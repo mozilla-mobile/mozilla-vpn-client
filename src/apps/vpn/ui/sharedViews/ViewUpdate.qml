@@ -6,13 +6,14 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
-    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (VPNTheme.theme.windowMargin * 4)
+    flickContentHeight: vpnPanel.height + alertWrapperBackground.height + footerContent.height + (MZTheme.theme.windowMargin * 4)
     state: VPN.state === VPN.StateUpdateRequired ? "required" : "recommended"
     states: [
         State {
@@ -60,7 +61,7 @@ VPNFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    VPNUrlOpener.openUrlLabel("account");
+                    MZUrlOpener.openUrlLabel("account");
                 }
             }
 
@@ -70,17 +71,17 @@ VPNFlickable {
     Item {
         id: spacer1
 
-        height: Math.max(VPNTheme.theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
+        height: Math.max(MZTheme.theme.windowMargin * 2, ( window.safeContentHeight - flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
-    VPNPanel {
+    MZPanel {
         id: vpnPanel
 
         property var childRectHeight: vpnPanel.childrenRect.height
 
         anchors.top: spacer1.bottom
-        width: Math.min(vpnFlickable.width - VPNTheme.theme.windowMargin * 4, VPNTheme.theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width - MZTheme.theme.windowMargin * 4, MZTheme.theme.maxHorizontalContentWidth)
         logoSize: 80
     }
 
@@ -88,11 +89,11 @@ VPNFlickable {
         id: spacer2
 
         anchors.top: vpnPanel.bottom
-        height: Math.max(VPNTheme.theme.windowMargin * 2, (window.safeContentHeight -flickContentHeight ) / 2)
+        height: Math.max(MZTheme.theme.windowMargin * 2, (window.safeContentHeight -flickContentHeight ) / 2)
         width: vpnFlickable.width
     }
 
-    VPNDropShadowWithStates {
+    MZDropShadowWithStates {
         anchors.fill: alertWrapperBackground
         source: alertWrapperBackground
     }
@@ -101,21 +102,21 @@ VPNFlickable {
         id: alertWrapperBackground
 
         anchors.fill: alertWrapper
-        color: VPNTheme.theme.white
+        color: MZTheme.theme.white
         radius: 8
-        anchors.topMargin: -VPNTheme.theme.windowMargin
-        anchors.bottomMargin: -VPNTheme.theme.windowMargin
-        anchors.leftMargin: -VPNTheme.theme.windowMargin
-        anchors.rightMargin: -VPNTheme.theme.windowMargin
+        anchors.topMargin: -MZTheme.theme.windowMargin
+        anchors.bottomMargin: -MZTheme.theme.windowMargin
+        anchors.leftMargin: -MZTheme.theme.windowMargin
+        anchors.rightMargin: -MZTheme.theme.windowMargin
     }
 
     ColumnLayout {
         id: alertWrapper
 
         anchors.top: spacer2.bottom
-        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: MZTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(vpnFlickable.width - (VPNTheme.theme.windowMargin * 4), VPNTheme.theme.maxHorizontalContentWidth)
+        width: Math.min(vpnFlickable.width - (MZTheme.theme.windowMargin * 4), MZTheme.theme.maxHorizontalContentWidth)
 
         RowLayout {
             id: insecureConnectionAlert
@@ -132,12 +133,12 @@ VPNFlickable {
                 antialiasing: true
             }
 
-            VPNTextBlock {
+            MZTextBlock {
                 id: alertUpdateRecommendedText
 
-                font.family: VPNTheme.theme.fontInterFamily
-                font.pixelSize: VPNTheme.theme.fontSizeSmall
-                color: VPNTheme.theme.fontColorDark
+                font.family: MZTheme.theme.fontInterFamily
+                font.pixelSize: MZTheme.theme.fontSizeSmall
+                color: MZTheme.theme.fontColorDark
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 //% "Your connection will not be secure while you update."
@@ -153,16 +154,16 @@ VPNFlickable {
 
         anchors.top: alertWrapperBackground.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Math.min(parent.width, VPNTheme.theme.maxHorizontalContentWidth)
-        spacing: VPNTheme.theme.windowMargin * 1.25
+        width: Math.min(parent.width, MZTheme.theme.maxHorizontalContentWidth)
+        spacing: MZTheme.theme.windowMargin * 1.25
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: VPNTheme.theme.windowMargin / 2
-            color: VPNTheme.theme.transparent
+            Layout.preferredHeight: MZTheme.theme.windowMargin / 2
+            color: MZTheme.theme.transparent
         }
 
-        VPNButton {
+        MZButton {
             id: updateBtn
 
             //% "Update now"
@@ -172,7 +173,7 @@ VPNFlickable {
             onClicked: VPN.update()
         }
 
-        VPNLinkButton {
+        MZLinkButton {
             id: footerLink
 
             //% "Not now"
@@ -184,7 +185,7 @@ VPNFlickable {
             labelText: (vpnFlickable.state === "recommended") ? textNotNow : textManageAccount
         }
 
-        VPNSignOut {
+        MZSignOut {
             id: signOff
 
             anchors.bottom: undefined
@@ -195,8 +196,8 @@ VPNFlickable {
 
         Rectangle {
             Layout.fillWidth: true
-            Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-            color: VPNTheme.theme.transparent
+            Layout.preferredHeight: MZTheme.theme.windowMargin * 2
+            color: MZTheme.theme.transparent
         }
 
     }

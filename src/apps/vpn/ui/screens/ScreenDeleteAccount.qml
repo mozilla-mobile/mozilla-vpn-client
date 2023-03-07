@@ -11,7 +11,7 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 
-VPNStackView {
+MZStackView {
     id: stackview
     Component.onCompleted: () => {
        VPNNavigator.addStackView(VPNNavigator.ScreenDeleteAccount, stackview)

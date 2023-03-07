@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
@@ -14,14 +15,14 @@ import components.forms 0.1
 Item {
     id: root
 
-    VPNMenu {
+    MZMenu {
         id: menu
         // Do not translate this string!
         title: "Messages - REMOVE ME"
         _menuOnBackClicked: () => getHelpStackView.pop()
     }
 
-    VPNFlickable {
+    MZFlickable {
         id: vpnFlickable
         flickContentHeight: messagessHolder.implicitHeight
         anchors.top: menu.bottom
@@ -32,9 +33,9 @@ Item {
         ColumnLayout {
             anchors.top:  parent.top
             anchors.left:  parent.left
-            anchors.leftMargin: VPNTheme.theme.windowMargin
+            anchors.leftMargin: MZTheme.theme.windowMargin
 
-            spacing: VPNTheme.theme.windowMargin
+            spacing: MZTheme.theme.windowMargin
             id: messagessHolder
 
             MZFilterProxyModel {
@@ -49,7 +50,7 @@ Item {
 
             Repeater {
                 model: messagesModel
-                delegate: VPNCheckBoxRow {
+                delegate: MZCheckBoxRow {
                     // I'm too lazy to create a proper view.
                     function showMessageContent(addon) {
                         const list = [];
@@ -64,7 +65,7 @@ Item {
                     subLabelText: showMessageContent(addon)
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
-                    Layout.minimumHeight: VPNTheme.theme.rowHeight * 1.5
+                    Layout.minimumHeight: MZTheme.theme.rowHeight * 1.5
 
                     onClicked: {
                        if (addon.isRead) {

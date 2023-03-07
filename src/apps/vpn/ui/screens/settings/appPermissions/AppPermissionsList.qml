@@ -7,6 +7,7 @@ import QtQuick 2.5
 import QtQuick.Controls
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components.forms 0.1
@@ -17,9 +18,9 @@ ColumnLayout {
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
 
-    spacing: VPNTheme.theme.vSpacing
+    spacing: MZTheme.theme.vSpacing
 
-    VPNSearchBar {
+    MZSearchBar {
         property bool sorted: false;
         id: searchBarWrapper
         _filterProxySource: VPNAppPermissions
@@ -36,11 +37,11 @@ ColumnLayout {
         id: col2
         objectName: "appExclusionsList"
 
-        spacing: VPNTheme.theme.windowMargin / 2
+        spacing: MZTheme.theme.windowMargin / 2
         Layout.fillWidth: true
 
-        VPNLinkButton {
-            property int numDisabledApps: VPNSettings.vpnDisabledApps.length
+        MZLinkButton {
+            property int numDisabledApps: MZSettings.vpnDisabledApps.length
 
             id: clearAllButton
             objectName: "clearAll"
@@ -53,12 +54,12 @@ ColumnLayout {
             Layout.leftMargin: -4
 
             textAlignment: Text.AlignLeft
-            labelText: VPNI18n.SettingsAppExclusionClearAllApps
-            fontSize: VPNTheme.theme.fontSize
-            fontName: VPNTheme.theme.fontInterSemiBoldFamily
+            labelText: MZI18n.SettingsAppExclusionClearAllApps
+            fontSize: MZTheme.theme.fontSize
+            fontName: MZTheme.theme.fontInterSemiBoldFamily
 
             onClicked: VPNAppPermissions.protectAll();
-            enabled: VPNSettings.vpnDisabledApps.length > 0
+            enabled: MZSettings.vpnDisabledApps.length > 0
             visible: applist.count > 0
         }
 
@@ -72,14 +73,14 @@ ColumnLayout {
                 id: appRow
 
                 objectName: `app-${index}`
-                spacing: VPNTheme.theme.windowMargin
-                Layout.preferredHeight: VPNTheme.theme.navBarTopMargin
+                spacing: MZTheme.theme.windowMargin
+                Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
                 function handleClick() {
                     VPNAppPermissions.flip(appID)
                 }
 
-                VPNCheckBox {
+                MZCheckBox {
                     id: checkBox
                     objectName: "checkbox"
                     onClicked: () => appRow.handleClick()
@@ -89,17 +90,17 @@ ColumnLayout {
                 }
 
                 Rectangle {
-                    Layout.preferredWidth: VPNTheme.theme.windowMargin * 2
-                    Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
-                    Layout.maximumHeight: VPNTheme.theme.windowMargin * 2
-                    Layout.maximumWidth: VPNTheme.theme.windowMargin * 2
+                    Layout.preferredWidth: MZTheme.theme.windowMargin * 2
+                    Layout.preferredHeight: MZTheme.theme.windowMargin * 2
+                    Layout.maximumHeight: MZTheme.theme.windowMargin * 2
+                    Layout.maximumWidth: MZTheme.theme.windowMargin * 2
                     Layout.alignment: Qt.AlignVCenter
-                    color: VPNTheme.theme.transparent
-                    radius: VPNTheme.theme.cornerRadius
+                    color: MZTheme.theme.transparent
+                    radius: MZTheme.theme.cornerRadius
 
                     Image {
-                        sourceSize.width: VPNTheme.theme.windowMargin * 2
-                        sourceSize.height: VPNTheme.theme.windowMargin * 2
+                        sourceSize.width: MZTheme.theme.windowMargin * 2
+                        sourceSize.height: MZTheme.theme.windowMargin * 2
                         anchors.centerIn: parent
                         asynchronous: true
                         fillMode:  Image.PreserveAspectFit
@@ -111,15 +112,15 @@ ColumnLayout {
                     }
                 }
 
-                VPNInterLabel {
+                MZInterLabel {
                     id: label
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
                     text: appName
-                    color: VPNTheme.theme.fontColorDark
+                    color: MZTheme.theme.fontColorDark
                     horizontalAlignment: Text.AlignLeft
 
-                    VPNMouseArea {
+                    MZMouseArea {
                         anchors.fill: undefined
                         width: parent.implicitWidth
                         height: parent.implicitHeight
@@ -130,12 +131,12 @@ ColumnLayout {
             }
         }
 
-        VPNLinkButton {
+        MZLinkButton {
             objectName: "addApplication"
             labelText: addApplication
             textAlignment: Text.AlignLeft
-            fontSize: VPNTheme.theme.fontSize
-            fontName: VPNTheme.theme.fontInterSemiBoldFamily
+            fontSize: MZTheme.theme.fontSize
+            fontName: MZTheme.theme.fontInterSemiBoldFamily
             onClicked: VPNAppPermissions.openFilePicker()
 
             // Hack to horizontally align the "+" sign with the
@@ -144,10 +145,10 @@ ColumnLayout {
 
             visible: Qt.platform.os === "windows"
             iconComponent: Component {
-                VPNIcon {
+                MZIcon {
                     source: "qrc:/nebula/resources/plus.svg"
-                    sourceSize.height: VPNTheme.theme.iconSmallSize
-                    sourceSize.width: VPNTheme.theme.iconSmallSize
+                    sourceSize.height: MZTheme.theme.iconSmallSize
+                    sourceSize.width: MZTheme.theme.iconSmallSize
                     anchors.verticalCenter: parent.verticalCenter
                 }
             }

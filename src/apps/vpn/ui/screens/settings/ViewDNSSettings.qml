@@ -6,30 +6,31 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     objectName: "DNSSettingsView"
 
-    _menuTitle: VPNI18n.SettingsDnsSettings
+    _menuTitle: MZI18n.SettingsDnsSettings
 
     function maybeApplyChange(settingValue) {
-        if (settingValue === VPNSettings.Gateway) {
-            if (VPNSettings.dnsProviderFlags !== VPNSettings.Custom) {
+        if (settingValue === MZSettings.Gateway) {
+            if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
                 // We are not changing anything interesting. Let's keep the current value.
                 return;
             }
 
-            VPNSettings.dnsProviderFlags = settingValue;
+            MZSettings.dnsProviderFlags = settingValue;
             return;
         }
 
-        if (VPNSettings.dnsProviderFlags === VPNSettings.Custom ||
-            VPNSettings.dnsProviderFlags === VPNSettings.Gateway) {
-            VPNSettings.dnsProviderFlags = settingValue;
+        if (MZSettings.dnsProviderFlags === MZSettings.Custom ||
+            MZSettings.dnsProviderFlags === MZSettings.Gateway) {
+            MZSettings.dnsProviderFlags = settingValue;
             return;
         }
 
@@ -37,9 +38,9 @@ VPNViewBase {
     }
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin * 1.5
-        Layout.leftMargin: VPNTheme.theme.windowMargin
-        Layout.rightMargin: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin * 1.5
+        Layout.leftMargin: MZTheme.theme.windowMargin
+        Layout.rightMargin: MZTheme.theme.windowMargin
 
         Loader {
             objectName: "DNSSettingsInformationCardLoader"
@@ -47,15 +48,15 @@ VPNViewBase {
             Layout.alignment: Qt.AlignHCenter
             sourceComponent: InformationCard {
                 objectName: "DNSSettingsViewInformationCard"
-                height: textBlocks.height + VPNTheme.theme.windowMargin * 2
-                width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
+                height: textBlocks.height + MZTheme.theme.windowMargin * 2
+                width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
                 _infoContent: ColumnLayout {
                     id: textBlocks
 
                     spacing: 0
-                    VPNTextBlock {
+                    MZTextBlock {
                         Layout.fillWidth: true
-                        text: VPNI18n.SettingsDnsSettingsDisconnectWarning
+                        text: MZI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
@@ -69,44 +70,44 @@ VPNViewBase {
         }
 
         RowLayout {
-            spacing: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+            spacing: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
-            VPNRadioButton {
+            MZRadioButton {
                 objectName: "dnsStandard"
 
                 id: gatewayRadioButton
-                Layout.preferredWidth: VPNTheme.theme.vSpacing
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredWidth: MZTheme.theme.vSpacing
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProviderFlags !== VPNSettings.Custom
+                checked: MZSettings.dnsProviderFlags !== MZSettings.Custom
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNI18n.SettingsDnsSettingsStandardDNSTitle
-                onClicked: maybeApplyChange(VPNSettings.Gateway);
+                accessibleName: MZI18n.SettingsDnsSettingsStandardDNSTitle
+                onClicked: maybeApplyChange(MZSettings.Gateway);
             }
 
             ColumnLayout {
                 spacing: 4
 
-                VPNInterLabel {
+                MZInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNI18n.SettingsDnsSettingsStandardDNSTitle
+                    text: MZI18n.SettingsDnsSettingsStandardDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
-                    VPNMouseArea {
+                    MZMouseArea {
                         anchors.fill: parent
 
                         enabled: gatewayRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(VPNSettings.Gateway);
+                        onClicked: maybeApplyChange(MZSettings.Gateway);
                     }
                 }
 
-                VPNTextBlock {
-                    text: VPNI18n.SettingsDnsSettingsStandardDNSBody
+                MZTextBlock {
+                    text: MZI18n.SettingsDnsSettingsStandardDNSBody
                     Layout.fillWidth: true
                 }
             }
@@ -114,47 +115,47 @@ VPNViewBase {
 
         RowLayout {
             Layout.fillWidth: true
-            spacing: VPNTheme.theme.windowMargin
+            spacing: MZTheme.theme.windowMargin
 
-            VPNRadioButton {
+            MZRadioButton {
                 objectName: "dnsCustom"
 
                 id: customRadioButton
-                Layout.preferredWidth: VPNTheme.theme.vSpacing
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredWidth: MZTheme.theme.vSpacing
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                checked: MZSettings.dnsProviderFlags === MZSettings.Custom
                 ButtonGroup.group: radioButtonGroup
-                accessibleName: VPNI18n.SettingsDnsSettingsCustomDNSTitle
-                onClicked: maybeApplyChange(VPNSettings.Custom);
+                accessibleName: MZI18n.SettingsDnsSettingsCustomDNSTitle
+                onClicked: maybeApplyChange(MZSettings.Custom);
             }
 
             ColumnLayout {
                 spacing: 4
                 Layout.fillWidth: true
 
-                VPNInterLabel {
+                MZInterLabel {
                     Layout.fillWidth: true
 
-                    text: VPNI18n.SettingsDnsSettingsCustomDNSTitle
+                    text: MZI18n.SettingsDnsSettingsCustomDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
 
-                    VPNMouseArea {
+                    MZMouseArea {
                         anchors.fill: parent
 
                         enabled: customRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(VPNSettings.Custom);
+                        onClicked: maybeApplyChange(MZSettings.Custom);
                     }
                 }
-                VPNTextBlock {
-                    text: VPNI18n.SettingsDnsSettingsCustomDNSBody
+                MZTextBlock {
+                    text: MZI18n.SettingsDnsSettingsCustomDNSBody
                     Layout.fillWidth: true
                 }
 
-                VPNTextField {
+                MZTextField {
                     id: ipInput
                     objectName: "dnsCustomInput"
 
@@ -162,13 +163,13 @@ VPNViewBase {
                     property string error: "This is an error string"
 
                     hasError: valueInvalid
-                    enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                    enabled: MZSettings.dnsProviderFlags === MZSettings.Custom
                     onEnabledChanged: if(enabled) forceActiveFocus()
 
-                    _placeholderText: VPNI18n.SettingsDnsSettingsInputPlaceholder
+                    _placeholderText: MZI18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
                     Layout.fillWidth: true
-                    Layout.maximumWidth: VPNTheme.theme.maxTextWidth
+                    Layout.maximumWidth: MZTheme.theme.maxTextWidth
                     Layout.topMargin: 12
                     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhFormattedNumbersOnly
 
@@ -177,22 +178,22 @@ VPNViewBase {
                     }
 
                     Component.onCompleted: {
-                        ipInput.text = VPNSettings.userDNS;
+                        ipInput.text = MZSettings.userDNS;
                     }
 
                     onEditingFinished: {
                         if (ipInput.text === "" || VPN.validateUserDNS(ipInput.text)) {
-                            VPNSettings.userDNS = ipInput.text
+                            MZSettings.userDNS = ipInput.text
                         }
                     }
 
                     onTextChanged: {
                         ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
-                        ipInput.error = VPNI18n.SettingsDnsSettingsCustomDNSError
+                        ipInput.error = MZI18n.SettingsDnsSettingsCustomDNSError
                     }
                 }
 
-                VPNContextualAlerts {
+                MZContextualAlerts {
                     id: errorAlert
 
                     property string messageText: ""
@@ -202,9 +203,9 @@ VPNViewBase {
                         left: undefined
                         right: undefined
                     }
-                    Layout.topMargin: VPNTheme.theme.listSpacing
+                    Layout.topMargin: MZTheme.theme.listSpacing
 
-                    visible: ipInput.valueInvalid && ipInput.visible && VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                    visible: ipInput.valueInvalid && ipInput.visible && MZSettings.dnsProviderFlags === MZSettings.Custom
 
                     messages: [
                         {
@@ -220,8 +221,8 @@ VPNViewBase {
 
     onVisibleChanged: {
       if (!visible) {
-        if (VPNSettings.userDNS === "" && VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
-          VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+        if (MZSettings.userDNS === "" && MZSettings.dnsProviderFlags === MZSettings.Custom) {
+          MZSettings.dnsProviderFlags = MZSettings.Gateway;
         }
       }
     }
@@ -230,28 +231,28 @@ VPNViewBase {
         id: dnsOverwriteLoader
 
         active: false
-        sourceComponent: VPNSimplePopup {
+        sourceComponent: MZSimplePopup {
             id: dnsOverwritePopup
 
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-dns-privacy.svg"
             imageSize: Qt.size(80, 80)
-            title: VPNI18n.DnsOverwriteDialogTitlePrivacy
-            description: VPNI18n.DnsOverwriteDialogBodyPrivacy
+            title: MZI18n.DnsOverwriteDialogTitlePrivacy
+            description: MZI18n.DnsOverwriteDialogBodyPrivacy
             buttons: [
-                VPNButton {
+                MZButton {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
-                    text: VPNI18n.DnsOverwriteDialogPrimaryButton
+                    text: MZI18n.DnsOverwriteDialogPrimaryButton
                     Layout.fillWidth: true
                     onClicked: {
-                        VPNSettings.dnsProviderFlags = VPNSettings.Custom;
+                        MZSettings.dnsProviderFlags = MZSettings.Custom;
                         dnsOverwritePopup.close()
                     }
                 },
-                VPNLinkButton {
+                MZLinkButton {
                     objectName: "dnsOverwritePopupGoBackButton"
-                    labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
+                    labelText: MZI18n.DnsOverwriteDialogSecondaryButton
                     onClicked: dnsOverwritePopup.close()
                     Layout.alignment: Qt.AlignHCenter
                 }

@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import Mozilla.VPN.qmlcomponents 1.0
@@ -24,20 +25,20 @@ Rectangle {
 
     objectName: "navigationBar"
 
-    height: VPNTheme.theme.navBarHeight
-    width: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
+    height: MZTheme.theme.navBarHeight
+    width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
     radius: height / 2
-    color: VPNTheme.theme.ink
+    color: MZTheme.theme.ink
 
     visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain && opacity !== 0
 
     anchors {
         horizontalCenter: parent.horizontalCenter
         bottom: parent.bottom
-        bottomMargin: VPNTheme.theme.navBarBottomMargin
+        bottomMargin: MZTheme.theme.navBarBottomMargin
     }
 
-    VPNDropShadow {
+    MZDropShadow {
         source: outline
         anchors.fill: outline
         transparentBorder: true
@@ -45,7 +46,7 @@ Rectangle {
         opacity: 0.6
         spread: 0
         radius: parent.radius
-        color: VPNTheme.colors.grey60
+        color: MZTheme.colors.grey60
         cached: true
     }
 
@@ -56,11 +57,11 @@ Rectangle {
 
     Rectangle {
         id: outline
-        color: VPNTheme.theme.ink
+        color: MZTheme.theme.ink
         radius: parent.radius
         anchors.fill: parent
         border.width: 0
-        border.color: VPNTheme.theme.ink
+        border.color: MZTheme.theme.ink
     }
 
     RowLayout {
@@ -68,16 +69,16 @@ Rectangle {
         objectName: "navigationLayout"
 
         anchors.fill: parent
-        anchors.topMargin: VPNTheme.theme.vSpacingSmall / 2
+        anchors.topMargin: MZTheme.theme.vSpacingSmall / 2
         anchors.leftMargin: {
             let minNumberOfIcons = 3
             let paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
-            window.width < VPNTheme.theme.tabletMinimumWidth ? VPNTheme.theme.navBarMaxPadding - (paddingFactor * (navButtons.count - minNumberOfIcons)) : VPNTheme.theme.navBarMaxPaddingTablet
+            window.width < MZTheme.theme.tabletMinimumWidth ? MZTheme.theme.navBarMaxPadding - (paddingFactor * (navButtons.count - minNumberOfIcons)) : MZTheme.theme.navBarMaxPaddingTablet
         }
         anchors.rightMargin: anchors.leftMargin
-        anchors.bottomMargin: VPNTheme.theme.vSpacingSmall / 2
+        anchors.bottomMargin: MZTheme.theme.vSpacingSmall / 2
 
-        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (VPNTheme.theme.navBarIconSize * navButtons.count)) / (navButtons.count - 1)
+        spacing: (root.width - anchors.leftMargin - anchors.rightMargin - (MZTheme.theme.navBarIconSize * navButtons.count)) / (navButtons.count - 1)
 
         Repeater {
             model: navButtons
@@ -92,7 +93,7 @@ Rectangle {
                 _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
                 ButtonGroup.group: navBarButtonGroup
 
-                accessibleName: VPNI18n[navAccessibleName]
+                accessibleName: MZI18n[navAccessibleName]
                 enabled: root.visible
 
                 Component.onCompleted: {
@@ -169,7 +170,7 @@ Rectangle {
     }
 
     Connections {
-        target: VPNSettings
+        target: MZSettings
         function onAddonSettingsChanged() {
             root.getUnreadNotificationStatus()
         }

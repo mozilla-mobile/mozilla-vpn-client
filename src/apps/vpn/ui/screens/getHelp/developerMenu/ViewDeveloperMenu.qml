@@ -6,94 +6,95 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
-    _menuTitle: VPNI18n.SettingsDevTitle
+MZViewBase {
+    _menuTitle: MZI18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
         Layout.fillWidth: true
 
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: developerUnlock
 
             Layout.fillWidth: true
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            labelText:  VPNI18n.SettingsDevShowOptionTitle
-            subLabelText: VPNI18n.SettingsDevShowOptionSubtitle
-            isChecked: VPNSettings.developerUnlock
-            onClicked: VPNSettings.developerUnlock = !VPNSettings.developerUnlock
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText:  MZI18n.SettingsDevShowOptionTitle
+            subLabelText: MZI18n.SettingsDevShowOptionSubtitle
+            isChecked: MZSettings.developerUnlock
+            onClicked: MZSettings.developerUnlock = !MZSettings.developerUnlock
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: checkBoxRowStagingServer
 
             Layout.fillWidth: true
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            labelText: VPNI18n.SettingsDevUseStagingTitle
-            subLabelText: VPNI18n.SettingsDevUseStagingSubtitle
-            isChecked: VPNSettings.stagingServer
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText: MZI18n.SettingsDevUseStagingTitle
+            subLabelText: MZI18n.SettingsDevUseStagingSubtitle
+            isChecked: MZSettings.stagingServer
             showDivider: false
             onClicked: {
-                VPNSettings.stagingServer = !VPNSettings.stagingServer
+                MZSettings.stagingServer = !MZSettings.stagingServer
             }
         }
 
-        VPNTextField {
+        MZTextField {
             id: serverAddressInput
 
             Layout.fillWidth: true
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 3
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 3
 
             Layout.alignment: Qt.AlignHCenter
-            enabled: VPNSettings.stagingServer
+            enabled: MZSettings.stagingServer
             _placeholderText: "Staging server address"
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredHeight: MZTheme.theme.rowHeight
 
             PropertyAnimation on opacity {
                 duration: 200
             }
 
             onTextChanged: text => {
-                               if (VPNSettings.stagingServerAddress !== serverAddressInput.text) {
-                                   VPNSettings.stagingServerAddress = serverAddressInput.text;
+                               if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
+                                   MZSettings.stagingServerAddress = serverAddressInput.text;
                                }
                            }
 
             Component.onCompleted: {
-                serverAddressInput.text = VPNSettings.stagingServerAddress;
+                serverAddressInput.text = MZSettings.stagingServerAddress;
             }
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.topMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
 
             labelText: "Custom Add-on URL"
             subLabelText: "Load add-ons from an alternative URL address"
 
-            isChecked: VPNSettings.addonCustomServer
+            isChecked: MZSettings.addonCustomServer
             showDivider: false
             onClicked: {
-                VPNSettings.addonCustomServer = !VPNSettings.addonCustomServer
+                MZSettings.addonCustomServer = !MZSettings.addonCustomServer
             }
         }
 
-        VPNTextField {
+        MZTextField {
             id: addonCustomServerInput
 
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 3
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 3
             Layout.alignment: Qt.AlignRight
             Layout.fillWidth: true
 
-            enabled: VPNSettings.addonCustomServer
+            enabled: MZSettings.addonCustomServer
             _placeholderText: "Addon Custom Server Address"
             height: 40
 
@@ -102,26 +103,26 @@ VPNViewBase {
             }
 
             onTextChanged: text => {
-                               if (VPNSettings.addonCustomServerAddress !== addonCustomServerInput.text) {
-                                   VPNSettings.addonCustomServerAddress = addonCustomServerInput.text;
+                               if (MZSettings.addonCustomServerAddress !== addonCustomServerInput.text) {
+                                   MZSettings.addonCustomServerAddress = addonCustomServerInput.text;
                                }
                            }
 
             Component.onCompleted: {
-                addonCustomServerInput.text = VPNSettings.addonCustomServerAddress;
+                addonCustomServerInput.text = MZSettings.addonCustomServerAddress;
             }
         }
 
-        VPNCheckBoxRow {
+        MZCheckBoxRow {
             id: checkBoxRowProdKeyInStaging
 
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
             labelText: "Add-on production signature key in staging"
             subLabelText: "Use the add-on production signature key in staging"
-            isChecked: VPNSettings.addonProdKeyInStaging
+            isChecked: MZSettings.addonProdKeyInStaging
             showDivider: false
             onClicked: {
-                VPNSettings.addonProdKeyInStaging = !VPNSettings.addonProdKeyInStaging
+                MZSettings.addonProdKeyInStaging = !MZSettings.addonProdKeyInStaging
             }
         }
 
@@ -129,9 +130,9 @@ VPNViewBase {
             id: divider
             Layout.preferredHeight: 1
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.windowMargin / 2
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 3
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.topMargin: MZTheme.theme.windowMargin / 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 3
+            Layout.rightMargin: MZTheme.theme.windowMargin
             color: "#E7E7E7"
         }
 
@@ -157,25 +158,25 @@ VPNViewBase {
                 }
             }
 
-            delegate: VPNSettingsItem {
+            delegate: MZSettingsItem {
                settingTitle:  title
                imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-               imageRightMirror: VPNLocalizer.isRightToLeft
+               imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
-               Layout.leftMargin: VPNTheme.theme.windowMargin / 2
-               Layout.rightMargin: VPNTheme.theme.windowMargin / 2
+               Layout.leftMargin: MZTheme.theme.windowMargin / 2
+               Layout.rightMargin: MZTheme.theme.windowMargin / 2
             }
         }
 
-        //Need to wrap VPNExternalLinkListItem in an item since it is not written to work in a layout
+        //Need to wrap MZExternalLinkListItem in an item since it is not written to work in a layout
         Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredHeight: MZTheme.theme.rowHeight
 
             visible: checkBoxRowStagingServer.isChecked && !restartRequired.isVisible
 
-            VPNExternalLinkListItem {
+            MZExternalLinkListItem {
                 id: inspectorLink
 
                 anchors.left: parent.left
@@ -185,31 +186,31 @@ VPNViewBase {
                 title: "Open Inspector"
                 accessibleName: "Open Inspector"
                 iconSource:  "qrc:/nebula/resources/externalLink.svg"
-                backgroundColor: VPNTheme.theme.clickableRowBlue
+                backgroundColor: MZTheme.theme.clickableRowBlue
                 onClicked: {
-                    VPNUrlOpener.openUrlLabel("inspector");
+                    MZUrlOpener.openUrlLabel("inspector");
                 }
             }
         }
 
-        VPNContextualAlerts {
+        MZContextualAlerts {
             id: restartRequired
 
             property bool isVisible: false
 
-            Layout.topMargin: VPNTheme.theme.listSpacing
-            Layout.leftMargin: VPNTheme.theme.windowMargin/2
+            Layout.topMargin: MZTheme.theme.listSpacing
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
 
             messages: [
                 {
                     type: "warning",
-                    message: VPNI18n.SettingsDevRestartRequired,
+                    message: MZI18n.SettingsDevRestartRequired,
                     visible: isVisible
                 }
             ]
 
             Connections {
-                target: VPNSettings
+                target: MZSettings
                 function onStagingServerAddressChanged() {
                     restartRequired.isVisible = true;
                 }
@@ -219,10 +220,10 @@ VPNViewBase {
             }
         }
 
-        VPNButton {
+        MZButton {
             id: reinstateMessages
 
-            Layout.topMargin: VPNTheme.theme.listSpacing * 2
+            Layout.topMargin: MZTheme.theme.listSpacing * 2
 
             text: "Reinstate messages"
             onClicked: {
@@ -230,14 +231,14 @@ VPNViewBase {
             }
         }
 
-        VPNButton {
+        MZButton {
             id: crashApp
             property int clickNeeded: 5
 
 
             text: "Test Crash Reporter"
             onClicked: {
-                if (!VPNSettings.stagingServer){
+                if (!MZSettings.stagingServer){
                     text = "Test Crash Reporter (Staging only!)";
                     return;
                 }
@@ -250,7 +251,7 @@ VPNViewBase {
             }
         }
 
-        VPNButton {
+        MZButton {
             id: resetAndQuit
             property int clickNeeded: 5
 
@@ -270,24 +271,24 @@ VPNViewBase {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
             Layout.maximumWidth: resetAndQuit.width
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+            Layout.topMargin: MZTheme.theme.vSpacingSmall
 
-            VPNTextBlock {
+            MZTextBlock {
                 Layout.fillWidth: true
 
                 text: VPN.devVersion
             }
 
-            VPNTextBlock {
+            MZTextBlock {
                 Layout.fillWidth: true
 
-                text: "Installation time: " + VPNSettings.installationTime
+                text: "Installation time: " + MZSettings.installationTime
             }
 
-            VPNTextBlock {
+            MZTextBlock {
                 Layout.fillWidth: true
 
-                text: "Update time: " + VPNSettings.updateTime
+                text: "Update time: " + MZSettings.updateTime
             }
         }
     }

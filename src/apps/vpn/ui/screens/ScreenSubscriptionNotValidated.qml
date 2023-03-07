@@ -5,10 +5,11 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackview
 
     function handleButtonClick() {
@@ -20,13 +21,13 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
+            headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
             // "An unexpected error....."
-            errorMessage: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorText,
+            errorMessage: MZI18n.GenericPurchaseErrorGenericPurchaseErrorText,
 
             // "Try again"
-            primaryButtonText: VPNI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
+            primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: false,

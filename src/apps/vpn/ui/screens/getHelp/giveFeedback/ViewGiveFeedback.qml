@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -25,11 +26,11 @@ ColumnLayout {
         buttons: row.children
     }
 
-    VPNBoldLabel {
+    MZBoldLabel {
         Layout.fillWidth: true
-        Layout.topMargin: window.fullscreenRequired() ? VPNTheme.theme.windowMargin * 3 : VPNTheme.theme.vSpacing
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.topMargin: window.fullscreenRequired() ? MZTheme.theme.windowMargin * 3 : MZTheme.theme.vSpacing
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
         //% "How would you describe your Mozilla VPN experience so far?"
         text: qsTrId("vpn.feedbackForm.ratingHeadline")
@@ -42,10 +43,10 @@ ColumnLayout {
     RowLayout {
         id: row
 
-        Layout.topMargin: VPNTheme.theme.windowMargin * 2
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-        Layout.preferredHeight: VPNTheme.theme.rowHeight
+        Layout.topMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.preferredHeight: MZTheme.theme.rowHeight
 
         GiveFeedbackRadioDelegate {
             //% "Very poor"
@@ -53,7 +54,7 @@ ColumnLayout {
             iconSource: "qrc:/ui/resources/faces/veryPoor.svg"
             value: 1
         }
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.preferredHeight: 1
             Layout.fillWidth: true
         }
@@ -65,7 +66,7 @@ ColumnLayout {
             value: 2
         }
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.preferredHeight: 1
             Layout.fillWidth: true
         }
@@ -77,7 +78,7 @@ ColumnLayout {
             value: 3
         }
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.preferredHeight: 1
             Layout.fillWidth: true
         }
@@ -89,55 +90,55 @@ ColumnLayout {
             value: 4
         }
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.preferredHeight: 1
             Layout.fillWidth: true
         }
 
         GiveFeedbackRadioDelegate {
-            Accessible.name: VPNI18n.FeedbackFormExcellentLabel
+            Accessible.name: MZI18n.FeedbackFormExcellentLabel
             iconSource: "qrc:/ui/resources/faces/veryGood.svg"
             value: 5
         }
     }
 
     RowLayout {
-        Layout.topMargin: VPNTheme.theme.vSpacingSmall
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
-        VPNInterLabel {
+        MZInterLabel {
             horizontalAlignment: Qt.AlignLeft
             text: qsTrId("vpn.feedbackForm.veryPoor")
             Layout.fillWidth: true
-            color: VPNTheme.theme.fontColor
+            color: MZTheme.theme.fontColor
         }
 
         Item {
             Layout.fillWidth: true
         }
 
-        VPNInterLabel {
+        MZInterLabel {
             horizontalAlignment: Qt.AlignRight
-            text: VPNI18n.FeedbackFormExcellentLabel
+            text: MZI18n.FeedbackFormExcellentLabel
             Layout.fillWidth: true
-            color: VPNTheme.theme.fontColor
+            color: MZTheme.theme.fontColor
         }
     }
 
     Item {
         Layout.fillHeight: window.fullscreenRequired()
-        Layout.preferredHeight: window.fullscreenRequired() ? undefined : VPNTheme.theme.windowMargin * 2
+        Layout.preferredHeight: window.fullscreenRequired() ? undefined : MZTheme.theme.windowMargin * 2
     }
 
 
-    VPNButton {
+    MZButton {
         id: feebackContinueButton
 
         Layout.fillWidth: true
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
-        Layout.bottomMargin: VPNTheme.theme.navBarHeightWithMargins
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.bottomMargin: MZTheme.theme.navBarHeightWithMargins
 
         //% "Continue"
         text: qsTrId("vpn.feedbackForm.continue")

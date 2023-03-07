@@ -5,33 +5,34 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
 
-VPNInAppAuthenticationBase {
+MZInAppAuthenticationBase {
     id: viewDeleteAccount
     objectName: "viewDeleteAccountRequest"
 
     property var checkboxData: [
         {
-            subLabelText: VPNI18n.DeleteAccountOptionDescriptionOne,
+            subLabelText: MZI18n.DeleteAccountOptionDescriptionOne,
             objectName: "check1",
             isSelected: false
         },
         {
-            subLabelText: VPNI18n.DeleteAccountOptionDescriptionTwo,
+            subLabelText: MZI18n.DeleteAccountOptionDescriptionTwo,
             objectName: "check2",
             isSelected: false
         },
         {
-            subLabelText: VPNI18n.DeleteAccountOptionDescriptionThree,
+            subLabelText: MZI18n.DeleteAccountOptionDescriptionThree,
             objectName: "check3",
             isSelected: false
         },
         {
-            subLabelText: VPNI18n.DeleteAccountOptionDescriptionFour,
+            subLabelText: MZI18n.DeleteAccountOptionDescriptionFour,
             objectName: "check4",
             isSelected: false
         }
@@ -42,31 +43,31 @@ VPNInAppAuthenticationBase {
     _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
+    _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();
     }
-    _headlineText: VPNI18n.DeleteAccountHeadline
+    _headlineText: MZI18n.DeleteAccountHeadline
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
     _inputs: ColumnLayout {
         objectName: "accountDeletionLayout"
-        VPNTextBlock {
+        MZTextBlock {
             objectName: "accountDeletionLabel"
-            color: VPNTheme.theme.fontColor
+            color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
-            text: VPNI18n.DeleteAccountSubheadline
-                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
+            text: MZI18n.DeleteAccountSubheadline
+                .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
                     + VPNAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
 
             Layout.fillWidth: true
-            Layout.bottomMargin: VPNTheme.theme.vSpacing
+            Layout.bottomMargin: MZTheme.theme.vSpacing
         }
 
         Repeater {
             model: checkboxData
-            delegate: VPNCheckBoxRow {
+            delegate: MZCheckBoxRow {
                 objectName: "accountDeletionCheckbox-" + modelData.objectName;
                 subLabelText: modelData.subLabelText
                 leftMargin: 0
@@ -82,28 +83,28 @@ VPNInAppAuthenticationBase {
     _footerContent: ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
-        spacing: VPNTheme.theme.vSpacing
+        spacing: MZTheme.theme.vSpacing
 
-        VPNButton {
+        MZButton {
             Layout.fillWidth: true
             objectName: "deleteAccountForRealButton"
 
-            colorScheme: VPNTheme.theme.redButton
+            colorScheme: MZTheme.theme.redButton
             enabled: viewDeleteAccount.allowAccountDeletion
             // Delete account
-            text: VPNI18n.DeleteAccountButtonLabel
+            text: MZI18n.DeleteAccountButtonLabel
             onClicked: if (viewDeleteAccount.allowAccountDeletion) {
                 VPNAuthInApp.deleteAccount();
             }
         }
 
-        VPNLinkButton {
+        MZLinkButton {
             Layout.fillWidth: true
 
-            fontName: VPNTheme.theme.fontBoldFamily
+            fontName: MZTheme.theme.fontBoldFamily
             // Cancel
-            labelText: VPNI18n.InAppSupportWorkflowSupportSecondaryActionText
-            linkColor: VPNTheme.theme.redLinkButton
+            labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText
+            linkColor: MZTheme.theme.redLinkButton
             onClicked: {
                 cancelAuthenticationFlow();
             }

@@ -6,12 +6,13 @@ import QtQuick 2.15
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import Mozilla.VPN.qmlcomponents 1.0
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     objectName: "messageInboxView"
 
@@ -19,15 +20,15 @@ VPNViewBase {
     property bool isEditing: false
     property var dismissedMessages: []
     property Component rightMenuButton: Component {
-        VPNLinkButton {
+        MZLinkButton {
             id: editLink
 
             property bool isEditing: false
             property bool skipEnsureVisible: true
 
-            horizontalPadding: VPNTheme.theme.hSpacing / 5
+            horizontalPadding: MZTheme.theme.hSpacing / 5
             enabled: !isEmptyState
-            labelText: !vpnFlickable.isEditing || isEmptyState ? VPNI18n.InAppMessagingEditButton : VPNI18n.InAppSupportWorkflowSupportResponseButton
+            labelText: !vpnFlickable.isEditing || isEmptyState ? MZI18n.InAppMessagingEditButton : MZI18n.InAppSupportWorkflowSupportResponseButton
             onClicked: {
                 vpnFlickable.isEditing = !vpnFlickable.isEditing
             }
@@ -39,7 +40,7 @@ VPNViewBase {
     //Weird workaround to fix VPN-2895
     onIsEditingChanged: editModeChanged()
 
-    _menuTitle: VPNI18n.InAppMessagingMenuTitle
+    _menuTitle: MZI18n.InAppMessagingMenuTitle
 
     onVisibleChanged: if (!visible) resetPage()
 
@@ -79,17 +80,17 @@ VPNViewBase {
 
         spacing: 0
 
-        VPNSearchBar {
+        MZSearchBar {
             id: searchBar
 
             Layout.fillWidth: true
-            Layout.topMargin: VPNTheme.theme.listSpacing
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+            Layout.topMargin: MZTheme.theme.listSpacing
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
             enabled: !vpnFlickable.isEmptyState
             onEnabledChanged: if (!enabled) clearText()
 
-            _searchBarPlaceholderText: VPNI18n.InAppMessagingSearchBarPlaceholderText
+            _searchBarPlaceholderText: MZI18n.InAppMessagingSearchBarPlaceholderText
             _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
 
             _filterProxySource: VPNAddonManager
@@ -99,7 +100,7 @@ VPNViewBase {
         }
 
         Image {
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall * 2
+            Layout.topMargin: MZTheme.theme.vSpacingSmall * 2
             Layout.alignment: Qt.AlignHCenter
 
             source: "qrc:/ui/resources/messages-empty.svg"
@@ -109,33 +110,33 @@ VPNViewBase {
 
         }
 
-        VPNHeadline {
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+        MZHeadline {
+            Layout.topMargin: MZTheme.theme.vSpacingSmall
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
             Layout.fillWidth: true
 
-            text: VPNI18n.InAppMessagingEmptyStateTitle
+            text: MZI18n.InAppMessagingEmptyStateTitle
             visible: vpnFlickable.isEmptyState
         }
 
-        VPNInterLabel {
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall / 2
-            Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+        MZInterLabel {
+            Layout.topMargin: MZTheme.theme.vSpacingSmall / 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
             Layout.fillWidth: true
 
-            text: VPNI18n.InAppMessagingEmptyStateDescription
+            text: MZI18n.InAppMessagingEmptyStateDescription
             visible: vpnFlickable.isEmptyState
-            color: VPNTheme.theme.fontColor
+            color: MZTheme.theme.fontColor
         }
 
         Rectangle {
-            Layout.topMargin: VPNTheme.theme.vSpacing
+            Layout.topMargin: MZTheme.theme.vSpacing
             Layout.fillWidth: true
             Layout.preferredHeight: 1
 
-            color: VPNTheme.colors.grey10
+            color: MZTheme.colors.grey10
             visible: !vpnFlickable.isEmptyState
         }
 
@@ -181,7 +182,7 @@ VPNViewBase {
 
                 spacing: 0
 
-                VPNSwipeDelegate {
+                MZSwipeDelegate {
                     id: swipeDelegate
 
                     property real deleteLabelWidth: 0.0
@@ -212,16 +213,16 @@ VPNViewBase {
                         }
                     }
 
-                    swipe.left: VPNSwipeAction {
+                    swipe.left: MZSwipeAction {
                         id: deleteSwipeAction
 
                         activeFocusOnTab: swipeDelegate.isSwipeOpen
-                        bgColor: VPNTheme.theme.redHovered
+                        bgColor: MZTheme.theme.redHovered
                         content: Image {
                             anchors.centerIn: parent
                             source: "qrc:/nebula/resources/delete-white.svg"
                         }
-                        Accessible.name: VPNI18n.InAppMessagingDeleteMessage
+                        Accessible.name: MZI18n.InAppMessagingDeleteMessage
 
                         SwipeDelegate.onClicked: {
                             swipeDelegate.swipe.close() // prevents weird iOS animation bug
@@ -261,11 +262,11 @@ VPNViewBase {
                         spacing: 0
 
                         RowLayout {
-                            Layout.topMargin: VPNTheme.theme.windowMargin
-                            Layout.leftMargin: VPNTheme.theme.windowMargin
-                            Layout.rightMargin: VPNTheme.theme.windowMargin
+                            Layout.topMargin: MZTheme.theme.windowMargin
+                            Layout.leftMargin: MZTheme.theme.windowMargin
+                            Layout.rightMargin: MZTheme.theme.windowMargin
 
-                            spacing: VPNTheme.theme.listSpacing
+                            spacing: MZTheme.theme.listSpacing
 
                             Rectangle {
                                 id: dot
@@ -274,39 +275,39 @@ VPNViewBase {
 
                                 opacity: addon.isRead? 0 : 1
                                 radius: Layout.preferredHeight / 2
-                                color: VPNTheme.theme.blue
+                                color: MZTheme.theme.blue
                             }
 
-                            VPNBoldInterLabel {
+                            MZBoldInterLabel {
                                 id: title
                                 Layout.fillWidth: true
 
                                 text: swipeDelegate.title
-                                font.pixelSize: VPNTheme.theme.fontSize
-                                lineHeight: VPNTheme.theme.labelLineHeight
+                                font.pixelSize: MZTheme.theme.fontSize
+                                lineHeight: MZTheme.theme.labelLineHeight
                                 verticalAlignment: Text.AlignVCenter
                                 elide: Text.ElideRight
                                 maximumLineCount: 1
                             }
 
-                            VPNInterLabel {
+                            MZInterLabel {
                                 text: swipeDelegate.formattedDate
-                                font.pixelSize: VPNTheme.theme.fontSizeSmall
+                                font.pixelSize: MZTheme.theme.fontSizeSmall
                                 lineHeight: 21
-                                color: VPNTheme.theme.fontColor
+                                color: MZTheme.theme.fontColor
                                 horizontalAlignment: Text.AlignRight
                             }
                         }
 
-                        VPNInterLabel {
-                            Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-                            Layout.bottomMargin: VPNTheme.theme.windowMargin
+                        MZInterLabel {
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.bottomMargin: MZTheme.theme.windowMargin
                             Layout.maximumWidth: title.width
 
                             text: swipeDelegate.subtitle
-                            font.pixelSize: VPNTheme.theme.fontSizeSmall
+                            font.pixelSize: MZTheme.theme.fontSizeSmall
                             lineHeight: 21
-                            color: VPNTheme.theme.fontColor
+                            color: MZTheme.theme.fontColor
                             horizontalAlignment: Text.AlignLeft
                             elide: Text.ElideRight
                             maximumLineCount: 1
@@ -332,7 +333,7 @@ VPNViewBase {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
 
-                    color: VPNTheme.colors.grey10
+                    color: MZTheme.colors.grey10
                 }
             }
         }

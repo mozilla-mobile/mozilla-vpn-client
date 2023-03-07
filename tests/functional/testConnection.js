@@ -110,8 +110,8 @@ describe('Connectivity', function() {
     await vpn.activateViaToggle();
 
     // The controller starts with the data we have set in the settings.
-    const currentServer =
-        await vpn.getVPNProperty('VPNController', 'currentServerString');
+    const currentServer = await vpn.getMozillaProperty(
+        'Mozilla.VPN', 'VPNController', 'currentServerString');
     assert.equal(currentServer, 'au-Melbourne--');
 
     await vpn.setSetting(
@@ -122,9 +122,11 @@ describe('Connectivity', function() {
     // values. VPNCurrentServer is updated, instead.
     assert.equal(
         currentServer,
-        await vpn.getVPNProperty('VPNController', 'currentServerString'));
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNController', 'currentServerString'));
     assert.equal(
-        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
 
     await vpn.waitForCondition(async () => {
@@ -137,9 +139,11 @@ describe('Connectivity', function() {
     // in sync.
     assert.equal(
         currentServer,
-        await vpn.getVPNProperty('VPNController', 'currentServerString'));
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNController', 'currentServerString'));
     assert.equal(
-        await vpn.getVPNProperty('VPNCurrentServer', 'exitCityName'),
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });
 });

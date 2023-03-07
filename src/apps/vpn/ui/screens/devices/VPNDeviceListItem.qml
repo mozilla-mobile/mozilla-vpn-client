@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -13,7 +14,7 @@ Item {
     id: device
 
     Layout.fillWidth: true
-    Layout.preferredHeight: deviceRow.implicitHeight + VPNTheme.theme.windowMargin
+    Layout.preferredHeight: deviceRow.implicitHeight + MZTheme.theme.windowMargin
     //% "%1 %2"
     //: Example: "deviceName deviceDescription"
     Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceDesc.text)
@@ -23,7 +24,7 @@ Item {
     onActiveFocusChanged: if (focus) vpnFlickable.ensureVisible(device)
 
     Rectangle {
-        color: VPNTheme.theme.greyHovered
+        color: MZTheme.theme.greyHovered
         opacity: device.focus || iconButton.focus ? 1 : 0
         anchors.fill: device
         anchors.topMargin: -8
@@ -45,9 +46,9 @@ Item {
         spacing: 0
         anchors.right: parent.right
         anchors.left: parent.left
-        anchors.rightMargin: VPNTheme.theme.windowMargin
+        anchors.rightMargin: MZTheme.theme.windowMargin
         anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: MZTheme.theme.windowMargin
 
         SequentialAnimation {
             id: deviceRemovalTransition
@@ -106,13 +107,13 @@ Item {
             target: VPN
         }
 
-        VPNIcon {
+        MZIcon {
             id: deviceIcon
 
             source: "qrc:/ui/resources/devices.svg"
             fillMode: Image.PreserveAspectFit
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
             opacity: enabled ? 1 : 0.6
         }
@@ -123,11 +124,11 @@ Item {
             Layout.fillWidth: true
             spacing: 0
 
-            VPNInterLabel {
+            MZInterLabel {
                 id: deviceName
 
                 text: name
-                color: VPNTheme.theme.fontColorDark
+                color: MZTheme.theme.fontColorDark
                 elide: Text.ElideRight
                 anchors.left: parent.left
                 horizontalAlignment: Text.AlignLeft
@@ -136,7 +137,7 @@ Item {
                 Accessible.ignored: isModalDialogOpened
             }
 
-            VPNTextBlock {
+            MZTextBlock {
                 id: deviceDesc
 
                 function deviceSubtitle() {
@@ -172,20 +173,20 @@ Item {
             }
         }
 
-        VPNIconButton {
+        MZIconButton {
             id: iconButton
             objectName: "deviceRemoveButton"
 
             property var iconSource: "qrc:/nebula/resources/delete.svg"
             property real iconHeightWidth: 22
 
-            buttonColorScheme: VPNTheme.theme.removeDeviceBtn
+            buttonColorScheme: MZTheme.theme.removeDeviceBtn
             visible: !currentOne
             opacity: enabled || (!enabled && iconSource === "qrc:/nebula/resources/spinner.svg") ? 1 : 0.6
             Layout.topMargin: -8
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
-            Layout.preferredWidth: VPNTheme.theme.rowHeight
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            Layout.preferredWidth: MZTheme.theme.rowHeight
             onClicked: removePopup.initializeAndOpen(name, publicKey)
             //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
             //% "Remove %1"
@@ -194,7 +195,7 @@ Item {
 
             Accessible.ignored: isModalDialogOpened
 
-            VPNIcon {
+            MZIcon {
                 id: icon
 
                 property bool rotating: false

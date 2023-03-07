@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
@@ -22,7 +23,7 @@ Window {
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 
-    LayoutMirroring.enabled: VPNLocalizer.isRightToLeft
+    LayoutMirroring.enabled: MZLocalizer.isRightToLeft
     LayoutMirroring.childrenInherit: true
 
     function fullscreenRequired() {
@@ -73,16 +74,16 @@ Window {
     flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
     visible: true
 
-    width: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
-    height: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
+    width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
+    height: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     //These need to be bound before onComplete so that the window buttons, menus and title bar double click behave properly
-    maximumWidth: fullscreenRequired() ? Screen.width : VPNTheme.theme.desktopAppWidth;
-    maximumHeight: fullscreenRequired() ? Screen.height : VPNTheme.theme.desktopAppHeight;
+    maximumWidth: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
+    maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     //% "Mozilla VPN"
     title: qsTrId("vpn.main.productName")
-    color: VPNTheme.theme.bgColor
+    color: MZTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -106,8 +107,8 @@ Window {
             this.showMinimized();
         }
         if (!fullscreenRequired()) {
-            minimumHeight = VPNTheme.theme.desktopAppHeight
-            minimumWidth = VPNTheme.theme.desktopAppWidth
+            minimumHeight = MZTheme.theme.desktopAppHeight
+            minimumWidth = MZTheme.theme.desktopAppWidth
 
         }
         VPN.mainWindowLoaded()
@@ -116,21 +117,21 @@ Window {
     //Overlays the entire window at all times to remove focus from components on click away
     MouseArea {
         anchors.fill: parent
-        z: VPNTheme.theme.maxZLevel
+        z: MZTheme.theme.maxZLevel
         onPressed: (mouse) => {
             window.screenClicked(mouse.x, mouse.y)
             mouse.accepted = false
         }
     }
 
-    VPNMobileStatusBarModifier {
+    MZMobileStatusBarModifier {
         id: statusBarModifier
     }
 
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: VPNTheme.theme.transparent
+        color: MZTheme.theme.transparent
         height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top
@@ -180,7 +181,7 @@ Window {
             var channel = VPN.stagingMode ? "staging" : "production";
 
             console.debug("Initializing glean with channel set to:", channel);
-            Glean.initialize("mozillavpn", VPNSettings.gleanEnabled, {
+            Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
                 appBuild: "MozillaVPN/" + VPN.env.versionString,
                 appDisplayVersion: VPN.env.versionString,
                 channel: channel,
@@ -224,21 +225,21 @@ Window {
     }
 
     Connections {
-        target: VPNSettings
+        target: MZSettings
         function onGleanEnabledChanged() {
-            console.debug("Glean - onGleanEnabledChanged", VPNSettings.gleanEnabled);
-            Glean.setUploadEnabled(VPNSettings.gleanEnabled);
+            console.debug("Glean - onGleanEnabledChanged", MZSettings.gleanEnabled);
+            Glean.setUploadEnabled(MZSettings.gleanEnabled);
         }
     }
 
-    VPNTutorialPopups {
+    MZTutorialPopups {
         id: tutorialUI
     }
 
-    VPNSystemAlert {
+    MZSystemAlert {
     }
 
-    VPNServerUnavailablePopup {
+    MZServerUnavailablePopup {
         id: serverUnavailablePopup
     }
 
@@ -258,7 +259,7 @@ Window {
         target: VPNAppPermissions
         function onNotification(type,message,action) {
             console.log("Got notification: "+type + "  message:"+message);
-            var component = Qt.createComponent("qrc:/nebula/components/VPNAlert.qml");
+            var component = Qt.createComponent("qrc:/nebula/components/MZAlert.qml");
             if(component.status !== Component.Ready)
                 {
                     if( component.status == Component.Error )
@@ -274,7 +275,7 @@ Window {
                                        duration:type === "warning"? 0: 2000,
                                        destructive:true,
                                        // Pin y height to be below the alert bar as we can't render above it
-                                       setY: VPNTheme.theme.windowMargin,
+                                       setY: MZTheme.theme.windowMargin,
                                        onActionPressed: ()=>{VPNAppPermissions.openFilePicker();},
                                    });
 

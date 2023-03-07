@@ -140,7 +140,8 @@ describe('Devices', function() {
               .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
@@ -277,7 +278,8 @@ describe('Devices', function() {
               .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
@@ -418,7 +420,8 @@ describe('Devices', function() {
           queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(

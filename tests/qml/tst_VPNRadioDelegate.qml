@@ -36,7 +36,7 @@ Item {
                 id: radioButtonGroup
             }
 
-            VPNRadioDelegate {
+            MZRadioDelegate {
                 id: radioDelegateTest
 
                 property bool _isChecked: false
@@ -51,7 +51,7 @@ Item {
     }
 
     TestCase {
-        name: "VPNRadioDelegate"
+        name: "MZRadioDelegate"
         when: windowShown
 
         function test_clickingRadioDelegateLabelSelectsIt() {

@@ -141,7 +141,8 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
@@ -249,7 +250,8 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
@@ -358,7 +360,8 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(
@@ -436,7 +439,8 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForVPNProperty('VPN', 'userState', 'UserAuthenticated');
+      await vpn.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(

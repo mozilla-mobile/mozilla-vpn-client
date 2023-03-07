@@ -6,10 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     property bool wasmView: false
@@ -19,11 +20,11 @@ VPNFlickable {
     interactive: flickContentHeight > height
 
     Rectangle {
-        color: VPNTheme.theme.bgColor
+        color: MZTheme.theme.bgColor
         anchors.fill: parent
     }
 
-    VPNHeaderLink {
+    MZHeaderLink {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
@@ -43,39 +44,39 @@ VPNFlickable {
             source: "qrc:/ui/resources/logo-connecting.svg"
 
             Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: VPNTheme.theme.vSpacing
+            Layout.topMargin: MZTheme.theme.vSpacing
         }
 
-        VPNHeadline {
+        MZHeadline {
             id: headline
-            text: VPNI18n.PurchaseWebTitle
+            text: MZI18n.PurchaseWebTitle
 
-            Layout.bottomMargin: VPNTheme.theme.listSpacing
-            Layout.topMargin: VPNTheme.theme.vSpacingSmall
+            Layout.bottomMargin: MZTheme.theme.listSpacing
+            Layout.topMargin: MZTheme.theme.vSpacingSmall
         }
 
-        VPNTextBlock {
-            color: VPNTheme.theme.fontColor
-            font.pixelSize: VPNTheme.theme.fontSize
+        MZTextBlock {
+            color: MZTheme.theme.fontColor
+            font.pixelSize: MZTheme.theme.fontSize
             horizontalAlignment: Text.AlignHCenter
             textFormat: Text.RichText
-            text: VPNI18n.PurchaseWebMessage
-                .arg("<b style='color:" + VPNTheme.theme.fontColorDark + ";'>"
+            text: MZI18n.PurchaseWebMessage
+                .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
                     + VPNUser.email + "</b>")
             wrapMode: Text.WordWrap
-            width: Math.max(parent.width, VPNTheme.theme.maxTextWidth)
+            width: Math.max(parent.width, MZTheme.theme.maxTextWidth)
 
-            Layout.bottomMargin: VPNTheme.theme.vSpacing * 2
+            Layout.bottomMargin: MZTheme.theme.vSpacing * 2
             Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.vSpacingSmall
-            Layout.rightMargin: VPNTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.vSpacingSmall
+            Layout.rightMargin: MZTheme.theme.windowMargin
 
             Accessible.role: Accessible.StaticText
             // Prevent html tags from being read by screen readers
             Accessible.name: text.replace(/<[^>]*>/g, "")
         }
 
-        VPNButton {
+        MZButton {
             id: subscribeNow
             objectName: "vpnSubscriptionNeededView"
             //% "Subscribe now"
@@ -83,11 +84,11 @@ VPNFlickable {
 
             onClicked: VPNPurchase.subscribe("web")
 
-            Layout.bottomMargin: VPNTheme.theme.vSpacingSmall
+            Layout.bottomMargin: MZTheme.theme.vSpacingSmall
             Layout.fillWidth: true
-            Layout.leftMargin: VPNTheme.theme.windowMargin
-            Layout.rightMargin: VPNTheme.theme.windowMargin
-            Layout.topMargin: VPNTheme.theme.windowMargin * 0.75
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.topMargin: MZTheme.theme.windowMargin * 0.75
         }
 
         GridLayout {
@@ -105,53 +106,53 @@ VPNFlickable {
                 }
             }
 
-            VPNGreyLink {
+            MZGreyLink {
                 id: termsOfService
 
                 // Terms of Service - string defined in ViewAboutUs.qml
                 labelText: qsTrId("vpn.aboutUs.tos2")
                 textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
 
-                onClicked: VPNUrlOpener.openUrlLabel("termsOfService")
+                onClicked: MZUrlOpener.openUrlLabel("termsOfService")
 
                 Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
             }
 
             Rectangle {
-                color: VPNTheme.theme.greyLink.defaultColor
-                height: VPNTheme.theme.focusBorderWidth * 2
+                color: MZTheme.theme.greyLink.defaultColor
+                height: MZTheme.theme.focusBorderWidth * 2
                 Layout.alignment: Qt.AlignHCenter
                 opacity: 0.8
-                radius: VPNTheme.theme.focusBorderWidth
+                radius: MZTheme.theme.focusBorderWidth
                 visible: parent.flow !== Grid.TopToBottom
                 width: height
             }
 
-            VPNGreyLink {
+            MZGreyLink {
                 id: privacyNotice
                 // Privacy Notice - string defined in ViewAboutUs.qml
                 labelText: qsTrId("vpn.aboutUs.privacyNotice2")
                 textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
 
-                onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
 
                 Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter
             }
         }
 
-        VPNSignOut {
+        MZSignOut {
             anchors {
                 bottom: undefined
                 bottomMargin: undefined
                 horizontalCenter: undefined
             }
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
-            Layout.topMargin: VPNTheme.theme.vSpacing
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            Layout.topMargin: MZTheme.theme.vSpacing
         }
 
-        VPNVerticalSpacer {
-            Layout.preferredHeight: VPNTheme.theme.vSpacingSmall
+        MZVerticalSpacer {
+            Layout.preferredHeight: MZTheme.theme.vSpacingSmall
             Layout.fillWidth: true
         }
     }

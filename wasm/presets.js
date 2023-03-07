@@ -125,8 +125,8 @@ const MVPNPresets = [
       await controller.waitForQuery('//initialStackView{busy=false}');
       await controller.clickOnQuery('//signUpButton');
 
-      await controller.waitForVPNProperty(
-          'VPN', 'userState', 'UserAuthenticated');
+      await controller.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
       await controller.waitForQuery('//screenLoader{busy=false}');
@@ -280,8 +280,8 @@ const MVPNPresets = [
       await controller.waitForQuery('//initialStackView{busy=false}');
       await controller.clickOnQuery('//signUpButton');
 
-      await controller.waitForVPNProperty(
-          'VPN', 'userState', 'UserAuthenticated');
+      await controller.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
       await controller.wait();
 
       await controller.waitForQuery('//screenLoader{busy=false}');
@@ -334,8 +334,8 @@ const MVPNPresets = [
       await controller.waitForQuery('//initialStackView{busy=false}');
       await controller.clickOnQuery('//signUpButton');
 
-      await controller.waitForVPNProperty(
-          'VPN', 'userState', 'UserAuthenticated');
+      await controller.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await controller.waitForQuery('//screenLoader{busy=false}');
 

@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
@@ -14,14 +15,14 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 
-VPNViewBase {
+MZViewBase {
     _menuTitle: "Feature list"
     _viewContentData: ColumnLayout {
         id: featureListHolder
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 1.5
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 1.5
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         Repeater {
             id: rep
@@ -29,7 +30,7 @@ VPNViewBase {
             model: VPNFeatureList
             delegate: ColumnLayout {
                 Layout.fillWidth: true
-                spacing: VPNTheme.theme.windowMargin / 1.5
+                spacing: MZTheme.theme.windowMargin / 1.5
 
                 RowLayout {
 
@@ -38,24 +39,24 @@ VPNViewBase {
                     ColumnLayout {
                         Layout.fillWidth: true
 
-                        VPNLightLabel {
+                        MZLightLabel {
                             text: feature.name
-                            color: VPNTheme.theme.fontColorDark
+                            color: MZTheme.theme.fontColorDark
                         }
 
-                        VPNTextBlock {
+                        MZTextBlock {
                             text: `id: ${feature.id}`
-                            font.pixelSize: VPNTheme.theme.fontSizeSmall
+                            font.pixelSize: MZTheme.theme.fontSizeSmall
                         }
                     }
 
                     Rectangle {
                         Layout.preferredHeight: 1
                         Layout.fillWidth: true
-                        color: VPNTheme.theme.transparent
+                        color: MZTheme.theme.transparent
                     }
 
-                    VPNSettingsToggle {
+                    MZSettingsToggle {
                         accessibleName: feature.name
                         checked: feature.isSupported
                         enabled: feature.isToggleable
@@ -73,13 +74,13 @@ VPNViewBase {
                     Layout.alignment: Qt.AlignBottom
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
-                    color: VPNTheme.colors.grey10
+                    color: MZTheme.colors.grey10
                     visible: index < rep.count - 1
                 }
             }
         }
 
-        VPNVerticalSpacer {
+        MZVerticalSpacer {
             Layout.preferredHeight: 1
             Layout.fillWidth: true
         }

@@ -11,12 +11,12 @@ Item {
     width: 600;
     height: 800;
 
-    VPNPasswordInput {
+    MZPasswordInput {
         id: vpnPasswordInputTest
     }
 
     TestCase {
-        name: "VPNPasswordInput"
+        name: "MZPasswordInput"
         when: windowShown
 
         // Display options for text inputs.

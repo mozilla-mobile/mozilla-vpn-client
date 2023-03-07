@@ -6,12 +6,13 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
 import telemetry 0.30
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     objectName: "viewMainFlickable"
@@ -42,20 +43,20 @@ VPNFlickable {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: VPNTheme.theme.windowMargin / 2
-        anchors.rightMargin: VPNTheme.theme.windowMargin / 2
+        anchors.leftMargin: MZTheme.theme.windowMargin / 2
+        anchors.rightMargin: MZTheme.theme.windowMargin / 2
         flow: GridLayout.TopToBottom
-        rowSpacing: VPNTheme.theme.windowMargin
+        rowSpacing: MZTheme.theme.windowMargin
         anchors.top: parent.top
-        anchors.topMargin: VPNTheme.theme.windowMargin
+        anchors.topMargin: MZTheme.theme.windowMargin
 
         RowLayout {
             id: mobileHeader
-            Layout.preferredHeight: VPNTheme.theme.rowHeight
+            Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.alignment: Qt.AlignHCenter
             spacing: 6
 
-            VPNIcon {
+            MZIcon {
                 source: "qrc:/ui/resources/logo.svg"
                 sourceSize.height: 20
                 sourceSize.width: 20
@@ -63,7 +64,7 @@ VPNFlickable {
                 Layout.alignment: Qt.AlignVCenter
             }
 
-            VPNBoldLabel {
+            MZBoldLabel {
                 //% "Mozilla VPN"
                 text: qsTrId("MozillaVPN")
                 color: "#000000"
@@ -71,12 +72,12 @@ VPNFlickable {
             }
         }
 
-        VPNControllerView {
+        MZControllerView {
             id: box
             z: 1
         }
 
-        VPNControllerNav {
+        MZControllerNav {
             function handleClick() {
                 if (disableRowWhen) {
                     return
@@ -105,7 +106,7 @@ VPNFlickable {
             Layout.topMargin: 12
             contentChildren: [
 
-                VPNServerLabel {
+                MZServerLabel {
                     id: selectLocationLabel
                     objectName: "serverListButton-label"
 
@@ -132,7 +133,7 @@ VPNFlickable {
 
         objectName: "tipsAndTricksIntroPopupLoader"
         active: false
-        sourceComponent: VPNSimplePopup {
+        sourceComponent: MZSimplePopup {
             id: tipsAndTricksIntroPopup
 
             //Keeps track of how the popup was closed to determine whether or not to fire "dismissed" telemetry
@@ -142,13 +143,13 @@ VPNFlickable {
             closeButtonObjectName: "tipsAndTricksIntroPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-sparkles.svg"
             imageSize: Qt.size(116, 80)
-            title: VPNI18n.TipsAndTricksSettingsEntryLabel
-            description: VPNI18n.TipsAndTricksIntroModalDescription
+            title: MZI18n.TipsAndTricksSettingsEntryLabel
+            description: MZI18n.TipsAndTricksIntroModalDescription
             buttons: [
-                VPNButton {
+                MZButton {
                     id: tipAndTricksIntroButton
                     objectName: "tipsAndTricksIntroPopupDiscoverNowButton"
-                    text: VPNI18n.GlobalDiscoverNow
+                    text: MZI18n.GlobalDiscoverNow
                     Layout.fillWidth: true
                     onClicked: {
                         tipAndTricksIntroButton.enabled = false
@@ -157,16 +158,16 @@ VPNFlickable {
                         VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
                     }
                 },
-                VPNLinkButton {
+                MZLinkButton {
                     objectName: "tipsAndTricksIntroPopupGoBackButton"
-                    labelText: VPNI18n.GlobalGoBack
+                    labelText: MZI18n.GlobalGoBack
                     onClicked: tipsAndTricksIntroPopup.close()
                     Layout.alignment: Qt.AlignHCenter
                 }
             ]
 
             onOpened: {
-                VPNSettings.tipsAndTricksIntroShown = true
+                MZSettings.tipsAndTricksIntroShown = true
                 Sample.tipsAndTricksModalShown.record();
                 Glean.sample.tipsAndTricksModalShown.record();
             }
@@ -184,7 +185,7 @@ VPNFlickable {
     }
 
     function maybeActivateTipsAndTricksIntro() {
-        if (!VPNSettings.tipsAndTricksIntroShown &&
+        if (!MZSettings.tipsAndTricksIntroShown &&
             VPNAddonManager.loadCompleted &&
             !!VPNAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
             tipsAndTricksIntroPopupLoader.active = true

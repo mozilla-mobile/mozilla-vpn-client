@@ -5,27 +5,28 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
 
 
-VPNInAppAuthenticationBase {
+MZInAppAuthenticationBase {
     _changeEmailLinkVisible: true
     _viewObjectName: "authSignUp"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
-    _menuButtonImageMirror: VPNLocalizer.isRightToLeft
+    _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         VPNAuthInApp.reset();
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
     _headlineText: VPNAuthInApp.emailAddress
-    _subtitleText: VPNI18n.InAppAuthFinishAccountCreationDescription
+    _subtitleText: MZI18n.InAppAuthFinishAccountCreationDescription
     _imgSource: "qrc:/nebula/resources/avatar.svg"
-    _inputLabel: VPNI18n.InAppAuthCreatePasswordLabel
+    _inputLabel: MZI18n.InAppAuthCreatePasswordLabel
 
-    _inputs: VPNInAppAuthenticationInputs {
+    _inputs: MZInAppAuthenticationInputs {
         objectName: "authSignUp"
 
         function validatePassword(passwordString) {
@@ -38,16 +39,16 @@ VPNInAppAuthenticationBase {
                               VPNAuthInApp.setPassword(inputText);
                               VPNAuthInApp.signUp();
                           }
-        _buttonText: VPNI18n.InAppAuthCreateAccountButton
-        _inputPlaceholderText: VPNI18n.InAppAuthPasswordInputPlaceholder
+        _buttonText: MZI18n.InAppAuthCreateAccountButton
+        _inputPlaceholderText: MZI18n.InAppAuthPasswordInputPlaceholder
     }
 
-    _disclaimers: VPNInAppAuthenticationLegalDisclaimer {}
+    _disclaimers: MZInAppAuthenticationLegalDisclaimer {}
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
 
-        VPNCancelButton {
+        MZCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: VPN.cancelAuthentication()
         }

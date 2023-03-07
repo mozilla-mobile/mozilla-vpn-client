@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 import QtQml.Models 2.2
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -16,7 +17,7 @@ Item {
     objectName: "viewServers"
 
 
-    VPNMenu {
+    MZMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
         id: menu
         objectName: "serverListBackButton"
@@ -56,7 +57,7 @@ Item {
         target: VPNNavigator
     }
 
-    VPNSegmentedNavigation {
+    MZSegmentedNavigation {
         id: segmentedNav
 
         property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCityName]
@@ -67,7 +68,7 @@ Item {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-            topMargin: VPNTheme.theme.vSpacingSmall
+            topMargin: MZTheme.theme.vSpacingSmall
         }
 
         segmentedToggleButtonsModel: ListModel {
@@ -82,7 +83,7 @@ Item {
         }
 
         stackContent: [
-            VPNServerList {
+            MZServerList {
                 id: singleHopServerList
                 currentServer: {
                     "countryCode": VPNCurrentServer.exitCountryCode,

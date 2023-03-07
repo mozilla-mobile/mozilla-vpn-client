@@ -6,6 +6,7 @@ import QtQuick 2.3
 import QtTest 1.0
 
 import TestHelper 1.0
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import org.mozilla.Glean 0.30
 import ui 0.1
@@ -67,10 +68,10 @@ Item {
         }
 
         function test_onGleanEnabledChangedCallsGleanSetUploadEnabledCorrectly() {
-            VPNSettings.gleanEnabled = false
+            MZSettings.gleanEnabled = false
             compare(spyUploadEnabled, false)
 
-            VPNSettings.gleanEnabled = true
+            MZSettings.gleanEnabled = true
             compare(spyUploadEnabled, true)
         }
 
@@ -89,11 +90,11 @@ Item {
         }
 
         function test_onInitializeGleanCallsInitializeCorrectUploadEnabled() {
-            VPNSettings.gleanEnabled = false
+            MZSettings.gleanEnabled = false
             TestHelper.triggerInitializeGlean()
             compare(spyUploadEnabledInitialize, false)
 
-            VPNSettings.gleanEnabled = true
+            MZSettings.gleanEnabled = true
             TestHelper.triggerInitializeGlean()
             compare(spyUploadEnabledInitialize, true)
         }

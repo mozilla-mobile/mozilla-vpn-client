@@ -4,7 +4,7 @@
 
 import components 0.1
 
-VPNLoader {
+MZLoader {
     objectName: "authenticatingView"
 
     //% "Waiting for sign in and subscription confirmation…"

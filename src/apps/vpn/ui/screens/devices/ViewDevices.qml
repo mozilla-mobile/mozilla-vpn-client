@@ -6,16 +6,17 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
     property string deviceCountLabelText: ""
     property Component rightMenuButton: Component {
-        VPNLightLabel {
+        MZLightLabel {
             text: vpnFlickable.deviceCountLabelText
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignRight
@@ -31,7 +32,7 @@ VPNViewBase {
 
         objectName: "deviceListView"
         Layout.fillWidth: true
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
         VPNDevicesListHeader {
             id: maxDevicesReached
@@ -50,8 +51,8 @@ VPNViewBase {
             id: col
             Layout.fillWidth: true
 
-            VPNVerticalSpacer {
-                Layout.preferredHeight: VPNTheme.theme.windowMargin * 2
+            MZVerticalSpacer {
+                Layout.preferredHeight: MZTheme.theme.windowMargin * 2
                 Layout.fillWidth: true
 
                 Rectangle {
@@ -60,30 +61,30 @@ VPNViewBase {
                     anchors {
                         left: parent.left
                         right: parent.right
-                        leftMargin: VPNTheme.theme.windowMargin
-                        rightMargin: VPNTheme.theme.windowMargin
+                        leftMargin: MZTheme.theme.windowMargin
+                        rightMargin: MZTheme.theme.windowMargin
                         verticalCenter: parent.verticalCenter
                     }
                     color: "#e7e7e7"
                 }
             }
 
-            VPNLinkButton {
+            MZLinkButton {
                 id: getHelpLink
 
                 labelText: qsTrId("vpn.main.getHelp2")
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
             }
 
-            VPNSignOut {
+            MZSignOut {
                 id: signOff
                 anchors.bottom: undefined
                 anchors.horizontalCenter: undefined
                 anchors.bottomMargin: undefined
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
             }
         }
     }

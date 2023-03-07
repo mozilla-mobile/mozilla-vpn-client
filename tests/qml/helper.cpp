@@ -88,7 +88,15 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNI18n",
+      "Mozilla.Shared", 1, 0, "MZGleanDeprecated",
+      [](QQmlEngine*, QJSEngine*) -> QObject* {
+        QObject* obj = GleanDeprecated::instance();
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<MozillaVPN>(
+      "Mozilla.Shared", 1, 0, "MZI18n",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
         QObject* obj = m_i18nstrings;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -96,7 +104,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<TestHelper>(
-      "Mozilla.VPN", 1, 0, "VPNSettings",
+      "Mozilla.Shared", 1, 0, "MZSettings",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
         QObject* obj = &m_settingsHolder;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -104,18 +112,10 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       });
 
   qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "VPNTheme",
+      "Mozilla.Shared", 1, 0, "MZTheme",
       [this](QQmlEngine*, QJSEngine* engine) -> QObject* {
         m_theme->initialize(engine);
         QObject* obj = m_theme;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.VPN", 1, 0, "MZGleanDeprecated",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = GleanDeprecated::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

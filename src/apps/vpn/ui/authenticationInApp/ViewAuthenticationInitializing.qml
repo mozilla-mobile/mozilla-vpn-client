@@ -8,7 +8,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNLoader {
+MZLoader {
     // In the background, we are starting the authentication flow.
     // The next states are:
     // - StateStart: happy path.

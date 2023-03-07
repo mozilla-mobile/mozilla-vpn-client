@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -15,30 +16,30 @@ import org.mozilla.Glean 0.30
 import telemetry 0.30
 
 
-VPNViewBase {
+MZViewBase {
     id: root
     objectName: "privacySettingsView"
 
-    _menuTitle: VPNI18n.SettingsPrivacySettings
+    _menuTitle: MZI18n.SettingsPrivacySettings
     _interactive: false
 
     _viewContentData: ColumnLayout {
-        spacing: VPNTheme.theme.windowMargin * 1.5
+        spacing: MZTheme.theme.windowMargin * 1.5
 
         InformationCard {
             objectName: "privacySettingsViewInformationCard"
-            Layout.preferredWidth: Math.min(window.width - VPNTheme.theme.windowMargin * 2, VPNTheme.theme.navBarMaxWidth)
-            Layout.minimumHeight: textBlocks.height + VPNTheme.theme.windowMargin * 2
+            Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
+            Layout.minimumHeight: textBlocks.height + MZTheme.theme.windowMargin * 2
             Layout.alignment: Qt.AlignHCenter
 
             _infoContent: ColumnLayout {
                 id: textBlocks
                 spacing: 0
 
-                VPNTextBlock {
+                MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: VPNI18n.SettingsDnsSettingsWarning
+                    text: MZI18n.SettingsDnsSettingsWarning
                     verticalAlignment: Text.AlignVCenter
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
@@ -47,9 +48,9 @@ VPNViewBase {
                     active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
                     Layout.fillWidth: true
                     visible: active
-                    sourceComponent: VPNTextBlock {
+                    sourceComponent: MZTextBlock {
                         width: parent.width
-                        text: VPNI18n.SettingsDnsSettingsDisconnectWarning
+                        text: MZI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
                         Accessible.role: Accessible.StaticText
                         Accessible.name: text
@@ -60,19 +61,19 @@ VPNViewBase {
         Repeater {
             id: repeater
 
-            delegate: VPNCheckBoxRow {
+            delegate: MZCheckBoxRow {
                 objectName: modelData.objectName
 
                 Layout.fillWidth: true
-                Layout.rightMargin: VPNTheme.theme.windowMargin
+                Layout.rightMargin: MZTheme.theme.windowMargin
                 labelText: modelData.settingTitle
                 subLabelText: modelData.settingDescription
-                isChecked: VPNSettings.dnsProviderFlags & modelData.settingValue
+                isChecked: MZSettings.dnsProviderFlags & modelData.settingValue
                 showDivider: false
                 onClicked: {
-                    let dnsProviderFlags = VPNSettings.dnsProviderFlags;
-                    dnsProviderFlags &= ~VPNSettings.Custom;
-                    dnsProviderFlags &= ~VPNSettings.Gateway;
+                    let dnsProviderFlags = MZSettings.dnsProviderFlags;
+                    dnsProviderFlags &= ~MZSettings.Custom;
+                    dnsProviderFlags &= ~MZSettings.Gateway;
 
                     if (dnsProviderFlags & modelData.settingValue) {
                         dnsProviderFlags &= ~modelData.settingValue;
@@ -81,8 +82,8 @@ VPNViewBase {
                     }
 
                     // We are not changing anything interesting for the privacy/dns dialog.
-                    if (VPNSettings.dnsProviderFlags !== VPNSettings.Custom) {
-                        VPNSettings.dnsProviderFlags = dnsProviderFlags;
+                    if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
+                        MZSettings.dnsProviderFlags = dnsProviderFlags;
                         return;
                     }
 
@@ -96,19 +97,19 @@ VPNViewBase {
             repeater.model = [
                 {
                     objectName: "blockAds",
-                    settingValue: VPNSettings.BlockAds,
-                    settingTitle: VPNI18n.SettingsPrivacyAdblockTitle,
-                    settingDescription: VPNI18n.SettingsPrivacyAdblockBody,
+                    settingValue: MZSettings.BlockAds,
+                    settingTitle: MZI18n.SettingsPrivacyAdblockTitle,
+                    settingDescription: MZI18n.SettingsPrivacyAdblockBody,
                 }, {
                     objectName: "blockTrackers",
-                    settingValue: VPNSettings.BlockTrackers,
-                    settingTitle: VPNI18n.SettingsPrivacyTrackerTitle,
-                    settingDescription: VPNI18n.SettingsPrivacyTrackerBody,
+                    settingValue: MZSettings.BlockTrackers,
+                    settingTitle: MZI18n.SettingsPrivacyTrackerTitle,
+                    settingDescription: MZI18n.SettingsPrivacyTrackerBody,
                 }, {
                     objectName: "blockMalware",
-                    settingValue: VPNSettings.BlockMalware,
-                    settingTitle: VPNI18n.SettingsPrivacyMalwareTitle,
-                    settingDescription: VPNI18n.SettingsPrivacyMalwareBody,
+                    settingValue: MZSettings.BlockMalware,
+                    settingTitle: MZI18n.SettingsPrivacyMalwareTitle,
+                    settingDescription: MZI18n.SettingsPrivacyMalwareBody,
                 }
             ];
         }
@@ -122,28 +123,28 @@ VPNViewBase {
 
         objectName: "privacyOverwriteLoader"
         active: false
-        sourceComponent: VPNSimplePopup {
+        sourceComponent: MZSimplePopup {
             id: privacyOverwritePopup
 
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "privacyOverwritePopupPopupCloseButton"
             imageSrc: "qrc:/ui/resources/logo-dns-settings.svg"
             imageSize: Qt.size(80, 80)
-            title: VPNI18n.DnsOverwriteDialogTitleDNS
-            description: VPNI18n.DnsOverwriteDialogBodyDNS
+            title: MZI18n.DnsOverwriteDialogTitleDNS
+            description: MZI18n.DnsOverwriteDialogBodyDNS
             buttons: [
-                VPNButton {
+                MZButton {
                     objectName: "privacyOverwritePopupDiscoverNowButton"
-                    text: VPNI18n.DnsOverwriteDialogPrimaryButton
+                    text: MZI18n.DnsOverwriteDialogPrimaryButton
                     Layout.fillWidth: true
                     onClicked: {
-                        VPNSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;
+                        MZSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;
                         privacyOverwritePopup.close()
                     }
                 },
-                VPNLinkButton {
+                MZLinkButton {
                     objectName: "privacyOverwritePopupGoBackButton"
-                    labelText: VPNI18n.DnsOverwriteDialogSecondaryButton
+                    labelText: MZI18n.DnsOverwriteDialogSecondaryButton
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: privacyOverwritePopup.close()
                 }

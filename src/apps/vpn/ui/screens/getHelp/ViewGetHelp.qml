@@ -6,11 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
     //% "Get help"
     _menuTitle: qsTrId("vpn.main.getHelp2")
@@ -18,34 +18,34 @@ VPNViewBase {
     _viewContentData: Column {
 
         objectName: "getHelpLinks"
-        spacing: VPNTheme.theme.windowMargin
+        spacing: MZTheme.theme.windowMargin
 
         Layout.fillWidth: true
 
-        VPNExternalLinkListItem {
+        MZExternalLinkListItem {
             objectName: "helpCenter"
 
-            accessibleName: VPNI18n.GetHelpHelpCenter
-            title: VPNI18n.GetHelpHelpCenter
+            accessibleName: MZI18n.GetHelpHelpCenter
+            title: MZI18n.GetHelpHelpCenter
             iconSource: "qrc:/nebula/resources/externalLink.svg"
-            backgroundColor: VPNTheme.theme.clickableRowBlue
-            width: parent.width - VPNTheme.theme.windowMargin
+            backgroundColor: MZTheme.theme.clickableRowBlue
+            width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("helpMenuHelpCenterOpened");
                 Glean.sample.helpMenuHelpCenterOpened.record();
-                VPNUrlOpener.openUrlLabel("sumo")
+                MZUrlOpener.openUrlLabel("sumo")
             }
         }
 
-        VPNExternalLinkListItem {
+        MZExternalLinkListItem {
             objectName: "inAppSupport"
 
-            accessibleName: VPNI18n.InAppSupportWorkflowSupportNavLinkText
-            title: VPNI18n.InAppSupportWorkflowSupportNavLinkText
+            accessibleName: MZI18n.InAppSupportWorkflowSupportNavLinkText
+            title: MZI18n.InAppSupportWorkflowSupportNavLinkText
             iconSource: "qrc:/nebula/resources/chevron.svg"
-            iconMirror: VPNLocalizer.isRightToLeft
-            backgroundColor: VPNTheme.theme.iconButtonLightBackground
-            width: parent.width - VPNTheme.theme.windowMargin
+            iconMirror: MZLocalizer.isRightToLeft
+            backgroundColor: MZTheme.theme.iconButtonLightBackground
+            width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("helpContactSupportOpened");
                 Glean.sample.helpContactSupportOpened.record();
@@ -53,15 +53,15 @@ VPNViewBase {
             }
         }
 
-        VPNExternalLinkListItem {
+        MZExternalLinkListItem {
             objectName: "viewLogs"
 
-            accessibleName: VPNI18n.GetHelpViewLogs
-            title: VPNI18n.GetHelpViewLogs
+            accessibleName: MZI18n.GetHelpViewLogs
+            title: MZI18n.GetHelpViewLogs
             iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
-            iconMirror: !VPNFeatureList.get("shareLogs").isSupported && VPNLocalizer.isRightToLeft
-            backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?VPNTheme.theme.clickableRowBlue : VPNTheme.theme.iconButtonLightBackground
-            width: parent.width - VPNTheme.theme.windowMargin
+            iconMirror: !VPNFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
+            backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
+            width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
                 Glean.sample.helpMenuViewLogsOpened.record();
@@ -69,32 +69,32 @@ VPNViewBase {
             }
         }
 
-        VPNExternalLinkListItem {
+        MZExternalLinkListItem {
             objectName: "settingsGiveFeedback"
 
             accessibleName: title
             title: qsTrId("vpn.settings.giveFeedback")
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedback.qml")
             iconSource: "qrc:/nebula/resources/chevron.svg"
-            iconMirror: VPNLocalizer.isRightToLeft
-            backgroundColor: VPNTheme.theme.iconButtonLightBackground
-            width: parent.width - VPNTheme.theme.windowMargin
+            iconMirror: MZLocalizer.isRightToLeft
+            backgroundColor: MZTheme.theme.iconButtonLightBackground
+            width: parent.width - MZTheme.theme.windowMargin
             visible: VPN.userState === VPN.UserAuthenticated
         }
 
-        VPNSettingsItem {
+        MZSettingsItem {
             objectName: "developer"
 
-            width: parent.width - VPNTheme.theme.windowMargin
-            spacing: VPNTheme.theme.listSpacing
+            width: parent.width - MZTheme.theme.windowMargin
+            spacing: MZTheme.theme.listSpacing
             anchors.horizontalCenter: parent.horizontalCenter
 
             //% "Developer Options"
             settingTitle: qsTrId("vpn.settings.developer")
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-            imageRightMirror: VPNLocalizer.isRightToLeft
-            visible: VPNSettings.developerUnlock
+            imageRightMirror: MZLocalizer.isRightToLeft
+            visible: MZSettings.developerUnlock
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }
 

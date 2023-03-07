@@ -6,22 +6,23 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
-VPNViewBase {
+MZViewBase {
     id: vpnFlickable
 
     objectName: "contactUs"
-    _menuTitle: VPNI18n.InAppSupportWorkflowSupportNavLinkText
+    _menuTitle: MZI18n.InAppSupportWorkflowSupportNavLinkText
    _viewContentData: ColumnLayout {
        property string _emailAddress: ""
 
        id: contactUsRoot
 
        function createSupportTicket(email, subject, issueText, category) {
-           getHelpStackView.push("qrc:/nebula/components/VPNLoader.qml", {
+           getHelpStackView.push("qrc:/nebula/components/MZLoader.qml", {
                footerLinkIsVisible: false
            });
            VPN.createSupportTicket(email, subject, issueText, category);
@@ -35,16 +36,16 @@ VPNViewBase {
                } else {
                    // TODO: Navigator.GetTheThing
                    getHelpStackView.replace("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
-                       headlineText: VPNI18n.InAppSupportWorkflowSupportErrorHeader,
-                       errorMessage: VPNI18n.InAppSupportWorkflowSupportErrorText,
-                       primaryButtonText: VPNI18n.InAppSupportWorkflowSupportErrorButton,
+                       headlineText: MZI18n.InAppSupportWorkflowSupportErrorHeader,
+                       errorMessage: MZI18n.InAppSupportWorkflowSupportErrorText,
+                       primaryButtonText: MZI18n.InAppSupportWorkflowSupportErrorButton,
                        primaryButtonOnClick: () => getHelpStackView.pop(),
                        primaryButtonObjectName: "errorTryAgainButton",
                        secondaryButtonIsSignOff: false,
-                       secondaryButtonText: VPNI18n.InAppSupportWorkflowSupportErrorBrowserButton,
+                       secondaryButtonText: MZI18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
                        secondaryButtonOnClick: () => {
-                               VPNUrlOpener.openUrlLabel("sumo");
+                               MZUrlOpener.openUrlLabel("sumo");
                                getHelpStackView.pop();
                            },
                        }
@@ -53,9 +54,9 @@ VPNViewBase {
            }
        }
 
-        spacing: VPNTheme.theme.windowMargin
-        Layout.leftMargin: VPNTheme.theme.windowMargin * 2
-        Layout.rightMargin: VPNTheme.theme.windowMargin * 2
+        spacing: MZTheme.theme.windowMargin
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
         ColumnLayout {
             Layout.alignment: Qt.AlignTop
@@ -70,11 +71,11 @@ VPNViewBase {
 
                 ColumnLayout {
                     spacing: 10
-                    VPNBoldLabel {
-                        property string enterEmailAddress: VPNI18n.InAppSupportWorkflowSupportEmailFieldLabel
+                    MZBoldLabel {
+                        property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportEmailFieldLabel
 
                         text: enterEmailAddress
-                        lineHeight: VPNTheme.theme.labelLineHeight
+                        lineHeight: MZTheme.theme.labelLineHeight
                         lineHeightMode: Text.FixedHeight
                         wrapMode: Text.WordWrap
                         verticalAlignment: Text.AlignVCenter
@@ -83,33 +84,33 @@ VPNViewBase {
 
                     }
 
-                    VPNTextField {
+                    MZTextField {
                         id: emailInput
 
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !VPNAuthInApp.validateEmailAddress(emailInput.text)
-                        _placeholderText: VPNI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
+                        _placeholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                     }
                 }
 
-                VPNTextField {
+                MZTextField {
                     id: confirmEmailInput
 
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !VPNAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                    _placeholderText: VPNI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
+                    _placeholderText: MZI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                 }
             }
 
-            VPNUserProfile {
+            MZUserProfile {
                 objectName: "contactUs-userInfo"
                 enabled: false
                 Layout.fillWidth: true
                 visible: VPN.userState === VPN.UserAuthenticated
-                Layout.topMargin: -VPNTheme.theme.windowMargin / 2
-                Layout.bottomMargin: -VPNTheme.theme.windowMargin / 2
+                Layout.topMargin: -MZTheme.theme.windowMargin / 2
+                Layout.bottomMargin: -MZTheme.theme.windowMargin / 2
                 Layout.leftMargin: undefined
                 Layout.rightMargin: undefined
             }
@@ -119,11 +120,11 @@ VPNViewBase {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 10
 
-                VPNBoldLabel {
-                    property string enterEmailAddress: VPNI18n.InAppSupportWorkflowSupportFieldHeader
+                MZBoldLabel {
+                    property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportFieldHeader
 
                     text: enterEmailAddress
-                    lineHeight: VPNTheme.theme.labelLineHeight
+                    lineHeight: MZTheme.theme.labelLineHeight
                     lineHeightMode: Text.FixedHeight
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
@@ -131,27 +132,27 @@ VPNViewBase {
                     width: undefined
                 }
 
-                VPNComboBox {
+                MZComboBox {
                     id: dropDown
-                    placeholderText: VPNI18n.InAppSupportWorkflowDropdownLabel
+                    placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
                     Layout.preferredWidth: undefined
                 }
             }
 
-            VPNTextField {
+            MZTextField {
                 id: subjectInput
 
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
-                _placeholderText: VPNI18n.InAppSupportWorkflowSubjectFieldPlaceholder
+                _placeholderText: MZI18n.InAppSupportWorkflowSubjectFieldPlaceholder
             }
 
-            VPNTextArea {
+            MZTextArea {
                 id: textArea
-                placeholderText: VPNI18n.InAppSupportWorkflowIssueFieldPlaceholder
+                placeholderText: MZI18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
             }
@@ -163,7 +164,7 @@ VPNViewBase {
             Layout.fillHeight: true
             spacing: 24
 
-            VPNVerticalSpacer {
+            MZVerticalSpacer {
                 Layout.fillWidth: true
                 Layout.minimumHeight: 16
                 Layout.fillHeight: !window.fullscreenRequired()
@@ -173,27 +174,27 @@ VPNViewBase {
                 spacing: 0
                 Layout.fillWidth: true
 
-                VPNTextBlock {
-                    font.pixelSize: VPNTheme.theme.fontSize
+                MZTextBlock {
+                    font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
-                    text: VPNI18n.InAppSupportWorkflowDisclaimerText
+                    text: MZI18n.InAppSupportWorkflowDisclaimerText
                     anchors.left: parent.left
                     anchors.right: parent.right
 
                 }
 
-                VPNLinkButton {
+                MZLinkButton {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    labelText: VPNI18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                    onClicked: VPNUrlOpener.openUrlLabel("privacyNotice")
+                    labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
+                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
                 }
             }
 
             ColumnLayout {
-                spacing: VPNTheme.theme.windowMargin
+                spacing: MZTheme.theme.windowMargin
 
-                VPNButton {
-                    text: VPNI18n.InAppSupportWorkflowSupportPrimaryButtonText
+                MZButton {
+                    text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       MZGleanDeprecated.recordGleanEvent("supportCaseSubmitted");
                       Glean.sample.supportCaseSubmitted.record();
@@ -205,7 +206,7 @@ VPNViewBase {
                                 (VPNAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                              )
                     opacity: enabled ? 1 : .5
-                    Layout.preferredHeight: VPNTheme.theme.rowHeight
+                    Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.fillWidth: true
                     width: undefined
                     height: undefined
@@ -216,8 +217,8 @@ VPNViewBase {
                     }
                 }
 
-                VPNCancelButton {
-                    Layout.minimumHeight: VPNTheme.theme.rowHeight
+                MZCancelButton {
+                    Layout.minimumHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignHCenter
                     onClicked: getHelpStackView.pop()

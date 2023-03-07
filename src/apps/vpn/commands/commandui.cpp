@@ -321,14 +321,6 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "MZGleanDeprecated",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GleanDeprecated::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->captivePortalDetection();
@@ -374,14 +366,6 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNLicenseModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = LicenseModel::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -459,34 +443,9 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNTheme",
-        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
-          Theme* theme = MozillaVPN::instance()->theme();
-          theme->initialize(engine);
-          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
-          return theme;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNLocalizer",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Localizer::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNAppPermissions",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = AppPermission::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNSettings",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SettingsHolder::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
@@ -552,14 +511,6 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNI18n",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = I18nStrings::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNErrorHandler",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = ErrorHandler::instance();
@@ -584,15 +535,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNUrlOpener",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = UrlOpener::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "GleanPings",
+        "Mozilla.Shared", 1, 0, "GleanPings",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = __DONOTUSE__GleanPings::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
@@ -600,8 +543,66 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "Glean", [](QQmlEngine*, QJSEngine*) -> QObject* {
+        "Mozilla.Shared", 1, 0, "Glean",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = __DONOTUSE__GleanMetrics::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZGleanDeprecated",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = GleanDeprecated::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZI18n",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = I18nStrings::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZLicenseModel",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = LicenseModel::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZLocalizer",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = Localizer::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZSettings",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = SettingsHolder::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZTheme",
+        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
+          Theme* theme = MozillaVPN::instance()->theme();
+          theme->initialize(engine);
+          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
+          return theme;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZUrlOpener",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = UrlOpener::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

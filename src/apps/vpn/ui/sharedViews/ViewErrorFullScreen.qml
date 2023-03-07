@@ -5,13 +5,14 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
 import org.mozilla.Glean 0.30
 import telemetry 0.30
 
-VPNFlickable {
+MZFlickable {
     id: vpnFlickable
 
     property var headlineText
@@ -33,7 +34,7 @@ VPNFlickable {
 
     flickContentHeight: col.height
 
-    VPNHeaderLink {
+    MZHeaderLink {
         id: headerLink
         objectName: "getHelpLink"
         visible: getHelpLinkVisible
@@ -45,23 +46,23 @@ VPNFlickable {
     ColumnLayout {
         id: col
         anchors.fill: parent
-        anchors.leftMargin: VPNTheme.theme.windowMargin
-        anchors.rightMargin: VPNTheme.theme.windowMargin
-        anchors.bottomMargin: navbar.visible ? VPNTheme.theme.navBarHeightWithMargins : 34
+        anchors.leftMargin: MZTheme.theme.windowMargin
+        anchors.rightMargin: MZTheme.theme.windowMargin
+        anchors.bottomMargin: navbar.visible ? MZTheme.theme.navBarHeightWithMargins : 34
         spacing: 0
 
-        VPNHeadline {
+        MZHeadline {
             id: headline
 
             text: headlineText
             Layout.preferredHeight: paintedHeight
-            Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 2)
+            Layout.preferredWidth: col.width - (MZTheme.theme.windowMargin * 2)
             Layout.maximumWidth: 500
             Layout.topMargin: headerLink.height + vpnFlickable.height * (window.fullscreenRequired() ? 0.20 :  0.08)
         }
 
         ColumnLayout {
-            Layout.topMargin: VPNTheme.theme.vSpacing
+            Layout.topMargin: MZTheme.theme.vSpacing
             Layout.alignment: Qt.AlignHCenter
             spacing: 0
 
@@ -71,7 +72,7 @@ VPNFlickable {
                 Layout.preferredHeight: 48
                 Layout.preferredWidth: 48
                 Layout.alignment: Qt.AlignHCenter;
-                color: VPNTheme.theme.red
+                color: MZTheme.theme.red
                 radius: height / 2
 
                 Image {
@@ -84,39 +85,39 @@ VPNFlickable {
             }
 
             ColumnLayout {
-                Layout.topMargin: VPNTheme.theme.vSpacing
+                Layout.topMargin: MZTheme.theme.vSpacing
                 Layout.alignment: Qt.AlignHCenter
 
                 spacing: 0
 
-                VPNTextBlock {
+                MZTextBlock {
                     id: copyBlock1
-                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
+                    Layout.preferredWidth: col.width - (MZTheme.theme.windowMargin * 3)
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
                     horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: VPNTheme.theme.fontSize
+                    font.pixelSize: MZTheme.theme.fontSize
                     lineHeight: 22
                     text: errorMessage
                 }
 
-                VPNTextBlock {
+                MZTextBlock {
                     id: copyBlock2
 
-                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
+                    Layout.preferredWidth: col.width - (MZTheme.theme.windowMargin * 3)
                     horizontalAlignment: Text.AlignHCenter
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
-                    font.pixelSize: VPNTheme.theme.fontSize
+                    font.pixelSize: MZTheme.theme.fontSize
                     lineHeight: 22
                     text: errorMessage2
                 }
 
-                VPNLinkButton {
+                MZLinkButton {
                     //% "Check outage updates"
                     labelText: qsTrId("vpn.errors.checkOutageUpdates")
-                    Layout.preferredWidth: col.width - (VPNTheme.theme.windowMargin * 3)
-                    onClicked: VPNUrlOpener.openUrl("https://status.vpn.mozilla.org")
+                    Layout.preferredWidth: col.width - (MZTheme.theme.windowMargin * 3)
+                    onClicked: MZUrlOpener.openUrl("https://status.vpn.mozilla.org")
                     Layout.alignment: Qt.AlignHCenter
                     visible: statusLinkVisible
                 }
@@ -132,25 +133,25 @@ VPNFlickable {
             Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
 
-            spacing: VPNTheme.theme.vSpacingSmall
+            spacing: MZTheme.theme.vSpacingSmall
 
-            VPNButton {
+            MZButton {
                 id: primaryButton
 
                 objectName: primaryButtonObjectName
                 text: primaryButtonText
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 loaderVisible: false
                 onClicked: primaryButtonOnClick()
             }
             
-            VPNFooterLink {
+            MZFooterLink {
                 id: secondaryButton
 
                 objectName: secondaryButtonObjectName
                 labelText: secondaryButtonText
                 visible: secondaryButtonText != "" && !secondaryButtonIsSignOff
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined
@@ -159,11 +160,11 @@ VPNFlickable {
                 onClicked: secondaryButtonOnClick()
             }
 
-            VPNSignOut {
+            MZSignOut {
                 id: signOff
 
                 visible: secondaryButtonIsSignOff
-                Layout.preferredHeight: VPNTheme.theme.rowHeight
+                Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignHCenter
                 anchors.horizontalCenter: undefined
                 anchors.bottom: undefined

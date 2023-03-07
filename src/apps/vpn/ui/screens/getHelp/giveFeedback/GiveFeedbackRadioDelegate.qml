@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
@@ -15,13 +15,13 @@ RadioDelegate {
     property var value
     property alias iconSource: img.source
     property real iconSize: 30
-    property var uiState: VPNTheme.theme.uiState
+    property var uiState: MZTheme.theme.uiState
     readonly property bool isMobile: (Qt.platform.os === "android" || Qt.platform.os === "ios")
 
     id: radio
 
-    implicitHeight: VPNTheme.theme.rowHeight
-    implicitWidth: VPNTheme.theme.rowHeight
+    implicitHeight: MZTheme.theme.rowHeight
+    implicitWidth: MZTheme.theme.rowHeight
     activeFocusOnTab: true
     focus: true
 
@@ -34,17 +34,17 @@ RadioDelegate {
         height: iconSize
         width: iconSize
 
-        VPNIcon {
+        MZIcon {
             id: img
             antialiasing: true
             sourceSize.height: parent.height
             sourceSize.width: parent.width
         }
 
-        VPNColorOverlay {
+        MZColorOverlay {
             anchors.fill: parent
             source: img
-            color: VPNTheme.colors.blue
+            color: MZTheme.colors.blue
             //prevents iOS and Android from getting into a weird hover state
             visible: radio.checked || radio.state === uiState.statePressed
                      || (!radio.isMobile && radio.state === uiState.stateHovered)
@@ -61,12 +61,12 @@ RadioDelegate {
             radio.clicked();
     }
 
-    background: VPNFocusOutline {
-        anchors.margins: VPNTheme.theme.focusBorderWidth
+    background: MZFocusOutline {
+        anchors.margins: MZTheme.theme.focusBorderWidth
 
-        border.color: VPNTheme.theme.blueFocusOutline
-        border.width: VPNTheme.theme.focusBorderWidth * 2
-        color: VPNTheme.theme.transparent
+        border.color: MZTheme.theme.blueFocusOutline
+        border.width: MZTheme.theme.focusBorderWidth * 2
+        color: MZTheme.theme.transparent
         //OS Check to prevent multi-touch issue
         opacity: radio.checked || (!radio.isMobile && radio.activeFocus) ? 1 : 0
         radius: height
@@ -78,7 +78,7 @@ RadioDelegate {
         }
     }
 
-    VPNMouseArea {
+    MZMouseArea {
         id: mouseArea
         onMouseAreaClicked: function() {
             radio.forceActiveFocus();

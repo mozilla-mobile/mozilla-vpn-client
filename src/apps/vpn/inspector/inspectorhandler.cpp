@@ -234,11 +234,12 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{
-        "property", "Retrieve a property value from a Mozilla VPN object", 2,
+        "property", "Retrieve a property value from a Mozilla object", 3,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
-          int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(arguments[1]));
+          int id = qmlTypeId(qPrintable(arguments[1]), 1, 0,
+                             qPrintable(arguments[2]));
 
           QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
               QmlEngineHolder::instance()->engine());
@@ -248,7 +249,7 @@ static QList<InspectorCommand> s_commands{
             return obj;
           }
 
-          QVariant property = item->property(arguments[2]);
+          QVariant property = item->property(arguments[3]);
           if (!property.isValid()) {
             obj["error"] = "Property is invalid";
             return obj;
@@ -259,11 +260,12 @@ static QList<InspectorCommand> s_commands{
         }},
 
     InspectorCommand{
-        "set_property", "Set a property value to a Mozilla VPN object", 3,
+        "set_property", "Set a property value to a Mozilla object", 4,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
 
-          int id = qmlTypeId("Mozilla.VPN", 1, 0, qPrintable(arguments[1]));
+          int id = qmlTypeId(qPrintable(arguments[1]), 1, 0,
+                             qPrintable(arguments[2]));
 
           QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
               QmlEngineHolder::instance()->engine());
@@ -274,7 +276,7 @@ static QList<InspectorCommand> s_commands{
           }
 
           const QMetaObject* metaObject = item->metaObject();
-          int propertyId = metaObject->indexOfProperty(arguments[2]);
+          int propertyId = metaObject->indexOfProperty(arguments[3]);
           if (propertyId < 0) {
             obj["error"] = "Invalid property";
             return obj;
@@ -283,7 +285,7 @@ static QList<InspectorCommand> s_commands{
           QMetaProperty property = metaObject->property(propertyId);
           Q_ASSERT(property.isValid());
 
-          QVariant value = QVariant::fromValue(arguments[3]);
+          QVariant value = QVariant::fromValue(arguments[4]);
           if (!value.canConvert(property.type())) {
             obj["error"] = "Property value is invalid";
             return obj;

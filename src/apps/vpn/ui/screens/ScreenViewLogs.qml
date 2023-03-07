@@ -8,6 +8,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -18,7 +19,7 @@ Item {
     width: window.width
     height: window.safeContentHeight
 
-    VPNMenu {
+    MZMenu {
         id: menu
 
         //% "View Logs"
@@ -26,20 +27,20 @@ Item {
         _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
     }
 
-    VPNFlickable {
+    MZFlickable {
         id: logScrollView
 
         height: logs.height - menu.height - copyClearWrapper.height
-        flickContentHeight: logText.height + VPNTheme.theme.windowMargin
-        width: logs.width - VPNTheme.theme.windowMargin
+        flickContentHeight: logText.height + MZTheme.theme.windowMargin
+        width: logs.width - MZTheme.theme.windowMargin
         anchors.top: menu.bottom
-        anchors.leftMargin: VPNTheme.theme.windowMargin
+        anchors.leftMargin: MZTheme.theme.windowMargin
         anchors.horizontalCenter: logs.horizontalCenter
-        contentWidth: width - (VPNTheme.theme.windowMargin * 2)
+        contentWidth: width - (MZTheme.theme.windowMargin * 2)
 
-        VPNTextBlock {
+        MZTextBlock {
             id: logText
-            y: VPNTheme.theme.windowMargin
+            y: MZTheme.theme.windowMargin
             font.pixelSize: 11
             lineHeight: 16
             width: parent.width
@@ -62,7 +63,7 @@ Item {
 
         width: parent.width
         height: 1
-        color: VPNTheme.theme.divider
+        color: MZTheme.theme.divider
         Layout.alignment: Qt.AlignRight
         anchors.bottom: copyClearWrapper.top
     }
@@ -70,8 +71,8 @@ Item {
     Rectangle {
         id: copyClearWrapper
 
-        color: VPNTheme.theme.bgColor
-        height: VPNTheme.theme.rowHeight * 1.5
+        color: MZTheme.theme.bgColor
+        height: MZTheme.theme.rowHeight * 1.5
         anchors.bottom: parent.bottom
         width: logs.width
 
@@ -80,7 +81,7 @@ Item {
             height: parent.height
             width: copyClearWrapper.width
 
-            VPNLogsButton {
+            MZLogsButton {
                 //% "Copy"
                 buttonText: qsTrId("vpn.logs.copy")
                 iconSource: "qrc:/ui/resources/copy.svg"
@@ -94,11 +95,11 @@ Item {
             Rectangle {
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: 1
-                color: VPNTheme.theme.divider
+                color: MZTheme.theme.divider
                 Layout.alignment: Qt.AlignRight
             }
 
-            VPNLogsButton {
+            MZLogsButton {
                 //% "Clear"
                 buttonText: qsTrId("vpn.logs.clear")
                 iconSource: "qrc:/nebula/resources/delete.svg"

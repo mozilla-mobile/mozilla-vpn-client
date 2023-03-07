@@ -4,8 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
-import Mozilla.VPN 1.0
 
+import Mozilla.Shared 1.0
 import components 0.1
 
 Item {
@@ -63,12 +63,12 @@ Item {
         id: spacer
 
         anchors.top: listHeader.top
-        height: VPNTheme.theme.windowMargin * 2
+        height: MZTheme.theme.windowMargin * 2
         width: listHeader.width
-        color: VPNTheme.theme.transparent
+        color: MZTheme.theme.transparent
     }
 
-    VPNPanel {
+    MZPanel {
         id: vpnPanel
         objectName: "deviceLimitPanel"
         anchors.top: spacer.bottom
@@ -85,9 +85,9 @@ Item {
         id: bottomSpacer
 
         anchors.top: vpnPanel.bottom
-        height: VPNTheme.theme.windowMargin * 2
+        height: MZTheme.theme.windowMargin * 2
         width: listHeader.width
-        color: VPNTheme.theme.transparent
+        color: MZTheme.theme.transparent
     }
 
 }

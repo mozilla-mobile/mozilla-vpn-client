@@ -5,14 +5,15 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-VPNStackView {
+MZStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPNUrlOpener.openUrlLabel("subscriptionBlocked");
+        MZUrlOpener.openUrlLabel("subscriptionBlocked");
     }
 
     Component.onCompleted: {
@@ -20,10 +21,10 @@ VPNStackView {
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
-            headlineText: VPNI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
+            headlineText: MZI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
 
             // "Your subscription is linked to another Firefox Account....."
-            errorMessage: VPNI18n.MultiFxaAccountErrorFxaAccountErrorText,
+            errorMessage: MZI18n.MultiFxaAccountErrorFxaAccountErrorText,
 
             //% "Visit our help center to learn more about managing your subscriptions."
             errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
