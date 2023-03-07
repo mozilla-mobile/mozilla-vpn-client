@@ -176,7 +176,7 @@ Rectangle {
         }
     }
 
-    MZLogoLoader {
+    LogoLoader {
         anchors {
             horizontalCenter: parent.horizontalCenter
             verticalCenter: parent.verticalCenter
