@@ -234,7 +234,8 @@ bool Controller::activate(const ServerData& serverData,
     request->get(AppConstants::apiUrl(AppConstants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
-            [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            [this, serverSelectionPolicy](QNetworkReply::NetworkError error,
+                                          const QByteArray&) {
               logger.error() << "Account request failed" << error;
               REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
                                  "PreActivationSubscriptionCheck");
@@ -242,24 +243,30 @@ bool Controller::activate(const ServerData& serverData,
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
               // subscribed.
-              if (MozillaVPN::instance()->state() == MozillaVPN::StateMain) {
-                setState(StateConnecting);
-              } else {
-                setState(StateOff);
+              if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+                return;
               }
+
+              setState(StateConnecting);
+
+              clearRetryCounter();
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
-            [this](const QByteArray& data) {
+            [this, serverSelectionPolicy](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
               setState(StateConnecting);
+
+              clearRetryCounter();
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
             });
 
     connect(request, &QObject::destroyed, task, &QObject::deleteLater);
+    return true;
   }
 
   clearRetryCounter();
-
   activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
   return true;
 }
