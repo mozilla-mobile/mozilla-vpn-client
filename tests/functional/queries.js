@@ -100,10 +100,14 @@ const screenHome = {
     SEARCH_BAR: new QmlQueryComposer('//countrySearchBar'),
     SEARCH_BAR_TEXT_FIELD: new QmlQueryComposer('//searchBarTextField'),
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),
+    SINGLEHOP_SELECTOR_TAB: new QmlQueryComposer(
+      '//segmentedNavToggle/segmentedToggleBtnLayout/tabSingleHop'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
     ALL_SERVERS_TAB: new QmlQueryComposer(
-      '//tabAllServers')
+      '//tabAllServers'),
+    VPN_MULTHOP_CHEVRON: new QmlQueryComposer('//vpnCollapsibleCardChevron'),
+    VPN_COLLAPSIBLE_CARD: new QmlQueryComposer('//vpnCollapsibleCard'),
   }
 };
 
