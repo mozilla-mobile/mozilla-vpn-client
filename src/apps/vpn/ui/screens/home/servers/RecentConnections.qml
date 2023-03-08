@@ -98,7 +98,7 @@ ColumnLayout {
                     width: parent.width - MZTheme.theme.windowMargin * 2
                     height: parent.height
 
-                    MZServerLabel {
+                    ServerLabel {
 
                         id: serverLabel
                         Layout.fillWidth: true

@@ -62,10 +62,6 @@
         <file>components/MZRadioButtonLabel.qml</file>
         <file>components/MZRadioDelegate.qml</file>
         <file>components/MZSemiMonoLabel.qml</file>
-        <file>components/MZServerCountry.qml</file>
-        <file>components/MZServerLabel.qml</file>
-        <file>components/MZServerLatencyIndicator.qml</file>
-        <file>components/MZServerListToggle.qml</file>
         <file>components/MZServerUnavailablePopup.qml</file>
         <file>components/MZSettingsItem.qml</file>
         <file>components/MZSettingsToggle.qml</file>

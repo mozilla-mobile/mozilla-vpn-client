@@ -55,10 +55,6 @@ MZScreenBase 0.1 MZScreenBase.qml
 MZSegmentedNavigation 0.1 MZSegmentedNavigation.qml
 MZSegmentedToggle 0.1 MZSegmentedToggle.qml
 MZSemiMonoLabel 0.1 MZSemiMonoLabel.qml
-MZServerCountry 0.1 MZServerCountry.qml
-MZServerLabel 0.1 MZServerLabel.qml
-MZServerLatencyIndicator 0.1 MZServerLatencyIndicator.qml
-MZServerListToggle 0.1 MZServerListToggle.qml
 MZServerUnavailablePopup 0.1 MZServerUnavailablePopup.qml
 MZSettingsItem 0.1 MZSettingsItem.qml
 MZSettingsToggle 0.1 MZSettingsToggle.qml

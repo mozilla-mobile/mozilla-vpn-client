@@ -77,7 +77,7 @@ StackView {
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
                 descriptionText: titleText
                 contentChildren: [
-                    MZServerLabel {
+                    ServerLabel {
                         id: entryLabel
 
                         serversList: [
@@ -112,7 +112,7 @@ StackView {
                     descriptionText: titleText
                     contentChildren: [
 
-                        MZServerLabel {
+                        ServerLabel {
                             id: exitLabel
                             serversList: [
 

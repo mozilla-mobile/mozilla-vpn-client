@@ -39,7 +39,7 @@ MZButtonBase {
 
     // visual state changes are applied to this
     // component to prevent state overwrite conflicts
-    // in MZServerCountry {}
+    // in ServerCountry {}
     Rectangle {
         id: rowVisualStates
 
