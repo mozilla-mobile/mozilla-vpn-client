@@ -3,3 +3,6 @@ ConnectionStability 0.1 controller/ConnectionStability.qml
 ControllerImage 0.1 controller/ControllerImage.qml
 ControllerNav 0.1 controller/ControllerNav.qml
 ControllerView 0.1 controller/ControllerView.qml
+RecentConnections 0.1 servers/RecentConnections.qml
+ServerList 0.1 servers/ServerList.qml
+ServerLabel 0.1 servers/ServerLabel.qml

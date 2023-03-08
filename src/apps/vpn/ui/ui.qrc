@@ -48,6 +48,12 @@
         <file>screens/home/controller/ip/IPInfoPanel.qml</file>
         <file>screens/home/controller/qmldir</file>
         <file>screens/home/qmldir</file>
+        <file>screens/home/servers/RecentConnections.qml</file>
+        <file>screens/home/servers/ServerCountry.qml</file>
+        <file>screens/home/servers/ServerLabel.qml</file>
+        <file>screens/home/servers/ServerLatencyIndicator.qml</file>
+        <file>screens/home/servers/ServerListToggle.qml</file>
+        <file>screens/home/servers/ServerList.qml</file>
         <file>screens/home/ViewHome.qml</file>
         <file>screens/home/ViewMultiHop.qml</file>
         <file>screens/home/ViewServers.qml</file>

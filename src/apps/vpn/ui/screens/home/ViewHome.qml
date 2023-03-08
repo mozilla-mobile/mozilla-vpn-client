@@ -107,7 +107,7 @@ MZFlickable {
             Layout.topMargin: 12
             contentChildren: [
 
-                MZServerLabel {
+                ServerLabel {
                     id: selectLocationLabel
                     objectName: "serverListButton-label"
 

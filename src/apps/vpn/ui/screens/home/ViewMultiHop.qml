@@ -56,7 +56,7 @@ StackView {
                 Layout.preferredWidth: parent.width - MZTheme.theme.windowMargin
             }
 
-            MZRecentConnections {
+            RecentConnections {
                 Layout.fillWidth: true
                 showMultiHopRecentConnections: true
             }
@@ -64,7 +64,7 @@ StackView {
             ControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/nebula/components/MZServerList.qml",
+                        "qrc:/ui/screens/home/servers/ServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -77,7 +77,7 @@ StackView {
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
                 descriptionText: titleText
                 contentChildren: [
-                    MZServerLabel {
+                    ServerLabel {
                         id: entryLabel
 
                         serversList: [
@@ -97,7 +97,7 @@ StackView {
                 spacing: 8
                 ControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/nebula/components/MZServerList.qml",
+                        multiHopStackView.push("qrc:/ui/screens/home/servers/ServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false
@@ -112,7 +112,7 @@ StackView {
                     descriptionText: titleText
                     contentChildren: [
 
-                        MZServerLabel {
+                        ServerLabel {
                             id: exitLabel
                             serversList: [
 

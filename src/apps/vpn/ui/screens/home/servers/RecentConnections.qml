@@ -5,9 +5,13 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.VPN.qmlcomponents 1.0
+
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
-import Mozilla.VPN.qmlcomponents 1.0
+import compat 0.1
+import components 0.1
+import components.forms 0.1
 
 ColumnLayout {
     id: root
@@ -94,7 +98,7 @@ ColumnLayout {
                     width: parent.width - MZTheme.theme.windowMargin * 2
                     height: parent.height
 
-                    MZServerLabel {
+                    ServerLabel {
 
                         id: serverLabel
                         Layout.fillWidth: true

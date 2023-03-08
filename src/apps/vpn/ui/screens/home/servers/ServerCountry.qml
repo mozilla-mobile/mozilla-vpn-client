@@ -8,6 +8,8 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
+import compat 0.1
 
 MZClickableRow {
     id: serverCountry
@@ -126,7 +128,7 @@ MZClickableRow {
         anchors.left: parent.left
 
 
-        MZServerListToggle {
+        ServerListToggle {
             id: serverListToggle
 
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
@@ -205,7 +207,7 @@ MZClickableRow {
                     }
                 }
 
-                MZServerLatencyIndicator {
+                ServerLatencyIndicator {
                     anchors {
                         right: parent.right
                         rightMargin: MZTheme.theme.hSpacing
