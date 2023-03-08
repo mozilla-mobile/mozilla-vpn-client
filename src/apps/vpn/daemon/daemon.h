@@ -45,6 +45,9 @@ class Daemon : public QObject {
   void disconnected();
   void backendFailure();
 
+ private:
+  bool maybeUpdateResolvers(const InterfaceConfig& config);
+
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
     Q_UNUSED(op);
