@@ -42,8 +42,19 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     horizontalAlignment: TextInput.AlignLeft
 
-    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
-        vpnFlickable.ensureVisible(textField);
+    onActiveFocusChanged: {
+        if(activeFocus) {
+            var parentComponent = parent
+            while(parentComponent && parentComponent !== "undefined") {
+                if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                    parentComponent.ensureVisible(textField)
+                    return
+                }
+                else {
+                    parentComponent = parentComponent.parent
+                }
+            }
+        }
     }
     // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader

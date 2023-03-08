@@ -81,8 +81,17 @@ Item {
             }
 
             onActiveFocusChanged: {
-                if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
-                    vpnFlickable.ensureVisible(textArea)
+                if(activeFocus) {
+                    var parentComponent = parent
+                    while(parentComponent && parentComponent !== "undefined") {
+                        if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                            parentComponent.ensureVisible(textArea)
+                            return
+                        }
+                        else {
+                            parentComponent = parentComponent.parent
+                        }
+                    }
                 }
             }
 

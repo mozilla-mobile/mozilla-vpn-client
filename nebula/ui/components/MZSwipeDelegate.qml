@@ -44,8 +44,17 @@ SwipeDelegate {
     }
 
     onActiveFocusChanged: {
-        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
-            vpnFlickable.ensureVisible(swipeDelegate)
+        if(activeFocus) {
+            var parentComponent = parent
+            while(parentComponent && parentComponent !== "undefined") {
+                if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                    parentComponent.ensureVisible(swipeDelegate)
+                    return
+                }
+                else {
+                    parentComponent = parentComponent.parent
+                }
+            }
         }
     }
 

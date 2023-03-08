@@ -24,11 +24,18 @@ CheckBox {
     hoverEnabled: false
     onActiveFocusChanged: {
         if (!activeFocus)
-            mouseArea.changeState(uiState.stateDefault);
+            return mouseArea.changeState(uiState.stateDefault);
 
-        if (activeFocus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
-            vpnFlickable.ensureVisible(checkBox);
-
+        var parentComponent = parent
+        while(parentComponent && parentComponent !== "undefined") {
+            if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                parentComponent.ensureVisible(checkBox)
+                return
+            }
+            else {
+                parentComponent = parentComponent.parent
+            }
+        }
     }
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)

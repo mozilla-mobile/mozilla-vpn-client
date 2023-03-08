@@ -48,13 +48,21 @@ RoundButton {
 
 
     onActiveFocusChanged: {
-        if (!focus) {
+        if (!activeFocus) {
             return visualStateItem.state = uiState.stateDefault;
         }
         visualStateItem.state = uiState.stateFocused;
 
-        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined")
-            vpnFlickable.ensureVisible(root)
+        var parentComponent = parent
+        while(parentComponent && parentComponent !== "undefined") {
+            if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                parentComponent.ensureVisible(root)
+                return
+            }
+            else {
+                parentComponent = parentComponent.parent
+            }
+        }
     }
 
     background: Rectangle {

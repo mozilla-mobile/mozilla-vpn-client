@@ -17,7 +17,20 @@ CheckBox {
     property string accessibleName
 
     onClicked: toolTip.hide()
-    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") ensureVisible(vpnSettingsToggle)
+    onActiveFocusChanged: {
+        if(activeFocus) {
+            var parentComponent = parent
+            while(parentComponent && parentComponent !== "undefined") {
+                if(typeof(parentComponent.ensureVisible) !== "undefined") {
+                    parentComponent.ensureVisible(vpnSettingsToggle)
+                    return
+                }
+                else {
+                    parentComponent = parentComponent.parent
+                }
+            }
+        }
+    }
 
     height: MZTheme.theme.vSpacing
     width: 45
