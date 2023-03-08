@@ -61,7 +61,7 @@ describe('Onboarding', function() {
        assert.equal(
            await vpn.getQueryProperty(
                queries.screenInitialize.PANEL_TITLE.visible(), 'text'),
-           'Protect your privacy');
+           'One tap to safety');
        const descriptionText = await vpn.getQueryProperty(
            queries.screenInitialize.PANEL_DESCRIPTION, 'text');
        assert(descriptionText.includes('Route your activity and location'));
