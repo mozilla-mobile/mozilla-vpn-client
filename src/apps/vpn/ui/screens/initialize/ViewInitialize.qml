@@ -21,8 +21,11 @@ Item {
     MZRadialGradient {
         height: Screen.height
         width: Screen.width
-        anchors.top: parent.top
-        anchors.topMargin: -window.safeAreaHeightByDevice()
+
+        anchors {
+            top: parent.top
+            topMargin:  -window.safeAreaHeightByDevice()
+        }
 
         gradient: Gradient {
             GradientStop {
@@ -44,9 +47,9 @@ Item {
         property bool firstRun: true
         id: onboardingPanel
 
-
-        flickContentHeight: window.safeContentHeight / 2 + col.implicitHeight
-        anchors.fill: parent
+        flickContentHeight: Math.max(window.safeContentHeight / 2 + col.implicitHeight, parent.height)
+        height: parent.height
+        width: parent.width
 
         ListModel {
             id: onboardingModel
@@ -61,26 +64,26 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/nebula/resources/animations/lock_animation.json"
-                loopAnimation: true
-                titleStringId: "MobileOnboardingPanelTwoTitle"
-                subtitleStringId: "MobileOnboardingPanelTwoSubtitle"
-                panelId: "encrypt-your-activity"
-            }
-            ListElement {
-                animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/globe_animation.json"
                 loopAnimation: true
-                titleStringId: "MobileOnboardingPanelThreeTitle"
-                subtitleStringId: "MobileOnboardingPanelThreeSubtitle"
-                panelId: "protect-your-privacy"
+                titleStringId: "OnboardingPanelTwoTitle"
+                subtitleStringId: "OnboardingPanelTwoSubtitle"
+                panelId: "encrypt-your-activity"
             }
             ListElement {
                 animationSpeed: 1
                 animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
                 loopAnimation: true
-                titleStringId: "MobileOnboardingPanelFourTitle"
-                subtitleStringId: "MobileOnboardingPanelFourSubtitle"
+                titleStringId: "OnboardingPanelThreeTitle"
+                subtitleStringId: "OnboardingPanelThreeSubtitle"
+                panelId: "protect-your-privacy"
+            }
+            ListElement {
+                animationSpeed: 1
+                animationSrc: ":/nebula/resources/animations/lock_animation.json"
+                loopAnimation: true
+                titleStringId: "OnboardingPanelFourTitle"
+                subtitleStringId: "OnboardingPanelFourSubtitle"
                 panelId: "more-security"
             }
         }
@@ -260,64 +263,66 @@ Item {
 
         ColumnLayout {
             id: col
-            anchors.fill: parent
 
-            anchors.topMargin: onboardingPanel.height / 2
-            anchors.rightMargin: MZTheme.theme.windowMargin * 2
-            anchors.leftMargin: MZTheme.theme.windowMargin * 2
+            anchors {
+                fill: parent
+                topMargin: onboardingPanel.height / 2
+                leftMargin: MZTheme.theme.windowMargin * 1.5
+                rightMargin: MZTheme.theme.windowMargin * 1.5
+            }
 
-            Column {
+            ColumnLayout {
                 id: panelText
-                Layout.preferredWidth: col.width
+
                 spacing: MZTheme.theme.windowMargin / 2
 
                 MZHeadline {
                     id: panelTitle
                     objectName: "panelTitle"
+
                     color: MZTheme.colors.white
-                    width: parent.width
+                    width: undefined
+                    Layout.fillWidth: true
                 }
 
                 MZSubtitle {
                     id: panelDescription
                     objectName: "panelDescription"
                     color: MZTheme.colors.grey20
-                    width: parent.width
+                    width: undefined
+                    Layout.fillWidth: true
                 }
             }
 
-            MZVerticalSpacer {
-                // Pushes panelText and PanelBottomContent to top and bottom of
-                // the wrapping ColumnLayout
-                Layout.fillHeight: true
-                Layout.minimumHeight: MZTheme.theme.windowMargin
-            }
 
-            Column {
+            ColumnLayout {
                 id: panelBottomContent
-                Layout.preferredWidth: parent.width
                 spacing: MZTheme.theme.windowMargin
 
+                MZVerticalSpacer {
+                    // Pushes panelText and PanelBottomContent to top and bottom of
+                    // the wrapping ColumnLayout
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                }
+
                 MZInterLabel {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    
                     text: MZI18n.FreeTrialsStartYourFreeTrial
                     color: MZTheme.colors.white80
                     font.family: MZTheme.theme.fontInterSemiBoldFamily
-                    width: parent.width
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+                    width: undefined
                     visible: VPNFeatureList.get("freeTrial").isSupported
                 }
-
-                MZVerticalSpacer {
-                    height: 1
-                }
-
                 PageIndicator {
                     id: progressIndicator
 
                     interactive: true
                     count: swipeView.count
                     currentIndex: swipeView.currentIndex
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    Layout.alignment: Qt.AlignHCenter
                     spacing: MZTheme.theme.windowMargin / 2
 
                     delegate: Rectangle {
@@ -336,10 +341,12 @@ Item {
 
                 MZButton {
                     id: signUpButton
+
                     objectName: "signUpButton"
-                    anchors.horizontalCenter: parent.horizontalCenter
                     text: MZI18n.MobileOnboardingSignUpBtn
-                    width: Math.min(parent.width, MZTheme.theme.maxHorizontalContentWidth)
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.fillWidth: true
+                    width: undefined
                     onClicked: {
                         const platform = Qt.platform.os;
                         if (platform === "android" || platform === "ios") {
@@ -352,9 +359,9 @@ Item {
                 MZLinkButton {
                     objectName: "alreadyASubscriberLink"
                     labelText: MZI18n.MobileOnboardingAlreadyASubscriber
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    height: MZTheme.theme.rowHeight
+                    Layout.alignment: Qt.AlignHCenter
                     linkColor: MZTheme.theme.whiteButton
+                    width: undefined
                     onClicked: {
                         const platform = Qt.platform.os;
                         if (platform === "android" || platform === "ios") {
@@ -363,11 +370,11 @@ Item {
                         VPN.authenticate();
                     }
                 }
-            }
 
-            MZVerticalSpacer {
-                id: spacerBottom
-                Layout.preferredHeight: Math.min(window.height * 0.08, MZTheme.theme.rowHeight)
+                MZVerticalSpacer {
+                    id: spacerBottom
+                    Layout.preferredHeight: Math.min(window.height * 0.08, MZTheme.theme.rowHeight)
+                }
             }
         }
 
