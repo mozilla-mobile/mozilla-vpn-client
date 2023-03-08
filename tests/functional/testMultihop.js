@@ -16,32 +16,10 @@
    this.ctx.authenticationNeeded = true;
 
    beforeEach(async () => {
-     await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
+     await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
      servers = await vpn.servers();
-     currentCountryCode = await vpn.getQueryProperty(
-        'VPNCurrentServer',
-        'exitCountryCode'
-      );
-     currentCity = await vpn.getQueryProperty('VPNCurrentServer', 'exitCityName');
-
-     for (let server of servers) {
-       if (currentCountryCode === server.code) {
-         for (let city of server.cities) {
-           if (city.name == currentCity) {
-             currentCity = city.localizedName;
-             break;
-           }
-         }
-       }
-     }
-     console.log(
-       'Current city (localized):',
-       currentCity,
-       '| Current country code:',
-       currentCountryCode
-     );
    });
 
    it('opening the entry and exit server list', async () => {
@@ -131,6 +109,7 @@
      );
      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
+     await vpn.wait();
      await vpn.waitForQueryAndClick(
        queries.screenHome.serverListView.EXIT_BUTTON.visible()
      );
