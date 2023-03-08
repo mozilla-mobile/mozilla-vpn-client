@@ -99,6 +99,8 @@ class NetworkRequest final : public QObject {
   QNetworkRequest m_request;
   QTimer m_timer;
 
+  QUrl m_redirectedUrl;
+
 #ifndef QT_NO_SSL
   /**
    * @brief this is a workaround against a buggy old version of Firefox with an
@@ -117,10 +119,6 @@ class NetworkRequest final : public QObject {
 
   bool m_completed = false;
   bool m_aborted = false;
-
-#if QT_VERSION >= 0x060000
-  QUrl m_redirectedUrl;
-#endif
 };
 
 #endif  // NETWORKREQUEST_H

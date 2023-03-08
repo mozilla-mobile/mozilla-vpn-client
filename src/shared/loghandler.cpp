@@ -49,7 +49,7 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
 
 // static
 LogHandler* LogHandler::instance() {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   return maybeCreate(lock);
 }
 
@@ -57,7 +57,7 @@ LogHandler* LogHandler::instance() {
 void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext& context,
                                   const QString& message) {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   maybeCreate(lock)->addLog(Log(qtTypeToLogLevel(type), context.file,
                                 context.function, context.line, message),
                             lock);
@@ -66,13 +66,13 @@ void LogHandler::messageQTHandler(QtMsgType type,
 // static
 void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
                                 const QString& message) {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   maybeCreate(lock)->addLog(Log(logLevel, className, message), lock);
 }
 
 // static
 void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
 
   maybeCreate(lock)->addLog(
       Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)),
@@ -80,7 +80,7 @@ void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
 }
 
 // static
-LogHandler* LogHandler::maybeCreate(const MutexLocker& proofOfLock) {
+LogHandler* LogHandler::maybeCreate(const QMutexLocker<QMutex>& proofOfLock) {
   if (!s_instance) {
     s_instance = new LogHandler(proofOfLock);
   }
@@ -151,11 +151,11 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 
 // static
 void LogHandler::enableStderr() {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   maybeCreate(lock)->m_stderrEnabled = true;
 }
 
-LogHandler::LogHandler(const MutexLocker& proofOfLock) {
+LogHandler::LogHandler(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
 #if defined(MZ_DEBUG)
@@ -167,7 +167,8 @@ LogHandler::LogHandler(const MutexLocker& proofOfLock) {
   }
 }
 
-void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
+void LogHandler::addLog(const Log& log,
+                        const QMutexLocker<QMutex>& proofOfLock) {
   if (m_output) {
     prettyOutput(*m_output, log);
   }
@@ -195,7 +196,7 @@ void LogHandler::addLog(const Log& log, const MutexLocker& proofOfLock) {
 
 // static
 void LogHandler::writeLogs(QTextStream& out) {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
 
   if (!s_instance || !s_instance->m_logFile) {
     return;
@@ -218,12 +219,12 @@ void LogHandler::writeLogs(QTextStream& out) {
 
 // static
 void LogHandler::cleanupLogs() {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   cleanupLogFile(lock);
 }
 
 // static
-void LogHandler::cleanupLogFile(const MutexLocker& proofOfLock) {
+void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   if (!s_instance || !s_instance->m_logFile) {
     return;
   }
@@ -241,7 +242,7 @@ void LogHandler::cleanupLogFile(const MutexLocker& proofOfLock) {
 
 // static
 void LogHandler::setLocation(const QString& path) {
-  MutexLocker lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&s_mutex);
   s_location = path;
 
   if (s_instance && s_instance->m_logFile) {
@@ -249,7 +250,7 @@ void LogHandler::setLocation(const QString& path) {
   }
 }
 
-void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
+void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
   Q_ASSERT(!m_logFile);
   Q_ASSERT(!m_output);
@@ -285,7 +286,7 @@ void LogHandler::openLogFile(const MutexLocker& proofOfLock) {
          proofOfLock);
 }
 
-void LogHandler::closeLogFile(const MutexLocker& proofOfLock) {
+void LogHandler::closeLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
   if (m_logFile) {

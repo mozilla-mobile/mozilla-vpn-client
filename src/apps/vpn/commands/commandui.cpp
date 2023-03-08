@@ -607,7 +607,7 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-#if MVPN_IOS && QT_VERSION >= 0x060000 && QT_VERSION < 0x060300
+#if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
                      &MozillaVPN::quit);
 #else
@@ -625,13 +625,7 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
-        []() {
-#if QT_VERSION < 0x060000
-          qApp->setFallbackSessionManagementEnabled(false);
-#endif
-          MozillaVPN::instance()->deactivate();
-        },
-        Qt::DirectConnection);
+        []() { MozillaVPN::instance()->deactivate(); }, Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &MozillaVPN::quit, Qt::QueuedConnection);
