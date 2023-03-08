@@ -23,7 +23,6 @@ MZExternalLinkListItem 0.1 MZExternalLinkListItem.qml
 MZFlickable 0.1 MZFlickable.qml
 MZFocusBorder 0.1 MZFocusBorder.qml
 MZFocusOutline 0.1 MZFocusOutline.qml
-MZFooterMargin 0.1 MZFooterMargin.qml
 MZFooterLink 0.1 MZFooterLink.qml
 MZGreyLink 0.1 MZGreyLink.qml
 MZGuideCard 0.1 MZGuideCard.qml
