@@ -4,7 +4,7 @@
 ---
 
 source/vpn:
-    description: "Linux Source Build"
+    description: "VPN Source Build"
     treeherder:
         symbol: B
         kind: build
