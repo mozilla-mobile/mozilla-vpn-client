@@ -36,6 +36,14 @@ macos/pr:
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
 
+macos/universal:
+    description: "Mac Build"
+    treeherder:
+        symbol: BD
+        platform: macos/universal
+    run:
+        command: ./taskcluster/scripts/build/macos_universal_build.sh -d
+
 macos/opt:
     description: "Mac Build"
     treeherder:
