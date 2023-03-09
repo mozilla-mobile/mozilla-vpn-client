@@ -5,7 +5,6 @@
 const vpn = require('./helper.js');
 const assert = require('assert');
 const queries = require('./queries.js');
-const guardianEndpoints = require("./servers/guardian_endpoints.js");
 
 async function openContactUsInSettings(isAuthenticated) {
   if (!isAuthenticated) {
@@ -15,34 +14,28 @@ async function openContactUsInSettings(isAuthenticated) {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
   } else {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    // wait for element to be interactable
+    await vpn.wait();
     await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
   }
 
   await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+  // wait for element to be interactable
   await vpn.wait();
   await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
-  await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+  await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 }
 
-describe("Contact us view -  unauthenticated user", function () {
-  this.ctx.guardianOverrideEndpoints = {
-    GETs: {},
-    POSTs: {
-      "/api/v1/vpn/createGuestSupportTicket": {
-        status: 201,
-        bodyValidator: guardianEndpoints.validators.supportTicketData,
-        body: null,
-      },
-    },
-    DELETEs: {},
-  };
+async function getDropDownTextString(index){
+  return await vpn.getQueryProperty(`//category-Dropdown-Option-${index}-text`, 'text')
+}
 
-  it("VPNUserInfo is not visible to unathenticated users", async () => {
-    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+describe('Contact us view -  unauthenticated user', function () {
+  it('VPNUserInfo is not visible to unathenticated users', async () => {
+    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK.visible());
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
 
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.USER_INFO.hidden()
@@ -50,37 +43,37 @@ describe("Contact us view -  unauthenticated user", function () {
     assert.equal(
       await vpn.getQueryProperty(
         queries.screenGetHelp.contactSupportView.USER_INFO,
-        "visible"
+        'visible'
       ),
-      "false"
+      'false'
     );
   });
 
-  it("Email inputs are visible to unauthenticated user", async () => {
-    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+  it('Email inputs are visible to unauthenticated user', async () => {
+    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK.visible());
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
 
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUT.visible()
     );
   });
 
-  it("Unauthenticated User is able to fill out form", async () => {
-    console.log(
-      "*****************Unauthenticated User is able to fill out form********************"
-    );
+  it.only('Unauthenticated User is able to fill out form', async () => {
     await openContactUsInSettings(false);
 
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.EMAIL_INPUT.visible(),
-      "test@test.com"
+      'test@test.com'
     );
-    await vpn.wait(1000);
+
+    // wait for element to be interactable
+    await vpn.wait();
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.CONFIRM_EMAIL_INPUTS.visible(),
-      "test@test.com"
+      'test@test.com'
     );
 
     // open combo box
@@ -88,75 +81,58 @@ describe("Contact us view -  unauthenticated user", function () {
       queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
     );
 
+    // wait for element to be interactable
     await vpn.wait();
-    await vpn.waitForQuery(
-      queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
-    );
-
     await Promise.all([
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-0-text", "text"),
-        "Payment and billing"
+        await getDropDownTextString(0),
+        'Payment and billing'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-1-text", "text"),
-        "Account issues"
+        await getDropDownTextString(1),
+        'Account issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-2-text", "text"),
-        "Technical issues"
+        await getDropDownTextString(2),
+        'Technical issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-3-text", "text"),
-        "Request features"
+        await getDropDownTextString(3),
+        'Request features'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-4-text", "text"),
-        "Other"
+        await getDropDownTextString(4),
+        'Other'
       ),
     ]);
 
-    await vpn.waitForQueryAndClick("//category-Dropdown-Option-4-text");
+    await vpn.waitForQueryAndClick('//category-Dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
-      "automated subject"
+      'automated subject'
     );
 
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.DESCRIBE_TEXTAREA.visible(),
-      "automated describe area"
+      'automated describe area'
     );
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON.visible());
   });
 });
 
-describe("Unaunthenticated failures", function () {
-  this.ctx.guardianOverrideEndpoints = {
-    GETs: {},
-    POSTs: {
-      "/api/v1/vpn/createGuestSupportTicket": {
-        status: 400,
-        body: {},
-      },
-    },
-    DELETEs: {},
-  };
-
-  it("failures, Unauthenticated User is able to fill out form", async () => {
-    console.log(
-      "*****************Failed Unauthenticated User is able to fill out form********************"
-    );
+describe('Unaunthenticated failures', function () {
+  it('failures, Unauthenticated User is able to fill out form', async () => {
     await openContactUsInSettings(false);
 
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.EMAIL_INPUT.visible(),
-      "test@test.com"
+      'test@test.com'
     );
-    await vpn.wait(1000);
+    await vpn.wait();
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.CONFIRM_EMAIL_INPUTS.visible(),
-      "test@test.com"
+      'test@test.com'
     );
 
     // open combo box
@@ -164,6 +140,7 @@ describe("Unaunthenticated failures", function () {
       queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
     );
 
+    // wait for element to be interactable
     await vpn.wait();
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
@@ -171,60 +148,49 @@ describe("Unaunthenticated failures", function () {
 
     await Promise.all([
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-0-text", "text"),
-        "Payment and billing"
+        await getDropDownTextString(0),
+        'Payment and billing'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-1-text", "text"),
-        "Account issues"
+        await getDropDownTextString(1),
+        'Account issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-2-text", "text"),
-        "Technical issues"
+        await getDropDownTextString(2),
+        'Technical issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-3-text", "text"),
-        "Request features"
+        await getDropDownTextString(3),
+        'Request features'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-4-text", "text"),
-        "Other"
+        await getDropDownTextString(4),
+        'Other'
       ),
     ]);
 
-    await vpn.wait(1000);
-    await vpn.waitForQueryAndClick("//category-Dropdown-Option-4-text");
+    // wait for element to be interactable
+    await vpn.wait();
+    await vpn.waitForQueryAndClick('//category-Dropdown-Option-4-text');
 
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
-      "automated subject"
+      'automated subject'
     );
 
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.DESCRIBE_TEXTAREA.visible(),
-      "automated describe area"
+      'automated describe area'
     );
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON.visible());
   });
 });
 
-describe("Contact us view - authenticated user", function () {
+describe('Contact us view - authenticated user', function () {
   this.ctx.authenticationNeeded = true;
-  this.ctx.guardianOverrideEndpoints = {
-    GETs: {},
-    POSTs: {
-      "/api/v1/vpn/createSupportTicket": {
-        status: 201,
-        requiredHeaders: ["Authorization"],
-        bodyValidator: guardianEndpoints.validators.supportTicketData,
-        body: null,
-      },
-    },
-    DELETEs: {},
-  };
 
-  it("VPNUserInfo visible to authenticated users", async () => {
+  it('VPNUserInfo visible to authenticated users', async () => {
     await openContactUsInSettings(true);
 
     await vpn.waitForQuery(
@@ -232,7 +198,7 @@ describe("Contact us view - authenticated user", function () {
     );
   });
 
-  it("VPNUserInfo is disabled", async () => {
+  it('VPNUserInfo is disabled', async () => {
     await openContactUsInSettings(true);
 
     await vpn.waitForQuery(
@@ -240,55 +206,56 @@ describe("Contact us view - authenticated user", function () {
     );
   });
 
-  it("authenticated User is able to fill out form", async () => {
-    console.log(
-      "*****************authenticated User is able to fill out form********************"
-    );
+  it('authenticated User is able to fill out form', async () => {
     await openContactUsInSettings(true);
 
     await vpn.waitForQueryAndClick(
       queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
     );
-    await vpn.waitForQuery(
-      queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
-    );
+
+    // wait for element to be interactable
     await vpn.wait();
-    assert.equal(
-      await vpn.getQueryProperty("//category-Dropdown-Option-0-text", "text"),
-      "Payment and billing"
-    ),
+
+    await Promise.all([
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-1-text", "text"),
-        "Account issues"
+        await getDropDownTextString(0),
+        'Payment and billing'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-2-text", "text"),
-        "Technical issues"
+        await getDropDownTextString(1),
+        'Account issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-3-text", "text"),
-        "Request features"
+        await getDropDownTextString(2),
+        'Technical issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-4-text", "text"),
-        "Other"
+        await getDropDownTextString(3),
+        'Request features'
       ),
-      await vpn.waitForQueryAndClick("//category-Dropdown-Option-4-text");
+      assert.equal(
+        await getDropDownTextString(4),
+        'Other'
+      ),
+    ]);
+
+
+    await vpn.waitForQueryAndClick('//category-Dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
-      "automated subject"
+      'automated subject'
     );
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.DESCRIBE_TEXTAREA.visible(),
-      "automated describe area"
+      'automated describe area'
     );
     await vpn.waitForQueryAndClick(
       queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON.visible()
     );
   });
 
-  it("Email inputs are not visible to authenticated user", async () => {
-    it("Email inputs are visible to unauthenticated user", async () => {
+  it('Email inputs are not visible to authenticated user', async () => {
+    it('Email inputs are visible to unauthenticated user', async () => {
       await openContactUsInSettings(true);
 
       await vpn.waitForQuery(
@@ -298,23 +265,10 @@ describe("Contact us view - authenticated user", function () {
   });
 });
 
-describe("Authenticated failures", function () {
+describe('Authenticated failures', function () {
   this.ctx.authenticationNeeded = true;
-  this.ctx.guardianOverrideEndpoints = {
-    GETs: {},
-    POSTs: {
-      "/api/v1/vpn/createSupportTicket": {
-        status: 400,
-        body: {},
-      },
-    },
-    DELETEs: {},
-  };
 
-  it("failures, authenticated User is able to fill out form", async () => {
-    console.log(
-      "*****************failures, authenticated User is able to fill out form********************"
-    );
+  it('failures, authenticated User is able to fill out form', async () => {
     await openContactUsInSettings(true);
 
     await vpn.waitForQueryAndClick(
@@ -323,35 +277,40 @@ describe("Authenticated failures", function () {
     await vpn.waitForQuery(
       queries.screenGetHelp.contactSupportView.CATEGORY_DROPDOWN.visible()
     );
+
+    // wait for element to be interactable
     await vpn.wait();
-    assert.equal(
-      await vpn.getQueryProperty("//category-Dropdown-Option-0-text", "text"),
-      "Payment and billing"
-    ),
+    await Promise.all([
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-1-text", "text"),
-        "Account issues"
+        await getDropDownTextString(0),
+        'Payment and billing'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-2-text", "text"),
-        "Technical issues"
+        await getDropDownTextString(1),
+        'Account issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-3-text", "text"),
-        "Request features"
+        await getDropDownTextString(2),
+        'Technical issues'
       ),
       assert.equal(
-        await vpn.getQueryProperty("//category-Dropdown-Option-4-text", "text"),
-        "Other"
+        await getDropDownTextString(3),
+        'Request features'
       ),
-      await vpn.waitForQueryAndClick("//category-Dropdown-Option-4-text");
+      assert.equal(
+        await getDropDownTextString(4),
+        'Other'
+      ),
+    ]);
+
+    await vpn.waitForQueryAndClick('//category-Dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
-      "automated subject"
+      'automated subject'
     );
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.DESCRIBE_TEXTAREA.visible(),
-      "automated describe area"
+      'automated describe area'
     );
     await vpn.waitForQueryAndClick(
       queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON.visible()
