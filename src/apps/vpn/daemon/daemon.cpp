@@ -74,6 +74,15 @@ bool Daemon::activate(const InterfaceConfig& config) {
       if (!switchServer(config)) {
         return false;
       }
+
+      if (supportDnsUtils() && !dnsutils()->restoreResolvers()) {
+        return false;
+      }
+
+      if (!maybeUpdateResolvers(config)) {
+        return false;
+      }
+
       m_connections[config.m_hopindex] = ConnectionState(config);
       m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
       return true;
@@ -115,19 +124,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
     return false;
   }
 
-  if ((config.m_hopindex == 0) && supportDnsUtils()) {
-    QList<QHostAddress> resolvers;
-    resolvers.append(QHostAddress(config.m_dnsServer));
-
-    // If the DNS is not the Gateway, it's a user defined DNS
-    // thus, not add any other :)
-    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
-      resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
-    }
-
-    if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
-      return false;
-    }
+  if (!maybeUpdateResolvers(config)) {
+    return false;
   }
 
   if (supportIPUtils()) {
@@ -156,6 +154,25 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
 
   return status;
+}
+
+bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
+  if ((config.m_hopindex == 0) && supportDnsUtils()) {
+    QList<QHostAddress> resolvers;
+    resolvers.append(QHostAddress(config.m_dnsServer));
+
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if (config.m_dnsServer == config.m_serverIpv4Gateway) {
+      resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
+    }
+
+    if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // static
