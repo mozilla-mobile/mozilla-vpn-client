@@ -11,7 +11,7 @@ task-defaults:
         platform: windows/x86_64
     worker-type: b-win2012
     dependencies:
-        build: build-linux/source
+        build: build-source/vpn
     fetches:
         fetch:
             - win-dev-env
