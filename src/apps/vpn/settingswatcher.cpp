@@ -18,7 +18,29 @@
 
 namespace {
 Logger logger("SettingsWatcher");
+
 }
+
+class SettingsWatcher::TaskSettingsWatcher final : public Task {
+ public:
+  TaskSettingsWatcher()
+      : Task("TaskSettingsWatcher"),
+        m_taskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNotNeeded) {
+    connect(&m_taskControllerAction, &Task::completed, this, &Task::completed);
+  }
+
+  ~TaskSettingsWatcher() { SettingsWatcher::instance()->operationCompleted(); }
+
+  void run() override { m_taskControllerAction.run(); }
+
+  DeletePolicy deletePolicy() const override {
+    return m_taskControllerAction.deletePolicy();
+  }
+
+ private:
+  TaskControllerAction m_taskControllerAction;
+};
 
 SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(SettingsWatcher);
@@ -64,12 +86,16 @@ SettingsWatcher* SettingsWatcher::instance() {
 void SettingsWatcher::maybeServerSwitch() {
   logger.debug() << "Settings changed!";
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
+      m_operationRunning) {
     return;
   }
 
+  m_operationRunning = true;
+
   TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNotNeeded));
+  TaskScheduler::scheduleTask(new TaskSettingsWatcher());
+  ;
 }
+
+void SettingsWatcher::operationCompleted() { m_operationRunning = false; }
