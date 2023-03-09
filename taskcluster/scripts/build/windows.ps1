@@ -8,21 +8,26 @@ $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
-# Enable qt, enable msvc, enable rust
+# Switch to the work dir, enable qt, enable msvc, enable rust
+Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 . "$REPO_ROOT_PATH/taskcluster/scripts/fetch/enable_win_rust.ps1"
+
+# Extract the sources
+$SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
+$SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
+tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
+$SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 # Remove Long lasting ms-compiler-telemetry service:
 # This will sometimes live longer then our compile
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
 
-# Reqs
-git submodule update --init --depth 1
-git submodule update --remote i18n
-python3 -m pip install -r requirements.txt --user
-python3 -m pip install -r taskcluster/scripts/requirements.txt --user
+# Install python build tooling
+python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
+python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
 $PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
@@ -65,10 +70,10 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
 } else {
     # Do the generic build
-   cmake -S . -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
 }
 cmake --build $BUILD_DIR
 cmake --build $BUILD_DIR --target msi

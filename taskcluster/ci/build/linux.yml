@@ -11,7 +11,7 @@ task-defaults:
         build:
             - artifact: mozillavpn-sources.tar.gz
     dependencies:
-        build: build-linux/source
+        build: build-source/vpn
     worker-type: b-linux
     worker:
         max-run-time: 3600

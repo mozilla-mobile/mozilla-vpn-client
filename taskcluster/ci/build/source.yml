@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 
-linux/source:
-    description: "Linux Source Build"
+source/vpn:
+    description: "VPN Source Build"
     treeherder:
         symbol: B
         kind: build
         tier: 1
-        platform: linux/source
+        platform: source/vpn
     worker-type: b-linux
     worker:
         docker-image: {in-tree: build}
