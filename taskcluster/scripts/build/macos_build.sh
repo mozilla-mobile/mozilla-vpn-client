@@ -98,7 +98,6 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 
