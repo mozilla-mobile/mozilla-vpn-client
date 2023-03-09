@@ -15,12 +15,33 @@
    this.timeout(240000);
    this.ctx.authenticationNeeded = true;
 
-   beforeEach(async () => {
-     await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
-     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+   this.timeout(240000);
+   this.ctx.authenticationNeeded = true;
 
-     servers = await vpn.servers();
-   });
+    beforeEach(async () => {
+      await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
+      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+
+      servers = await vpn.servers();
+      currentCountryCode = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
+      currentCity = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
+
+      for (let server of servers) {
+        if (currentCountryCode === server.code) {
+          for (let city of server.cities) {
+            if (city.name == currentCity) {
+              currentCity = city.localizedName;
+              break;
+            }
+          }
+        }
+      }
+      console.log(
+          'Current city (localized):', currentCity,
+          '| Current country code:', currentCountryCode);
+    });
 
    it('opening the entry and exit server list', async () => {
      await vpn.waitForQueryAndClick(
