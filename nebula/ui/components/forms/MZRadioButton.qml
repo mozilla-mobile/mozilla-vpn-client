@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import util 0.1
 
 RadioDelegate {
     id: radioControl
@@ -27,17 +28,7 @@ RadioDelegate {
         if (!radioControl.focus)
             return mouseArea.changeState(uiState.stateDefault);
 
-        var parentComponent = parent
-        while(parentComponent && parentComponent !== "undefined") {
-            if(typeof(parentComponent.ensureVisible) !== "undefined") {
-                parentComponent.ensureVisible(radioControl)
-                return
-            }
-            else {
-                parentComponent = parentComponent.parent
-            }
-        }
-
+        MZUtils.scrollToComponent(radioControl)
     }
 
     Keys.onPressed: event => {

@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import utils 0.1
 
 TextField {
     property bool hasError: false
@@ -42,20 +43,8 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     horizontalAlignment: TextInput.AlignLeft
 
-    onActiveFocusChanged: {
-        if(activeFocus) {
-            var parentComponent = parent
-            while(parentComponent && parentComponent !== "undefined") {
-                if(typeof(parentComponent.ensureVisible) !== "undefined") {
-                    parentComponent.ensureVisible(textField)
-                    return
-                }
-                else {
-                    parentComponent = parentComponent.parent
-                }
-            }
-        }
-    }
+    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(textField)
+
     // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader
     // fails to narrate any accessible content and action. After regaining

@@ -6,6 +6,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 RoundButton {
     id: root
@@ -53,16 +54,7 @@ RoundButton {
         }
         visualStateItem.state = uiState.stateFocused;
 
-        var parentComponent = parent
-        while(parentComponent && parentComponent !== "undefined") {
-            if(typeof(parentComponent.ensureVisible) !== "undefined") {
-                parentComponent.ensureVisible(root)
-                return
-            }
-            else {
-                parentComponent = parentComponent.parent
-            }
-        }
+        MZUtils.scrollToComponent(root)
     }
 
     background: Rectangle {

@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 CheckBox {
     property var uiState: MZTheme.theme.uiState
@@ -26,16 +27,7 @@ CheckBox {
         if (!activeFocus)
             return mouseArea.changeState(uiState.stateDefault);
 
-        var parentComponent = parent
-        while(parentComponent && parentComponent !== "undefined") {
-            if(typeof(parentComponent.ensureVisible) !== "undefined") {
-                parentComponent.ensureVisible(checkBox)
-                return
-            }
-            else {
-                parentComponent = parentComponent.parent
-            }
-        }
+        MZUtils.scrollToComponent(checkBox)
     }
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
