@@ -200,6 +200,7 @@ void NetworkRequest::replyFinished() {
   logger.debug() << "Network reply received - status:" << status
                  << "- expected:" << expect;
 
+  m_replyData.append(m_reply->readAll());
   processData(m_reply->error(), m_reply->errorString(), status, m_replyData);
 }
 
