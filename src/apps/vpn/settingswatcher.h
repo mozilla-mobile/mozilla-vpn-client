@@ -20,11 +20,17 @@ class SettingsWatcher final : public QObject {
 
   ~SettingsWatcher();
 
- private slots:
-  void maybeServerSwitch();
-
  private:
   explicit SettingsWatcher(QObject* parent);
+
+  void maybeServerSwitch();
+
+  void operationCompleted();
+
+ private:
+  class TaskSettingsWatcher;
+
+  bool m_operationRunning = false;
 };
 
 #endif  // SETTINGSWATCHER_H
