@@ -63,7 +63,7 @@ git submodule update --remote i18n || die "Failed to pull latest i18n from remot
 print G "done."
 
 # Install dependendy got get-secret.py
-python3 -m pip install -r taskcluster/scripts/requirements.txt
+python3 -m pip install -r taskcluster/scripts/requirements.txt --user
 print Y "Fetching tokens..."
 # Only on a release build we have access to those secrects.
 if [[ "$RELEASE" ]]; then
