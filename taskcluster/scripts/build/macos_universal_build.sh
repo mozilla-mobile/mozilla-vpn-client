@@ -62,20 +62,10 @@ git submodule update --init --depth 1 || die "Failed to init submodules"
 git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
 print G "done."
 
-# Install dependendy got get-secret.py
-python3 -m pip install -r taskcluster/scripts/requirements.txt --user
-print Y "Fetching tokens..."
-# Only on a release build we have access to those secrects.
-if [[ "$RELEASE" ]]; then
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_dsn -f sentry_dsn
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
-else
-    # write a dummy value in the files, so that we still compile sentry c:
-    echo "dummy" > sentry_dsn
-    echo "dummy" > sentry_envelope_endpoint
-    echo "dummy" > sentry_debug_file_upload_key
-fi
+# write a dummy value in the files, so that we still compile sentry c:
+echo "dummy" > sentry_dsn
+echo "dummy" > sentry_envelope_endpoint
+echo "dummy" > sentry_debug_file_upload_key
 
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
