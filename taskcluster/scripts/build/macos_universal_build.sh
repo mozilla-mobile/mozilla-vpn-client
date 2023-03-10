@@ -72,7 +72,9 @@ export SENTRY_DSN=$(cat sentry_dsn)
 #Install Sentry CLI, if' not already installed from previous run.
 if ! command -v sentry-cli &> /dev/null
 then
-    npm install -g @sentry/cli
+    export PATH="$HOME/node/bin:$PATH"
+    npm config set prefix=$HOME/node
+    npm install @sentry/cli
 fi
 
 
