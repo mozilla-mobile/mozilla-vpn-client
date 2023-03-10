@@ -127,6 +127,8 @@ MZButtonBase {
         Label {
             id: label
 
+            Layout.fillWidth: true
+
             text: labelText
             color: root.linkColor.defaultColor
             horizontalAlignment: textAlignment
