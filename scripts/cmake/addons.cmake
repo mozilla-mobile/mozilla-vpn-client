@@ -33,10 +33,14 @@ function(add_addon_target NAME)
         endforeach()
     endif()
 
+    # Fix Ninja dependency tracking when dealing with absolute paths. 
+    cmake_policy(PUSH)
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
+        cmake_policy(SET CMP0116 NEW)
+    endif()
+
     # Add commands to build the addons
     foreach(MANIFEST_FILE ${ADDON_SOURCES})
-        message("Parsing ${MANIFEST_FILE}...")
-
         # Parse the manifest to get the addon ID.
         file(READ ${MANIFEST_FILE} ADDON_MANIFEST)
         string(JSON ADDON_ID GET ${ADDON_MANIFEST} "id")
@@ -44,11 +48,16 @@ function(add_addon_target NAME)
         add_custom_command(
             OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
             DEPENDS ${MANIFEST_FILE}
+            DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
             COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
-                        -q ${QT_TOOL_PATH} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
+                        -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d -q ${QT_TOOL_PATH}
+                        ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
         )
         list(APPEND ADDON_OUTPUT_FILES ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc)
     endforeach()
+
+    ## Reset our policy changes
+    cmake_policy(POP)
 
     # Add a command to generate the addon index.
     add_custom_command(

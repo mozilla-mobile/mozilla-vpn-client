@@ -275,6 +275,13 @@ parser.add_argument(
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
 )
+parser.add_argument(
+    "-d",
+    "--depfile",
+    default=None,
+    dest="depfile",
+    help="Generate a dependency file"
+)
 args = parser.parse_args()
 
 def qtquery(qmake, propname):
@@ -404,6 +411,14 @@ with open(args.source, "r", encoding="utf-8") as file:
 
     else:
        print("Addon not translatable")
+
+    if args.depfile is not None:
+        print("Generate the dependency file...")
+        with open(args.depfile, "w") as f:
+            f.write(f"{os.path.join(args.dest, manifest['id'])}.rcc: {args.source}")
+            srcdir = os.path.dirname(args.source)
+            for file in get_file_list(srcdir, ""):
+                f.write(f" {os.path.join(srcdir, file)}")
 
     print("Generate the RCC file...")
     files = get_file_list(tmp_path, "")
