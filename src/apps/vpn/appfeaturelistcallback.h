@@ -15,17 +15,6 @@
 #  include "versionutils.h"
 #endif
 
-// Generic callback functions
-// --------------------------
-
-bool FeatureCallback_iosOrAndroid() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
 // Custom callback functions
 // -------------------------
 

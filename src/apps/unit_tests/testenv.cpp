@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testmozillavpnh.h"
+#include "testenv.h"
 
-// Although the following two tests are trivial checks of the mozillavpn.h logic
-// for osVersion and architecture; breaking or changing these values would cause
-// our glean analytics to not be comparable over time so it's important to have
-// this check and balance.
-void TestMozillaVPNh::osVersion() {
+#include "env.h"
+
+#ifdef MZ_WINDOWS
+#  include "platforms/windows/windowsutils.h"
+#endif
+
+void TestEnv::osVersion() {
   QString expected;
 #ifdef MZ_WINDOWS
   expected = WindowsUtils::windowsVersion();
@@ -19,10 +21,10 @@ void TestMozillaVPNh::osVersion() {
   QCOMPARE(actual, expected);
 }
 
-void TestMozillaVPNh::architecture() {
+void TestEnv::architecture() {
   QString expected = QSysInfo::currentCpuArchitecture();
   QString actual = Env::architecture();
   QCOMPARE(actual, expected);
 }
 
-static TestMozillaVPNh s_testMozillaVPNh;
+static TestEnv s_testEnv;

@@ -18,14 +18,27 @@ class Env final : public QObject {
   Q_DISABLE_COPY_MOVE(Env)
 
   Q_PROPERTY(bool inProduction READ inProduction CONSTANT)
+  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
+  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
 
+#ifdef UNIT_TEST
+  Q_PROPERTY(
+      bool debugMode READ debugMode WRITE setDebugMode NOTIFY debugModeChanged)
+  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode NOTIFY
+                 stagingModeChanged)
+#else
+  Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
+  Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
+#endif
+
  public:
-  Env() = default;
+  static Env* instance();
+
   ~Env() = default;
 
   static bool inProduction() { return Constants::inProduction(); }
@@ -40,6 +53,23 @@ class Env final : public QObject {
   }
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
+  static QString devVersion();
+  static QString graphicsApi();
+
+  static bool debugMode();
+  static bool stagingMode();
+
+#ifdef UNIT_TEST
+  void setDebugMode(bool debugMode);
+  void setStagingMode(bool stagingMode);
+
+ signals:
+  void debugModeChanged();
+  void stagingModeChanged();
+#endif
+
+ private:
+  Env() = default;
 };
 
 #endif  // ENV_H

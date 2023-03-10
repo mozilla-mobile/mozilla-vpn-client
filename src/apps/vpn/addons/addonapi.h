@@ -40,7 +40,7 @@ class AddonApi final : public QObject {
  private:
   QJSValue addon() const;
   QJSValue controller() const;
-  const Env* env() const { return &m_env; }
+  const Env* env() const { return Env::instance(); }
   QJSValue featureList() const;
   QJSValue navigator() const;
   QJSValue settings() const;
@@ -49,7 +49,6 @@ class AddonApi final : public QObject {
 
  private:
   Addon* m_addon = nullptr;
-  Env m_env;
 };
 
 class AddonApiCallbackWrapper final : public QObject {

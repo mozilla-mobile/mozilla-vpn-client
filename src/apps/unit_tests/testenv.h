@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestMozillaVPNh : public TestHelper {
+class TestEnv : public TestHelper {
   Q_OBJECT
 
  private slots:

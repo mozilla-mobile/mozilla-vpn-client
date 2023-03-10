@@ -173,7 +173,7 @@ Window {
         enabled: Qt.platform.os !== "android"
 
         function onInitializeGlean() {
-            if (VPN.debugMode) {
+            if (MZEnv.debugMode) {
                 console.debug("Initializing glean with debug mode");
                 Glean.setLogPings(true);
                 // Uncomment for debugging purposes.
@@ -185,11 +185,11 @@ Window {
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + VPN.env.versionString,
-                appDisplayVersion: VPN.env.versionString,
+                appBuild: "MozillaVPN/" + MZEnv.versionString,
+                appDisplayVersion: MZEnv.versionString,
                 channel: channel,
-                osVersion: VPN.env.osVersion,
-                architecture: [VPN.env.architecture, VPN.env.graphicsApi].join(" ").trim(),
+                osVersion: MZEnv.osVersion,
+                architecture: [MZEnv.architecture, MZEnv.graphicsApi].join(" ").trim(),
             });
         }
 

@@ -68,7 +68,7 @@ MZViewBase {
                 Layout.fillWidth: true
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 onClicked: {
-                    VPN.storeInClipboard(releaseVersion.text)
+                    MZUtils.storeInClipboard(releaseVersion.text)
                     MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);
                 }
 
@@ -82,7 +82,7 @@ MZViewBase {
 
                     MZTextBlock {
                         id: releaseVersion
-                        text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
+                        text: MZEnv.buildNumber === "" ? MZEnv.versionString : (MZEnv.versionString + " (" + MZEnv.buildNumber + ")")
                         width: undefined
                         Layout.alignment: Qt.AlignVCenter
                     }

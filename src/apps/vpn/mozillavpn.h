@@ -11,7 +11,6 @@
 #include <QTimer>
 
 #include "authenticationlistener.h"
-#include "env.h"
 #include "errorhandler.h"
 
 struct MozillaVPNPrivate;
@@ -80,13 +79,9 @@ class MozillaVPN final : public QObject {
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
-  Q_PROPERTY(const Env* env READ env CONSTANT)
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
-  Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
-  Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
 
  public:
   MozillaVPN();
@@ -102,9 +97,6 @@ class MozillaVPN final : public QObject {
 
   State state() const;
 
-  bool stagingMode() const;
-  bool debugMode() const;
-
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
@@ -112,7 +104,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
-  Q_INVOKABLE void storeInClipboard(const QString& text);
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
@@ -121,21 +112,16 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void triggerHeartbeat();
   Q_INVOKABLE void submitFeedback(const QString& feedbackText,
                                   const qint8 rating, const QString& category);
-  Q_INVOKABLE void openAppStoreReviewLink();
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
-  Q_INVOKABLE void crashTest();
   Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
-#ifdef MZ_ANDROID
-  Q_INVOKABLE void launchPlayStore();
-#endif
 
   void authenticateWithType(
       AuthenticationListener::AuthenticationType authenticationType);
@@ -185,11 +171,6 @@ class MozillaVPN final : public QObject {
   void abortAuthentication();
 
   void silentSwitch();
-
-  static QString devVersion();
-  static QString graphicsApi();
-
-  const Env* env() const { return &m_env; }
 
   void logout();
 
@@ -303,8 +284,6 @@ class MozillaVPN final : public QObject {
  private:
   bool m_initialized = false;
   struct MozillaVPNPrivate* m_private = nullptr;
-
-  Env m_env;
 
   State m_state = StateInitialize;
 

@@ -9,6 +9,7 @@
 #include <QWindow>
 
 #include "authenticationinapp/authenticationinapp.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
@@ -20,6 +21,7 @@
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "urlopener.h"
+#include "utils.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
@@ -48,6 +50,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
 #endif
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZErrorHandler",
                                ErrorHandler::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZEnv",
+                               Env::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZGleanDeprecated",
                                GleanDeprecated::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",
@@ -60,6 +64,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                SettingsHolder::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
+                               Utils::instance());
 }
 
 QmlEngineHolder::~QmlEngineHolder() {

@@ -75,6 +75,8 @@ target_sources(app_unit_tests PRIVATE
     mocsentryadapter.cpp
     testcheckedint.h
     testcheckedint.cpp
+    testenv.cpp
+    testenv.h
     testfeature.cpp
     testfeature.h
     testipaddress.cpp

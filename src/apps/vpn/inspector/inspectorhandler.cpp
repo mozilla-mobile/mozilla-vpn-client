@@ -47,6 +47,7 @@
 #include "settingsholder.h"
 #include "task.h"
 #include "urlopener.h"
+#include "utils.h"
 #include "websocket/pushmessage.h"
 
 #ifdef MZ_WASM
@@ -792,7 +793,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"copy_to_clipboard", "Copy text to clipboard", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString copiedText = arguments[1];
-                       MozillaVPN::instance()->storeInClipboard(copiedText);
+                       Utils::storeInClipboard(copiedText);
                        return QJsonObject();
                      }},
 

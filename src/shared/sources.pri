@@ -12,6 +12,7 @@ SOURCES += \
         $$PWD/constants.cpp \
         $$PWD/cryptosettings.cpp \
         $$PWD/curve25519.cpp \
+        $$PWD/env.cpp \
         $$PWD/errorhandler.cpp \
         $$PWD/feature.cpp \
         $$PWD/filterproxymodel.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
         $$PWD/temporarydir.cpp \
         $$PWD/theme.cpp \
         $$PWD/urlopener.cpp \
+        $$PWD/utils.cpp \
         $$PWD/versionutils.cpp
 
 HEADERS += \
@@ -102,6 +104,7 @@ HEADERS += \
         $$PWD/temporarydir.h \
         $$PWD/theme.h \
         $$PWD/urlopener.h \
+        $$PWD/utils.h \
         $$PWD/versionutils.h
 
 # Signal handling for unix platforms

@@ -39,6 +39,7 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/env.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/env.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/errorhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/errorhandler.h
@@ -117,6 +118,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/theme.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/urlopener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
 )

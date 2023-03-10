@@ -18,6 +18,14 @@ bool FeatureCallback_false() { return false; }
 
 bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
+bool FeatureCallback_iosOrAndroid() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // Custom callback functions
 // -------------------------
 
