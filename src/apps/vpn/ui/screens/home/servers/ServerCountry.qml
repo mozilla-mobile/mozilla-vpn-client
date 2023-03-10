@@ -137,7 +137,7 @@ MZClickableRow {
         Image {
             id: flag
 
-            source: "qrc:/nebula/resources/flags/" + code.toUpperCase() + ".png"
+            source: "qrc:/ui/resources/flags/" + code.toUpperCase() + ".png"
             fillMode: Image.PreserveAspectFit
             Layout.preferredWidth: MZTheme.theme.iconSize
             Layout.preferredHeight: MZTheme.theme.iconSize

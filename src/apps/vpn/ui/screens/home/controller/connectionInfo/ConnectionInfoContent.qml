@@ -100,7 +100,7 @@ MZFlickable {
                                 : ""
                             subtitle: ""
                             iconPath: serverLocations.isMultipHop
-                                ? "qrc:/nebula/resources/flags/"
+                                ? "qrc:/ui/resources/flags/"
                                     + VPNCurrentServer.entryCountryCode.toUpperCase()
                                     + ".png"
                                 : ""
@@ -128,7 +128,7 @@ MZFlickable {
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
-                            iconPath: "qrc:/nebula/resources/flags/"
+                            iconPath: "qrc:/ui/resources/flags/"
                                 + VPNCurrentServer.exitCountryCode.toUpperCase()
                                 + ".png"
                             isFlagIcon: true

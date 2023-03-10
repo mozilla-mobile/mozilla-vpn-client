@@ -42,14 +42,14 @@ RowLayout {
 
                     Component.onCompleted: {
                         if (typeof(countryCode) !== "undefined") {
-                            return source = "qrc:/nebula/resources/flags/" + countryCode.toUpperCase() + ".png"
+                            return source = "qrc:/ui/resources/flags/" + countryCode.toUpperCase() + ".png"
                         }
 
                         if (typeof(modelData.countryCode) === "undefined" || modelData.countryCode === "") {
                             return visible = false;
                         }
 
-                        source = "qrc:/nebula/resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
+                        source = "qrc:/ui/resources/flags/" + modelData.countryCode.toUpperCase() + ".png"
 
                     }
                 }
