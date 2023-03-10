@@ -156,6 +156,12 @@ if(NOT CMAKE_CROSSCOMPILING)
 
     # Dummy Testing Client
     add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
+
+    # Functional testing
+    option(BUILD_FUNCTIONAL_TESTS "Include functional tests when running CTest")
+    if(BUILD_FUNCTIONAL_TESTS)
+        add_subdirectory(tests/functional EXCLUDE_FROM_ALL)
+    endif()
 endif()
 
 # Extra platform targets
