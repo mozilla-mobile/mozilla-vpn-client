@@ -50,7 +50,7 @@ generated_path = os.path.join(generated_path, "addons")
 if not os.path.isdir(generated_path):
     os.mkdir(generated_path)
 
-addons = []
+generated_addons = []
 for file in os.listdir(addons_path):
     addon_path = os.path.join(addons_path, file, "manifest.json")
     if not os.path.exists(addon_path):
@@ -63,18 +63,9 @@ for file in os.listdir(addons_path):
         build_cmd.append(args.qtpath)
     subprocess.call(build_cmd)
 
-    generated_addon_path = os.path.join(generated_path, file + ".rcc")
-    if not os.path.exists(generated_addon_path):
-        exit(f"Expected addon file {generated_addon_path}")
+    generated_addons.append(os.path.join(generated_path, file + ".rcc"))
 
-    with open(generated_addon_path,"rb") as f:
-        sha256 = hashlib.sha256(f.read()).hexdigest();
-        addons.append({ 'id': file, 'sha256': sha256 })
-
-index = {
-  'api_version': '0.1',
-  'addons': addons,
-}
-
-with open(os.path.join(generated_path, "manifest.json"), "w") as f:
-  f.write(json.dumps(index, indent=2))
+## Generate the index.
+index_cmd = [sys.executable, '-o', os.path.join(generated_path, 'manifest.json')]
+index_cmd.append(generated_addons)
+subprocess.call(build_cmd)
