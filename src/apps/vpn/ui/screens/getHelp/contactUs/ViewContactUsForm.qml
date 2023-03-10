@@ -184,7 +184,8 @@ MZViewBase {
                 }
 
                 MZLinkButton {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                     onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
                 }
