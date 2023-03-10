@@ -6,6 +6,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 RoundButton {
     id: root
@@ -48,13 +49,12 @@ RoundButton {
 
 
     onActiveFocusChanged: {
-        if (!focus) {
+        if (!activeFocus) {
             return visualStateItem.state = uiState.stateDefault;
         }
         visualStateItem.state = uiState.stateFocused;
 
-        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined")
-            vpnFlickable.ensureVisible(root)
+        MZUtils.scrollToComponent(root)
     }
 
     background: Rectangle {

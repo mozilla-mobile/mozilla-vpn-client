@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import utils 0.1
 
 RadioDelegate {
     id: radioControl
@@ -23,11 +24,11 @@ RadioDelegate {
         state = uiState.stateDefault
     }
 
-    onFocusChanged: {
-        if (!radioControl.focus)
+    onActiveFocusChanged: {
+        if (!radioControl.activeFocus)
             return mouseArea.changeState(uiState.stateDefault);
-        if (typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
-            vpnFlickable.ensureVisible(radioControl);
+
+        MZUtils.scrollToComponent(radioControl)
     }
 
     Keys.onPressed: event => {

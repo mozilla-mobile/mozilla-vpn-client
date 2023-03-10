@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import utils 0.1
 
 Item {
     property alias placeholderText: formattedPlaceholderText.text
@@ -80,11 +81,7 @@ Item {
                 }
             }
 
-            onActiveFocusChanged: {
-                if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
-                    vpnFlickable.ensureVisible(textArea)
-                }
-            }
+            onActiveFocusChanged: if(activeFocus)  MZUtils.scrollToComponent(textArea)
 
             Connections {
                 target: window

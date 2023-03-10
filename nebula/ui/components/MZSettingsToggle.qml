@@ -6,6 +6,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 CheckBox {
     id: vpnSettingsToggle
@@ -17,7 +18,7 @@ CheckBox {
     property string accessibleName
 
     onClicked: toolTip.hide()
-    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") ensureVisible(vpnSettingsToggle)
+    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(vpnSettingsToggle)
 
     height: MZTheme.theme.vSpacing
     width: 45

@@ -6,6 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 SwipeDelegate {
     id: swipeDelegate
@@ -43,11 +44,7 @@ SwipeDelegate {
         onSwipeClose()
     }
 
-    onActiveFocusChanged: {
-        if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
-            vpnFlickable.ensureVisible(swipeDelegate)
-        }
-    }
+    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(swipeDelegate)
 
     contentItem: Item {
         id: swipeDelegateContentItem

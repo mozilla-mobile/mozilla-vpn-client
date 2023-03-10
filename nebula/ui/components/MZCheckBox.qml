@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import utils 0.1
 
 CheckBox {
     property var uiState: MZTheme.theme.uiState
@@ -24,11 +25,9 @@ CheckBox {
     hoverEnabled: false
     onActiveFocusChanged: {
         if (!activeFocus)
-            mouseArea.changeState(uiState.stateDefault);
+            return mouseArea.changeState(uiState.stateDefault);
 
-        if (activeFocus && typeof(vpnFlickable) !== "undefined" && vpnFlickable.ensureVisible)
-            vpnFlickable.ensureVisible(checkBox);
-
+        MZUtils.scrollToComponent(checkBox)
     }
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
