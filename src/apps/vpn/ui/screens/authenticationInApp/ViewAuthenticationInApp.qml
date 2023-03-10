@@ -5,7 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
@@ -29,7 +29,7 @@ Item {
     states: [
         State {
             name: "StateInitializing"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateInitializing || VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
+            when: MZAuthInApp.state === MZAuthInApp.StateInitializing || MZAuthInApp.state === MZAuthInApp.StateAuthenticated
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
@@ -38,7 +38,7 @@ Item {
 
         State {
             name: "StateStart"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateStart || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
+            when: MZAuthInApp.state === MZAuthInApp.StateStart || MZAuthInApp.state === MZAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationStart.qml"
@@ -47,7 +47,7 @@ Item {
 
         State {
             name: "StateSignIn"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateSignIn || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
+            when: MZAuthInApp.state === MZAuthInApp.StateSignIn || MZAuthInApp.state === MZAuthInApp.StateSigningIn
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignIn.qml"
@@ -55,7 +55,7 @@ Item {
         },
 
         State {
-            when: VPNAuthInApp.state === VPNAuthInApp.StateSignUp || VPNAuthInApp.state === VPNAuthInApp.StateSigningUp
+            when: MZAuthInApp.state === MZAuthInApp.StateSignUp || MZAuthInApp.state === MZAuthInApp.StateSigningUp
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignUp.qml"
@@ -64,7 +64,7 @@ Item {
 
         State {
             name: "StateUnblockCodeNeeded"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
+            when: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
@@ -73,7 +73,7 @@ Item {
 
         State {
             name: "StateVerificationSessionByEmailNeeded"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
+            when: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionEmailCode
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
@@ -82,7 +82,7 @@ Item {
 
         State {
             name: "StateVerificationSessionByTotpNeeded"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
+            when: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionTotpCode
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
@@ -91,7 +91,7 @@ Item {
 
         State {
             name: "StateFallbackInBrowser"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateFallbackInBrowser
+            when: MZAuthInApp.state === MZAuthInApp.StateFallbackInBrowser
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml"

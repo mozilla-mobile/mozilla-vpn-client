@@ -46,11 +46,11 @@ MZInAppAuthenticationBase {
         if (isReauthFlow) {
             cancelAuthenticationFlow();
         } else {
-            VPNAuthInApp.reset();
+            MZAuthInApp.reset();
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
-    _headlineText: VPNAuthInApp.emailAddress
+    _headlineText: MZAuthInApp.emailAddress
     _subtitleText: MZI18n.InAppAuthSignInSubtitle
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: MZI18n.InAppAuthPasswordInputLabel
@@ -59,10 +59,10 @@ MZInAppAuthenticationBase {
         objectName: "authSignIn"
         id: authInputs
 
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignIn && !activeInput().hasError
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignIn && !activeInput().hasError
         _buttonOnClicked: (inputText) => {
-             VPNAuthInApp.setPassword(inputText);
-             VPNAuthInApp.signIn();
+             MZAuthInApp.setPassword(inputText);
+             MZAuthInApp.signIn();
          }
         _buttonText: MZI18n.InAppAuthSignInButton
         _inputPlaceholderText: MZI18n.InAppAuthPasswordInputPlaceholder

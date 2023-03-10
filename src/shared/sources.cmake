@@ -21,6 +21,16 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/collator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
@@ -30,6 +40,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/env.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/errorhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/errorhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/feature.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/filterproxymodel.cpp
@@ -91,6 +103,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/task.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/taskscheduler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/taskauthenticate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/taskauthenticate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
@@ -115,6 +131,14 @@ if(UNIX)
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/signalhandler.h
      )
+endif()
+
+# Sources for desktop platforms.
+if(NOT CMAKE_CROSSCOMPILING)
+     target_sources(shared-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.h
+       )
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR

@@ -19,7 +19,7 @@ MZInAppAuthenticationBase {
         if (isReauthFlow) {
             cancelAuthenticationFlow();
         } else {
-            VPNAuthInApp.reset();
+            MZAuthInApp.reset();
         }
     }
     _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
@@ -29,8 +29,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authVerificationSessionByEmailNeeded"
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === VPNAuthInApp.sessionEmailCodeLength && !activeInput().hasError
-        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionEmailCode(inputText) }
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === MZAuthInApp.sessionEmailCodeLength && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { MZAuthInApp.verifySessionEmailCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhNone
         _inputPlaceholderText: MZI18n.InAppAuthSessionEmailCodeInputPlaceholder
@@ -44,8 +44,8 @@ MZInAppAuthenticationBase {
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                VPNAuthInApp.resendVerificationSessionCodeEmail();
-                VPNErrorHandler.requestAlert(VPNErrorHandler.AuthCodeSentAlert);
+                MZAuthInApp.resendVerificationSessionCodeEmail();
+                MZErrorHandler.requestAlert(MZErrorHandler.AuthCodeSentAlert);
             }
         }
 

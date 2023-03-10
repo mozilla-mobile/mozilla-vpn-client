@@ -28,9 +28,9 @@ Logger logger("AuthenticationListener");
 
 // static
 AuthenticationListener* AuthenticationListener::create(
-    QObject* parent, MozillaVPN::AuthenticationType authenticationType) {
+    QObject* parent, AuthenticationType authenticationType) {
   switch (authenticationType) {
-    case MozillaVPN::AuthenticationInBrowser:
+    case AuthenticationInBrowser:
 #if defined(MZ_ANDROID) or defined(MZ_IOS)
       logger.error() << "Something went totally wrong";
       Q_ASSERT(false);
@@ -41,7 +41,7 @@ AuthenticationListener* AuthenticationListener::create(
 #else
       return new DesktopAuthenticationListener(parent);
 #endif
-    case MozillaVPN::AuthenticationInApp:
+    case AuthenticationInApp:
       return new AuthenticationInAppListener(parent);
 
     default:
@@ -63,7 +63,7 @@ AuthenticationListener::~AuthenticationListener() {
 QUrl AuthenticationListener::createAuthenticationUrl(
     const QString& codeChallenge, const QString& codeChallengeMethod,
     const QString& emailAddress) {
-  QString path("/api/v2/vpn/login/");
+  QString path = QString("/api/v2/%1/login/").arg(AppConstants::AUTH_PROD_NAME);
 
 #if !defined(MZ_DUMMY)
   path.append(Constants::PLATFORM_NAME);
@@ -85,6 +85,13 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   }
 
   url.setQuery(query);
+  return url;
+}
+
+QUrl AuthenticationListener::createLoginVerifyUrl() {
+  QUrl url(AppConstants::apiBaseUrl());
+  url.setPath(
+      QString("/api/v2/%1/login/verify").arg(AppConstants::AUTH_PROD_NAME));
   return url;
 }
 

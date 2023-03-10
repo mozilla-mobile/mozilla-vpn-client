@@ -18,10 +18,10 @@ MZInAppAuthenticationBase {
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
-        VPNAuthInApp.reset();
+        MZAuthInApp.reset();
     }
     _menuButtonAccessibleName: qsTrId("vpn.main.back")
-    _headlineText: VPNAuthInApp.emailAddress
+    _headlineText: MZAuthInApp.emailAddress
     _subtitleText: MZI18n.InAppAuthFinishAccountCreationDescription
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: MZI18n.InAppAuthCreatePasswordLabel
@@ -30,14 +30,14 @@ MZInAppAuthenticationBase {
         objectName: "authSignUp"
 
         function validatePassword(passwordString) {
-            return VPNAuthInApp.validatePasswordCommons(passwordString)
-                && VPNAuthInApp.validatePasswordLength(passwordString)
-                && VPNAuthInApp.validatePasswordEmail(passwordString)
+            return MZAuthInApp.validatePasswordCommons(passwordString)
+                && MZAuthInApp.validatePasswordLength(passwordString)
+                && MZAuthInApp.validatePasswordEmail(passwordString)
         }
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateSignUp && validatePassword(activeInput().text)
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignUp && validatePassword(activeInput().text)
         _buttonOnClicked: (inputText) => {
-                              VPNAuthInApp.setPassword(inputText);
-                              VPNAuthInApp.signUp();
+                              MZAuthInApp.setPassword(inputText);
+                              MZAuthInApp.signUp();
                           }
         _buttonText: MZI18n.InAppAuthCreateAccountButton
         _inputPlaceholderText: MZI18n.InAppAuthPasswordInputPlaceholder

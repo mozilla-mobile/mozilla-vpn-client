@@ -80,16 +80,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/apppermission.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/apppermission.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appsettingslist.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapp.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinapplistener.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/authenticationinappsession.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationinapp/incrementaldecoder.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationlistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/authenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/captiveportal/captiveportaldetection.cpp
@@ -162,8 +152,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/errorhandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/errorhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/extrastrings.h
@@ -269,16 +257,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/addon/taskaddon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/addonindex/taskaddonindex.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/authenticate/taskauthenticate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/deleteaccount/taskdeleteaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
@@ -338,8 +322,6 @@ if(NOT CMAKE_CROSSCOMPILING)
      target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/authenticate/desktopauthenticationlistener.h
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/server/serverconnection.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/server/serverconnection.h
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/server/serverhandler.cpp

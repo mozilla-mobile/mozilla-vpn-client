@@ -29,8 +29,8 @@ MZInAppAuthenticationBase {
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authVerificationSessionByTotpNeeded"
 
-        _buttonEnabled: VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === VPNAuthInApp.totpCodeLength && !activeInput().hasError
-        _buttonOnClicked: (inputText) => { VPNAuthInApp.verifySessionTotpCode(inputText) }
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === MZAuthInApp.totpCodeLength && !activeInput().hasError
+        _buttonOnClicked: (inputText) => { MZAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
         _inputMethodHints: Qt.ImhDigitsOnly
         _inputPlaceholderText: MZI18n.InAppAuthSecurityCodeInputPlaceholder

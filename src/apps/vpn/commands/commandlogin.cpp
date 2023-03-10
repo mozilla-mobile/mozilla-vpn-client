@@ -5,6 +5,7 @@
 #include "commandlogin.h"
 
 #include "authenticationinapp/authenticationinapp.h"
+#include "authenticationlistener.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -69,9 +70,9 @@ int CommandLogin::run(QStringList& tokens) {
     MozillaVPN vpn;
 
     if (!passwordOption.m_set) {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInBrowser);
+      vpn.authenticateWithType(AuthenticationListener::AuthenticationInBrowser);
     } else {
-      vpn.authenticateWithType(MozillaVPN::AuthenticationInApp);
+      vpn.authenticateWithType(AuthenticationListener::AuthenticationInApp);
     }
 
     QEventLoop loop;

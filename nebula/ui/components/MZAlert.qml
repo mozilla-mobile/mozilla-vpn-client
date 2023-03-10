@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import compat 0.1
 
 Rectangle {
@@ -352,7 +351,7 @@ Rectangle {
     }
 
     function remove() {
-        VPNErrorHandler.hideAlert();
+        MZErrorHandler.hideAlert();
         if (alertBox.destructive){
             alertBox.destroy(100)
         }

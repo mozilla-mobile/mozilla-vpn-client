@@ -6,7 +6,6 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
@@ -58,7 +57,7 @@ MZInAppAuthenticationBase {
             horizontalAlignment: Text.AlignLeft
             text: MZI18n.DeleteAccountSubheadline
                 .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
-                    + VPNAuthInApp.emailAddress + "</b>")
+                    + MZAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
 
             Layout.fillWidth: true
@@ -94,7 +93,7 @@ MZInAppAuthenticationBase {
             // Delete account
             text: MZI18n.DeleteAccountButtonLabel
             onClicked: if (viewDeleteAccount.allowAccountDeletion) {
-                VPNAuthInApp.deleteAccount();
+                MZAuthInApp.deleteAccount();
             }
         }
 

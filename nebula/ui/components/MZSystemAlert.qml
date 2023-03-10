@@ -14,17 +14,17 @@ MZAlert {
 
     Item {
         id: alertStates
-        state: VPNErrorHandler.alert
+        state: MZErrorHandler.alert
         states: [
             State {
-                name: VPNErrorHandler.NoAlert
+                name: MZErrorHandler.NoAlert
                 PropertyChanges {
                     target: alertBox
                     visible: false
                 }
             },
             State{
-                name: VPNErrorHandler.AuthCodeSentAlert
+                name: MZErrorHandler.AuthCodeSentAlert
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success
@@ -33,7 +33,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.AuthenticationFailedAlert
+                name: MZErrorHandler.AuthenticationFailedAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Authentication error"
@@ -48,7 +48,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.ConnectionFailedAlert
+                name: MZErrorHandler.ConnectionFailedAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Unable to connect"
@@ -58,7 +58,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.NoConnectionAlert
+                name: MZErrorHandler.NoConnectionAlert
                 PropertyChanges {
                     target: alertBox
                     //% "No internet connection"
@@ -68,7 +68,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.ControllerErrorAlert
+                name: MZErrorHandler.ControllerErrorAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Background service error"
@@ -83,7 +83,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.UnrecoverableErrorAlert
+                name: MZErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox
                     alertText: qsTrId("vpn.alert.backendServiceError")
@@ -94,7 +94,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.RemoteServiceErrorAlert
+                name: MZErrorHandler.RemoteServiceErrorAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Remote service error"
@@ -106,7 +106,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.SubscriptionFailureAlert
+                name: MZErrorHandler.SubscriptionFailureAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Subscription failed"
@@ -116,7 +116,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.GeoIpRestrictionAlert
+                name: MZErrorHandler.GeoIpRestrictionAlert
                 PropertyChanges {
                     target: alertBox
                     //% "Operation not allowed from current location"
@@ -125,7 +125,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.LogoutAlert
+                name: MZErrorHandler.LogoutAlert
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success
@@ -135,7 +135,7 @@ MZAlert {
                 }
             },
             State {
-                name: VPNErrorHandler.CopiedToClipboardConfirmationAlert
+                name: MZErrorHandler.CopiedToClipboardConfirmationAlert
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.success

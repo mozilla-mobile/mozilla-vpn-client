@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
@@ -42,8 +43,8 @@ Item {
         State {
             name: "StateInitializing"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateInitializing
-                || VPNAuthInApp.state === VPNAuthInApp.StateCheckingAccount
+                MZAuthInApp.state === MZAuthInApp.StateInitializing
+                || MZAuthInApp.state === MZAuthInApp.StateCheckingAccount
             )
             PropertyChanges {
                 target: loader
@@ -54,8 +55,8 @@ Item {
         State {
             name: "StateSignIn"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateSignIn
-                || VPNAuthInApp.state === VPNAuthInApp.StateSigningIn
+                MZAuthInApp.state === MZAuthInApp.StateSignIn
+                || MZAuthInApp.state === MZAuthInApp.StateSigningIn
             )
             PropertyChanges {
                 target: loader
@@ -66,8 +67,8 @@ Item {
         State {
             name: "StateUnblockCodeNeeded"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateUnblockCodeNeeded
-                || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingUnblockCode
+                MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded
+                || MZAuthInApp.state === MZAuthInApp.StateVerifyingUnblockCode
             )
             PropertyChanges {
                 target: loader
@@ -78,8 +79,8 @@ Item {
         State {
             name: "StateVerificationSessionByEmailNeeded"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByEmailNeeded
-                || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionEmailCode
+                MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded
+                || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionEmailCode
             )
             PropertyChanges {
                 target: loader
@@ -90,8 +91,8 @@ Item {
         State {
             name: "StateVerificationSessionByTotpNeeded"
             when: (
-                VPNAuthInApp.state === VPNAuthInApp.StateVerificationSessionByTotpNeeded
-                || VPNAuthInApp.state === VPNAuthInApp.StateVerifyingSessionTotpCode
+                MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded
+                || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionTotpCode
             )
             PropertyChanges {
                 target: loader
@@ -101,7 +102,7 @@ Item {
 
         State {
             name: "StateAuthenticated"
-            when: VPNAuthInApp.state === VPNAuthInApp.StateAuthenticated
+            when: MZAuthInApp.state === MZAuthInApp.StateAuthenticated
             StateChangeScript {
                 name: "closeReAuth"
                 script: {

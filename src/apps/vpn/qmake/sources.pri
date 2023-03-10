@@ -26,11 +26,6 @@ SOURCES += \
         apps/vpn/addons/state/addonstatebase.cpp \
         apps/vpn/appconstants.cpp \
         apps/vpn/apppermission.cpp \
-        apps/vpn/authenticationlistener.cpp \
-        apps/vpn/authenticationinapp/authenticationinapp.cpp \
-        apps/vpn/authenticationinapp/authenticationinapplistener.cpp \
-        apps/vpn/authenticationinapp/authenticationinappsession.cpp \
-        apps/vpn/authenticationinapp/incrementaldecoder.cpp \
         apps/vpn/captiveportal/captiveportal.cpp \
         apps/vpn/captiveportal/captiveportaldetection.cpp \
         apps/vpn/captiveportal/captiveportaldetectionimpl.cpp \
@@ -65,7 +60,6 @@ SOURCES += \
         apps/vpn/controller.cpp \
         apps/vpn/dnshelper.cpp \
         apps/vpn/dnspingsender.cpp \
-        apps/vpn/errorhandler.cpp \
         apps/vpn/externalophandler.cpp \
         apps/vpn/frontend/navigator.cpp \
         apps/vpn/frontend/navigatorreloader.cpp \
@@ -118,9 +112,7 @@ SOURCES += \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
         apps/vpn/tasks/addon/taskaddon.cpp \
         apps/vpn/tasks/addonindex/taskaddonindex.cpp \
-        apps/vpn/tasks/authenticate/taskauthenticate.cpp \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
-        apps/vpn/tasks/deleteaccount/taskdeleteaccount.cpp \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
         apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
@@ -174,11 +166,6 @@ HEADERS += \
         apps/vpn/appimageprovider.h \
         apps/vpn/apppermission.h \
         apps/vpn/applistprovider.h \
-        apps/vpn/authenticationlistener.h \
-        apps/vpn/authenticationinapp/authenticationinapp.h \
-        apps/vpn/authenticationinapp/authenticationinapplistener.h \
-        apps/vpn/authenticationinapp/authenticationinappsession.h \
-        apps/vpn/authenticationinapp/incrementaldecoder.h \
         apps/vpn/captiveportal/captiveportal.h \
         apps/vpn/captiveportal/captiveportaldetection.h \
         apps/vpn/captiveportal/captiveportaldetectionimpl.h \
@@ -215,7 +202,6 @@ HEADERS += \
         apps/vpn/controllerimpl.h \
         apps/vpn/dnshelper.h \
         apps/vpn/dnspingsender.h \
-        apps/vpn/errorhandler.h \
         apps/vpn/externalophandler.h \
         apps/vpn/frontend/navigator.h \
         apps/vpn/frontend/navigatorreloader.h \
@@ -269,9 +255,7 @@ HEADERS += \
         apps/vpn/tasks/adddevice/taskadddevice.h \
         apps/vpn/tasks/addon/taskaddon.h \
         apps/vpn/tasks/addonindex/taskaddonindex.h \
-        apps/vpn/tasks/authenticate/taskauthenticate.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
-        apps/vpn/tasks/deleteaccount/taskdeleteaccount.h \
         apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \

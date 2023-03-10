@@ -7,7 +7,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 
 MZSimplePopup {
@@ -30,7 +29,7 @@ MZSimplePopup {
     ]
 
     Connections {
-        target: VPNAuthInApp
+        target: MZAuthInApp
 
         function retryAfterSecToMin(retryAfterSec) {
             if (retryAfterSec <= 0) {
@@ -49,36 +48,36 @@ MZSimplePopup {
 
         function onErrorOccurred(e, retryAfterSec) {
             switch(e) {
-            case VPNAuthInApp.ErrorAccountAlreadyExists:
+            case MZAuthInApp.ErrorAccountAlreadyExists:
                 showGenericAuthError();
                 break;
 
-            case VPNAuthInApp.ErrorUnknownAccount:
+            case MZAuthInApp.ErrorUnknownAccount:
                 showGenericAuthError();
                 break;
 
-            case VPNAuthInApp.ErrorEmailCanNotBeUsedToLogin:
+            case MZAuthInApp.ErrorEmailCanNotBeUsedToLogin:
                 showGenericAuthError();
                 break;
 
-            case VPNAuthInApp.ErrorEmailTypeNotSupported:
+            case MZAuthInApp.ErrorEmailTypeNotSupported:
                 authError.description = MZI18n.InAppAuthProblemEmailTypeNotSupported
                 authError.open()
                 break;
-            case VPNAuthInApp.ErrorConnectionTimeout:
+            case MZAuthInApp.ErrorConnectionTimeout:
                 authError.description = qsTrId("vpn.alert.noInternet")
                 authError.open()
                 break;
-            case VPNAuthInApp.ErrorFailedToSendEmail:
+            case MZAuthInApp.ErrorFailedToSendEmail:
                 authError.description = MZI18n.InAppAuthProblemSendingEmailErrorMessage
                 authError.open()
                 break;
 
-            case VPNAuthInApp.ErrorServerUnavailable:
+            case MZAuthInApp.ErrorServerUnavailable:
                 showGenericAuthError();
                 break;
 
-            case VPNAuthInApp.ErrorTooManyRequests:
+            case MZAuthInApp.ErrorTooManyRequests:
                 const retryAfterMin = retryAfterSecToMin(retryAfterSec);
                 if (retryAfterMin === 1) {
                     authError.description = MZI18n.InAppAuthSignInBlockedForOneMinute;

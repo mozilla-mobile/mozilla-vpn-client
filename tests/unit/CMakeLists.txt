@@ -115,8 +115,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/errorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigator.cpp
@@ -230,6 +228,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/curve25519.cpp
     ${MZ_SOURCE_DIR}/shared/curve25519.h
     ${MZ_SOURCE_DIR}/shared/env.h
+    ${MZ_SOURCE_DIR}/shared/errorhandler.cpp
+    ${MZ_SOURCE_DIR}/shared/errorhandler.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
@@ -356,7 +356,6 @@ target_sources(unit_tests PRIVATE
 
 # Generate the version header
 configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-target_sources(auth_tests PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE

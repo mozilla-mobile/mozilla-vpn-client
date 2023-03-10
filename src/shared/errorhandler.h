@@ -24,7 +24,7 @@ class ErrorHandler final : public QObject {
     NoError,
     ConnectionFailureError,
     NoConnectionError,
-    VPNDependentConnectionError,
+    DependentConnectionError,
     AuthenticationError,
     ControllerError,
     RemoteServiceError,
@@ -96,8 +96,13 @@ class ErrorHandler final : public QObject {
 #include "errorlist.h"
 #undef ERRORSTATE
 
+  static void registerCustomErrorHandler(ErrorType errorType,
+                                         bool supportPolicyPropagation,
+                                         AlertType (*getAlert)());
+
  signals:
   void alertChanged();
+  void errorHandled();
 
  private:
   void setAlert(ErrorHandler::AlertType alert);

@@ -61,8 +61,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/daemon/wireguardutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosauthenticationlistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.cpp

@@ -61,7 +61,6 @@ src/apps/vpn/tasks/ @bakulf @birdsarah
 /src/apps/vpn/websocket/ @brizental
 
 /taskcluster/ @mozrokafor @strseb
-/tests/auth/ @bakulf @birdsarah
 /tests/functional/ @bakulf @mozrokafor @birdsarah 
 /tests/nativemessaging/ @bakulf @birdsarah @mozrokafor
 /tests/qml/ @birdsarah @mozrokafor @bakulf

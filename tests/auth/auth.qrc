@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file alias="ui/resources/encodedPassword.txt">../../src/apps/vpn/ui/resources/encodedPassword.txt</file>
-    </qresource>
-</RCC>

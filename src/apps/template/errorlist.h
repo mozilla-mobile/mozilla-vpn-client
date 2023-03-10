@@ -9,9 +9,3 @@
 #if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
 #  error No supported
 #endif
-
-// Restore button
-ERRORSTATE(subscriptionGeneric)  // iOS only
-ERRORSTATE(noSubscriptionFound)  // iOS only
-ERRORSTATE(subscriptionExpired)  // iOS only
-ERRORSTATE(subscriptionInUse)    // iOS only

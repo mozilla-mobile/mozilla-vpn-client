@@ -69,6 +69,9 @@ constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "mozillavpn";
 
+// The app product name in guardian
+constexpr const char* AUTH_PROD_NAME = "vpn";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 

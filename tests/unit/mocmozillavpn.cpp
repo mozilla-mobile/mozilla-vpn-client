@@ -80,7 +80,8 @@ void MozillaVPN::setState(State) {}
 bool MozillaVPN::setServerList(QByteArray const&) { return true; }
 
 void MozillaVPN::authenticate() {}
-void MozillaVPN::authenticateWithType(MozillaVPN::AuthenticationType) {}
+void MozillaVPN::authenticateWithType(
+    AuthenticationListener::AuthenticationType) {}
 
 void MozillaVPN::setToken(const QString&) {}
 

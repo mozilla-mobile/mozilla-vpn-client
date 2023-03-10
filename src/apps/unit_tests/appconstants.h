@@ -9,6 +9,11 @@
 
 namespace AppConstants {
 
+/**
+ * @brief expose the API base URL for guardian
+ */
+inline QString apiBaseUrl() { return ""; }
+
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "UnitTest";
 
@@ -22,6 +27,9 @@ constexpr const char* NETWORK_USERAGENT_PREFIX = "UnitTest";
 
 // The file name for the logging
 constexpr const char* LOG_FILE_NAME = "unit-test.txt";
+
+// The app product name in guardian
+constexpr const char* AUTH_PROD_NAME = "unit_test";
 
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
