@@ -18,29 +18,7 @@
 
 namespace {
 Logger logger("SettingsWatcher");
-
 }
-
-class SettingsWatcher::TaskSettingsWatcher final : public Task {
- public:
-  TaskSettingsWatcher()
-      : Task("TaskSettingsWatcher"),
-        m_taskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNotNeeded) {
-    connect(&m_taskControllerAction, &Task::completed, this, &Task::completed);
-  }
-
-  ~TaskSettingsWatcher() { SettingsWatcher::instance()->operationCompleted(); }
-
-  void run() override { m_taskControllerAction.run(); }
-
-  DeletePolicy deletePolicy() const override {
-    return m_taskControllerAction.deletePolicy();
-  }
-
- private:
-  TaskControllerAction m_taskControllerAction;
-};
 
 SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(SettingsWatcher);
@@ -70,6 +48,21 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
   DNS_CONNECT(userDNSChanged);
 
 #undef DNS_CONNECT
+
+  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+          [this]() {
+            Controller::State state =
+                MozillaVPN::instance()->controller()->state();
+            // m_operationRunning is set to true when the Controller is in
+            // StateOn. So, if we see a change, it means that the new settings
+            // values have been taken in consideration. We are ready to
+            // schedule a new TaskControllerAction if needed.
+            if (state != Controller::StateOn && state != Controller::StateOff &&
+                m_operationRunning) {
+              logger.debug() << "Resetting the operation running state";
+              m_operationRunning = false;
+            }
+          });
 }
 
 SettingsWatcher::~SettingsWatcher() { MZ_COUNT_DTOR(SettingsWatcher); }
@@ -94,8 +87,9 @@ void SettingsWatcher::maybeServerSwitch() {
   m_operationRunning = true;
 
   TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(new TaskSettingsWatcher());
-  ;
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+                               TaskControllerAction::eServerCoolDownNotNeeded));
 }
 
 void SettingsWatcher::operationCompleted() { m_operationRunning = false; }
