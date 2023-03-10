@@ -56,6 +56,10 @@ if( ${_SUPPORTED} GREATER -1 )
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
+        if(CMAKE_OSX_ARCHITECTURES)
+            STRING(REPLACE ";" "$<SEMICOLON>" OSX_ARCH_LISTSAFE "${CMAKE_OSX_ARCHITECTURES}")
+            LIST(APPEND SENTRY_ARGS -DCMAKE_OSX_ARCHITECTURES:STRING=${OSX_ARCH_LISTSAFE})
+        endif()
     endif()
     if(WIN32)
         # Let sentry.h know we are using a static build
