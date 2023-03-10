@@ -328,6 +328,10 @@
         <file>resources/settings/privacy.svg</file>
         <file>resources/settings/questionMark.svg</file>
         <file>resources/settings/tipsandtrickssettings.svg</file>
+        <file>resources/server-latency-strong.svg</file>
+        <file>resources/server-latency-moderate.svg</file>
+        <file>resources/server-latency-weak.svg</file>
+        <file>resources/server-latency-unavailable.svg</file>
         <file>resources/sparkling-check.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
