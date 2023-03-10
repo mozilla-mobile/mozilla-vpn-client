@@ -38,6 +38,9 @@ macos/pr:
 
 macos/universal:
     description: "Mac Build"
+    fetches:
+        fetch:
+            - macos-golang
     treeherder:
         symbol: BD
         platform: macos/universal

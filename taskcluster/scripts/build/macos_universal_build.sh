@@ -36,6 +36,7 @@ print N ""
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
+export PATH="${MOZ_FETCHES_DIR}/go/bin:$PATH"
 
 print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
@@ -43,12 +44,11 @@ export PATH="$HOME/.cargo/bin:$PATH"
 rustup target add aarch64-apple-darwin
 rustup target add x86_64-apple-darwin
 
-print Y "Installing homebrew, cmake, ninja, go..."
+print Y "Installing homebrew, cmake, ninja..."
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
-brew install go@1.18
 
 print Y "Installing python dependencies..."
 # use --user for permissions

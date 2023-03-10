@@ -72,3 +72,10 @@ tasks:
             artifact-name: miniconda.sh
             size: 46574107
         fetch-alias: miniconda-osx
+    macos-golang:
+        description: Golang for MacOS 1.18
+        fetch:
+            type: static-url
+            url: https://go.dev/dl/go1.18.10.darwin-amd64.tar.gz
+            sha256: 5614904f2b0b546b1493f294122fea7d67b2fbfc2efe84b1ab560fb678502e1f
+            size: 144826521
