@@ -16,6 +16,7 @@
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "platforms/android/androidcommons.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 
@@ -41,7 +42,7 @@ void AndroidIAPHandler::maybeInit() {
     return;
   }
   // Init the billing client
-  auto appContext = AndroidUtils::getActivity().callObjectMethod(
+  auto appContext = AndroidCommons::getActivity().callObjectMethod(
       "getApplicationContext", "()Landroid/content/Context;");
   if (!appContext.isValid()) {
     // This is a race condition, we could be here while android has not finished
@@ -55,7 +56,7 @@ void AndroidIAPHandler::maybeInit() {
                                      appContext.object());
 
   // Hook together implementations for functions called by native code
-  AndroidUtils::runOnAndroidThreadSync([]() {
+  AndroidCommons::runOnAndroidThreadSync([]() {
     JNINativeMethod methods[]{
         // Failures
         {"onBillingNotAvailable", "(Ljava/lang/String;)V",
@@ -116,7 +117,7 @@ void AndroidIAPHandler::nativeStartSubscription(
   maybeInit();
   Q_ASSERT(m_init);
   auto jniString = QJniObject::fromString(product->m_name);
-  auto appActivity = AndroidUtils::getActivity();
+  auto appActivity = AndroidCommons::getActivity();
   QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/InAppPurchase", "purchaseProduct",
       "(Ljava/lang/String;Landroid/app/Activity;)V", jniString.object(),
@@ -132,7 +133,7 @@ void AndroidIAPHandler::nativeRestoreSubscription() {
 void AndroidIAPHandler::launchPlayStore() {
   maybeInit();
   Q_ASSERT(m_init);
-  auto appActivity = AndroidUtils::getActivity();
+  auto appActivity = AndroidCommons::getActivity();
   QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/InAppPurchase", "launchPlayStore",
       "(Landroid/app/Activity;)V", appActivity.object());
@@ -170,7 +171,7 @@ void AndroidIAPHandler::onPurchaseUpdated(JNIEnv* env, jobject thiz,
   logger.debug() << "Got purchase info"
                  << logger.sensitive(QJsonDocument(purchase).toJson());
 
-  AndroidUtils::dispatchToMainThread([purchase] {
+  AndroidCommons::dispatchToMainThread([purchase] {
     PurchaseIAPHandler* iap = PurchaseIAPHandler::instance();
     Q_ASSERT(iap);
     static_cast<AndroidIAPHandler*>(iap)->processPurchase(purchase);

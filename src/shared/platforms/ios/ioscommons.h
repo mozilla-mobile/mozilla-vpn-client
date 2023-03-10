@@ -20,6 +20,8 @@ class IOSCommons final {
   static bool verifySignature(const QByteArray& publicKey,
                               const QByteArray& content,
                               const QByteArray& signature);
+
+  static void shareLogs(const QString& logs);
 };
 
 #endif  // IOSCOMMONS_H

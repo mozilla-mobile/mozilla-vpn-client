@@ -71,18 +71,6 @@ AndroidUtils::~AndroidUtils() {
 }
 
 // static
-void AndroidUtils::dispatchToMainThread(std::function<void()> callback) {
-  QTimer* timer = new QTimer();
-  timer->moveToThread(qApp->thread());
-  timer->setSingleShot(true);
-  QObject::connect(timer, &QTimer::timeout, [=]() {
-    callback();
-    timer->deleteLater();
-  });
-  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
-}
-
-// static
 QByteArray AndroidUtils::getQByteArrayFromJString(JNIEnv* env, jstring data) {
   const char* buffer = env->GetStringUTFChars(data, nullptr);
   if (!buffer) {
@@ -90,18 +78,6 @@ QByteArray AndroidUtils::getQByteArrayFromJString(JNIEnv* env, jstring data) {
     return QByteArray();
   }
   QByteArray out(buffer);
-  env->ReleaseStringUTFChars(data, buffer);
-  return out;
-}
-
-// static
-QString AndroidUtils::getQStringFromJString(JNIEnv* env, jstring data) {
-  const char* buffer = env->GetStringUTFChars(data, nullptr);
-  if (!buffer) {
-    logger.error() << "getQStringFromJString - failed to parse data.";
-    return QString();
-  }
-  QString out(buffer);
   env->ReleaseStringUTFChars(data, buffer);
   return out;
 }
@@ -125,12 +101,6 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   return json.object();
 }
 
-bool AndroidUtils::ShareText(const QString& text) {
-  return (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
-      QJniObject::fromString(text).object());
-}
-
 QByteArray AndroidUtils::DeviceId() {
   /*
    * On Android 8.0 (API level 26) and higher versions of the platform,
@@ -141,7 +111,7 @@ QByteArray AndroidUtils::DeviceId() {
    * APK signing key changes.
    */
   QJniEnvironment env;
-  QJniObject activity = getActivity();
+  QJniObject activity = AndroidCommons::getActivity();
   QJniObject string = QJniObject::callStaticObjectMethod(
       UTILS_CLASS, "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());
@@ -162,18 +132,6 @@ void AndroidUtils::openNotificationSettings() {
                                      "()V");
 }
 
-QJniObject AndroidUtils::getActivity() {
-  return QNativeInterface::QAndroidApplication::context();
-}
-
-int AndroidUtils::GetSDKVersion() {
-  QJniEnvironment env;
-  jclass versionClass = env->FindClass("android/os/Build$VERSION");
-  jfieldID sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I");
-  int sdk = env->GetStaticIntField(versionClass, sdkIntFieldID);
-  return sdk;
-}
-
 QString AndroidUtils::GetManufacturer() {
   QJniEnvironment env;
   jclass buildClass = env->FindClass("android/os/Build");
@@ -191,32 +149,4 @@ QString AndroidUtils::GetManufacturer() {
   logger.info() << "MANUFACTURER: " << res;
   env->ReleaseStringUTFChars(value, buffer);
   return res;
-}
-
-void AndroidUtils::runOnAndroidThreadSync(
-    const std::function<void()> runnable) {
-  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
-      .waitForFinished();
-}
-
-// static
-void AndroidUtils::initializeGlean(bool isTelemetryEnabled,
-                                   const QString& channel) {
-  AndroidUtils::runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
-    QJniObject::callStaticMethod<void>(
-        UTILS_CLASS, "initializeGlean",
-        "(Landroid/content/Context;ZLjava/lang/String;)V",
-        getActivity().object(), (jboolean)isTelemetryEnabled,
-        QJniObject::fromString(channel).object());
-  });
-}
-
-// Static
-// Creates a copy of the passed QByteArray in the JVM and passes back a ref
-jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
-  QJniEnvironment env;
-  jbyteArray out = env->NewByteArray(data.size());
-  env->SetByteArrayRegion(out, 0, data.size(),
-                          reinterpret_cast<const jbyte*>(data.constData()));
-  return out;
 }

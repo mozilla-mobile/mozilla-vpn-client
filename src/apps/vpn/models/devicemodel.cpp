@@ -11,16 +11,27 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+
+#if MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
+#endif
 
 namespace {
 Logger logger("DeviceModel");
 }
 
-DeviceModel::DeviceModel() { MZ_COUNT_CTOR(DeviceModel); }
+DeviceModel::DeviceModel() {
+  MZ_COUNT_CTOR(DeviceModel);
+  LogHandler::instance()->registerLogSerializer(this);
+}
 
-DeviceModel::~DeviceModel() { MZ_COUNT_DTOR(DeviceModel); }
+DeviceModel::~DeviceModel() {
+  MZ_COUNT_DTOR(DeviceModel);
+  LogHandler::instance()->unregisterLogSerializer(this);
+}
 
 bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
   logger.debug() << "DeviceModel from json";
@@ -269,4 +280,37 @@ const Device* DeviceModel::deviceFromUniqueId() const {
 
 bool DeviceModel::hasCurrentDevice(const Keys* keys) const {
   return currentDevice(keys) != nullptr;
+}
+
+void DeviceModel::serializeLogs(
+    std::function<void(const QString& name, const QString& logs)>&&
+        a_callback) {
+  std::function<void(const QString& name, const QString& logs)> callback =
+      std::move(a_callback);
+
+  QString buffer;
+  QTextStream out(&buffer);
+  out << "Name -> " << Device::currentDeviceName() << Qt::endl;
+  out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
+  out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
+  out << "OS -> " << QSysInfo::productType() << Qt::endl;
+#ifdef MZ_WINDOWS
+  out << "OS Version -> " << WindowsUtils::windowsVersion() << Qt::endl;
+#else
+  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+#endif
+#ifdef MZ_ANDROID
+  out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
+#endif
+
+  out << "APP Version -> " << Constants::versionString() << Qt::endl;
+  out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
+  out << "Device ID -> " << Device::uniqueDeviceId() << Qt::endl;
+
+#ifndef QT_NO_SSL
+  out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
+      << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
+#endif
+
+  callback("Device", buffer);
 }

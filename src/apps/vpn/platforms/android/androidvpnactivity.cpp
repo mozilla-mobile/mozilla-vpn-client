@@ -10,13 +10,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "androidutils.h"
 #include "constants.h"
 #include "frontend/navigator.h"
 #include "jni.h"
 #include "logger.h"
 #include "logoutobserver.h"
 #include "mozillavpn.h"
+#include "platforms/android/androidcommons.h"
 #include "settingsholder.h"
 
 namespace {
@@ -26,7 +26,7 @@ Logger logger("AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {
-  AndroidUtils::runOnAndroidThreadSync([]() {
+  AndroidCommons::runOnAndroidThreadSync([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{
         {"handleBackButton", "()Z", reinterpret_cast<bool*>(handleBackButton)},
@@ -105,7 +105,7 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
   }
   QString parcelBody(buffer);
   env->ReleaseStringUTFChars(body, buffer);
-  AndroidUtils::dispatchToMainThread([messageType, parcelBody] {
+  AndroidCommons::dispatchToMainThread([messageType, parcelBody] {
     AndroidVPNActivity::instance()->handleServiceMessage(messageType,
                                                          parcelBody);
   });

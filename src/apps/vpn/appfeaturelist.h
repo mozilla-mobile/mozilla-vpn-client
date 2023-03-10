@@ -117,13 +117,6 @@ FEATURE(serverConnectionScore,      // Feature ID
         QStringList(),              // feature dependencies
         FeatureCallback_false)
 
-FEATURE(shareLogs,              // Feature ID
-        "Share Logs",           // Feature name
-        FeatureCallback_false,  // Can be flipped on
-        FeatureCallback_false,  // Can be flipped off
-        QStringList(),          // feature dependencies
-        FeatureCallback_shareLogs)
-
 FEATURE(splitTunnel,            // Feature ID
         "Split-tunnel",         // Feature name
         FeatureCallback_true,   // Can be flipped on

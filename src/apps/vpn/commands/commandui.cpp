@@ -44,6 +44,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "models/featuremodel.h"
 #include "models/recentconnections.h"
 #include "mozillavpn.h"
@@ -578,6 +579,14 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.Shared", 1, 0, "MZLocalizer",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
           QObject* obj = Localizer::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZLog",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = LogHandler::instance();
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });

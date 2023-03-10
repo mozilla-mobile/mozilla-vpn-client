@@ -60,16 +60,8 @@
 #  include "sentry/sentryadapter.h"
 #endif
 
-#ifdef MZ_IOS
-#  include "platforms/ios/iosutils.h"
-#endif
-
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidiaphandler.h"
-#  include "platforms/android/androidutils.h"
-#endif
-
-#ifdef MZ_ANDROID
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
 #endif
@@ -740,18 +732,19 @@ void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [out, buffer, feedbackText, rating, category] {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
+  LogHandler::instance()->serializeLogs(
+      out, [out, buffer, feedbackText, rating, category] {
+        Q_ASSERT(out);
+        Q_ASSERT(buffer);
 
-    // buffer is getting copied by TaskSendFeedback so we can delete it
-    // afterwards
-    TaskScheduler::scheduleTask(
-        new TaskSendFeedback(feedbackText, *buffer, rating, category));
+        // buffer is getting copied by TaskSendFeedback so we can delete it
+        // afterwards
+        TaskScheduler::scheduleTask(
+            new TaskSendFeedback(feedbackText, *buffer, rating, category));
 
-    delete buffer;
-    delete out;
-  });
+        delete buffer;
+        delete out;
+      });
 }
 
 void MozillaVPN::createSupportTicket(const QString& email,
@@ -763,25 +756,26 @@ void MozillaVPN::createSupportTicket(const QString& email,
   QString* buffer = new QString();
   QTextStream* out = new QTextStream(buffer);
 
-  serializeLogs(out, [out, buffer, email, subject, issueText, category] {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
+  LogHandler::instance()->serializeLogs(
+      out, [out, buffer, email, subject, issueText, category] {
+        Q_ASSERT(out);
+        Q_ASSERT(buffer);
 
-    // buffer is getting copied by TaskCreateSupportTicket so we can delete it
-    // afterwards
-    Task* task = new TaskCreateSupportTicket(email, subject, issueText, *buffer,
-                                             category);
-    delete buffer;
-    delete out;
+        // buffer is getting copied by TaskCreateSupportTicket so we can delete
+        // it afterwards
+        Task* task = new TaskCreateSupportTicket(email, subject, issueText,
+                                                 *buffer, category);
+        delete buffer;
+        delete out;
 
-    // Support tickets can be created at anytime. Even during "critical"
-    // operations such as authentication, account deletion, etc. Those
-    // operations are often running in tasks, which would block the scheduling
-    // of this new support ticket task execution if we used
-    // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
-    // immediately and let's hope it does not fail.
-    TaskScheduler::scheduleTaskNow(task);
-  });
+        // Support tickets can be created at anytime. Even during "critical"
+        // operations such as authentication, account deletion, etc. Those
+        // operations are often running in tasks, which would block the
+        // scheduling of this new support ticket task execution if we used
+        // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
+        // immediately and let's hope it does not fail.
+        TaskScheduler::scheduleTaskNow(task);
+      });
 }
 
 #ifdef MZ_ANDROID
@@ -1005,183 +999,9 @@ void MozillaVPN::stopSchedulingPeriodicOperations() {
   m_periodicOperationsTimer.stop();
 }
 
-bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation location) {
-  return writeLogs(location, [](const QString& filename) {
-    logger.debug() << "Opening the logFile somehow:" << filename;
-    UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
-  });
-}
-
-bool MozillaVPN::writeLogs(
-    QStandardPaths::StandardLocation location,
-    std::function<void(const QString& filename)>&& a_callback) {
-  logger.debug() << "Trying to save logs in:" << location;
-
-  std::function<void(const QString& filename)> callback = std::move(a_callback);
-
-  if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
-    return false;
-  }
-
-  QString filename;
-  QDate now = QDate::currentDate();
-
-  QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month()
-                         << "-" << now.day() << ".txt";
-
-  QDir logDir(QStandardPaths::writableLocation(location));
-  QString logFile = logDir.filePath(filename);
-
-  if (QFileInfo::exists(logFile)) {
-    logger.warning() << logFile << "exists. Let's try a new filename";
-
-    for (uint32_t i = 1;; ++i) {
-      QString filename;
-      QTextStream(&filename)
-          << "mozillavpn-" << now.year() << "-" << now.month() << "-"
-          << now.day() << "_" << i << ".txt";
-      logFile = logDir.filePath(filename);
-      if (!QFileInfo::exists(logFile)) {
-        logger.debug() << "Filename found!" << i;
-        break;
-      }
-    }
-  }
-
-  logger.debug() << "Writing logs into: " << logFile;
-
-  QFile* file = new QFile(logFile);
-  if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
-    logger.error() << "Failed to open the logfile";
-    delete file;
-    return false;
-  }
-
-  QTextStream* out = new QTextStream(file);
-  serializeLogs(out, [callback = std::move(callback), logFile, file, out]() {
-    Q_ASSERT(out);
-    Q_ASSERT(file);
-    delete out;
-    delete file;
-
-    callback(logFile);
-  });
-
-  return true;
-}
-
-void MozillaVPN::serializeLogs(QTextStream* out,
-                               std::function<void()>&& a_finalizeCallback) {
-  std::function<void()> finalizeCallback = std::move(a_finalizeCallback);
-
-  *out << "Mozilla VPN logs" << Qt::endl
-       << "================" << Qt::endl
-       << Qt::endl;
-
-  LogHandler::writeLogs(*out);
-
-  MozillaVPN::instance()->controller()->getBackendLogs(
-      [out,
-       finalizeCallback = std::move(finalizeCallback)](const QString& logs) {
-        logger.debug() << "Logs from the backend service received";
-
-        *out << Qt::endl
-             << Qt::endl
-             << "Mozilla VPN backend logs" << Qt::endl
-             << "========================" << Qt::endl
-             << Qt::endl;
-
-        if (!logs.isEmpty()) {
-          *out << logs;
-        } else {
-          *out << "No logs from the backend.";
-        }
-        *out << Qt::endl;
-        *out << "==== SETTINGS ====" << Qt::endl;
-        *out << SettingsHolder::instance()->getReport();
-        *out << "==== DEVICE ====" << Qt::endl;
-        *out << Device::currentDeviceReport();
-        *out << Qt::endl;
-
-        finalizeCallback();
-      });
-}
-
-bool MozillaVPN::viewLogs() {
-  logger.debug() << "View logs";
-
-  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
-    logger.error() << "ViewLogs Called on unsupported OS or version!";
-    return false;
-  }
-
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-  bool ok = true;
-  serializeLogs(out, [buffer, out
-#  if defined(MZ_ANDROID)
-                      ,
-                      &ok
-#  endif
-  ]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-#  if defined(MZ_ANDROID)
-    ok = AndroidUtils::ShareText(*buffer);
-#  else
-    IOSUtils::shareLogs(*buffer);
-#  endif
-
-    delete out;
-    delete buffer;
-  });
-  return ok;
-#endif
-
-  if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return true;
-  }
-
-  if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return true;
-  }
-
-  if (writeAndShowLogs(QStandardPaths::TempLocation)) {
-    return true;
-  }
-
-  qWarning()
-      << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
-  return false;
-}
-
-void MozillaVPN::retrieveLogs() {
-  logger.debug() << "Retrieve logs";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  serializeLogs(out, [this, buffer, out]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-    delete out;
-    emit logsReady(*buffer);
-    delete buffer;
-  });
-}
-
 void MozillaVPN::storeInClipboard(const QString& text) {
   logger.debug() << "Store in clipboard";
   QApplication::clipboard()->setText(text);
-}
-
-void MozillaVPN::cleanupLogs() {
-  logger.debug() << "Cleanup logs";
-  LogHandler::instance()->cleanupLogs();
-  MozillaVPN::instance()->controller()->cleanupBackendLogs();
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1219,11 +1039,6 @@ void MozillaVPN::requestAbout() {
 
   QmlEngineHolder::instance()->showWindow();
   emit aboutNeeded();
-}
-
-void MozillaVPN::requestViewLogs() {
-  logger.debug() << "View log requested";
-  emit viewLogsNeeded();
 }
 
 void MozillaVPN::activate() {

@@ -11,7 +11,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkwatcherimpl.h"
-#include "platforms/android/androidutils.h"
+#include "platforms/android/androidcommons.h"
 
 namespace {
 Logger logger("AndroidNetworkWatcher");
@@ -33,7 +33,7 @@ void AndroidNetworkWatcher::initialize() {}
 
 NetworkWatcherImpl::TransportType AndroidNetworkWatcher::getTransportType() {
   QJniEnvironment env;
-  QJniObject activity = AndroidUtils::getActivity();
+  QJniObject activity = AndroidCommons::getActivity();
   int type = QJniObject::callStaticMethod<int>(
       VPNNetworkWatcher_CLASS, "getTransportType",
       "(Landroid/content/Context;)I", activity.object());
