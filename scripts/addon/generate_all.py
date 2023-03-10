@@ -29,6 +29,7 @@ args = parser.parse_args()
 
 lang_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "import_languages.py")
 build_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "build.py")
+index_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "index.py")
 addons_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
     "addons",
@@ -66,6 +67,5 @@ for file in os.listdir(addons_path):
     generated_addons.append(os.path.join(generated_path, file + ".rcc"))
 
 ## Generate the index.
-index_cmd = [sys.executable, '-o', os.path.join(generated_path, 'manifest.json')]
-index_cmd.append(generated_addons)
-subprocess.call(build_cmd)
+index_cmd = [sys.executable, index_path, '-o', os.path.join(generated_path, 'manifest.json')]
+subprocess.call(index_cmd + generated_addons)
