@@ -49,7 +49,11 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
-brew install getsentry/tools/sentry-cli
+
+print Y "Installing sentry-cli..."
+export PATH="$HOME/sentry/bin:$PATH"
+export INSTALL_DIR=$HOME/sentry/bin
+curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.14.4" sh
 
 print Y "Installing python dependencies..."
 # use --user for permissions
