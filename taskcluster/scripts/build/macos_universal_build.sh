@@ -49,6 +49,7 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar 
 export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
+brew install getsentry/tools/sentry-cli
 
 print Y "Installing python dependencies..."
 # use --user for permissions
@@ -67,14 +68,6 @@ echo "dummy" > sentry_debug_file_upload_key
 
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
-#Install Sentry CLI, if' not already installed from previous run.
-if ! command -v sentry-cli &> /dev/null
-then
-    export PATH="$HOME/node/bin:$PATH"
-    npm config set prefix=$HOME/node
-    npm install @sentry/cli
-fi
-
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
