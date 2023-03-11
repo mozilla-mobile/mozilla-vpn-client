@@ -23,3 +23,18 @@ performance:
       - brizental@mozilla.com
     expires: never
     time_unit: microsecond
+
+  connect_on_startup_active:
+    type: boolean
+    lifetime: ping
+    description: |
+      The status of whether the VPN is activated on device start
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4069
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never

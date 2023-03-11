@@ -31,7 +31,10 @@ MZViewBase {
             subLabelText: MZI18n.SettingsStartAtBootSubtitle
             isChecked: MZSettings.startAtBoot
             showDivider: false
-            onClicked: MZSettings.startAtBoot = !MZSettings.startAtBoot
+            onClicked: {
+                MZSettings.startAtBoot = !MZSettings.startAtBoot;
+                Glean.performance.connectOnStartupActive.set(MZSettings.startAtBoot);
+            }
             visible: VPNFeatureList.get("startOnBoot").isSupported
             anchors {
                 right: parent.right
