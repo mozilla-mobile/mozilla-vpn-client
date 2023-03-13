@@ -133,14 +133,6 @@ CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
 
 #undef CONSTEXPR
 
-#ifdef SENTRY_ENABLED
-constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
-constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
-#else
-constexpr const char* SENTRY_DSN_ENDPOINT = "";
-constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
-#endif
-
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
     "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";

@@ -52,7 +52,6 @@ addons/**/manifest.json @flodolo
 /src/apps/vpn/qmake/ @bakulf @oskirby
 /src/apps/vpn/resources/ @birdsarah
 /src/apps/vpn/rfc/ @oskirby @bakulf
-/src/apps/vpn/sentry/ @strseb
 /src/apps/vpn/server/ @birdsarah @bakulf
 src/apps/vpn/tasks/ @bakulf @birdsarah
 /src/apps/vpn/tutorial/ @bakulf @brizental

@@ -337,16 +337,6 @@ int CommandUI::run(QStringList& tokens) {
           return obj;
         });
 
-#ifdef SENTRY_ENABLED
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNCrashReporter",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SentryAdapter::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
-
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.VPN", 1, 0, "VPNUser",
         [](QQmlEngine*, QJSEngine*) -> QObject* {
@@ -550,6 +540,16 @@ int CommandUI::run(QStringList& tokens) {
           QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
           return obj;
         });
+
+#ifdef SENTRY_ENABLED
+    qmlRegisterSingletonType<MozillaVPN>(
+        "Mozilla.Shared", 1, 0, "MZCrashReporter",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+          QObject* obj = SentryAdapter::instance();
+          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+          return obj;
+        });
+#endif
 
     qmlRegisterSingletonType<MozillaVPN>(
         "Mozilla.Shared", 1, 0, "MZGleanDeprecated",
