@@ -181,12 +181,12 @@ void Telemetry::initialize() {
         GleanSample::serverUnavailableError);
   });
 
-  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this, []() {
-    #if !defined(MZ_IOS) {
-      bool currentSetting = SettingsHolder::instance()->startAtBoot();
-      mozilla::glean::performance::connect_on_startup_active.set(currentSetting);
-    }
-    #endif
+  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+          []() {
+            bool currentSetting = SettingsHolder::instance()->startAtBoot();
+            mozilla::glean::performance::connect_on_startup_active.set(
+                currentSetting);
+          });
 
   PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
