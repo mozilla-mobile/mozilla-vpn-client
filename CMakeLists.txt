@@ -135,6 +135,14 @@ add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
 
+# Addons
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/addons.cmake)
+add_addon_target(addons
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/addons
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/addons
+)
+set_target_properties(addons PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
     add_subdirectory(extension)
