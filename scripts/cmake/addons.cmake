@@ -22,7 +22,9 @@ function(add_addon_target NAME)
 
     # Get the path to the Qt host tools.
     get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
-    get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
+    get_filename_component(QT_TOOL_BIN_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
+    get_target_property(QT_RCC_EXECUTABLE Qt6::rcc LOCATION)
+    get_filename_component(QT_TOOL_LIBEXEC_PATH ${QT_RCC_EXECUTABLE} PATH)
 
     # Scan for addon manifests if a source directory was provided.
     if(ADDON_SOURCE_DIR)
@@ -52,7 +54,8 @@ function(add_addon_target NAME)
             DEPENDS ${MANIFEST_FILE}
             DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
             COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
-                        -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d -q ${QT_TOOL_PATH}
+                        -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
+                        -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
                         ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
         )
         list(APPEND ADDON_OUTPUT_FILES ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc)
