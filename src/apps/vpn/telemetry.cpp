@@ -118,8 +118,11 @@ void Telemetry::initialize() {
   });
 
   connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this, []() {
-    bool currentSetting = SettingsHolder::instance()->startAtBoot();
-    mozilla::glean::performance::connect_on_startup_active.set(currentSetting);
+    #if !defined(MZ_IOS) {
+      bool currentSetting = SettingsHolder::instance()->startAtBoot();
+      mozilla::glean::performance::connect_on_startup_active.set(currentSetting);
+    }
+    #endif
   });
 }
 
