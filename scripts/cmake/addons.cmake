@@ -16,6 +16,8 @@ function(add_addon_target NAME)
 
     if(NOT ADDON_OUTPUT_DIR)
         set(ADDON_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    else()
+        file(MAKE_DIRECTORY ${ADDON_OUTPUT_DIR})
     endif()
 
     # Get the path to the Qt host tools.
