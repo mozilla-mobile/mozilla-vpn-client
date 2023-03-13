@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcher.h"
+#include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
 #if defined(MZ_ANDROID)
@@ -114,6 +115,11 @@ void Telemetry::initialize() {
     mozilla::glean::sample::server_unavailable_error.record();
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::serverUnavailableError);
+  });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this, []() {
+    bool currentSetting = SettingsHolder::instance()->startAtBoot();
+    mozilla::glean::performance::connect_on_startup_active.set(currentSetting);
   });
 }
 
