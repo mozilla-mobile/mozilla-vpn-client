@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcher.h"
+#include "purchasehandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -50,7 +51,70 @@ Telemetry::~Telemetry() { MZ_COUNT_DTOR(Telemetry); }
 void Telemetry::initialize() {
   logger.debug() << "Initialize";
 
-  Controller* controller = MozillaVPN::instance()->controller();
+  MozillaVPN* vpn = MozillaVPN::instance();
+  connect(vpn, &MozillaVPN::stateChanged, this, []() {
+    MozillaVPN::State state = MozillaVPN::instance()->state();
+
+    mozilla::glean::sample::app_step.record(
+        mozilla::glean::sample::AppStepExtra{
+            ._state = QVariant::fromValue(state).toString()});
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::appStep,
+        {{"state", QVariant::fromValue(state).toString()}});
+
+    if (state == MozillaVPN::StateDeviceLimit) {
+      mozilla::glean::sample::max_device_reached.record();
+      emit GleanDeprecated::instance()->recordGleanEvent(
+          GleanSample::maxDeviceReached);
+    }
+
+    if (state == MozillaVPN::StateSubscriptionNotValidated) {
+      mozilla::glean::sample::iap_subscription_failed.record(
+          mozilla::glean::sample::IapSubscriptionFailedExtra{
+              ._error = "not-validated",
+              ._sku = PurchaseHandler::instance()->currentSKU()});
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::iapSubscriptionFailed,
+          {{"error", "not-validated"},
+           {"sku", PurchaseHandler::instance()->currentSKU()}});
+    }
+
+    if (state == MozillaVPN::StateSubscriptionBlocked) {
+      mozilla::glean::sample::iap_subscription_failed.record(
+          mozilla::glean::sample::IapSubscriptionFailedExtra{
+              ._error = "alrady-subscribed",
+          });
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::iapSubscriptionFailed, {{"error", "alrady-subscribed"}});
+    }
+  });
+
+  connect(vpn, &MozillaVPN::authenticationStarted, this, []() {
+    mozilla::glean::sample::authentication_started.record();
+    emit GleanDeprecated::instance()->recordGleanEvent(
+        GleanSample::authenticationStarted);
+  });
+
+  connect(vpn, &MozillaVPN::authenticationAborted, this, []() {
+    mozilla::glean::sample::authentication_aborted.record();
+    emit GleanDeprecated::instance()->recordGleanEvent(
+        GleanSample::authenticationAborted);
+  });
+
+  connect(vpn, &MozillaVPN::authenticationCompleted, this, []() {
+    mozilla::glean::sample::authentication_completed.record();
+    emit GleanDeprecated::instance()->recordGleanEvent(
+        GleanSample::authenticationCompleted);
+  });
+
+  connect(vpn, &MozillaVPN::deviceRemoved, this, [](const QString& source) {
+    mozilla::glean::sample::device_removed.record(
+        mozilla::glean::sample::DeviceRemovedExtra{._source = source});
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::deviceRemoved, {{"source", source}});
+  });
+
+  Controller* controller = vpn->controller();
   Q_ASSERT(controller);
 
 #if defined(MZ_ANDROID)
@@ -123,6 +187,54 @@ void Telemetry::initialize() {
       mozilla::glean::performance::connect_on_startup_active.set(currentSetting);
     }
     #endif
+
+  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
+  connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
+          [](const QString& productIdentifier) {
+            mozilla::glean::sample::iap_subscription_started.record(
+                mozilla::glean::sample::IapSubscriptionStartedExtra{
+                    ._sku = productIdentifier});
+            emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+                GleanSample::iapSubscriptionStarted,
+                {{"sku", productIdentifier}});
+          });
+
+  connect(purchaseHandler, &PurchaseHandler::restoreSubscriptionStarted, this,
+          []() {
+            mozilla::glean::sample::iap_restore_sub_started.record();
+            emit GleanDeprecated::instance()->recordGleanEvent(
+                GleanSample::iapRestoreSubStarted);
+          });
+
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCompleted, this, []() {
+    mozilla::glean::sample::iap_subscription_completed.record(
+        mozilla::glean::sample::IapSubscriptionCompletedExtra{
+            ._sku = PurchaseHandler::instance()->currentSKU()});
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::iapSubscriptionCompleted,
+        {{"sku", PurchaseHandler::instance()->currentSKU()}});
+  });
+
+  connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this, []() {
+    mozilla::glean::sample::iap_subscription_failed.record(
+        mozilla::glean::sample::IapSubscriptionFailedExtra{
+            ._error = "failed",
+            ._sku = PurchaseHandler::instance()->currentSKU()});
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::iapSubscriptionFailed,
+        {{"error", "failed"},
+         {"sku", PurchaseHandler::instance()->currentSKU()}});
+  });
+
+  connect(purchaseHandler, &PurchaseHandler::subscriptionCanceled, this, []() {
+    mozilla::glean::sample::iap_subscription_failed.record(
+        mozilla::glean::sample::IapSubscriptionFailedExtra{
+            ._error = "canceled",
+            ._sku = PurchaseHandler::instance()->currentSKU()});
+    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+        GleanSample::iapSubscriptionFailed,
+        {{"error", "canceled"},
+         {"sku", PurchaseHandler::instance()->currentSKU()}});
   });
 }
 

@@ -46,14 +46,14 @@ Item {
             width: parent.width
 
             Connections {
-                target: VPN
+                target: MZLog
                 function onLogsReady(logs) {
                     logText.text = logs;
                 }
             }
 
             Component.onCompleted: {
-                VPN.retrieveLogs();
+                MZLog.retrieveLogs();
             }
         }
     }
@@ -104,7 +104,7 @@ Item {
                 buttonText: qsTrId("vpn.logs.clear")
                 iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
-                    VPN.cleanupLogs();
+                    MZLog.flushLogs();
                     logText.text = "";
                 }
             }

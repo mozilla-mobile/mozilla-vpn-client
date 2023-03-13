@@ -72,7 +72,7 @@ MZFlickable {
             text: qsTrId("vpn.crashreporter.sendButtonLabel");
             
             onClicked: {
-                VPNCrashReporter.allowCrashReporting()
+                MZCrashReporter.allowCrashReporting()
                 VPNNavigator.requestPreviousScreen();
             }
 
@@ -85,7 +85,7 @@ MZFlickable {
             labelText: qsTrId("vpn.crashreporter.dontSendButton");
         
             onClicked: {
-                VPNCrashReporter.declineCrashReporting()
+                MZCrashReporter.declineCrashReporting()
                 VPNNavigator.requestPreviousScreen();
             }
             Layout.fillWidth: true

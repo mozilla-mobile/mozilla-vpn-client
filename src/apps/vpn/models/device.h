@@ -20,8 +20,6 @@ class Device final {
 
   static QString currentDeviceName();
 
-  static QString currentDeviceReport();
-
   static QString uniqueDeviceId();
 
   [[nodiscard]] bool fromJson(const QJsonValue& json);

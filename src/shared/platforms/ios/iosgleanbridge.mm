@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosgleanbridge.h"
-#include "leakdetector.h"
 #include "Mozilla_VPN-Swift.h"
+#include "leakdetector.h"
 
 #include <QString>
 

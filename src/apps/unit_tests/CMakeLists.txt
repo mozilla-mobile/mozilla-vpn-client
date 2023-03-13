@@ -70,8 +70,9 @@ target_sources(app_unit_tests PRIVATE
     appfeaturelistcallback.h
     appfeaturelist.h
     appsettingslist.h
-    main.cpp
     helper.h
+    main.cpp
+    mocsentryadapter.cpp
     testcheckedint.h
     testcheckedint.cpp
     testfeature.cpp
@@ -90,6 +91,8 @@ target_sources(app_unit_tests PRIVATE
     testnetworkmanager.h
     testqmlpath.cpp
     testqmlpath.h
+    testtasksentry.cpp
+    testtasksentry.h
     testsettings.cpp
     testsettings.h
     testtasks.cpp
@@ -101,6 +104,9 @@ target_sources(app_unit_tests PRIVATE
     testurlopener.cpp
     testurlopener.h
     ${GENERATED_DIR}/translations.qrc
+    ${MZ_SOURCE_DIR}/shared/sentry/sentryadapter.h
+    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h
 )
 
 file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")

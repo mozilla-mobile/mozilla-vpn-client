@@ -65,7 +65,7 @@ MZViewBase {
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
                 Glean.sample.helpMenuViewLogsOpened.record();
-                VPN.requestViewLogs()
+                MZLog.requestViewLogs()
             }
         }
 

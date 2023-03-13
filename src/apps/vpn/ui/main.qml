@@ -148,17 +148,20 @@ Window {
     }
 
     Connections {
-        target: VPN
+        target: MZLog
         function onViewLogsNeeded() {
             if (VPNFeatureList.get("shareLogs").isSupported)  {
-                if(VPN.viewLogs()){
+                if(MZLog.viewLogs()){
                     return;
                 }
             }
 
             VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
         }
+    }
 
+    Connections {
+        target: VPN
         function onAccountDeleted() {
             VPNController.logout();
         }

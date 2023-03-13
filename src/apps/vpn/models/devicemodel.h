@@ -8,10 +8,11 @@
 #include <QAbstractListModel>
 
 #include "device.h"
+#include "loghandler.h"
 
 class Keys;
 
-class DeviceModel final : public QAbstractListModel {
+class DeviceModel final : public QAbstractListModel, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DeviceModel)
 
@@ -53,6 +54,11 @@ class DeviceModel final : public QAbstractListModel {
   const Device* deviceFromPublicKey(const QString& publicKey) const;
 
   const Device* deviceFromUniqueId() const;
+
+  // LogSerializer interface
+  void serializeLogs(
+      std::function<void(const QString& name, const QString& logs)>&& callback)
+      override;
 
   // QAbstractListModel methods
 

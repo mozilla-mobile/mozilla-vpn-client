@@ -14,7 +14,6 @@
 #include "addons/manager/addonmanager.h"
 #include "appconstants.h"
 #include "apppermission.h"
-#include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "connectionbenchmark/connectionbenchmark.h"
@@ -25,27 +24,23 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "ipaddresslookup.h"
-#include "models/devicemodel.h"
-#include "models/feedbackcategorymodel.h"
-#include "models/licensemodel.h"
-#include "models/servercountrymodel.h"
-#include "models/subscriptiondata.h"
-#include "models/supportcategorymodel.h"
-#include "models/user.h"
-// Relative path is required here,
-// otherwise this gets confused with the Glean.js implementation
 #include "glean/mzglean.h"
 #include "gleandeprecated.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
+#include "ipaddresslookup.h"
 #include "keyregenerator.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
+#include "models/devicemodel.h"
 #include "models/featuremodel.h"
+#include "models/feedbackcategorymodel.h"
 #include "models/recentconnections.h"
+#include "models/servercountrymodel.h"
+#include "models/subscriptiondata.h"
+#include "models/supportcategorymodel.h"
+#include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "notificationhandler.h"
@@ -62,7 +57,6 @@
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
-#include "urlopener.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -85,10 +79,6 @@
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
-#endif
-
-#ifdef SENTRY_ENABLED
-#  include "sentry/sentryadapter.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -305,307 +295,81 @@ int CommandUI::run(QStringList& tokens) {
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
     }
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPN", [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNFeatureList",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = FeatureModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN",
+                                 MozillaVPN::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNFeatureList",
+                                 FeatureModel::instance());
+    qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->captivePortalDetection();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+        MozillaVPN::instance()->captivePortalDetection());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
+                                 MozillaVPN::instance()->controller());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
+                                 MozillaVPN::instance()->user());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
+                                 MozillaVPN::instance()->deviceModel());
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNController",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->controller();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-#ifdef SENTRY_ENABLED
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNCrashReporter",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SentryAdapter::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-#endif
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNUser",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->user();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNDeviceModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->deviceModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
+    qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->feedbackCategoryModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNRecentConnectionsModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = RecentConnections::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
+        MozillaVPN::instance()->feedbackCategoryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
+                                 "VPNRecentConnectionsModel",
+                                 RecentConnections::instance());
+    qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->supportCategoryModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNServerCountryModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->serverCountryModel();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNSubscriptionData",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->subscriptionData();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNProfileFlow",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->profileFlow();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNCurrentServer",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->serverData();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNServerLatency",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->serverLatency();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNConnectionHealth",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionHealth();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->releaseMonitor();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNAppPermissions",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AppPermission::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->connectionBenchmark();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = MozillaVPN::instance()->ipAddressLookup();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNNavigator",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Navigator::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+        MozillaVPN::instance()->supportCategoryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerCountryModel",
+                                 MozillaVPN::instance()->serverCountryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNSubscriptionData",
+                                 MozillaVPN::instance()->subscriptionData());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProfileFlow",
+                                 MozillaVPN::instance()->profileFlow());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNCurrentServer",
+                                 MozillaVPN::instance()->serverData());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerLatency",
+                                 MozillaVPN::instance()->serverLatency());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionHealth",
+                                 MozillaVPN::instance()->connectionHealth());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+                                 MozillaVPN::instance()->releaseMonitor());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAppPermissions",
+                                 AppPermission::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
+                                 MozillaVPN::instance()->connectionBenchmark());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
+                                 MozillaVPN::instance()->ipAddressLookup());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNNavigator",
+                                 Navigator::instance());
 
 #ifdef MZ_ANDROID
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNAndroidUtils",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AndroidUtils::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
+                                 AndroidUtils::instance());
 #endif
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNPurchase",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = PurchaseHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNPurchase",
+                                 PurchaseHandler::instance());
 
     if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      qmlRegisterSingletonType<MozillaVPN>(
-          "Mozilla.VPN", 1, 0, "VPNProducts",
-          [](QQmlEngine*, QJSEngine*) -> QObject* {
-            QObject* obj = ProductsHandler::instance();
-            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-            return obj;
-          });
+      qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
+                                   ProductsHandler::instance());
     }
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNTutorial",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Tutorial::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNTutorial",
+                                 Tutorial::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAddonManager",
+                                 AddonManager::instance());
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.VPN", 1, 0, "VPNAddonManager",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AddonManager::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+    // TODO: MZI18n should be moved to QmlEngineHolder but it requires extra
+    // work for the generation of i18nstrings.h/cpp for the unit-test app.
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
+                                 I18nStrings::instance());
 
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZAuthInApp",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = AuthenticationInApp::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZErrorHandler",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = ErrorHandler::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "GleanPings",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = __DONOTUSE__GleanPings::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "Glean",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = __DONOTUSE__GleanMetrics::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZGleanDeprecated",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = GleanDeprecated::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZI18n",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = I18nStrings::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZLicenseModel",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = LicenseModel::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZLocalizer",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = Localizer::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZSettings",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = SettingsHolder::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZTheme",
-        [](QQmlEngine*, QJSEngine* engine) -> QObject* {
-          Theme* theme = MozillaVPN::instance()->theme();
-          theme->initialize(engine);
-          QQmlEngine::setObjectOwnership(theme, QQmlEngine::CppOwnership);
-          return theme;
-        });
-
-    qmlRegisterSingletonType<MozillaVPN>(
-        "Mozilla.Shared", 1, 0, "MZUrlOpener",
-        [](QQmlEngine*, QJSEngine*) -> QObject* {
-          QObject* obj = UrlOpener::instance();
-          QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-          return obj;
-        });
+    // TODO: MZTheme should be moved to QmlEngineHolder but it requires a bit
+    // of work in MozillaVPN first.
+    Theme* theme = MozillaVPN::instance()->theme();
+    theme->initialize(engine);
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme", theme);
 
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,

@@ -56,35 +56,6 @@ QString Device::currentDeviceName() {
   return deviceName;
 }
 
-// static
-QString Device::currentDeviceReport() {
-  QString buffer;
-  QTextStream out(&buffer);
-  out << "Name -> " << currentDeviceName() << Qt::endl;
-  out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
-  out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
-  out << "OS -> " << QSysInfo::productType() << Qt::endl;
-#ifdef MZ_WINDOWS
-  out << "OS Version -> " << WindowsUtils::windowsVersion() << Qt::endl;
-#else
-  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
-#endif
-#ifdef MZ_ANDROID
-  out << "SDK Version -> " << AndroidUtils::GetSDKVersion() << Qt::endl;
-#endif
-
-  out << "APP Version -> " << Constants::versionString() << Qt::endl;
-  out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
-  out << "Device ID -> " << uniqueDeviceId() << Qt::endl;
-
-#ifndef QT_NO_SSL
-  out << "SSL Lib:" << QSslSocket::sslLibraryVersionString()
-      << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
-#endif
-
-  return buffer;
-}
-
 QString Device::uniqueDeviceId() {
 #if MZ_ANDROID
   return AndroidUtils::DeviceId();

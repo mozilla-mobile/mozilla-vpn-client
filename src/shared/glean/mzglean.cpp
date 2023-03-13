@@ -15,7 +15,7 @@
 #  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
-#  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidcommons.h"
 #endif
 #if defined(MZ_IOS) && not(defined(BUILD_QMAKE))
 #  include "platforms/ios/iosgleanbridge.h"
@@ -97,7 +97,7 @@ void MZGlean::initialize() {
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
 #elif defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
-    AndroidUtils::initializeGlean(
+    AndroidCommons::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
 #elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))

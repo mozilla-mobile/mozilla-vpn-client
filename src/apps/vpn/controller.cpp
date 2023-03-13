@@ -91,9 +91,15 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
+
+  LogHandler::instance()->registerLogSerializer(this);
 }
 
-Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
+Controller::~Controller() {
+  MZ_COUNT_DTOR(Controller);
+
+  LogHandler::instance()->unregisterLogSerializer(this);
+}
 
 Controller::State Controller::state() const { return m_state; }
 
@@ -163,6 +169,9 @@ void Controller::initialize() {
 
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &Controller::serverDataChanged);
+
+  connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
+          &Controller::cleanupBackendLogs);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -723,16 +732,20 @@ qint64 Controller::time() const {
   return 0;
 }
 
-void Controller::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
+void Controller::serializeLogs(
+    std::function<void(const QString& name, const QString& logs)>&&
+        a_callback) {
+  std::function<void(const QString& name, const QString&)> callback =
+      std::move(a_callback);
 
   if (!m_impl) {
-    callback(QString());
+    callback("Mozilla VPN backend logs", QString());
     return;
   }
 
-  m_impl->getBackendLogs(std::move(callback));
+  m_impl->getBackendLogs([callback](const QString& logs) {
+    callback("Mozilla VPN backend logs", logs);
+  });
 }
 
 void Controller::cleanupBackendLogs() {

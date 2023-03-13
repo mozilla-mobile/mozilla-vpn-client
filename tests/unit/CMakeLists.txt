@@ -23,6 +23,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Core
     Qt6::Xml
     Qt6::Network
+    Qt6::NetworkAuth
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
@@ -177,7 +178,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${MZ_SOURCE_DIR}/apps/vpn/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
     ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
@@ -197,8 +197,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorial.h
     ${MZ_SOURCE_DIR}/apps/vpn/tutorial/tutorialstep.cpp
@@ -219,6 +217,16 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.h
+    ${MZ_SOURCE_DIR}/shared/authenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationlistener.h
     ${MZ_SOURCE_DIR}/shared/collator.cpp
     ${MZ_SOURCE_DIR}/shared/collator.h
     ${MZ_SOURCE_DIR}/shared/constants.cpp
@@ -240,6 +248,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20Poly1305_32.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Curve25519_51.c
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Poly1305_32.c
+    ${MZ_SOURCE_DIR}/shared/hawkauth.cpp
+    ${MZ_SOURCE_DIR}/shared/hawkauth.h
+    ${MZ_SOURCE_DIR}/shared/hkdf.cpp
+    ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
@@ -254,6 +266,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/models/licensemodel.cpp
+    ${MZ_SOURCE_DIR}/shared/models/licensemodel.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
@@ -280,6 +294,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
@@ -306,7 +322,6 @@ target_sources(unit_tests PRIVATE
     mocinspectorhandler.cpp
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
-    mocsentryadapter.cpp
     helper.h
     testaddon.cpp
     testaddon.h
@@ -344,8 +359,6 @@ target_sources(unit_tests PRIVATE
     testserverlatency.h
     teststatusicon.cpp
     teststatusicon.h
-    testtasksentry.cpp
-    testtasksentry.h
     websocket/testexponentialbackoffstrategy.cpp
     websocket/testexponentialbackoffstrategy.h
     websocket/testpushmessage.cpp

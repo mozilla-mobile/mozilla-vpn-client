@@ -17,7 +17,7 @@
 #ifdef MZ_ANDROID
 #  include <QJniObject>
 
-#  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidcommons.h"
 #endif
 
 #include <QRandomGenerator>
@@ -139,7 +139,7 @@ void AdjustHandler::forget() {
   }
 
 #ifdef MZ_ANDROID
-  QJniObject activity = AndroidUtils::getActivity();
+  QJniObject activity = AndroidCommons::getActivity();
   QJniObject::callStaticMethod<void>(
       "org/mozilla/firefox/vpn/qt/VPNApplication", "forget",
       "(Landroid/app/Activity;)V", activity.object());
