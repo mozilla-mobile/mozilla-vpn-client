@@ -271,6 +271,7 @@ parser.add_argument(
 parser.add_argument(
     "-q",
     "--qt_path",
+    default=[],
     action='append',
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
