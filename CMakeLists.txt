@@ -169,9 +169,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 
     # Functional testing
     option(BUILD_FUNCTIONAL_TESTS "Include functional tests when running CTest")
-    if(BUILD_FUNCTIONAL_TESTS)
-        add_subdirectory(tests/functional EXCLUDE_FROM_ALL)
-    endif()
+    add_subdirectory(tests/functional EXCLUDE_FROM_ALL)
 endif()
 
 # Extra platform targets

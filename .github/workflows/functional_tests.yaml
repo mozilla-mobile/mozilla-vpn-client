@@ -56,11 +56,15 @@ jobs:
               -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
               -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
           cmake --build build/cmake -j$(nproc) --target dummyvpn
+          cmake --build build/cmake -j$(nproc) --target addon_tests
 
           mkdir -p build/profile
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \
               build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+
+          mkdir -p build/addons
+          rsync -a build/cmake/tests/functional/addons/ build/addons/
 
       - uses: actions/upload-artifact@v3
         with:
@@ -128,10 +132,6 @@ jobs:
             chmod +x ${{github.workspace}}/grcov-build/bin/grcov
             ${{github.workspace}}/grcov-build/bin/grcov --version
 
-      - name: Build addons
-        shell: bash
-        run: ./scripts/addon/generate_all_tests.py
-
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -147,6 +147,7 @@ jobs:
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/dummyvpn
+          MVPN_ADDON_PATH: ./build/addons/
 
       - name: Generating grcov reports
         id: generateGrcov
