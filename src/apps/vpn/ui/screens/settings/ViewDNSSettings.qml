@@ -220,7 +220,8 @@ VPNViewBase {
 
     onVisibleChanged: {
       if (!visible) {
-        if (VPNSettings.userDNS === "" && VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
+        if ((VPNSettings.userDNS === "" || !VPN.validateUserDNS(ipInput.text)) &&
+            VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
           VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
         }
       }
