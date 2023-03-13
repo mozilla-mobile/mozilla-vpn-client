@@ -474,6 +474,38 @@ describe('Settings', function() {
 
     // We keep the custom DNS.
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+
+    // Write something invalid...
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+            .visible()
+            .prop('checked', false));
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+            .visible()
+            .prop('checked', true));
+
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenSettings.appPreferencesView.dnsSettingsView
+                .CUSTOM_DNS_INPUT.visible(),
+            'text'),
+        '1.2.3.4');
+
+    await vpn.setQueryProperty(
+        queries.screenSettings.appPreferencesView.dnsSettingsView
+            .CUSTOM_DNS_INPUT.visible(),
+        'text', '1.2.3.4aabbcc');
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // We keep the custom DNS.
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
   });
 
   it('Checking the languages settings', async () => {
