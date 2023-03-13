@@ -79,11 +79,11 @@ void MozillaVPN::authenticateWithType(
 
 void MozillaVPN::setToken(const QString&) {}
 
-void MozillaVPN::authenticationCompleted(const QByteArray&, const QString&) {}
+void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
-void MozillaVPN::deviceRemoved(const QString&, const QString&) {}
+void MozillaVPN::removeDevice(const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 

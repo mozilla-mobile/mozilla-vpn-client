@@ -166,12 +166,12 @@ class MozillaVPN final : public QObject {
 
   // Called at the end of the authentication flow. We can continue adding the
   // device if it doesn't exist yet, or we can go to OFF state.
-  void authenticationCompleted(const QByteArray& json, const QString& token);
+  void completeAuthentication(const QByteArray& json, const QString& token);
 
   void deviceAdded(const QString& deviceName, const QString& publicKey,
                    const QString& privateKey);
 
-  void deviceRemoved(const QString& publicKey, const QString& source);
+  void removeDevice(const QString& publicKey, const QString& source);
   void deviceRemovalCompleted(const QString& publicKey);
 
   void setJournalPublicAndPrivateKeys(const QString& publicKey,
@@ -282,9 +282,14 @@ class MozillaVPN final : public QObject {
   void stateChanged();
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
+  void deviceRemoved(const QString& source);
   void aboutNeeded();
   void updatingChanged();
   void accountDeleted();
+
+  void authenticationStarted();
+  void authenticationAborted();
+  void authenticationCompleted();
 
   // For Glean
   void initializeGlean();
