@@ -41,6 +41,7 @@ macos/universal:
     fetches:
         fetch:
             - macos-golang
+            - macos-sentry-cli
     treeherder:
         symbol: BD
         platform: macos/universal

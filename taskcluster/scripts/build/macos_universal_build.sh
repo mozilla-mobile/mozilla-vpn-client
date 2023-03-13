@@ -50,11 +50,6 @@ export PATH=$PWD/homebrew/bin:$PATH
 brew install cmake
 brew install ninja
 
-print Y "Installing sentry-cli..."
-export PATH="$HOME/sentry/bin:$PATH"
-export INSTALL_DIR=$HOME/sentry/bin
-curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.14.4" sh
-
 print Y "Installing python dependencies..."
 # use --user for permissions
 python3 -m pip install -r requirements.txt --user
@@ -72,6 +67,7 @@ echo "dummy" > sentry_debug_file_upload_key
 
 export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
 export SENTRY_DSN=$(cat sentry_dsn)
+chmod +x ${MOZ_FETCHES_DIR}/sentry-cli
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
@@ -100,13 +96,13 @@ dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ V
 
 print Y "Checking & genrating a symbols bundle"
 ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
-sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
-sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+${MOZ_FETCHES_DIR}/sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+${MOZ_FETCHES_DIR}/sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 
 if [[ "$RELEASE" ]]; then
     print Y "Uploading the Symbols..."
-    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
-    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+    ${MOZ_FETCHES_DIR}/sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+    ${MOZ_FETCHES_DIR}/sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
 cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
