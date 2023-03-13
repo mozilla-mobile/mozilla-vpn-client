@@ -62,6 +62,8 @@ class NetworkRequest final : public QObject {
                    const QString& errorString, int status,
                    const QByteArray& data);
 
+  qint64 discardData();
+
  private:
   void getResource();
 
@@ -110,6 +112,7 @@ class NetworkRequest final : public QObject {
 #endif
 
   QNetworkReply* m_reply = nullptr;
+  QByteArray m_replyData;
   int m_expectedStatusCode = 0;
 #ifdef MZ_WASM
   // In wasm network request, m_reply is null. So we need to store the "status
