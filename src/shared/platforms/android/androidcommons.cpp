@@ -6,12 +6,17 @@
 
 #include <jni.h>
 
+#include <QApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
+#include <QTimer>
 
 #include "logger.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
+
+// TODO - to remove:
+constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 
 namespace {
 Logger logger("AndroidCommons");
@@ -28,6 +33,20 @@ jbyteArray tojByteArray(const QByteArray& data) {
 }  // namespace
 
 // static
+QJniObject AndroidCommons::getActivity() {
+  return QNativeInterface::QAndroidApplication::context();
+}
+
+// static
+int AndroidCommons::getSDKVersion() {
+  QJniEnvironment env;
+  jclass versionClass = env->FindClass("android/os/Build$VERSION");
+  jfieldID sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I");
+  int sdk = env->GetStaticIntField(versionClass, sdkIntFieldID);
+  return sdk;
+}
+
+// static
 bool AndroidCommons::verifySignature(const QByteArray& publicKey,
                                      const QByteArray& content,
                                      const QByteArray& signature) {
@@ -37,4 +56,43 @@ bool AndroidCommons::verifySignature(const QByteArray& publicKey,
       tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
   logger.info() << "Android Signature Response" << out;
   return out;
+}
+
+// static
+bool AndroidCommons::shareText(const QString& text) {
+  return (bool)QJniObject::callStaticMethod<jboolean>(
+      UTILS_CLASS, "sharePlainText",
+      "(Landroid/content/Context;Ljava/lang/String;)Z", getActivity().object(),
+      QJniObject::fromString(text).object());
+}
+
+// static
+void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
+                                     const QString& channel) {
+  runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
+    QJniObject::callStaticMethod<void>(
+        UTILS_CLASS, "initializeGlean",
+        "(Landroid/content/Context;ZLjava/lang/String;)V",
+        getActivity().object(), (jboolean)isTelemetryEnabled,
+        QJniObject::fromString(channel).object());
+  });
+}
+
+// static
+void AndroidCommons::runOnAndroidThreadSync(
+    const std::function<void()> runnable) {
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
+      .waitForFinished();
+}
+
+// static
+void AndroidCommons::dispatchToMainThread(std::function<void()> callback) {
+  QTimer* timer = new QTimer();
+  timer->moveToThread(qApp->thread());
+  timer->setSingleShot(true);
+  QObject::connect(timer, &QTimer::timeout, [=]() {
+    callback();
+    timer->deleteLater();
+  });
+  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
 }

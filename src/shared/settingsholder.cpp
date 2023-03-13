@@ -15,6 +15,7 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "loghandler.h"
 
 namespace {
 
@@ -95,6 +96,8 @@ SettingsHolder::SettingsHolder()
     setUpdateTime(QDateTime::currentDateTime());
     setInstalledVersion(Env::versionString());
   }
+
+  LogHandler::instance()->registerLogSerializer(this);
 }
 
 SettingsHolder::~SettingsHolder() {
@@ -108,6 +111,8 @@ SettingsHolder::~SettingsHolder() {
     m_settings.clear();
   }
 #endif
+
+  LogHandler::instance()->unregisterLogSerializer(this);
 }
 
 void SettingsHolder::clear() {
@@ -149,35 +154,6 @@ void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
   m_settings.setValue(key, value);
 }
 #endif
-
-// Returns a Report which settings are set
-// Used to Print in LogFiles:
-QString SettingsHolder::getReport() const {
-  QString buff;
-  QTextStream out(&buff);
-#define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
-                userSettings, removeWhenReset, sensitive)                  \
-  if (has()) {                                                             \
-    if (sensitive) {                                                       \
-      out << key << " -> <Sensitive>" << Qt::endl;                         \
-    } else {                                                               \
-      out << key << " -> ";                                                \
-      QVariant value = m_settings.value(key);                              \
-      switch (value.typeId()) {                                            \
-        case QVariant::List:                                               \
-        case QVariant::StringList:                                         \
-          out << '[' << value.toStringList().join(",") << ']' << ' ';      \
-          break;                                                           \
-        default:                                                           \
-          out << value.toString();                                         \
-      }                                                                    \
-      out << Qt::endl;                                                     \
-    }                                                                      \
-  }
-#include "settingslist.h"
-#undef SETTING
-  return buff;
-}
 
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
                 userSettings, ...)                                         \
@@ -332,4 +308,37 @@ void SettingsHolder::maybeSaveInTransaction(const QString& key,
   if (!m_transactionChanges.contains(key)) {
     m_transactionChanges.insert(key, {signalName, oldValue});
   }
+}
+
+void SettingsHolder::serializeLogs(
+    std::function<void(const QString& name, const QString& logs)>&&
+        a_callback) {
+  std::function<void(const QString& name, const QString& logs)> callback =
+      std::move(a_callback);
+
+  QString buff;
+  QTextStream out(&buff);
+#define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
+                userSettings, removeWhenReset, sensitive)                  \
+  if (has()) {                                                             \
+    if (sensitive) {                                                       \
+      out << key << " -> <Sensitive>" << Qt::endl;                         \
+    } else {                                                               \
+      out << key << " -> ";                                                \
+      QVariant value = m_settings.value(key);                              \
+      switch (value.typeId()) {                                            \
+        case QVariant::List:                                               \
+        case QVariant::StringList:                                         \
+          out << '[' << value.toStringList().join(",") << ']' << ' ';      \
+          break;                                                           \
+        default:                                                           \
+          out << value.toString();                                         \
+      }                                                                    \
+      out << Qt::endl;                                                     \
+    }                                                                      \
+  }
+#include "settingslist.h"
+#undef SETTING
+
+  callback("Settings", buff);
 }

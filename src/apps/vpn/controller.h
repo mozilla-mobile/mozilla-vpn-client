@@ -14,6 +14,7 @@
 #include <functional>
 
 #include "ipaddress.h"
+#include "loghandler.h"
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "pinghelper.h"
@@ -33,7 +34,7 @@ class HopConnection {
   QHostAddress m_dnsServer;
 };
 
-class Controller final : public QObject {
+class Controller final : public QObject, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Controller)
 
@@ -90,8 +91,6 @@ class Controller final : public QObject {
 
   void updateRequired();
 
-  void getBackendLogs(std::function<void(const QString& logs)>&& callback);
-
   void cleanupBackendLogs();
 
   void getStatus(
@@ -124,6 +123,11 @@ class Controller final : public QObject {
     RandomizeServerSelection,
     DoNotRandomizeServerSelection,
   };
+
+  // LogSerializer interface
+  void serializeLogs(
+      std::function<void(const QString& name, const QString& logs)>&& callback)
+      override;
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will

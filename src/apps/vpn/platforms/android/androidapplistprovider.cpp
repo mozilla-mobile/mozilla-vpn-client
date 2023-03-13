@@ -11,9 +11,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "androidutils.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/android/androidcommons.h"
 
 namespace {
 Logger logger("AndroidAppListProvider");
@@ -27,7 +27,7 @@ AndroidAppListProvider::AndroidAppListProvider(QObject* parent)
 void AndroidAppListProvider::getApplicationList() {
   logger.debug() << "Fetch Application list from Android";
 
-  QJniObject activity = AndroidUtils::getActivity();
+  QJniObject activity = AndroidCommons::getActivity();
   Q_ASSERT(activity.isValid());
 
   QJniObject str = QJniObject::callStaticObjectMethod(

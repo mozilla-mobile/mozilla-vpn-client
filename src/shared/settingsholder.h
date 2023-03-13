@@ -11,7 +11,9 @@
 #include <QSettings>
 #include <QStringList>
 
-class SettingsHolder final : public QObject {
+#include "loghandler.h"
+
+class SettingsHolder final : public QObject, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SettingsHolder)
 
@@ -25,6 +27,11 @@ class SettingsHolder final : public QObject {
 
   SettingsHolder();
   ~SettingsHolder();
+
+  // LogSerializer interface
+  void serializeLogs(
+      std::function<void(const QString& name, const QString& logs)>&& callback)
+      override;
 
   static SettingsHolder* instance();
 
@@ -56,8 +63,6 @@ class SettingsHolder final : public QObject {
   void setRawSetting(const QString& key, const QVariant& value);
   void doNotClearOnDTOR() { m_doNotClearOnDTOR = true; }
 #endif
-
-  QString getReport() const;
 
   void clear();
 

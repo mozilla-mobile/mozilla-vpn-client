@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QMutexLocker>
 #include <QObject>
+#include <QStandardPaths>
 #include <QVector>
 
 #include "loglevel.h"
@@ -15,8 +16,16 @@
 class QFile;
 class QTextStream;
 
+class LogSerializer {
+ public:
+  virtual void serializeLogs(
+      std::function<void(const QString& name, const QString& logs)>&&
+          callback) = 0;
+};
+
 class LogHandler final : public QObject {
   Q_OBJECT
+  Q_DISABLE_COPY_MOVE(LogHandler)
 
  public:
   struct Log {
@@ -49,6 +58,11 @@ class LogHandler final : public QObject {
     bool m_fromQT = false;
   };
 
+  Q_INVOKABLE bool viewLogs();
+  Q_INVOKABLE void retrieveLogs();
+  Q_INVOKABLE void flushLogs();
+  Q_INVOKABLE void requestViewLogs();
+
   static LogHandler* instance();
 
   static void messageQTHandler(QtMsgType type,
@@ -70,8 +84,17 @@ class LogHandler final : public QObject {
 
   static void enableStderr();
 
+  void serializeLogs(QTextStream* out,
+                     std::function<void()>&& finalizeCallback);
+
+  void registerLogSerializer(LogSerializer* logSerializer);
+  void unregisterLogSerializer(LogSerializer* logSerializer);
+
  signals:
   void logEntryAdded(const QByteArray& log);
+  void viewLogsNeeded();
+  void logsReady(const QString& logs);
+  void cleanupLogsNeeded();
 
  private:
   explicit LogHandler(const QMutexLocker<QMutex>& proofOfLock);
@@ -86,10 +109,18 @@ class LogHandler final : public QObject {
 
   static void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
+  bool writeAndShowLogs(QStandardPaths::StandardLocation location);
+
+  bool writeLogsToLocation(
+      QStandardPaths::StandardLocation location,
+      std::function<void(const QString& filename)>&& a_callback);
+
   bool m_stderrEnabled = false;
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;
+
+  QList<LogSerializer*> m_logSerializers;
 };
 
 #endif  // LOGHANDLER_H

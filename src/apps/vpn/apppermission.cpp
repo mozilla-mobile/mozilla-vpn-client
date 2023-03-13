@@ -25,6 +25,7 @@
 #endif
 
 #include <QFileDialog>
+#include <QStandardPaths>
 
 namespace {
 Logger logger("AppPermission");

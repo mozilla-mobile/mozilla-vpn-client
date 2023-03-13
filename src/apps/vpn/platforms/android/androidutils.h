@@ -22,11 +22,7 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
-  static int GetSDKVersion();
   static QString GetManufacturer();
-
-  // Creates a "share" intent to Open/Send Plaintext
-  static bool ShareText(const QString& plainText);
 
   static QByteArray DeviceId();
 
@@ -34,25 +30,9 @@ class AndroidUtils final : public QObject {
 
   Q_INVOKABLE void openNotificationSettings();
 
-  static void dispatchToMainThread(std::function<void()> callback);
-
   static QByteArray getQByteArrayFromJString(JNIEnv* env, jstring data);
 
-  static jbyteArray tojByteArray(const QByteArray& data);
-
-  static QString getQStringFromJString(JNIEnv* env, jstring data);
-
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
-
-  static QJniObject getActivity();
-
-  static void runOnAndroidThreadSync(const std::function<void()> runnable);
-
-  static bool verifySignature(const QByteArray& publicKey,
-                              const QByteArray& content,
-                              const QByteArray& signature);
-
-  static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
  private:
   AndroidUtils(QObject* parent);

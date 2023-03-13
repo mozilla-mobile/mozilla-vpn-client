@@ -8,7 +8,6 @@
 #include <QList>
 #include <QNetworkReply>
 #include <QObject>
-#include <QStandardPaths>
 #include <QTimer>
 
 #include "authenticationlistener.h"
@@ -38,8 +37,6 @@ class SupportCategoryModel;
 class Telemetry;
 class Theme;
 class User;
-
-class QTextStream;
 
 class MozillaVPN final : public QObject {
   Q_OBJECT
@@ -115,9 +112,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
-  Q_INVOKABLE bool viewLogs();
-  Q_INVOKABLE void retrieveLogs();
-  Q_INVOKABLE void cleanupLogs();
   Q_INVOKABLE void storeInClipboard(const QString& text);
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
@@ -142,7 +136,6 @@ class MozillaVPN final : public QObject {
 #ifdef MZ_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
-  Q_INVOKABLE void requestViewLogs();
 
   void authenticateWithType(
       AuthenticationListener::AuthenticationType authenticationType);
@@ -251,14 +244,6 @@ class MozillaVPN final : public QObject {
 
   void stopSchedulingPeriodicOperations();
 
-  bool writeAndShowLogs(QStandardPaths::StandardLocation location);
-
-  bool writeLogs(QStandardPaths::StandardLocation location,
-                 std::function<void(const QString& filename)>&& a_callback);
-
-  void serializeLogs(QTextStream* out,
-                     std::function<void()>&& finalizeCallback);
-
   void subscriptionStarted(const QString& productIdentifier);
   void restoreSubscriptionStarted();
   void subscriptionCompleted();
@@ -298,7 +283,6 @@ class MozillaVPN final : public QObject {
   void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void aboutNeeded();
-  void viewLogsNeeded();
   void updatingChanged();
   void accountDeleted();
 
@@ -308,8 +292,6 @@ class MozillaVPN final : public QObject {
   void setGleanSourceTags(const QStringList& tags);
 
   void aboutToQuit();
-
-  void logsReady(const QString& logs);
 
   void ticketCreationAnswer(bool successful);
 
