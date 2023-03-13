@@ -56,8 +56,8 @@ void TaskRemoveDevice::run() {
             if (error == QNetworkReply::ContentNotFoundError) {
               logger.error() << "The device has been removed in the meantime. "
                                 "Let's consider it a success";
-              MozillaVPN::instance()->deviceRemoved(m_publicKey,
-                                                    "TaskRemoveDevice");
+              MozillaVPN::instance()->removeDevice(m_publicKey,
+                                                   "TaskRemoveDevice");
               emit completed();
               return;
             }
@@ -71,8 +71,8 @@ void TaskRemoveDevice::run() {
           [this](const QByteArray&) {
             logger.debug() << "Device removed";
 
-            MozillaVPN::instance()->deviceRemoved(m_publicKey,
-                                                  "TaskRemoveDevice");
+            MozillaVPN::instance()->removeDevice(m_publicKey,
+                                                 "TaskRemoveDevice");
             emit completed();
           });
 }

@@ -221,7 +221,8 @@ MZViewBase {
 
     onVisibleChanged: {
       if (!visible) {
-        if (MZSettings.userDNS === "" && MZSettings.dnsProviderFlags === MZSettings.Custom) {
+        if ((MZSettings.userDNS === "" || !VPN.validateUserDNS(ipInput.text)) &&
+            MZSettings.dnsProviderFlags === MZSettings.Custom) {
           MZSettings.dnsProviderFlags = MZSettings.Gateway;
         }
       }

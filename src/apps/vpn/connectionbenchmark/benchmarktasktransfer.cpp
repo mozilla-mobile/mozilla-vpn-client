@@ -229,23 +229,13 @@ void BenchmarkTaskTransfer::transferProgressed(qint64 bytesSent,
   Q_UNUSED(bytesTotal);
 #endif
 
-  switch (m_type) {
-    case BenchmarkDownload: {
-      // Count and discard downloaded data
-      m_bytesTransferred += reply->skip(bytesTotal);
-      break;
-    }
-    case BenchmarkUpload: {
-      Q_UNUSED(reply);
-      if (bytesSent > 0) {
-        m_bytesTransferred = bytesSent;
-      }
-      break;
-    }
-    default: {
-      logger.error() << "Unhandled benchmark type";
-      break;
-    }
+  NetworkRequest* request = qobject_cast<NetworkRequest*>(sender());
+  if (request != nullptr) {
+    request->discardData();
+  }
+
+  if (bytesSent > 0) {
+    m_bytesTransferred = bytesSent;
   }
 }
 

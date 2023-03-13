@@ -62,6 +62,14 @@ PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
 
 #undef PRODBETAEXPR
 
+#ifdef SENTRY_ENABLED
+constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
+constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
+#else
+constexpr const char* SENTRY_DSN_ENDPOINT = "";
+constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
+#endif
+
 };  // namespace Constants
 
 #endif  // CONSTANTS_H

@@ -4,7 +4,7 @@
   "name": "Guide: Multi-Account Containers",
   "type": "guide",
   "conditions": {
-    "min_client_version": "2.15.0"
+    "min_client_version": "2.14.0"
   },
   "guide": {
     "id": "guide_multi_account_containers",

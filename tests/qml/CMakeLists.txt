@@ -20,6 +20,7 @@ add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
     Qt6::Gui
+    Qt6::NetworkAuth
     Qt6::WebSockets
     Qt6::Widgets
     Qt6::Qml
@@ -79,12 +80,24 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinappsession.h
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationinapp/incrementaldecoder.h
+    ${MZ_SOURCE_DIR}/shared/authenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/shared/authenticationlistener.h
     ${MZ_SOURCE_DIR}/shared/collator.cpp
     ${MZ_SOURCE_DIR}/shared/collator.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
     ${MZ_SOURCE_DIR}/shared/env.h
+    ${MZ_SOURCE_DIR}/shared/errorhandler.cpp
+    ${MZ_SOURCE_DIR}/shared/errorhandler.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.cpp
@@ -111,6 +124,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/models/licensemodel.cpp
+    ${MZ_SOURCE_DIR}/shared/models/licensemodel.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
@@ -123,6 +138,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
     ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp

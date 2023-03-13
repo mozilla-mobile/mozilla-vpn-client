@@ -200,8 +200,8 @@ void NetworkRequest::replyFinished() {
   logger.debug() << "Network reply received - status:" << status
                  << "- expected:" << expect;
 
-  QByteArray data = m_reply->readAll();
-  processData(m_reply->error(), m_reply->errorString(), status, data);
+  m_replyData.append(m_reply->readAll());
+  processData(m_reply->error(), m_reply->errorString(), status, m_replyData);
 }
 
 void NetworkRequest::processData(QNetworkReply::NetworkError error,
@@ -234,6 +234,15 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   }
 
   emit requestCompleted(data);
+}
+
+qint64 NetworkRequest::discardData() {
+  qint64 bytes = m_replyData.count();
+  if (m_reply != nullptr) {
+    bytes += m_reply->skip(m_reply->bytesAvailable());
+  }
+  m_replyData.clear();
+  return bytes;
 }
 
 bool NetworkRequest::isRedirect() const {
@@ -313,6 +322,11 @@ void NetworkRequest::handleReply(QNetworkReply* reply) {
 
   connect(m_reply, &QNetworkReply::finished, this,
           &NetworkRequest::replyFinished);
+
+  m_replyData.clear();
+  connect(m_reply, &QIODevice::readyRead, this,
+          [&]() { m_replyData.append(m_reply->readAll()); });
+
 #ifndef QT_NO_SSL
   connect(m_reply, &QNetworkReply::sslErrors, this, &NetworkRequest::sslErrors);
 #endif

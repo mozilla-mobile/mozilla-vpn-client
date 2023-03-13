@@ -6,6 +6,7 @@
 
 #include <QQmlApplicationEngine>
 
+#include "localizer.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "theme.h"
@@ -33,6 +34,8 @@ void TestThemes::loadTheme() {
     settingsHolder.setTheme(theme);
   }
 
+  Localizer l;
+
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -51,6 +54,7 @@ void TestThemes::loadTheme() {
 
 void TestThemes::model() {
   SettingsHolder settingsHolder;
+  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);

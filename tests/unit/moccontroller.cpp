@@ -48,8 +48,6 @@ void Controller::setState(State) {}
 
 qint64 Controller::time() const { return 42; }
 
-void Controller::getBackendLogs(std::function<void(const QString&)>&&) {}
-
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}
 
@@ -88,3 +86,6 @@ void Controller::handshakeTimeout() {}
 #ifdef MZ_DUMMY
 QString Controller::currentServerString() const { return QString("42"); }
 #endif
+
+void Controller::serializeLogs(
+    std::function<void(const QString& name, const QString& logs)>&&) {}

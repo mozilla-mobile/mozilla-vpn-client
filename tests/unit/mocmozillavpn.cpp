@@ -85,11 +85,11 @@ void MozillaVPN::authenticateWithType(
 
 void MozillaVPN::setToken(const QString&) {}
 
-void MozillaVPN::authenticationCompleted(const QByteArray&, const QString&) {}
+void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
 
-void MozillaVPN::deviceRemoved(const QString&, const QString&) {}
+void MozillaVPN::removeDevice(const QString&, const QString&) {}
 
 void MozillaVPN::deviceRemovalCompleted(const QString&) {}
 
@@ -115,30 +115,11 @@ void MozillaVPN::startSchedulingPeriodicOperations() {}
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {}
 
-bool MozillaVPN::writeAndShowLogs(QStandardPaths::StandardLocation) {
-  return true;
-}
-
-bool MozillaVPN::writeLogs(QStandardPaths::StandardLocation,
-                           std::function<void(const QString& filename)>&&) {
-  return true;
-}
-
-bool MozillaVPN::viewLogs() { return true; }
-
 bool MozillaVPN::modelsInitialized() const { return true; }
 
 void MozillaVPN::requestAbout() {}
 
-void MozillaVPN::requestViewLogs() {}
-
-void MozillaVPN::retrieveLogs() {}
-
 void MozillaVPN::storeInClipboard(const QString&) {}
-
-void MozillaVPN::cleanupLogs() {}
-
-void MozillaVPN::serializeLogs(QTextStream*, std::function<void()>&&) {}
 
 void MozillaVPN::activate() {}
 

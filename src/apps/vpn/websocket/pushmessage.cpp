@@ -145,6 +145,6 @@ bool PushMessage::handleDeviceDeleted(const QJsonObject& payload) {
     return true;
   }
 
-  MozillaVPN::instance()->deviceRemoved(publicKey, "PushMessage");
+  MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
   return true;
 }

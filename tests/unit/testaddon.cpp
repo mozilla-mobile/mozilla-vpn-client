@@ -234,6 +234,7 @@ void TestAddon::conditions() {
 }
 
 void TestAddon::conditionWatcher_javascript() {
+  Localizer l;
   MozillaVPN vpn;
 
   QQmlApplicationEngine engine;
@@ -768,6 +769,7 @@ void TestAddon::tutorial_create() {
   QCOMPARE(tutorial->property("highlighted").toBool(), highlighted);
   QCOMPARE(tutorial->property("settingsRollbackNeeded").toBool(), transaction);
 
+  Localizer l;
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
