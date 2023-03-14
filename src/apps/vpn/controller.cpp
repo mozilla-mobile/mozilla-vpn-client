@@ -10,6 +10,8 @@
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -29,6 +31,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -519,6 +522,9 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
+  mozilla::glean::performance::session_start.set();
+  mozilla::glean::performance::sessions_started.add();
+
   if (m_nextStep != None) {
     deactivate();
     return;
@@ -564,6 +570,8 @@ void Controller::handshakeTimeout() {
 
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
+  mozilla::glean::performance::session_end.set();
+  mozilla::glean_pings::Vpnsession.submit();
 
   clearConnectedTime();
   clearRetryCounter();

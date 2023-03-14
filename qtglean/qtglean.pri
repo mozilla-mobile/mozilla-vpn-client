@@ -14,11 +14,13 @@ else{
 }
 
 SOURCES += $$PWD/src/cpp/counter.cpp
+SOURCES += $$PWD/src/cpp/datetime.cpp
 SOURCES += $$PWD/src/cpp/event.cpp
 SOURCES += $$PWD/src/cpp/ping.cpp
 SOURCES += $$PWD/src/cpp/timingdistribution.cpp
 
 HEADERS += $$PWD/include/glean/counter.h
+HEADERS += $$PWD/include/glean/datetime.h
 HEADERS += $$PWD/include/glean/event.h
 HEADERS += $$PWD/include/glean/ping.h
 HEADERS += $$PWD/include/glean/timingdistribution.h
