@@ -24,6 +24,7 @@ performance:
     expires: never
     time_unit: microsecond
 
+settings:
   connect_on_startup_active:
     type: boolean
     lifetime: ping
