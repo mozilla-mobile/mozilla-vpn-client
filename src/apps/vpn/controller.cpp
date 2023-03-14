@@ -522,7 +522,8 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
-  mozilla::glean::session::apps_excluded.set(AppPermission::instance()->disabledAppCount());
+  mozilla::glean::session::apps_excluded.set(
+      AppPermission::instance()->disabledAppCount());
 
   if (m_nextStep != None) {
     deactivate();
