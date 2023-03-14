@@ -65,7 +65,7 @@ jobs:
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
           mkdir -p build/prod-addons
-          rysnc -a build/cmake/addons/ build/prod-addons/
+          rsync -a build/cmake/addons/ build/prod-addons/
           mkdir -p build/test-addons
           rsync -a build/cmake/tests/functional/addons/ build/test-addons/
 
