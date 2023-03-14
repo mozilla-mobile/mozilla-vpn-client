@@ -522,8 +522,8 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
-  mozilla::glean::performance::session_start.set();
-  mozilla::glean::performance::sessions_started.add();
+  mozilla::glean::session::session_start.set();
+  mozilla::glean::session::sessions_started.add();
 
   if (m_nextStep != None) {
     deactivate();
@@ -570,7 +570,7 @@ void Controller::handshakeTimeout() {
 
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
-  mozilla::glean::performance::session_end.set();
+  mozilla::glean::session::session_end.set();
   mozilla::glean_pings::Vpnsession.submit();
 
   clearConnectedTime();

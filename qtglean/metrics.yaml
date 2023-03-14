@@ -39,6 +39,7 @@ performance:
       - mcleinman@mozilla.com
     expires: never
 
+session:
   session_start:
     type: datetime
     description: |
