@@ -217,6 +217,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
+    ${MZ_SOURCE_DIR}/shared/app.cpp
+    ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp

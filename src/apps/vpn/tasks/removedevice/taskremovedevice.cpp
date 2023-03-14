@@ -4,6 +4,7 @@
 
 #include "taskremovedevice.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -23,7 +24,7 @@ TaskRemoveDevice::TaskRemoveDevice(const QString& publicKey)
       // the operation even if the client resets the token. Because of this,
       // let's take a copy of the authorization header now. At ::run(), it could
       // be too late.
-      m_authHeader(MozillaVPN::authorizationHeader()) {
+      m_authHeader(App::authorizationHeader()) {
   MZ_COUNT_CTOR(TaskRemoveDevice);
 }
 

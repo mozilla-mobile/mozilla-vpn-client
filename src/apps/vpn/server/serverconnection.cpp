@@ -100,7 +100,7 @@ QJsonObject serializeStatus() {
   locationObj["entry_city_name"] = vpn->serverData()->entryCityName();
 
   QJsonObject obj;
-  obj["authenticated"] = vpn->userState() == MozillaVPN::UserAuthenticated;
+  obj["authenticated"] = App::isUserAuthenticated();
   obj["location"] = locationObj;
 
   {

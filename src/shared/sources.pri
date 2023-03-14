@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
+        $$PWD/app.cpp \
         $$PWD/authenticationlistener.cpp \
         $$PWD/authenticationinapp/authenticationinapp.cpp \
         $$PWD/authenticationinapp/authenticationinapplistener.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
         $$PWD/localizer.cpp \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
+        $$PWD/logoutobserver.cpp \
         $$PWD/models/licensemodel.cpp \
         $$PWD/networkmanager.cpp \
         $$PWD/networkrequest.cpp \
@@ -57,6 +59,7 @@ SOURCES += \
         $$PWD/versionutils.cpp
 
 HEADERS += \
+        $$PWD/app.h \
         $$PWD/authenticationlistener.h \
         $$PWD/authenticationinapp/authenticationinapp.h \
         $$PWD/authenticationinapp/authenticationinapplistener.h \
@@ -82,6 +85,7 @@ HEADERS += \
         $$PWD/localizer.h \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
+        $$PWD/logoutobserver.h \
         $$PWD/models/licensemodel.h \
         $$PWD/networkmanager.h \
         $$PWD/networkrequest.h \

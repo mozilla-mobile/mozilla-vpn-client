@@ -3,11 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosiaphandler.h"
+
+#include "app.h"
 #include "errorhandler.h"
 #include "iosutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
@@ -159,7 +160,7 @@ bool s_transactionsProcessed = false;
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (MozillaVPN::instance()->userState() == MozillaVPN::UserAuthenticated) {
+  } else if (App::instance()->userState() == App::UserAuthenticated) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,

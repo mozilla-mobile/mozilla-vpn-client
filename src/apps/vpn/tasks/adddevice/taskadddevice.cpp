@@ -8,6 +8,7 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
+#include "app.h"
 #include "appconstants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
@@ -55,7 +56,7 @@ void TaskAddDevice::run() {
   MozillaVPN::instance()->setJournalPublicAndPrivateKeys(publicKey, privateKey);
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->post(AppConstants::apiUrl(AppConstants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},

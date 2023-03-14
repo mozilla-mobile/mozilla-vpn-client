@@ -26,7 +26,7 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
 
@@ -58,9 +58,6 @@ Location* MozillaVPN::location() const {
 }
 
 MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
-MozillaVPN::UserState MozillaVPN::userState() const {
-  return UserNotAuthenticated;
-}
 
 void MozillaVPN::initialize() {}
 
@@ -69,8 +66,6 @@ void MozillaVPN::setState(State) {}
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType) {}
-
-void MozillaVPN::setToken(const QString&) {}
 
 void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
@@ -97,8 +92,6 @@ void MozillaVPN::mainWindowLoaded() {
 }
 
 void MozillaVPN::telemetryPolicyCompleted() {}
-
-void MozillaVPN::setUserState(UserState) {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
