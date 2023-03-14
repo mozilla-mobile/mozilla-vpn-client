@@ -12,6 +12,13 @@
 #  error No supported
 #endif
 
+FEATURE(appReview,              // Feature ID
+        "App Review",           // Feature name
+        FeatureCallback_false,  // Can be flipped on
+        FeatureCallback_false,  // Can be flipped off
+        QStringList(),          // feature dependencies
+        FeatureCallback_iosOrAndroid)
+
 FEATURE(gleanRust,             // Feature ID
         "Glean Rust SDK",      // Feature name
         FeatureCallback_true,  // Can be flipped on

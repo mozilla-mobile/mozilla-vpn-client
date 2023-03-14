@@ -235,6 +235,7 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
     ${MZ_SOURCE_DIR}/shared/curve25519.cpp
     ${MZ_SOURCE_DIR}/shared/curve25519.h
+    ${MZ_SOURCE_DIR}/shared/env.cpp
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/errorhandler.cpp
     ${MZ_SOURCE_DIR}/shared/errorhandler.h
@@ -306,6 +307,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
+    ${MZ_SOURCE_DIR}/shared/utils.cpp
+    ${MZ_SOURCE_DIR}/shared/utils.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )
@@ -349,8 +352,6 @@ target_sources(unit_tests PRIVATE
     testipfinder.h
     testmodels.cpp
     testmodels.h
-    testmozillavpnh.cpp
-    testmozillavpnh.h
     testreleasemonitor.cpp
     testreleasemonitor.h
     testserveri18n.cpp

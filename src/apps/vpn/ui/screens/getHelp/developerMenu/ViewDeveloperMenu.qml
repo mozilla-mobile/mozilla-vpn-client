@@ -247,7 +247,7 @@ MZViewBase {
                     --clickNeeded;
                     return;
                 }
-                VPN.crashTest()
+                MZUtils.crashTest()
             }
         }
 
@@ -276,7 +276,7 @@ MZViewBase {
             MZTextBlock {
                 Layout.fillWidth: true
 
-                text: VPN.devVersion
+                text: MZEnv.devVersion
             }
 
             MZTextBlock {

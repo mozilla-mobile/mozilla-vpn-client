@@ -13,7 +13,7 @@ MZStackView {
     id: stackview
 
     function handleButtonClick() {
-        VPN.launchPlayStore()
+        MZUtils.launchPlayStore()
     }
 
     Component.onCompleted: {

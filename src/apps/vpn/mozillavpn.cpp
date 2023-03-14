@@ -71,29 +71,15 @@
 #endif
 
 #include <QApplication>
-#include <QClipboard>
 #include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QLocale>
 #include <QQmlApplicationEngine>
-#include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
-
-#ifdef MZ_ANDROID
-constexpr const char* GOOGLE_PLAYSTORE_URL =
-    "https://play.google.com/store/apps/details?id=org.mozilla.firefox.vpn";
-#endif
-
-#ifdef MZ_IOS
-constexpr const char* APPLE_STORE_URL =
-    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id1489407738?action=write-review";
-#endif
 
 namespace {
 Logger logger("MozillaVPN");
@@ -224,16 +210,6 @@ MozillaVPN::~MozillaVPN() {
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
 
 MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
-
-bool MozillaVPN::stagingMode() const { return !Constants::inProduction(); }
-
-bool MozillaVPN::debugMode() const {
-#ifdef MZ_DEBUG
-  return true;
-#else
-  return false;
-#endif
-}
 
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
@@ -761,14 +737,6 @@ void MozillaVPN::createSupportTicket(const QString& email,
       });
 }
 
-#ifdef MZ_ANDROID
-void MozillaVPN::launchPlayStore() {
-  logger.debug() << "Launch Play Store";
-  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
-  static_cast<AndroidIAPHandler*>(purchaseHandler)->launchPlayStore();
-}
-#endif
-
 void MozillaVPN::accountChecked(const QByteArray& json) {
   logger.debug() << "Account checked";
 
@@ -978,11 +946,6 @@ void MozillaVPN::startSchedulingPeriodicOperations() {
 void MozillaVPN::stopSchedulingPeriodicOperations() {
   logger.debug() << "Stop scheduling account and servers";
   m_periodicOperationsTimer.stop();
-}
-
-void MozillaVPN::storeInClipboard(const QString& text) {
-  logger.debug() << "Store in clipboard";
-  QApplication::clipboard()->setText(text);
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1271,16 +1234,6 @@ void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
   scheduleRefreshDataTasks(refreshProducts);
 }
 
-void MozillaVPN::openAppStoreReviewLink() {
-  Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-
-#if defined(MZ_IOS)
-  UrlOpener::instance()->openUrl(APPLE_STORE_REVIEW_URL);
-#elif defined(MZ_ANDROID)
-  UrlOpener::instance()->openUrl(GOOGLE_PLAYSTORE_URL);
-#endif
-}
-
 bool MozillaVPN::validateUserDNS(const QString& dns) const {
   return DNSHelper::validateUserDNS(dns);
 }
@@ -1335,50 +1288,6 @@ void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
   Q_ASSERT(!reason.isEmpty());
   logger.error() << "Unrecoverable error detected: " << reason;
   quit();
-}
-
-void MozillaVPN::crashTest() {
-  logger.debug() << "Crashing Application";
-  qFatal("Ready to crash!");
-}
-
-// static
-QString MozillaVPN::devVersion() {
-  QString out;
-  QTextStream stream(&out);
-
-  stream << "Qt version: <b>";
-  stream << qVersion();
-  stream << "</b> - compiled: <b>";
-  stream << QT_VERSION_STR;
-  stream << "</b>";
-
-  return out;
-}
-
-// static
-QString MozillaVPN::graphicsApi() {
-  QQuickWindow* window =
-      qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
-  Q_ASSERT(window);
-
-  switch (window->rendererInterface()->graphicsApi()) {
-    case QSGRendererInterface::Software:
-      return "software";
-    case QSGRendererInterface::OpenVG:
-    case QSGRendererInterface::OpenGL:
-      return "openGL/openVG";
-    case QSGRendererInterface::Direct3D11:
-      return "Direct3D11";
-    case QSGRendererInterface::Vulkan:
-      return "Vulkan";
-    case QSGRendererInterface::Metal:
-      return "Metal";
-    case QSGRendererInterface::Unknown:
-    case QSGRendererInterface::Null:
-    default:
-      return "unknown";
-  }
 }
 
 void MozillaVPN::requestDeleteAccount() {
@@ -1494,9 +1403,9 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("update", []() -> QString {
     return
 #if defined(MZ_IOS)
-        APPLE_STORE_URL
+        AppConstants::APPLE_STORE_URL
 #elif defined(MZ_ANDROID)
-                              GOOGLE_PLAYSTORE_URL
+                              AppConstants::GOOGLE_PLAYSTORE_URL
 #else
             AppConstants::apiUrl(
                 AppConstants::RedirectUpdateWithPlatformArgument)

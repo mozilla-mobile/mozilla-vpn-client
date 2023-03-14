@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -17,6 +18,10 @@
 
 #if MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
+#endif
+
+#ifdef MZ_WINDOWS
+#  include "platforms/windows/windowsutils.h"
 #endif
 
 namespace {
