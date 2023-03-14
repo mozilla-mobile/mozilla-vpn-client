@@ -308,6 +308,7 @@ void Localizer::settingsChanged() {
     emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
         GleanSample::nonDefaultLanguageUsed, {{"language_code", code}});
   }
+  mozilla::glean::performance::using_system_language.set(code.isEmpty());
 
   m_code = code;
 
