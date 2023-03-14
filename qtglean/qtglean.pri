@@ -13,15 +13,21 @@ else{
     error(Glean generated files are missing. Please run `python3 ./qtglean/glean_parser_ext/run_glean_parser.py`)
 }
 
+SOURCES += $$PWD/src/cpp/boolean.cpp
 SOURCES += $$PWD/src/cpp/counter.cpp
 SOURCES += $$PWD/src/cpp/datetime.cpp
 SOURCES += $$PWD/src/cpp/event.cpp
+SOURCES += $$PWD/src/cpp/quantity.cpp
+SOURCES += $$PWD/src/cpp/string.cpp
 SOURCES += $$PWD/src/cpp/ping.cpp
 SOURCES += $$PWD/src/cpp/timingdistribution.cpp
 
+HEADERS += $$PWD/include/glean/boolean.h
 HEADERS += $$PWD/include/glean/counter.h
 HEADERS += $$PWD/include/glean/datetime.h
 HEADERS += $$PWD/include/glean/event.h
+HEADERS += $$PWD/include/glean/quantity.h
+HEADERS += $$PWD/include/glean/string.h
 HEADERS += $$PWD/include/glean/ping.h
 HEADERS += $$PWD/include/glean/timingdistribution.h
 HEADERS += $$PWD/include/glean/metrictypes.h

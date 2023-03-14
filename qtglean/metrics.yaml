@@ -24,6 +24,21 @@ performance:
     expires: never
     time_unit: microsecond
 
+  using_system_language:
+    type: boolean
+    lifetime: ping
+    description: |
+      Status of whether app is being used in language of the operating system
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4068
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
   session_start:
     type: datetime
     description: |
