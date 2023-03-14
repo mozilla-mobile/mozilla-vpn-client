@@ -196,13 +196,31 @@ void NotificationHandler::showNotification() {
           return;
         }
         // "VPN Disconnected"
-        notifyInternal(None,
-                       I18nStrings::instance()->t(
-                           I18nStrings::NotificationsVPNDisconnectedTitle),
-                       I18nStrings::instance()
-                           ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
-                           .arg(localizedCityName),
-                       NOTIFICATION_TIME_MSEC);
+        ServerData* serverData = vpn->serverData();
+        if (serverData->multihop())
+        {
+            QString localizedEntryCityName =
+                vpn->controller()->currentServer().localizedEntryCityName();
+
+            QString localizedExitCityName =
+                vpn->controller()->currentServer().localizedExitCityName();
+            
+            notifyInternal(None,
+                           I18nStrings::instance()->t(
+                               I18nStrings::NotificationsVPNDisconnectedTitle),
+                           I18nStrings::instance()
+                               ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
+                               .arg(localizedExitCityName, localizedEntryCityName),
+                           NOTIFICATION_TIME_MSEC);
+        } else {
+            notifyInternal(None,
+                           I18nStrings::instance()->t(
+                               I18nStrings::NotificationsVPNDisconnectedTitle),
+                           I18nStrings::instance()
+                               ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
+                               .arg(localizedCityName),
+                           NOTIFICATION_TIME_MSEC);
+        }
       }
       return;
 

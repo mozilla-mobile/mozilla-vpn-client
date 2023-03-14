@@ -270,15 +270,18 @@ notifications:
     comment: "%1 is the Wi-Fi network name"
   VPNConnectedTitle: VPN Connected
   VPNConnectedMessage:
-    value: "Connected to %1"
+    value: "Connected through %1"
     comment: "%1 is the name of the city the VPN is connected to."
   VPNMultihopConnectedMessage:
-    value: "Connected to %1, through %2"
+    value: "Connected to %1 through %2"
     comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage:
     value: "Disconnected from %1"
     comment: "%1 is the name of the city the VPN disconnected from."
+  VPNMultihopDisconnectedMessage:
+    value: "Disconnected from %1 and %2"
+    comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNSwitchedServersTitle: VPN Switched Servers
   VPNSwitchedServersMessage:
     value: "Switched from %1 to %2"
