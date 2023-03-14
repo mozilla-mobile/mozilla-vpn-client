@@ -6,41 +6,35 @@ const Server = require('./server.js');
 const fs = require('fs');
 const path = require('path');
 
-const PROD_ADDONS_PATH = './addons';
-const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
-                         process.env.MVPN_ADDONS_PATH :
+const PROD_ADDONS_PATH = ('MVPN_PROD_ADDONS_PATH' in process.env) ?
+                         process.env.MVPN_PROD_ADDONS_PATH : './addons';
+const TEST_ADDONS_PATH = ('MVPN_TEST_ADDONS_PATH' in process.env) ?
+                         process.env.MVPN_TEST_ADDONS_PATH :
                          './tests/functional/addons';
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
 function createScenario(scenario, addonPath) {
-  const generatedPath = path.join(addonPath, 'generated');
-  if (!fs.existsSync(generatedPath)) {
-    const manifestPath = path.join(addonPath, 'manifest.json');
-    if (!fs.existsSync(manifestPath)) {
-      throw new Error(`No generated and not manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
-    }
-
-    const obj = {};
-
-    obj[`/${scenario}/manifest.json`] = {
-      status: 200,
-      bodyRaw: fs.readFileSync(manifestPath),
-    };
-    obj[`/${scenario}/manifest.json.sig`] = {
-      status: 404,
-      bodyRaw: '',
-    };
-
-    return obj;
-  }
-
-  const addonsPath = path.join(generatedPath, 'addons');
-  if (!fs.existsSync(addonsPath)) {
-    throw new Error(`${addonsPath} should exist!`);
+  const generatedPath = path.join(addonPath, 'generated', 'addons', 'manifest.json');
+  const manifestPath = path.join(addonPath, 'manifest.json');
+  var addonsPath;
+  if (fs.existsSync(generatedPath)) {
+    addonsPath = path.dirname(generatedPath);
+  } else if (fs.existsSync(manifestPath)) {
+    addonsPath = path.dirname(manifestPath);
+  } else {
+    throw new Error(`No generated and not manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
   }
 
   const obj = {};
+  obj[`/${scenario}/manifest.json`] = {
+    status: 200,
+    bodyRaw: fs.readFileSync(path.join(addonsPath, 'manifest.json')),
+  };
+  obj[`/${scenario}/manifest.json.sig`] = {
+    status: 404,
+    bodyRaw: '',
+  };
 
   const files = fs.readdirSync(addonsPath);
   for (const file of files) {
@@ -49,17 +43,15 @@ function createScenario(scenario, addonPath) {
     if (!stat.isFile()) {
       throw new Error(`Unexpected object: ${filePath}`);
     }
+    if (path.extname(filePath) !== '.rcc') {
+      continue;
+    }
 
     obj[`/${scenario}/${file}`] = {
       status: 200,
       bodyRaw: fs.readFileSync(filePath),
     };
   }
-
-  obj[`/${scenario}/manifest.json.sig`] = {
-    status: 404,
-    bodyRaw: '',
-  };
 
   return obj;
 }

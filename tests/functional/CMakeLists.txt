@@ -55,8 +55,9 @@ if(NOT BUILD_FUNCTIONAL_TESTS)
     return()
 endif()
 
-# Generate the dummy client when building tests
+# Generate the dummy client and addons when building tests
 add_dependencies(build_tests dummyvpn)
+add_dependencies(build_tests addons)
 
 file(GLOB FUNCTIONAL_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "test*.js")
 foreach(FUNCTIONAL_TEST_SOURCE ${FUNCTIONAL_TEST_SOURCES})
@@ -66,6 +67,7 @@ foreach(FUNCTIONAL_TEST_SOURCE ${FUNCTIONAL_TEST_SOURCES})
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMAND ${CMAKE_COMMAND} -E env
                     MVPN_BIN=$<TARGET_FILE:dummyvpn>
-                    MVPN_ADDONS_PATH=${CMAKE_CURRENT_BINARY_DIR}/addons
+                    MVPN_PROD_ADDONS_PATH=${CMAKE_BINARY_DIR}/addons
+                    MVPN_TEST_ADDONS_PATH=${CMAKE_CURRENT_BINARY_DIR}/addons
                 npm run functionalTest ${FUNCTIONAL_TEST_ABSPATH})
 endforeach()
