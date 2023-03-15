@@ -35,17 +35,19 @@ Here are some useful links to start:
 * Localization happens on
   [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
 
-If you want to submit a pull-request, please, install the clang format
-pre-commit hook: `./scripts/git-pre-commit-format install`
+### Pre-commit formatting hook
 
-(If the conda environment is *not* being used, a clang-format library will need 
-to manually installed, and the linter will need to know where to find it. Using 
-homebrew on macOS: 
-```
-brew install clang-format
-export CLANG_FORMAT_DIFF=/opt/homebrew/Cellar/clang-format/15.0.7/share/clang/clang-format-diff.py
-```
-This packaged is automatically added in the conda environment.)
+If you want to submit a pull-request, please, install the clang format
+pre-commit hook that lints code.
+
+1. The standard conda environment includes the required clang-format libraries.
+If the conda environment is *not* being used, a clang-format library will need
+to manually installed. (For example, using Homebrew on macOS:
+`brew install clang-format`.)
+
+2. The linter will need to know where to find the `clang-format-diff.py` file, so
+`CLANG_FORMAT_DIFF` must be exported. On a standard conda installation:
+`export CLANG_FORMAT_DIFF=$(find ~/miniconda3/pkgs -name clang-format-diff.py)`
 
 ## Checking out the source code
 
