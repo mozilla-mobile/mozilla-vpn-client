@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "app.h"
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -33,7 +34,7 @@ void TaskGetLocation::run() {
   QString host = url.host();
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);
   request->get(url);

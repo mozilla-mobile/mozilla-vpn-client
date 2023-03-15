@@ -71,7 +71,6 @@ SOURCES += \
         apps/vpn/inspector/inspectorwebsocketconnection.cpp \
         apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
@@ -214,7 +213,6 @@ HEADERS += \
         apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
         apps/vpn/localizer.h \
-        apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
         apps/vpn/models/featuremodel.h \

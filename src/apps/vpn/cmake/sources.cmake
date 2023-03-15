@@ -175,8 +175,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.h

@@ -25,15 +25,11 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
 
 MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
-
-MozillaVPN::UserState MozillaVPN::userState() const {
-  return TestHelper::userState;
-}
 
 CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 
@@ -80,8 +76,6 @@ void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType) {}
 
-void MozillaVPN::setToken(const QString&) {}
-
 void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
 void MozillaVPN::deviceAdded(const QString&, const QString&, const QString&) {}
@@ -105,8 +99,6 @@ void MozillaVPN::postAuthenticationCompleted() {}
 void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
-
-void MozillaVPN::setUserState(UserState) {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
@@ -169,6 +161,3 @@ bool MozillaVPN::checkCurrentDevice() { return true; }
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
-
-// static
-QByteArray MozillaVPN::authorizationHeader() { return ""; }

@@ -4,10 +4,10 @@
 
 #include "taskpurchase.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #ifdef MZ_IOS
@@ -63,7 +63,7 @@ void TaskPurchase::run() {
                                                200
 #endif
   );
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
 
   switch (m_op) {
 #ifdef MZ_IOS

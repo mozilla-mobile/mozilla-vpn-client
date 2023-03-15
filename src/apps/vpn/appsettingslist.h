@@ -400,17 +400,6 @@ SETTING_BOOL(tipsAndTricksIntroShown,        // getter
              false                           // sensitive (do not log)t
 )
 
-SETTING_STRING(token,        // getter
-               setToken,     // setter
-               removeToken,  // remover
-               hasToken,     // has
-               "token",      // key
-               "",           // default value
-               false,        // user setting
-               true,         // remove when reset
-               true          // sensitive (do not log)
-)
-
 SETTING_BOOL(unsecuredNetworkAlert,        // getter
              setUnsecuredNetworkAlert,     // setter
              removeUnsecuredNetworkAlert,  // remover

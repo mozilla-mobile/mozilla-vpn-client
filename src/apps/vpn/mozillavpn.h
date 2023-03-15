@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 
+#include "app.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
 
@@ -37,7 +38,7 @@ class Telemetry;
 class Theme;
 class User;
 
-class MozillaVPN final : public QObject {
+class MozillaVPN final : public App {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MozillaVPN)
 
@@ -59,27 +60,8 @@ class MozillaVPN final : public QObject {
   };
   Q_ENUM(State);
 
-  enum UserState {
-    // The user is not authenticated and there is not a logging-out operation
-    // in progress. Maybe we are running the authentication flow (to know if we
-    // are running the authentication flow, please use the
-    // `StateAuthenticating` state).
-    UserNotAuthenticated,
-
-    // The user is authenticated and there is not a logging-out operation in
-    // progress.
-    UserAuthenticated,
-
-    // We are logging out the user. There are a few steps to run in order to
-    // complete the logout. In the meantime, the user should be considered as
-    // not-authenticated. The next state will be `UserNotAuthenticated`.
-    UserLoggingOut,
-  };
-  Q_ENUM(UserState);
-
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
 
@@ -174,20 +156,11 @@ class MozillaVPN final : public QObject {
 
   void logout();
 
-  UserState userState() const;
-
-  static bool isUserAuthenticated() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    return vpn->userState() == MozillaVPN::UserAuthenticated;
-  }
-
   bool startMinimized() const { return m_startMinimized; }
 
   void setStartMinimized(bool startMinimized) {
     m_startMinimized = startMinimized;
   }
-
-  void setToken(const QString& token);
 
   [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
@@ -210,16 +183,12 @@ class MozillaVPN final : public QObject {
 
   void hardReset();
 
-  static QByteArray authorizationHeader();
-
   void requestAbout();
 
  private:
   void setState(State state);
 
   void maybeStateMain();
-
-  void setUserState(UserState userState);
 
   void startSchedulingPeriodicOperations();
 
@@ -261,7 +230,6 @@ class MozillaVPN final : public QObject {
 
  signals:
   void stateChanged();
-  void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);
   void aboutNeeded();
@@ -286,8 +254,6 @@ class MozillaVPN final : public QObject {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   State m_state = StateInitialize;
-
-  UserState m_userState = UserNotAuthenticated;
 
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;

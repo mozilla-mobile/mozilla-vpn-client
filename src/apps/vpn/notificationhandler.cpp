@@ -4,6 +4,7 @@
 
 #include "notificationhandler.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "controller.h"
 #include "externalophandler.h"
@@ -290,7 +291,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
   logger.debug() << "New in-app message notification";
 
-  if (!MozillaVPN::isUserAuthenticated()) {
+  if (!App::isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
     return;
   }

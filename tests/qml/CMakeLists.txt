@@ -80,6 +80,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/shared/app.cpp
+    ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp

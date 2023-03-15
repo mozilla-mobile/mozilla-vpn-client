@@ -4,23 +4,20 @@
 
 #include "logoutobserver.h"
 
+#include "app.h"
 #include "leakdetector.h"
-#include "mozillavpn.h"
 
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  connect(vpn, &MozillaVPN::userStateChanged, this,
+  connect(App::instance(), &App::userStateChanged, this,
           &LogoutObserver::userStateChanged);
 }
 
 LogoutObserver::~LogoutObserver() { MZ_COUNT_DTOR(LogoutObserver); }
 
 void LogoutObserver::userStateChanged() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->userState() == MozillaVPN::UserNotAuthenticated) {
+  if (App::instance()->userState() == App::UserNotAuthenticated) {
     emit ready();
     deleteLater();
   }

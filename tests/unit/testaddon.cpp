@@ -877,8 +877,7 @@ void TestAddon::message_notification_data() {
 
   // Mock a user login.
   TestHelper::resetLastSystemNotification();
-  TestHelper::userState = MozillaVPN::UserAuthenticated;
-  emit MozillaVPN::instance()->userStateChanged();
+  App::instance()->setUserState(App::UserAuthenticated);
   // A login should not trigger any messages either.
   QTest::addRow("login") << QString() << QString()
                          << TestHelper::lastSystemNotification.title
@@ -951,6 +950,8 @@ void TestAddon::message_notification_data() {
       << QString("Test Message 5 - Subtitle")
       << TestHelper::lastSystemNotification.title
       << TestHelper::lastSystemNotification.message;
+
+  App::instance()->setUserState(App::UserNotAuthenticated);
 }
 
 void TestAddon::message_notification() {

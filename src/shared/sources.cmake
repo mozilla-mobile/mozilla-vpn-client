@@ -21,6 +21,8 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/app.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp
@@ -71,6 +73,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/leakdetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/localizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/logoutobserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/logoutobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp

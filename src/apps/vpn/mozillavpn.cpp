@@ -95,7 +95,10 @@ MozillaVPN* MozillaVPN::instance() {
 // static
 MozillaVPN* MozillaVPN::maybeInstance() { return s_instance; }
 
-MozillaVPN::MozillaVPN() : m_private(new MozillaVPNPrivate()) {
+// static
+App* App::instance() { return MozillaVPN::instance(); }
+
+MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   MZ_COUNT_CTOR(MozillaVPN);
 
   logger.debug() << "Creating MozillaVPN singleton";
@@ -208,8 +211,6 @@ MozillaVPN::~MozillaVPN() {
 }
 
 MozillaVPN::State MozillaVPN::state() const { return m_state; }
-
-MozillaVPN::UserState MozillaVPN::userState() const { return m_userState; }
 
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
@@ -438,10 +439,10 @@ void MozillaVPN::authenticateWithType(
 
   ErrorHandler::instance()->hideAlert();
 
-  if (m_userState != UserNotAuthenticated) {
+  if (userState() != UserNotAuthenticated) {
     // If we try to start an authentication flow when already logged in, there
     // is a bug elsewhere.
-    Q_ASSERT(m_userState == UserLoggingOut);
+    Q_ASSERT(userState() == UserLoggingOut);
 
     LogoutObserver* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nexted tasks executions.
@@ -475,10 +476,6 @@ void MozillaVPN::abortAuthentication() {
   emit authenticationAborted();
 }
 
-void MozillaVPN::setToken(const QString& token) {
-  SettingsHolder::instance()->setToken(token);
-}
-
 void MozillaVPN::completeAuthentication(const QByteArray& json,
                                         const QString& token) {
   logger.debug() << "Completing the authentication flow";
@@ -500,7 +497,7 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  setToken(token);
+  SettingsHolder::instance()->setToken(token);
   setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
@@ -920,20 +917,12 @@ void MozillaVPN::telemetryPolicyCompleted() {
     return;
   }
 
-  if (m_userState != UserAuthenticated) {
+  if (userState() != UserAuthenticated) {
     authenticate();
     return;
   }
 
   maybeStateMain();
-}
-
-void MozillaVPN::setUserState(UserState state) {
-  logger.debug() << "User authentication state:" << state;
-  if (m_userState != state) {
-    m_userState = state;
-    emit userStateChanged();
-  }
 }
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
@@ -1216,7 +1205,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (!modelsInitialized() || m_userState != UserAuthenticated) {
+  if (!modelsInitialized() || userState() != UserAuthenticated) {
     setState(StateInitialize);
     return;
   }
@@ -1419,18 +1408,6 @@ void MozillaVPN::registerUrlOpenerLabels() {
         .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
                                        : AppConstants::API_STAGING_URL);
   });
-}
-
-// static
-QByteArray MozillaVPN::authorizationHeader() {
-  if (SettingsHolder::instance()->token().isEmpty()) {
-    logger.error() << "INVALID TOKEN! This network request is going to fail.";
-    Q_ASSERT(false);
-  }
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  return authorizationHeader;
 }
 
 void MozillaVPN::errorHandled() {

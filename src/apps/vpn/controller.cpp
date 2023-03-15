@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
@@ -239,7 +240,7 @@ bool Controller::activate(const ServerData& serverData,
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
-    request->auth(MozillaVPN::authorizationHeader());
+    request->auth(App::authorizationHeader());
     request->get(AppConstants::apiUrl(AppConstants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
