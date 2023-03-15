@@ -52,14 +52,29 @@ void Telemetry::initialize() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   connect(vpn, &MozillaVPN::stateChanged, this, []() {
-    MozillaVPN::State state = MozillaVPN::instance()->state();
+    int state = MozillaVPN::instance()->state();
 
-    mozilla::glean::sample::app_step.record(
-        mozilla::glean::sample::AppStepExtra{
-            ._state = QVariant::fromValue(state).toString()});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::appStep,
-        {{"state", QVariant::fromValue(state).toString()}});
+    if (state > App::StateCustom) {
+      mozilla::glean::sample::app_step.record(
+          mozilla::glean::sample::AppStepExtra{
+              ._state = QVariant::fromValue(
+                            static_cast<MozillaVPN::CustomState>(state))
+                            .toString()});
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::appStep,
+          {{"state",
+            QVariant::fromValue(static_cast<MozillaVPN::CustomState>(state))
+                .toString()}});
+    } else {
+      mozilla::glean::sample::app_step.record(
+          mozilla::glean::sample::AppStepExtra{
+              ._state = QVariant::fromValue(static_cast<App::State>(state))
+                            .toString()});
+      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+          GleanSample::appStep,
+          {{"state",
+            QVariant::fromValue(static_cast<App::State>(state)).toString()}});
+    }
 
     if (state == MozillaVPN::StateDeviceLimit) {
       mozilla::glean::sample::max_device_reached.record();
@@ -67,7 +82,7 @@ void Telemetry::initialize() {
           GleanSample::maxDeviceReached);
     }
 
-    if (state == MozillaVPN::StateSubscriptionNotValidated) {
+    if (state == App::StateSubscriptionNotValidated) {
       mozilla::glean::sample::iap_subscription_failed.record(
           mozilla::glean::sample::IapSubscriptionFailedExtra{
               ._error = "not-validated",
@@ -78,7 +93,7 @@ void Telemetry::initialize() {
            {"sku", PurchaseHandler::instance()->currentSKU()}});
     }
 
-    if (state == MozillaVPN::StateSubscriptionBlocked) {
+    if (state == App::StateSubscriptionBlocked) {
       mozilla::glean::sample::iap_subscription_failed.record(
           mozilla::glean::sample::IapSubscriptionFailedExtra{
               ._error = "alrady-subscribed",

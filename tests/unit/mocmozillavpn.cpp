@@ -29,8 +29,6 @@ MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
 
-MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
-
 CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 
 ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
@@ -67,8 +65,6 @@ Location* MozillaVPN::location() const {
 }
 
 void MozillaVPN::initialize() {}
-
-void MozillaVPN::setState(State) {}
 
 bool MozillaVPN::setServerList(QByteArray const&) { return true; }
 
@@ -113,8 +109,6 @@ void MozillaVPN::activate() {}
 void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
-
-void MozillaVPN::quit() {}
 
 void MozillaVPN::update() {}
 

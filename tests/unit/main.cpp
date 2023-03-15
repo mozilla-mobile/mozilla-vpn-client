@@ -17,7 +17,6 @@ class TestApp final : public App {
 };
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
-MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
 QVector<QObject*> TestHelper::testList;
 TestHelper::SystemNotification TestHelper::lastSystemNotification;

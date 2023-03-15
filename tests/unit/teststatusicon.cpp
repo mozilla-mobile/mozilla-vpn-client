@@ -5,7 +5,11 @@
 #include "teststatusicon.h"
 
 #include <QEventLoop>
+#include <QQmlApplicationEngine>
 
+#include "localizer.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 #include "statusicon.h"
 
 void TestStatusIcon::basic() {
@@ -15,8 +19,15 @@ void TestStatusIcon::basic() {
   si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
+  MozillaVPN vpn;
+  SettingsHolder settingsHolder;
+  Localizer l;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
   // VPN is on
-  TestHelper::vpnState = MozillaVPN::StateMain;
+  MozillaVPN::instance()->setState(App::StateMain);
   TestHelper::controllerState = Controller::StateOn;
   si.refreshNeeded();
 
