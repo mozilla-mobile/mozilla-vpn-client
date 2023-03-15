@@ -149,12 +149,12 @@ void NotificationHandler::showNotification() {
             QString localizedExitCityName =
                 vpn->controller()->currentServer().localizedExitCityName();
             
-            // We hit this when going single to multihop
-            if (!localizedEntryCityName.isEmpty()) {
+            // We hit this when going multi to single hop ?
+            if (localizedEntryCityName.isEmpty()) {
                 notifyInternal(
                     None,
                     I18nStrings::instance()->t(
-                        I18nStrings::NotificationsVPNSwitchedServersTitle),
+                        I18nStrings::NotificationsVPNConnectedTitle),
                     I18nStrings::instance()
                         ->t(I18nStrings::NotificationsVPNSwitchedSingleToMultiHopMessage)
                         .arg(localizedExitCityName, localizedCityName),
@@ -167,15 +167,15 @@ void NotificationHandler::showNotification() {
 
             QString localizedExitCityName =
                 vpn->controller()->currentServer().localizedExitCityName();
-            // check if we are going to singlehop. We hit this when going multihop to singlehop
+            // singlehop to singlehop
             if (localizedEntryCityName.isEmpty()) {
                 notifyInternal(
                     None,
                     I18nStrings::instance()->t(
-                        I18nStrings::NotificationsVPNSwitchedServersTitle),
+                        I18nStrings::NotificationsVPNConnectedTitle),
                     I18nStrings::instance()
-                        ->t(I18nStrings::NotificationsVPNSwitchedMultiToSingleHopMessage)
-                        .arg(localizedCityName),
+                        ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
+                        .arg(localizedPreviousExitCityName, localizedCityName),
                     NOTIFICATION_TIME_MSEC);
             }
             
@@ -215,7 +215,7 @@ void NotificationHandler::showNotification() {
               I18nStrings::instance()->t(
                   I18nStrings::NotificationsVPNConnectedTitle),
               I18nStrings::instance()
-                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
+                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessages)
                   .arg(localizedExitCityName, localizedEntryCityName),
               NOTIFICATION_TIME_MSEC);
         } else {
@@ -223,7 +223,7 @@ void NotificationHandler::showNotification() {
                          I18nStrings::instance()->t(
                              I18nStrings::NotificationsVPNConnectedTitle),
                          I18nStrings::instance()
-                             ->t(I18nStrings::NotificationsVPNConnectedMessage)
+                             ->t(I18nStrings::NotificationsVPNConnectedMessages)
                              .arg(localizedCityName),
                          NOTIFICATION_TIME_MSEC);
         }
