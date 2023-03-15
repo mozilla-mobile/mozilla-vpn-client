@@ -14,6 +14,7 @@
 #include "mozillavpn.h"
 #include "networkwatcher.h"
 #include "purchasehandler.h"
+#include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
 #if defined(MZ_ANDROID)
@@ -179,6 +180,13 @@ void Telemetry::initialize() {
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::serverUnavailableError);
   });
+
+  connect(
+      SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+      []() {
+        bool currentSetting = SettingsHolder::instance()->startAtBoot();
+        mozilla::glean::settings::connect_on_startup_active.set(currentSetting);
+      });
 
   PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
