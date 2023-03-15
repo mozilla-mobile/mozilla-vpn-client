@@ -10,6 +10,7 @@
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -518,6 +519,8 @@ void Controller::connected(const QString& pubkey,
   } else {
     resetConnectedTime();
   }
+
+  mozilla::glean::settings::dns_type.set(DNSHelper::getDNSType());
 
   if (m_nextStep != None) {
     deactivate();

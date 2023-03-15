@@ -19,6 +19,14 @@ namespace {
 Logger logger("DNSHelper");
 }
 
+const QString BLOCK_ADS_DNS = "100.64.0.1";
+const QString BLOCK_TRACKERS_DNS = "100.64.0.2";
+const QString BLOCK_ADS_TRACKERS_DNS = "100.64.0.3";
+const QString BLOCK_MALWARE_DNS = "100.64.0.4";
+const QString BLOCK_MALWARE_ADS_DNS = "100.64.0.5";
+const QString BLOCK_MALWARE_TRACKERS_DNS = "100.64.0.6";
+const QString BLOCK_MALWARE_ADS_TRACKERS_DNS = "100.64.0.7";
+
 // static
 QString DNSHelper::getDNS(const QString& fallback) {
   if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
@@ -49,20 +57,50 @@ QString DNSHelper::getDNS(const QString& fallback) {
   }
 
   static QMap<int, QString> dnsMap{
-      {SettingsHolder::BlockAds, "100.64.0.1"},
-      {SettingsHolder::BlockTrackers, "100.64.0.2"},
-      {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers, "100.64.0.3"},
-      {SettingsHolder::BlockMalware, "100.64.0.4"},
-      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds, "100.64.0.5"},
+      {SettingsHolder::BlockAds, BLOCK_ADS_DNS},
+      {SettingsHolder::BlockTrackers, BLOCK_TRACKERS_DNS},
+      {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers,
+       BLOCK_ADS_TRACKERS_DNS},
+      {SettingsHolder::BlockMalware, BLOCK_MALWARE_DNS},
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds,
+       BLOCK_MALWARE_ADS_DNS},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
-       "100.64.0.6"},
+       BLOCK_MALWARE_TRACKERS_DNS},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds +
            SettingsHolder::BlockTrackers,
-       "100.64.0.7"},
+       BLOCK_MALWARE_ADS_TRACKERS_DNS},
   };
 
   Q_ASSERT(dnsMap.contains(dnsProviderFlags));
   return dnsMap[dnsProviderFlags];
+}
+
+// static
+QString DNSHelper::getDNSType() {
+  if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
+    return "NoCustomDNSAvailable";
+  }
+
+  const QString testFallback = "anything";
+  static QMap<QString, QString> dnsTypeMap{
+      {testFallback, "Default"},
+      {BLOCK_ADS_DNS, "BlockAds"},
+      {BLOCK_TRACKERS_DNS, "BlockTrackers"},
+      {BLOCK_ADS_TRACKERS_DNS, "BlockAdsAndTrackers"},
+      {BLOCK_MALWARE_DNS, "BlockMalware"},
+      {BLOCK_MALWARE_ADS_DNS, "BlockMalwareAndAds"},
+      {BLOCK_MALWARE_TRACKERS_DNS, "BlockMalwareAndTrackers"},
+      {BLOCK_MALWARE_ADS_TRACKERS_DNS, "BlockMalwareAndAdsAndTrackers"},
+  };
+
+  const QString currentDNS = DNSHelper::getDNS(testFallback);
+
+  // If it is an unknown DNS server, it's the user's custom DNS.
+  if (!dnsTypeMap.contains(currentDNS)) {
+    return "Custom";
+  }
+
+  return dnsTypeMap[currentDNS];
 }
 
 // static
