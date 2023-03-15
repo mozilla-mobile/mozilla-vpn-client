@@ -108,6 +108,10 @@ module.exports = {
     assert(await this.query(queries.screenInitialize.SIGN_UP_BUTTON.visible()));
     assert(await this.query(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible()));
+    await this.waitForCondition(async () => {
+      return await this.getQueryProperty(
+                  queries.screenInitialize.PANEL_DESCRIPTION, 'text') !== '';
+    });
   },
 
   async forceHeartbeatFailure() {
