@@ -57,7 +57,7 @@ ComboBox {
 
     delegate: ItemDelegate {
         id: comboDelegate
-        objectName: "category-Dropdown-Option-" + index
+        objectName: root + "-" + index
         width: parent.width
         height: Math.max(MZTheme.theme.rowHeight, textItem.implicitHeight)
         padding: 0
@@ -77,7 +77,7 @@ ComboBox {
             MZTextBlock {
                 id: textItem
                 text: name
-                objectName: "category-Dropdown-Option-" + index + "-text"
+                objectName: root + "-" + index + "-text"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: MZTheme.theme.windowMargin / 2
