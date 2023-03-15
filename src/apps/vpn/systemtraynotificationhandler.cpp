@@ -212,7 +212,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   m_lastLocationLabel->setVisible(true);
 
-  QIcon flagIcon(QString(":/nebula/resources/flags/%1.png")
+  QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
                      .arg(vpn->serverData()->exitCountryCode().toUpper()));
 
   QString localizedCityName = vpn->serverData()->localizedExitCityName();
