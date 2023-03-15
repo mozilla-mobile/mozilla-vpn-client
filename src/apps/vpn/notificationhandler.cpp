@@ -139,14 +139,56 @@ void NotificationHandler::showNotification() {
         }
 
         // "VPN Switched Servers"
-        notifyInternal(
-            None,
-            I18nStrings::instance()->t(
-                I18nStrings::NotificationsVPNSwitchedServersTitle),
-            I18nStrings::instance()
-                ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
-                .arg(localizedPreviousExitCityName, localizedCityName),
-            NOTIFICATION_TIME_MSEC);
+        ServerData* serverData = vpn->serverData();
+        
+        if (serverData->multihop()) {
+            
+            QString localizedEntryCityName =
+                vpn->controller()->currentServer().localizedEntryCityName();
+
+            QString localizedExitCityName =
+                vpn->controller()->currentServer().localizedExitCityName();
+            
+            // We hit this when going single to multihop
+            if (!localizedEntryCityName.isEmpty()) {
+                notifyInternal(
+                    None,
+                    I18nStrings::instance()->t(
+                        I18nStrings::NotificationsVPNSwitchedServersTitle),
+                    I18nStrings::instance()
+                        ->t(I18nStrings::NotificationsVPNSwitchedSingleToMultiHopMessage)
+                        .arg(localizedExitCityName, localizedCityName),
+                    NOTIFICATION_TIME_MSEC);
+            }
+              
+        } else {
+            QString localizedEntryCityName =
+                vpn->controller()->currentServer().localizedEntryCityName();
+
+            QString localizedExitCityName =
+                vpn->controller()->currentServer().localizedExitCityName();
+            // check if we are going to singlehop. We hit this when going multihop to singlehop
+            if (localizedEntryCityName.isEmpty()) {
+                notifyInternal(
+                    None,
+                    I18nStrings::instance()->t(
+                        I18nStrings::NotificationsVPNSwitchedServersTitle),
+                    I18nStrings::instance()
+                        ->t(I18nStrings::NotificationsVPNSwitchedMultiToSingleHopMessage)
+                        .arg(localizedCityName),
+                    NOTIFICATION_TIME_MSEC);
+            }
+            
+//            notifyInternal(
+//                None,
+//                I18nStrings::instance()->t(
+//                    I18nStrings::NotificationsVPNSwitchedServersTitle),
+//                I18nStrings::instance()
+//                    ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
+//                    .arg(localizedPreviousExitCityName, localizedCityName),
+//                NOTIFICATION_TIME_MSEC);
+        }
+          
         return;
       }
 

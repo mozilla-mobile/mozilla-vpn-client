@@ -286,6 +286,12 @@ notifications:
   VPNSwitchedServersMessage:
     value: "Switched from %1 to %2"
     comment: "%1 is the name of the initial server, %2 is the name of the destination server."
+  VPNSwitchedMultiToSingleHopMessage:
+    value: "Now connected through %1"
+    comment: "%1 is the name of the city the VPN is connected to."
+  VPNSwitchedSingleToMultiHopMessage:
+    value: "Now connected through %1 via %2"
+    comment: "%2 is the name of the initial server, %1 is the name of the destination server."
 
 systray:
   hide: Hide Mozilla VPN
