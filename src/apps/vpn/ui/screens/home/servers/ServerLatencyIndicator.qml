@@ -21,7 +21,7 @@ MZIcon {
                 score === VPNServerLatency.Excellent)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/nebula/resources/server-latency-strong.svg"
+                source: "qrc:/ui/resources/server-latency-strong.svg"
                 visible: true
             }
         },
@@ -30,7 +30,7 @@ MZIcon {
             when: (score === VPNServerLatency.Moderate)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/nebula/resources/server-latency-moderate.svg"
+                source: "qrc:/ui/resources/server-latency-moderate.svg"
                 visible: true
             }
         },
@@ -39,7 +39,7 @@ MZIcon {
             when: (score === VPNServerLatency.Poor)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/nebula/resources/server-latency-weak.svg"
+                source: "qrc:/ui/resources/server-latency-weak.svg"
                 visible: true
             }
         },
@@ -48,7 +48,7 @@ MZIcon {
             when: score === VPNServerLatency.Unavailable
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/nebula/resources/server-latency-unavailable.svg"
+                source: "qrc:/ui/resources/server-latency-unavailable.svg"
                 visible: true
             }
         },
