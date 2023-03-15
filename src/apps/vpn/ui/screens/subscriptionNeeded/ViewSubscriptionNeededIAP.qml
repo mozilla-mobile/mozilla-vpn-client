@@ -26,7 +26,7 @@ MZFlickable {
         id: headerLink
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
+        onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
     }
 
     Image {

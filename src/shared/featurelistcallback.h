@@ -41,6 +41,14 @@ bool FeatureCallback_shareLogs() {
 #endif
 }
 
+bool FeatureCallback_webPurchase() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
+  return false;
+#else
+  return true;
+#endif
+}
+
 // The app must implement its feature list callback file.
 #include "appfeaturelistcallback.h"
 

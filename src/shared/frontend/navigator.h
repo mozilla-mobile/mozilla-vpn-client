@@ -15,8 +15,7 @@ class Navigator final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Navigator)
 
-  Q_PROPERTY(
-      Screen screen MEMBER m_currentScreen NOTIFY currentComponentChanged)
+  Q_PROPERTY(int screen MEMBER m_currentScreen NOTIFY currentComponentChanged)
   Q_PROPERTY(LoadPolicy loadPolicy MEMBER m_currentLoadPolicy NOTIFY
                  currentComponentChanged)
   Q_PROPERTY(LoadingFlags loadingFlags MEMBER m_currentLoadingFlags NOTIFY
@@ -38,57 +37,37 @@ class Navigator final : public QObject {
   };
   Q_ENUM(LoadingFlags);
 
-  enum Screen {
-    ScreenAuthenticating,
-    ScreenAuthenticationInApp,
-    ScreenBackendFailure,
-    ScreenBillingNotAvailable,
-    ScreenCaptivePortal,
-    ScreenCrashReporting,
-    ScreenDeleteAccount,
-    ScreenDeviceLimit,
-    ScreenGetHelp,
-    ScreenHome,
-    ScreenInitialize,
-    ScreenMessaging,
-    ScreenNoSubscriptionFoundError,
-    ScreenPostAuthentication,
-    ScreenSettings,
-    ScreenSubscriptionBlocked,
-    ScreenSubscriptionNeededIAP,
-    ScreenSubscriptionNeededWeb,
-    ScreenSubscriptionExpiredError,
-    ScreenSubscriptionGenericError,
-    ScreenSubscriptionInProgressIAP,
-    ScreenSubscriptionInProgressWeb,
-    ScreenSubscriptionInUseError,
-    ScreenSubscriptionNotValidated,
-    ScreenTelemetryPolicy,
-    ScreenTipsAndTricks,
-    ScreenUpdateRecommended,
-    ScreenUpdateRequired,
-    ScreenViewLogs,
+  enum Screen : int {
+    // This enum will be populated with shareable screens when ready.
+    ScreenCustom = 1000
   };
   Q_ENUM(Screen);
 
   static Navigator* instance();
 
+  void initialize();
+
   ~Navigator();
 
   Q_INVOKABLE void requestScreenFromBottomBar(
-      Navigator::Screen screen, Navigator::LoadingFlags loadingFlags = NoFlags);
+      int screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestScreen(
-      Navigator::Screen screen, Navigator::LoadingFlags loadingFlags = NoFlags);
+      int screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestPreviousScreen();
 
-  Q_INVOKABLE void addStackView(Navigator::Screen screen,
-                                const QVariant& stackView);
-  Q_INVOKABLE void addView(Navigator::Screen screen, const QVariant& view);
+  Q_INVOKABLE void addStackView(int screen, const QVariant& stackView);
+  Q_INVOKABLE void addView(int screen, const QVariant& view);
 
   Q_INVOKABLE bool eventHandled();
 
   void registerReloader(NavigatorReloader* reloader);
   void unregisterReloader(NavigatorReloader* reloader);
+
+  static void registerScreen(int screenId, LoadPolicy loadPolicy,
+                             const QString& qmlComponentUrl,
+                             const QVector<int>& requiresAppState,
+                             int8_t (*priorityGetter)(int*),
+                             bool (*quitBlocked)());
 
  signals:
   void goBack(QQuickItem* item);
@@ -98,18 +77,18 @@ class Navigator final : public QObject {
   explicit Navigator(QObject* parent);
 
   void computeComponent();
-  void loadScreen(Screen screen, LoadPolicy loadPolicy,
-                  QQmlComponent* component, LoadingFlags loadingFlags);
+  void loadScreen(int screen, LoadPolicy loadPolicy, QQmlComponent* component,
+                  LoadingFlags loadingFlags);
 
   void removeItem(QObject* obj);
 
  private:
-  Screen m_currentScreen = ScreenInitialize;
+  int m_currentScreen = -1;
   LoadPolicy m_currentLoadPolicy = LoadTemporarily;
   LoadingFlags m_currentLoadingFlags = NoFlags;
   QQmlComponent* m_currentComponent = nullptr;
 
-  QList<Screen> m_screenHistory;
+  QList<int> m_screenHistory;
 
   QList<NavigatorReloader*> m_reloaders;
 };

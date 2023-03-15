@@ -5,8 +5,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
-
 
 StackView {
     id: stackView
@@ -26,7 +26,7 @@ StackView {
     }
 
     Connections {
-        target: VPNNavigator
+        target: MZNavigator
         function onGoBack(item) {
             if (item === stackView) {
                 stackView.pop();

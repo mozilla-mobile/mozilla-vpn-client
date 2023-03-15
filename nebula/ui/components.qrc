@@ -79,6 +79,8 @@
         <file>components/MZTutorialCard.qml</file>
         <file>components/MZUIStates.qml</file>
         <file>components/MZVerticalSpacer.qml</file>
+        <file>components/navigator/navigatorLoader.qml</file>
+        <file>components/navigator/navigatorLoaderInternal.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/MZInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/MZInAppAuthenticationErrorPopup.qml</file>

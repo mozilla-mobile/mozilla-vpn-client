@@ -118,10 +118,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigator.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigator.h
-    ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
@@ -243,6 +239,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/errorhandler.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h

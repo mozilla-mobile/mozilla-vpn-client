@@ -155,3 +155,5 @@ bool MozillaVPN::checkCurrentDevice() { return true; }
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
+
+bool MozillaVPN::handleCloseEvent() { return true; }

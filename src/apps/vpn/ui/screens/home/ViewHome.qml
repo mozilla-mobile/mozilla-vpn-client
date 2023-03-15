@@ -156,7 +156,7 @@ MZFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
+                        MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
                     }
                 },
                 MZLinkButton {

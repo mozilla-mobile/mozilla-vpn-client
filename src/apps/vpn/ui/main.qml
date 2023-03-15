@@ -94,7 +94,7 @@ Window {
             return;
         }
 
-        if (VPNNavigator.eventHandled()) {
+        if (MZNavigator.eventHandled()) {
             close.accepted = false;
             return;
         }
@@ -137,7 +137,7 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNNavigatorLoader {
+    MZNavigatorLoader {
       objectName: "screenLoader"
       anchors {
           top: iosSafeAreaTopMargin.bottom
@@ -156,7 +156,7 @@ Window {
                 }
             }
 
-            VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
+            MZNavigator.requestScreen(VPN.ScreenViewLogs);
         }
     }
 

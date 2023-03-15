@@ -105,6 +105,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.cpp
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h

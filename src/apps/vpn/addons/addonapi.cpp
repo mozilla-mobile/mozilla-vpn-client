@@ -156,3 +156,14 @@ QJSValue AddonApi::subscriptionData() const {
       engine->newQMetaObject(&SubscriptionData::staticMetaObject));
   return value;
 }
+
+QJSValue AddonApi::vpn() const {
+  QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+  QObject* obj = MozillaVPN::instance();
+  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+  QJSValue value = engine->newQObject(obj);
+  value.setPrototype(engine->newQMetaObject(&MozillaVPN::staticMetaObject));
+  return value;
+}

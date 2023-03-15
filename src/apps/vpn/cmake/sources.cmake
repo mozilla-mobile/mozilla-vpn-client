@@ -155,10 +155,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/extrastrings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp

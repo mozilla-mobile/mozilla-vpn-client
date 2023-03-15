@@ -15,11 +15,11 @@ import compat 0.1
 Rectangle {
     id: root
     property var showNavigationBar: [
-        VPNNavigator.ScreenSettings,
-        VPNNavigator.ScreenHome,
-        VPNNavigator.ScreenMessaging,
-        VPNNavigator.ScreenGetHelp,
-        VPNNavigator.ScreenTipsAndTricks
+        VPN.ScreenSettings,
+        VPN.ScreenHome,
+        VPN.ScreenMessaging,
+        VPN.ScreenGetHelp,
+        VPN.ScreenTipsAndTricks
     ]
     property var messagesNavButton
 
@@ -30,7 +30,7 @@ Rectangle {
     radius: height / 2
     color: MZTheme.theme.ink
 
-    visible: showNavigationBar.includes(VPNNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain && opacity !== 0
+    visible: showNavigationBar.includes(MZNavigator.screen) && VPN.userState === VPN.UserAuthenticated && VPN.state === VPN.StateMain && opacity !== 0
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -89,7 +89,7 @@ Rectangle {
                 Layout.preferredWidth: width
 
                 skipEnsureVisible: true
-                _screen: VPNNavigator[screen]
+                _screen: VPN[screen]
                 _source: checked ? (_hasNotification ? sourceCheckedNotification : sourceChecked) : (_hasNotification ? sourceUncheckedNotification : sourceUnchecked)
                 ButtonGroup.group: navBarButtonGroup
 
@@ -99,13 +99,13 @@ Rectangle {
                 Component.onCompleted: {
                     if(objectName === "navButton-messages") root.messagesNavButton = this
 
-                    // We want to set checked like this, otherwise it will be bound to VPNNavigator.screen.
+                    // We want to set checked like this, otherwise it will be bound to MZNavigator.screen.
                     // and we don't want that because we have more screens than buttons
                     // and if we move to a screen that doesn't have a button suddenly no buttons are checked.
                     //
                     // Also, even if we bound it that would quickly be unbound by
                     // the code over on onCurrentComponentChanged, so ¯\_(ツ)_/¯.
-                    checked = VPNNavigator.screen === VPNNavigator[screen]
+                    checked = MZNavigator.screen === MZNavigator[screen]
                 }
             }
         }
@@ -139,11 +139,11 @@ Rectangle {
     }
 
     Connections {
-      target: VPNNavigator
+      target: MZNavigator
 
       function onCurrentComponentChanged() {
           for (let i = 0; i < navBarButtonGroup.buttons.length; i++) {
-              if (navBarButtonGroup.buttons[i]._screen === VPNNavigator.screen) {
+              if (navBarButtonGroup.buttons[i]._screen === MZNavigator.screen) {
                   navBarButtonGroup.buttons[i].checked = true;
                   return;
               }
@@ -184,7 +184,7 @@ Rectangle {
     }
 
     function setNavBarOpacity() {
-        if (VPNNavigator.screen === VPNNavigator.ScreenHome) {
+        if (MZNavigator.screen === VPN.ScreenHome) {
             navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
         } else {
             navbar.opacity = 1;

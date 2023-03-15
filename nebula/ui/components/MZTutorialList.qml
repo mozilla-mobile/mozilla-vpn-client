@@ -50,7 +50,7 @@ GridLayout {
                 }
                 else {
                     VPNTutorial.play(addon);
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                    MZNavigator.requestScreen(VPN.ScreenHome)
                 }
             }
         }

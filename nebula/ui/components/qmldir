@@ -13,7 +13,6 @@ MZCard 0.1 MZCard.qml
 MZCheckBox 0.1 MZCheckBox.qml
 MZCheckBoxAlert 0.1 MZCheckBoxAlert.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
-VPNCheckmark 0.1 VPNCheckmark.qml
 MZChevron 0.1 MZChevron.qml
 MZClickableRow 0.1 MZClickableRow.qml
 MZCollapsibleCard 0.1 MZCollapsibleCard.qml
@@ -42,6 +41,7 @@ MZMenu 0.1 MZMenu.qml
 MZMetropolisLabel 0.1 MZMetropolisLabel.qml
 MZMobileStatusBarModifier 0.1 MZMobileStatusBarModifier.qml
 MZMouseArea 0.1 MZMouseArea.qml
+MZNavigatorLoader 0.1 navigator/navigatorLoader.qml
 MZPanel 0.1 MZPanel.qml
 MZPasteButton 0.1 MZPasteButton.qml
 MZPaymentMethod 0.1 MZPaymentMethod.qml

@@ -89,7 +89,7 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
+                onClicked: MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
             }
 
             MZSettingsItem {
@@ -129,7 +129,7 @@ MZViewBase {
                 onClicked: {
                     MZGleanDeprecated.recordGleanEvent("getHelpClickedViewSettings");
                     Glean.sample.getHelpClickedViewSettings.record();
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
+                    MZNavigator.requestScreen(VPN.ScreenGetHelp);
                 }
             }
 

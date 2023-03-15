@@ -40,7 +40,7 @@ MZFlickable {
         visible: getHelpLinkVisible
 
         labelText: qsTrId("vpn.main.getHelp2")
-        onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
+        onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
     }
 
     ColumnLayout {

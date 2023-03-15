@@ -8,6 +8,7 @@
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "dnshelper.h"
+#include "externalophandler.h"
 #include "feature.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
@@ -222,6 +223,8 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_initialized);
   m_initialized = true;
+
+  registerNavigatorScreens();
 
   // This is our first state.
   Q_ASSERT(state() == StateInitialize);
@@ -1436,4 +1439,344 @@ void MozillaVPN::registerErrorHandlers() {
 
         return ErrorHandler::ConnectionFailedAlert;
       });
+}
+
+void MozillaVPN::registerNavigatorScreens() {
+  Navigator::registerScreen(
+      MozillaVPN::ScreenAuthenticating, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenAuthenticating.qml",
+      QVector<int>{App::StateAuthenticating},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
+                   ? -1
+                   : 0;
+      },
+      []() -> bool {
+        MozillaVPN::instance()->cancelAuthentication();
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenAuthenticationInApp,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenAuthenticationInApp.qml",
+      QVector<int>{App::StateAuthenticating},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
+                   ? 0
+                   : -1;
+      },
+      []() -> bool {
+        MozillaVPN::instance()->cancelAuthentication();
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenBackendFailure, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenBackendFailure.qml",
+      QVector<int>{MozillaVPN::StateBackendFailure},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenBillingNotAvailable,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenBillingNotAvailable.qml",
+      QVector<int>{App::StateBillingNotAvailable},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenCaptivePortal, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenCaptivePortal.qml", QVector<int>{App::StateMain},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenCrashReporting, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenCrashReporting.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenCrashReporting)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenDeleteAccount, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenDeleteAccount.qml", QVector<int>{App::StateMain},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenDeleteAccount)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        MozillaVPN::instance()->cancelReauthentication();
+        return false;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenDeviceLimit, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenDeviceLimit.qml",
+      QVector<int>{MozillaVPN::StateDeviceLimit},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenGetHelp, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenGetHelp.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenGetHelp)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      "qrc:/ui/screens/ScreenHome.qml", QVector<int>{App::StateMain},
+      [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenInitialize, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenInitialize.qml",
+      QVector<int>{App::StateInitialize}, [](int*) -> int8_t { return 0; },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
+      "qrc:/ui/screens/ScreenMessaging.qml", QVector<int>{App::StateMain},
+      [](int*) -> int8_t { return 0; },
+      []() -> bool {
+        Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
+                                             Navigator::ForceReload);
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenNoSubscriptionFoundError,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenNoSubscriptionFoundError.qml",
+      QVector<int>{App::StateSubscriptionNeeded,
+                   App::StateSubscriptionInProgress},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenNoSubscriptionFoundError)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenPostAuthentication,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenPostAuthentication.qml",
+      QVector<int>{App::StatePostAuthentication},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
+      "qrc:/ui/screens/ScreenSettings.qml", QVector<int>{App::StateMain},
+      [](int*) -> int8_t { return 0; },
+      []() -> bool {
+        Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
+                                             Navigator::ForceReload);
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionBlocked,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionBlocked.qml",
+      QVector<int>{App::StateSubscriptionBlocked},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionExpiredError,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionExpiredError.qml",
+      QVector<int>{App::StateSubscriptionNeeded,
+                   App::StateSubscriptionInProgress},
+      [](int* requestedScreen) -> int8_t {
+        return requestedScreen && *requestedScreen ==
+                                      MozillaVPN::ScreenSubscriptionExpiredError
+                   ? 99
+                   : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionGenericError,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionGenericError.qml",
+      QVector<int>{App::StateSubscriptionNeeded,
+                   App::StateSubscriptionInProgress},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenSubscriptionGenericError)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionInProgressIAP,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionInProgressIAP.qml",
+      QVector<int>{App::StateSubscriptionInProgress},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
+                                                                         : 99;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionInProgressWeb,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionInProgressWeb.qml",
+      QVector<int>{App::StateSubscriptionInProgress},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
+                                                                         : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionInUseError,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionInUseError.qml",
+      QVector<int>{App::StateSubscriptionNeeded,
+                   App::StateSubscriptionInProgress},
+      [](int* requestedScreen) -> int8_t {
+        return requestedScreen && *requestedScreen ==
+                                      MozillaVPN::ScreenSubscriptionInUseError
+                   ? 99
+                   : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionNeededIAP,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionNeededIAP.qml",
+      QVector<int>{App::StateSubscriptionNeeded},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
+                                                                         : 99;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionNeededWeb,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
+      QVector<int>{App::StateSubscriptionNeeded},
+      [](int*) -> int8_t {
+        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
+                                                                         : -1;
+      },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenSubscriptionNotValidated,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenSubscriptionNotValidated.qml",
+      QVector<int>{App::StateSubscriptionNotValidated},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenTelemetryPolicy, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenTelemetryPolicy.qml",
+      QVector<int>{App::StateTelemetryPolicy}, [](int*) -> int8_t { return 0; },
+      []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenUpdateRequired, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenUpdateRequired.qml",
+      QVector<int>{MozillaVPN::StateUpdateRequired},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenUpdateRecommended,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenUpdateRecommended.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenUpdateRecommended)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenTipsAndTricks, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenTipsAndTricks.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenTipsAndTricks)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenViewLogs, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenViewLogs.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenViewLogs)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound,
+          Navigator::instance(), []() {
+            Navigator::instance()->requestScreen(
+                MozillaVPN::ScreenNoSubscriptionFoundError);
+          });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::subscriptionExpired,
+          Navigator::instance(), []() {
+            Navigator::instance()->requestScreen(
+                MozillaVPN::ScreenSubscriptionExpiredError);
+          });
+
+  connect(ErrorHandler::instance(), &ErrorHandler::subscriptionInUse,
+          Navigator::instance(), []() {
+            Navigator::instance()->requestScreen(
+                MozillaVPN::ScreenSubscriptionInUseError);
+          });
+
+  connect(
+      ErrorHandler::instance(), &ErrorHandler::subscriptionGeneric,
+      Navigator::instance(), []() {
+        Navigator::instance()->requestScreen(ScreenSubscriptionGenericError);
+      });
+
+#ifdef SENTRY_ENABLED
+  connect(
+      SentryAdapter::instance(), &SentryAdapter::needsCrashReportScreen,
+      Navigator::instance(), []() {
+        Navigator::instance()->requestScreen(MozillaVPN::ScreenCrashReporting);
+      });
+#endif
+
+  Navigator::instance()->initialize();
+}
+
+bool MozillaVPN::handleCloseEvent() {
+  return !ExternalOpHandler::instance()->request(
+      ExternalOpHandler::OpCloseEvent);
 }

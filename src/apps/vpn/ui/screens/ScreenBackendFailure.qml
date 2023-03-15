@@ -17,7 +17,7 @@ MZStackView {
     }
 
     Component.onCompleted: {
-        VPNNavigator.addStackView(VPNNavigator.ScreenBackendFailure, stackview)
+        MZNavigator.addStackView(VPN.ScreenBackendFailure, stackview)
 
         stackview.push(
             "qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {

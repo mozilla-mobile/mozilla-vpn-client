@@ -11,6 +11,7 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "env.h"
 #include "errorhandler.h"
+#include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
@@ -60,6 +61,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                Localizer::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLog",
                                LogHandler::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZNavigator",
+                               Navigator::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",

@@ -61,8 +61,6 @@ SOURCES += \
         apps/vpn/dnshelper.cpp \
         apps/vpn/dnspingsender.cpp \
         apps/vpn/externalophandler.cpp \
-        apps/vpn/frontend/navigator.cpp \
-        apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
         apps/vpn/inspector/inspectorhandler.cpp \
@@ -202,8 +200,6 @@ HEADERS += \
         apps/vpn/dnshelper.h \
         apps/vpn/dnspingsender.h \
         apps/vpn/externalophandler.h \
-        apps/vpn/frontend/navigator.h \
-        apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
         apps/vpn/inspector/inspectorhandler.h \

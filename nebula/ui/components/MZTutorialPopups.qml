@@ -266,7 +266,7 @@ Item {
 
     function openTipsAndTricks() {
         tutorialPopup.close();
-        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
+        MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
     }
 
 
@@ -328,7 +328,7 @@ Item {
                 VPNTutorial.stop()
                 if(shouldPlayTutorial) {
                     VPNTutorial.play(tutorial)
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                    MZNavigator.requestScreen(VPN.ScreenHome)
                 }
             }
             tutorialPopup.dismissOnStop = false;

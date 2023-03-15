@@ -55,7 +55,7 @@ Item {
             }
         }
 
-        target: VPNNavigator
+        target: MZNavigator
     }
 
     MZSegmentedNavigation {
