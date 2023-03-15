@@ -38,6 +38,15 @@ Here are some useful links to start:
 If you want to submit a pull-request, please, install the clang format
 pre-commit hook: `./scripts/git-pre-commit-format install`
 
+(If the conda environment is *not* being used, a clang-format library will need 
+to manually installed, and the linter will need to know where to find it. Using 
+homebrew on macOS: 
+```
+brew install clang-format
+export CLANG_FORMAT_DIFF=/opt/homebrew/Cellar/clang-format/15.0.7/share/clang/clang-format-diff.py
+```
+This packaged is automatically added in the conda environment.)
+
 ## Checking out the source code
 
 ```bash
