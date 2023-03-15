@@ -56,10 +56,6 @@
         <file>resources/server-unavailable.svg</file>
         <file>resources/settings.svg</file>
         <file>resources/settings-white.svg</file>
-        <file>resources/server-latency-strong.svg</file>
-        <file>resources/server-latency-moderate.svg</file>
-        <file>resources/server-latency-weak.svg</file>
-        <file>resources/server-latency-unavailable.svg</file>
         <file>resources/shaders/baked/animatedRings.frag.qsb</file>
         <file>resources/shaders/src/animatedRings.frag</file>
         <file>resources/shield-off.svg</file>
