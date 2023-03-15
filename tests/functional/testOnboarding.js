@@ -40,7 +40,7 @@ describe('Onboarding', function () {
     });
     assert.equal(
       await vpn.getQueryProperty(queries.screenInitialize.PANEL_TITLE, 'text'),
-      'Mozilla VPN'
+      'Protect your privacy'
     );
   });
 
