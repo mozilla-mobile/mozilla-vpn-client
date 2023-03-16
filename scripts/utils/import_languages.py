@@ -179,10 +179,6 @@ for l10n_file in l10n_files:
 
 os.system(f"{lupdate} translations/generated/dummy_language.pro")
 for l10n_file in l10n_files:
-    # Let's remove the non-translated strings if needed
-    if l10n_file['locale'] != 'en':
-        print(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
-        os.system(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
     os.system(f"{lrelease} -idbased {l10n_file['ts']}")
 
 print(f'Imported {len(l10n_files)} locales')
