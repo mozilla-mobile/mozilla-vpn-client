@@ -53,7 +53,6 @@ MZRadioDelegate 0.1 MZRadioDelegate.qml
 MZScreenBase 0.1 MZScreenBase.qml
 MZSegmentedNavigation 0.1 MZSegmentedNavigation.qml
 MZSegmentedToggle 0.1 MZSegmentedToggle.qml
-MZServerUnavailablePopup 0.1 MZServerUnavailablePopup.qml
 MZSettingsItem 0.1 MZSettingsItem.qml
 MZSettingsToggle 0.1 MZSettingsToggle.qml
 MZSignOut 0.1 MZSignOut.qml
