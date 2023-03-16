@@ -36,7 +36,6 @@ class StatusIcon;
 class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
-class Theme;
 class User;
 
 class MozillaVPN final : public App {
@@ -150,7 +149,6 @@ class MozillaVPN final : public App {
   StatusIcon* statusIcon() const;
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
-  Theme* theme() const;
   User* user() const;
 
   // Called at the end of the authentication flow. We can continue adding the

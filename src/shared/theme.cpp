@@ -15,13 +15,26 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
+#include <QCoreApplication>
+
 namespace {
 Logger logger("Theme");
 }
 
-Theme::Theme() { MZ_COUNT_CTOR(Theme); }
+Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
+  MZ_COUNT_CTOR(Theme);
+}
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
+
+// static
+Theme* Theme::instance() {
+  static Theme* s_instance = nullptr;
+  if (!s_instance) {
+    s_instance = new Theme(qApp);
+  }
+  return s_instance;
+}
 
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();

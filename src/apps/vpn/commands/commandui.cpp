@@ -53,7 +53,6 @@
 #include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "temporarydir.h"
-#include "theme.h"
 #include "tutorial/tutorial.h"
 #include "update/updater.h"
 
@@ -361,12 +360,6 @@ int CommandUI::run(QStringList& tokens) {
     // work for the generation of i18nstrings.h/cpp for the unit-test app.
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
                                  I18nStrings::instance());
-
-    // TODO: MZTheme should be moved to QmlEngineHolder but it requires a bit
-    // of work in MozillaVPN first.
-    Theme* theme = MozillaVPN::instance()->theme();
-    theme->initialize(engine);
-    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme", theme);
 
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
