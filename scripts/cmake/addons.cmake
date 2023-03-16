@@ -14,6 +14,15 @@ function(add_addon_target NAME)
         "SOURCES"
         ${ARGN})
 
+    if(${CMAKE_VERSION} VERSION_LESS 3.20)
+        message(WARNING "Addon generation requires CMake 3.20 or later")
+        return()
+    endif()
+
+    # Fix Ninja dependency tracking when dealing with absolute paths. 
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0116 NEW)
+
     if(NOT ADDON_OUTPUT_DIR)
         set(ADDON_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     else()
@@ -37,20 +46,14 @@ function(add_addon_target NAME)
         endforeach()
     endif()
 
-    # Fix Ninja dependency tracking when dealing with absolute paths. 
-    cmake_policy(PUSH)
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
-        cmake_policy(SET CMP0116 NEW)
-    endif()
-
     # Add commands to build the addons
     foreach(MANIFEST_FILE ${ADDON_SOURCES})
         # Parse the manifest to get the addon ID.
         file(READ ${MANIFEST_FILE} ADDON_MANIFEST)
         string(JSON ADDON_ID GET ${ADDON_MANIFEST} "id")
 
-        if(CMAKE_GENERATOR MATCHES "Ninja")
-            ## Depfiles are great, but they only work on some generators.
+        if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
+            ## Depfiles are great, but they only work for some generators.
             add_custom_command(
                 OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
                 DEPENDS ${MANIFEST_FILE}
