@@ -102,9 +102,6 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 
   url.setPath("/api/v1/vpn/ipinfo");
 
-  // We need a token for the network request.
-  SettingsHolder::instance()->setToken("TOKEN!");
-
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(App::authorizationHeader());
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
