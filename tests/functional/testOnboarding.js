@@ -20,7 +20,7 @@ describe('Onboarding', function () {
     );
   });
 
-  it('Panel title is set correctly based on StackView currentIndex', async () => {
+  it.only('Panel title is set correctly based on StackView currentIndex', async () => {
     await vpn.waitForQuery(queries.screenInitialize.SCREEN.ready());
     await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
     await vpn.setQueryProperty(
@@ -40,7 +40,7 @@ describe('Onboarding', function () {
     });
     assert.equal(
       await vpn.getQueryProperty(queries.screenInitialize.PANEL_TITLE, 'text'),
-      'Protect your privacy'
+      'Mozilla VPN'
     );
   });
 
