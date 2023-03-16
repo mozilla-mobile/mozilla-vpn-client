@@ -203,10 +203,10 @@ int CommandLogin::run(QStringList& tokens) {
           });
     }
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &vpn, [&] {
-      if (vpn.state() == MozillaVPN::StatePostAuthentication ||
-          vpn.state() == MozillaVPN::StateTelemetryPolicy ||
-          vpn.state() == MozillaVPN::StateMain) {
+    QObject::connect(&vpn, &App::stateChanged, &vpn, [&] {
+      if (vpn.state() == App::StatePostAuthentication ||
+          vpn.state() == App::StateTelemetryPolicy ||
+          vpn.state() == App::StateMain) {
         loop.exit();
       }
       if (ErrorHandler::instance()->alert() ==

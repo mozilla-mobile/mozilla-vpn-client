@@ -253,7 +253,7 @@ bool Controller::activate(const ServerData& serverData,
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
               // subscribed.
-              if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+              if (App::instance()->state() != App::StateMain) {
                 return;
               }
 

@@ -57,11 +57,7 @@ Location* MozillaVPN::location() const {
   return location;
 }
 
-MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
-
 void MozillaVPN::initialize() {}
-
-void MozillaVPN::setState(State) {}
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
@@ -106,8 +102,6 @@ void MozillaVPN::activate() {}
 void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
-
-void MozillaVPN::quit() {}
 
 void MozillaVPN::update() {}
 
