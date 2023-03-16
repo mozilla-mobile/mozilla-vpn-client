@@ -345,7 +345,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
         if (!json.isObject()) {
           REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
           emit subscriptionFailed();
-          ErrorHandler::instance()->subscriptionGenericError();
+          emit ErrorHandler::instance()->subscriptionGeneric();
           return;
         }
 
@@ -354,7 +354,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
         if (!errorValue.isDouble()) {
           REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
           emit subscriptionFailed();
-          ErrorHandler::instance()->subscriptionGenericError();
+          emit ErrorHandler::instance()->subscriptionGeneric();
           return;
         }
 
@@ -362,14 +362,14 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
         if (errorNumber == GUARDIAN_ERROR_RECEIPT_NOT_VALID) {
           REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
           emit subscriptionFailed();
-          ErrorHandler::instance()->subscriptionExpiredError();
+          emit ErrorHandler::instance()->subscriptionExpired();
           return;
         }
 
         if (errorNumber == GUARDIAN_ERROR_RECEIPT_IN_USE) {
           REPORTNETWORKERROR(error, ErrorHandler::PropagateError, purchase->name());
           emit subscriptionFailed();
-          ErrorHandler::instance()->subscriptionInUseError();
+          emit ErrorHandler::instance()->subscriptionInUse();
           return;
         }
 
@@ -394,7 +394,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 
 void IOSIAPHandler::noSubscriptionFoundError() {
   emit subscriptionCanceled();
-  ErrorHandler::instance()->noSubscriptionFoundError();
+  emit ErrorHandler::instance()->noSubscriptionFound();
 }
 
 int IOSIAPHandler::discountToDays(void* aDiscount) {

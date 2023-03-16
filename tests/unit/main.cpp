@@ -14,6 +14,8 @@
 class TestApp final : public App {
  public:
   TestApp() : App(nullptr) {}
+
+  bool handleCloseEvent() override { return true; }
 };
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;

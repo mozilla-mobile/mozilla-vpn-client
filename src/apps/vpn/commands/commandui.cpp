@@ -21,7 +21,6 @@
 #include "controller.h"
 #include "feature.h"
 #include "fontloader.h"
-#include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
@@ -339,8 +338,6 @@ int CommandUI::run(QStringList& tokens) {
                                  MozillaVPN::instance()->connectionBenchmark());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
                                  MozillaVPN::instance()->ipAddressLookup());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNNavigator",
-                                 Navigator::instance());
 
 #ifdef MZ_ANDROID
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",

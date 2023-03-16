@@ -18,6 +18,8 @@ SOURCES += \
         $$PWD/feature.cpp \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
+        $$PWD/frontend/navigator.cpp \
+        $$PWD/frontend/navigatorreloader.cpp \
         $$PWD/glean/gleandeprecated.cpp \
         $$PWD/glean/mzglean.cpp \
         $$PWD/hacl-star/Hacl_Chacha20.c \
@@ -74,6 +76,8 @@ HEADERS += \
         $$PWD/feature.h \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
+        $$PWD/frontend/navigator.h \
+        $$PWD/frontend/navigatorreloader.h \
         $$PWD/glean/gleandeprecated.h \
         $$PWD/glean/mzglean.h \
         $$PWD/hawkauth.h \

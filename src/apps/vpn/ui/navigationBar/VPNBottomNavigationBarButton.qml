@@ -6,7 +6,6 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 
 MZIconButton {
@@ -19,7 +18,7 @@ MZIconButton {
     accessibleName: ""
 
     onClicked: {
-        VPNNavigator.requestScreenFromBottomBar(_screen, VPNNavigator.screen === _screen ? VPNNavigator.ForceReload : VPNNavigator.NoFlags);
+        MZNavigator.requestScreenFromBottomBar(_screen, MZNavigator.screen === _screen ? MZNavigator.ForceReload : MZNavigator.NoFlags);
     }
 
     width: MZTheme.theme.navBarIconSize

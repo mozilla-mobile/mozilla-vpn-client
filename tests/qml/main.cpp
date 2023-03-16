@@ -6,6 +6,12 @@
 
 #include "helper.h"
 
+// static
+App* App::instance() {
+  qFatal("This method should not be called");
+  return nullptr;
+}
+
 int main(int argc, char* argv[]) {
   // In order to be able to call our TestHelper constructor how we want,
   // we do not follow the exact instructions here

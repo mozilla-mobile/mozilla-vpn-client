@@ -13,6 +13,7 @@
 #include "app.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
+#include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;
 class CaptivePortal;
@@ -49,6 +50,39 @@ class MozillaVPN final : public App {
     StateUpdateRequired,
   };
   Q_ENUM(CustomState);
+
+  enum CustomScreen {
+    ScreenAuthenticating = Navigator::ScreenCustom + 1,
+    ScreenAuthenticationInApp,
+    ScreenBackendFailure,
+    ScreenBillingNotAvailable,
+    ScreenCaptivePortal,
+    ScreenCrashReporting,
+    ScreenDeleteAccount,
+    ScreenDeviceLimit,
+    ScreenGetHelp,
+    ScreenHome,
+    ScreenInitialize,
+    ScreenMessaging,
+    ScreenNoSubscriptionFoundError,
+    ScreenPostAuthentication,
+    ScreenSettings,
+    ScreenSubscriptionBlocked,
+    ScreenSubscriptionExpiredError,
+    ScreenSubscriptionGenericError,
+    ScreenSubscriptionInProgressIAP,
+    ScreenSubscriptionInProgressWeb,
+    ScreenSubscriptionInUseError,
+    ScreenSubscriptionNeededIAP,
+    ScreenSubscriptionNeededWeb,
+    ScreenSubscriptionNotValidated,
+    ScreenTelemetryPolicy,
+    ScreenTipsAndTricks,
+    ScreenUpdateRecommended,
+    ScreenUpdateRequired,
+    ScreenViewLogs,
+  };
+  Q_ENUM(CustomScreen);
 
  private:
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
@@ -170,6 +204,8 @@ class MozillaVPN final : public App {
 
   void requestAbout();
 
+  bool handleCloseEvent() override;
+
  private:
   void maybeStateMain();
 
@@ -210,6 +246,8 @@ class MozillaVPN final : public App {
   static void registerUrlOpenerLabels();
 
   static void registerErrorHandlers();
+
+  static void registerNavigatorScreens();
 
  signals:
   void deviceRemoving(const QString& publicKey);

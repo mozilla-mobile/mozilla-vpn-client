@@ -172,10 +172,10 @@ Item {
                 stackview.pop();
         }
 
-        target: VPNNavigator
+        target: MZNavigator
     }
 
-    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenSettings, root)
+    Component.onCompleted: MZNavigator.addView(VPN.ScreenSettings, root)
 
     Component.onDestruction: {
         MZGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{

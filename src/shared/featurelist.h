@@ -54,5 +54,12 @@ FEATURE(shareLogs,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_shareLogs)
 
+FEATURE(webPurchase,           // Feature ID
+        "Web Purchase",        // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_webPurchase)
+
 // The app must implement its feature list file.
 #include "appfeaturelist.h"

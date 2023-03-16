@@ -74,7 +74,7 @@ MZViewBase {
 
                 labelText: qsTrId("vpn.main.getHelp2")
                 Layout.alignment: Qt.AlignHCenter
-                onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
+                onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
                 Layout.preferredHeight: MZTheme.theme.rowHeight
             }
 

@@ -692,7 +692,7 @@ Item {
         radius: MZTheme.theme.cornerRadius * 2
     }
 
-    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenHome, connectionInfoScreen)
+    Component.onCompleted: MZNavigator.addView(VPN.ScreenHome, connectionInfoScreen)
 
     Connections {
         function onGoBack(item) {
@@ -701,6 +701,6 @@ Item {
             }
         }
 
-        target: VPNNavigator
+        target: MZNavigator
     }
 }

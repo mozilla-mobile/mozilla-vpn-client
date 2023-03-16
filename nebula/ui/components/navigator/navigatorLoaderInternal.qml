@@ -4,13 +4,13 @@
 
 import QtQuick 2.5
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 
 Loader {
     id: loader
     asynchronous: true
 
     // Let's use `onCompleted` to take the current value of
-    // VPNNavigator.component without creating a property binding.
-    Component.onCompleted: () => { loader.sourceComponent = VPNNavigator.component }
+    // MZNavigator.component without creating a property binding.
+    Component.onCompleted: () => { loader.sourceComponent = MZNavigator.component }
 }

@@ -114,7 +114,7 @@ MZViewBase {
 
                 onClicked: {
                     MZGleanDeprecated.recordGleanEvent("deleteAccountRequested");
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
+                    MZNavigator.requestScreen(VPN.ScreenDeleteAccount)
                 }
 
                 Layout.alignment: Qt.AlignHCenter

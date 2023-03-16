@@ -93,6 +93,11 @@ class App : public QObject {
 
   void quit();
 
+  /**
+   * @brief return true if the close-event is handled by the app somehow
+   */
+  virtual bool handleCloseEvent() = 0;
+
  signals:
   void stateChanged();
   void userStateChanged();

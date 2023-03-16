@@ -36,7 +36,7 @@ MZFlickable {
             PropertyChanges {
                 target: footerLink
                 onClicked: {
-                    VPNNavigator.requestPreviousScreen();
+                    MZNavigator.requestPreviousScreen();
                 }
             }
 

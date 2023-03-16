@@ -14,11 +14,11 @@ StackView {
     id: multiHopStackView
 
     Component.onCompleted: function() {
-        VPNNavigator.addStackView(VPNNavigator.ScreenHome, multiHopStackView)
+        MZNavigator.addStackView(VPN.ScreenHome, multiHopStackView)
     }
 
     Connections {
-        target: VPNNavigator
+        target: MZNavigator
         function onGoBack(item) {
             if (item === multiHopStackView) {
                 multiHopStackView.pop();

@@ -17,7 +17,7 @@ MZStackView {
     }
 
     Component.onCompleted: {
-        VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionBlocked, stackview)
+        MZNavigator.addStackView(VPN.ScreenSubscriptionBlocked, stackview)
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"

@@ -225,7 +225,7 @@ bool Controller::activate(const ServerData& serverData,
   if (m_state == StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
-      Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
+      Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
 
       m_portalDetected = false;
       return true;

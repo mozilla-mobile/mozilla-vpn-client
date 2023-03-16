@@ -5,7 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
-import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 
 StackView {
   id: stackView
@@ -17,15 +17,15 @@ StackView {
   property var currentLoadPolicy: null
 
   function showCurrentComponent() {
-      if (stackView.currentLoadPolicy === VPNNavigator.LoadTemporarily) {
+      if (stackView.currentLoadPolicy === MZNavigator.LoadTemporarily) {
         // Temporarily items will be always at the last position because
         // nothing else can be added after them.
         stackView.pop(StackView.Immediate);
       }
 
-      stackView.currentLoadPolicy = VPNNavigator.loadPolicy;
+      stackView.currentLoadPolicy = MZNavigator.loadPolicy;
 
-      if (VPNNavigator.loadingFlags === VPNNavigator.ForceReloadAll) {
+      if (MZNavigator.loadingFlags === MZNavigator.ForceReloadAll) {
         for (let i = 0; i < stackView.screens.length; ++i) {
           stackView.get(i+1).sourceComponent = null;
         }
@@ -34,14 +34,14 @@ StackView {
       // Let's hide the initial empty screen.
       stackView.get(0).visible = false;
 
-      const pos = stackView.screens.indexOf(VPNNavigator.screen)
+      const pos = stackView.screens.indexOf(MZNavigator.screen)
       if (pos === -1) {
         for (let i = 0; i < stackView.screens.length; ++i) {
           stackView.get(i+1).visible = false;
         }
 
-        if (stackView.currentLoadPolicy === VPNNavigator.LoadPersistently) {
-          stackView.screens.push(VPNNavigator.screen);
+        if (stackView.currentLoadPolicy === MZNavigator.LoadPersistently) {
+          stackView.screens.push(MZNavigator.screen);
         }
 
         const loaderComponent = Qt.createComponent("navigatorLoaderInternal.qml")
@@ -51,9 +51,9 @@ StackView {
       }
 
       if (stackView.get(pos+1).sourceComponent === null ||
-          (VPNNavigator.loadingFlags === VPNNavigator.ForceReload)) {
+          (MZNavigator.loadingFlags === MZNavigator.ForceReload)) {
         stackView.get(pos+1).sourceComponent = null;
-        stackView.get(pos+1).sourceComponent = VPNNavigator.component;
+        stackView.get(pos+1).sourceComponent = MZNavigator.component;
       }
 
       for (let i = 0; i < stackView.screens.length; ++i) {
@@ -74,7 +74,7 @@ StackView {
 
 
   Connections {
-    target: VPNNavigator
+    target: MZNavigator
     function onCurrentComponentChanged() {
        showCurrentComponent();
     }

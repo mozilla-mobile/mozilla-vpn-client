@@ -13,7 +13,7 @@ MZStackView {
     id: stackView
 
     Component.onCompleted: function() {
-       VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionGenericError, stackView)
+       MZNavigator.addStackView(VPN.ScreenSubscriptionGenericError, stackView)
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
@@ -26,7 +26,7 @@ MZStackView {
            // Try again (Error SubscriptionGenericError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
            primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
-           primaryButtonOnClick: () => { VPNNavigator.requestScreen(VPNNavigator.ScreenSubscriptionNeededIAP) },
+           primaryButtonOnClick: () => { MZNavigator.requestScreen(VPN.ScreenSubscriptionNeededIAP) },
            secondaryButtonIsSignOff: false,
            getHelpLinkVisible: true
        });

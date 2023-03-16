@@ -60,13 +60,6 @@ FEATURE(freeTrial,             // Feature ID
         QStringList(),         // feature dependencies
         FeatureCallback_freeTrial)
 
-FEATURE(webPurchase,           // Feature ID
-        "Web Purchase",        // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_webPurchase)
-
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
         FeatureCallback_true,  // Can be flipped on
