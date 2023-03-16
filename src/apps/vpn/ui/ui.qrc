@@ -32,6 +32,7 @@
         <file>screens/home/controller/connectionInfo/ConnectionInfoScreen.qml</file>
         <file>screens/home/controller/connectionInfo/LogoLoader.qml</file>
         <file>screens/home/controller/ConnectionStability.qml</file>
+        <file>screens/home/controller/ConnectionTimer.qml</file>
         <file>screens/home/controller/ControllerImage.qml</file>
         <file>screens/home/controller/ControllerNav.qml</file>
         <file>screens/home/controller/ControllerView.qml</file>

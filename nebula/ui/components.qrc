@@ -59,7 +59,6 @@
         <file>components/MZPopup.qml</file>
         <file>components/MZRadioButtonLabel.qml</file>
         <file>components/MZRadioDelegate.qml</file>
-        <file>components/MZSemiMonoLabel.qml</file>
         <file>components/MZServerUnavailablePopup.qml</file>
         <file>components/MZSettingsItem.qml</file>
         <file>components/MZSettingsToggle.qml</file>
