@@ -295,8 +295,8 @@ def qtquery(qmake, propname):
         pass
     return None
 
-# Try to get the Qt tooling paths from qmake.
 if len(args.qtpath) == 0:
+    # Try to get the Qt tooling paths from qmake.
     p = qtquery("qmake", "QT_INSTALL_BINS")
     if p is not None:
         args.qtpath.append(p)
@@ -310,6 +310,13 @@ if len(args.qtpath) == 0:
     p = qtquery("qmake6", "QT_INSTALL_LIBEXECS")
     if p is not None:
         args.qtpath.append(p)
+else:
+    # If we can find a qmake, then add libexec to our search path too.
+    qmake = shutil.which("qmake", path=":".join(args.qtpath))
+    libexecs = qtquery(qmake, "QT_INSTALL_LIBEXECS")
+    if libexecs is not None:
+        args.qtpath.append(libexecs)
+
 qtsearchpath=":".join(args.qtpath)
 
 # Lookup our required tools for addon generation.

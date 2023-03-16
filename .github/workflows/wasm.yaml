@@ -126,7 +126,7 @@ jobs:
 
       - name: Build addons
         shell: bash
-        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin -q /opt/$QTVERSION/gcc_64/libexec
+        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
