@@ -38,6 +38,7 @@
         <file>screens/home/controller/ip/IPAddress.qml</file>
         <file>screens/home/controller/ip/IPInfoPanel.qml</file>
         <file>screens/home/controller/qmldir</file>
+        <file>screens/home/controller/VPNToggle.qml</file>
         <file>screens/home/qmldir</file>
         <file>screens/home/servers/RecentConnections.qml</file>
         <file>screens/home/servers/ServerCountry.qml</file>

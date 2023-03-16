@@ -69,7 +69,6 @@ MZSystemAlert 0.1 MZSystemAlert.qml
 MZTabNavigation 0.1 MZTabNavigation.qml
 MZTextBlock 0.1 MZTextBlock.qml
 MZTimer 0.1 MZTimer.qml
-MZToggle 0.1 MZToggle.qml
 MZToggleCard 0.1 MZToggleCard.qml
 MZToolTip 0.1 MZToolTip.qml
 MZTutorialCard 0.1 MZTutorialCard.qml

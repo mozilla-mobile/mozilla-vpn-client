@@ -74,7 +74,6 @@
         <file>components/MZTextBlock.qml</file>
         <file>components/MZTimer.qml</file>
         <file>components/MZToggleCard.qml</file>
-        <file>components/MZToggle.qml</file>
         <file>components/MZToolTip.qml</file>
         <file>components/MZTutorialCard.qml</file>
         <file>components/MZUIStates.qml</file>

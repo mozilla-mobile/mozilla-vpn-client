@@ -7,3 +7,4 @@ ConnectionInfoScreen 0.1 connectionInfo/ConnectionInfoScreen.qml
 IPAddress 0.1 ip/IPAddress.qml
 IPInfoPanel 0.1 ip/IPInfoPanel.qml
 LogoLoader 0.1 connectionInfo/LogoLoader.qml
+VPNToggle 0.1 VPNToggle.qml

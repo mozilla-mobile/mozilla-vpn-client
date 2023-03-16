@@ -592,7 +592,7 @@ Item {
 
     }
 
-    MZToggle {
+    VPNToggle {
         id: toggle
         objectName: "controllerToggle"
 
