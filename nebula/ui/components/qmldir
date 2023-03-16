@@ -12,7 +12,6 @@ MZCallout 0.1 MZCallout.qml
 MZCancelButton 0.1 MZCancelButton.qml
 MZCard 0.1 MZCard.qml
 MZCheckBox 0.1 MZCheckBox.qml
-MZCheckBoxAlert 0.1 MZCheckBoxAlert.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
 MZChevron 0.1 MZChevron.qml
 MZClickableRow 0.1 MZClickableRow.qml

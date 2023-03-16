@@ -23,7 +23,6 @@
         <file>components/MZCallout.qml</file>
         <file>components/MZCancelButton.qml</file>
         <file>components/MZCard.qml</file>
-        <file>components/MZCheckBoxAlert.qml</file>
         <file>components/MZCheckBox.qml</file>
         <file>components/MZCheckBoxRow.qml</file>
         <file>components/MZChevron.qml</file>
