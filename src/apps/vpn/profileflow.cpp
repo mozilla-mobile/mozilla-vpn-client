@@ -85,9 +85,7 @@ void ProfileFlow::start() {
           });
 
   connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
-    if (vpn->state() != MozillaVPN::StateMain) {
+    if (App::instance()->state() != App::StateMain) {
       reset();
     }
   });

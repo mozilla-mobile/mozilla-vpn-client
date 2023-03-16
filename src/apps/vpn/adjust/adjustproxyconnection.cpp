@@ -7,14 +7,15 @@
 
 #include "adjustproxyconnection.h"
 
+#include <QTcpSocket>
 #include <QUrl>
 #include <QUrlQuery>
 
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
+#include "app.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "taskscheduler.h"
 
