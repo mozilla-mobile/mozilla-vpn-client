@@ -4,6 +4,7 @@ MZAvatar 0.1 MZAvatar.qml
 MZBadge 0.1 MZBadge.qml
 MZBoldInterLabel 0.1 MZBoldInterLabel.qml
 MZBoldLabel 0.1 MZBoldLabel.qml
+MZBottomNavigationBar 0.1 navigationBar/MZBottomNavigationBar.qml
 MZButton 0.1 MZButton.qml
 MZButtonBase 0.1 MZButtonBase.qml
 MZButtonLoader 0.1 MZButtonLoader.qml

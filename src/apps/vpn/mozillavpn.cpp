@@ -10,6 +10,7 @@
 #include "dnshelper.h"
 #include "externalophandler.h"
 #include "feature.h"
+#include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
@@ -225,6 +226,8 @@ void MozillaVPN::initialize() {
   m_initialized = true;
 
   registerNavigatorScreens();
+
+  registerNavigationBarButtons();
 
   // This is our first state.
   Q_ASSERT(state() == StateInitialize);
@@ -1774,6 +1777,48 @@ void MozillaVPN::registerNavigatorScreens() {
 #endif
 
   Navigator::instance()->initialize();
+}
+
+static void resetNotification(NavigationBarButton* icon) {
+  int unreadMessages = 0;
+  AddonManager::instance()->forEach(
+      [unreadMessages = &unreadMessages](Addon* addon) {
+        if (addon->type() == "message" && !addon->property("isRead").toBool()) {
+          (*unreadMessages)++;
+        }
+      });
+
+  icon->setHasNotification(!!unreadMessages);
+}
+
+// static
+void MozillaVPN::registerNavigationBarButtons() {
+  NavigationBarModel* nbm = NavigationBarModel::instance();
+  nbm->appendButton(new NavigationBarButton(
+      nbm, "navButton-home", "NavBarHomeTab", MozillaVPN::ScreenHome,
+      "qrc:/nebula/resources/navbar/home.svg",
+      "qrc:/nebula/resources/navbar/home-selected.svg"));
+
+  NavigationBarButton* messageIcon = new NavigationBarButton(
+      nbm, "navButton-messages", "NavBarMessagesTab",
+      MozillaVPN::ScreenMessaging, "qrc:/nebula/resources/navbar/messages.svg",
+      "qrc:/nebula/resources/navbar/messages-selected.svg",
+      "qrc:/nebula/resources/navbar/messages-notification.svg",
+      "qrc:/nebula/resources/navbar/messages-notification-selected.svg");
+  nbm->appendButton(messageIcon);
+
+  nbm->appendButton(new NavigationBarButton(
+      nbm, "navButton-settings", "NavBarSettingsTab",
+      MozillaVPN::ScreenSettings, "qrc:/nebula/resources/navbar/settings.svg",
+      "qrc:/nebula/resources/navbar/settings-selected.svg"));
+
+  connect(SettingsHolder::instance(), &SettingsHolder::addonSettingsChanged,
+          [messageIcon]() { resetNotification(messageIcon); });
+
+  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
+          [messageIcon]() { resetNotification(messageIcon); });
+
+  resetNotification(messageIcon);
 }
 
 bool MozillaVPN::handleCloseEvent() {

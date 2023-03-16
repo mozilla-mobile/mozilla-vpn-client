@@ -11,8 +11,6 @@
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
-        <file>navigationBar/VPNBottomNavigationBar.qml</file>
-        <file>navigationBar/VPNBottomNavigationBarButton.qml</file>
         <file>qmldir</file>
         <file>screens/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>screens/devices/ViewDevices.qml</file>
