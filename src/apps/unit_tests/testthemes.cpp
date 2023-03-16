@@ -39,17 +39,17 @@ void TestThemes::loadTheme() {
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
-  Theme t;
-  t.initialize(qml.engine());
+  Theme* t = Theme::instance();
+  t->initialize(qml.engine());
 
-  QCOMPARE(t.currentTheme(), expected);
-  QVERIFY(t.readTheme().isObject());
-  QVERIFY(t.readColors().isObject());
+  QCOMPARE(t->currentTheme(), expected);
+  QVERIFY(t->readTheme().isObject());
+  QVERIFY(t->readColors().isObject());
 
-  t.setCurrentTheme(theme);
-  QCOMPARE(t.currentTheme(), expected);
-  QVERIFY(t.readTheme().isObject());
-  QVERIFY(t.readColors().isObject());
+  t->setCurrentTheme(theme);
+  QCOMPARE(t->currentTheme(), expected);
+  QVERIFY(t->readTheme().isObject());
+  QVERIFY(t->readColors().isObject());
 }
 
 void TestThemes::model() {
@@ -59,18 +59,18 @@ void TestThemes::model() {
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
-  Theme t;
-  t.initialize(qml.engine());
+  Theme* t = Theme::instance();
+  t->initialize(qml.engine());
 
-  QHash<int, QByteArray> rn = t.roleNames();
+  QHash<int, QByteArray> rn = t->roleNames();
   QCOMPARE(rn.count(), 1);
   QCOMPARE(rn[Theme::NameRole], "name");
 
-  QCOMPARE(t.rowCount(QModelIndex()), 2 /* main and foobar */);
-  QCOMPARE(t.data(QModelIndex(), Theme::NameRole), QVariant());
+  QCOMPARE(t->rowCount(QModelIndex()), 2 /* main and foobar */);
+  QCOMPARE(t->data(QModelIndex(), Theme::NameRole), QVariant());
 
-  QCOMPARE(t.data(t.index(0, 0), Theme::NameRole), "foobar");
-  QCOMPARE(t.data(t.index(1, 0), Theme::NameRole), "main");
+  QCOMPARE(t->data(t->index(0, 0), Theme::NameRole), "foobar");
+  QCOMPARE(t->data(t->index(1, 0), Theme::NameRole), "main");
 }
 
 static TestThemes s_testThemes;
