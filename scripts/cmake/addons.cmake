@@ -49,15 +49,26 @@ function(add_addon_target NAME)
         file(READ ${MANIFEST_FILE} ADDON_MANIFEST)
         string(JSON ADDON_ID GET ${ADDON_MANIFEST} "id")
 
-        add_custom_command(
-            OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
-            DEPENDS ${MANIFEST_FILE}
-            DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
-            COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
-                        -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
-                        -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
-                        ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
-        )
+        if(CMAKE_GENERATOR MATCHES "Ninja")
+            ## Depfiles are great, but they only work on some generators.
+            add_custom_command(
+                OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
+                DEPENDS ${MANIFEST_FILE}
+                DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
+                COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
+                            -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
+                            -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
+                            ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
+            )
+        else()
+            add_custom_command(
+                OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
+                DEPENDS ${MANIFEST_FILE}
+                COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
+                            -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
+                            ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
+            )
+        endif()
         list(APPEND ADDON_OUTPUT_FILES ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc)
     endforeach()
 
