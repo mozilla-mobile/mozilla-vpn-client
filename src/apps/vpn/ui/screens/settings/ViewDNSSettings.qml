@@ -11,30 +11,59 @@ import components 0.1
 import components.forms 0.1
 
 VPNViewBase {
-    id: vpnFlickable
+    id: root
     objectName: "DNSSettingsView"
 
     _menuTitle: VPNl18n.SettingsDnsSettings
 
-    function maybeApplyChange(settingValue) {
+    property bool customDNS: false
+    property bool privacyDialogNeeded: true
+    property bool dnsSelectionChanged: false
+
+    function applyFrontendChanges(settingValue) {
         if (settingValue === VPNSettings.Gateway) {
-            if (VPNSettings.dnsProviderFlags !== VPNSettings.Custom) {
-                // We are not changing anything interesting. Let's keep the current value.
-                return;
-            }
-
-            VPNSettings.dnsProviderFlags = settingValue;
+            root.dnsSelectionChanged = true;
+            root.customDNS = false;
             return;
         }
 
-        if (VPNSettings.dnsProviderFlags === VPNSettings.Custom ||
-            VPNSettings.dnsProviderFlags === VPNSettings.Gateway) {
-            VPNSettings.dnsProviderFlags = settingValue;
+        if (root.privacyDialogNeeded) {
+            dnsOverwriteLoader.active = true;
             return;
         }
 
-        dnsOverwriteLoader.active = true;
+        root.customDNS = true;
+        root.dnsSelectionChanged = true;
     }
+
+    function maybeSaveChange() {
+        if (!root.dnsSelectionChanged && ipInput.text === VPNSettings.userDNS) {
+            return;
+        }
+
+        root.dnsSelectionChanged = false;
+
+        if (!root.customDNS) {
+            VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+            return;
+        }
+
+        if (ipInput.text !== "" && VPN.validateUserDNS(ipInput.text)) {
+            VPNSettings.userDNS = ipInput.text
+            VPNSettings.dnsProviderFlags = VPNSettings.Custom;
+            return;
+        }
+
+        VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+    }
+
+    function reset() {
+        root.customDNS = VPNSettings.dnsProviderFlags === VPNSettings.Custom;
+        root.privacyDialogNeeded = VPNSettings.dnsProviderFlags !== VPNSettings.Custom &&
+                                   VPNSettings.dnsProviderFlags !== VPNSettings.Gateway;
+        ipInput.text = VPNSettings.userDNS;
+    }
+
 
     _viewContentData: ColumnLayout {
         spacing: VPNTheme.theme.windowMargin * 1.5
@@ -79,10 +108,10 @@ VPNViewBase {
                 Layout.preferredWidth: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProviderFlags !== VPNSettings.Custom
+                checked: !root.customDNS
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.SettingsDnsSettingsStandardDNSTitle
-                onClicked: maybeApplyChange(VPNSettings.Gateway);
+                onClicked: applyFrontendChanges(VPNSettings.Gateway);
             }
 
             ColumnLayout {
@@ -101,7 +130,7 @@ VPNViewBase {
                         enabled: gatewayRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(VPNSettings.Gateway);
+                        onClicked: applyFrontendChanges(VPNSettings.Gateway);
                     }
                 }
 
@@ -123,10 +152,10 @@ VPNViewBase {
                 Layout.preferredWidth: VPNTheme.theme.vSpacing
                 Layout.preferredHeight: VPNTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                checked: root.customDNS
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: VPNl18n.SettingsDnsSettingsCustomDNSTitle
-                onClicked: maybeApplyChange(VPNSettings.Custom);
+                onClicked: applyFrontendChanges(VPNSettings.Custom);
             }
 
             ColumnLayout {
@@ -146,7 +175,7 @@ VPNViewBase {
                         enabled: customRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(VPNSettings.Custom);
+                        onClicked: applyFrontendChanges(VPNSettings.Custom);
                     }
                 }
                 VPNTextBlock {
@@ -162,7 +191,7 @@ VPNViewBase {
                     property string error: "This is an error string"
 
                     hasError: valueInvalid
-                    enabled: VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                    enabled: root.customDNS
                     onEnabledChanged: if(enabled) forceActiveFocus()
 
                     _placeholderText: VPNl18n.SettingsDnsSettingsInputPlaceholder
@@ -176,15 +205,6 @@ VPNViewBase {
                         duration: 200
                     }
 
-                    Component.onCompleted: {
-                        ipInput.text = VPNSettings.userDNS;
-                    }
-
-                    onEditingFinished: {
-                        if (ipInput.text === "" || VPN.validateUserDNS(ipInput.text)) {
-                            VPNSettings.userDNS = ipInput.text
-                        }
-                    }
 
                     onTextChanged: {
                         ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
@@ -204,7 +224,7 @@ VPNViewBase {
                     }
                     Layout.topMargin: VPNTheme.theme.listSpacing
 
-                    visible: ipInput.valueInvalid && ipInput.visible && VPNSettings.dnsProviderFlags === VPNSettings.Custom
+                    visible: ipInput.valueInvalid && ipInput.visible && root.customDNS
 
                     messages: [
                         {
@@ -218,12 +238,19 @@ VPNViewBase {
         }
     }
 
+    Component.onCompleted: {
+        reset();
+    }
+
+    Component.onDestruction: {
+        maybeSaveChange();
+    }
+
     onVisibleChanged: {
       if (!visible) {
-        if ((VPNSettings.userDNS === "" || !VPN.validateUserDNS(ipInput.text)) &&
-            VPNSettings.dnsProviderFlags === VPNSettings.Custom) {
-          VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
-        }
+          maybeSaveChange();
+      } else {
+          reset();
       }
     }
 
@@ -245,7 +272,8 @@ VPNViewBase {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: VPNl18n.DnsOverwriteDialogPrimaryButton
                     onClicked: {
-                        VPNSettings.dnsProviderFlags = VPNSettings.Custom;
+                        root.privacyDialogNeeded = false;
+                        applyFrontendChanges(VPNSettings.Custom);
                         dnsOverwritePopup.close()
                     }
                 },
