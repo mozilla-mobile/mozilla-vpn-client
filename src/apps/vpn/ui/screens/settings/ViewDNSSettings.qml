@@ -12,30 +12,58 @@ import components 0.1
 import components.forms 0.1
 
 MZViewBase {
-    id: vpnFlickable
+    id: root
     objectName: "DNSSettingsView"
 
     _menuTitle: MZI18n.SettingsDnsSettings
 
-    function maybeApplyChange(settingValue) {
+    property bool customDNS: false
+    property bool privacyDialogNeeded: true
+    property bool dnsSelectionChanged: false
+
+    function applyFrontendChanges(settingValue) {
         if (settingValue === MZSettings.Gateway) {
-            if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
-                // We are not changing anything interesting. Let's keep the current value.
-                return;
-            }
-
-            MZSettings.dnsProviderFlags = settingValue;
+            root.dnsSelectionChanged = true;
+            root.customDNS = false;
             return;
         }
 
-        if (MZSettings.dnsProviderFlags === MZSettings.Custom ||
-            MZSettings.dnsProviderFlags === MZSettings.Gateway) {
-            MZSettings.dnsProviderFlags = settingValue;
+        if (root.privacyDialogNeeded) {
+            dnsOverwriteLoader.active = true;
             return;
         }
 
-        dnsOverwriteLoader.active = true;
+        root.customDNS = true;
+        root.dnsSelectionChanged = true;
     }
+
+    function maybeSaveChange() {
+        if (!root.dnsSelectionChanged && ipInput.text === MZSettings.userDNS) {
+            return;
+        }
+
+        root.dnsSelectionChanged = false;
+
+        if (!root.customDNS) {
+            MZSettings.dnsProviderFlags = MZSettings.Gateway;
+            return;
+        }
+
+        if (ipInput.text !== "" && VPN.validateUserDNS(ipInput.text)) {
+            MZSettings.userDNS = ipInput.text
+            MZSettings.dnsProviderFlags = MZSettings.Custom;
+            return;
+        }
+
+        MZSettings.dnsProviderFlags = MZSettings.Gateway;
+    }
+
+    function reset() {
+        root.customDNS = MZSettings.dnsProviderFlags === MZSettings.Custom;
+        root.privacyDialogNeeded = MZSettings.dnsProviderFlags !== MZSettings.Custom &&
+                                   MZSettings.dnsProviderFlags !== MZSettings.Gateway;
+    }
+
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5
@@ -81,10 +109,10 @@ MZViewBase {
                 Layout.preferredWidth: MZTheme.theme.vSpacing
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: MZSettings.dnsProviderFlags !== MZSettings.Custom
+                checked: !root.customDNS
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: MZI18n.SettingsDnsSettingsStandardDNSTitle
-                onClicked: maybeApplyChange(MZSettings.Gateway);
+                onClicked: applyFrontendChanges(MZSettings.Gateway);
             }
 
             ColumnLayout {
@@ -103,7 +131,7 @@ MZViewBase {
                         enabled: gatewayRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(MZSettings.Gateway);
+                        onClicked: applyFrontendChanges(MZSettings.Gateway);
                     }
                 }
 
@@ -125,10 +153,10 @@ MZViewBase {
                 Layout.preferredWidth: MZTheme.theme.vSpacing
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: MZSettings.dnsProviderFlags === MZSettings.Custom
+                checked: root.customDNS
                 ButtonGroup.group: radioButtonGroup
                 accessibleName: MZI18n.SettingsDnsSettingsCustomDNSTitle
-                onClicked: maybeApplyChange(MZSettings.Custom);
+                onClicked: applyFrontendChanges(MZSettings.Custom);
             }
 
             ColumnLayout {
@@ -148,7 +176,7 @@ MZViewBase {
                         enabled: customRadioButton.enabled
                         width: Math.min(parent.implicitWidth, parent.width)
                         propagateClickToParent: false
-                        onClicked: maybeApplyChange(MZSettings.Custom);
+                        onClicked: applyFrontendChanges(MZSettings.Custom);
                     }
                 }
                 MZTextBlock {
@@ -164,7 +192,7 @@ MZViewBase {
                     property string error: "This is an error string"
 
                     hasError: valueInvalid
-                    enabled: MZSettings.dnsProviderFlags === MZSettings.Custom
+                    enabled: root.customDNS
                     onEnabledChanged: if(enabled) forceActiveFocus()
 
                     _placeholderText: MZI18n.SettingsDnsSettingsInputPlaceholder
@@ -180,12 +208,6 @@ MZViewBase {
 
                     Component.onCompleted: {
                         ipInput.text = MZSettings.userDNS;
-                    }
-
-                    onEditingFinished: {
-                        if (ipInput.text === "" || VPN.validateUserDNS(ipInput.text)) {
-                            MZSettings.userDNS = ipInput.text
-                        }
                     }
 
                     onTextChanged: {
@@ -206,7 +228,7 @@ MZViewBase {
                     }
                     Layout.topMargin: MZTheme.theme.listSpacing
 
-                    visible: ipInput.valueInvalid && ipInput.visible && MZSettings.dnsProviderFlags === MZSettings.Custom
+                    visible: ipInput.valueInvalid && ipInput.visible && root.customDNS
 
                     messages: [
                         {
@@ -220,12 +242,19 @@ MZViewBase {
         }
     }
 
+    Component.onCompleted: {
+        reset();
+    }
+
+    Component.onDestruction: {
+        maybeSaveChange();
+    }
+
     onVisibleChanged: {
       if (!visible) {
-        if ((MZSettings.userDNS === "" || !VPN.validateUserDNS(ipInput.text)) &&
-            MZSettings.dnsProviderFlags === MZSettings.Custom) {
-          MZSettings.dnsProviderFlags = MZSettings.Gateway;
-        }
+          maybeSaveChange();
+      } else {
+          reset();
       }
     }
 
@@ -248,7 +277,8 @@ MZViewBase {
                     text: MZI18n.DnsOverwriteDialogPrimaryButton
                     Layout.fillWidth: true
                     onClicked: {
-                        MZSettings.dnsProviderFlags = MZSettings.Custom;
+                        root.privacyDialogNeeded = false;
+                        applyFrontendChanges(MZSettings.Custom);
                         dnsOverwritePopup.close()
                     }
                 },
