@@ -58,9 +58,9 @@ MZViewBase {
 
             accessibleName: MZI18n.GetHelpViewLogs
             title: MZI18n.GetHelpViewLogs
-            iconSource: VPNFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
-            iconMirror: !VPNFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
-            backgroundColor: VPNFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
+            iconSource: MZFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+            iconMirror: !MZFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
+            backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");

@@ -36,6 +36,7 @@ SOURCES += \
         $$PWD/logger.cpp \
         $$PWD/loghandler.cpp \
         $$PWD/logoutobserver.cpp \
+        $$PWD/models/featuremodel.cpp \
         $$PWD/models/licensemodel.cpp \
         $$PWD/networkmanager.cpp \
         $$PWD/networkrequest.cpp \
@@ -53,6 +54,7 @@ SOURCES += \
         $$PWD/tasks/authenticate/taskauthenticate.cpp \
         $$PWD/tasks/deleteaccount/taskdeleteaccount.cpp \
         $$PWD/tasks/function/taskfunction.cpp \
+        $$PWD/tasks/getfeaturelist/taskgetfeaturelist.cpp \
         $$PWD/tasks/group/taskgroup.cpp \
         $$PWD/temporarydir.cpp \
         $$PWD/theme.cpp \
@@ -90,6 +92,7 @@ HEADERS += \
         $$PWD/logger.h \
         $$PWD/loghandler.h \
         $$PWD/logoutobserver.h \
+        $$PWD/models/featuremodel.h \
         $$PWD/models/licensemodel.h \
         $$PWD/networkmanager.h \
         $$PWD/networkrequest.h \
@@ -108,6 +111,7 @@ HEADERS += \
         $$PWD/tasks/authenticate/taskauthenticate.h \
         $$PWD/tasks/deleteaccount/taskdeleteaccount.h \
         $$PWD/tasks/function/taskfunction.h \
+        $$PWD/tasks/getfeaturelist/taskgetfeaturelist.h \
         $$PWD/tasks/group/taskgroup.h \
         $$PWD/temporarydir.h \
         $$PWD/theme.h \
@@ -123,11 +127,36 @@ unix {
 
 ios {
     OBJECTIVE_SOURCES += \
-        shared/platforms/macos/macoscryptosettings.mm \
-        shared/platforms/ios/ioscommons.mm
+        $$PWD/platforms/macos/macoscryptosettings.mm \
+        $$PWD/platforms/ios/ioscommons.mm
 
     OBJECTIVE_HEADERS += \
-        shared/platforms/ios/ioscommons.h
+        $$PWD/platforms/ios/ioscommons.h
+
+    adjust {
+        message(Adjust SDK enabled)
+        DEFINES += MZ_ADJUST
+
+        SOURCES += \
+            $$PWD/adjust/adjustfiltering.cpp \
+            $$PWD/adjust/adjusthandler.cpp \
+            $$PWD/adjust/adjustproxy.cpp \
+            $$PWD/adjust/adjustproxyconnection.cpp \
+            $$PWD/adjust/adjustproxypackagehandler.cpp \
+            $$PWD/adjust/adjusttasksubmission.cpp
+
+        OBJECTIVE_SOURCES += $$PWD/platforms/ios/iosadjusthelper.mm
+
+        HEADERS += \
+            $$PWD/adjust/adjustfiltering.h \
+            $$PWD/adjust/adjusthandler.h \
+            $$PWD/adjust/adjustproxy.h \
+            $$PWD/adjust/adjustproxyconnection.h \
+            $$PWD/adjust/adjustproxypackagehandler.h \
+            $$PWD/adjust/adjusttasksubmission.h
+
+        OBJECTIVE_HEADERS += $$PWD/platforms/ios/iosadjusthelper.h
+    }
 }
 
 RESOURCES += shared/resources/license.qrc

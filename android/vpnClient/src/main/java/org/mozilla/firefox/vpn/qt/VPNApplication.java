@@ -24,6 +24,7 @@ public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplicat
       VPNApplication.instance = this;
   }
 
+  // TODO: to move to a shared component
   public static void onVpnInit(boolean inProduction, int proxyPort) {
     if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
       String appToken = BuildConfig.ADJUST_SDK_TOKEN;
@@ -40,6 +41,7 @@ public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplicat
     }
   }
 
+  // TODO: to move to a shared component
   public static void trackEvent(String event) {
     if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
       AdjustEvent adjustEvent = new AdjustEvent(event);
@@ -47,12 +49,14 @@ public class VPNApplication extends org.qtproject.qt.android.bindings.QtApplicat
     }
   }
 
+  // TODO: to move to a shared component
   public static void forget(Activity activity) {
     if (BuildConfig.ADJUST_SDK_TOKEN != null && !BuildConfig.ADJUST_SDK_TOKEN.isEmpty()) {
       Adjust.gdprForgetMe(activity);
     }
   }
 
+  // TODO: to move to a shared component
   private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
       @Override
       public void onActivityResumed(Activity activity) {

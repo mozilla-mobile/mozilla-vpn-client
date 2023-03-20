@@ -23,7 +23,7 @@ MZViewBase {
             Layout.fillWidth: true
 
             MZUserProfile {
-                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
                 _iconSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
@@ -80,7 +80,7 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
-                visible: VPNFeatureList.get("splitTunnel").isSupported
+                visible: MZFeatureList.get("splitTunnel").isSupported
             }
 
             MZSettingsItem {

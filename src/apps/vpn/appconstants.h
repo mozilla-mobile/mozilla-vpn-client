@@ -22,7 +22,6 @@ enum ApiEndpoint {
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
-  FeatureList,
   Feedback,
   Heartbeat,
   IPInfo,
@@ -196,7 +195,7 @@ PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR
 
-#if defined(MVPN_ADJUST)
+#if defined(MZ_ADJUST)
 // These are the two auto-generated token from the Adjust dashboard for the
 // "Subscription Completed" event. We have two since in the Adjust dashboard we
 // have defined two apps for iOS and Android with a event token each.

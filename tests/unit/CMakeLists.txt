@@ -33,7 +33,6 @@ target_link_libraries(unit_tests PRIVATE
 )
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
-target_compile_definitions(unit_tests PRIVATE MVPN_ADJUST)
 
 target_link_libraries(unit_tests PRIVATE glean qtglean lottie nebula translations)
 
@@ -85,10 +84,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonstatebase.h
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/addons/state/addonsessionstate.h
-    ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
-    ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
@@ -127,8 +122,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.cpp
@@ -269,6 +262,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/models/featuremodel.cpp
+    ${MZ_SOURCE_DIR}/shared/models/featuremodel.h
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
@@ -338,16 +333,12 @@ target_sources(unit_tests PRIVATE
     testaddonstatebase.h
     testaddonsessionstate.cpp
     testaddonsessionstate.h
-    testadjust.cpp
-    testadjust.h
     testcommandlineparser.cpp
     testcommandlineparser.h
     testcomposer.cpp
     testcomposer.h
     testdnshelper.cpp
     testdnshelper.h
-    testfeaturemodel.cpp
-    testfeaturemodel.h
     testipaddresslookup.cpp
     testipaddresslookup.h
     testipfinder.cpp

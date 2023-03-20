@@ -176,8 +176,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.cpp
@@ -257,8 +255,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp

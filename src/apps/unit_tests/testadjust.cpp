@@ -6,6 +6,7 @@
 
 #include "adjust/adjustfiltering.h"
 #include "adjust/adjustproxypackagehandler.h"
+#include "constants.h"
 #include "helper.h"
 
 // We need this since QFETCH has a problem with a comma in the type
@@ -49,18 +50,20 @@ void TestAdjust::paramFiltering_data() {
 
   QTest::addRow("mirror default")
       << QUrlQuery{{"device_name", "a"}}.toString()
-      << QUrlQuery{{"device_name", "dummy"}}.toString() << QStringList();
+      << QUrlQuery{{"device_name", Constants::PLATFORM_NAME}}.toString()
+      << QStringList();
 
-  QTest::addRow("everything together") << QUrlQuery{{"device_name", "a"},
-                                                    {"foo", "bar"},
-                                                    {"os_name", "os"},
-                                                    {"region", "what"}}
-                                              .toString()
-                                       << QUrlQuery{{"device_name", "dummy"},
-                                                    {"os_name", "os"},
-                                                    {"region", "xxxxx"}}
-                                              .toString()
-                                       << QStringList{"foo"};
+  QTest::addRow("everything together")
+      << QUrlQuery{{"device_name", "a"},
+                   {"foo", "bar"},
+                   {"os_name", "os"},
+                   {"region", "what"}}
+             .toString()
+      << QUrlQuery{{"device_name", Constants::PLATFORM_NAME},
+                   {"os_name", "os"},
+                   {"region", "xxxxx"}}
+             .toString()
+      << QStringList{"foo"};
 }
 
 void TestAdjust::paramFiltering() {
