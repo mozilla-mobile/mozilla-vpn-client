@@ -30,7 +30,7 @@ python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
 python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
 
 # Fix: pip scripts are not on path by default on tc, so glean would fail
-$PYTHON_SCRIPTS =$(python3 -c 'import site; print(":".join(site.getsitepackages()))')
+$PYTHON_SCRIPTS =$(python3 -c "import site; print(';'.join(site.getsitepackages()))")
 Write-Output "Python Paths: $PYTHON_SCRIPTS" 
 $env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
