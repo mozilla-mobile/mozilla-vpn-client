@@ -25,14 +25,14 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
 
+# Ensure user scripts are accessible in the path.
+$PYTHON_SCRIPTS =$(python3 -c "import site, os; print(os.path.join(site.getuserbase(), 'Scripts')")
+Write-Output "Python Scripts: $PYTHON_SCRIPTS" 
+$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
+
 # Install python build tooling
 python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
 python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
-
-# Fix: pip scripts are not on path by default on tc, so glean would fail
-$PYTHON_SCRIPTS =$(python3 -c "import site; print(';'.join(site.getsitepackages()))")
-Write-Output "Python Paths: $PYTHON_SCRIPTS" 
-$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
 # DEBUG: Confirm that we can actually run `get-secret.py`
 python3 $SOURCE_DIR/taskcluster/scripts/get-secret.py --help
