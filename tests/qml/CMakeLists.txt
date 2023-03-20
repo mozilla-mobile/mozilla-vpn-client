@@ -107,6 +107,10 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.h
     ${MZ_SOURCE_DIR}/shared/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/shared/frontend/navigator.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h

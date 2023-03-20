@@ -247,6 +247,8 @@ class MozillaVPN final : public App {
 
   static void registerNavigatorScreens();
 
+  static void registerNavigationBarButtons();
+
  signals:
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);
