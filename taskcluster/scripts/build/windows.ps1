@@ -34,6 +34,9 @@ $PYTHON_SCRIPTS =$(python3 -c "import site; print(';'.join(site.getsitepackages(
 Write-Output "Python Paths: $PYTHON_SCRIPTS" 
 $env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
+# DEBUG: Confirm that we can actually run `get-secret.py`
+python3 $SOURCE_DIR/taskcluster/scripts/get-secret.py --help
+
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
 $env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
