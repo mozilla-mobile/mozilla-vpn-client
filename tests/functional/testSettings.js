@@ -376,7 +376,7 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
 
     // Check the modal
     await vpn.setSetting('dnsProviderFlags', 2);
@@ -411,6 +411,11 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_PRIMARY_BUTTON.visible());
+
+    await vpn.setQueryProperty(
+        queries.screenSettings.appPreferencesView.dnsSettingsView
+            .CUSTOM_DNS_INPUT.visible(),
+        'text', '1.2.3.4');
 
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());

@@ -62,6 +62,7 @@ MZViewBase {
         root.customDNS = MZSettings.dnsProviderFlags === MZSettings.Custom;
         root.privacyDialogNeeded = MZSettings.dnsProviderFlags !== MZSettings.Custom &&
                                    MZSettings.dnsProviderFlags !== MZSettings.Gateway;
+        ipInput.text = MZSettings.userDNS;
     }
 
 
@@ -204,10 +205,6 @@ MZViewBase {
 
                     PropertyAnimation on opacity {
                         duration: 200
-                    }
-
-                    Component.onCompleted: {
-                        ipInput.text = MZSettings.userDNS;
                     }
 
                     onTextChanged: {
