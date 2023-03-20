@@ -15,7 +15,7 @@ class Navigator final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Navigator)
 
-  Q_PROPERTY(int screen MEMBER m_currentScreen NOTIFY currentComponentChanged)
+  Q_PROPERTY(int screen READ currentScreen NOTIFY currentComponentChanged)
   Q_PROPERTY(LoadPolicy loadPolicy MEMBER m_currentLoadPolicy NOTIFY
                  currentComponentChanged)
   Q_PROPERTY(LoadingFlags loadingFlags MEMBER m_currentLoadingFlags NOTIFY
@@ -44,6 +44,8 @@ class Navigator final : public QObject {
   Q_ENUM(Screen);
 
   static Navigator* instance();
+
+  int currentScreen() const { return m_currentScreen; }
 
   void initialize();
 

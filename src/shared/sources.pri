@@ -19,6 +19,8 @@ SOURCES += \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
         $$PWD/frontend/navigator.cpp \
+        $$PWD/frontend/navigationbarbutton.cpp \
+        $$PWD/frontend/navigationbarmodel.cpp \
         $$PWD/frontend/navigatorreloader.cpp \
         $$PWD/glean/gleandeprecated.cpp \
         $$PWD/glean/mzglean.cpp \
@@ -82,6 +84,8 @@ HEADERS += \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
         $$PWD/frontend/navigator.h \
+        $$PWD/frontend/navigationbarbutton.h \
+        $$PWD/frontend/navigationbarmodel.h \
         $$PWD/frontend/navigatorreloader.h \
         $$PWD/glean/gleandeprecated.h \
         $$PWD/glean/mzglean.h \

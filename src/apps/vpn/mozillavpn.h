@@ -252,6 +252,8 @@ class MozillaVPN final : public App {
 
   static void registerInspectorCommands();
 
+  static void registerNavigationBarButtons();
+
  signals:
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);

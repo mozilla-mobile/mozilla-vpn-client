@@ -53,6 +53,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/fontloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigationbarbutton.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigationbarbutton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigationbarmodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigatorreloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.cpp

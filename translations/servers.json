@@ -207,6 +207,20 @@
     }
    },
    {
+    "wikiDataID": "Q34932",
+    "city": "Brisbane",
+    "languages": {
+     "el": "Μπρίσμπεϊν",
+     "ja": "ブリスベン",
+     "pa_IN": "ਬ੍ਰਿਜ਼ਬਨ",
+     "ru": "Брисбен",
+     "sq": "Brisbejn",
+     "uk": "Брисбен",
+     "zh_CN": "布里斯班",
+     "zh_TW": "布里斯本"
+    }
+   },
+   {
     "city": "Melbourne",
     "languages": {
      "bg": "Мелбърн",
