@@ -90,7 +90,6 @@
 #endif
 
 #ifdef MZ_WASM
-#  include "platforms/wasm/wasmnetworkrequest.h"
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -434,11 +433,6 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
-
-    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
-                                      WasmNetworkRequest::getResource,
-                                      WasmNetworkRequest::postResource,
-                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

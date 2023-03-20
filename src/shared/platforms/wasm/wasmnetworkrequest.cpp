@@ -75,23 +75,23 @@ int processNetworkRequest(NetworkRequest* request) {
 
 }  // namespace
 
-EMSCRIPTEN_KEEPALIVE void mvpnNetworkResponse(emscripten::val id,
-                                              emscripten::val input) {
+EMSCRIPTEN_KEEPALIVE void mzNetworkResponse(emscripten::val id,
+                                            emscripten::val input) {
   std::string str = input.as<std::string>();
   processNetworkResponse(id.as<int>(), QByteArray(str.c_str(), str.length()));
 }
 
-EMSCRIPTEN_BINDINGS(MozillaVPNResponse) {
-  emscripten::function("mvpnNetworkResponse", &mvpnNetworkResponse);
+EMSCRIPTEN_BINDINGS(MozillaWasmResponse) {
+  emscripten::function("mzNetworkResponse", &mzNetworkResponse);
 }
 
-EM_JS(void, call_mvpnNetworkRequest,
+EM_JS(void, call_mzNetworkRequest,
       (int id, const char* method, const char* url, const char* body,
        int bodyLength),
       {
         try {
-          mvpnNetworkRequest(id, UTF8ToString(method), UTF8ToString(url),
-                             UTF8ToString(body, bodyLength));
+          mzNetworkRequest(id, UTF8ToString(method), UTF8ToString(url),
+                           UTF8ToString(body, bodyLength));
         } catch (e) {
           console.log("Failed to process the network request in JS", e);
         }
@@ -101,8 +101,8 @@ EM_JS(void, call_mvpnNetworkRequest,
 bool WasmNetworkRequest::deleteResource(NetworkRequest* request) {
   logger.debug() << "Delete request to JS";
 
-  call_mvpnNetworkRequest(processNetworkRequest(request), "DELETE",
-                          request->url().toString().toUtf8().data(), "", 0);
+  call_mzNetworkRequest(processNetworkRequest(request), "DELETE",
+                        request->url().toString().toUtf8().data(), "", 0);
   return true;
 }
 
@@ -110,8 +110,8 @@ bool WasmNetworkRequest::deleteResource(NetworkRequest* request) {
 bool WasmNetworkRequest::getResource(NetworkRequest* request) {
   logger.debug() << "Get request to JS";
 
-  call_mvpnNetworkRequest(processNetworkRequest(request), "GET",
-                          request->url().toString().toUtf8().data(), "", 0);
+  call_mzNetworkRequest(processNetworkRequest(request), "GET",
+                        request->url().toString().toUtf8().data(), "", 0);
   return true;
 }
 
@@ -120,9 +120,9 @@ bool WasmNetworkRequest::postResource(NetworkRequest* request,
                                       const QByteArray& body) {
   logger.debug() << "Post request to JS";
 
-  call_mvpnNetworkRequest(processNetworkRequest(request), "POST",
-                          request->url().toString().toUtf8().data(),
-                          body.data(), body.length());
+  call_mzNetworkRequest(processNetworkRequest(request), "POST",
+                        request->url().toString().toUtf8().data(), body.data(),
+                        body.length());
   return true;
 }
 
