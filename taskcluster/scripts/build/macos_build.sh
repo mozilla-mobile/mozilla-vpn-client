@@ -67,6 +67,8 @@ print Y "Updating submodules..."
 git submodule init || die
 git submodule update || die
 
+python3 ./scripts/utils/import_languages.py
+
 # Install dependendy got get-secret.py 
 python3 -m pip install -r taskcluster/scripts/requirements.txt
 print Y "Fetching tokens..."

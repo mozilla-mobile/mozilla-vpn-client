@@ -4,8 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - 'releases/**'
-      - releases/2.14.0
+      - releases/**
     types:
       - opened
       - synchronize
