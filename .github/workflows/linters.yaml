@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'releases/**'
+      - releases/2.14.0
     types:
       - opened
       - synchronize
