@@ -16,7 +16,7 @@ class EventListener final : public QObject {
   EventListener();
   ~EventListener();
 
-  static bool checkOtherInstances();
+  static bool checkOtherInstances(const QString& windowTitle);
 
  private:
   QLocalServer m_server;

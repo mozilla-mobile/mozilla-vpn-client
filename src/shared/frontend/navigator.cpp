@@ -45,7 +45,7 @@ struct ScreenData {
   // The URL of the component.
   QString m_qmlComponentUrl;
 
-  // The list of acceptable VPN states. Empty means any state is OK.
+  // The list of acceptable App states. Empty means any state is OK.
   QVector<int> m_requiredState;
 
   // This function ptr is used to obtain the priority for this screen. If it

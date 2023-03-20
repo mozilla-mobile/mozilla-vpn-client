@@ -171,6 +171,10 @@ ios {
 
         OBJECTIVE_HEADERS += $$PWD/platforms/ios/iosadjusthelper.h
     }
+
+    SWIFT_OBJC_INTERFACE_HEADER_NAME.name = "SWIFT_OBJC_INTERFACE_HEADER_NAME"
+    SWIFT_OBJC_INTERFACE_HEADER_NAME.value = "Mozilla-Swift.h"
+    QMAKE_MAC_XCODE_SETTINGS += SWIFT_OBJC_INTERFACE_HEADER_NAME
 }
 
 RESOURCES += shared/resources/license.qrc

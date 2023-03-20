@@ -5,10 +5,10 @@
 #include "adjusthandler.h"
 
 #include "adjustproxy.h"
+#include "app.h"
 #include "constants.h"
 #include "controller.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
@@ -20,6 +20,7 @@
 #  include "platforms/android/androidcommons.h"
 #endif
 
+#include <QCoreApplication>
 #include <QRandomGenerator>
 #include <QString>
 
@@ -44,11 +45,11 @@ void AdjustHandler::initialize() {
     settingsHolder->setAdjustActivatable(true);
   }
 
-  MozillaVPN* vpn = MozillaVPN::instance();
+  App* app = App::instance();
 
   // If the app has not started yet, let's wait.
-  if (vpn->state() == App::StateInitialize) {
-    QObject::connect(vpn, &App::stateChanged, AdjustHandler::initialize);
+  if (app->state() == App::StateInitialize) {
+    QObject::connect(app, &App::stateChanged, AdjustHandler::initialize);
     return;
   }
 
@@ -74,8 +75,8 @@ void AdjustHandler::initialize() {
     }
   });
 
-  s_adjustProxy = new AdjustProxy(vpn);
-  QObject::connect(vpn->controller(), &Controller::readyToQuit, s_adjustProxy,
+  s_adjustProxy = new AdjustProxy(app);
+  QObject::connect(qApp, &QCoreApplication::aboutToQuit, s_adjustProxy,
                    &AdjustProxy::close);
   QObject::connect(s_adjustProxy, &AdjustProxy::acceptError,
                    [](QAbstractSocket::SocketError socketError) {
