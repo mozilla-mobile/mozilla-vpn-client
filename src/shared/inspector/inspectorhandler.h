@@ -19,8 +19,6 @@ class InspectorHandler : public QObject {
  public:
   static void initialize();
 
-  static bool mockFreeTrial();
-  static QString appVersionForUpdate();
   static QString getObjectClass(const QObject* target);
   static QJsonObject getViewTree();
   static QJsonObject serialize(QQuickItem* item);
@@ -29,6 +27,22 @@ class InspectorHandler : public QObject {
   void recv(const QByteArray& buffer);
   virtual void send(const QByteArray& buffer) = 0;
 
+  /**
+   * @brief Set a constructor callback to inform the caller about this new
+   * inspector handler.
+   */
+  static void setConstructorCallback(
+      std::function<void(InspectorHandler* inspectorHandler)>&& callback);
+
+  /**
+   * @brief Register a new command.
+   */
+  static void registerCommand(
+      const QString& commandName, const QString& commandDescription,
+      int32_t arguments,
+      std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>&&
+          callback);
+
  protected:
   explicit InspectorHandler(QObject* parent);
   virtual ~InspectorHandler();
@@ -36,7 +50,6 @@ class InspectorHandler : public QObject {
  private:
   void addonLoadCompleted();
   void logEntryAdded(const QByteArray& log);
-  void notificationShown(const QString& title, const QString& message);
   void networkRequestFinished(QNetworkReply* reply);
 };
 

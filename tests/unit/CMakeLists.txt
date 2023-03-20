@@ -118,9 +118,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.cpp
@@ -255,6 +252,9 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hawkauth.h
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
@@ -324,7 +324,6 @@ target_sources(unit_tests PRIVATE
 target_sources(unit_tests PRIVATE
     main.cpp
     moccontroller.cpp
-    mocinspectorhandler.cpp
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h

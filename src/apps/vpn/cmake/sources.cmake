@@ -157,16 +157,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/extrastrings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectoritempicker.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectoritempicker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketconnection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketconnection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.cpp
