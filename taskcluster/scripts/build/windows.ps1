@@ -9,6 +9,7 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
 # Switch to the work dir, enable qt, enable msvc, enable rust
+$env:PATH ="$FETCHES_PATH;$QTPATH;$env:PATH"
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
@@ -24,11 +25,6 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 # This will sometimes live longer then our compile
 # and __sometimes__ taskcluster will fail to do cleanup once the task is done
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
-
-# Ensure user scripts are accessible in the path.
-$PYTHON_SCRIPTS =$(python3 -c "import sysconfig, os; sysconfig.get_path('scripts', f'{os.name}_user')")
-Write-Output "Python Scripts: $PYTHON_SCRIPTS" 
-$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
 # Install python build tooling
 python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
