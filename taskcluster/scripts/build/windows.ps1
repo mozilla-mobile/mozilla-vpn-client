@@ -26,7 +26,7 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64/VCTIP.EXE
 
 # Ensure user scripts are accessible in the path.
-$PYTHON_SCRIPTS =$(python3 -c "import site, os; print(os.path.join(site.getuserbase(), 'Scripts')")
+$PYTHON_SCRIPTS =$(python3 -c "import site, os; print(os.path.join(site.getuserbase(), 'Scripts'))")
 Write-Output "Python Scripts: $PYTHON_SCRIPTS" 
 $env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
