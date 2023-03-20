@@ -65,9 +65,9 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 cmake --version
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
