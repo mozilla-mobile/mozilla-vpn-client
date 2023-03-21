@@ -336,8 +336,9 @@ void Controller::activateNext() {
   setState(StateConfirming);
 }
 
-bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
-  logger.debug() << "Silently switch servers";
+bool Controller::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
   if (m_state != StateOn) {
     logger.warning() << "Cannot silent switch if not on";
@@ -354,7 +355,7 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
     return false;
   }
 
-  if (serverCoolDownNeeded) {
+  if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     MozillaVPN::instance()->serverCountryModel()->setServerCooldown(
         m_serverData.exitServerPublicKey());
   }

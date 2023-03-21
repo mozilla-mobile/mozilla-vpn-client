@@ -85,7 +85,14 @@ class Controller final : public QObject {
   qint64 time() const;
 
   bool switchServers(const ServerData& serverData);
-  bool silentSwitchServers(bool serverCoolDownNeeded);
+
+  enum ServerCoolDownPolicyForSilentSwitch {
+    eServerCoolDownNeeded,
+    eServerCoolDownNotNeeded,
+  };
+
+  bool silentSwitchServers(
+      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
 
   void updateRequired();
 
