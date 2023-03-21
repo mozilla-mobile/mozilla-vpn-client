@@ -19,6 +19,8 @@ SOURCES += \
         $$PWD/filterproxymodel.cpp \
         $$PWD/fontloader.cpp \
         $$PWD/frontend/navigator.cpp \
+        $$PWD/frontend/navigationbarbutton.cpp \
+        $$PWD/frontend/navigationbarmodel.cpp \
         $$PWD/frontend/navigatorreloader.cpp \
         $$PWD/glean/gleandeprecated.cpp \
         $$PWD/glean/mzglean.cpp \
@@ -28,6 +30,11 @@ SOURCES += \
         $$PWD/hacl-star/Hacl_Poly1305_32.c \
         $$PWD/hawkauth.cpp \
         $$PWD/hkdf.cpp \
+        $$PWD/inspector/inspectorhandler.cpp \
+        $$PWD/inspector/inspectoritempicker.cpp \
+        $$PWD/inspector/inspectorutils.cpp \
+        $$PWD/inspector/inspectorwebsocketconnection.cpp \
+        $$PWD/inspector/inspectorwebsocketserver.cpp \
         $$PWD/ipaddress.cpp \
         $$PWD/itempicker.cpp \
         $$PWD/languagei18n.cpp \
@@ -79,12 +86,19 @@ HEADERS += \
         $$PWD/filterproxymodel.h \
         $$PWD/fontloader.h \
         $$PWD/frontend/navigator.h \
+        $$PWD/frontend/navigationbarbutton.h \
+        $$PWD/frontend/navigationbarmodel.h \
         $$PWD/frontend/navigatorreloader.h \
         $$PWD/glean/gleandeprecated.h \
         $$PWD/glean/mzglean.h \
         $$PWD/hawkauth.h \
         $$PWD/hkdf.h \
         $$PWD/ipaddress.h \
+        $$PWD/inspector/inspectorhandler.h \
+        $$PWD/inspector/inspectoritempicker.h \
+        $$PWD/inspector/inspectorutils.h \
+        $$PWD/inspector/inspectorwebsocketconnection.h \
+        $$PWD/inspector/inspectorwebsocketserver.h \
         $$PWD/itempicker.h \
         $$PWD/languagei18n.h \
         $$PWD/leakdetector.h \

@@ -19,11 +19,7 @@
 #include <QTest>
 #include <functional>
 
-#include "addons/manager/addonmanager.h"
-#include "captiveportal/captiveportaldetection.h"
 #include "constants.h"
-#include "controller.h"
-#include "externalophandler.h"
 #include "feature.h"
 #include "frontend/navigator.h"
 #include "inspectoritempicker.h"
@@ -32,23 +28,12 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/devicemodel.h"
-#include "models/featuremodel.h"
-#include "models/keys.h"
-#include "models/servercountrymodel.h"
-#include "mozillavpn.h"
 #include "networkmanager.h"
-#include "networkwatcher.h"
-#include "notificationhandler.h"
-#include "profileflow.h"
 #include "qmlengineholder.h"
-#include "releasemonitor.h"
-#include "serveri18n.h"
 #include "settingsholder.h"
 #include "task.h"
 #include "urlopener.h"
 #include "utils.h"
-#include "websocket/pushmessage.h"
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"
@@ -58,21 +43,17 @@
 #  include "inspectorwebsocketserver.h"
 #endif
 
-#ifdef MZ_ANDROID
-#  include "platforms/android/androidvpnactivity.h"
-#endif
-
 namespace {
 Logger logger("InspectorHandler");
 
 bool s_forwardNetwork = false;
-bool s_mockFreeTrial = false;
 
-QString s_updateVersion;
 QStringList s_pickedItems;
 bool s_pickedItemsSet = false;
 
 InspectorItemPicker* s_itemPicker = nullptr;
+
+std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
 }  // namespace
 
 struct InspectorSettingCommand {
@@ -114,38 +95,16 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"reset", "Reset the app", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
-
-                       vpn->reset(true);
-                       ErrorHandler::instance()->hideAlert();
-
-                       SettingsHolder* settingsHolder =
-                           SettingsHolder::instance();
-                       Q_ASSERT(settingsHolder);
-
-                       // Extra cleanup for testing
-                       settingsHolder->setTelemetryPolicyShown(false);
-
-                       return QJsonObject();
-                     }},
     InspectorCommand{"fetch_network", "Enables forwarding of networkRequests",
                      0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        s_forwardNetwork = true;
                        return QJsonObject();
                      }},
+
     InspectorCommand{"view_tree", "Sends a view tree", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        return InspectorHandler::getViewTree();
-                     }},
-
-    InspectorCommand{"quit", "Quit the app", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->controller()->quit();
-                       return QJsonObject();
                      }},
 
     InspectorCommand{"pick", "Wait for a click to select an element", 0,
@@ -336,12 +295,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"click_notification", "Click on a notification", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       NotificationHandler::instance()->messageClickHandle();
-                       return QJsonObject();
-                     }},
-
     InspectorCommand{
         "stealurls",
         "Do not open the URLs in browser and expose them via inspector", 0,
@@ -349,120 +302,12 @@ static QList<InspectorCommand> s_commands{
           UrlOpener::instance()->setStealUrls();
           return QJsonObject();
         }},
-    InspectorCommand{"mockFreeTrial",
-                     "Force the UI to show 7 day trial on 1 year plan", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       s_mockFreeTrial = true;
-                       return QJsonObject();
-                     }},
 
     InspectorCommand{"lasturl", "Retrieve the last opened URL", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
                        obj["value"] = UrlOpener::instance()->lastUrl();
                        return obj;
-                     }},
-
-    InspectorCommand{"set_glean_source_tags",
-                     "Set Glean Source Tags (supply a comma seperated list)", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QStringList tags = QString(arguments[1]).split(',');
-                       emit MozillaVPN::instance()->setGleanSourceTags(tags);
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"force_update_check", "Force a version update check", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       s_updateVersion = arguments[1];
-                       MozillaVPN::instance()->releaseMonitor()->runSoon();
-                       return QJsonObject();
-                     }},
-    InspectorCommand{"force_captive_portal_check",
-                     "Force a captive portal check", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()
-                           ->captivePortalDetection()
-                           ->detectCaptivePortal();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{
-        "force_captive_portal_detection", "Simulate a captive portal detection",
-        0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN::instance()
-              ->captivePortalDetection()
-              ->captivePortalDetected();
-          MozillaVPN::instance()->controller()->captivePortalPresent();
-          return QJsonObject();
-        }},
-
-    InspectorCommand{
-        "force_unsecured_network", "Force an unsecured network detection", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                     "Dummy");
-          return QJsonObject();
-        }},
-
-    InspectorCommand{
-        "force_server_unavailable",
-        "Timeout all servers in a city using force_server_unavailable "
-        "{countryCode} "
-        "{cityCode}",
-        2,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          QJsonObject obj;
-          if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
-            MozillaVPN::instance()
-                ->serverCountryModel()
-                ->setCooldownForAllServersInACity(QString(arguments[1]),
-                                                  QString(arguments[2]));
-          } else {
-            obj["error"] =
-                QString("Please provide country and city codes as arguments");
-          }
-
-          return QJsonObject();
-        }},
-
-    InspectorCommand{
-        "force_subscription_management_reauthentication",
-        "Force re-authentication for the subscription management view", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          MozillaVPN::instance()->profileFlow()->setForceReauthFlow(true);
-          return QJsonObject();
-        }},
-
-    InspectorCommand{"activate", "Activate the VPN", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->activate();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"deactivate", "Deactivate the VPN", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->deactivate();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"force_heartbeat_failure", "Force a heartbeat failure", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->heartbeatCompleted(
-                           false /* success */);
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"hard_reset", "Hard reset (wipe all settings).", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->hardReset();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"logout", "Logout the user", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN::instance()->logout();
-                       return QJsonObject();
                      }},
 
     InspectorCommand{
@@ -559,42 +404,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"guides", "Returns a list of guide title ids", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       QJsonObject obj;
-
-                       AddonManager* am = AddonManager::instance();
-                       Q_ASSERT(am);
-
-                       QJsonArray guides;
-                       am->forEach([&](Addon* addon) {
-                         if (addon->type() == "guide") {
-                           guides.append(addon->id());
-                         }
-                       });
-
-                       obj["value"] = guides;
-                       return obj;
-                     }},
-
-    InspectorCommand{"messages", "Returns a list of the loaded messages ids", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       QJsonObject obj;
-
-                       AddonManager* am = AddonManager::instance();
-                       Q_ASSERT(am);
-
-                       QJsonArray messages;
-                       am->forEach([&](Addon* addon) {
-                         if (addon->type() == "message") {
-                           messages.append(addon->id());
-                         }
-                       });
-
-                       obj["value"] = messages;
-                       return obj;
-                     }},
-
     InspectorCommand{"translate", "Translate a string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
@@ -639,94 +448,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{
-        "servers", "Returns a list of servers", 0,
-        [](InspectorHandler*, const QList<QByteArray>&) {
-          QJsonObject obj;
-
-          QJsonArray countryArray;
-          ServerCountryModel* scm =
-              MozillaVPN::instance()->serverCountryModel();
-          for (const ServerCountry& country : scm->countries()) {
-            QJsonArray cityArray;
-            for (const QString& cityName : country.cities()) {
-              const ServerCity& city = scm->findCity(country.code(), cityName);
-              if (!city.initialized()) {
-                continue;
-              }
-              QJsonObject cityObj;
-              cityObj["name"] = city.name();
-              cityObj["localizedName"] =
-                  ServerI18N::translateCityName(country.code(), city.name());
-              cityObj["code"] = city.code();
-              cityArray.append(cityObj);
-            }
-
-            QJsonObject countryObj;
-            countryObj["name"] = country.name();
-            countryObj["localizedName"] = ServerI18N::translateCountryName(
-                country.code(), country.name());
-            countryObj["code"] = country.code();
-            countryObj["cities"] = cityArray;
-
-            countryArray.append(countryObj);
-          }
-
-          obj["value"] = countryArray;
-          return obj;
-        }},
-#ifdef MZ_ANDROID
-    InspectorCommand{"android_daemon",
-                     "Send a request to the Daemon {type} {args}", 2,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       auto activity = AndroidVPNActivity::instance();
-                       Q_ASSERT(activity);
-                       auto type = QString(arguments[1]);
-                       auto json = QString(arguments[2]);
-
-                       ServiceAction a = (ServiceAction)type.toInt();
-                       AndroidVPNActivity::sendToService(a, json);
-                       return QJsonObject();
-                     }},
-#endif
-
-    InspectorCommand{"devices", "Retrieve the list of devices", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
-
-                       DeviceModel* dm = vpn->deviceModel();
-                       Q_ASSERT(dm);
-
-                       QJsonArray deviceArray;
-                       for (const Device& device : dm->devices()) {
-                         QJsonObject deviceObj;
-                         deviceObj["name"] = device.name();
-                         deviceObj["publicKey"] = device.publicKey();
-                         deviceObj["currentDevice"] =
-                             device.isCurrentDevice(vpn->keys());
-                         deviceArray.append(deviceObj);
-                       }
-
-                       QJsonObject obj;
-                       obj["value"] = deviceArray;
-                       return obj;
-                     }},
-
-    InspectorCommand{"public_key",
-                     "Retrieve the public key of the current device", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MozillaVPN* vpn = MozillaVPN::instance();
-                       Q_ASSERT(vpn);
-
-                       Keys* keys = vpn->keys();
-                       Q_ASSERT(keys);
-
-                       QJsonObject obj;
-                       obj["value"] = keys->publicKey();
-                       return obj;
-                     }},
-
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
@@ -751,38 +472,6 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QString featureName = arguments[1];
-                       const Feature* feature = Feature::getOrNull(featureName);
-                       if (!feature) {
-                         QJsonObject obj;
-                         obj["error"] = "Feature does not exist";
-                         return obj;
-                       }
-
-                       if (!feature->isSupported()) {
-                         FeatureModel::instance()->toggle(arguments[1]);
-                       }
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"flip_off_feature", "Flip Off a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QString featureName = arguments[1];
-                       const Feature* feature = Feature::getOrNull(featureName);
-                       if (!feature) {
-                         QJsonObject obj;
-                         obj["error"] = "Feature does not exist";
-                         return obj;
-                       }
-
-                       if (feature->isSupported()) {
-                         FeatureModel::instance()->toggle(arguments[1]);
-                       }
-                       return QJsonObject();
-                     }},
-
     InspectorCommand{"back_button_clicked",
                      "Simulate an android back-button clicked", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -797,22 +486,6 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{
-        "send_push_message_device_deleted",
-        "Simulate the receiving of a push-message type device-deleted", 1,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          QJsonObject payload;
-          payload["publicKey"] = QString(arguments[1]);
-
-          QJsonObject msg;
-          msg["type"] = "DEVICE_DELETED";
-          msg["payload"] = payload;
-
-          PushMessage message(QJsonDocument(msg).toJson());
-          message.executeAction();
-          return QJsonObject();
-        }},
-
     InspectorCommand{"set_installation_time", "Set the installation time", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        qint64 epoch = arguments[1].toLongLong();
@@ -825,20 +498,6 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        Localizer::instance()->forceRTL();
                        emit SettingsHolder::instance()->languageCodeChanged();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"reset_addons",
-                     "Reset all the addons cleaning up the cache", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       AddonManager::instance()->reset();
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{"fetch_addons", "Force a fetch of the addon list manifest",
-                     0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       AddonManager::instance()->fetch();
                        return QJsonObject();
                      }},
 
@@ -858,9 +517,8 @@ void InspectorHandler::initialize() {
   if (!Constants::inProduction()) {
     InspectorWebSocketServer* inspectWebSocketServer =
         new InspectorWebSocketServer(qApp);
-    QObject::connect(MozillaVPN::instance()->controller(),
-                     &Controller::readyToQuit, inspectWebSocketServer,
-                     &InspectorWebSocketServer::close);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit,
+                     inspectWebSocketServer, &InspectorWebSocketServer::close);
   }
 #endif
 }
@@ -871,14 +529,13 @@ InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
   connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
           &InspectorHandler::logEntryAdded);
 
-  connect(NotificationHandler::instance(),
-          &NotificationHandler::notificationShown, this,
-          &InspectorHandler::notificationShown);
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &InspectorHandler::networkRequestFinished);
-  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged, this,
-          &InspectorHandler::addonLoadCompleted);
+
+  if (s_constructorCallback) {
+    s_constructorCallback(this);
+  }
 }
 
 InspectorHandler::~InspectorHandler() { MZ_COUNT_DTOR(InspectorHandler); }
@@ -928,21 +585,6 @@ void InspectorHandler::logEntryAdded(const QByteArray& log) {
   QJsonObject obj;
   obj["type"] = "log";
   obj["value"] = QString(log).trimmed();
-  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-}
-
-void InspectorHandler::addonLoadCompleted() {
-  QJsonObject obj;
-  obj["type"] = "addon_load_completed";
-  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-}
-
-void InspectorHandler::notificationShown(const QString& title,
-                                         const QString& message) {
-  QJsonObject obj;
-  obj["type"] = "notification";
-  obj["title"] = title;
-  obj["message"] = message;
   send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
@@ -1000,18 +642,6 @@ QString InspectorHandler::getObjectClass(const QObject* target) {
   }
   auto metaObject = target->metaObject();
   return metaObject->className();
-}
-
-// static
-bool InspectorHandler::mockFreeTrial() { return s_mockFreeTrial; }
-
-// static
-QString InspectorHandler::appVersionForUpdate() {
-  if (s_updateVersion.isEmpty()) {
-    return Constants::versionString();
-  }
-
-  return s_updateVersion;
 }
 
 // static
@@ -1100,4 +730,20 @@ void InspectorHandler::itemsPicked(const QList<QQuickItem*>& objects) {
     s_itemPicker->deleteLater();
     s_itemPicker = nullptr;
   }
+}
+
+// static
+void InspectorHandler::registerCommand(
+    const QString& commandName, const QString& commandDescription,
+    int32_t arguments,
+    std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>&&
+        callback) {
+  s_commands.append(InspectorCommand{commandName, commandDescription, arguments,
+                                     std::move(callback)});
+}
+
+// static
+void InspectorHandler::setConstructorCallback(
+    std::function<void(InspectorHandler* inspectorHandler)>&& callback) {
+  s_constructorCallback = std::move(callback);
 }

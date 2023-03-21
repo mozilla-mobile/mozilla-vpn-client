@@ -81,6 +81,8 @@
         <file>components/MZVerticalSpacer.qml</file>
         <file>components/navigator/navigatorLoader.qml</file>
         <file>components/navigator/navigatorLoaderInternal.qml</file>
+        <file>components/navigationBar/MZBottomNavigationBar.qml</file>
+        <file>components/navigationBar/MZBottomNavigationBarButton.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/MZInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/MZInAppAuthenticationErrorPopup.qml</file>

@@ -204,6 +204,9 @@ class MozillaVPN final : public App {
 
   bool handleCloseEvent() override;
 
+  static QString appVersionForUpdate();
+  static bool mockFreeTrial();
+
  private:
   void maybeStateMain();
 
@@ -246,6 +249,10 @@ class MozillaVPN final : public App {
   static void registerErrorHandlers();
 
   static void registerNavigatorScreens();
+
+  static void registerInspectorCommands();
+
+  static void registerNavigationBarButtons();
 
  signals:
   void deviceRemoving(const QString& publicKey);

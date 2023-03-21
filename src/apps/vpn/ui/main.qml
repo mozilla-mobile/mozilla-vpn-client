@@ -254,8 +254,49 @@ Window {
         }
     }
 
-    VPNBottomNavigationBar {
+    MZBottomNavigationBar {
         id: navbar
+
+        property var showNavigationBar: [
+            VPN.ScreenSettings,
+            VPN.ScreenHome,
+            VPN.ScreenMessaging,
+            VPN.ScreenGetHelp,
+            VPN.ScreenTipsAndTricks
+        ]
+
+        visible: showNavigationBar.includes(MZNavigator.screen) &&
+                 VPN.userState === VPN.UserAuthenticated &&
+                 VPN.state === VPN.StateMain && opacity !== 0
+
+        function setNavBarOpacity() {
+            if (MZNavigator.screen === VPN.ScreenHome) {
+                navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            } else {
+                navbar.opacity = 1;
+            }
+        }
+
+        Connections {
+            target: VPNConnectionBenchmark
+            function onStateChanged() {
+                navbar.setNavBarOpacity();
+            }
+        }
+
+        Connections {
+          target: MZNavigator
+
+          function onCurrentComponentChanged() {
+              navbar.setNavBarOpacity();
+           }
+        }
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
     }
 
     Connections {

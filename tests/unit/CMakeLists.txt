@@ -113,9 +113,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.cpp
@@ -234,6 +231,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/shared/frontend/navigator.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
@@ -248,6 +249,9 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hawkauth.h
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/itempicker.cpp
@@ -319,7 +323,6 @@ target_sources(unit_tests PRIVATE
 target_sources(unit_tests PRIVATE
     main.cpp
     moccontroller.cpp
-    mocinspectorhandler.cpp
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h

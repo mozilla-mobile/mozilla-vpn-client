@@ -63,11 +63,6 @@ SOURCES += \
         apps/vpn/externalophandler.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
-        apps/vpn/inspector/inspectorhandler.cpp \
-        apps/vpn/inspector/inspectoritempicker.cpp \
-        apps/vpn/inspector/inspectorutils.cpp \
-        apps/vpn/inspector/inspectorwebsocketconnection.cpp \
-        apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
@@ -200,11 +195,6 @@ HEADERS += \
         apps/vpn/externalophandler.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
-        apps/vpn/inspector/inspectorhandler.h \
-        apps/vpn/inspector/inspectoritempicker.h \
-        apps/vpn/inspector/inspectorutils.h \
-        apps/vpn/inspector/inspectorwebsocketconnection.h \
-        apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
         apps/vpn/localizer.h \
         apps/vpn/models/device.h \
