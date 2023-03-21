@@ -15,6 +15,7 @@ TextField {
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
+    property bool focusReasonA11y: false
 
     id: textField
 
@@ -31,7 +32,6 @@ TextField {
     color: MZTheme.colors.input.default.text
     cursorDelegate: MZCursorDelegate {}
     echoMode: TextInput.Normal
-    focus: true
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSizeSmall
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
@@ -43,7 +43,11 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     horizontalAlignment: TextInput.AlignLeft
 
-    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(textField)
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            MZUtils.scrollToComponent(textField)
+        }
+    }
 
     // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader
@@ -51,8 +55,10 @@ TextField {
     // active focus the screen reader keeps working as expected.
     onTextChanged: {
         if (Qt.platform.os === "osx") {
+            textField.focusReasonA11y = true
             textField.focus = false;
             textField.forceActiveFocus();
+            textField.focusReasonA11y = false
         }
     }
 
