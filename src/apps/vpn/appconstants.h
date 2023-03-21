@@ -141,7 +141,7 @@ constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
 constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
-constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
+constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 
 constexpr const char* APPLE_SUBSCRIPTIONS_URL =
     "https://apps.apple.com/account/subscriptions";
