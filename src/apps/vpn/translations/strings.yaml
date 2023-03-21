@@ -398,6 +398,9 @@ genericError:
 # Connection Info Screen
 connectionInfo:
   openButton: Connection Info
+  startSpeedTest:
+    value: Start speed test
+    comment: Accessible label for the button that opens the speed test view and initiates a speed test
   labelBitps:
     value: bit/s
     comment: Bits per second
@@ -482,6 +485,10 @@ connectionInfo:
   ipInfoButtonLabel:
     value: Show IP info
     comment: Accessible label for the IP info button that shows the IP info panel when clicked.
+  connectionInformation:
+    value: Connection information
+    comment: Accessible label for the button that shows the IP info panel when clicked.
+  
 
 crashreporter:
   mainTitle:
