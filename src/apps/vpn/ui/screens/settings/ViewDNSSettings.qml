@@ -36,6 +36,16 @@ VPNViewBase {
         root.dnsSelectionChanged = true;
     }
 
+    function saveChange(dnsProviderFlags, userDNS = undefined) {
+        if (VPNSettings.dnsProviderFlags !== dnsProviderFlags) {
+            VPNSettings.dnsProviderFlags = dnsProviderFlags;
+        }
+
+        if (userDNS !== undefined && VPNSettings.userDNS != userDNS) {
+            VPNSettings.userDNS = userDNS;
+        }
+    }
+
     function maybeSaveChange() {
         if (!root.dnsSelectionChanged && ipInput.text === VPNSettings.userDNS) {
             return;
@@ -44,18 +54,17 @@ VPNViewBase {
         root.dnsSelectionChanged = false;
 
         if (!root.customDNS) {
-            VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+            saveChange(VPNSettings.Gateway);
             return;
         }
 
         if (ipInput.text !== "" && VPN.validateUserDNS(ipInput.text)) {
-            VPNSettings.userDNS = ipInput.text
-            VPNSettings.dnsProviderFlags = VPNSettings.Custom;
+            saveChange(VPNSettings.Custom, ipInput.text);
             return;
         }
 
         if (VPNSettings.userDNS === "" || !VPN.validateUserDNS(VPNSettings.userDNS)) {
-            VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+            saveChange(VPNSettings.Gateway);
         }
     }
 
