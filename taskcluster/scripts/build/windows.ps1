@@ -30,9 +30,6 @@ Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64
 python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
 python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
 
-# DEBUG: Confirm that we can actually run `get-secret.py`
-python3 $SOURCE_DIR/taskcluster/scripts/get-secret.py --help
-
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
 $env:PATH ="$FETCHES_PATH\go\bin;$env:PATH"
