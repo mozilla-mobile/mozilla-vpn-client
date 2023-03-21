@@ -18,8 +18,6 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
-        CheckBox {}
-
         ColumnLayout {
             spacing: 0
             Layout.fillWidth: true
