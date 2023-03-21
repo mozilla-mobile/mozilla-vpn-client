@@ -54,7 +54,9 @@ VPNViewBase {
             return;
         }
 
-        VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+        if (VPNSettings.userDNS === "" || !VPN.validateUserDNS(VPNSettings.userDNS)) {
+            VPNSettings.dnsProviderFlags = VPNSettings.Gateway;
+        }
     }
 
     function reset() {
@@ -209,6 +211,12 @@ VPNViewBase {
                     onTextChanged: {
                         ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
                         ipInput.error = VPNl18n.SettingsDnsSettingsCustomDNSError
+                    }
+
+                    onActiveFocusChanged: {
+                       if (!activeFocus && !ipInput.focusReasonA11y) {
+                           maybeSaveChange();
+                       }
                     }
                 }
 

@@ -424,6 +424,7 @@ describe('Settings', function () {
   });
 
   it('Checking the DNS settings reset', async () => {
+    await vpn.setSetting('dnsProviderFlags', 0);
     await vpn.setSetting('userDNS', '');
 
     await vpn.waitForQueryAndClick(
@@ -435,7 +436,6 @@ describe('Settings', function () {
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     // Checking if the checkboxes are correctly set based on the settings prop
-    await vpn.setSetting('dnsProviderFlags', 0);
     await vpn.waitForQuery(
         queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
@@ -524,7 +524,7 @@ describe('Settings', function () {
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     // We keep the custom DNS.
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
   });
 
   it('Checking the languages settings', async () => {

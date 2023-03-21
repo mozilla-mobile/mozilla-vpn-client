@@ -14,6 +14,7 @@ TextField {
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
+    property bool focusReasonA11y: false
 
     id: textField
 
@@ -30,7 +31,6 @@ TextField {
     color: VPNTheme.colors.input.default.text
     cursorDelegate: VPNCursorDelegate {}
     echoMode: TextInput.Normal
-    focus: true
     font.family: VPNTheme.theme.fontInterFamily
     font.pixelSize: VPNTheme.theme.fontSizeSmall
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
@@ -42,17 +42,20 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     horizontalAlignment: TextInput.AlignLeft
 
-    onActiveFocusChanged: if (focus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
+    onActiveFocusChanged: if (activeFocus && typeof(vpnFlickable) !== "undefined" && typeof(vpnFlickable.ensureVisible) !== "undefined") {
         vpnFlickable.ensureVisible(textField);
     }
+
     // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader
     // fails to narrate any accessible content and action. After regaining
     // active focus the screen reader keeps working as expected.
     onTextChanged: {
         if (Qt.platform.os === "osx") {
+            textField.focusReasonA11y = true
             textField.focus = false;
             textField.forceActiveFocus();
+            textField.focusReasonA11y = false
         }
     }
 
