@@ -98,6 +98,8 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
+                objectName: "serverListRecommended"
+
                 spacing: MZTheme.theme.listSpacing * 1.5
                 width: parent.width
 
