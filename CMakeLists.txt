@@ -137,6 +137,9 @@ add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
 
+add_custom_target(relayapp)
+add_subdirectory(src/apps/relay EXCLUDE_FROM_ALL)
+
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
     add_subdirectory(extension)
