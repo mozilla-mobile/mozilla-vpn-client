@@ -71,6 +71,16 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hawkauth.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectoritempicker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectoritempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/ipaddress.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/itempicker.cpp

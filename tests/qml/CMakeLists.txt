@@ -42,7 +42,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
@@ -123,6 +122,7 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hawkauth.h
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
@@ -172,7 +172,6 @@ target_sources(qml_tests PRIVATE
     mocconstants.cpp
     moccontroller.cpp
     mocmozillavpn.cpp
-    ../unit/mocinspectorhandler.cpp
 )
 
 if(WIN32)

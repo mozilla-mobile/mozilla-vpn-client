@@ -157,3 +157,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 void MozillaVPN::registerUrlOpenerLabels() {}
 
 bool MozillaVPN::handleCloseEvent() { return true; }
+
+// static
+QString MozillaVPN::appVersionForUpdate() { return "42"; }
