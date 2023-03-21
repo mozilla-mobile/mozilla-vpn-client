@@ -26,7 +26,6 @@
 #include "logoutobserver.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
-#include "models/featuremodel.h"
 #include "models/keys.h"
 #include "models/recentconnections.h"
 #include "models/servercountrymodel.h"
@@ -1951,40 +1950,6 @@ void MozillaVPN::registerInspectorCommands() {
       "fetch_addons", "Force a fetch of the addon list manifest", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         AddonManager::instance()->fetch();
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
-      "flip_off_feature", "Flip Off a feature", 1,
-      [](InspectorHandler*, const QList<QByteArray>& arguments) {
-        QString featureName = arguments[1];
-        const Feature* feature = Feature::getOrNull(featureName);
-        if (!feature) {
-          QJsonObject obj;
-          obj["error"] = "Feature does not exist";
-          return obj;
-        }
-
-        if (feature->isSupported()) {
-          FeatureModel::instance()->toggle(arguments[1]);
-        }
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
-      "flip_on_feature", "Flip On a feature", 1,
-      [](InspectorHandler*, const QList<QByteArray>& arguments) {
-        QString featureName = arguments[1];
-        const Feature* feature = Feature::getOrNull(featureName);
-        if (!feature) {
-          QJsonObject obj;
-          obj["error"] = "Feature does not exist";
-          return obj;
-        }
-
-        if (!feature->isSupported()) {
-          FeatureModel::instance()->toggle(arguments[1]);
-        }
         return QJsonObject();
       });
 

@@ -28,6 +28,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/featuremodel.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -99,6 +100,38 @@ static QList<InspectorCommand> s_commands{
                      0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        s_forwardNetwork = true;
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"flip_off_feature", "Flip Off a feature", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       const Feature* feature = Feature::getOrNull(featureName);
+                       if (!feature) {
+                         QJsonObject obj;
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
+
+                       if (feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QString featureName = arguments[1];
+                       const Feature* feature = Feature::getOrNull(featureName);
+                       if (!feature) {
+                         QJsonObject obj;
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
+
+                       if (!feature->isSupported()) {
+                         FeatureModel::instance()->toggle(arguments[1]);
+                       }
                        return QJsonObject();
                      }},
 
