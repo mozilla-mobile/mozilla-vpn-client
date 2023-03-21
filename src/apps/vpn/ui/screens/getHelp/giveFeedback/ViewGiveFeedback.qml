@@ -154,7 +154,7 @@ ColumnLayout {
             if (btnGroup.checkedButton.value >= 5) {
                 VPN.submitFeedback("", btnGroup.checkedButton.value, 0);
 
-                if (VPNFeatureList.get("appReview").isSupported) {
+                if (MZFeatureList.get("appReview").isSupported) {
                     getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml");
                     return;
                 }

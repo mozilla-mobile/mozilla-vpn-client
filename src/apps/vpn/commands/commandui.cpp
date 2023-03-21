@@ -33,7 +33,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
-#include "models/featuremodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/recentconnections.h"
 #include "models/servercountrymodel.h"
@@ -296,8 +295,6 @@ int CommandUI::run(QStringList& tokens) {
 
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN",
                                  MozillaVPN::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNFeatureList",
-                                 FeatureModel::instance());
     qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         MozillaVPN::instance()->captivePortalDetection());

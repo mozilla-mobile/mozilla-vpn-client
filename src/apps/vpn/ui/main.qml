@@ -150,7 +150,7 @@ Window {
     Connections {
         target: MZLog
         function onViewLogsNeeded() {
-            if (VPNFeatureList.get("shareLogs").isSupported)  {
+            if (MZFeatureList.get("shareLogs").isSupported)  {
                 if(MZLog.viewLogs()){
                     return;
                 }

@@ -31,6 +31,7 @@ include_directories(${MZ_SOURCE_DIR}/apps/unit_tests)
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
 target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+target_compile_definitions(app_unit_tests PRIVATE MZ_ADJUST)
 
 target_link_libraries(app_unit_tests PRIVATE
     Qt6::Quick
@@ -73,12 +74,16 @@ target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
     mocsentryadapter.cpp
+    testadjust.cpp
+    testadjust.h
     testcheckedint.h
     testcheckedint.cpp
     testenv.cpp
     testenv.h
     testfeature.cpp
     testfeature.h
+    testfeaturemodel.cpp
+    testfeaturemodel.h
     testipaddress.cpp
     testipaddress.h
     testlanguagei18n.cpp
@@ -110,6 +115,15 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h
 )
+
+if(NOT BUILD_ADJUST_SDK_TOKEN)
+    target_sources(app_unit_tests PRIVATE
+        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
+        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.h
+        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.cpp
+        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
+    )
+endif()
 
 file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
 file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"languages.json\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/languages.json</file>\n")

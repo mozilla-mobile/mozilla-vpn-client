@@ -478,19 +478,6 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    false                   // sensitive (do not log)
 )
 
-#if defined(MVPN_ADJUST)
-SETTING_BOOL(adjustActivatable,        // getter
-             setAdjustActivatable,     // setter
-             removeAdjustActivatable,  // remover
-             hasAdjustActivatable,     // has
-             "adjustActivatable",      // key
-             false,                    // default value
-             false,                    // user setting
-             false,                    // remove when reset
-             false                     // sensitive (do not log)
-)
-#endif
-
 #if defined(MZ_IOS)
 SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    setSubscriptionTransactions,     // setter

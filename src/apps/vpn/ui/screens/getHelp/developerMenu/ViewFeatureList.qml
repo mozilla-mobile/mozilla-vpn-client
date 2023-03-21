@@ -7,8 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
-import Mozilla.VPN.qmlcomponents 1.0
 import components 0.1
 
 import org.mozilla.Glean 0.30
@@ -27,7 +25,7 @@ MZViewBase {
         Repeater {
             id: rep
 
-            model: VPNFeatureList
+            model: MZFeatureList
             delegate: ColumnLayout {
                 Layout.fillWidth: true
                 spacing: MZTheme.theme.windowMargin / 1.5
@@ -65,7 +63,7 @@ MZViewBase {
                         Layout.alignment: Qt.AlignTop | Qt. AlignRight
                         opacity: enabled ? 1 : .3
                         onClicked: {
-                            VPNFeatureList.toggle(feature.id);
+                            MZFeatureList.toggle(feature.id);
                         }
                     }
 

@@ -97,6 +97,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/logger.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/loghandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/featuremodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/featuremodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.cpp
@@ -130,6 +132,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/taskauthenticate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/getfeaturelist/taskgetfeaturelist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp

@@ -314,7 +314,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     width: undefined
-                    visible: VPNFeatureList.get("freeTrial").isSupported
+                    visible: MZFeatureList.get("freeTrial").isSupported
                 }
                 PageIndicator {
                     id: progressIndicator

@@ -67,7 +67,6 @@ SOURCES += \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
-        apps/vpn/models/featuremodel.cpp \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/location.cpp \
@@ -105,7 +104,6 @@ SOURCES += \
         apps/vpn/tasks/addon/taskaddon.cpp \
         apps/vpn/tasks/addonindex/taskaddonindex.cpp \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
         apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
@@ -201,7 +199,6 @@ HEADERS += \
         apps/vpn/localizer.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
-        apps/vpn/models/featuremodel.h \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/location.h \
@@ -240,7 +237,6 @@ HEADERS += \
         apps/vpn/tasks/addon/taskaddon.h \
         apps/vpn/tasks/addonindex/taskaddonindex.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \

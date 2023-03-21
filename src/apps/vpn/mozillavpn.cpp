@@ -78,7 +78,7 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
 #  include "adjust/adjusthandler.h"
 #endif
 
@@ -269,7 +269,7 @@ void MozillaVPN::initialize() {
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
   initTasks.append(new TaskFunction([] { AdjustHandler::initialize(); }));
 #endif
 
@@ -423,7 +423,7 @@ void MozillaVPN::maybeStateMain() {
     setState(StateMain);
   }
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
   // When the client is ready to be activated, we do not need adjustSDK anymore
   // (the subscription is done, and no extra events will be dispatched). We
   // cannot disable AdjustSDK at runtime, but we can disable it for the next
@@ -1070,7 +1070,7 @@ void MozillaVPN::subscriptionCompleted() {
 
   logger.debug() << "Subscription completed";
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
   AdjustHandler::trackEvent(AppConstants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 

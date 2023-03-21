@@ -9,7 +9,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
 #  include "adjust/adjustfiltering.h"
 #endif
 
@@ -207,7 +207,7 @@ void FeatureModel::updateFeatureList(const QByteArray& data) {
     settingsHolder->setFeaturesFlippedOff(featuresFlippedOff);
   }
 
-#ifdef MVPN_ADJUST
+#ifdef MZ_ADJUST
   QJsonValue adjustFieldsValue = json["adjustFields"];
   if (adjustFieldsValue.isUndefined()) {
     logger.debug() << "No adjust fields found in feature list";

@@ -32,7 +32,7 @@ MZViewBase {
             isChecked: MZSettings.startAtBoot
             showDivider: false
             onClicked: MZSettings.startAtBoot = !MZSettings.startAtBoot
-            visible: VPNFeatureList.get("startOnBoot").isSupported
+            visible: MZFeatureList.get("startOnBoot").isSupported
             anchors {
                 right: parent.right
                 left: parent.left
@@ -78,7 +78,7 @@ MZViewBase {
                     }
                     stackview.push("qrc:/ui/screens/settings/ViewNotifications.qml")
                 }
-                visible: VPNFeatureList.get("captivePortal").isSupported || VPNFeatureList.get("unsecuredNetworkNotification").isSupported || VPNFeatureList.get("notificationControl").isSupported
+                visible: MZFeatureList.get("captivePortal").isSupported || MZFeatureList.get("unsecuredNetworkNotification").isSupported || MZFeatureList.get("notificationControl").isSupported
                 width: parent.width - MZTheme.theme.windowMargin
             }
 

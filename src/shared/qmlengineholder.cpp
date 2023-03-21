@@ -19,6 +19,7 @@
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "localizer.h"
+#include "models/featuremodel.h"
 #include "models/licensemodel.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
@@ -55,6 +56,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                ErrorHandler::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZEnv",
                                Env::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZFeatureList",
+                               FeatureModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZGleanDeprecated",
                                GleanDeprecated::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",

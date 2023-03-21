@@ -12,30 +12,6 @@ isEmpty(MVPN_GROUP_ID_IOS) {
     MVPN_GROUP_ID_IOS = "group.org.mozilla.ios.Guardian"
 }
 
-adjust {
-    message(Adjust SDK enabled)
-    DEFINES += MVPN_ADJUST
-
-    SOURCES += \
-        apps/vpn/adjust/adjustfiltering.cpp \
-        apps/vpn/adjust/adjusthandler.cpp \
-        apps/vpn/adjust/adjustproxy.cpp \
-        apps/vpn/adjust/adjustproxyconnection.cpp \
-        apps/vpn/adjust/adjustproxypackagehandler.cpp \
-        apps/vpn/adjust/adjusttasksubmission.cpp
-
-    OBJECTIVE_SOURCES += apps/vpn/platforms/ios/iosadjusthelper.mm
-
-    HEADERS += \
-        apps/vpn/adjust/adjustfiltering.h \
-        apps/vpn/adjust/adjusthandler.h \
-        apps/vpn/adjust/adjustproxy.h \
-        apps/vpn/adjust/adjustproxyconnection.h \
-        apps/vpn/adjust/adjustproxypackagehandler.h \
-        apps/vpn/adjust/adjusttasksubmission.h
-
-    OBJECTIVE_HEADERS += apps/vpn/platforms/ios/iosadjusthelper.h
-}
 
 TARGET = "MozillaVPN"
 
