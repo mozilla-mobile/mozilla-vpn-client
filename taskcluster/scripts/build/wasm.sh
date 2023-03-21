@@ -8,7 +8,11 @@ source /opt/emsdk/emsdk_env.sh
 
 # Reqs
 git submodule update --init --depth 1
-git submodule update --remote i18n
+
+for i in src/apps/*/translations/i18n; do
+  git submodule update --remote $i
+done
+
 pip3 install -r requirements.txt
 
 export PATH="$QTPATH/wasm_32/bin:$PATH"

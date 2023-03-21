@@ -28,7 +28,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations_vpn)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
