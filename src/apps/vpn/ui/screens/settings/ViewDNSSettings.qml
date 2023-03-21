@@ -55,7 +55,9 @@ MZViewBase {
             return;
         }
 
-        MZSettings.dnsProviderFlags = MZSettings.Gateway;
+        if (MZSettings.userDNS === "" || !VPN.validateUserDNS(MZSettings.userDNS)) {
+            MZSettings.dnsProviderFlags = MZSettings.Gateway;
+        }
     }
 
     function reset() {
@@ -210,6 +212,12 @@ MZViewBase {
                     onTextChanged: {
                         ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
                         ipInput.error = MZI18n.SettingsDnsSettingsCustomDNSError
+                    }
+
+                    onActiveFocusChanged: {
+                       if (!activeFocus && !ipInput.focusReasonA11y) {
+                           maybeSaveChange();
+                       }
                     }
                 }
 
