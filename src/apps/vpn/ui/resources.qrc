@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/ui">
+        <file>resources/animations/globe_animation.json</file>
+        <file>resources/animations/lock_animation.json</file>
+        <file>resources/animations/speedometer_animation.json</file>
+        <file>resources/animations/vpnactive_animation.json</file>
+        <file>resources/animations/vpnlogo-drop_animation.json</file>
+        <file>resources/animations/vpnlogo-kinetic_animation.json</file>
         <file>resources/app-rating.svg</file>
         <file>resources/chevron-purple.svg</file>
         <file>resources/connection-error-unstable.svg</file>
