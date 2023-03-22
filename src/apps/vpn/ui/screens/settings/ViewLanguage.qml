@@ -32,6 +32,7 @@ MZViewBase {
             id: searchBar
 
             Layout.fillWidth: true
+            Layout.topMargin: 8
             Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
             Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
