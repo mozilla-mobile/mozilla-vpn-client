@@ -173,7 +173,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances()) {
+    if (!EventListener::checkOtherInstances(qtTrId("vpn.main.productName"))) {
       return 0;
     }
 

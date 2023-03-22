@@ -23,6 +23,9 @@ constexpr const char* LOG_FILE_NAME = "foobar.txt";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "foo_bar";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "foo-bar";
+
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "foobar";
 

@@ -8,6 +8,7 @@
 #include <QFileOpenEvent>
 #include <QUrlQuery>
 
+#include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"
@@ -38,7 +39,8 @@ bool MacosAuthenticationListener::eventFilter(QObject* obj, QEvent* event) {
 
   QFileOpenEvent* ev = static_cast<QFileOpenEvent*>(event);
   QUrl url = ev->url();
-  if ((url.scheme() != "mozilla-vpn") || (url.authority() != "login")) {
+  if ((url.scheme() != AppConstants::DEEP_LINK_SCHEME) ||
+      (url.authority() != "login")) {
     logger.warning() << "Received unknown URL:" << url.toString();
     return false;
   }

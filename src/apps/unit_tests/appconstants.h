@@ -25,6 +25,9 @@ constexpr const char* LOCALIZER_FILENAME_PREFIX = "unit_test";
 // The prefix for the user-agent requests
 constexpr const char* NETWORK_USERAGENT_PREFIX = "UnitTest";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "unit-test";
+
 // The file name for the logging
 constexpr const char* LOG_FILE_NAME = "unit-test.txt";
 

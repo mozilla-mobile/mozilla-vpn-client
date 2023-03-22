@@ -24,6 +24,9 @@ constexpr const char* SETTINGS_APP_NAME = "AuthTest";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "auth_test";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "auth-test";
+
 // The prefix for the user-agent requests. This needs to be kept as MozillaVPN
 // to make guardian happy.
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
