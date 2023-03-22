@@ -91,7 +91,7 @@ if( ${_SUPPORTED} GREATER -1 )
 
     include(ExternalProject)
     ExternalProject_Add(sentry
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../3rdparty/sentry
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
         GIT_REPOSITORY https://github.com/getsentry/sentry-native/
         GIT_TAG 0.5.0
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
