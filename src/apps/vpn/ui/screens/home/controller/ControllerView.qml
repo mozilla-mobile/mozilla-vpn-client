@@ -449,7 +449,6 @@ Item {
         id: connectionInfoToggleButton
         objectName: "connectionInfoToggleButton"
 
-        //% "Close"
         property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
@@ -637,7 +636,6 @@ Item {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
-        //% "Close"
         property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
