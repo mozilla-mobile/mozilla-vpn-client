@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/nebula">
         <file>utils/qmldir</file>
-        <file>utils/MZUtils.qml</file>
+        <file>utils/MZUiUtils.qml</file>
     </qresource>
 </RCC>

@@ -27,7 +27,7 @@ CheckBox {
         if (!activeFocus)
             return mouseArea.changeState(uiState.stateDefault);
 
-        MZUtils.scrollToComponent(checkBox)
+        MZUiUtils.scrollToComponent(checkBox)
     }
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)

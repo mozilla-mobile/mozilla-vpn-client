@@ -28,7 +28,7 @@ RadioDelegate {
         if (!radioControl.activeFocus)
             return mouseArea.changeState(uiState.stateDefault);
 
-        MZUtils.scrollToComponent(radioControl)
+        MZUiUtils.scrollToComponent(radioControl)
     }
 
     Keys.onPressed: event => {
