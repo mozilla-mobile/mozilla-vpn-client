@@ -28,6 +28,7 @@ namespace {
 Logger logger("AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
+constexpr auto CORE_APPLICATION = "org/mozilla/firefox/qt/common/CoreApplication";
 }  // namespace
 
 void AdjustHandler::initialize() {
@@ -98,7 +99,7 @@ void AdjustHandler::initialize() {
 
 #ifdef MZ_ANDROID
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNApplication", "onVpnInit", "(ZI)V",
+      CORE_APPLICATION, "initializeAdjust", "(ZI)V",
       Constants::inProduction(), s_adjustProxy->serverPort());
 #endif
 
@@ -121,7 +122,7 @@ void AdjustHandler::trackEvent(const QString& event) {
 #ifdef MZ_ANDROID
   QJniObject javaMessage = QJniObject::fromString(event);
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNApplication", "trackEvent",
+      CORE_APPLICATION, "trackEvent",
       "(Ljava/lang/String;)V", javaMessage.object<jstring>());
 #endif
 
@@ -142,7 +143,7 @@ void AdjustHandler::forget() {
 #ifdef MZ_ANDROID
   QJniObject activity = AndroidCommons::getActivity();
   QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/VPNApplication", "forget",
+      CORE_APPLICATION, "forget",
       "(Landroid/app/Activity;)V", activity.object());
 #endif
 
