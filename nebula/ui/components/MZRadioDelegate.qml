@@ -14,6 +14,7 @@ RadioDelegate {
     property var radioButtonLabelText
     property string accessibleName
     property var uiState: MZTheme.theme.uiState
+    readonly property int labelX: radioButton.anchors.margins + radioButton.implicitWidth + radioButtonLabel.anchors.leftMargin
 
     signal clicked()
 
@@ -114,8 +115,15 @@ RadioDelegate {
     MZRadioButtonLabel {
         id: radioButtonLabel
 
-        text: radioButtonLabelText
         anchors.verticalCenter: parent.verticalCenter
+        anchors.left: radioButton.right
+        anchors.right: parent.right
+        anchors.leftMargin: 16 + radioButton.anchors.rightMargin
+
+        text: radioButtonLabelText
+        lineHeightMode: Text.FixedHeight
+        lineHeight: 21
+        wrapMode: Text.Wrap
     }
 
     background: Rectangle {
@@ -132,6 +140,7 @@ RadioDelegate {
         id: radioButton
 
         objectName: "radioIndicator"
+        anchors.margins: 2
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         implicitWidth: 20
