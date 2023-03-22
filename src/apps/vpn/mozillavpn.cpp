@@ -68,6 +68,8 @@
 #include "websocket/pushmessage.h"
 #include "websocket/websockethandler.h"
 
+#include "subscriptionmonitor.h"
+
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
 #endif
@@ -277,6 +279,8 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  SubscriptionMonitor::instance();
 
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
