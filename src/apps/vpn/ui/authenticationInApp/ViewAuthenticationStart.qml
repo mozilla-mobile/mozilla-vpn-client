@@ -15,7 +15,7 @@ MZInAppAuthenticationBase {
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
-    _menuButtonAccessibleName:  qsTrId("vpn.main.back")
+    _menuButtonAccessibleName:  MZI18n.GlobalGoBack
     _headlineText: "Mozilla VPN"
     _subtitleText: MZI18n.InAppAuthEnterEmailAddressDescription
     _imgSource: "qrc:/ui/resources/logo.svg"
