@@ -18,7 +18,7 @@ CheckBox {
     property string accessibleName
 
     onClicked: toolTip.hide()
-    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(vpnSettingsToggle)
+    onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(vpnSettingsToggle)
 
     height: MZTheme.theme.vSpacing
     width: 45

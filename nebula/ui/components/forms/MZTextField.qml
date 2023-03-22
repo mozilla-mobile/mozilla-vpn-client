@@ -43,7 +43,11 @@ TextField {
     verticalAlignment: TextInput.AlignVCenter
     horizontalAlignment: TextInput.AlignLeft
 
-    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(textField)
+    onActiveFocusChanged: {
+        if (activeFocus) {
+            MZUiUtils.scrollToComponent(textField)
+        }
+    }
 
     // This is a workaround for VoiceOver on macOS: https://bugreports.qt.io/browse/QTBUG-108189
     // After gaining initial focus or typing in TextField the screen reader
