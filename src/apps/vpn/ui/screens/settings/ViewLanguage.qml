@@ -53,6 +53,7 @@ MZViewBase {
 
             MZRadioDelegate {
                 id: systemLanguageRadioButton
+                objectName: "systemLanguageRadioButton"
 
                 Layout.fillWidth: true
                 Layout.leftMargin: MZTheme.theme.windowMargin

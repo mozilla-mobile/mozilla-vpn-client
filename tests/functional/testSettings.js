@@ -543,14 +543,10 @@ describe('Settings', function() {
         queries.screenSettings.appPreferencesView.LANGUAGE.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.languageSettingsView
-            .SYSTEM_LANGUAGE_TOGGLE.visible()
-            .checked());
     await vpn.waitForQuery(
         queries.screenSettings.appPreferencesView.languageSettingsView
-            .SYSTEM_LANGUAGE_TOGGLE.visible()
-            .unchecked());
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .checked());
 
     await vpn.scrollToQuery(
         queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
@@ -560,6 +556,11 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.appPreferencesView.languageSettingsView
             .languageItemLabel('it'));
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .unchecked());
 
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
@@ -581,7 +582,8 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(
         queries.screenSettings.appPreferencesView.languageSettingsView
-            .SYSTEM_LANGUAGE_TOGGLE.unchecked());
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .unchecked());
 
     await vpn.scrollToQuery(
         queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
@@ -616,11 +618,12 @@ describe('Settings', function() {
 
     await vpn.waitForQueryAndClick(
         queries.screenSettings.appPreferencesView.languageSettingsView
-            .SYSTEM_LANGUAGE_TOGGLE.visible()
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .unchecked());
     await vpn.waitForQuery(
         queries.screenSettings.appPreferencesView.languageSettingsView
-            .SYSTEM_LANGUAGE_TOGGLE.checked());
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .checked());
 
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
