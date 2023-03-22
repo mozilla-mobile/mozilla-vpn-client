@@ -44,7 +44,7 @@ SwipeDelegate {
         onSwipeClose()
     }
 
-    onActiveFocusChanged: if(activeFocus) MZUtils.scrollToComponent(swipeDelegate)
+    onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(swipeDelegate)
 
     contentItem: Item {
         id: swipeDelegateContentItem
