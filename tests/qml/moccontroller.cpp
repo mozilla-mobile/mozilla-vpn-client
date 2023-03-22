@@ -19,7 +19,9 @@ bool Controller::activate(const ServerData&) { return false; }
 
 bool Controller::switchServers(const ServerData& serverData) { return false; }
 
-bool Controller::silentSwitchServers(bool) { return false; }
+bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
+  return false;
+}
 
 void Controller::activateInternal(bool forcePort53) { Q_UNUSED(forcePort53) }
 
