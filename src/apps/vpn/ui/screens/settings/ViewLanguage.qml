@@ -11,7 +11,6 @@ import components 0.1
 import components.forms 0.1
 
 MZViewBase {
-
     id: vpnFlickable
     objectName: "settingsLanguagesView"
 
@@ -25,47 +24,9 @@ MZViewBase {
 
         spacing: MZTheme.theme.vSpacing
 
-        //        MZToggleCard {
-        //            id: toggleCard
-        //            toggleObjectName: "settingsSystemLanguageToggle"
-        //            Layout.fillWidth: true
-        //            Layout.topMargin: -MZTheme.theme.windowMargin
-        //            Layout.preferredHeight: childrenRect.height
-
-        //            //% "Use system language"
-        //            //: Title for the language switcher toggle.
-        //            labelText: qsTrId("vpn.settings.systemLanguageTitle")
-
-        //            //% "Mozilla VPN will use the default system language."
-        //            //: Description for the language switcher toggle when
-        //            //: "Use system language" is enabled.
-        //            sublabelText: qsTrId("vpn.settings.systemLangaugeSubtitle")
-
-        //            toolTipTitleText: {
-        //                if (toggleChecked) {
-        //                   //% "Disable to select a different language"
-        //                   //: Tooltip for the language switcher toggle
-        //                   return qsTrId("vpn.settings.systemLanguageEnabled");
-        //                }
-        //                return qsTrId("vpn.settings.systemLanguageTitle");
-        //            }
-
-        //            toggleChecked: MZSettings.languageCode === ""
-        //            function handleClick() {
-        //                toggleChecked = !toggleChecked
-        //                if (toggleChecked) {
-        //                    MZSettings.languageCode = "";
-        //                } else {
-        //                    MZSettings.languageCode = MZSettings.previousLanguageCode;
-        //                }
-        //            }
-        //        }
-
-
         ButtonGroup {
             id: radioButtonGroup
         }
-
 
         MZSearchBar {
             id: searchBar
@@ -86,7 +47,7 @@ MZViewBase {
         }
 
         ColumnLayout {
-            spacing: 4
+            spacing: 0
             visible: searchBar.isEmpty
 
             MZRadioDelegate {
@@ -110,24 +71,24 @@ MZViewBase {
 
             MZTextBlock {
                 id: systemLanguageRadioButtonDescription
+
                 Layout.fillWidth: true
+                Layout.topMargin: 4
                 Layout.leftMargin: MZTheme.theme.windowMargin + systemLanguageRadioButton.labelX
                 Layout.rightMargin: MZTheme.theme.windowMargin
-                Layout.alignment: Qt.AlignLeft
 
                 text: qsTrId("vpn.settings.systemLangaugeSubtitle")
             }
 
-            Rectangle {
-                id: divider
+            Rectangle {                
                 Layout.preferredHeight: 1
                 Layout.fillWidth: true
-                Layout.topMargin: 24
+                Layout.topMargin: MZTheme.theme.vSpacing
                 Layout.leftMargin: 18.5
                 Layout.rightMargin: 18.5
+
                 color: "#E7E7E7"
             }
-
         }
 
         Repeater {
@@ -151,18 +112,20 @@ MZViewBase {
             }
 
             delegate: ColumnLayout {
-                property bool isSelectedLanguage: delRadio.checked
                 id: del
-                spacing: 0
                 objectName: "language-column-" + code
-                width: parent.width
 
-                LayoutMirroring.enabled: isRightToLeft
-                LayoutMirroring.childrenInherit: true
+                property bool isSelectedLanguage: delRadio.checked
 
                 function pushFocusToRadio() {
                     delRadio.forceActiveFocus();
                 }
+
+                spacing: 0
+                width: parent.width
+
+                LayoutMirroring.enabled: isRightToLeft
+                LayoutMirroring.childrenInherit: true
 
                 MZRadioDelegate {
                     id: delRadio
@@ -198,8 +161,8 @@ MZViewBase {
                     Layout.topMargin: 4
                     Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.fillWidth: true
+
                     text: localizedLanguageName
-                    Layout.alignment: Qt.AlignLeft
                 }
             }
         }
