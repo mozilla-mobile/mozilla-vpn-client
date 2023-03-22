@@ -4,6 +4,7 @@
 
 #include "utils.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "feature.h"
 #include "logger.h"
@@ -25,6 +26,12 @@ Logger logger("Utils");
 Utils* Utils::instance() {
   static Utils s_instance;
   return &s_instance;
+}
+
+void Utils::exitForUnrecoverableError(const QString& reason) {
+  Q_ASSERT(!reason.isEmpty());
+  logger.error() << "Unrecoverable error detected: " << reason;
+  App::instance()->quit();
 }
 
 // static

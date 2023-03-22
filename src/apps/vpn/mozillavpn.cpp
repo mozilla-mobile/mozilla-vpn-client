@@ -1267,12 +1267,6 @@ void MozillaVPN::hardResetAndQuit() {
   quit();
 }
 
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
-  Q_ASSERT(!reason.isEmpty());
-  logger.error() << "Unrecoverable error detected: " << reason;
-  quit();
-}
-
 void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
   Q_ASSERT(Feature::get(Feature::Feature_accountDeletion)->isSupported());
