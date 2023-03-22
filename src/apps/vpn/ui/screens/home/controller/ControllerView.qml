@@ -450,7 +450,7 @@ Item {
         objectName: "connectionInfoToggleButton"
 
         //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             left: parent.left
@@ -638,7 +638,7 @@ Item {
         objectName: "ipInfoToggleButton"
 
         //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             right: parent.right

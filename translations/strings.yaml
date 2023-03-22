@@ -835,6 +835,9 @@ global:
   paste:
     value: Paste
     comment: Label for button to paste value from clipboard into input
+  close:
+    value: Close
+    comment: Accessible label for close button
 
 getHelp:
   helpCenter: Help Center
