@@ -108,6 +108,9 @@ languageView:
   systemLanguageButtonTitle:
     value: System language
     comment: the title for the system language radio button
+  systemLanguageButtonDescription:
+    value: Mozilla VPN will use the default system language.
+    comment: the description for the system lagnague radio button
 
 feedbackForm:
   chooseCategory: Choose a category

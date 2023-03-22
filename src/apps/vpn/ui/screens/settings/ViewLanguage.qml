@@ -78,7 +78,7 @@ MZViewBase {
                 Layout.leftMargin: MZTheme.theme.windowMargin + systemLanguageRadioButton.labelX
                 Layout.rightMargin: MZTheme.theme.windowMargin
 
-                text: qsTrId("vpn.settings.systemLangaugeSubtitle")
+                text: MZI18n.LanguageViewSystemLanguageButtonDescription
             }
 
             Rectangle {                
