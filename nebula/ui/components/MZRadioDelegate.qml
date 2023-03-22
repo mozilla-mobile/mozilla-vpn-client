@@ -122,7 +122,7 @@ RadioDelegate {
 
         text: radioButtonLabelText
         lineHeightMode: Text.FixedHeight
-        lineHeight: 21
+        lineHeight: MZTheme.theme.labelLineHeight
         wrapMode: Text.Wrap
     }
 
