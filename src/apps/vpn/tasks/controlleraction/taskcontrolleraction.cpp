@@ -16,7 +16,7 @@ Logger logger("TaskControllerAction");
 
 TaskControllerAction::TaskControllerAction(
     TaskControllerAction::TaskAction action,
-    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
+    Controller::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
     : Task("TaskControllerAction"),
       m_action(action),
       m_lastState(Controller::State::StateOff),
@@ -26,7 +26,8 @@ TaskControllerAction::TaskControllerAction(
       m_serverCoolDownPolicy(serverCoolDownPolicy) {
   MZ_COUNT_CTOR(TaskControllerAction);
 
-  logger.debug() << "TaskControllerAction created" << action;
+  logger.debug() << "TaskControllerAction created" << action
+                 << serverCoolDownPolicy;
   connect(&m_timer, &QTimer::timeout, this, &TaskControllerAction::checkStatus);
 }
 
@@ -57,8 +58,7 @@ void TaskControllerAction::run() {
       break;
 
     case eSilentSwitch:
-      expectSignal = controller->silentSwitchServers(m_serverCoolDownPolicy ==
-                                                     eServerCoolDownNeeded);
+      expectSignal = controller->silentSwitchServers(m_serverCoolDownPolicy);
       break;
 
     case eSwitch:
