@@ -838,6 +838,9 @@ global:
   close:
     value: Close
     comment: Accessible label for close button
+  getHelp: 
+    value: Get help
+    comment: Button label
 
 getHelp:
   helpCenter: Help Center

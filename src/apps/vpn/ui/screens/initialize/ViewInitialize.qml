@@ -237,7 +237,7 @@ Item {
         MZHeaderLink {
             id: headerLink
             objectName: "getHelpLink"
-            labelText: qsTrId("vpn.main.getHelp2")
+            labelText: MZI18n.GlobalGetHelp
             isLightTheme: false
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
