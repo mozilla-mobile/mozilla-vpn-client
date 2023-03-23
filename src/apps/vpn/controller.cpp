@@ -413,15 +413,16 @@ void Controller::activateNext() {
   setState(StateConfirming);
 }
 
-bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
-  logger.debug() << "Silently switch servers";
+bool Controller::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
   if (m_state != StateOn) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
   }
 
-  if (serverCoolDownNeeded) {
+  if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     QList<Server> servers = m_serverData.exitServers();
     Q_ASSERT(!servers.isEmpty());
@@ -438,7 +439,7 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
   }
 
   m_nextServerData = m_serverData;
-  m_nextServerSelectionPolicy = serverCoolDownNeeded
+  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
                                     ? RandomizeServerSelection
                                     : DoNotRandomizeServerSelection;
 
