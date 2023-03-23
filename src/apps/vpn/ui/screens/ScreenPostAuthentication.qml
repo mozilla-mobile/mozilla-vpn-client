@@ -17,15 +17,13 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.08
         anchors.horizontalCenter: parent.horizontalCenter
-        //% "Quick access"
-        text: qsTrId("vpn.postAuthentication..quickAccess")
+        text: MZI18n.PostAuthenticationHeadline
     }
 
     MZSubtitle {
         id: logoSubtitle
 
-        //% "You can quickly access Mozilla VPN from your status bar."
-        text: qsTrId("vpn.postAuthentication.statusBarIntro")
+        text: MZI18n.PostAuthenticationSubtitle
         anchors.top: headline.bottom
         anchors.topMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
