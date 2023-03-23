@@ -397,7 +397,6 @@ genericError:
 
 # Connection Info Screen
 connectionInfo:
-  openButton: Connection Info
   startSpeedTest:
     value: Start speed test
     comment: Accessible label for the button that opens the speed test view and initiates a speed test
@@ -482,9 +481,6 @@ connectionInfo:
     comment:
       - Exit server IP label for IPv6.
       - IPv6 is the abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
-  ipInfoButtonLabel:
-    value: Show IP info
-    comment: Accessible label for the IP info button that shows the IP info panel when clicked.
   connectionInformation:
     value: Connection information
     comment: Accessible label for the button that shows the IP info panel when clicked.
