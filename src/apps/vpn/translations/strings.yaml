@@ -246,6 +246,10 @@ purchaseWeb:
     comment: "%1 is the user’s email address."
   inProgress2: Please continue subscribing in your browser…
 
+purchase:
+  subscriptionOption: "%1-month plan: %2"
+  comment: "%1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost."
+
 networkSettings:
   multihopTitle: Multi-hop tunnel
 

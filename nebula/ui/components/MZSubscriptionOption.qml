@@ -124,9 +124,7 @@ RadioDelegate {
             // TODO (maybe) - Do we want to add the subscription duration in months to the model?
             property var subscriptionDuration: getSubscriptionDuration(productType)
 
-            //: %1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost.
-            //% "%1-month plan: %2"
-            property string productMultiMonth: qsTrId("vpn.subscription.multiMonthPlan").arg(col.subscriptionDuration).arg(productPrice)
+            property string productMultiMonth: MZI18n.PurchaseSubscriptionOption.arg(col.subscriptionDuration).arg(productPrice)
 
             property int trialDays: productTrialDays
 
