@@ -84,8 +84,7 @@ Item {
                 iconSource: "qrc:/ui/resources/copy.svg"
                 onClicked: {
                     MZUtils.storeInClipboard(logText.text);
-                    //% "Copied!"
-                    buttonText = qsTrId("vpn.logs.copied");
+                    buttonText = MZI18n.GlobalCopied
                 }
             }
 
