@@ -835,12 +835,16 @@ global:
   paste:
     value: Paste
     comment: Label for button to paste value from clipboard into input
+  close:
+    value: Close
+    comment: Accessible label for close button
 
 getHelp:
   helpCenter: Help Center
   viewLogs:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
+  linkTitle: Get help
 
 navBar:
   homeTab:

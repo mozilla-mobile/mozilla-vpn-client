@@ -12,8 +12,7 @@ import components 0.1
 
 MZViewBase {
     id: vpnFlickable
-    //% "Get help"
-    _menuTitle: qsTrId("vpn.main.getHelp2")
+    _menuTitle: MZI18n.GetHelpLinkTitle
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     _viewContentData: Column {
 
