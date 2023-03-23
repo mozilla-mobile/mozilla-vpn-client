@@ -237,7 +237,7 @@ Item {
         MZHeaderLink {
             id: headerLink
             objectName: "getHelpLink"
-            labelText: MZI18n.GlobalGetHelp
+            labelText: MZI18n.GetHelpLinkTitle
             isLightTheme: false
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")

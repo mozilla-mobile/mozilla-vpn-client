@@ -25,7 +25,7 @@ MZFlickable {
     MZHeaderLink {
         id: headerLink
 
-        labelText: MZI18n.GlobalGetHelp
+        labelText: MZI18n.GetHelpLinkTitle
         onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
     }
 

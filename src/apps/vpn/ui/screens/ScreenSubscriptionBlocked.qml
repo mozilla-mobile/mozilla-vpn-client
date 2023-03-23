@@ -29,7 +29,7 @@ MZStackView {
             //% "Visit our help center to learn more about managing your subscriptions."
             errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
 
-            primaryButtonText: MZI18n.GlobalGetHelp,
+            primaryButtonText: MZI18n.GetHelpLinkTitle,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: true,

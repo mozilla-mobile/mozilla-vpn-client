@@ -39,7 +39,7 @@ MZFlickable {
         objectName: "getHelpLink"
         visible: getHelpLinkVisible
 
-        labelText: MZI18n.GlobalGetHelp
+        labelText: MZI18n.GetHelpLinkTitle
         onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
     }
 

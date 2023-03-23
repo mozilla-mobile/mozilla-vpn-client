@@ -122,7 +122,7 @@ MZViewBase {
                 //% "Give feedback"
                 property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
                 objectName: "settingsGetHelp"
-                settingTitle: MZI18n.GlobalGetHelp
+                settingTitle: MZI18n.GetHelpLinkTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
