@@ -611,6 +611,9 @@ inAppAuth:
   waitingForSignIn:
     value: Waiting for sign in and subscription confirmation…
     comment: Headline on loading screen
+  pleaseWait:
+    value: Please wait…
+    comment: Headline on loading screen
   
 postAuthentication:
   headline: Quick access

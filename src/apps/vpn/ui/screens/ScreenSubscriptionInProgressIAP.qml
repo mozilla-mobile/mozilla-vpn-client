@@ -7,7 +7,6 @@ import components 0.1
 MZLoader {
     objectName: "subscriptionInProgressIAP"
 
-    //% "Please wait…"
-    headlineText: qsTrId("vpn.subscription.pleaseWait")
+    headlineText: MZI18n.InAppAuthPleaseWait
     footerLinkIsVisible: false
 }
