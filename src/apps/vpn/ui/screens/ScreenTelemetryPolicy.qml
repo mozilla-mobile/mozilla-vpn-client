@@ -100,8 +100,7 @@ MZFlickable {
 
             MZLinkButton {
                 objectName: "privacyLink"
-                //% "Mozilla VPN Privacy Notice"
-                labelText: qsTrId("vpn.telemetryPolicy.MozillaVPNPrivacyNotice")
+                labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
             }
