@@ -852,6 +852,9 @@ global:
   noInternetConnection:
     value: No internet connection
     comment: Status alert text
+  continue:
+    value: Continue
+    comment: Button label
 
 getHelp:
   helpCenter: Help Center

@@ -43,8 +43,7 @@ Item {
         id: button
         objectName: "postAuthenticationButton"
 
-        //% "Continue"
-        text: qsTrId("vpn.postAuthentication.continue")
+        text: MZI18n.GlobalContinue
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
