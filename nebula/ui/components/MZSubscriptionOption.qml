@@ -216,9 +216,7 @@ RadioDelegate {
             Layout.fillWidth: true
 
             MZInterLabel {
-                //: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan.
-                //% "Save %1%"
-                text: qsTrId("vpn.subscription.savePercent").arg(productSavings)
+                text: MZI18n.PurchasePercentSaved.arg(productSavings)
 
                 color: MZTheme.theme.purple60
                 font.family: MZTheme.theme.fontBoldFamily

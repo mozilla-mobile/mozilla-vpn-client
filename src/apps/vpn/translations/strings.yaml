@@ -250,6 +250,9 @@ purchase:
   subscriptionOption: 
     value: "%1-month plan: %2"
     comment: "%1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost."
+  percentSaved:
+    value: Save %1%
+    comment: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan
 
 networkSettings:
   multihopTitle: Multi-hop tunnel
