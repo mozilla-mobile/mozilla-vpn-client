@@ -84,12 +84,12 @@ function init() {
     qtLoader.loadEmscriptenModule('mozillavpn');
 }
 
-function mvpnNetworkRequest(id, method, url, body) {
+function mzNetworkRequest(id, method, url, body) {
   // Special case for capitve-portal because the firefox URL captive-portal
   // detector does not support cors.
   if (url.endsWith("/success.txt")) {
     setTimeout(() => {
-            Module.mvpnNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
+            Module.mzNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
     return;
   }
 
@@ -100,14 +100,14 @@ function mvpnNetworkRequest(id, method, url, body) {
      'Content-Type': 'application/json'
     };
   };
-  fetch(url, options).then(async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
+  fetch(url, options).then(async resp => Module.mzNetworkResponse(id, JSON.stringify({
             status: resp.status,
             body: btoa(String.fromCharCode.apply(
                 null, new Uint8Array(await resp.arrayBuffer())))
           })))
           .catch(() => {
             console.error('Unable to fetch content for URL', url);
-            Module.mvpnNetworkResponse(
+            Module.mzNetworkResponse(
                 id, JSON.stringify({status: 0, body: ''}));
           });
 }
