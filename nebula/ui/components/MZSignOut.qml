@@ -6,8 +6,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 
 MZFooterLink {
-    //% "Sign out"
-    labelText: qsTrId("vpn.main.signOut2")
+    labelText: MZI18n.GlobalSignOut
     fontName: MZTheme.theme.fontBoldFamily
     linkColor: MZTheme.theme.redLinkButton
     onClicked: () => {
