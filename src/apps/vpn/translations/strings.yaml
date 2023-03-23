@@ -870,6 +870,9 @@ global:
   copy:
     value: Copy
     comment: Accessible button label
+  clear: 
+    value: Clear
+    comment: Accessible label for clear button
 
 getHelp:
   helpCenter: Help Center

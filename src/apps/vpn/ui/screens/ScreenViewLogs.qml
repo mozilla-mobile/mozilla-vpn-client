@@ -96,8 +96,7 @@ Item {
             }
 
             MZLogsButton {
-                //% "Clear"
-                buttonText: qsTrId("vpn.logs.clear")
+                buttonText: MZI18n.GlobalClear
                 iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
                     MZLog.flushLogs();
