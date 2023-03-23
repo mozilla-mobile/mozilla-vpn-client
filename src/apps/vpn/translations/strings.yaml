@@ -353,6 +353,7 @@ aboutUs:
   copyVersionNumber:
     value: Copy %1
     comment: "Accessible name for a button. %1 is the version number of the VPN client."
+  privacyNotice: Privacy notice
 
 AndroidNotifications:
   GeneralNotifications:

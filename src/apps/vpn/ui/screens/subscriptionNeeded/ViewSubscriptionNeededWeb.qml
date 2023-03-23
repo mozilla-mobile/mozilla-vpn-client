@@ -130,8 +130,7 @@ MZFlickable {
 
             MZGreyLink {
                 id: privacyNotice
-                // Privacy Notice - string defined in ViewAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                labelText: MZI18n.AboutUsPrivacyNotice
                 textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
 
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")

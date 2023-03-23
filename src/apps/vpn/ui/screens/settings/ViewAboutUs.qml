@@ -119,8 +119,7 @@ MZViewBase {
                ListElement {
                    linkId: "privacy"
 
-                   //% "Privacy notice"
-                   linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
+                   linkTitle: MZI18n.AboutUsPrivacyNotice
                    openUrl: "link-privacy-notice"
                    openView: ""
                }
