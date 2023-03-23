@@ -80,8 +80,7 @@ Item {
             width: copyClearWrapper.width
 
             MZLogsButton {
-                //% "Copy"
-                buttonText: qsTrId("vpn.logs.copy")
+                buttonText: MZI18n.GlobalCopy
                 iconSource: "qrc:/ui/resources/copy.svg"
                 onClicked: {
                     MZUtils.storeInClipboard(logText.text);
