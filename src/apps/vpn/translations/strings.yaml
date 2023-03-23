@@ -608,6 +608,9 @@ inAppAuth:
   emailTokenResentAlert:
     value: We’ve resent your code to your email.
     comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
+  waitingForSignIn:
+    value: Waiting for sign in and subscription confirmation…
+    comment: Headline on loading screen
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
