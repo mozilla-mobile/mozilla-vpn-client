@@ -21,8 +21,7 @@ Item {
     MZMenu {
         id: menu
 
-        //% "View Logs"
-        title: qsTrId("vpn.viewlogs.title")
+        title: MZI18n.GetHelpViewLogs
         _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     }
 
