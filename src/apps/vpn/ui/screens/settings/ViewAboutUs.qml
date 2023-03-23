@@ -16,8 +16,7 @@ MZViewBase {
     property bool listenForUpdateEvents:false
     property string licenseURL: ""
 
-    //% "About us"
-    _menuTitle: qsTrId("vpn.settings.aboutUs")
+    _menuTitle: MZI18n.AboutUsTitle
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
