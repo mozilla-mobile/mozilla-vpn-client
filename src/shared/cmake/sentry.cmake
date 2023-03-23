@@ -69,7 +69,6 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
-        # Windows will use the winhttp transport btw
         SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DSENTRY_TRANSPORT=none -DCMAKE_BUILD_TYPE=Release)
     endif()
 
