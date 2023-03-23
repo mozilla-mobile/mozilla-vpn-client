@@ -33,12 +33,6 @@
         <file>resources/externalLink.svg</file>
         <file>resources/eye-hidden.svg</file>
         <file>resources/eye-visible.svg</file>
-        <file>resources/animations/globe_animation.json</file>
-        <file>resources/animations/lock_animation.json</file>
-        <file>resources/animations/speedometer_animation.json</file>
-        <file>resources/animations/vpnactive_animation.json</file>
-        <file>resources/animations/vpnlogo-drop_animation.json</file>
-        <file>resources/animations/vpnlogo-kinetic_animation.json</file>
         <file>resources/fonts/InterUI.otf</file>
         <file>resources/fonts/InterSemiBold.otf</file>
         <file>resources/fonts/Metropolis.otf</file>
