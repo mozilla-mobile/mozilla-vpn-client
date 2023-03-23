@@ -109,8 +109,7 @@ MZFlickable {
             MZGreyLink {
                 id: termsOfService
 
-                // Terms of Service - string defined in ViewAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.tos2")
+                labelText: MZI18n.AboutUsTermsOfService
                 textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
 
                 onClicked: MZUrlOpener.openUrlLabel("termsOfService")

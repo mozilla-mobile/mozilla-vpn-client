@@ -110,8 +110,7 @@ MZViewBase {
                ListElement {
                    linkId: "tos"
 
-                   //% "Terms of service"
-                   linkTitle: qsTrId("vpn.aboutUs.tos2")
+                   linkTitle: MZI18n.AboutUsTermsOfService
                    openUrl: "terms-of-service"
                    openView: ""
                }
