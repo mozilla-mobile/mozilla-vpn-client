@@ -4,7 +4,6 @@
 
 #include "testpasswordvalidation.h"
 
-#include <QDateTime>
 #include <QDebug>
 #include <QEventLoop>
 #include <QTest>
@@ -130,7 +129,7 @@ void TestPasswordValidation::emailPassword() {
   QCOMPARE(aia->state(), AuthenticationInApp::StateStart);
 
   QString emailAddress("vpn.test.auth.password.");
-  emailAddress.append(QString::number(QDateTime::currentSecsSinceEpoch()));
+  emailAddress.append(m_nonce);
   emailAddress.append("@restmail.net");
 
   // Account
