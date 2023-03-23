@@ -39,7 +39,7 @@ MZViewBase {
                 MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: qsTrId("vpn.main.productDescription")
+                    text: MZI18n.ProductDescription
                 }
             }
             MZBoldLabel {
