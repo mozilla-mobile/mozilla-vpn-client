@@ -845,6 +845,9 @@ global:
   signOut:
     value: Sign out
     comment: Link title
+  noInternetConnection:
+    value: No internet connection
+    comment: Status alert text
 
 getHelp:
   helpCenter: Help Center
