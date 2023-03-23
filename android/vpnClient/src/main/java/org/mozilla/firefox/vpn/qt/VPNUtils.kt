@@ -106,21 +106,4 @@ object VPNUtils {
         }
         context.startActivity(intent)
     }
-
-    @SuppressLint("NewApi")
-    @JvmStatic
-    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
-        Glean.initialize(
-            applicationContext = ctx.applicationContext,
-            uploadEnabled = isTelemetryEnabled,
-            // GleanBuildInfo can only be generated for application,
-            // We are in a library so we have to build it ourselves.
-            buildInfo = BuildInfo(
-                BuildConfig.VERSIONCODE,
-                BuildConfig.SHORTVERSION,
-                Calendar.getInstance()
-            ),
-            configuration = Configuration(channel = channel)
-        )
-    }
 }
