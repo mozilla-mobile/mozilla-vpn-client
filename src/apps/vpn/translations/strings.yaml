@@ -882,6 +882,9 @@ getHelp:
     comment: Label for a clickable item in the Get-Help view
   linkTitle: Get help
 
+product: 
+  name: Mozilla VPN
+
 navBar:
   homeTab:
     value: Home

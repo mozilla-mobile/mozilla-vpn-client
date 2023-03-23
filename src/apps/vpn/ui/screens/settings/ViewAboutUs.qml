@@ -33,7 +33,7 @@ MZViewBase {
                 spacing: MZTheme.theme.windowMargin / 2
 
                 MZBoldLabel {
-                    text: qsTrId("vpn.main.productName")
+                    text: MZI18n.ProductName
                     Layout.fillWidth: true
                 }
                 MZTextBlock {

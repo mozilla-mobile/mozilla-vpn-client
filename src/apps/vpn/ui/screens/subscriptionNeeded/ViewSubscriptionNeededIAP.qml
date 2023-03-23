@@ -43,7 +43,7 @@ MZFlickable {
 
     MZHeadline {
         id: headline
-        text: qsTrId("vpn.main.productName")
+        text: MZI18n.ProductName
         anchors.top: logo.bottom
         anchors.topMargin: MZTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
