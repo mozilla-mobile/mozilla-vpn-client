@@ -71,6 +71,7 @@
 #endif
 
 #ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -220,7 +221,7 @@ int CommandUI::run(QStringList& tokens) {
 #  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
-    if (AndroidUtils::GetManufacturer() == "Huawei") {
+    if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif

@@ -17,6 +17,8 @@ class AndroidCommons final : public QObject {
 
   static int getSDKVersion();
 
+  static QString GetManufacturer();
+
   static bool verifySignature(const QByteArray& publicKey,
                               const QByteArray& content,
                               const QByteArray& signature);
