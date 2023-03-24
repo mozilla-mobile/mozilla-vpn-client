@@ -43,7 +43,8 @@ void MacosSystemTrayNotificationHandler::setStatusMenu() {
           &MacosSystemTrayNotificationHandler::updateIconIndicator);
 
   m_macOSStatusIcon = new MacOSStatusIcon(this);
-  m_macOSStatusIcon->setToolTip(I18nStrings::instance()->t(I18nStrings::ProductName));
+  m_macOSStatusIcon->setToolTip(
+      I18nStrings::instance()->t(I18nStrings::ProductName));
   m_macOSStatusIcon->setMenu(m_menu->toNSMenu());
 }
 
