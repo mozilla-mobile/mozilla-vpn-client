@@ -11,7 +11,6 @@ async function openContactUsInSettings(isAuthenticated) {
     await vpn.waitForQueryAndClick(
       queries.screenInitialize.GET_HELP_LINK.visible()
     );
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
   } else {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     // wait for element to be interactable
@@ -23,11 +22,11 @@ async function openContactUsInSettings(isAuthenticated) {
   // wait for element to be interactable
   await vpn.wait();
   await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
-  await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+  await vpn.waitForQuery(queries.screenGetHelp.contactSupportView.SCREEN.visible())
 }
 
 async function getDropDownTextString(index){
-  return await vpn.getQueryProperty(`//contactUs-categoryDropDown-${index}-text`, 'text')
+  return await vpn.getQueryProperty(`//dropdown-Option-${index}-text`, 'text')
 }
 
 describe('Contact us view -  unauthenticated user', function () {
@@ -60,17 +59,15 @@ describe('Contact us view -  unauthenticated user', function () {
     );
   });
 
-  it.only('Unauthenticated User is able to fill out form', async () => {
+  it('Unauthenticated User is able to fill out form', async () => {
     await openContactUsInSettings(false);
 
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.EMAIL_INPUT.visible(),
       'test@test.com'
     );
 
     // wait for element to be interactable
-    await vpn.wait();
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.CONFIRM_EMAIL_INPUTS.visible(),
       'test@test.com'
@@ -82,7 +79,7 @@ describe('Contact us view -  unauthenticated user', function () {
     );
 
     // wait for element to be interactable
-    await vpn.wait();
+    await vpn.waitForQuery('//dropdown-Option-4-text')
     await Promise.all([
       assert.equal(
         await getDropDownTextString(0),
@@ -106,7 +103,7 @@ describe('Contact us view -  unauthenticated user', function () {
       ),
     ]);
 
-    await vpn.waitForQueryAndClick('//contactUs-categoryDropDown-4-text');
+    await vpn.waitForQueryAndClick('//dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
       'automated subject'
@@ -169,10 +166,7 @@ describe('Unaunthenticated failures', function () {
       ),
     ]);
 
-    // wait for element to be interactable
-    await vpn.wait();
-    await vpn.waitForQueryAndClick('//contactUs-categoryDropDown-4-text');
-
+    await vpn.waitForQueryAndClick('//dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
       'automated subject'
@@ -240,7 +234,7 @@ describe('Contact us view - authenticated user', function () {
     ]);
 
 
-    await vpn.waitForQueryAndClick('//contactUs-categoryDropDown-4-text');
+    await vpn.waitForQueryAndClick('//dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
       'automated subject'
@@ -303,7 +297,7 @@ describe('Authenticated failures', function () {
       ),
     ]);
 
-    await vpn.waitForQueryAndClick('//contactUs-categoryDropDown-4-text');
+    await vpn.waitForQueryAndClick('//dropdown-Option-4-text');
     await vpn.waitForQueryAndWriteInTextField(
       queries.screenGetHelp.contactSupportView.SUBJECT_INPUT.visible(),
       'automated subject'

@@ -211,6 +211,7 @@ const screenGetHelp = {
   },
 
   contactSupportView: {
+    SCREEN: new QmlQueryComposer('//contactUs'),
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
     UNAUTH_USER_INPUT: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
