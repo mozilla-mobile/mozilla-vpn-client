@@ -172,7 +172,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances(I18nStrings::instance()->t(I18nStrings::ProductName))) {
+    if (!EventListener::checkOtherInstances(
+            I18nStrings::instance()->t(I18nStrings::ProductName))) {
       return 0;
     }
 
