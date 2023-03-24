@@ -360,6 +360,9 @@ aboutUs:
     comment: Accessible name for a button. %1 is the version number of the VPN client.
   privacyNotice: Privacy notice
   termsOfService: Terms of service
+  releaseVersion: 
+    value: Release version
+    comment:  "Refers to the installed version. For example: 'Release Version: 1.23'"
 
 AndroidNotifications:
   GeneralNotifications:

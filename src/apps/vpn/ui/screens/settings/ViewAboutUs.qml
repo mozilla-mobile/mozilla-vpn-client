@@ -43,9 +43,7 @@ MZViewBase {
                 }
             }
             MZBoldLabel {
-                //% "Release version"
-                //: Refers to the installed version. For example: "Release Version: 1.23"
-                text: qsTrId("vpn.aboutUs.releaseVersion2")
+                text: MZI18n.AboutUsReleaseVersion
                 Accessible.role: Accessible.StaticText
             }
             MZClickableRow {
