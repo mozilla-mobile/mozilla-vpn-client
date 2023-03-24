@@ -378,6 +378,13 @@ telemetryPolicyView:
   dataCollectionAndUse: 
     value: Data collection and use
     comment: Headline of telemetry policy view and checkbox label
+  doNotAllow: 
+    value: Don’t allow
+    comment: Button label
+  allow: 
+    value: Allow on this device
+    comment: Button label
+  learnMore: Learn more about what data Mozilla collects and how it’s used.
 
 genericError:
   unexpected: Unexpected error

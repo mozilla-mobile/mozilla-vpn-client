@@ -62,8 +62,7 @@ MZFlickable {
             MZButton {
                 id: button
                 objectName: "telemetryPolicyButton"
-                //% "Allow on this device"
-                text: qsTrId("vpn.telemetryPolicy.allowOnThisDevice")
+                text: MZI18n.TelemetryPolicyViewAllow
                 radius: 5
                 onClicked: {
                     MZSettings.gleanEnabled = true;
@@ -74,8 +73,7 @@ MZFlickable {
             MZLinkButton {
                 id: linkBtn
                 objectName: "declineTelemetryLink"
-                //% "Don’t allow"
-                labelText: qsTrId("vpn.telemetryPolicy.doNotAllow")
+                labelText: MZI18n.TelemetryPolicyViewDoNotAllow
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: {
                     MZSettings.gleanEnabled = false;
@@ -94,8 +92,7 @@ MZFlickable {
                 Layout.rightMargin: MZTheme.theme.windowMargin * 3
                 Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
                 Layout.fillWidth: true
-                //% "Learn more about what data Mozilla collects and how it’s used."
-                text: qsTrId("vpn.telemetryPolicy.learnMoreAboutData")
+                text: MZI18n.TelemetryPolicyViewLearnMore
             }
 
             MZLinkButton {
