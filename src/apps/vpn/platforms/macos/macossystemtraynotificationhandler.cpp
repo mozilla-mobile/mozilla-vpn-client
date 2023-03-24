@@ -8,6 +8,7 @@
 #include <QMenu>
 #include <QWindow>
 
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "macosutils.h"
@@ -42,7 +43,7 @@ void MacosSystemTrayNotificationHandler::setStatusMenu() {
           &MacosSystemTrayNotificationHandler::updateIconIndicator);
 
   m_macOSStatusIcon = new MacOSStatusIcon(this);
-  m_macOSStatusIcon->setToolTip(qtTrId("vpn.main.productName"));
+  m_macOSStatusIcon->setToolTip(I18nStrings::instance()->t(I18nStrings::ProductName));
   m_macOSStatusIcon->setMenu(m_menu->toNSMenu());
 }
 

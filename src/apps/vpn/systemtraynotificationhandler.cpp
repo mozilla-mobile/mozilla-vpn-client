@@ -106,7 +106,7 @@ void SystemTrayNotificationHandler::setStatusMenu() {
 
   // TODO: Check if method is called on these devices.
 #if defined(MZ_LINUX) || defined(MZ_WINDOWS)
-  m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
+  m_systemTrayIcon->setToolTip(I18nStrings::instance()->t(I18nStrings::ProductName));
   m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
 #endif
