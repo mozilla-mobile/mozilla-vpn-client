@@ -54,8 +54,6 @@ constexpr const char* GOOGLE_PLAYSTORE_URL =
 #ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id123456789";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id123456789?action=write-review";
 #endif
 
 #if defined(MZ_LINUX)

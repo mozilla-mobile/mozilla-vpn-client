@@ -67,7 +67,6 @@ SOURCES += \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
-        apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
@@ -113,7 +112,6 @@ SOURCES += \
         apps/vpn/tasks/products/taskproducts.cpp \
         apps/vpn/tasks/release/taskrelease.cpp \
         apps/vpn/tasks/removedevice/taskremovedevice.cpp \
-        apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
         apps/vpn/telemetry.cpp \
         apps/vpn/tutorial/tutorial.cpp \
@@ -199,7 +197,6 @@ HEADERS += \
         apps/vpn/localizer.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
-        apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
@@ -246,7 +243,6 @@ HEADERS += \
         apps/vpn/tasks/products/taskproducts.h \
         apps/vpn/tasks/release/taskrelease.h \
         apps/vpn/tasks/removedevice/taskremovedevice.h \
-        apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
         apps/vpn/telemetry.h \
         apps/vpn/tutorial/tutorial.h \

@@ -56,7 +56,6 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
