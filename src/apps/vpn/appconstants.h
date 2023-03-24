@@ -22,7 +22,6 @@ enum ApiEndpoint {
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
-  Feedback,
   Heartbeat,
   IPInfo,
   LoginVerify,
