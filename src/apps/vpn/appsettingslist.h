@@ -150,6 +150,28 @@ SETTING_STRING(entryServerCountryCodeDeprecated,        // getter
                false  // sensitive (do not log)
 )
 
+SETTING_STRINGLIST(excludedIpv4Addresses,        // getter
+                   setExcludedIpv4Addresses,     // setter
+                   removeExcludedIpv4Addresses,  // remover
+                   hasExcludedIpv4Addresses,     // has
+                   "excluded/ipv4Addresses",     // key
+                   QStringList(),                // default value
+                   false,                        // user setting
+                   false,                        // remove when reset
+                   false                         // sensitive (do not log)
+)
+
+SETTING_STRINGLIST(excludedIpv6Addresses,         // getter
+                   setExcludedIpv6Addresses,      // setter
+                   removerExcludedIpv6Addresses,  // remover
+                   hasExcludedIpv6Addresses,      // has
+                   "excluded/ipv6Addresses",      // key
+                   QStringList(),                 // default value
+                   false,                         // user setting
+                   false,                         // remove when reset
+                   false                          // sensitive (do not log)
+)
+
 SETTING_STRINGLIST(iapProducts,        // getter
                    setIapProducts,     // setter
                    removeIapProducts,  // remover

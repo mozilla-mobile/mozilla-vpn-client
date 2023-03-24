@@ -833,6 +833,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
   excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
 
+  logger.debug() << "Filtering out explicitely-set network address ranges";
+  for (const QString& ipv4String :
+       SettingsHolder::instance()->excludedIpv4Addresses()) {
+    excludeIPv4s.append(IPAddress(ipv4String));
+  }
+  for (const QString& ipv6String :
+       SettingsHolder::instance()->excludedIpv6Addresses()) {
+    excludeIPv6s.append(IPAddress(ipv6String));
+  }
+
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
