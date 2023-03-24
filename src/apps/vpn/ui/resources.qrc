@@ -332,6 +332,7 @@
         <file>resources/server-latency-moderate.svg</file>
         <file>resources/server-latency-weak.svg</file>
         <file>resources/server-latency-unavailable.svg</file>
+        <file>resources/server-unavailable.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
