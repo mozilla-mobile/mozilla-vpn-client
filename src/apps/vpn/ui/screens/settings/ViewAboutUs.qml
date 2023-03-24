@@ -107,7 +107,7 @@ MZViewBase {
                ListElement {
                    linkId: "tos"
 
-                   linkTitle: MZI18n.AboutUsTermsOfService
+                   linkTitleId: "AboutUsTermsOfService"
                    openUrl: "terms-of-service"
                    openView: ""
                }
@@ -115,14 +115,14 @@ MZViewBase {
                ListElement {
                    linkId: "privacy"
 
-                   linkTitle: MZI18n.AboutUsPrivacyNotice
+                   linkTitleId: "AboutUsPrivacyNotice"
                    openUrl: "link-privacy-notice"
                    openView: ""
                }
            }
            delegate: MZExternalLinkListItem {
                objectName: "aboutUsList-" + linkId
-               title: linkTitle
+               title: MZI18n[linkTitleId]
                accessibleName: title
                Layout.fillWidth: true
                Layout.preferredHeight: MZTheme.theme.rowHeight
@@ -150,7 +150,7 @@ MZViewBase {
            Component.onCompleted: {
               aboutUsListModel.append({
                    linkId: "license",
-                   linkTitle: MZI18n.AboutUsLicenses,
+                   linkTitleId: "AboutUsLicenses",
                    openView: "qrc:/ui/screens/settings/ViewLicenses.qml"
               });
            }
