@@ -12,7 +12,7 @@
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidiaphandler.h"
+#  include "platforms/android/androidcommons.h"
 #endif
 
 #include <QApplication>
@@ -73,7 +73,6 @@ void Utils::crashTest() {
 // static
 void Utils::launchPlayStore() {
   logger.debug() << "Launch Play Store";
-  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
-  static_cast<AndroidIAPHandler*>(purchaseHandler)->launchPlayStore();
+  AndroidCommons::launchPlayStore();
 }
 #endif

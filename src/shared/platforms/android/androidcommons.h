@@ -26,6 +26,8 @@ class AndroidCommons final : public QObject {
   // Creates a "share" intent to Open/Send Plaintext
   static bool shareText(const QString& plainText);
 
+  static void launchPlayStore();
+
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
   static void runOnAndroidThreadSync(const std::function<void()> runnable);

@@ -115,3 +115,10 @@ QString AndroidCommons::GetManufacturer() {
   env->ReleaseStringUTFChars(value, buffer);
   return res;
 }
+
+void AndroidCommons::launchPlayStore() {
+  auto appActivity = AndroidCommons::getActivity();
+  QJniObject::callStaticMethod<void>(UTILS_CLASS, "launchPlayStore",
+                                     "(Landroid/app/Activity;)V",
+                                     appActivity.object());
+}
