@@ -15,9 +15,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import mozilla.telemetry.glean.BuildInfo
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
 import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
