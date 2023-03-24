@@ -42,15 +42,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation project(path: ':daemon')
-    implementation project(path: ':qtBindings')
-    implementation project(path: ':vpnClient')
-
-    coreLibraryDesugaring SharedDependencies.com_android_tools_desugar_jdk_libs
-}
-
 android {
     ndkVersion Config.ndkVersion
     compileSdkVersion Config.compileSdkVersion
@@ -165,7 +156,32 @@ android {
             universalApk true
         }
     }
+    flavorDimensions 'app'
+    productFlavors {
+        vpn {
+            dimension 'app'
+            applicationId 'org.mozilla.firefox.vpn'
+        }
+        relay {
+            dimension 'app'
+            applicationId 'org.mozilla.firefox.relay'
+        }
+    }
 }
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation project(path: ':qtBindings')
+    implementation project(path: ':common')
+    // vpn onlyCode
+    vpnImplementation( project(':vpnClient'))
+    vpnImplementation( project(':daemon'))
+    relayImplementation( project(':relay'))
+
+    coreLibraryDesugaring SharedDependencies.com_android_tools_desugar_jdk_libs
+}
+
 
 // Map for the version code that gives each ABI a value.
 ext.abiCodes = ['armeabi-v7a':1,"arm64-v8a":2, x86:3, x86_64:4]

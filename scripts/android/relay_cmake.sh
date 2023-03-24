@@ -139,6 +139,7 @@ else
 fi
 
 
+## TODO: Use the Relay app target once it landed
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/bin/qt-cmake \
@@ -152,6 +153,7 @@ if [[ "$RELEASE" ]]; then
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -S . -B .tmp/
 else
+## TODO: Use the Relay app target once it landed
   printn Y "Use debug config \n"
   $QTPATH/bin/qt-cmake \
     -DQT_HOST_PATH=$QT_HOST_PATH \
@@ -194,17 +196,17 @@ cd .tmp/src/android-build/
 # Into a single gradle project
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
-  ./gradlew compileVpnReleaseSources
-  ./gradlew assembleVpn || die
+  ./gradlew compileRelayReleaseSources
+  ./gradlew assembleRelay || die
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/vpn/release/"
+  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/relay/release/"
 else
   print Y "Generating Debug APK..."
-  ./gradlew compileVpnDebugSources
-  ./gradlew assembleVpnDebug || die
+  ./gradlew compileRelayDebugSources
+  ./gradlew assembleRelayDebug || die
   print G "Done 🎉"
-  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/vpn/debug/"
+  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/relay/debug/"
 fi
 
 rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml

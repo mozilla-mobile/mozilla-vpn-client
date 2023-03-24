@@ -9,11 +9,15 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
-include ':qtglean'
-include ':daemon'
-include ':qtBindings'
-include ':ClientCommon'
-include ':vpnClient'
+// TODO: We need a meta-project name
+// otherwise gradle debugging is hell c: 
+rootProject.name = 'prospector'
 include ':common'
 include ':adjust'
-
+include ':qtglean'
+include ':qtBindings'
+// VPN only Projects
+include ':daemon'
+include ':vpnClient'
+// :)
+include ':relay'

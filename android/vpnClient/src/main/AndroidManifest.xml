@@ -1,5 +1,79 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.mozilla.firefox.vpn.qt">
+<?xml version="1.0"?>
+<!--
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<manifest package="org.mozilla.firefox.vpn" xmlns:android="http://schemas.android.com/apk/res/android"  android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
+         Remove the comment if you do not require these default features. -->
+    <!-- %%INSERT_FEATURES -->
+
+
+    <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true" />
+    <application
+        android:hardwareAccelerated="true"
+        android:allowBackup="false"
+        android:name="org.mozilla.firefox.qt.common.CoreApplication"
+        android:label="Mozilla VPN"
+        android:extractNativeLibs="true"
+        android:theme="@style/AppTheme"
+        android:icon="@mipmap/vpnicon"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+            android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
+            android:label="Mozilla VPN"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Splash"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <!-- Checks URL of this format "mozilla-vpn://*" -->
+                <data android:scheme="mozilla-vpn"></data>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="mozillavpn" />
+
+            <meta-data
+                android:name="android.app.arguments"
+                android:value="" />
+
+            <meta-data
+                android:name="android.app.extract_android_style"
+                android:value="minimal" />
+
+        </activity>
+        <service
+            android:name=".daemon.VPNTileService"
+            android:label="@string/product_name"
+            android:icon="@drawable/ic_mozvpn_round"
+            android:exported="true"
+            android:process=":Daemon"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
 
 </manifest>

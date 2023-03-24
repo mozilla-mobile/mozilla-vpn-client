@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="org.mozilla.firefox.relay" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Prospector"
+        android:hardwareAccelerated="true"
+        android:allowBackup="false"
+        android:name="org.mozilla.firefox.qt.common.CoreApplication"
+        android:extractNativeLibs="true"
+        android:usesCleartextTraffic="true"
+        >
+        <activity
+            android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
+            android:name="org.qtproject.qt.android.bindings.QtActivity"
+            android:label="Firefox Relay"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- TODO: Change this once we have a "real" relay binary for android
+                Just a guess that it will be relayapp.so 
+             -->
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="relayapp" />
+
+            <meta-data
+                android:name="android.app.arguments"
+                android:value="" />
+
+            <meta-data
+                android:name="android.app.extract_android_style"
+                android:value="minimal" />
+        </activity>
+    </application>
+</manifest>

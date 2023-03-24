@@ -22,7 +22,7 @@ done
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
-cp .tmp/src/android-build/build/outputs/apk/debug/*  /builds/worker/artifacts/
+cp .tmp/src/android-build/build/outputs/apk/vpn/debug/*  /builds/worker/artifacts/
 
 # Have nicer names :)
 mv /builds/worker/artifacts/android-build-x86_64-debug.apk /builds/worker/artifacts/mozillavpn-x86_64-debug.apk

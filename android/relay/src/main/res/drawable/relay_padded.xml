@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/relay_icon"
+    android:insetTop="13.0dp"
+    android:insetRight="13.0dp"
+    android:insetBottom="13.0dp"
+    android:insetLeft="13.0dp"/>
