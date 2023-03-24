@@ -35,6 +35,10 @@ if( ${_SUPPORTED} GREATER -1 )
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_DSN="${SENTRY_DSN}")
     target_compile_definitions(mozillavpn PRIVATE SENTRY_ENABLED)
+    # Let's the app know we need to provide the upload client
+    target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
+
+
     # Sentry support is given
     target_sources(mozillavpn PRIVATE
         apps/vpn/sentry/sentryadapter.cpp
@@ -65,7 +69,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(mozillavpn PUBLIC breakpad_client.lib)
         target_link_libraries(mozillavpn PUBLIC dbghelp.lib)
         # Windows will use the winhttp transport btw
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DSENTRY_TRANSPORT=none -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     if(ANDROID)
