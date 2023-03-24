@@ -135,7 +135,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "settingsAboutUs"
-                settingTitle: qsTrId("vpn.settings.aboutUs")
+                settingTitle: MZI18n.AboutUsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
