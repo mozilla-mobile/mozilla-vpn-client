@@ -667,7 +667,7 @@ Item {
             anchors.centerIn: ipInfoToggleButton
             source: ipInfoPanel.isOpen
                 ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/nebula/resources/connection-info.svg"
+                : "qrc:/ui/resources/connection-info.svg"
             sourceSize {
                 height: iconSize
                 width: iconSize

@@ -7,6 +7,8 @@
         <file>resources/animations/vpnlogo-drop_animation.json</file>
         <file>resources/animations/vpnlogo-kinetic_animation.json</file>
         <file>resources/connection-error-unstable.svg</file>
+        <file>resources/connection-green.svg</file>
+        <file>resources/connection-info.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/devices.svg</file>

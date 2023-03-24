@@ -145,7 +145,7 @@ MZFlickable {
                     ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelPing
                         subtitle: VPNConnectionBenchmark.pingLatency + " " + MZI18n.ConnectionInfoUnitPing
-                        iconPath: "qrc:/nebula/resources/connection-green.svg"
+                        iconPath: "qrc:/ui/resources/connection-green.svg"
                     }
 
                     Rectangle {
