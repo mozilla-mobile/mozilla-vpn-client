@@ -216,6 +216,7 @@ notSignedInGoogle:
 multiFxaAccountError:
   fxaAccountErrorHeader: Problem confirming subscription
   fxaAccountErrorText: Your subscription is linked to another Firefox Account. You may need to sign in with a different email address.
+  visitOurHelpCenter: Visit our help center to learn more about managing your subscriptions.
 
 # IAP Android edge case 3
 genericPurchaseError:

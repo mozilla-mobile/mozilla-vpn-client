@@ -26,8 +26,7 @@ MZStackView {
             // "Your subscription is linked to another Firefox Account....."
             errorMessage: MZI18n.MultiFxaAccountErrorFxaAccountErrorText,
 
-            //% "Visit our help center to learn more about managing your subscriptions."
-            errorMessage2: qsTrId("vpn.subscriptionBlocked.visitHelpCenter"),
+            errorMessage2:  MZI18n.MultiFxaAccountErrorVisitOurHelpCenter,
 
             primaryButtonText: MZI18n.GetHelpLinkTitle,
             primaryButtonObjectName: "errorGetHelpButton",
