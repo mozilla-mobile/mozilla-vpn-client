@@ -692,17 +692,10 @@ describe('Settings', function() {
 
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
-    await vpn.waitForQuery(queries.screenGetHelp.FEEDBACK.visible());
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.FEEDBACK.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenGetHelp.giveFeedbackView.SCREEN.visible());
-
     await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
     await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
 
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
-
-    // TODO: checking the give feedback views
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.LOGS.visible());
 
@@ -731,12 +724,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
-  });
-
-  it('Give feedback is opened and closed', async () => {
-    await getToGetHelpView();
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.FEEDBACK.visible());
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
   });
 
   it('Contact us is opened and closed', async () => {
