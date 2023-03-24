@@ -34,7 +34,7 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 
-target_link_libraries(unit_tests PRIVATE glean qtglean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE glean qtglean lottie nebula translations_vpn)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE

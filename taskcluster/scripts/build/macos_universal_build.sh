@@ -57,7 +57,9 @@ python3 -m pip install -r requirements.txt --user
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
 git submodule update --init --depth 1 || die "Failed to init submodules"
-git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+for i in src/apps/*/translations/i18n; do
+  git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
+done
 print G "done."
 
 # write a dummy value in the files, so that we still compile sentry c:
