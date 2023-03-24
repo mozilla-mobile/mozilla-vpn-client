@@ -690,28 +690,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   }
 }
 
-void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
-                                const QString& category) {
-  logger.debug() << "Submit Feedback";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, feedbackText, rating, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskSendFeedback so we can delete it
-        // afterwards
-        TaskScheduler::scheduleTask(
-            new TaskSendFeedback(feedbackText, *buffer, rating, category));
-
-        delete buffer;
-        delete out;
-      });
-}
-
 void MozillaVPN::createSupportTicket(const QString& email,
                                      const QString& subject,
                                      const QString& issueText,

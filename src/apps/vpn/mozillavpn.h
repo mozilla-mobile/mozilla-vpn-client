@@ -112,8 +112,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
-  Q_INVOKABLE void submitFeedback(const QString& feedbackText,
-                                  const qint8 rating, const QString& category);
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
