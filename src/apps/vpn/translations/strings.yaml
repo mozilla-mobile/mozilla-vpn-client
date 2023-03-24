@@ -776,6 +776,8 @@ subscriptionManagement:
   valueProp3:
     value: 500+ servers in 30+ countries
     comment: Value proposition used to promote the product
+  manageAccount:
+    value: Manage account
 
 paymentMethods:
   amex: American Express
