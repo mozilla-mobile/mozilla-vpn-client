@@ -12,6 +12,8 @@
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/devices.svg</file>
+        <file>resources/devicesLimit.svg</file>
+        <file>resources/devicesRemove.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
