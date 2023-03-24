@@ -68,10 +68,6 @@ if(APPLE)
     endif()
 endif()
 
-if(ANDROID)
-    include(src/apps/vpn/cmake/android_openssl.cmake)
-endif()
-
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
     message("Generated BUILD_ID: ${BUILD_ID}")
