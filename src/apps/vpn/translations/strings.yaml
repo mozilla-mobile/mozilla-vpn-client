@@ -884,9 +884,6 @@ global:
   noInternetConnection:
     value: No internet connection
     comment: Status alert text
-  continue:
-    value: Continue
-    comment: Button label
   copy:
     value: Copy
     comment: Accessible button label
