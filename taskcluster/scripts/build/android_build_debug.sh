@@ -25,10 +25,10 @@ mkdir -p /builds/worker/artifacts/
 cp .tmp/src/android-build/build/outputs/apk/vpn/debug/*  /builds/worker/artifacts/
 
 # Have nicer names :)
-mv /builds/worker/artifacts/android-build-x86_64-debug.apk /builds/worker/artifacts/mozillavpn-x86_64-debug.apk
-mv /builds/worker/artifacts/android-build-arm64-v8a-debug.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-debug.apk
-mv /builds/worker/artifacts/android-build-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-debug.apk
-mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts//mozillavpn-x86-debug.apk
+mv /builds/worker/artifacts/prospector-vpn-x86_64-debug.apk /builds/worker/artifacts/mozillavpn-x86_64-debug.apk
+mv /builds/worker/artifacts/prospector-vpn-arm64-v8a-debug.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-debug.apk
+mv /builds/worker/artifacts/prospector-vpn-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-debug.apk
+mv /builds/worker/artifacts/prospector-vpn-x86-debug.apk /builds/worker/artifacts//mozillavpn-x86-debug.apk
 
 ls /builds/worker/artifacts/
 
