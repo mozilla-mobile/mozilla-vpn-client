@@ -4,6 +4,8 @@
 
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.pkcs.RSAPublicKey
@@ -33,5 +35,14 @@ object Utils {
             Log.e("VPNUtils", "Signature Exception $e")
             false
         }
+    }
+
+    @JvmStatic
+    fun launchPlayStore(activity: Activity) {
+        val intent = Intent.makeMainSelectorActivity(
+            Intent.ACTION_MAIN,
+            Intent.CATEGORY_APP_MARKET
+        )
+        activity.startActivity(intent)
     }
 }
