@@ -114,8 +114,7 @@ MZFlickable {
                 id: subscribeNow
                 objectName: "vpnSubscriptionNeededView"
 
-                //% "Subscribe now"
-                text: qsTrId("vpn.updates.subscribeNow")
+                text: MZI18n.PurchaseSubscribeNow
 
                 Layout.topMargin: MZTheme.theme.windowMargin
                 Layout.leftMargin: MZTheme.theme.windowMargin

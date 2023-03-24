@@ -254,6 +254,9 @@ purchase:
   percentSaved:
     value: Save %1%
     comment: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan
+  subscribeNow: 
+    value: Subscribe now
+    comment: Button label
 
 networkSettings:
   multihopTitle: Multi-hop tunnel

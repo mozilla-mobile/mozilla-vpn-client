@@ -79,8 +79,7 @@ MZFlickable {
         MZButton {
             id: subscribeNow
             objectName: "vpnSubscriptionNeededView"
-            //% "Subscribe now"
-            text: qsTrId("vpn.updates.subscribeNow")
+            text: MZI18n.PurchaseSubscribeNow
 
             onClicked: VPNPurchase.subscribe("web")
 
