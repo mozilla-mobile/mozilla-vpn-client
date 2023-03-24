@@ -357,7 +357,7 @@ aboutUs:
   licenses: Licenses
   copyVersionNumber:
     value: Copy %1
-    comment: "Accessible name for a button. %1 is the version number of the VPN client."
+    comment: Accessible name for a button. %1 is the version number of the VPN client.
   privacyNotice: Privacy notice
   termsOfService: Terms of service
 
@@ -897,6 +897,9 @@ getHelp:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
   linkTitle: Get help
+  developerOptions: 
+    value: Developer options
+    comment: Button label
 
 product: 
   name: Mozilla VPN
