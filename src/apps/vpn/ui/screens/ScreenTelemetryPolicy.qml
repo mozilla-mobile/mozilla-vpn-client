@@ -33,7 +33,7 @@ MZFlickable {
 
         MZPanel {
             logo: "qrc:/ui/resources/updateRecommended.svg"
-            logoTitle: qsTrId("vpn.settings.dataCollection")
+            logoTitle: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             logoSubtitle: MZI18n.TelemetryPolicyViewDescription
             Layout.fillWidth: true
             anchors.horizontalCenter: undefined
