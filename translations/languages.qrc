@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/i18n">
-        <file>translations_fallback.json</file>
-        <file>languages.json</file>
-    </qresource>
-</RCC>

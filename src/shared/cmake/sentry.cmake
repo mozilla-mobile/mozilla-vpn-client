@@ -35,6 +35,9 @@ if( ${_SUPPORTED} GREATER -1 )
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_DSN="${SENTRY_DSN}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
+    # Let's the app know we need to provide the upload client
+    target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
+
     # Sentry support is given
     target_sources(shared-sources INTERFACE
         shared/sentry/sentryadapter.cpp
@@ -48,8 +51,6 @@ if( ${_SUPPORTED} GREATER -1 )
         include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
-        # Let's the app know we need to provide the upload client
-        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
         # Compile Static for apple and link to libsentry.a
         target_link_libraries(shared-sources INTERFACE libsentry.a)
         target_link_libraries(shared-sources INTERFACE breakpad_client.a)
@@ -68,14 +69,10 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
-        # Windows will use the winhttp transport btw
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DSENTRY_TRANSPORT=none -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     if(ANDROID)
-        # Let's the app know we need to provide the upload client
-        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
-
         target_link_libraries(shared-sources INTERFACE libsentry.a)
         target_link_libraries(shared-sources INTERFACE libunwindstack.a)
         # We can only use inproc as crash backend.
@@ -91,7 +88,7 @@ if( ${_SUPPORTED} GREATER -1 )
 
     include(ExternalProject)
     ExternalProject_Add(sentry
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../3rdparty/sentry
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
         GIT_REPOSITORY https://github.com/getsentry/sentry-native/
         GIT_TAG 0.5.0
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}

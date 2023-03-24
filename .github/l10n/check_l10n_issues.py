@@ -15,7 +15,7 @@ vpn_root_folder = os.path.realpath(os.path.join(script_folder, os.pardir, os.par
 
 # Paths are relative to the root folder
 paths = [
-    "translations.ts",
+    "translations_*.ts",
     "addon_ts/*.ts",
 ]
 
@@ -55,25 +55,25 @@ for f in files:
         )
         print(f, message_id)
 
-        # Check if there are misused characters in the strings
-        if message_id not in exceptions["characters"]:
-            for character in misused_characters.keys():
-                if character in source_text:
-                    errors[relative_filename][message_id] = misused_characters[
-                        character
-                    ]
-
-        # Check if the string is empty
-        if message_id not in exceptions["empty"]:
-            if source_text == "":
+        if source_text is None:
+            # Check if the string is empty
+            if message_id not in exceptions["empty"]:
                 errors[relative_filename][message_id] = "String should not be empty."
+        else:
+            # Check if there are misused characters in the strings
+            if message_id not in exceptions["characters"]:
+                for character in misused_characters.keys():
+                    if character in source_text:
+                        errors[relative_filename][message_id] = misused_characters[
+                            character
+                        ]
 
-        # Check if there are variables in the string but no comments
-        if message_id not in exceptions["comments"]:
-            if "%" in source_text and source_comment == "":
-                errors[relative_filename][
-                    message_id
-                ] = "Strings with variables should always have a comment."
+            # Check if there are variables in the string but no comments
+            if message_id not in exceptions["comments"]:
+                if "%" in source_text and source_comment is None:
+                    errors[relative_filename][
+                        message_id
+                    ] = "Strings with variables should always have a comment."
 
 if errors:
     print("\n----\nERRORS:")

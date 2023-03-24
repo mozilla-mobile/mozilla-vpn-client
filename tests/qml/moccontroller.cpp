@@ -21,7 +21,9 @@ bool Controller::activate(const ServerData&, ServerSelectionPolicy) {
 
 bool Controller::switchServers(const ServerData& serverData) { return false; }
 
-bool Controller::silentSwitchServers(bool) { return false; }
+bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
+  return false;
+}
 
 bool Controller::silentServerSwitchingSupported() const { return false; }
 

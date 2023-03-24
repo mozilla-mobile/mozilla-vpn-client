@@ -45,7 +45,7 @@ TextField {
 
     onActiveFocusChanged: {
         if (activeFocus) {
-            MZUtils.scrollToComponent(textField)
+            MZUiUtils.scrollToComponent(textField)
         }
     }
 

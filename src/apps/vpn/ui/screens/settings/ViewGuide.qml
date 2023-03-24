@@ -43,9 +43,7 @@ Item {
                     'focusBorder': MZTheme.theme.lightFocusBorder
                 }
                 skipEnsureVisible: true
-                //% "Back"
-                //: Go back
-                accessibleName: qsTrId("vpn.main.back")
+                accessibleName: MZI18n.GlobalGoBack
 
                 onClicked: {
                     statusBarModifier.resetDefaults()

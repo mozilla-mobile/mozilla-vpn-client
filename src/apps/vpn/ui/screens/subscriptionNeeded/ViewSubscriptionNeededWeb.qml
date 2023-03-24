@@ -27,7 +27,7 @@ MZFlickable {
     MZHeaderLink {
         id: headerLink
 
-        labelText: qsTrId("vpn.main.getHelp2")
+        labelText: MZI18n.GetHelpLinkTitle
         onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
     }
 
@@ -79,8 +79,7 @@ MZFlickable {
         MZButton {
             id: subscribeNow
             objectName: "vpnSubscriptionNeededView"
-            //% "Subscribe now"
-            text: qsTrId("vpn.updates.subscribeNow")
+            text: MZI18n.PurchaseSubscribeNow
 
             onClicked: VPNPurchase.subscribe("web")
 
@@ -109,8 +108,7 @@ MZFlickable {
             MZGreyLink {
                 id: termsOfService
 
-                // Terms of Service - string defined in ViewAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.tos2")
+                labelText: MZI18n.AboutUsTermsOfService
                 textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
 
                 onClicked: MZUrlOpener.openUrlLabel("termsOfService")
@@ -130,8 +128,7 @@ MZFlickable {
 
             MZGreyLink {
                 id: privacyNotice
-                // Privacy Notice - string defined in ViewAboutUs.qml
-                labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                labelText: MZI18n.AboutUsPrivacyNotice
                 textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
 
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")

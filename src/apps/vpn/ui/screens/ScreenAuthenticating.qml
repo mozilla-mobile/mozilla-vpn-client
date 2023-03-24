@@ -6,7 +6,5 @@ import components 0.1
 
 MZLoader {
     objectName: "authenticatingView"
-
-    //% "Waiting for sign in and subscription confirmation…"
-    headlineText: qsTrId("vpn.authenticating.waitForSignIn")
+    headlineText: MZI18n.InAppAuthWaitingForSignIn
 }

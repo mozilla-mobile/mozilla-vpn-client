@@ -5,6 +5,7 @@
 #include "app.h"
 #include "appconstants.h"
 #include "helper.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -45,6 +46,8 @@ int main(int argc, char* argv[]) {
   pe.insert("LANGUAGE", "en");
 
   QCoreApplication app(argc, argv);
+
+  I18nStrings::initialize();
 
   int failures = 0;
 

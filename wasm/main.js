@@ -73,7 +73,7 @@ class MVPNWasm {
         url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {
       // 50mb of data is too much to be handled in the browser.
       setTimeout(
-          () => Module.mvpnNetworkResponse(id, JSON.stringify({
+          () => Module.mzNetworkResponse(id, JSON.stringify({
             status: 200,
             body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024)))
           })),
@@ -83,15 +83,14 @@ class MVPNWasm {
 
     if (!obj) {
       fetch(url)
-          .then(async resp => Module.mvpnNetworkResponse(id, JSON.stringify({
+          .then(async resp => Module.mzNetworkResponse(id, JSON.stringify({
             status: resp.status,
             body: btoa(String.fromCharCode.apply(
                 null, new Uint8Array(await resp.arrayBuffer())))
           })))
           .catch(() => {
             console.error('Unable to fetch content for URL', url);
-            Module.mvpnNetworkResponse(
-                id, JSON.stringify({status: 0, body: ''}));
+            Module.mzNetworkResponse(id, JSON.stringify({status: 0, body: ''}));
           });
       return;
     }
@@ -107,7 +106,7 @@ class MVPNWasm {
     }
 
     setTimeout(() => {
-      Module.mvpnNetworkResponse(
+      Module.mzNetworkResponse(
           id,
           JSON.stringify(
               {status: obj.status, body: btoa(JSON.stringify(obj.body))}));
@@ -214,6 +213,6 @@ class MVPNWasm {
 
 const mvpnWasm = new MVPNWasm();
 
-function mvpnNetworkRequest(id, method, url, body) {
+function mzNetworkRequest(id, method, url, body) {
   return mvpnWasm.networkRequest(id, method, url, body);
 }

@@ -40,7 +40,7 @@ MZInAppAuthenticationBase {
 
     _changeEmailLinkVisible: false
     _viewObjectName: "authDeleteAccountRequest"
-    _menuButtonAccessibleName: qsTrId("vpn.main.back")
+    _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {

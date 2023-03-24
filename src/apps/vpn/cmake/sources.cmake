@@ -104,6 +104,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddeactivate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddevice.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandexcludeip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandexcludeip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogout.cpp

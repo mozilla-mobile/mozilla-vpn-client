@@ -134,8 +134,6 @@ void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
 
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
-
 void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelReauthentication() {}

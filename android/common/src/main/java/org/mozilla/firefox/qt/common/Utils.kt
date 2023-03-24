@@ -5,6 +5,8 @@
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
 import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
@@ -39,7 +41,6 @@ object Utils {
             false
         }
     }
-
     @SuppressLint("NewApi")
     @JvmStatic
     fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
@@ -55,5 +56,13 @@ object Utils {
             ),
             configuration = Configuration(channel = channel),
         )
+
+    @JvmStatic
+    fun launchPlayStore(activity: Activity) {
+        val intent = Intent.makeMainSelectorActivity(
+            Intent.ACTION_MAIN,
+            Intent.CATEGORY_APP_MARKET
+        )
+        activity.startActivity(intent)
     }
 }

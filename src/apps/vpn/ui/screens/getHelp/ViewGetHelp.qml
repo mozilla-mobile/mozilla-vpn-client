@@ -12,8 +12,7 @@ import components 0.1
 
 MZViewBase {
     id: vpnFlickable
-    //% "Get help"
-    _menuTitle: qsTrId("vpn.main.getHelp2")
+    _menuTitle: MZI18n.GetHelpLinkTitle
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     _viewContentData: Column {
 
@@ -89,8 +88,7 @@ MZViewBase {
             spacing: MZTheme.theme.listSpacing
             anchors.horizontalCenter: parent.horizontalCenter
 
-            //% "Developer Options"
-            settingTitle: qsTrId("vpn.settings.developer")
+            settingTitle: MZI18n.GetHelpDeveloperOptions
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft

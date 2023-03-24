@@ -4,7 +4,6 @@
 
 #include "testsignupandin.h"
 
-#include <QDateTime>
 #include <QDebug>
 #include <QEventLoop>
 #include <QJsonArray>
@@ -38,10 +37,11 @@ class EventLoop final : public QEventLoop {
   }
 };
 
-TestSignUpAndIn::TestSignUpAndIn(const QString& pattern, bool totpCreation)
+TestSignUpAndIn::TestSignUpAndIn(const QString& nonce, const QString& pattern,
+                                 bool totpCreation)
     : m_totpCreation(totpCreation) {
   QString emailAccount(pattern);
-  emailAccount.append(QString::number(QDateTime::currentSecsSinceEpoch()));
+  emailAccount.append(nonce);
   m_emailAccount = emailAccount;
   qDebug() << "Pattern:" << m_emailAccount;
 }

@@ -54,7 +54,7 @@ RoundButton {
         }
         visualStateItem.state = uiState.stateFocused;
 
-        MZUtils.scrollToComponent(root)
+        MZUiUtils.scrollToComponent(root)
     }
 
     background: Rectangle {

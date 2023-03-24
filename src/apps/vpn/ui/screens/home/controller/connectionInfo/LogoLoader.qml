@@ -28,7 +28,7 @@ Item {
 
     MZLottieAnimation {
         id: loadingAnimation
-        source: ":/nebula/resources/animations/vpnlogo-kinetic_animation.json"
+        source: ":/ui/resources/animations/vpnlogo-kinetic_animation.json"
     }
 
 

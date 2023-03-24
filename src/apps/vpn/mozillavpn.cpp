@@ -1011,9 +1011,8 @@ void MozillaVPN::silentSwitch() {
   // here, the connection does not work and we don't want to wait for timeouts
   // to run the silenct-switch.
   TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNeeded));
+  TaskScheduler::scheduleTask(new TaskControllerAction(
+      TaskControllerAction::eSilentSwitch, Controller::eServerCoolDownNeeded));
 }
 
 void MozillaVPN::refreshDevices() {
@@ -1264,12 +1263,6 @@ void MozillaVPN::hardReset() {
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
-  quit();
-}
-
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {
-  Q_ASSERT(!reason.isEmpty());
-  logger.error() << "Unrecoverable error detected: " << reason;
   quit();
 }
 

@@ -71,6 +71,7 @@
 #endif
 
 #ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -89,7 +90,6 @@
 #endif
 
 #ifdef MZ_WASM
-#  include "platforms/wasm/wasmnetworkrequest.h"
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -173,7 +173,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances()) {
+    if (!EventListener::checkOtherInstances(
+            I18nStrings::instance()->t(I18nStrings::ProductName))) {
       return 0;
     }
 
@@ -220,7 +221,7 @@ int CommandUI::run(QStringList& tokens) {
 #  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
-    if (AndroidUtils::GetManufacturer() == "Huawei") {
+    if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
@@ -431,11 +432,6 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
-
-    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
-                                      WasmNetworkRequest::getResource,
-                                      WasmNetworkRequest::postResource,
-                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

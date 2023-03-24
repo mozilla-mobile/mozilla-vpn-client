@@ -81,7 +81,7 @@ Item {
                 }
             }
 
-            onActiveFocusChanged: if(activeFocus)  MZUtils.scrollToComponent(textArea)
+            onActiveFocusChanged: if(activeFocus)  MZUiUtils.scrollToComponent(textArea)
 
             Connections {
                 target: window
