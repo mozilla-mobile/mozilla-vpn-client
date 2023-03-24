@@ -216,6 +216,7 @@ notSignedInGoogle:
 multiFxaAccountError:
   fxaAccountErrorHeader: Problem confirming subscription
   fxaAccountErrorText: Your subscription is linked to another Firefox Account. You may need to sign in with a different email address.
+  visitOurHelpCenter: Visit our help center to learn more about managing your subscriptions.
 
 # IAP Android edge case 3
 genericPurchaseError:
@@ -245,6 +246,17 @@ purchaseWeb:
     value: We couldn’t find a subscription for %1. Subscribe now to protect your connection.
     comment: "%1 is the user’s email address."
   inProgress2: Please continue subscribing in your browser…
+
+purchase:
+  subscriptionOption: 
+    value: "%1-month plan: %2"
+    comment: "%1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost."
+  percentSaved:
+    value: Save %1%
+    comment: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan
+  subscribeNow: 
+    value: Subscribe now
+    comment: Button label
 
 networkSettings:
   multihopTitle: Multi-hop tunnel
@@ -341,10 +353,16 @@ dnsOverwriteDialog:
   secondaryButton: Maybe later
 
 aboutUs:
+  title: About us
   licenses: Licenses
   copyVersionNumber:
     value: Copy %1
-    comment: "Accessible name for a button. %1 is the version number of the VPN client."
+    comment: Accessible name for a button. %1 is the version number of the VPN client.
+  privacyNotice: Privacy notice
+  termsOfService: Terms of service
+  releaseVersion: 
+    value: Release version
+    comment:  "Refers to the installed version. For example: 'Release Version: 1.23'"
 
 AndroidNotifications:
   GeneralNotifications:
@@ -363,6 +381,16 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
+  dataCollectionAndUse: 
+    value: Data collection and use
+    comment: Headline of telemetry policy view and checkbox label
+  doNotAllow: 
+    value: Don’t allow
+    comment: Button label
+  allow: 
+    value: Allow on this device
+    comment: Button label
+  learnMore: Learn more about what data Mozilla collects and how it’s used.
 
 genericError:
   unexpected: Unexpected error
@@ -600,6 +628,16 @@ inAppAuth:
   emailTokenResentAlert:
     value: We’ve resent your code to your email.
     comment: User has requested to send a new email containing the 6-digit pin to confirm their email address.
+  waitingForSignIn:
+    value: Waiting for sign in and subscription confirmation…
+    comment: Headline on loading screen
+  pleaseWait:
+    value: Please wait…
+    comment: Headline on loading screen
+  
+postAuthentication:
+  headline: Quick access
+  subtitle: You can quickly access Mozilla VPN from your status bar.
 
 deleteAccount:
   authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
@@ -754,6 +792,8 @@ subscriptionManagement:
   valueProp3:
     value: 500+ servers in 30+ countries
     comment: Value proposition used to promote the product
+  manageAccount:
+    value: Manage account
 
 paymentMethods:
   amex: American Express
@@ -838,6 +878,18 @@ global:
   close:
     value: Close
     comment: Accessible label for close button
+  signOut:
+    value: Sign out
+    comment: Link title
+  noInternetConnection:
+    value: No internet connection
+    comment: Status alert text
+  copy:
+    value: Copy
+    comment: Accessible button label
+  clear: 
+    value: Clear
+    comment: Accessible label for clear button
 
 getHelp:
   helpCenter: Help Center
@@ -845,6 +897,13 @@ getHelp:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
   linkTitle: Get help
+  developerOptions: 
+    value: Developer options
+    comment: Button label
+
+product: 
+  name: Mozilla VPN
+  description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
 
 navBar:
   homeTab:

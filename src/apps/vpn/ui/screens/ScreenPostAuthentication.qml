@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -17,15 +18,13 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.08
         anchors.horizontalCenter: parent.horizontalCenter
-        //% "Quick access"
-        text: qsTrId("vpn.postAuthentication..quickAccess")
+        text: MZI18n.PostAuthenticationHeadline
     }
 
     MZSubtitle {
         id: logoSubtitle
 
-        //% "You can quickly access Mozilla VPN from your status bar."
-        text: qsTrId("vpn.postAuthentication.statusBarIntro")
+        text: MZI18n.PostAuthenticationSubtitle
         anchors.top: headline.bottom
         anchors.topMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
@@ -43,8 +42,7 @@ Item {
         id: button
         objectName: "postAuthenticationButton"
 
-        //% "Continue"
-        text: qsTrId("vpn.postAuthentication.continue")
+        text: MZI18n.GlobalContinue
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

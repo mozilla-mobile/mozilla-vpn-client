@@ -65,7 +65,7 @@ MZSimplePopup {
                 authError.open()
                 break;
             case MZAuthInApp.ErrorConnectionTimeout:
-                authError.description = qsTrId("vpn.alert.noInternet")
+                authError.description = MZI18n.GlobalNoInternetConnection
                 authError.open()
                 break;
             case MZAuthInApp.ErrorFailedToSendEmail:

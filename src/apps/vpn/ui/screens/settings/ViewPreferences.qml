@@ -50,8 +50,8 @@ MZViewBase {
                 rightMargin: MZTheme.theme.windowMargin
             }
 
-            //% "Data collection and use"
-            labelText: qsTrId("vpn.settings.dataCollection")
+
+            labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             subLabelText: MZI18n.SettingsDataCollectionDescription
             isChecked: MZSettings.gleanEnabled
             onClicked: {

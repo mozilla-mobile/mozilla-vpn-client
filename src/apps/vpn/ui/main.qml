@@ -81,8 +81,7 @@ Window {
     maximumWidth: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
-    //% "Mozilla VPN"
-    title: qsTrId("vpn.main.productName")
+    title: MZI18n.ProductName
     color: MZTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");

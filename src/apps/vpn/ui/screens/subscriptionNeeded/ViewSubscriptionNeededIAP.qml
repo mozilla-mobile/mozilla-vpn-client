@@ -43,7 +43,7 @@ MZFlickable {
 
     MZHeadline {
         id: headline
-        text: qsTrId("vpn.main.productName")
+        text: MZI18n.ProductName
         anchors.top: logo.bottom
         anchors.topMargin: MZTheme.theme.windowMargin
         anchors.horizontalCenter: parent.horizontalCenter
@@ -114,8 +114,7 @@ MZFlickable {
                 id: subscribeNow
                 objectName: "vpnSubscriptionNeededView"
 
-                //% "Subscribe now"
-                text: qsTrId("vpn.updates.subscribeNow")
+                text: MZI18n.PurchaseSubscribeNow
 
                 Layout.topMargin: MZTheme.theme.windowMargin
                 Layout.leftMargin: MZTheme.theme.windowMargin
@@ -139,8 +138,7 @@ MZFlickable {
                 MZGreyLink {
                     id: termsOfService
 
-                    // Terms of Service - string defined in ViewAboutUs.qml
-                    labelText: qsTrId("vpn.aboutUs.tos2")
+                    labelText: MZI18n.AboutUsTermsOfService
                     Layout.alignment: grid.columns > 1 ? Qt.AlignRight : Qt.AlignHCenter
                     textAlignment: grid.columns > 1 ? Text.AlignRight : Text.AlignHCenter
                     onClicked: MZUrlOpener.openUrlLabel("termsOfService")
@@ -159,8 +157,7 @@ MZFlickable {
                 MZGreyLink {
                     id: privacyNotice
 
-                    // Privacy Notice - string defined in ViewAboutUs.qml
-                    labelText: qsTrId("vpn.aboutUs.privacyNotice2")
+                    labelText: MZI18n.AboutUsPrivacyNotice
                     onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
                     textAlignment: grid.columns > 1 ? Text.AlignLeft : Text.AlignHCenter
                     Layout.alignment: grid.columns > 1 ? Qt.AlignLeft : Qt.AlignHCenter

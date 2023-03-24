@@ -88,8 +88,7 @@ MZViewBase {
             spacing: MZTheme.theme.listSpacing
             anchors.horizontalCenter: parent.horizontalCenter
 
-            //% "Developer Options"
-            settingTitle: qsTrId("vpn.settings.developer")
+            settingTitle: MZI18n.GetHelpDeveloperOptions
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft

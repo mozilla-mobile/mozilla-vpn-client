@@ -178,8 +178,7 @@ MZFlickable {
 
             //% "Not now"
             readonly property var textNotNow: qsTrId("vpn.updates.notNow")
-            //% "Manage account"
-            readonly property var textManageAccount: qsTrId("vpn.main.manageAccount")
+            readonly property var textManageAccount: MZI18n.SettingsManageAccount
 
             Layout.alignment: Qt.AlignHCenter
             labelText: (vpnFlickable.state === "recommended") ? textNotNow : textManageAccount

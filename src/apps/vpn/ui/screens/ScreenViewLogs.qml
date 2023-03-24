@@ -21,8 +21,7 @@ Item {
     MZMenu {
         id: menu
 
-        //% "View Logs"
-        title: qsTrId("vpn.viewlogs.title")
+        title: MZI18n.GetHelpViewLogs
         _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     }
 
@@ -81,13 +80,11 @@ Item {
             width: copyClearWrapper.width
 
             MZLogsButton {
-                //% "Copy"
-                buttonText: qsTrId("vpn.logs.copy")
+                buttonText: MZI18n.GlobalCopy
                 iconSource: "qrc:/ui/resources/copy.svg"
                 onClicked: {
                     MZUtils.storeInClipboard(logText.text);
-                    //% "Copied!"
-                    buttonText = qsTrId("vpn.logs.copied");
+                    buttonText = MZI18n.GlobalCopied
                 }
             }
 
@@ -99,8 +96,7 @@ Item {
             }
 
             MZLogsButton {
-                //% "Clear"
-                buttonText: qsTrId("vpn.logs.clear")
+                buttonText: MZI18n.GlobalClear
                 iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
                     MZLog.flushLogs();
