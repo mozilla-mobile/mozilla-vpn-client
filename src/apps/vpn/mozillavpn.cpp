@@ -225,6 +225,8 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   registerExternalOperations();
 
+  registerPushMessageTypes();
+
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
 }
@@ -2212,4 +2214,27 @@ void MozillaVPN::registerExternalOperations() {
 
   eoh->registerExternalOperation(
       OpQuit, []() { MozillaVPN::instance()->controller()->quit(); });
+}
+
+void MozillaVPN::registerPushMessageTypes() {
+  PushMessage::registerPushMessageType(
+      "DEVICE_DELETED", [](const QJsonObject& payload) -> bool {
+        const QString& publicKey = payload["publicKey"].toString();
+        if (publicKey.isEmpty()) {
+          logger.error() << "Malformed message payload for DeviceDeleted "
+                            "message. Ignoring.";
+          return false;
+        }
+
+        MozillaVPN* vpn = MozillaVPN::instance();
+        if (vpn->keys()->publicKey() == publicKey) {
+          logger.info()
+              << "Current device has been deleted from this subscription.";
+          vpn->reset(true);
+          return true;
+        }
+
+        MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
+        return true;
+      });
 }

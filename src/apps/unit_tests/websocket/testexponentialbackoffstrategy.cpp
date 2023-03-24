@@ -7,7 +7,6 @@
 #include <QtMath>
 
 #include "helper.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "websocket/exponentialbackoffstrategy.h"
 

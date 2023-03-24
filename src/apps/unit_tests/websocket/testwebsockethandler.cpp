@@ -7,8 +7,8 @@
 #include <QtMath>
 #include <QtWebSockets/QWebSocketServer>
 
+#include "app.h"
 #include "helper.h"
-#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "websocket/websockethandler.h"
 

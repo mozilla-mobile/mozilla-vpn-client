@@ -61,13 +61,7 @@ QString WebSocketHandler::webSocketServerUrl() {
     return s_customWebSocketServerUrl;
   }
 
-  QString httpServerUrl;
-  if (Constants::inProduction()) {
-    httpServerUrl = AppConstants::API_PRODUCTION_URL;
-  } else {
-    httpServerUrl = AppConstants::getStagingServerAddress();
-  }
-
+  QString httpServerUrl = AppConstants::apiBaseUrl();
   return httpServerUrl.toLower().replace("http", "ws");
 }
 

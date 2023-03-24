@@ -102,7 +102,10 @@ SOURCES += \
         $$PWD/tutorial/tutorialstepnext.cpp \
         $$PWD/urlopener.cpp \
         $$PWD/utils.cpp \
-        $$PWD/versionutils.cpp
+        $$PWD/versionutils.cpp \
+        $$PWD/websocket/exponentialbackoffstrategy.cpp \
+        $$PWD/websocket/pushmessage.cpp \
+        $$PWD/websocket/websockethandler.cpp
 
 HEADERS += \
         $$PWD/addons/addon.h \
@@ -204,7 +207,10 @@ HEADERS += \
         $$PWD/tutorial/tutorialstepnext.h \
         $$PWD/urlopener.h \
         $$PWD/utils.h \
-        $$PWD/versionutils.h
+        $$PWD/versionutils.h \
+        $$PWD/websocket/exponentialbackoffstrategy.h \
+        $$PWD/websocket/pushmessage.h \
+        $$PWD/websocket/websockethandler.h
 
 INCLUDEPATH += \
             $$PWD \
