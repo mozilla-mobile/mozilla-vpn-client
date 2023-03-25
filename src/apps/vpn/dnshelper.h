@@ -7,11 +7,17 @@
 
 #include <QString>
 
+struct dnsData {
+  QString ipAddress;
+  QString dnsType;
+};
 class DNSHelper final {
  public:
   static QString getDNS(const QString& fallbackAddress);
 
   static QString getDNSType();
+
+  static dnsData getDNSDetails(const QString& fallbackAddress);
 
   static bool validateUserDNS(const QString& dns);
 

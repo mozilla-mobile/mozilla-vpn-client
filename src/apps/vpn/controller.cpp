@@ -520,7 +520,7 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
-  mozilla::glean::settings::dns_type.set(DNSHelper::getDNSType());
+  mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
 
   if (m_nextStep != None) {
     deactivate();
