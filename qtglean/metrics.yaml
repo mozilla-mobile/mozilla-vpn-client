@@ -88,11 +88,13 @@ session:
       - mcleinman@mozilla.com
     expires: never
 
-  sessions_started:
-    type: counter
+  session_id:
+    type: uuid
+    lifetime: user
     description: |
-      The number of sessions started during the ping. This is a safety check
-      to see if only one session start happens in each ping, as expected.
+      A unique identifier for each session, shared with the daemon instance
+      of Glean. This is used to connect unique VPN sessions across pings, and
+      as a safety check on edge cases of VPN activation/deactivation.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4064
     data_reviews:

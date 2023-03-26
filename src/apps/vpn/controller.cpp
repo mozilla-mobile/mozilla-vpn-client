@@ -21,6 +21,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include <QUuid>
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -525,7 +526,8 @@ void Controller::connected(const QString& pubkey,
   }
 
   mozilla::glean::session::session_start.set();
-  mozilla::glean::session::sessions_started.add();
+  QUuid sessionId = QUuid::createUuid();
+  mozilla::glean::session::session_id.set(sessionId); // this probably needs to be cast to a string or something, depending on how we bring UUID Glean in
 
   if (m_nextStep != None) {
     deactivate();
@@ -573,7 +575,13 @@ void Controller::handshakeTimeout() {
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
   mozilla::glean::session::session_end.set();
-  mozilla::glean_pings::Vpnsession.submit();
+  // TODO: This must be after submission of ping
+
+  // We never expect to see this UUID in Glean metrics, as it is also
+  // updated before the next session begins. Rotating it here is a
+  // safety measure.
+  QUuid sessionId = QUuid::createUuid();
+  mozilla::glean::session::session_id.set(sessionId); // this probably needs to be cast to a string or something, depending on how we bring UUID Glean in
 
   clearConnectedTime();
   clearRetryCounter();
