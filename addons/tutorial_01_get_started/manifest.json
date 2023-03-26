@@ -3,6 +3,9 @@
   "id": "tutorial_01_get_started",
   "name": "Tutorial: get started",
   "type": "tutorial",
+  "conditions": {
+    "max_client_version": "2.14.9"  
+  },
   "tutorial": {
     "id": "01_get_started",
     "highlighted": true,

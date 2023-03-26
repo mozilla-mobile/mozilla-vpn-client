@@ -16,6 +16,7 @@ INCLUDEPATH += $$PWD
 RESOURCES += $$PWD/ui/components.qrc
 RESOURCES += $$PWD/ui/themes.qrc
 RESOURCES += $$PWD/ui/nebula_resources.qrc
+RESOURCES += $$PWD/ui/utils.qrc
 
 QML_IMPORT_PATH += $$PWD/ui
 

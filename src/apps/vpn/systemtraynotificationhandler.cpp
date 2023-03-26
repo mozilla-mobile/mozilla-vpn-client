@@ -106,7 +106,8 @@ void SystemTrayNotificationHandler::setStatusMenu() {
 
   // TODO: Check if method is called on these devices.
 #if defined(MZ_LINUX) || defined(MZ_WINDOWS)
-  m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
+  m_systemTrayIcon->setToolTip(
+      I18nStrings::instance()->t(I18nStrings::ProductName));
   m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
 #endif
@@ -148,7 +149,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  bool isStateMain = vpn->state() == MozillaVPN::StateMain;
+  bool isStateMain = vpn->state() == App::StateMain;
 
   m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
                                                     Controller::StateOn);
@@ -212,7 +213,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   m_lastLocationLabel->setVisible(true);
 
-  QIcon flagIcon(QString(":/nebula/resources/flags/%1.png")
+  QIcon flagIcon(QString(":/ui/resources/flags/%1.png")
                      .arg(vpn->serverData()->exitCountryCode().toUpper()));
 
   QString localizedCityName = vpn->serverData()->localizedExitCityName();

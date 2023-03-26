@@ -62,6 +62,19 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              true                          // sensitive (do not log)
 )
 
+#if defined(MZ_ADJUST)
+SETTING_BOOL(adjustActivatable,        // getter
+             setAdjustActivatable,     // setter
+             removeAdjustActivatable,  // remover
+             hasAdjustActivatable,     // has
+             "adjustActivatable",      // key
+             false,                    // default value
+             false,                    // user setting
+             false,                    // remove when reset
+             false                     // sensitive (do not log)
+)
+#endif
+
 SETTING_STRINGLIST(featuresFlippedOff,        // getter
                    setFeaturesFlippedOff,     // setter
                    removeFeaturesFlippedOff,  // remover
@@ -198,6 +211,17 @@ SETTING_BOOL(localhostRequestsOnly,        // Feature ID
              false,                        // user setting
              true,                         // remove when reset
              false                         // sensitive (do not log)
+)
+
+SETTING_STRING(token,        // getter
+               setToken,     // setter
+               removeToken,  // remover
+               hasToken,     // has
+               "token",      // key
+               "",           // default value
+               false,        // user setting
+               true,         // remove when reset
+               true          // sensitive (do not log)
 )
 
 // The app must implement its settings list file.

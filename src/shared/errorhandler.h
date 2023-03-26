@@ -90,12 +90,6 @@ class ErrorHandler final : public QObject {
   Q_INVOKABLE void hideAlert() { setAlert(NoAlert); }
   Q_INVOKABLE void requestAlert(ErrorHandler::AlertType alert);
 
-#define ERRORSTATE(name) \
-  void name##Error();    \
-  Q_SIGNAL void name();
-#include "errorlist.h"
-#undef ERRORSTATE
-
   static void registerCustomErrorHandler(ErrorType errorType,
                                          bool supportPolicyPropagation,
                                          AlertType (*getAlert)());
@@ -103,6 +97,11 @@ class ErrorHandler final : public QObject {
  signals:
   void alertChanged();
   void errorHandled();
+
+  void subscriptionGeneric();  // iOS only
+  void noSubscriptionFound();  // iOS only
+  void subscriptionExpired();  // iOS only
+  void subscriptionInUse();    // iOS only
 
  private:
   void setAlert(ErrorHandler::AlertType alert);

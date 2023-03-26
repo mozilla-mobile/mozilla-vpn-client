@@ -28,15 +28,9 @@ class TestHelper final : public QObject {
   Q_INVOKABLE void triggerSendGleanPings() const;
   Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags) const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
-  Q_PROPERTY(bool stagingMode READ stagingMode WRITE setStagingMode)
-  Q_PROPERTY(bool debugMode READ debugMode WRITE setDebugMode)
 
   bool mainWindowLoadedCalled() const;
   void setMainWindowLoadedCalled(bool val);
-  bool stagingMode() const;
-  void setStagingMode(bool val);
-  bool debugMode() const;
-  void setDebugMode(bool val);
 
  public slots:
   // For info on the slots we can use
@@ -51,8 +45,6 @@ class TestHelper final : public QObject {
   Localizer m_localizer;
 
   bool m_mainWindowLoadedCalled = false;
-  bool m_debugMode = true;
-  bool m_stagingMode = true;
 
   I18nStrings* m_i18nstrings = nullptr;
   MozillaVPN* m_mozillavpn = nullptr;

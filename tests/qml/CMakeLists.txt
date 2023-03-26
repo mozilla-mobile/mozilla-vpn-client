@@ -28,7 +28,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations_vpn)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -42,9 +42,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
@@ -80,6 +77,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/shared/app.cpp
+    ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapplistener.cpp
@@ -95,6 +94,7 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
+    ${MZ_SOURCE_DIR}/shared/env.cpp
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/errorhandler.cpp
     ${MZ_SOURCE_DIR}/shared/errorhandler.h
@@ -102,6 +102,12 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.cpp
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigator.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
@@ -114,6 +120,7 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hawkauth.h
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
     ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
@@ -124,6 +131,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/logger.h
     ${MZ_SOURCE_DIR}/shared/loghandler.cpp
     ${MZ_SOURCE_DIR}/shared/loghandler.h
+    ${MZ_SOURCE_DIR}/shared/models/featuremodel.cpp
+    ${MZ_SOURCE_DIR}/shared/models/featuremodel.h
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
@@ -144,6 +153,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/theme.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
+    ${MZ_SOURCE_DIR}/shared/utils.cpp
+    ${MZ_SOURCE_DIR}/shared/utils.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
 )
@@ -161,7 +172,6 @@ target_sources(qml_tests PRIVATE
     mocconstants.cpp
     moccontroller.cpp
     mocmozillavpn.cpp
-    ../unit/mocinspectorhandler.cpp
 )
 
 if(WIN32)

@@ -11,11 +11,11 @@
 #include <QJsonValue>
 #include <QUrl>
 
+#include "app.h"
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 
@@ -103,7 +103,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
   url.setPath("/api/v1/vpn/ipinfo");
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);
   request->get(url);

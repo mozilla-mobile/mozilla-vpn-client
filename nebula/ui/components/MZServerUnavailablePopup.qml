@@ -23,7 +23,7 @@ MZSimplePopup {
             text: MZI18n.ServerUnavailableModalButtonLabel
             Layout.fillWidth: true
             onClicked: {
-                VPNNavigator.requestScreen(VPNNavigator.ScreenHome)
+                MZNavigator.requestScreen(VPN.ScreenHome)
                 window.showServerList();
                 root.close();
             }

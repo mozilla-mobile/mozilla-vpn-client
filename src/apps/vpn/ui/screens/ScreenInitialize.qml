@@ -15,6 +15,6 @@ MZStackView {
 
     Component.onCompleted: function() {
         stackview.push("qrc:/ui/screens/initialize/ViewInitialize.qml")
-        VPNNavigator.addStackView(VPNNavigator.ScreenInitialize, stackview)
+        MZNavigator.addStackView(VPN.ScreenInitialize, stackview)
     }
 }

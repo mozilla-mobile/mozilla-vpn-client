@@ -450,8 +450,11 @@ bool LogHandler::writeLogsToLocation(
   QString filename;
   QDate now = QDate::currentDate();
 
-  QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month()
-                         << "-" << now.day() << ".txt";
+  QFileInfo logFileInfo(AppConstants::LOG_FILE_NAME);
+
+  QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year() << "-"
+                         << now.month() << "-" << now.day() << "."
+                         << logFileInfo.completeSuffix();
 
   QDir logDir(QStandardPaths::writableLocation(location));
   QString logFile = logDir.filePath(filename);
@@ -461,9 +464,9 @@ bool LogHandler::writeLogsToLocation(
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
-      QTextStream(&filename)
-          << "mozillavpn-" << now.year() << "-" << now.month() << "-"
-          << now.day() << "_" << i << ".txt";
+      QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year()
+                             << "-" << now.month() << "-" << now.day() << "_"
+                             << i << "." << logFileInfo.completeSuffix();
       logFile = logDir.filePath(filename);
       if (!QFileInfo::exists(logFile)) {
         logger.debug() << "Filename found!" << i;

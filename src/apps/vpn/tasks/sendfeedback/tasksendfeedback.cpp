@@ -6,12 +6,12 @@
 
 #include <QJsonObject>
 
+#include "app.h"
 #include "appconstants.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/user.h"
-#include "mozillavpn.h"
 #include "networkmanager.h"
 #include "networkrequest.h"
 
@@ -40,7 +40,7 @@ void TaskSendFeedback::run() {
   logger.debug() << "Sending the feedback";
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->post(
       AppConstants::apiUrl(AppConstants::Feedback),
       QJsonObject{{"feedbackText", m_feedbackText},

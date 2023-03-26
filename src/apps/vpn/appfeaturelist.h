@@ -25,13 +25,6 @@ FEATURE(addonSignature,             // Feature ID
         QStringList{"addon"},       // feature dependencies
         FeatureCallback_true)
 
-FEATURE(appReview,              // Feature ID
-        "App Review",           // Feature name
-        FeatureCallback_false,  // Can be flipped on
-        FeatureCallback_false,  // Can be flipped off
-        QStringList(),          // feature dependencies
-        FeatureCallback_iosOrAndroid)
-
 FEATURE(benchmarkUpload,       // Feature ID
         "Benchmark Upload",    // Feature name
         FeatureCallback_true,  // Can be flipped on
@@ -66,13 +59,6 @@ FEATURE(freeTrial,             // Feature ID
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         FeatureCallback_freeTrial)
-
-FEATURE(webPurchase,           // Feature ID
-        "Web Purchase",        // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_webPurchase)
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name

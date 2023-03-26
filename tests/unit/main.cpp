@@ -11,10 +11,15 @@
 #include "networkrequest.h"
 #include "settingsholder.h"
 
+class TestApp final : public App {
+ public:
+  TestApp() : App(nullptr) {}
+
+  bool handleCloseEvent() override { return true; }
+};
+
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
-MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
-MozillaVPN::UserState TestHelper::userState = MozillaVPN::UserNotAuthenticated;
 QVector<QObject*> TestHelper::testList;
 TestHelper::SystemNotification TestHelper::lastSystemNotification;
 
@@ -30,6 +35,12 @@ QObject* TestHelper::findTest(const QString& name) {
 }
 
 TestHelper::TestHelper() { testList.append(this); }
+
+// static
+App* App::instance() {
+  static TestApp app;
+  return &app;
+}
 
 // static
 bool TestHelper::networkRequestGeneric(NetworkRequest* request) {

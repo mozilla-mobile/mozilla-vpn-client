@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -13,7 +14,7 @@ MZScreenBase {
     objectName: "deviceList"
 
     Component.onCompleted: () => {
-        VPNNavigator.addStackView(VPNNavigator.ScreenDeviceLimit, getStack())
+        MZNavigator.addStackView(VPN.ScreenDeviceLimit, getStack())
         getStack().push("qrc:/ui/screens/devices/ViewDevices.qml")
     }
 }

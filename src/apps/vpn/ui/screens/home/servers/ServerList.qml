@@ -18,7 +18,7 @@ FocusScope {
     property real listOffset: (MZTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property bool showRecommendedConnections: (showRecentConnections
-        && VPNFeatureList.get("recommendedServers").isSupported)
+        && MZFeatureList.get("recommendedServers").isSupported)
     property var currentServer
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
@@ -98,6 +98,8 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
+                objectName: "serverListRecommended"
+
                 spacing: MZTheme.theme.listSpacing * 1.5
                 width: parent.width
 

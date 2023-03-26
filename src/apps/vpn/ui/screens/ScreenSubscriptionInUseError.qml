@@ -13,7 +13,7 @@ MZStackView {
     id: stackView
 
     Component.onCompleted: function(){
-       VPNNavigator.addStackView(VPNNavigator.ScreenSubscriptionInUseError, stackView)
+       MZNavigator.addStackView(VPN.ScreenSubscriptionInUseError, stackView)
 
        stackView.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
@@ -24,7 +24,7 @@ MZStackView {
            errorMessage: MZI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
            // Sign out
-           primaryButtonText: qsTrId("vpn.main.signOut2"),
+           primaryButtonText: MZI18n.GlobalSignOut,
            primaryButtonObjectName: "errorSignOutButton",
            primaryButtonOnClick: () => {
                VPNController.logout();

@@ -57,7 +57,7 @@ for file in os.listdir(addons_path):
        print(f"Ignoring path {file}.")
        continue
 
-    build_cmd = [sys.executable, build_path, addon_path, generated_path]
+    build_cmd = [sys.executable, build_path, "vpn", addon_path, generated_path]
     if args.qtpath:
         build_cmd.append("-q")
         build_cmd.append(args.qtpath)

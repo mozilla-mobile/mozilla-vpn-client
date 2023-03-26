@@ -30,7 +30,7 @@ Item {
 
             Layout.fillWidth: true
             
-            _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
+            _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
             _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
             _menuIconButtonMirror: getHelpStackView.depth !== 1 && MZLocalizer.isRightToLeft
             titleClicked: () => {
@@ -61,7 +61,7 @@ Item {
             Layout.fillHeight: true
 
             Component.onCompleted: function() {
-                VPNNavigator.addStackView(VPNNavigator.ScreenGetHelp, getHelpStackView)
+                MZNavigator.addStackView(VPN.ScreenGetHelp, getHelpStackView)
                 getHelpStackView.push("qrc:/ui/screens/getHelp/ViewGetHelp.qml")
             }
 

@@ -78,13 +78,13 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkOtherInstances() {
+bool EventListener::checkOtherInstances(const QString& windowName) {
   logger.debug() << "Checking other instances";
 
 #ifdef MZ_WINDOWS
   // Let's check if there is a window with the right name.
-  QString windowTitle = qtTrId("vpn.main.productName");
-  HWND window = FindWindow(nullptr, (const wchar_t*)windowTitle.utf16());
+  HWND window =
+      FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
   if (!window) {
     WindowsUtils::windowsLog("No other instances found");
     return true;

@@ -94,22 +94,53 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Build the Wireguard Go tunnel
-# FIXME: This only builds for the host architecture.
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
-add_custom_target(build_wireguard_go
-    COMMENT "Building wireguard-go"
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-    DEPENDS
-        ${WIREGUARD_GO_DEPS}
-        ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
-        ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-    COMMAND ${CMAKE_COMMAND} -E env
-                GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-                GOOS=darwin
-                CGO_ENABLED=1
-                GO111MODULE=on
-            go build -buildmode exe -buildvcs=false -trimpath -v -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-)
+if(CMAKE_OSX_ARCHITECTURES)
+    foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
+        string(REPLACE "x86_64" "amd64" GOARCH ${OSXARCH})
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
+            COMMENT "Building wireguard-go for ${OSXARCH}"
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
+            DEPENDS
+                ${WIREGUARD_GO_DEPS}
+                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
+                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
+            COMMAND ${CMAKE_COMMAND} -E env
+                        GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                        GOOS=darwin
+                        CGO_ENABLED=1
+                        GO111MODULE=on
+                        GOARCH=${GOARCH}
+                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                        -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
+        )
+        list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
+    endforeach()
+
+    add_custom_target(build_wireguard_go
+        COMMENT "Building wireguard-go"
+        DEPENDS ${WG_GO_ARCH_BUILDS}
+        COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
+    )
+else()
+    # This only builds for the host architecture.
+    add_custom_target(build_wireguard_go
+        COMMENT "Building wireguard-go"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
+        DEPENDS
+            ${WIREGUARD_GO_DEPS}
+            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
+            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
+        COMMAND ${CMAKE_COMMAND} -E env
+                    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                    GOOS=darwin
+                    CGO_ENABLED=1
+                    GO111MODULE=on
+                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                    -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+    )
+endif()
 add_dependencies(mozillavpn build_wireguard_go)
 osx_bundle_files(mozillavpn
     FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
@@ -125,7 +156,7 @@ osx_bundle_files(mozillavpn FILES
 )
 
 # Install the lproj translation files into the bundle.
-get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/i18n ABSOLUTE)
+get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
 list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})
@@ -145,7 +176,7 @@ foreach(LOCALE ${I18N_LOCALES})
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
         COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k LOCALE=${LOCALE} 
                     -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
-                    ${CMAKE_SOURCE_DIR}/translations/locversion.plist.in
+                    ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/locversion.plist.in
     )
 endforeach()
 

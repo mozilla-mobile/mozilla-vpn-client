@@ -50,6 +50,7 @@ target_link_libraries(app_auth_tests PRIVATE
     glean
     qtglean
     shared-sources
+    translations_auth_tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

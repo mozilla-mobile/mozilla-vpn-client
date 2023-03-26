@@ -256,17 +256,29 @@ void TestIpAddress::excludeAddresses_data() {
          "98,::8.0.0.0/101,::8/125,::80/121,::800/117,::8000/113,::8000:0:0/"
          "81,::8000:0:0:0/65,::800:0:0/85,::800:0:0:0/69,::80:0:0/"
          "89,::80:0:0:0/73,::8:0:0/93,::8:0:0:0/77";
+
+  QTest::addRow("world vs rfc1918 (part)")
+      << "0.0.0.0/5,11.0.0.0/8,12.0.0.0/6,128.0.0.0/1,16.0.0.0/4,32.0.0.0/"
+         "3,64.0.0.0/2,8.0.0.0/7"
+      << "8.0.0.0/5"
+      << "0.0.0.0/5,128.0.0.0/1,16.0.0.0/4,32.0.0.0/3,64.0.0.0/2";
 }
 
 void TestIpAddress::excludeAddresses() {
   QFETCH(QString, input);
-  IPAddress a = IPAddress(input);
+  QList<IPAddress> a;
+  for (const QString& addrString : input.split(",")) {
+    a.append(IPAddress(addrString));
+  }
 
   QFETCH(QString, excludeAddresses);
-  IPAddress b = IPAddress(excludeAddresses);
+  QList<IPAddress> b;
+  for (const QString& addrString : excludeAddresses.split(",")) {
+    b.append(IPAddress(addrString));
+  }
 
   QStringList list;
-  for (const IPAddress& r : a.excludeAddresses(b)) {
+  for (const IPAddress& r : IPAddress::excludeAddresses(a, b)) {
     list.append(r.toString());
   }
 

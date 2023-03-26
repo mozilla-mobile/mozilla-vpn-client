@@ -61,21 +61,12 @@ SOURCES += \
         apps/vpn/dnshelper.cpp \
         apps/vpn/dnspingsender.cpp \
         apps/vpn/externalophandler.cpp \
-        apps/vpn/frontend/navigator.cpp \
-        apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
-        apps/vpn/inspector/inspectorhandler.cpp \
-        apps/vpn/inspector/inspectoritempicker.cpp \
-        apps/vpn/inspector/inspectorutils.cpp \
-        apps/vpn/inspector/inspectorwebsocketconnection.cpp \
-        apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
-        apps/vpn/models/featuremodel.cpp \
         apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/location.cpp \
@@ -113,7 +104,6 @@ SOURCES += \
         apps/vpn/tasks/addon/taskaddon.cpp \
         apps/vpn/tasks/addonindex/taskaddonindex.cpp \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
         apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
@@ -203,21 +193,12 @@ HEADERS += \
         apps/vpn/dnshelper.h \
         apps/vpn/dnspingsender.h \
         apps/vpn/externalophandler.h \
-        apps/vpn/frontend/navigator.h \
-        apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
-        apps/vpn/inspector/inspectorhandler.h \
-        apps/vpn/inspector/inspectoritempicker.h \
-        apps/vpn/inspector/inspectorutils.h \
-        apps/vpn/inspector/inspectorwebsocketconnection.h \
-        apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
         apps/vpn/localizer.h \
-        apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
-        apps/vpn/models/featuremodel.h \
         apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/location.h \
@@ -256,7 +237,6 @@ HEADERS += \
         apps/vpn/tasks/addon/taskaddon.h \
         apps/vpn/tasks/addonindex/taskaddonindex.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \

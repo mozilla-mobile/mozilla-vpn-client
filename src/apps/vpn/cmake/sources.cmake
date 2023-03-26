@@ -104,6 +104,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddeactivate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commanddevice.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandexcludeip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandexcludeip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/commands/commandlogout.cpp
@@ -155,35 +157,17 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/extrastrings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/frontend/navigatorreloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectoritempicker.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectoritempicker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketconnection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketconnection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorwebsocketserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/logoutobserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/featuremodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.cpp
@@ -263,8 +247,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp

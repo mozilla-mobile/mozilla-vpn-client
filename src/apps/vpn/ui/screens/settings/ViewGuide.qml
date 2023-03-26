@@ -43,9 +43,7 @@ Item {
                     'focusBorder': MZTheme.theme.lightFocusBorder
                 }
                 skipEnsureVisible: true
-                //% "Back"
-                //: Go back
-                accessibleName: qsTrId("vpn.main.back")
+                accessibleName: MZI18n.GlobalGoBack
 
                 onClicked: {
                     statusBarModifier.resetDefaults()
@@ -172,10 +170,10 @@ Item {
                 stackview.pop();
         }
 
-        target: VPNNavigator
+        target: MZNavigator
     }
 
-    Component.onCompleted: VPNNavigator.addView(VPNNavigator.ScreenSettings, root)
+    Component.onCompleted: MZNavigator.addView(VPN.ScreenSettings, root)
 
     Component.onDestruction: {
         MZGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{

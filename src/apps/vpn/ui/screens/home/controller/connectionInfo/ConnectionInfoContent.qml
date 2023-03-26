@@ -63,7 +63,7 @@ MZFlickable {
                     MZLottieAnimation {
                         id: speedometerAnimation
                         loop: false
-                        source: ":/nebula/resources/animations/speedometer_animation.json"
+                        source: ":/ui/resources/animations/speedometer_animation.json"
                     }
                 }
 
@@ -100,7 +100,7 @@ MZFlickable {
                                 : ""
                             subtitle: ""
                             iconPath: serverLocations.isMultipHop
-                                ? "qrc:/nebula/resources/flags/"
+                                ? "qrc:/ui/resources/flags/"
                                     + VPNCurrentServer.entryCountryCode.toUpperCase()
                                     + ".png"
                                 : ""
@@ -128,7 +128,7 @@ MZFlickable {
                             subtitle: serverLocations.isMultipHop
                                 ? ""
                                 : VPNCurrentServer.localizedExitCityName
-                            iconPath: "qrc:/nebula/resources/flags/"
+                            iconPath: "qrc:/ui/resources/flags/"
                                 + VPNCurrentServer.exitCountryCode.toUpperCase()
                                 + ".png"
                             isFlagIcon: true
@@ -166,7 +166,7 @@ MZFlickable {
                         color: MZTheme.colors.white
                         height: 1
                         opacity: 0.2
-                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
+                        visible: MZFeatureList.get("benchmarkUpload").isSupported
 
                         Layout.fillWidth: true
                     }
@@ -175,7 +175,7 @@ MZFlickable {
                         title: MZI18n.ConnectionInfoLabelUpload
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
                         iconPath: "qrc:/nebula/resources/upload.svg"
-                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
+                        visible: MZFeatureList.get("benchmarkUpload").isSupported
                     }
                 }
             }

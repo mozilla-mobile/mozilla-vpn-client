@@ -19,7 +19,8 @@ class TestSignUpAndIn final : public QObject {
   };
   Q_ENUM(SendTotpCodeState);
 
-  TestSignUpAndIn(const QString& pattern, bool totpCreation = false);
+  TestSignUpAndIn(const QString& nonce, const QString& pattern,
+                  bool totpCreation = false);
   ~TestSignUpAndIn() = default;
 
  private slots:

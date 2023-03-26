@@ -16,8 +16,7 @@ MZViewBase {
     property bool listenForUpdateEvents:false
     property string licenseURL: ""
 
-    //% "About us"
-    _menuTitle: qsTrId("vpn.settings.aboutUs")
+    _menuTitle: MZI18n.AboutUsTitle
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
@@ -34,19 +33,17 @@ MZViewBase {
                 spacing: MZTheme.theme.windowMargin / 2
 
                 MZBoldLabel {
-                    text: qsTrId("vpn.main.productName")
+                    text: MZI18n.ProductName
                     Layout.fillWidth: true
                 }
                 MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: qsTrId("vpn.main.productDescription")
+                    text: MZI18n.ProductDescription
                 }
             }
             MZBoldLabel {
-                //% "Release version"
-                //: Refers to the installed version. For example: "Release Version: 1.23"
-                text: qsTrId("vpn.aboutUs.releaseVersion2")
+                text: MZI18n.AboutUsReleaseVersion
                 Accessible.role: Accessible.StaticText
             }
             MZClickableRow {
@@ -68,7 +65,7 @@ MZViewBase {
                 Layout.fillWidth: true
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 onClicked: {
-                    VPN.storeInClipboard(releaseVersion.text)
+                    MZUtils.storeInClipboard(releaseVersion.text)
                     MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);
                 }
 
@@ -82,7 +79,7 @@ MZViewBase {
 
                     MZTextBlock {
                         id: releaseVersion
-                        text: VPN.env.buildNumber === "" ? VPN.env.versionString : (VPN.env.versionString + " (" + VPN.env.buildNumber + ")")
+                        text: MZEnv.buildNumber === "" ? MZEnv.versionString : (MZEnv.versionString + " (" + MZEnv.buildNumber + ")")
                         width: undefined
                         Layout.alignment: Qt.AlignVCenter
                     }
@@ -110,8 +107,7 @@ MZViewBase {
                ListElement {
                    linkId: "tos"
 
-                   //% "Terms of service"
-                   linkTitle: qsTrId("vpn.aboutUs.tos2")
+                   linkTitleId: "AboutUsTermsOfService"
                    openUrl: "terms-of-service"
                    openView: ""
                }
@@ -119,15 +115,14 @@ MZViewBase {
                ListElement {
                    linkId: "privacy"
 
-                   //% "Privacy notice"
-                   linkTitle: qsTrId("vpn.aboutUs.privacyNotice2")
+                   linkTitleId: "AboutUsPrivacyNotice"
                    openUrl: "link-privacy-notice"
                    openView: ""
                }
            }
            delegate: MZExternalLinkListItem {
                objectName: "aboutUsList-" + linkId
-               title: linkTitle
+               title: MZI18n[linkTitleId]
                accessibleName: title
                Layout.fillWidth: true
                Layout.preferredHeight: MZTheme.theme.rowHeight
@@ -155,7 +150,7 @@ MZViewBase {
            Component.onCompleted: {
               aboutUsListModel.append({
                    linkId: "license",
-                   linkTitle: MZI18n.AboutUsLicenses,
+                   linkTitleId: "AboutUsLicenses",
                    openView: "qrc:/ui/screens/settings/ViewLicenses.qml"
               });
            }

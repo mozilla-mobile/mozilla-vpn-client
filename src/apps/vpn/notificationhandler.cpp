@@ -4,6 +4,7 @@
 
 #include "notificationhandler.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "controller.h"
 #include "externalophandler.h"
@@ -90,11 +91,11 @@ void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain &&
+  if (vpn->state() != App::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == MozillaVPN::StateInitialize &&
+      !(vpn->state() == App::StateInitialize &&
         vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
@@ -290,7 +291,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
   logger.debug() << "New in-app message notification";
 
-  if (!MozillaVPN::isUserAuthenticated()) {
+  if (!App::isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
     return;
   }

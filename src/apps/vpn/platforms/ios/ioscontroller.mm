@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscontroller.h"
-#include "Mozilla_VPN-Swift.h"
+#include "Mozilla-Swift.h"
 #include "controller.h"
 #include "feature.h"
 #include "ipaddress.h"

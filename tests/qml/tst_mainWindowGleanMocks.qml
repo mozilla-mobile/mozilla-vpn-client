@@ -85,8 +85,8 @@ Item {
             compare(spyApplicationId, "mozillavpn")
             compare(spyConfig.appBuild, "MozillaVPN/QMLTest_AppVersion")
             compare(spyConfig.appDisplayVersion, "QMLTest_AppVersion")
-            compare(spyConfig.osVersion, VPN.env.osVersion)
-            compare(spyConfig.architecture, VPN.env.architecture)
+            compare(spyConfig.osVersion, MZEnv.osVersion)
+            compare(spyConfig.architecture, [MZEnv.architecture, MZEnv.graphicsApi].join(" ").trim())
         }
 
         function test_onInitializeGleanCallsInitializeCorrectUploadEnabled() {
@@ -100,21 +100,21 @@ Item {
         }
 
         function test_onInitializeGleanByStagingMode() {
-            TestHelper.stagingMode = false
+            MZEnv.stagingMode = false
             TestHelper.triggerInitializeGlean()
             compare(spyConfig.channel, "production")
 
-            TestHelper.stagingMode = true
+            MZEnv.stagingMode = true
             TestHelper.triggerInitializeGlean()
-            compare(spyConfig.channel, "staging")
+            compare(spyConfig.channel, "production")
         }
 
         function test_onInitializeGleanByDebugMode() {
-            TestHelper.debugMode = false
+            MZEnv.debugMode = false
             TestHelper.triggerInitializeGlean()
             compare(spyLogPings, undefined)
 
-            TestHelper.debugMode = true
+            MZEnv.debugMode = true
             TestHelper.triggerInitializeGlean()
             compare(spyLogPings, true)
         }

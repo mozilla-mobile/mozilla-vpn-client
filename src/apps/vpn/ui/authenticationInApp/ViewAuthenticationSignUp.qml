@@ -20,7 +20,7 @@ MZInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         MZAuthInApp.reset();
     }
-    _menuButtonAccessibleName: qsTrId("vpn.main.back")
+    _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _headlineText: MZAuthInApp.emailAddress
     _subtitleText: MZI18n.InAppAuthFinishAccountCreationDescription
     _imgSource: "qrc:/nebula/resources/avatar.svg"

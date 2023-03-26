@@ -29,6 +29,7 @@ class AddonApi final : public QObject {
   Q_PROPERTY(QJSValue settings READ settings CONSTANT)
   Q_PROPERTY(QJSValue subscriptionData READ subscriptionData CONSTANT)
   Q_PROPERTY(QJSValue urlOpener READ urlOpener CONSTANT)
+  Q_PROPERTY(QJSValue vpn READ vpn CONSTANT)
 
  public:
   explicit AddonApi(Addon* addon);
@@ -40,16 +41,16 @@ class AddonApi final : public QObject {
  private:
   QJSValue addon() const;
   QJSValue controller() const;
-  const Env* env() const { return &m_env; }
+  const Env* env() const { return Env::instance(); }
   QJSValue featureList() const;
   QJSValue navigator() const;
   QJSValue settings() const;
   QJSValue subscriptionData() const;
   QJSValue urlOpener() const;
+  QJSValue vpn() const;
 
  private:
   Addon* m_addon = nullptr;
-  Env m_env;
 };
 
 class AddonApiCallbackWrapper final : public QObject {
