@@ -1,4 +1,4 @@
-personal_ws-1.1 en 188 utf-8
+personal_ws-1.1 en 190 utf-8
 APIs
 Adblock
 AdjustSdk
@@ -61,6 +61,7 @@ WiX
 WikiData
 Wintun
 WireGuard
+aarch
 accessors
 adb
 addon
