@@ -1,25 +1,8 @@
 <RCC>
     <qresource prefix="/addons_test">
-        <file>condition1.js</file>
-        <file>condition2.js</file>
-        <file>condition3.js</file>
-        <file>condition4.js</file>
-        <file>condition5.js</file>
-        <file>button1.js</file>
-        <file>button2.js</file>
-        <file>button3.js</file>
-        <file>button4.js</file>
         <file>message1.json</file>
         <file>message2.json</file>
         <file>message3.json</file>
         <file>message4.json</file>
-        <file>message5.json</file>
-        <file>api_controller.js</file>
-        <file>api_env.js</file>
-        <file>api_featurelist.js</file>
-        <file>api_navigator.js</file>
-        <file>api_settings.js</file>
-        <file>api_subscriptionData.js</file>
-        <file>api_urlopener.js</file>
     </qresource>
 </RCC>
