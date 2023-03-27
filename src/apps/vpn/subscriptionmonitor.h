@@ -8,8 +8,8 @@
 #include <QObject>
 
 /**
- * @brief this class watches a few setting properties to see if we need to
- * trigger a silent-server-switch
+ * @brief this class monitors the Controller and ConnectionHealth to check for
+ * subscription status after the controller enters the No Signal state
  */
 class SubscriptionMonitor final : public QObject {
   Q_OBJECT
@@ -22,13 +22,6 @@ class SubscriptionMonitor final : public QObject {
 
  private:
   explicit SubscriptionMonitor(QObject* parent);
-
-  void operationCompleted();
-
- private:
-  class TaskSubscriptionMonitor;
-
-  bool m_operationRunning = false;
 };
 
 #endif  // SUBSCRIPTIONMONITOR_H

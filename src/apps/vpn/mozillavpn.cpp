@@ -69,8 +69,6 @@
 #include "websocket/pushmessage.h"
 #include "websocket/websockethandler.h"
 
-// #include "subscriptionmonitor.h"
-
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
 #endif
