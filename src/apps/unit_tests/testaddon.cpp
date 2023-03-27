@@ -29,8 +29,8 @@
 #include "qmlengineholder.h"
 #include "qtglean.h"
 #include "settingsholder.h"
-#include "systemtraynotificationhandler.h"
 #include "tutorial/tutorial.h"
+#include "tutorial/tutorialstepnext.h"
 
 void TestAddon::init() {
   m_settingsHolder = new SettingsHolder();
@@ -235,7 +235,6 @@ void TestAddon::conditions() {
 
 void TestAddon::conditionWatcher_javascript() {
   Localizer l;
-  MozillaVPN vpn;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -288,12 +287,14 @@ void TestAddon::conditionWatcher_javascript() {
   }
 
   {
+    SettingsHolder::instance()->setAddonApiSetting(false);
+
     AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
         message, ":/addons_test/condition5.js");
     QVERIFY(!!a);
     QVERIFY(!a->conditionApplied());
 
-    SettingsHolder::instance()->setStartAtBoot(true);
+    SettingsHolder::instance()->setAddonApiSetting(true);
     QVERIFY(a->conditionApplied());
   }
 }
@@ -628,6 +629,20 @@ void TestAddon::tutorial_create_data() {
   QTest::addColumn<bool>("highlighted");
   QTest::addColumn<bool>("transaction");
 
+  TutorialStepNext::registerEmitter(
+      "vpn_emitter",
+      [](const QString& objectName) -> bool {
+        return objectName == "settingsHolder";
+      },
+      [](const QString& objectName) -> QObject* {
+        if (objectName == "settingsHolder") {
+          return SettingsHolder::instance();
+        }
+
+        qFatal("Invalid objectName");
+        return nullptr;
+      });
+
   QTest::addRow("object-without-id")
       << "" << QJsonObject() << false << false << false;
 
@@ -707,6 +722,7 @@ void TestAddon::tutorial_create_data() {
   QTest::addRow("with-step-with-invalid-next-5")
       << "foo" << obj << true << false << false;
 
+  nextObj.remove("query_emitter");
   nextObj["vpn_emitter"] = "a";
   step["next"] = nextObj;
   steps.replace(0, step);
@@ -846,122 +862,6 @@ void TestAddon::message_load_status() {
   SettingsHolder::instance()->setAddonSetting(
       AddonMessage::MessageStatusQuery("foo"), setting);
   QCOMPARE(AddonMessage::loadMessageStatus("foo"), status);
-}
-
-void TestAddon::message_notification_data() {
-  SettingsHolder settingsHolder;
-  Localizer l;
-
-  QObject parent;
-  SystemTrayNotificationHandler nh(&parent);
-
-  QTest::addColumn<QString>("title");
-  QTest::addColumn<QString>("message");
-  QTest::addColumn<QString>("actual_title");
-  QTest::addColumn<QString>("actual_message");
-
-  TestHelper::resetLastSystemNotification();
-  // Message is created for the first time,
-  // but user is not logged in, no  message sent
-  QTest::addRow("not-logged-in")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  // Message is created for the first time,
-  // user is not logged in and message is disabled, no  message sent
-  AddonMessage* disabledPreLoginMessage = static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message2.json"));
-  QTest::addRow("not-logged-in-disabled")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  // Mock a user login.
-  TestHelper::resetLastSystemNotification();
-  App::instance()->setUserState(App::UserAuthenticated);
-  // A login should not trigger any messages either.
-  QTest::addRow("login") << QString() << QString()
-                         << TestHelper::lastSystemNotification.title
-                         << TestHelper::lastSystemNotification.message;
-
-  // Message received pre login is enabled post login, message sent
-  TestHelper::resetLastSystemNotification();
-  // Message is later enabled
-  disabledPreLoginMessage->enable();
-  QTest::addRow("enable-post-login")
-      << QString("Test Message 2 - Title")
-      << QString("Test Message 2 - Subtitle")
-      << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is created for the first time, notification should be sent
-  AddonMessage* message = static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message3.json"));
-  QTest::addRow("do-show") << QString("Test Message 3 - Title")
-                           << QString("Test Message 3 - Subtitle")
-                           << TestHelper::lastSystemNotification.title
-                           << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is created for the second time, notification should not be sent
-  Addon::create(&parent, ":/addons_test/message3.json");
-  QTest::addRow("do-not-show")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is marked as read and we re-attempt to send a notification
-  message->markAsRead();
-  message->maybePushNotification();
-  QTest::addRow("message-is-read")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Another message is created for the first time
-  AddonMessage* anotherMessage = static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message4.json"));
-  QTest::addRow("do-show-2") << QString("Test Message 4 - Title")
-                             << QString("Test Message 4 - Subtitle")
-                             << TestHelper::lastSystemNotification.title
-                             << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is dismissed and we re-attempt to send a notification
-  anotherMessage->dismiss();
-  anotherMessage->maybePushNotification();
-  QTest::addRow("message-dismissed")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is created but due to it"s conditions it"s not enabled
-  AddonMessage* disabledMessage = static_cast<AddonMessage*>(
-      Addon::create(&parent, ":/addons_test/message5.json"));
-  QTest::addRow("message-loaded-disabled")
-      << QString() << QString() << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  TestHelper::resetLastSystemNotification();
-  // Message is later enabled
-  disabledMessage->enable();
-  QTest::addRow("message-enabled")
-      << QString("Test Message 5 - Title")
-      << QString("Test Message 5 - Subtitle")
-      << TestHelper::lastSystemNotification.title
-      << TestHelper::lastSystemNotification.message;
-
-  App::instance()->setUserState(App::UserNotAuthenticated);
-}
-
-void TestAddon::message_notification() {
-  QFETCH(QString, title);
-  QFETCH(QString, message);
-  QFETCH(QString, actual_title);
-  QFETCH(QString, actual_message);
-
-  QCOMPARE(actual_title, title);
-  QCOMPARE(actual_message, message);
 }
 
 void TestAddon::message_dismiss() {

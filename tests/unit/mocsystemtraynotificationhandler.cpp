@@ -10,7 +10,16 @@
 #include "systemtraynotificationhandler.h"
 
 SystemTrayNotificationHandler::SystemTrayNotificationHandler(QObject* parent)
-    : NotificationHandler(parent) {}
+    : NotificationHandler(parent) {
+  // We must use these private fields somehow to avoid Wunused-private-field
+  // warnings/errors.
+  m_statusLabel = nullptr;
+  m_lastLocationLabel = nullptr;
+  m_disconnectAction = nullptr;
+  m_separator = nullptr;
+  m_showHideLabel = nullptr;
+  m_quitAction = nullptr;
+}
 
 SystemTrayNotificationHandler::~SystemTrayNotificationHandler() {}
 

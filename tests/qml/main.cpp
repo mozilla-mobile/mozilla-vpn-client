@@ -2,14 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
 #include <QtQuickTest>
 
 #include "helper.h"
 
 // static
 App* App::instance() {
-  qFatal("This method should not be called");
-  return nullptr;
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
 }
 
 int main(int argc, char* argv[]) {

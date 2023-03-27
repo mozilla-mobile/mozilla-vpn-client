@@ -7,6 +7,7 @@
 #include <QQmlApplicationEngine>
 
 #include "addons/addon.h"
+#include "addons/addonapi.h"
 #include "addons/addonmessage.h"
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "feature.h"
@@ -16,33 +17,7 @@
 #include "settingsholder.h"
 #include "urlopener.h"
 
-void TestAddonApi::controller() {
-  MozillaVPN vpn;
-  SettingsHolder settingsHolder;
-  Localizer l;
-
-  QQmlApplicationEngine engine;
-  QmlEngineHolder qml(&engine);
-
-  QJsonObject content;
-  content["id"] = "foo";
-  content["blocks"] = QJsonArray();
-
-  QJsonObject obj;
-  obj["message"] = content;
-
-  QObject parent;
-  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
-  QVERIFY(!!message);
-
-  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
-      message, ":/addons_test/api_controller.js");
-  QVERIFY(!!a);
-  QVERIFY(a->conditionApplied());
-}
-
 void TestAddonApi::env() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -67,7 +42,6 @@ void TestAddonApi::env() {
 }
 
 void TestAddonApi::featurelist() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -104,7 +78,6 @@ void TestAddonApi::featurelist() {
 }
 
 void TestAddonApi::navigator() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -129,7 +102,6 @@ void TestAddonApi::navigator() {
 }
 
 void TestAddonApi::settings() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -147,43 +119,17 @@ void TestAddonApi::settings() {
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!!message);
 
-  settingsHolder.setPostAuthenticationShown(false);
-  QVERIFY(!settingsHolder.postAuthenticationShown());
+  settingsHolder.setAddonApiSetting(false);
+  QVERIFY(!settingsHolder.addonApiSetting());
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_settings.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
-  QVERIFY(settingsHolder.postAuthenticationShown());
-}
-
-void TestAddonApi::subscriptionData() {
-  MozillaVPN vpn;
-  SettingsHolder settingsHolder;
-  Localizer l;
-
-  QQmlApplicationEngine engine;
-  QmlEngineHolder qml(&engine);
-
-  QJsonObject content;
-  content["id"] = "foo";
-  content["blocks"] = QJsonArray();
-
-  QJsonObject obj;
-  obj["message"] = content;
-
-  QObject parent;
-  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
-  QVERIFY(!!message);
-
-  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
-      message, ":/addons_test/api_subscriptionData.js");
-  QVERIFY(!!a);
-  QVERIFY(a->conditionApplied());
+  QVERIFY(settingsHolder.addonApiSetting());
 }
 
 void TestAddonApi::urlopener() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -200,8 +146,6 @@ void TestAddonApi::urlopener() {
   QObject parent;
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!!message);
-
-  settingsHolder.setPostAuthenticationShown(false);
 
   UrlOpener* uo = UrlOpener::instance();
   QVERIFY(!!uo);
@@ -211,6 +155,35 @@ void TestAddonApi::urlopener() {
       message, ":/addons_test/api_urlopener.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
+}
+
+void TestAddonApi::foobar() {
+  AddonApi::setConstructorCallback(
+      [](AddonApi* addonApi) { addonApi->insert("foobar", 42); });
+
+  SettingsHolder settingsHolder;
+  Localizer l;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+
+  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/api_foobar.js");
+  QVERIFY(!!a);
+  QVERIFY(a->conditionApplied());
+
+  AddonApi::setConstructorCallback(nullptr);
 }
 
 static TestAddonApi s_testAddonApi;

@@ -70,6 +70,16 @@ void TestAddonIndex::update() {
 
   SettingsHolder settingsHolder;
 
+  settingsHolder.setFeaturesFlippedOff(QStringList{"addonSignature"});
+
+  // This is a horrible hack! The `Feature` objects are created at the startup
+  // of the test app, and they listen for signals emitted by another
+  // `SettingsHolder`. This means that the previous line does not reset the
+  // feature-state. We need to force the feature to read the settings from the
+  // current `SettingsHolder`.
+  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
+      ->maybeFlipOnOrOff();
+
   AddonDirectory ad;
   AddonIndex ai(&ad);
 

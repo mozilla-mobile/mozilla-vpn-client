@@ -35,8 +35,6 @@ class TestAddon final : public TestHelper {
 
   void message_create_data();
   void message_create();
-  void message_notification_data();
-  void message_notification();
   void message_load_status_data();
   void message_load_status();
   void message_dismiss();

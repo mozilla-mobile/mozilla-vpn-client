@@ -4,14 +4,18 @@
 
 #include "helper.h"
 
-class TestAddonApi final : public TestHelper {
+class SettingsHolder;
+
+class TestAddon final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void env();
-  void featurelist();
-  void navigator();
-  void settings();
-  void urlopener();
-  void foobar();
+  void init();
+  void cleanup();
+
+  void message_notification_data();
+  void message_notification();
+
+ private:
+  SettingsHolder* m_settingsHolder = nullptr;
 };

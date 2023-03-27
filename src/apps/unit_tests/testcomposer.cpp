@@ -46,7 +46,6 @@ void TestComposer::generic_data() {
 }
 
 void TestComposer::generic() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -123,7 +122,6 @@ void TestComposer::button_data() {
 }
 
 void TestComposer::button() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -183,7 +181,6 @@ void TestComposer::text_data() {
 }
 
 void TestComposer::text() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -238,7 +235,6 @@ void TestComposer::title_data() {
 }
 
 void TestComposer::title() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -314,7 +310,6 @@ void TestComposer::unorderedList_data() {
 }
 
 void TestComposer::unorderedList() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -397,7 +392,6 @@ void TestComposer::orderedList_data() {
 }
 
 void TestComposer::orderedList() {
-  MozillaVPN vpn;
   SettingsHolder settingsHolder;
   Localizer l;
 
