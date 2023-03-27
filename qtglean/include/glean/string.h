@@ -9,18 +9,12 @@
 
 #include "errortype.h"
 
-class StringMetric final {
-  Q_GADGET
+class StringMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(StringMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  StringMetric() = default;
-  StringMetric(const StringMetric&) = default;
-  StringMetric& operator=(const StringMetric&) = default;
-
   explicit StringMetric(int aId);
-  ~StringMetric() = default;
 
   Q_INVOKABLE void set(QString value = "") const;
 
@@ -30,7 +24,7 @@ class StringMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // STRING_H
