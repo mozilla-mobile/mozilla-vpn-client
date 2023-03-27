@@ -11,6 +11,7 @@
 
 class AddonTutorial;
 class QJsonValue;
+class QJsonObject;
 
 class TutorialStepBefore : public QObject {
   Q_OBJECT
@@ -22,6 +23,10 @@ class TutorialStepBefore : public QObject {
   virtual ~TutorialStepBefore();
 
   virtual bool run() = 0;
+
+  static void registerTutorialStepBefore(
+      const QString& name,
+      TutorialStepBefore* (*create)(AddonTutorial*, const QJsonObject&));
 
  protected:
   explicit TutorialStepBefore(AddonTutorial* parent);

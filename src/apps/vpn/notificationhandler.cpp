@@ -4,6 +4,8 @@
 
 #include "notificationhandler.h"
 
+#include "addons/addonmessage.h"
+#include "addons/manager/addonmanager.h"
 #include "app.h"
 #include "appconstants.h"
 #include "controller.h"
@@ -43,6 +45,7 @@ NotificationHandler* s_instance = nullptr;
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
   NotificationHandler* handler = createInternal(parent);
+
   handler->initialize();
   return handler;
 }
@@ -78,6 +81,9 @@ NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(AddonManager::instance(), &AddonManager::addonCreated, this,
+          &NotificationHandler::addonCreated);
 }
 
 NotificationHandler::~NotificationHandler() {
@@ -333,10 +339,37 @@ void NotificationHandler::messageClickHandle() {
   }
 
   if (!ExternalOpHandler::instance()->request(
-          ExternalOpHandler::OpNotificationClicked)) {
+          MozillaVPN::OpNotificationClicked)) {
     return;
   }
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;
+}
+
+void NotificationHandler::addonCreated(Addon* addon) {
+  if (addon->type() != "message") {
+    return;
+  }
+
+  if (addon->enabled()) {
+    maybeAddonNotification(addon);
+  }
+
+  connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
+    if (enabled) {
+      maybeAddonNotification(addon);
+    }
+  });
+}
+
+void NotificationHandler::maybeAddonNotification(Addon* addon) {
+  Q_ASSERT(addon->type() == "message");
+
+  AddonMessage* addonMessage = qobject_cast<AddonMessage*>(addon);
+  if (addonMessage->isReceived()) {
+    newInAppMessageNotification(addon->property("title").toString(),
+                                addon->property("subtitle").toString());
+    addonMessage->updateMessageStatus(AddonMessage::MessageStatus::Notified);
+  }
 }

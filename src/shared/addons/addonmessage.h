@@ -23,7 +23,7 @@ constexpr const char* ADDON_MESSAGE_DEFAULT_STATUS = "Received";
 class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
-  QML_NAMED_ELEMENT(VPNAddonMessage)
+  QML_NAMED_ELEMENT(MZAddonMessage)
   QML_UNCREATABLE("")
 
  public:
@@ -68,11 +68,15 @@ class AddonMessage final : public Addon {
 
   bool isRead() const { return m_status == MessageStatus::Read; }
 
+  bool isReceived() const { return m_status == MessageStatus::Received; }
+
   QString formattedDate() const;
 
   bool enabled() const override;
 
   Composer* composer() const { return m_composer; }
+
+  void updateMessageStatus(MessageStatus newStatus);
 
   // Explosed for testing.
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
@@ -95,12 +99,9 @@ class AddonMessage final : public Addon {
               QString(ADDON_MESSAGE_DEFAULT_STATUS)) {}
   };
   static MessageStatus loadMessageStatus(const QString& id);
-  void updateMessageStatus(MessageStatus newStatus);
 
   void planDateRetranslation();
   void setBadge(const QString& badge);
-  void enable() override;
-  void maybePushNotification();
 
  private:
   AddonProperty m_title;

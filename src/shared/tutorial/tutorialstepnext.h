@@ -22,16 +22,14 @@ class TutorialStepNext final : public QObject {
   void start();
   void stop();
 
- private:
-  // NOTE: If you add new vpn_emitter, please update the documentation.
-  enum EmitterType {
-    Controller,
-    Query,
-    SettingsHolder,
-  };
+  static void registerEmitter(
+      const QString& name, bool (*emitterValidator)(const QString& objectName),
+      QObject* (*emitter)(const QString& objectName));
 
-  TutorialStepNext(AddonTutorial* parent, EmitterType emitterType,
-                   const QString& emitter, const QString& signal);
+ private:
+  TutorialStepNext(AddonTutorial* parent, const QString& emitterName,
+                   QObject* (*emitterCallback)(const QString&),
+                   const QString& signal);
 
   void startOrStop(bool start);
 
@@ -41,8 +39,8 @@ class TutorialStepNext final : public QObject {
  private:
   AddonTutorial* m_addonTutorial = nullptr;
 
-  const EmitterType m_emitterType;
-  const QString m_emitter;
+  const QString m_emitterName;
+  QObject* (*m_emitterCallback)(const QString&);
   const QString m_signal;
 };
 

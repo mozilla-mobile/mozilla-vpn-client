@@ -6,12 +6,8 @@
 
 #include <QCoreApplication>
 
-#include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "tasks/controlleraction/taskcontrolleraction.h"
-#include "taskscheduler.h"
 
 namespace {
 ExternalOpHandler* s_instance = nullptr;
@@ -48,10 +44,8 @@ void ExternalOpHandler::unregisterBlocker(Blocker* blocker) {
   m_blockers.removeOne(blocker);
 }
 
-bool ExternalOpHandler::request(Op op) {
-  logger.debug() << "Op request received";
-
-  MozillaVPN* vpn = MozillaVPN::instance();
+bool ExternalOpHandler::request(int op) {
+  logger.debug() << "Op request received" << op;
 
   for (Blocker* blocker : m_blockers) {
     if (blocker->maybeBlockRequest(op)) {
@@ -60,30 +54,17 @@ bool ExternalOpHandler::request(Op op) {
     }
   }
 
-  switch (op) {
-    case OpAbout:
-      vpn->requestAbout();
-      break;
-    case OpActivate:
-      TaskScheduler::deleteTasks();
-      TaskScheduler::scheduleTask(
-          new TaskControllerAction(TaskControllerAction::eActivate));
-      break;
-    case OpDeactivate:
-      TaskScheduler::deleteTasks();
-      TaskScheduler::scheduleTask(
-          new TaskControllerAction(TaskControllerAction::eDeactivate));
-      break;
-    case OpQuit:
-      vpn->controller()->quit();
-      break;
-
-    // List of no-op requests:
-    case OpNotificationClicked:
-      [[fallthrough]];
-    case OpCloseEvent:
-      break;
+  Q_ASSERT(m_ops.contains(op));
+  if (!m_ops.contains(op)) {
+    logger.debug() << "Operation unknown.";
+    return false;
   }
 
+  m_ops[op]();
   return true;
+}
+
+void ExternalOpHandler::registerExternalOperation(int op, void (*callback)()) {
+  logger.debug() << "Registering" << op;
+  m_ops.insert(op, callback);
 }

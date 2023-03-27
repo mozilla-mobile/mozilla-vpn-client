@@ -14,8 +14,6 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "notificationhandler.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -229,25 +227,6 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = Survey;
   } else {
     logger.error() << "Unsupported badge type" << badge;
-  }
-}
-
-void AddonMessage::enable() {
-  Addon::enable();
-
-  maybePushNotification();
-}
-
-void AddonMessage::maybePushNotification() {
-  NotificationHandler* notificationHandler = NotificationHandler::instance();
-  if (!notificationHandler) {
-    return;
-  }
-
-  if (m_status == MessageStatus::Received) {
-    NotificationHandler::instance()->newInAppMessageNotification(
-        m_title.get(), m_subtitle.get());
-    updateMessageStatus(MessageStatus::Notified);
   }
 }
 

@@ -8,13 +8,12 @@
 #include <QDir>
 
 #include "addons/addontutorial.h"
-#include "controller.h"
+#include "app.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 
 namespace {
@@ -35,12 +34,7 @@ Tutorial::Tutorial(QObject* parent) : QObject(parent) {
   logger.debug() << "create";
   MZ_COUNT_CTOR(Tutorial);
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  connect(vpn, &MozillaVPN::stateChanged, this, &Tutorial::stop);
-
-  connect(vpn->controller(), &Controller::readyToServerUnavailable, this,
-          &Tutorial::stop);
+  connect(App::instance(), &App::stateChanged, this, &Tutorial::stop);
 }
 
 Tutorial::~Tutorial() { MZ_COUNT_DTOR(Tutorial); }
@@ -134,14 +128,11 @@ void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
   emit tooltipShownChanged();
 }
 
-bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
+bool Tutorial::maybeBlockRequest(int op) {
   logger.debug() << "External request received" << op;
   Q_ASSERT(isPlaying());
 
-  if (op != ExternalOpHandler::OpActivate &&
-      op != ExternalOpHandler::OpDeactivate &&
-      op != ExternalOpHandler::OpQuit &&
-      op != ExternalOpHandler::OpNotificationClicked) {
+  if (op == ExternalOpHandler::OpCloseEvent) {
     emit interruptRequest(op);
     return true;
   }
@@ -150,7 +141,7 @@ bool Tutorial::maybeBlockRequest(ExternalOpHandler::Op op) {
   return false;
 }
 
-void Tutorial::interruptAccepted(ExternalOpHandler::Op op) {
+void Tutorial::interruptAccepted(int op) {
   logger.debug() << "Interrupt by the user";
   stop();
   (void)ExternalOpHandler::instance()->request(op);

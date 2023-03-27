@@ -191,6 +191,8 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
     }
   });
 
+  emit addonCreated(addon);
+
   return true;
 }
 

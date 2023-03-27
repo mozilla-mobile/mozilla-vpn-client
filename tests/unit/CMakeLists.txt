@@ -327,6 +327,8 @@ target_sources(unit_tests PRIVATE
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h
+    testaddon.cpp
+    testaddon.h
     testcommandlineparser.cpp
     testcommandlineparser.h
     testdnshelper.cpp

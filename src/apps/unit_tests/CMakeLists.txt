@@ -87,8 +87,10 @@ target_sources(app_unit_tests PRIVATE
     testaddonstatebase.h
     testadjust.cpp
     testadjust.h
-    testcheckedint.h
     testcheckedint.cpp
+    testcheckedint.h
+    testcomposer.cpp
+    testcomposer.h
     testenv.cpp
     testenv.h
     testfeature.cpp

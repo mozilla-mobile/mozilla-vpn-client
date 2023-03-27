@@ -31,7 +31,7 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   Q_INVOKABLE void showWarning(Addon* tutorial);
   Q_INVOKABLE void stop();
   Q_INVOKABLE void allowItem(const QString& objectName);
-  Q_INVOKABLE void interruptAccepted(ExternalOpHandler::Op op);
+  Q_INVOKABLE void interruptAccepted(int op);
 
   bool isPlaying() const { return !!m_currentTutorial; }
 
@@ -41,14 +41,14 @@ class Tutorial final : public QObject, public ExternalOpHandler::Blocker {
   void requireTooltipShown(AddonTutorial* tutorial, bool shown);
 
   // ExternalOpHandler::Blocker
-  bool maybeBlockRequest(ExternalOpHandler::Op op) override;
+  bool maybeBlockRequest(int op) override;
 
  signals:
   void playingChanged();
   void tooltipNeeded(const QString& value, QObject* targetElement);
   void tooltipShownChanged();
   void tutorialCompleted(Addon* tutorial);
-  void interruptRequest(ExternalOpHandler::Op op);
+  void interruptRequest(int op);
   void showWarningNeeded(Addon* tutorial);
 
  private:

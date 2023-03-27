@@ -102,6 +102,8 @@ class AddonManager final : public QAbstractListModel {
   void loadCompletedChanged();
   void countChanged();
 
+  void addonCreated(Addon* addon);
+
  private:
   QMap<QString, AddonData> m_addons;
 

@@ -9,12 +9,9 @@
 #include <QMetaMethod>
 
 #include "addons/addontutorial.h"
-#include "controller.h"
 #include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
 
 namespace {
 Logger logger("TutorialStepNext");
@@ -34,6 +31,16 @@ QMetaMethod signalByName(const QMetaObject* metaObject, const QString& name) {
   return QMetaMethod();
 }
 
+struct TutorialStepNextData {
+  QString m_name;
+  bool (*m_emitterValidator)(const QString&);
+  QObject* (*m_emitter)(const QString&);
+};
+
+QList<TutorialStepNextData> s_tutorialStepNextList{TutorialStepNextData{
+    "query_emitter", [](const QString&) -> bool { return true; },
+    InspectorUtils::queryObject}};
+
 }  // namespace
 
 // static
@@ -45,11 +52,26 @@ TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  QString queryEmitter = obj["query_emitter"].toString();
-  QString vpnEmitter = obj["vpn_emitter"].toString();
-  if ((queryEmitter.isEmpty() ? 0 : 1) + (vpnEmitter.isEmpty() ? 0 : 1) != 1) {
-    logger.warning()
-        << "Only 1 query_emitter or 1 vpn_emitter. Not none, not both.";
+  QString emitterName;
+  QObject* (*emitterCallback)(const QString& objectName) = nullptr;
+
+  for (const TutorialStepNextData& data : s_tutorialStepNextList) {
+    if (obj.contains(data.m_name)) {
+      emitterName = obj[data.m_name].toString();
+      emitterCallback = data.m_emitter;
+
+      if (!data.m_emitterValidator(obj[data.m_name].toString())) {
+        logger.warning() << "The emitter" << obj[data.m_name].toString()
+                         << "is not valid";
+        return nullptr;
+      }
+
+      break;
+    }
+  }
+
+  if (!emitterCallback) {
+    logger.warning() << "No emitter defined";
     return nullptr;
   }
 
@@ -59,31 +81,17 @@ TutorialStepNext* TutorialStepNext::create(AddonTutorial* parent,
     return nullptr;
   }
 
-  EmitterType emitterType = Query;
-  if (!vpnEmitter.isEmpty()) {
-    if (vpnEmitter == "settingsHolder") {
-      emitterType = SettingsHolder;
-    } else if (vpnEmitter == "controller") {
-      emitterType = Controller;
-    } else {
-      logger.warning()
-          << "Only 'settingsHolder' and 'controller' are supported "
-             "as vpn_emitter";
-      return nullptr;
-    }
-  }
-
-  return new TutorialStepNext(parent, emitterType, queryEmitter, signal);
+  return new TutorialStepNext(parent, emitterName, emitterCallback, signal);
 }
 
 TutorialStepNext::TutorialStepNext(AddonTutorial* parent,
-                                   EmitterType emitterType,
-                                   const QString& emitter,
+                                   const QString& emitterName,
+                                   QObject* (*emitterCallback)(const QString&),
                                    const QString& signal)
     : QObject(parent),
       m_addonTutorial(parent),
-      m_emitterType(emitterType),
-      m_emitter(emitter),
+      m_emitterName(emitterName),
+      m_emitterCallback(emitterCallback),
       m_signal(signal) {
   MZ_COUNT_CTOR(TutorialStepNext);
 }
@@ -91,18 +99,7 @@ TutorialStepNext::TutorialStepNext(AddonTutorial* parent,
 TutorialStepNext::~TutorialStepNext() { MZ_COUNT_DTOR(TutorialStepNext); }
 
 void TutorialStepNext::startOrStop(bool start) {
-  QObject* obj = nullptr;
-  switch (m_emitterType) {
-    case SettingsHolder:
-      obj = ::SettingsHolder::instance();
-      break;
-    case Controller:
-      obj = MozillaVPN::instance()->controller();
-      break;
-    case Query:
-      obj = InspectorUtils::queryObject(m_emitter);
-      break;
-  }
+  QObject* obj = m_emitterCallback(m_emitterName);
 
   if (!obj) {
     logger.warning() << "Unable to find the correct object";
@@ -134,3 +131,11 @@ void TutorialStepNext::startOrStop(bool start) {
 void TutorialStepNext::start() { startOrStop(true); }
 
 void TutorialStepNext::stop() { startOrStop(false); }
+
+// static
+void TutorialStepNext::registerEmitter(
+    const QString& name, bool (*emitterValidator)(const QString& objectName),
+    QObject* (*emitter)(const QString& objectName)) {
+  s_tutorialStepNextList.append(
+      TutorialStepNextData{name, emitterValidator, emitter});
+}

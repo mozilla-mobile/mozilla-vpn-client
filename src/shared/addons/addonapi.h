@@ -6,9 +6,7 @@
 #define ADDONAPI_H
 
 #include <QJSValue>
-#include <QObject>
-
-#include "env.h"
+#include <QQmlPropertyMap>
 
 class Addon;
 
@@ -17,19 +15,9 @@ class Addon;
  * documentation in `docs/add-on-api.md`.
  */
 
-class AddonApi final : public QObject {
+class AddonApi final : public QQmlPropertyMap {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonApi)
-
-  Q_PROPERTY(QJSValue addon READ addon CONSTANT)
-  Q_PROPERTY(QJSValue controller READ controller CONSTANT)
-  Q_PROPERTY(const Env* env READ env CONSTANT)
-  Q_PROPERTY(QJSValue featureList READ featureList CONSTANT)
-  Q_PROPERTY(QJSValue navigator READ navigator CONSTANT)
-  Q_PROPERTY(QJSValue settings READ settings CONSTANT)
-  Q_PROPERTY(QJSValue subscriptionData READ subscriptionData CONSTANT)
-  Q_PROPERTY(QJSValue urlOpener READ urlOpener CONSTANT)
-  Q_PROPERTY(QJSValue vpn READ vpn CONSTANT)
 
  public:
   explicit AddonApi(Addon* addon);
@@ -38,16 +26,15 @@ class AddonApi final : public QObject {
   Q_INVOKABLE void connectSignal(QObject* obj, const QString& signalName,
                                  const QJSValue& callback);
 
+  /**
+   * @brief callback executed when a new AddonApi is created. Use it to add
+   * your custom APIs.
+   */
+  static void setConstructorCallback(
+      std::function<void(AddonApi* addonApi)>&& callback);
+
  private:
-  QJSValue addon() const;
-  QJSValue controller() const;
-  const Env* env() const { return Env::instance(); }
-  QJSValue featureList() const;
-  QJSValue navigator() const;
-  QJSValue settings() const;
-  QJSValue subscriptionData() const;
-  QJSValue urlOpener() const;
-  QJSValue vpn() const;
+  void initialize();
 
  private:
   Addon* m_addon = nullptr;

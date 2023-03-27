@@ -167,8 +167,6 @@ HEADERS += \
         apps/vpn/statusicon.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
-        apps/vpn/tasks/addon/taskaddon.h \
-        apps/vpn/tasks/addonindex/taskaddonindex.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \

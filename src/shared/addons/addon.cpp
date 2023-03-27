@@ -24,6 +24,7 @@
 #include "conditionwatchers/addonconditionwatchertimestart.h"
 #include "conditionwatchers/addonconditionwatchertranslationthreshold.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "env.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
