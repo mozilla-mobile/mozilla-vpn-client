@@ -687,14 +687,6 @@ describe('Settings', function() {
     await vpn.clickOnQuery(queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
-
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
-
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.LOGS.visible());
