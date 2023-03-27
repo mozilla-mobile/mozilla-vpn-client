@@ -22,6 +22,7 @@
 #include "localizer.h"
 #include "models/featuremodel.h"
 #include "models/licensemodel.h"
+#include "models/supportcategorymodel.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "theme.h"
@@ -82,6 +83,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
                                Utils::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSupportCategoryModel",
+                               SupportCategoryModel::instance());
 
   Theme::instance()->initialize(engine);
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme",

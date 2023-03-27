@@ -35,9 +35,6 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
   static QMap<ApiEndpoint, const char*> endpoints{
       {ApiEndpoint::Account, "/api/v1/vpn/account"},
       {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
-      {ApiEndpoint::CreateSupportTicket, "/api/v1/vpn/createSupportTicket"},
-      {ApiEndpoint::CreateSupportTicketGuest,
-       "/api/v1/vpn/createGuestSupportTicket"},
       {ApiEndpoint::Device, "/api/v1/vpn/device"},
       {ApiEndpoint::DeviceWithPublicKeyArgument, "/api/v1/vpn/device/%1"},
       {ApiEndpoint::DNSDetectPortal, "/api/v1/vpn/dns/detectportal"},

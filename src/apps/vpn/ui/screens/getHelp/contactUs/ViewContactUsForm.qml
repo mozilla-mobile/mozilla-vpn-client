@@ -25,11 +25,11 @@ MZViewBase {
            getHelpStackView.push("qrc:/nebula/components/MZLoader.qml", {
                footerLinkIsVisible: false
            });
-           VPN.createSupportTicket(email, subject, issueText, category);
+           MZUtils.createSupportTicket(email, subject, issueText, category);
        }
 
        Connections {
-           target: VPN
+           target: MZUtils
            function onTicketCreationAnswer(successful) {
                if(successful) {
                    getHelpStackView.replace("qrc:/ui/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
@@ -135,7 +135,7 @@ MZViewBase {
                 MZComboBox {
                     id: dropDown
                     placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
-                    model: VPNSupportCategoryModel
+                    model: MZSupportCategoryModel
                     Layout.fillWidth: true
                     Layout.preferredWidth: undefined
                 }

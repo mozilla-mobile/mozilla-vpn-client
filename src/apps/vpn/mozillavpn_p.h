@@ -17,7 +17,6 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/subscriptiondata.h"
-#include "models/supportcategorymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
@@ -44,7 +43,6 @@ struct MozillaVPNPrivate {
   ServerLatency m_serverLatency;
   StatusIcon m_statusIcon;
   SubscriptionData m_subscriptionData;
-  SupportCategoryModel m_supportCategoryModel;
   ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
   WebSocketHandler m_webSocketHandler;

@@ -63,10 +63,6 @@ SubscriptionData* MozillaVPN::subscriptionData() const {
   return &m_private->m_subscriptionData;
 }
 
-SupportCategoryModel* MozillaVPN::supportCategoryModel() const {
-  return &m_private->m_supportCategoryModel;
-}
-
 Telemetry* MozillaVPN::telemetry() const { return &m_private->m_telemetry; }
 
 User* MozillaVPN::user() const { return &m_private->m_user; }

@@ -74,6 +74,7 @@ SOURCES += \
         $$PWD/logoutobserver.cpp \
         $$PWD/models/featuremodel.cpp \
         $$PWD/models/licensemodel.cpp \
+        $$PWD/models/supportcategorymodel.cpp \
         $$PWD/networkmanager.cpp \
         $$PWD/networkrequest.cpp \
         $$PWD/qmlengineholder.cpp \
@@ -90,6 +91,7 @@ SOURCES += \
         $$PWD/tasks/addon/taskaddon.cpp \
         $$PWD/tasks/addonindex/taskaddonindex.cpp \
         $$PWD/tasks/authenticate/taskauthenticate.cpp \
+        $$PWD/tasks/createsupportticket/taskcreatesupportticket.cpp \
         $$PWD/tasks/deleteaccount/taskdeleteaccount.cpp \
         $$PWD/tasks/function/taskfunction.cpp \
         $$PWD/tasks/getfeaturelist/taskgetfeaturelist.cpp \
@@ -178,6 +180,7 @@ HEADERS += \
         $$PWD/logoutobserver.h \
         $$PWD/models/featuremodel.h \
         $$PWD/models/licensemodel.h \
+        $$PWD/models/supportcategorymodel.h \
         $$PWD/networkmanager.h \
         $$PWD/networkrequest.h \
         $$PWD/qmlengineholder.h \
@@ -195,6 +198,7 @@ HEADERS += \
         $$PWD/tasks/addon/taskaddon.h \
         $$PWD/tasks/addonindex/taskaddonindex.h \
         $$PWD/tasks/authenticate/taskauthenticate.h \
+        $$PWD/tasks/createsupportticket/taskcreatesupportticket.h \
         $$PWD/tasks/deleteaccount/taskdeleteaccount.h \
         $$PWD/tasks/function/taskfunction.h \
         $$PWD/tasks/getfeaturelist/taskgetfeaturelist.h \

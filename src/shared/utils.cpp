@@ -9,7 +9,9 @@
 #include "feature.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/supportcategorymodel.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "taskscheduler.h"
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
@@ -29,10 +31,9 @@ Utils* Utils::instance() {
   return &s_instance;
 }
 
-void MozillaVPN::createSupportTicket(const QString& email,
-                                     const QString& subject,
-                                     const QString& issueText,
-                                     const QString& category) {
+void Utils::createSupportTicket(const QString& email, const QString& subject,
+                                const QString& issueText,
+                                const QString& category) {
   logger.debug() << "Create support ticket";
 
   QString* buffer = new QString();
@@ -97,4 +98,5 @@ void Utils::launchPlayStore() {
   logger.debug() << "Launch Play Store";
   AndroidCommons::launchPlayStore();
 }
+
 #endif

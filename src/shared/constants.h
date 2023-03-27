@@ -12,6 +12,8 @@
 namespace Constants {
 
 enum ApiEndpoint {
+  CreateSupportTicket,
+  CreateSupportTicketGuest,
   FeatureList,
 };
 

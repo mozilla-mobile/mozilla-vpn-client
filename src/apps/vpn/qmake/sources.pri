@@ -47,7 +47,6 @@ SOURCES += \
         apps/vpn/models/servercountrymodel.cpp \
         apps/vpn/models/serverdata.cpp \
         apps/vpn/models/subscriptiondata.cpp \
-        apps/vpn/models/supportcategorymodel.cpp \
         apps/vpn/models/user.cpp \
         apps/vpn/mozillavpn.cpp \
         apps/vpn/mozillavpn_p.cpp \
@@ -138,7 +137,6 @@ HEADERS += \
         apps/vpn/models/servercountrymodel.h \
         apps/vpn/models/serverdata.h \
         apps/vpn/models/subscriptiondata.h \
-        apps/vpn/models/supportcategorymodel.h \
         apps/vpn/models/user.h \
         apps/vpn/mozillavpn.h \
         apps/vpn/mozillavpn_p.h \
@@ -168,7 +166,6 @@ HEADERS += \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
-        apps/vpn/tasks/createsupportticket/taskcreatesupportticket.h \
         apps/vpn/tasks/heartbeat/taskheartbeat.h \
         apps/vpn/tasks/ipfinder/taskipfinder.h \
         apps/vpn/tasks/products/taskproducts.h \

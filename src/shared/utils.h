@@ -7,8 +7,6 @@
 
 #include <QObject>
 
-class SupportCategoryModel;
-
 class Utils final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Utils)
@@ -32,11 +30,12 @@ class Utils final : public QObject {
   Q_INVOKABLE void launchPlayStore();
 #endif
 
-  SupportCategoryModel* supportCategoryModel() const;
-
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
+
+ signals:
+  void ticketCreationAnswer(bool successful);
 
  private:
   Utils() = default;

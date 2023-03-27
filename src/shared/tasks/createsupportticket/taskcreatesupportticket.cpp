@@ -7,12 +7,11 @@
 #include <QJsonObject>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/user.h"
 #include "networkmanager.h"
 #include "networkrequest.h"
 #include "utils.h"
@@ -54,9 +53,9 @@ void TaskCreateSupportTicket::run() {
   }
 
   request->post(
-      AppConstants::apiUrl(App::isUserAuthenticated()
-                               ? AppConstants::CreateSupportTicket
-                               : AppConstants::CreateSupportTicketGuest),
+      Constants::apiUrl(App::isUserAuthenticated()
+                            ? Constants::CreateSupportTicket
+                            : Constants::CreateSupportTicketGuest),
       QJsonObject{{"email", m_email},
                   {"logs", m_logs},
                   {"versionString", Env::versionString()},

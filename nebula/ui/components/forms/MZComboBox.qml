@@ -13,7 +13,7 @@ import components 0.1
 ComboBox {
     property string placeholderText
     property bool showInteractionStates: true
-    textRole: "name"
+    textRole: "value"
     valueRole: "value"
     id: combo
     Layout.preferredWidth: parent.width
@@ -46,7 +46,7 @@ ComboBox {
 
     contentItem: MZTextBlock {
         id: contentItem
-        text: currentIndex === -1 ? placeholderText : currentText
+        text: currentIndex === -1 ? placeholderText : MZI18n[currentText]
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignLeft
         anchors.left: parent.left
@@ -75,7 +75,7 @@ ComboBox {
 
             MZTextBlock {
                 id: textItem
-                text: name
+                text: MZI18n[value]
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: MZTheme.theme.windowMargin / 2

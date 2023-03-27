@@ -76,8 +76,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/supportcategorymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/supportcategorymodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
     ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
@@ -251,6 +249,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/models/featuremodel.h
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/shared/models/licensemodel.h
+    ${MZ_SOURCE_DIR}/shared/models/supportcategorymodel.cpp
+    ${MZ_SOURCE_DIR}/shared/models/supportcategorymodel.h
     ${MZ_SOURCE_DIR}/shared/networkmanager.cpp
     ${MZ_SOURCE_DIR}/shared/networkmanager.h
     ${MZ_SOURCE_DIR}/shared/networkrequest.cpp
@@ -283,6 +283,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.h
+    ${MZ_SOURCE_DIR}/shared/tasks/createsupportticket/taskcreatesupportticket.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/createsupportticket/taskcreatesupportticket.h
     ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
     ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp

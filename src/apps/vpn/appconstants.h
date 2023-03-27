@@ -17,8 +17,6 @@ QString apiBaseUrl();
 enum ApiEndpoint {
   Account,
   Adjust,
-  CreateSupportTicket,
-  CreateSupportTicketGuest,
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,

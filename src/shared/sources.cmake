@@ -162,6 +162,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/featuremodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/licensemodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/supportcategorymodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/models/supportcategorymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/networkrequest.cpp
@@ -195,6 +197,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/addonindex/taskaddonindex.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/taskauthenticate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/authenticate/taskauthenticate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/createsupportticket/taskcreatesupportticket.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/createsupportticket/taskcreatesupportticket.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/deleteaccount/taskdeleteaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/tasks/getfeaturelist/taskgetfeaturelist.cpp

@@ -19,6 +19,9 @@ QString s_versionOverride = "";
 
 QString Constants::apiUrl(ApiEndpoint endpoint) {
   static QMap<ApiEndpoint, const char*> endpoints{
+      {ApiEndpoint::CreateSupportTicket, "/api/v1/vpn/createSupportTicket"},
+      {ApiEndpoint::CreateSupportTicketGuest,
+       "/api/v1/vpn/createGuestSupportTicket"},
       {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"}};
 
   Q_ASSERT(endpoints.contains(endpoint));

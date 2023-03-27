@@ -115,9 +115,6 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
 
-void MozillaVPN::createSupportTicket(const QString&, const QString&,
-                                     const QString&, const QString&) {}
-
 void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshData) {}
 
 void MozillaVPN::abortAuthentication() {}

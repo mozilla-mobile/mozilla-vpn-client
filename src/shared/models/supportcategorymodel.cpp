@@ -9,41 +9,33 @@
 #include "logger.h"
 
 namespace {
+SupportCategoryModel* s_instance = nullptr;
 Logger logger("SupportCategoryModel");
 
 struct SupportCategory {
   const char* m_categoryName;
-  I18nStrings::String m_stringId;
 };
 
 static QList<SupportCategory> s_supportCategories{
-    SupportCategory{"payment",
-                    I18nStrings::InAppSupportWorkflowPaymentDropdownListItem},
-    SupportCategory{"account",
-                    I18nStrings::InAppSupportWorkflowAccountDropdownListItem},
-    SupportCategory{"technical",
-                    I18nStrings::InAppSupportWorkflowTechnicaDropdownListItem},
-    SupportCategory{
-        "feature",
-        I18nStrings::InAppSupportWorkflowFeatureRequestDropdownListItem},
-    SupportCategory{"other",
-                    I18nStrings::InAppSupportWorkflowOtherDropdownListItem},
+    SupportCategory{"InAppSupportWorkflowPaymentDropdownListItem"},
+    SupportCategory{"InAppSupportWorkflowAccountDropdownListItem"},
+    SupportCategory{"InAppSupportWorkflowTechnicaDropdownListItem"},
+    SupportCategory{"InAppSupportWorkflowFeatureRequestDropdownListItem"},
+    SupportCategory{"InAppSupportWorkflowOtherDropdownListItem"},
 };
 
 }  // namespace
 
-SupportCategoryModel::SupportCategoryModel() {
-  MZ_COUNT_CTOR(SupportCategoryModel);
-}
-
-SupportCategoryModel::~SupportCategoryModel() {
-  MZ_COUNT_DTOR(SupportCategoryModel);
+SupportCategoryModel* SupportCategoryModel::instance() {
+  if (!s_instance) {
+    s_instance = new SupportCategoryModel();
+  };
+  return s_instance;
 }
 
 QHash<int, QByteArray> SupportCategoryModel::roleNames() const {
   QHash<int, QByteArray> roles;
   roles[CategoryNameRole] = "value";
-  roles[LocalizedNameRole] = "name";
   return roles;
 }
 
@@ -59,10 +51,6 @@ QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {
   switch (role) {
     case CategoryNameRole:
       return QVariant(s_supportCategories.at(index.row()).m_categoryName);
-
-    case LocalizedNameRole:
-      return QVariant(I18nStrings::instance()->t(
-          s_supportCategories.at(index.row()).m_stringId));
 
     default:
       return QVariant();

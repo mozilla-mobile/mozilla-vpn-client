@@ -6,19 +6,22 @@
 #define SUPPORTCATEGORYMODEL_H
 
 #include <QAbstractListModel>
+#include <QObject>
 
 class SupportCategoryModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SupportCategoryModel)
 
- public:
-  SupportCategoryModel();
-  ~SupportCategoryModel();
+ private:
+  SupportCategoryModel() = default;
 
+ public:
   enum SupportCategoryRoles {
     CategoryNameRole = Qt::UserRole + 1,
-    LocalizedNameRole,
+    UnlocalizedNameRole,
   };
+
+  static SupportCategoryModel* instance();
 
   // QAbstractListModel methods
 
@@ -27,6 +30,7 @@ class SupportCategoryModel final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
+
 };
 
 #endif  // SUPPORTCATEGORYMODEL_H
