@@ -1,5 +1,5 @@
-(function(vpn, condition) {
-if (!('navigator' in vpn)) {
+(function(api, condition) {
+if (!('navigator' in api)) {
   return;
 }
 

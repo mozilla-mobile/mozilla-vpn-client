@@ -12,7 +12,7 @@ class Addon;
 class Composer final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Composer)
-  QML_NAMED_ELEMENT(VPNComposer)
+  QML_NAMED_ELEMENT(MZComposer)
   QML_UNCREATABLE("")
 
   Q_PROPERTY(QList<ComposerBlock*> blocks READ blocks NOTIFY blocksChanged)

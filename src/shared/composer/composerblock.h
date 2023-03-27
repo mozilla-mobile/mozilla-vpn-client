@@ -14,7 +14,7 @@ class QJsonObject;
 class ComposerBlock : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ComposerBlock)
-  QML_NAMED_ELEMENT(VPNComposerBlock)
+  QML_NAMED_ELEMENT(MZComposerBlock)
   QML_UNCREATABLE("")
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)

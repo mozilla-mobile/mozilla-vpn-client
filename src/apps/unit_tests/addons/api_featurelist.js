@@ -1,19 +1,19 @@
-(function(vpn, condition) {
-if (!('featureList' in vpn)) {
+(function(api, condition) {
+if (!('featureList' in api)) {
   return;
 }
 
-if (!vpn.featureList.get('testFeatureAddonApi')) {
+if (!api.featureList.get('testFeatureAddonApi')) {
   return;
 }
 
-if (vpn.featureList.get('testFeatureAddonApi').isSupported) {
+if (api.featureList.get('testFeatureAddonApi').isSupported) {
   return;
 }
 
-vpn.featureList.toggle('testFeatureAddonApi');
+api.featureList.toggle('testFeatureAddonApi');
 
-if (!vpn.featureList.get('testFeatureAddonApi').isSupported) {
+if (!api.featureList.get('testFeatureAddonApi').isSupported) {
   return;
 }
 

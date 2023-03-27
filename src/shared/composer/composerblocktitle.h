@@ -11,7 +11,7 @@
 class ComposerBlockTitle final : public ComposerBlock {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ComposerBlockTitle)
-  QML_NAMED_ELEMENT(VPNComposerBlockTitle)
+  QML_NAMED_ELEMENT(MZComposerBlockTitle)
   QML_UNCREATABLE("")
 
  public:

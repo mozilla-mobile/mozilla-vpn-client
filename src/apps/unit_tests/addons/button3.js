@@ -1,3 +1,3 @@
-(function(vpn) {
-console.log('CALLED!', vpn);
+(function(api) {
+console.log('CALLED!', api);
 })

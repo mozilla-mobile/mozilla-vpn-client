@@ -1,3 +1,4 @@
-(function(vpn, condition) {
-vpn.connectSignal(vpn.settings, 'startAtBootChanged', () => condition.enable());
+(function(api, condition) {
+api.connectSignal(
+    api.settings, 'addonApiSettingChanged', () => condition.enable());
 })

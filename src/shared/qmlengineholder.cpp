@@ -8,6 +8,7 @@
 #include <QQmlApplicationEngine>
 #include <QWindow>
 
+#include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -24,6 +25,7 @@
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 #include "theme.h"
+#include "tutorial/tutorial.h"
 #include "urlopener.h"
 #include "utils.h"
 
@@ -46,6 +48,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                __DONOTUSE__GleanPings::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "Glean",
                                __DONOTUSE__GleanMetrics::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAddonManager",
+                               AddonManager::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",
                                AuthenticationInApp::instance());
 #ifdef SENTRY_ENABLED
@@ -72,6 +76,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                NavigationBarModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTutorial",
+                               Tutorial::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",

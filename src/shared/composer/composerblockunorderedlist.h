@@ -11,7 +11,7 @@
 class ComposerBlockUnorderedList : public ComposerBlock {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ComposerBlockUnorderedList)
-  QML_NAMED_ELEMENT(VPNComposerBlockUnorderedList)
+  QML_NAMED_ELEMENT(MZComposerBlockUnorderedList)
   QML_UNCREATABLE("")
 
  public:

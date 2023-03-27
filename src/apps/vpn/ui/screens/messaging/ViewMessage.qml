@@ -7,9 +7,8 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
+import Mozilla.Shared.qmlcomponents 1.0
 import components 0.1
-import Mozilla.VPN.qmlcomponents 1.0
 
 MZViewBase {
     id: vpnFlickable
@@ -85,21 +84,21 @@ MZViewBase {
 
             Loader {
                 Layout.preferredWidth: item.width
-                active: message.badge !== VPNAddonMessage.None
+                active: message.badge !== MZAddonMessage.None
                 sourceComponent: MZBadge {
 
                     badgeLabel.width: Math.min(badgeLabel.implicitWidth, badgeAndTimestampRow.width - dateLabel.width - badgeAndTimestampRow.spacing)
                     badgeType: {
                         switch(message.badge) {
-                        case VPNAddonMessage.Warning:
+                        case MZAddonMessage.Warning:
                             return badgeInfo.warningBadge
-                        case VPNAddonMessage.Critical:
+                        case MZAddonMessage.Critical:
                             return badgeInfo.criticalBadge
-                        case VPNAddonMessage.NewUpdate:
+                        case MZAddonMessage.NewUpdate:
                             return badgeInfo.newUpdateBadge
-                        case VPNAddonMessage.WhatsNew:
+                        case MZAddonMessage.WhatsNew:
                             return badgeInfo.whatsNewBadge
-                        case VPNAddonMessage.Survey:
+                        case MZAddonMessage.Survey:
                             return badgeInfo.surveyBadge
                         }
                     }

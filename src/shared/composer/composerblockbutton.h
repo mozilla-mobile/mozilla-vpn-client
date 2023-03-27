@@ -15,7 +15,7 @@ class Addon;
 class ComposerBlockButton final : public ComposerBlock {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(ComposerBlockButton)
-  QML_NAMED_ELEMENT(VPNComposerBlockButton)
+  QML_NAMED_ELEMENT(MZComposerBlockButton)
   QML_UNCREATABLE("")
 
  public:

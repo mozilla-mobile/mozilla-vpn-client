@@ -1,15 +1,15 @@
-(function(vpn, condition) {
-if (!('urlOpener' in vpn)) {
+(function(api, condition) {
+if (!('urlOpener' in api)) {
   return;
 }
 
-vpn.urlOpener.openUrl('https://example.com');
-if (vpn.urlOpener.lastUrl !== 'https://example.com') {
+api.urlOpener.openUrl('https://example.com');
+if (api.urlOpener.lastUrl !== 'https://example.com') {
   return;
 }
 
-vpn.urlOpener.openUrlLabel('aa');
-if (vpn.urlOpener.lastUrl !== 'http://foo.bar') {
+api.urlOpener.openUrlLabel('aa');
+if (api.urlOpener.lastUrl !== 'http://foo.bar') {
   return;
 }
 

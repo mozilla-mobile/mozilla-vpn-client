@@ -1,15 +1,15 @@
-(function(vpn, condition) {
-if (!('settings' in vpn)) {
+(function(api, condition) {
+if (!('settings' in api)) {
   return;
 }
 
-if (vpn.settings.postAuthenticationShown) {
+if (api.settings.addonApiSetting) {
   return;
 }
 
-vpn.settings.postAuthenticationShown = true;
+api.settings.addonApiSetting = true;
 
-if (!vpn.settings.postAuthenticationShown) {
+if (!api.settings.addonApiSetting) {
   return;
 }
 
