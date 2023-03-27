@@ -9,6 +9,7 @@
 #include <QMetaObject>
 
 #include "appconstants.h"
+#include "connectionhealth.h"
 #include "controller.h"
 #include "dnshelper.h"
 #include "leakdetector.h"
@@ -24,23 +25,23 @@ namespace {
 Logger logger("SubscriptionMonitor");
 }
 
-/**
-     * Finally, any singleton should define some business logic, which can be
-     * executed on its instance.
-     * link: https://refactoring.guru/design-patterns/singleton/cpp/example#example-1
-*/
-
 SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(SubscriptionMonitor);
 
 /**
  * Here we need to setup 2 connections:
- * connection health: to monitor no signal state)
+ * connection health: to monitor no signal state
  * controller: to monitor if/when user turns their VPN off 
  *             so we can ping guardian and then show the sub expired page.
  */
- 
 
+  connect(MozillaVPN::instance()->connectionHealth(), &ConnectionHealth::stabilityChanged, this, [this] () {
+    if (MozillaVPN::instance()->connectionHealth()->stability() == ConnectionHealth::NoSignal)
+    {
+      logger.debug() << "VPN connection stability is NoSignal";
+    }
+  });
+ 
   connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
           [this]() {
             Controller::State state =
@@ -51,15 +52,17 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
             // schedule a new TaskControllerAction if needed.
             if (state == Controller::StateOff) {
               logger.debug() << "User has toggled the VPN off";
-              m_operationRunning = false;
+              m_operationRunning = false; //not sure we need this
 
-              // Check the subscription status
-              // MozillaVPN::instance()->controller()->setState(Controller::StateCheckSubscription);
+              // Check the subscription status. setStatus() ia private 
+              // so I think instead of setting controller status, we can just go ahead and send in the network request directly
+              // MozillaVPN::instance()->controller()->setState(Controller::StateCheckSubscription); // Can't do this here
               TaskFunction* task = new TaskFunction([]() {});
               NetworkRequest* request = new NetworkRequest(task, 200);
               request->auth(MozillaVPN::authorizationHeader());
               request->get(AppConstants::apiUrl(AppConstants::Account));
 
+              // TODO: We most likely need to listen for request failures
               // connect(request, &NetworkRequest::requestFailed, this,
               //         [this](QNetworkReply::NetworkError error, const QByteArray&) {
               //           logger.error() << "Account request failed" << error;
