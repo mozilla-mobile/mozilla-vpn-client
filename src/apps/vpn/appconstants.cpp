@@ -45,7 +45,6 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
       {ApiEndpoint::Heartbeat, "/__heartbeat__"},
       {ApiEndpoint::IPInfo, "/api/v1/vpn/ipinfo"},
       {ApiEndpoint::LoginVerify, "/api/v2/vpn/login/verify"},
-      {ApiEndpoint::Products, "/api/v3/vpn/products"},
 #ifdef MZ_ANDROID
       {ApiEndpoint::PurchasesAndroid, "/api/v1/vpn/purchases/android"},
 #endif

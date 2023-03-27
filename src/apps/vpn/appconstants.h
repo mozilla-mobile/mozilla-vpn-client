@@ -74,6 +74,9 @@ constexpr const char* DEEP_LINK_SCHEME = "mozilla-vpn";
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
 
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "guardian-vpn";
+
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
 

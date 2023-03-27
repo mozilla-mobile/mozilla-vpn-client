@@ -29,6 +29,9 @@ constexpr const char* DEEP_LINK_SCHEME = "foo-bar";
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "foobar";
 
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "foobar";
+
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
 constexpr const char* CRYPTO_SETTINGS_SERVICE = "App FooBar";
