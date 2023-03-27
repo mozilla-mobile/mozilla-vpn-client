@@ -27,7 +27,7 @@ set_target_properties(loginitem PROPERTIES
     XCODE_GENERATE_SCHEME TRUE
 )
 
-target_compile_options(loginitem PRIVATE -DAPP_ID="$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>")
+target_compile_options(loginitem PRIVATE -DAPP_ID="$<TARGET_PROPERTY:${MAIN_TARGET},MACOSX_BUNDLE_GUI_IDENTIFIER>")
 target_sources(loginitem PRIVATE main.m)
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)

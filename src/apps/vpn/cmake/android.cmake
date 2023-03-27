@@ -2,24 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-add_dependencies(mozillavpn ndk_openssl_merged)
+add_dependencies(${MAIN_TARGET} ndk_openssl_merged)
 
 get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
 get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
 
-set_property(TARGET mozillavpn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+set_property(TARGET ${MAIN_TARGET} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../android/
 )
 
-target_link_libraries(mozillavpn PRIVATE
+target_link_libraries(${MAIN_TARGET} PRIVATE
     Qt6::Test
     Qt6::Xml)
 
 target_link_libraries(
-    mozillavpn PRIVATE
+    ${MAIN_TARGET} PRIVATE
     -ljnigraphics)
 
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/android/androidcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/android/androidiaphandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/android/androidnetworkwatcher.cpp
@@ -42,13 +42,13 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxpingsender.h
 )
 
-target_include_directories(mozillavpn PUBLIC ${ssl_module}/include)
+target_include_directories(${MAIN_TARGET} PUBLIC ${ssl_module}/include)
 
 get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
-set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
+set_property(TARGET ${MAIN_TARGET} PROPERTY QT_ANDROID_EXTRA_LIBS
     ${openssl_libs}/libcrypto_1_1.so
     ${openssl_libs}/libssl_1_1.so)
 
-target_link_directories(mozillavpn PUBLIC ${openssl_libs})
-target_link_libraries(mozillavpn PRIVATE libcrypto.so)
-target_link_libraries(mozillavpn PRIVATE libssl.so)
+target_link_directories(${MAIN_TARGET} PUBLIC ${openssl_libs})
+target_link_libraries(${MAIN_TARGET} PRIVATE libcrypto.so)
+target_link_libraries(${MAIN_TARGET} PRIVATE libssl.so)

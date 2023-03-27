@@ -134,7 +134,7 @@ else()
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     )
-    add_dependencies(mozillavpn qtglean_telemetry)
+    add_dependencies(${MAIN_TARGET} qtglean_telemetry)
 endif()
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)

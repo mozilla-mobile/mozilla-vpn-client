@@ -60,6 +60,17 @@ export PYTHONIOENCODING="UTF-8"
 # Install cmake
 brew install cmake
 
+# In previous iterations "Mozilla VPN" didn't use to have a space in it,
+# to avoid the pains of migrations we will just rename here. 
+# This is harmless, but still very hacky.
+WORKSPACE_ROOT="$( cd "$(dirname "$0")/.." ; pwd -P )"
+sed -i.bak -E \
+    -e "s/Mozilla VPN/MozillaVPN/" \
+    "${WORKSPACE_ROOT}/CMakeLists.txt"
+sed -i.bak -E \
+    -e "s/MAIN_TARGET mozillavpn/MAIN_TARGET MozillaVPN/" \
+    "${WORKSPACE_ROOT}/CMakeLists.txt"
+
 $QT_IOS_BIN/qt-cmake -S . -GXcode \
   -DQT_HOST_PATH="/Volumes/workspace/repository/qt_ios/$QTVERSION/macos" \
   -DCMAKE_PREFIX_PATH="/Volumes/workspace/repository/qt_ios/cmake" \

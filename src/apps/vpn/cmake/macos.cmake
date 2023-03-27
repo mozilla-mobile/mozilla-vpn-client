@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-set_target_properties(mozillavpn PROPERTIES OUTPUT_NAME "Mozilla VPN")
+set_target_properties(${MAIN_TARGET} PROPERTIES OUTPUT_NAME "Mozilla VPN")
 
 # Configure the application bundle Info.plist
-set_target_properties(mozillavpn PROPERTIES
+set_target_properties(${MAIN_TARGET} PROPERTIES
     MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/macos/app/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "Mozilla VPN"
@@ -28,15 +28,15 @@ find_library(FW_COREWLAN CoreWLAN)
 find_library(FW_NETWORK Network)
 find_library(FW_USER_NOTIFICATIONS UserNotifications)
 
-target_link_libraries(mozillavpn PRIVATE ${FW_SYSTEMCONFIG})
-target_link_libraries(mozillavpn PRIVATE ${FW_SERVICEMGMT})
-target_link_libraries(mozillavpn PRIVATE ${FW_SECURITY})
-target_link_libraries(mozillavpn PRIVATE ${FW_COREWLAN})
-target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
-target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_SYSTEMCONFIG})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_SERVICEMGMT})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_SECURITY})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_COREWLAN})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_NETWORK})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_USER_NOTIFICATIONS})
 
 # MacOS platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
@@ -84,11 +84,11 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 # Enable Balrog for update support.
-target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
+target_compile_definitions(${MAIN_TARGET} PRIVATE MVPN_BALROG)
 add_go_library(balrog-api ../balrog/balrog-api.go
     CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
-target_link_libraries(mozillavpn PRIVATE balrog-api)
-target_sources(mozillavpn PRIVATE
+target_link_libraries(${MAIN_TARGET} PRIVATE balrog-api)
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
@@ -141,15 +141,15 @@ else()
                     -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     )
 endif()
-add_dependencies(mozillavpn build_wireguard_go)
-osx_bundle_files(mozillavpn
+add_dependencies(${MAIN_TARGET} build_wireguard_go)
+osx_bundle_files(${MAIN_TARGET}
     FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     DESTINATION Resources/utils
 )
 
 # Install the native messaging extensions into the bundle.
-add_dependencies(mozillavpn mozillavpnnp)
-osx_bundle_files(mozillavpn FILES
+add_dependencies(${MAIN_TARGET} mozillavpnnp)
+osx_bundle_files(${MAIN_TARGET} FILES
     $<TARGET_FILE:mozillavpnnp>
     ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
     DESTINATION Resources/utils
@@ -171,7 +171,7 @@ foreach(LOCALE ${I18N_LOCALES})
         continue()
     endif()
     
-    add_custom_command(TARGET mozillavpn POST_BUILD
+    add_custom_command(TARGET ${MAIN_TARGET} POST_BUILD
         COMMENT "Bundling locale ${LOCALE}"
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
         COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k LOCALE=${LOCALE} 
@@ -181,15 +181,15 @@ foreach(LOCALE ${I18N_LOCALES})
 endforeach()
 
 ## Install the LoginItems into the bundle.
-add_dependencies(mozillavpn loginitem)
-add_custom_command(TARGET mozillavpn POST_BUILD
+add_dependencies(${MAIN_TARGET} loginitem)
+add_custom_command(TARGET ${MAIN_TARGET} POST_BUILD
     COMMENT "Bundling LoginItems"
     COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:loginitem>
         $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
 )
 
 ## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
+osx_bundle_assetcatalog(${MAIN_TARGET} CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
 
 # Perform codesigning.
-osx_codesign_target(mozillavpn FORCE)
+osx_codesign_target(${MAIN_TARGET} FORCE)

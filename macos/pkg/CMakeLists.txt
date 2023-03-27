@@ -47,12 +47,12 @@ endforeach()
 ## Stage 1: Create the staging directory, and populate it with the app.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
-    DEPENDS mozillavpn
+    DEPENDS ${MAIN_TARGET}
     COMMAND ${CMAKE_COMMAND} -E remove_directory -f ${CMAKE_CURRENT_BINARY_DIR}/staging
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/staging
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:mozillavpn>
-       ${CMAKE_CURRENT_BINARY_DIR}/staging/Applications/$<TARGET_PROPERTY:mozillavpn,OUTPUT_NAME>.app/
-    COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>" --version "2.0"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:${MAIN_TARGET}>
+       ${CMAKE_CURRENT_BINARY_DIR}/staging/Applications/$<TARGET_PROPERTY:${MAIN_TARGET},OUTPUT_NAME>.app/
+    COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:${MAIN_TARGET},MACOSX_BUNDLE_GUI_IDENTIFIER>" --version "2.0"
         --scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts --root ${CMAKE_CURRENT_BINARY_DIR}/staging
         ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
 )

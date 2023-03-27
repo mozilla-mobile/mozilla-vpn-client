@@ -112,7 +112,7 @@ set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     PROPERTIES GENERATED TRUE
 )
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.swift
     ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.mm
@@ -120,4 +120,4 @@ target_sources(mozillavpn PRIVATE
 )
 
 target_link_libraries(iosglean PRIVATE qtglean)
-target_link_libraries(mozillavpn PRIVATE iosglean)
+target_link_libraries(${MAIN_TARGET} PRIVATE iosglean)

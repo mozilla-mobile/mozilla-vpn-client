@@ -5,13 +5,13 @@
 # For CMake versions prior to 3.19, we may need to perform manual
 # finalization in order to pick up QML dependencies when built
 # statically.
-qt_add_executable(mozillavpn MANUAL_FINALIZATION)
+qt_add_executable(${MAIN_TARGET} MANUAL_FINALIZATION)
 
 if(NOT MSVC AND NOT IOS)
-  target_compile_options(mozillavpn PRIVATE -Wall -Werror -Wno-conversion)
+  target_compile_options(${MAIN_TARGET} PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
-target_link_libraries(mozillavpn PRIVATE
+target_link_libraries(${MAIN_TARGET} PRIVATE
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
@@ -21,7 +21,7 @@ target_link_libraries(mozillavpn PRIVATE
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
    AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
-    target_link_libraries(mozillavpn PRIVATE
+    target_link_libraries(${MAIN_TARGET} PRIVATE
         Qt6::NetworkAuth
     )
 endif()
@@ -43,9 +43,9 @@ endif()
 include(shared/sources.cmake)
 include(apps/vpn/cmake/sources.cmake)
 
-target_link_libraries(mozillavpn PRIVATE
+target_link_libraries(${MAIN_TARGET} PRIVATE
     shared-sources
-    mozillavpn-sources
+    ${MAIN_TARGET}-sources
     glean
     lottie
     nebula
@@ -53,20 +53,20 @@ target_link_libraries(mozillavpn PRIVATE
     qtglean
 )
 
-target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
+target_link_libraries(${MAIN_TARGET} PUBLIC ${CMAKE_DL_LIBS})
 
-target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
-target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+target_compile_definitions(${MAIN_TARGET} PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
+target_compile_definitions(${MAIN_TARGET} PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(apps/vpn/cmake/${MZ_PLATFORM_NAME}.cmake)
 
 
 if(NOT CMAKE_CROSSCOMPILING)
-    target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
+    target_compile_definitions(${MAIN_TARGET} PUBLIC MVPN_WEBEXTENSION)
 endif()
 
-qt6_add_qml_module(mozillavpn
+qt6_add_qml_module(${MAIN_TARGET}
   URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
 
-qt_finalize_target(mozillavpn)
+qt_finalize_target(${MAIN_TARGET})
