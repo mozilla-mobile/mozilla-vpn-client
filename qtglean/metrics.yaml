@@ -54,3 +54,21 @@ settings:
     notification_emails:
       - mcleinman@mozilla.com
     expires: never
+
+session:
+  apps_excluded:
+    type: quantity
+    unit: apps
+    description: |
+      The number of apps the user is excluding from the VPN tunnel
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4066
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    send_in_pings:
+      - vpnsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
