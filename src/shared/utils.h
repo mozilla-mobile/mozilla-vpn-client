@@ -7,6 +7,8 @@
 
 #include <QObject>
 
+class SupportCategoryModel;
+
 class Utils final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Utils)
@@ -14,6 +16,11 @@ class Utils final : public QObject {
  public:
   static Utils* instance();
   ~Utils() = default;
+
+  Q_INVOKABLE void createSupportTicket(const QString& email,
+                                       const QString& subject,
+                                       const QString& issueText,
+                                       const QString& category);
 
   Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
 
@@ -24,6 +31,12 @@ class Utils final : public QObject {
 #ifdef MZ_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
+
+  SupportCategoryModel* supportCategoryModel() const;
+
+  void createTicketAnswerRecieved(bool successful) {
+    emit ticketCreationAnswer(successful);
+  }
 
  private:
   Utils() = default;

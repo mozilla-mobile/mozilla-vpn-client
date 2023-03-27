@@ -48,7 +48,6 @@
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
-#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/getfeaturelist/taskgetfeaturelist.h"
@@ -700,37 +699,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // background and work aync.
     m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
   }
-}
-
-void MozillaVPN::createSupportTicket(const QString& email,
-                                     const QString& subject,
-                                     const QString& issueText,
-                                     const QString& category) {
-  logger.debug() << "Create support ticket";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, email, subject, issueText, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskCreateSupportTicket so we can delete
-        // it afterwards
-        Task* task = new TaskCreateSupportTicket(email, subject, issueText,
-                                                 *buffer, category);
-        delete buffer;
-        delete out;
-
-        // Support tickets can be created at anytime. Even during "critical"
-        // operations such as authentication, account deletion, etc. Those
-        // operations are often running in tasks, which would block the
-        // scheduling of this new support ticket task execution if we used
-        // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
-        // immediately and let's hope it does not fail.
-        TaskScheduler::scheduleTaskNow(task);
-      });
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {

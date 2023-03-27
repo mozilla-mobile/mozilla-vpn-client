@@ -9,6 +9,7 @@
 #include "feature.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
@@ -26,6 +27,37 @@ Logger logger("Utils");
 Utils* Utils::instance() {
   static Utils s_instance;
   return &s_instance;
+}
+
+void MozillaVPN::createSupportTicket(const QString& email,
+                                     const QString& subject,
+                                     const QString& issueText,
+                                     const QString& category) {
+  logger.debug() << "Create support ticket";
+
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+
+  LogHandler::instance()->serializeLogs(
+      out, [out, buffer, email, subject, issueText, category] {
+        Q_ASSERT(out);
+        Q_ASSERT(buffer);
+
+        // buffer is getting copied by TaskCreateSupportTicket so we can delete
+        // it afterwards
+        Task* task = new TaskCreateSupportTicket(email, subject, issueText,
+                                                 *buffer, category);
+        delete buffer;
+        delete out;
+
+        // Support tickets can be created at anytime. Even during "critical"
+        // operations such as authentication, account deletion, etc. Those
+        // operations are often running in tasks, which would block the
+        // scheduling of this new support ticket task execution if we used
+        // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
+        // immediately and let's hope it does not fail.
+        TaskScheduler::scheduleTaskNow(task);
+      });
 }
 
 void Utils::exitForUnrecoverableError(const QString& reason) {
