@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-set -e
+set -xe
 
 
 . $(dirname $0)/../../../scripts/utils/commons.sh
@@ -18,11 +18,11 @@ export LANG=en_US.utf-8
 print Y "Installing rust..."
 curl https://sh.rustup.rs -sSf | sh -s -- -y || die
 export PATH="$HOME/.cargo/bin:$PATH"
-rustup target add x86_64-apple-ios aarch64-apple-ios
+rustup target add aarch64-apple-ios
 
 print Y "Installing go..."
-curl -O https://dl.google.com/go/go1.17.6.darwin-amd64.tar.gz
-tar -xzf go1.17.6.darwin-amd64.tar.gz
+curl -O https://dl.google.com/go/go1.18.10.darwin-amd64.tar.gz
+tar -xzf go1.18.10.darwin-amd64.tar.gz
 export PATH="`pwd`/go/bin:$PATH"
 
 print Y "Installing python dependencies..."
@@ -36,16 +36,17 @@ QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
 echo "Using QT:$QTVERSION"
 
 print Y "Installing Homebrew..."
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# We have to install it locally like this because of Taskcluster permission policies.
+mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+export PATH=$PATH:$(pwd)/homebrew/bin
 
 print Y "Installing cmake..."
 brew install cmake
 
+export PATH=$PATH:$GOROOT/bin
+
 print Y "Get the submodules..."
 git submodule update --init --depth 1 || die "Failed to init submodules"
-# Technically we do not need the following line because we later call the
-# apple compile script which calls import languages. However when we move to cmake
-# for iOS we can remove the call to import languages and this step will be necessary
 for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
 done
@@ -62,13 +63,17 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
-# NOTE: In case we want to release this, we need to get that token, see android-release.sh
-# ./scripts/macos/apple_compile.sh ios -q ../../fetches/qt_ios/$QTVERSION/macos/bin -a ReallyNotAnAPIToken || die
 print Y "Building xcodeproj..."
-../../fetches/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja
+$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B $MOZ_FETCHES_DIR/build -GXcode \
+  -DQT_HOST_PATH="$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/macos" \
+  -DCMAKE_PREFIX_PATH=$MOZ_FETCHES_DIR/qt_ios/lib/cmake \
+  -DCMAKE_OSX_ARCHITECTURES="arm64" \
+  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
+  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
+  -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
 
 print Y "Compiling..."
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -project ${MOZ_FETCHES_DIR}/build/Mozilla\ VPN.xcodeproj || die
+cmake --build build -j$(nproc) || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
