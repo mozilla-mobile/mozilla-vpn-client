@@ -73,6 +73,4 @@ SupportCategoryModel* MozillaVPN::supportCategoryModel() const {
 
 Telemetry* MozillaVPN::telemetry() const { return &m_private->m_telemetry; }
 
-Theme* MozillaVPN::theme() const { return &m_private->m_theme; }
-
 User* MozillaVPN::user() const { return &m_private->m_user; }

@@ -13,6 +13,8 @@ void TestIpAddressLookup::checkIpAddressFailure() {
   SettingsHolder settingsHolder;
   SimpleNetworkManager snm;
 
+  settingsHolder.setToken("TOKEN!");
+
   IpAddressLookup ial;
   ial.reset();
 
@@ -51,6 +53,8 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
 void TestIpAddressLookup::checkIpAddressSucceess() {
   SettingsHolder settingsHolder;
   SimpleNetworkManager snm;
+
+  settingsHolder.setToken("TOKEN!");
 
   IpAddressLookup ial;
   ial.reset();

@@ -95,7 +95,7 @@ MZFlickable {
                 if(vpnFlickable.state === "post-activation"){
                     VPNCaptivePortal.deactivationRequired();
                 }
-                VPNNavigator.requestScreen(VPNNavigator.ScreenHome);
+                MZNavigator.requestScreen(VPN.ScreenHome);
             }
 
             Layout.fillWidth: true

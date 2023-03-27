@@ -22,8 +22,6 @@ class AndroidUtils final : public QObject {
  public:
   static QString GetDeviceName();
 
-  static QString GetManufacturer();
-
   static QByteArray DeviceId();
 
   static AndroidUtils* instance();

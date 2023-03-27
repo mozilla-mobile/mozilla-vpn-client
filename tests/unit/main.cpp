@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+
 #include "appconstants.h"
 #include "glean/mzglean.h"
 #include "helper.h"
@@ -12,9 +14,7 @@
 #include "settingsholder.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
-MozillaVPN::State TestHelper::vpnState = MozillaVPN::StateInitialize;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
-MozillaVPN::UserState TestHelper::userState = MozillaVPN::UserNotAuthenticated;
 QVector<QObject*> TestHelper::testList;
 TestHelper::SystemNotification TestHelper::lastSystemNotification;
 
@@ -30,6 +30,17 @@ QObject* TestHelper::findTest(const QString& name) {
 }
 
 TestHelper::TestHelper() { testList.append(this); }
+
+// static
+App* App::instance() {
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
+}
 
 // static
 bool TestHelper::networkRequestGeneric(NetworkRequest* request) {

@@ -6,8 +6,7 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
-import Mozilla.VPN.qmlcomponents 1.0
+import Mozilla.Shared.qmlcomponents 1.0
 import components 0.1
 
 ColumnLayout {
@@ -41,28 +40,28 @@ ColumnLayout {
             Component.onCompleted: {
                 //Avoids binding loops
                 var margin = getTopMargin()
-                if (modelData instanceof VPNComposerBlockButton) repeater.isFirstButton = false
+                if (modelData instanceof MZComposerBlockButton) repeater.isFirstButton = false
                 Layout.topMargin = margin
             }
 
 
             function getSourceComponent() {
-                if (modelData instanceof VPNComposerBlockTitle) return titleBlock
-                if (modelData instanceof VPNComposerBlockText) return textBlock
-                if (modelData instanceof VPNComposerBlockOrderedList ||
-                    modelData instanceof VPNComposerBlockUnorderedList) return listBlock
-                if (modelData instanceof VPNComposerBlockButton)
-                    return composerBlock.style === VPNComposerBlockButton.Link ? linkButtonBlock : buttonBlock
+                if (modelData instanceof MZComposerBlockTitle) return titleBlock
+                if (modelData instanceof MZComposerBlockText) return textBlock
+                if (modelData instanceof MZComposerBlockOrderedList ||
+                    modelData instanceof MZComposerBlockUnorderedList) return listBlock
+                if (modelData instanceof MZComposerBlockButton)
+                    return composerBlock.style === MZComposerBlockButton.Link ? linkButtonBlock : buttonBlock
 
                 console.error("Unable to create view for composer block of type: " + modelData)
             }
 
             function getTopMargin() {
-                if (modelData instanceof VPNComposerBlockTitle) {
+                if (modelData instanceof MZComposerBlockTitle) {
                     return MZTheme.theme.vSpacingSmall
                 }
 
-                if (modelData instanceof VPNComposerBlockText) {
+                if (modelData instanceof MZComposerBlockText) {
                     switch(composer.view) {
                     case MZComposerView.View.Guide:
                         return MZTheme.theme.listSpacing * 0.5
@@ -72,8 +71,8 @@ ColumnLayout {
                     }
                 }
 
-                if (modelData instanceof VPNComposerBlockOrderedList ||
-                        modelData instanceof VPNComposerBlockUnorderedList) {
+                if (modelData instanceof MZComposerBlockOrderedList ||
+                        modelData instanceof MZComposerBlockUnorderedList) {
                     switch(composer.view) {
                     case MZComposerView.View.Guide:
                         return MZTheme.theme.listSpacing * 0.5
@@ -83,7 +82,7 @@ ColumnLayout {
                     }
                 }
 
-                if (modelData instanceof VPNComposerBlockButton) {
+                if (modelData instanceof MZComposerBlockButton) {
                     if(repeater.isFirstButton) {
                         return MZTheme.theme.vSpacingSmall * 2
                     }
@@ -146,7 +145,7 @@ ColumnLayout {
 
                     implicitHeight: MZTheme.theme.rowHeight
                     text: loader.composerBlock.text
-                    colorScheme: loader.composerBlock.style === VPNComposerBlockButton.Primary ? MZTheme.theme.blueButton : MZTheme.theme.redButton
+                    colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ? MZTheme.theme.blueButton : MZTheme.theme.redButton
 
                     onClicked: {
                         MZGleanDeprecated.recordGleanEventWithExtraKeys("addonCtaClicked", { "addon_id": addon.id });

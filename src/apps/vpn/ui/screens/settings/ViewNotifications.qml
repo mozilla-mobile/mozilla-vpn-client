@@ -7,7 +7,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
@@ -24,7 +23,7 @@ MZViewBase {
         MZCheckBoxRow {
             id: captivePortalAlert
             objectName: "settingCaptivePortalAlert"
-            visible: VPNFeatureList.get("captivePortal").isSupported
+            visible: MZFeatureList.get("captivePortal").isSupported
             //% "Guest Wi-Fi portal alert"
             labelText: qsTrId("vpn.settings.guestWifiAlert")
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
@@ -40,7 +39,7 @@ MZViewBase {
         MZCheckBoxRow {
             id: unsecuredNetworkAlert
             objectName: "settingUnsecuredNetworkAlert"
-            visible: VPNFeatureList.get("unsecuredNetworkNotification").isSupported
+            visible: MZFeatureList.get("unsecuredNetworkNotification").isSupported
             //% "Unsecured network alert"
             labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
@@ -57,7 +56,7 @@ MZViewBase {
         MZCheckBoxRow {
             id: switchServersAlert
             objectName: "switchServersAlert"
-            visible: VPNFeatureList.get("notificationControl").isSupported
+            visible: MZFeatureList.get("notificationControl").isSupported
             //% "Server switching notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch2")
             //% "Get notified when you successfully switched servers"
@@ -73,7 +72,7 @@ MZViewBase {
         MZCheckBoxRow {
             id: connectionChangeAlert
             objectName: "connectionChangeAlert"
-            visible: VPNFeatureList.get("notificationControl").isSupported
+            visible: MZFeatureList.get("notificationControl").isSupported
 
             //% "Connection change notification"
             labelText: qsTrId("vpn.settings.notification.connectionChange2")
@@ -90,7 +89,7 @@ MZViewBase {
         MZCheckBoxRow {
             id: serverUnavailableNotification
             objectName: "serverUnavailableNotification"
-            visible: VPNFeatureList.get("serverUnavailableNotification").isSupported
+            visible: MZFeatureList.get("serverUnavailableNotification").isSupported
             labelText: MZI18n.ServerUnavailableNotificationPreferencesLabel
             subLabelText: MZI18n.ServerUnavailableNotificationPreferencesSubLabel
             isChecked: (MZSettings.serverUnavailableNotification)

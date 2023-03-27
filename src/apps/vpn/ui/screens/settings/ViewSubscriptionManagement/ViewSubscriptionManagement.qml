@@ -110,11 +110,11 @@ MZViewBase {
                 fontName: MZTheme.theme.fontBoldFamily
                 labelText: MZI18n.DeleteAccountButtonLabel
                 linkColor: MZTheme.theme.redLinkButton
-                visible: VPNFeatureList.get("accountDeletion").isSupported
+                visible: MZFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
                     MZGleanDeprecated.recordGleanEvent("deleteAccountRequested");
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenDeleteAccount)
+                    MZNavigator.requestScreen(VPN.ScreenDeleteAccount)
                 }
 
                 Layout.alignment: Qt.AlignHCenter
@@ -147,7 +147,7 @@ MZViewBase {
     // not already bundle subscribers.
     function isBundleUpgradeAvailable() {
         if (
-            !VPNFeatureList.get("bundleUpgrade").isSupported ||
+            !MZFeatureList.get("bundleUpgrade").isSupported ||
             VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionWeb
         ) {
             return false;

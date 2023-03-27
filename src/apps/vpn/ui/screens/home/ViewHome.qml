@@ -156,7 +156,7 @@ MZFlickable {
                         tipAndTricksIntroButton.enabled = false
                         closedByPrimaryButton = true
                         tipsAndTricksIntroPopup.close()
-                        VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
+                        MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
                     }
                 },
                 MZLinkButton {
@@ -187,8 +187,8 @@ MZFlickable {
 
     function maybeActivateTipsAndTricksIntro() {
         if (!MZSettings.tipsAndTricksIntroShown &&
-            VPNAddonManager.loadCompleted &&
-            !!VPNAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
+            MZAddonManager.loadCompleted &&
+            !!MZAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
             tipsAndTricksIntroPopupLoader.active = true
         }
     }
@@ -196,7 +196,7 @@ MZFlickable {
     Component.onCompleted: () => maybeActivateTipsAndTricksIntro();
 
     Connections {
-        target: VPNAddonManager
+        target: MZAddonManager
         function onLoadCompletedChanged() { maybeActivateTipsAndTricksIntro(); }
     }
 }

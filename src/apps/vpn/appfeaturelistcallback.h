@@ -15,17 +15,6 @@
 #  include "versionutils.h"
 #endif
 
-// Generic callback functions
-// --------------------------
-
-bool FeatureCallback_iosOrAndroid() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
 // Custom callback functions
 // -------------------------
 
@@ -56,14 +45,6 @@ bool FeatureCallback_captivePortal() {
   // (not-encrypted) requests. By default, IOS apps work in
   // HTTPS-only mode.
   return false;
-#endif
-}
-
-bool FeatureCallback_webPurchase() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
-  return false;
-#else
-  return true;
 #endif
 }
 
@@ -126,7 +107,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_ANDROID)
+    defined(MZ_DUMMY) || defined(MZ_WASM)
   return true;
 #else
   return false;

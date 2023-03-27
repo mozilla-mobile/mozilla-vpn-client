@@ -4,6 +4,7 @@
 
 #include "taskaccount.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -24,7 +25,7 @@ TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 
 void TaskAccount::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::Account));
 
   connect(request, &NetworkRequest::requestFailed, this,

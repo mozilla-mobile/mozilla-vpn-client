@@ -4,6 +4,9 @@
 
 #include "notificationhandler.h"
 
+#include "addons/addonmessage.h"
+#include "addons/manager/addonmanager.h"
+#include "app.h"
 #include "appconstants.h"
 #include "controller.h"
 #include "externalophandler.h"
@@ -42,6 +45,7 @@ NotificationHandler* s_instance = nullptr;
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
   NotificationHandler* handler = createInternal(parent);
+
   handler->initialize();
   return handler;
 }
@@ -77,6 +81,9 @@ NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(AddonManager::instance(), &AddonManager::addonCreated, this,
+          &NotificationHandler::addonCreated);
 }
 
 NotificationHandler::~NotificationHandler() {
@@ -90,11 +97,11 @@ void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != MozillaVPN::StateMain &&
+  if (vpn->state() != App::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == MozillaVPN::StateInitialize &&
+      !(vpn->state() == App::StateInitialize &&
         vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
@@ -290,7 +297,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
   logger.debug() << "New in-app message notification";
 
-  if (!MozillaVPN::isUserAuthenticated()) {
+  if (!App::isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
     return;
   }
@@ -332,10 +339,37 @@ void NotificationHandler::messageClickHandle() {
   }
 
   if (!ExternalOpHandler::instance()->request(
-          ExternalOpHandler::OpNotificationClicked)) {
+          MozillaVPN::OpNotificationClicked)) {
     return;
   }
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;
+}
+
+void NotificationHandler::addonCreated(Addon* addon) {
+  if (addon->type() != "message") {
+    return;
+  }
+
+  if (addon->enabled()) {
+    maybeAddonNotification(addon);
+  }
+
+  connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
+    if (enabled) {
+      maybeAddonNotification(addon);
+    }
+  });
+}
+
+void NotificationHandler::maybeAddonNotification(Addon* addon) {
+  Q_ASSERT(addon->type() == "message");
+
+  AddonMessage* addonMessage = qobject_cast<AddonMessage*>(addon);
+  if (addonMessage->isReceived()) {
+    newInAppMessageNotification(addon->property("title").toString(),
+                                addon->property("subtitle").toString());
+    addonMessage->updateMessageStatus(AddonMessage::MessageStatus::Notified);
+  }
 }

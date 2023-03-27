@@ -23,7 +23,7 @@ MZViewBase {
             Layout.fillWidth: true
 
             MZUserProfile {
-                property bool subscriptionManagementEnabled: VPNFeatureList.get("subscriptionManagement").isSupported
+                property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
                 _iconSource: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
@@ -80,7 +80,7 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
-                visible: VPNFeatureList.get("splitTunnel").isSupported
+                visible: MZFeatureList.get("splitTunnel").isSupported
             }
 
             MZSettingsItem {
@@ -89,7 +89,7 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenTipsAndTricks);
+                onClicked: MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
             }
 
             MZSettingsItem {
@@ -122,20 +122,20 @@ MZViewBase {
                 //% "Give feedback"
                 property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
                 objectName: "settingsGetHelp"
-                settingTitle: qsTrId("vpn.main.getHelp2")
+                settingTitle: MZI18n.GetHelpLinkTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     MZGleanDeprecated.recordGleanEvent("getHelpClickedViewSettings");
                     Glean.sample.getHelpClickedViewSettings.record();
-                    VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp);
+                    MZNavigator.requestScreen(VPN.ScreenGetHelp);
                 }
             }
 
             MZSettingsItem {
                 objectName: "settingsAboutUs"
-                settingTitle: qsTrId("vpn.settings.aboutUs")
+                settingTitle: MZI18n.AboutUsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft

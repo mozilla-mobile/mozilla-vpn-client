@@ -204,7 +204,7 @@ Rectangle {
     Component.onDestruction: VPNConnectionBenchmark.reset()
 
     Connections {
-      target: VPNNavigator
+      target: MZNavigator
 
       function onCurrentComponentChanged() {
           // Stop connection speed test when navigating away from ScreenHome

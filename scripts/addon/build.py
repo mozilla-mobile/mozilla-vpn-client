@@ -248,6 +248,13 @@ def get_file_list(path, prefix):
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
+    "project",
+    metavar="PROJECT",
+    type=str,
+    action="store",
+    help="The project name (vpn, relay, foobar, ...)",
+)
+parser.add_argument(
     "source",
     metavar="MANIFEST",
     type=str,
@@ -269,7 +276,6 @@ parser.add_argument(
     help="The QT binary path. If not set, we try to guess.",
 )
 args = parser.parse_args()
-
 
 def qtquery(qmake, propname):
     try:
@@ -325,6 +331,10 @@ if not os.path.isdir(args.dest):
 
 script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
+i18n_path = os.path.join(os.path.dirname(script_path), "src", "apps", args.project, "translations", "i18n")
+if not os.path.isdir(i18n_path):
+    exit(f"The translation for project `{args.project}` does not exist at path {i18n_path}")
+
 jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
     exit(f"The JSONSchema {jsonSchema} does not exist")
@@ -365,7 +375,6 @@ with open(args.source, "r", encoding="utf-8") as file:
         os.system(f"{lrelease} -idbased {ts_file}")
 
         completeness = [];
-        i18n_path = os.path.join(os.path.dirname(script_path), "i18n")
         for locale in os.listdir(i18n_path):
             if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
                 continue

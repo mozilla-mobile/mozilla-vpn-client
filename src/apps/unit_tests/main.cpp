@@ -2,13 +2,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+
+#include "app.h"
 #include "appconstants.h"
 #include "helper.h"
+#include "i18nstrings.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
 
 QVector<QObject*> TestHelper::testList;
+
+// static
+App* App::instance() {
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
+}
 
 QObject* TestHelper::findTest(const QString& name) {
   for (QObject* obj : TestHelper::testList) {
@@ -38,6 +53,8 @@ int main(int argc, char* argv[]) {
   pe.insert("LANGUAGE", "en");
 
   QCoreApplication app(argc, argv);
+
+  I18nStrings::initialize();
 
   int failures = 0;
 

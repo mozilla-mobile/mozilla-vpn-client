@@ -6,6 +6,7 @@
 
 #include <QJsonObject>
 
+#include "app.h"
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
@@ -50,7 +51,7 @@ void TaskGetSubscriptionDetails::run() {
 
 void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(MozillaVPN::authorizationHeader());
+  request->auth(App::authorizationHeader());
   request->get(AppConstants::apiUrl(AppConstants::SubscriptionDetails));
 
   connect(

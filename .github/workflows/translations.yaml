@@ -36,9 +36,6 @@ jobs:
       - name: Install python dependencies
         run: |
           pip install -r requirements.txt
-        
-          # lxml might be in use by old releases
-          pip install lxml
 
       - name: Generating translations
         run: |
@@ -50,5 +47,5 @@ jobs:
         with:
             name: Translation files
             path: |
-              translations.ts
+              translations_*.ts
               addon_ts/*.ts

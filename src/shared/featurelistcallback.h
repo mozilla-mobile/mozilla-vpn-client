@@ -18,6 +18,14 @@ bool FeatureCallback_false() { return false; }
 
 bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
+bool FeatureCallback_iosOrAndroid() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // Custom callback functions
 // -------------------------
 
@@ -30,6 +38,14 @@ bool FeatureCallback_shareLogs() {
          29;  // Android Q (10) is required for this
 #else
   return false;
+#endif
+}
+
+bool FeatureCallback_webPurchase() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
+  return false;
+#else
+  return true;
 #endif
 }
 

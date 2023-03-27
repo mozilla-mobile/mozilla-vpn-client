@@ -4,7 +4,9 @@
   "name": "Test Message 4",
   "translatable": false,
   "type": "message",
-  "conditions": {},
+  "conditions": {
+    "end_time": 1599424544
+  },
   "message": {
     "id": "test_message_4",
     "title": "Test Message 4 - Title",

@@ -9,7 +9,6 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
@@ -22,9 +21,8 @@ Item {
     MZMenu {
         id: menu
 
-        //% "View Logs"
-        title: qsTrId("vpn.viewlogs.title")
-        _menuOnBackClicked: () => VPNNavigator.requestPreviousScreen()
+        title: MZI18n.GetHelpViewLogs
+        _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     }
 
     MZFlickable {
@@ -82,13 +80,11 @@ Item {
             width: copyClearWrapper.width
 
             MZLogsButton {
-                //% "Copy"
-                buttonText: qsTrId("vpn.logs.copy")
+                buttonText: MZI18n.GlobalCopy
                 iconSource: "qrc:/ui/resources/copy.svg"
                 onClicked: {
-                    VPN.storeInClipboard(logText.text);
-                    //% "Copied!"
-                    buttonText = qsTrId("vpn.logs.copied");
+                    MZUtils.storeInClipboard(logText.text);
+                    buttonText = MZI18n.GlobalCopied
                 }
             }
 
@@ -100,8 +96,7 @@ Item {
             }
 
             MZLogsButton {
-                //% "Clear"
-                buttonText: qsTrId("vpn.logs.clear")
+                buttonText: MZI18n.GlobalClear
                 iconSource: "qrc:/nebula/resources/delete.svg"
                 onClicked: {
                     MZLog.flushLogs();

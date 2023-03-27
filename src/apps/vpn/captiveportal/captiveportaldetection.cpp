@@ -176,7 +176,7 @@ void CaptivePortalDetection::captivePortalDetected() {
     return;
   }
   emit captivePortalPresent();
-  Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
+  Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -189,7 +189,7 @@ void CaptivePortalDetection::captivePortalGone() {
   logger.debug() << "Portal gone";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() == MozillaVPN::StateMain &&
+  if (vpn->state() == App::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
     captivePortalMonitor()->stop();
@@ -211,7 +211,7 @@ void CaptivePortalDetection::activationRequired() {
   logger.debug() << "User wants to activate the vpn";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() == MozillaVPN::StateMain &&
+  if (vpn->state() == App::StateMain &&
       vpn->controller()->state() == Controller::StateOff) {
     vpn->controller()->captivePortalGone();
     vpn->activate();

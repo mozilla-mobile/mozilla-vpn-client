@@ -7,6 +7,9 @@
 class TestPasswordValidation final : public QObject {
   Q_OBJECT
 
+ public:
+  explicit TestPasswordValidation(const QString& nonce) : m_nonce(nonce) {}
+
  private slots:
   void incrementalDecoder_data();
   void incrementalDecoder();
@@ -18,4 +21,7 @@ class TestPasswordValidation final : public QObject {
   void passwordLength();
 
   void emailPassword();
+
+ private:
+  QString m_nonce;
 };

@@ -16,6 +16,8 @@ void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
   SimpleNetworkManager snm;
 
+  settingsHolder.setToken("TOKEN!");
+
   TestHelper::networkConfig.clear();
 
   QEventLoop loop;

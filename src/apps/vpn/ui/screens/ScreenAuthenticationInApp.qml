@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -12,7 +13,7 @@ MZStackView {
     id: stackview
 
     Component.onCompleted: function() {
-        VPNNavigator.addStackView(VPNNavigator.ScreenAuthenticationInApp, stackview)
+        MZNavigator.addStackView(VPN.ScreenAuthenticationInApp, stackview)
         stackview.push("qrc:/ui/screens/authenticationInApp/ViewAuthenticationInApp.qml")
     }
 }

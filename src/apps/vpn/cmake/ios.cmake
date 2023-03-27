@@ -57,29 +57,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
 )
 
-# Include the Adjust SDK
-if(BUILD_ADJUST_SDK_TOKEN)
-    add_compile_definitions(MVPN_ADJUST)
-    target_compile_options(mozillavpn PRIVATE -DADJUST_SDK_TOKEN=${BUILD_ADJUST_SDK_TOKEN})
-    target_sources(mozillavpn PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosadjusthelper.mm
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosadjusthelper.h
-    )
-    target_link_libraries(mozillavpn PRIVATE adjust)
-endif()
-
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard)
@@ -99,7 +76,7 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_SOURCE_DIR}/ios/app/WireGuard-Bridging-Header.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL "-Onone"
-    XCODE_ATTRIBUTE_SWIFT_OBJC_INTERFACE_HEADER_NAME "Mozilla_VPN-Swift.h"
+    XCODE_ATTRIBUTE_SWIFT_OBJC_INTERFACE_HEADER_NAME "Mozilla-Swift.h"
 )
 target_compile_options(mozillavpn PRIVATE
     -DGROUP_ID=\"${BUILD_IOS_GROUP_IDENTIFIER}\"

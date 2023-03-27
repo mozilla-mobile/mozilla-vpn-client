@@ -1,4 +1,4 @@
-.DS_Store
+
 Makefile
 Makefile.*
 *.o
@@ -33,6 +33,7 @@ linux/netfilter/vendor/
 __pycache__
 lottie.mjs
 qml_lint_result.txt
+qtglean/Cargo.lock
 
 # Translation pipeline
 addon_ts/

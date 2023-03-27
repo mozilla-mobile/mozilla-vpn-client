@@ -21,8 +21,10 @@ class Theme final : public QAbstractListModel {
                  changed)
 
  public:
-  Theme();
+  explicit Theme(QObject* parent);
   ~Theme();
+
+  static Theme* instance();
 
   enum ModelRoles {
     NameRole = Qt::UserRole + 1,

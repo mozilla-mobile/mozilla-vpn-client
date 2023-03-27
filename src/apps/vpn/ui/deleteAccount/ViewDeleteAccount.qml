@@ -24,7 +24,7 @@ Item {
 
         function cancelAuthenticationFlow() {
             VPN.cancelReauthentication();
-            VPNNavigator.requestPreviousScreen();
+            MZNavigator.requestPreviousScreen();
         }
     }
 

@@ -50,7 +50,7 @@ void KeyRegenerator::stateChanged() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn->state() != MozillaVPN::StateMain ||
+  if (vpn->state() != App::StateMain ||
       vpn->controller()->state() != Controller::StateOff) {
     logger.debug() << "Wrong state";
     return;

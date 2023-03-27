@@ -243,11 +243,11 @@ QList<IPAddress> IPAddress::excludeAddresses(
     QList<IPAddress> newResults;
 
     for (const IPAddress& ip : results) {
-      if (ip.overlaps(exclude)) {
+      if (!ip.overlaps(exclude)) {
+        newResults.append(ip);
+      } else if (exclude.subnetOf(ip) && exclude != ip) {
         QList<IPAddress> range = ip.excludeAddresses(exclude);
         newResults.append(range);
-      } else {
-        newResults.append(ip);
       }
     }
 

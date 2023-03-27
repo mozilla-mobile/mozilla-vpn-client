@@ -10,9 +10,11 @@
 #include <QObject>
 #include <QTimer>
 
+#include "app.h"
 #include "authenticationlistener.h"
-#include "env.h"
 #include "errorhandler.h"
+#include "externalophandler.h"
+#include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;
 class CaptivePortal;
@@ -35,58 +37,65 @@ class StatusIcon;
 class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
-class Theme;
 class User;
 
-class MozillaVPN final : public QObject {
+class MozillaVPN final : public App {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MozillaVPN)
 
  public:
-  enum State {
-    StateAuthenticating,
+  enum CustomState {
+    StateDeviceLimit = StateCustom + 1,
     StateBackendFailure,
-    StateBillingNotAvailable,
-    StateDeviceLimit,
-    StateInitialize,
-    StateMain,
-    StatePostAuthentication,
-    StateSubscriptionBlocked,
-    StateSubscriptionNeeded,
-    StateSubscriptionInProgress,
-    StateSubscriptionNotValidated,
-    StateTelemetryPolicy,
     StateUpdateRequired,
   };
-  Q_ENUM(State);
+  Q_ENUM(CustomState);
 
-  enum UserState {
-    // The user is not authenticated and there is not a logging-out operation
-    // in progress. Maybe we are running the authentication flow (to know if we
-    // are running the authentication flow, please use the
-    // `StateAuthenticating` state).
-    UserNotAuthenticated,
-
-    // The user is authenticated and there is not a logging-out operation in
-    // progress.
-    UserAuthenticated,
-
-    // We are logging out the user. There are a few steps to run in order to
-    // complete the logout. In the meantime, the user should be considered as
-    // not-authenticated. The next state will be `UserNotAuthenticated`.
-    UserLoggingOut,
+  enum CustomScreen {
+    ScreenAuthenticating = Navigator::ScreenCustom + 1,
+    ScreenAuthenticationInApp,
+    ScreenBackendFailure,
+    ScreenBillingNotAvailable,
+    ScreenCaptivePortal,
+    ScreenCrashReporting,
+    ScreenDeleteAccount,
+    ScreenDeviceLimit,
+    ScreenGetHelp,
+    ScreenHome,
+    ScreenInitialize,
+    ScreenMessaging,
+    ScreenNoSubscriptionFoundError,
+    ScreenPostAuthentication,
+    ScreenSettings,
+    ScreenSubscriptionBlocked,
+    ScreenSubscriptionExpiredError,
+    ScreenSubscriptionGenericError,
+    ScreenSubscriptionInProgressIAP,
+    ScreenSubscriptionInProgressWeb,
+    ScreenSubscriptionInUseError,
+    ScreenSubscriptionNeededIAP,
+    ScreenSubscriptionNeededWeb,
+    ScreenSubscriptionNotValidated,
+    ScreenTelemetryPolicy,
+    ScreenTipsAndTricks,
+    ScreenUpdateRecommended,
+    ScreenUpdateRequired,
+    ScreenViewLogs,
   };
-  Q_ENUM(UserState);
+  Q_ENUM(CustomScreen);
+
+  enum CustomExternalOperations {
+    OpAbout = ExternalOpHandler::OpCustom + 1,
+    OpActivate,
+    OpDeactivate,
+    OpNotificationClicked,
+    OpQuit,
+  };
+  Q_ENUM(CustomExternalOperations);
 
  private:
-  Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
-  Q_PROPERTY(const Env* env READ env CONSTANT)
-  Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
-  Q_PROPERTY(bool stagingMode READ stagingMode CONSTANT)
-  Q_PROPERTY(bool debugMode READ debugMode CONSTANT)
 
  public:
   MozillaVPN();
@@ -100,11 +109,6 @@ class MozillaVPN final : public QObject {
 
   void initialize();
 
-  State state() const;
-
-  bool stagingMode() const;
-  bool debugMode() const;
-
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
@@ -112,7 +116,6 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
-  Q_INVOKABLE void storeInClipboard(const QString& text);
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate();
   Q_INVOKABLE void refreshDevices();
@@ -121,21 +124,15 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void triggerHeartbeat();
   Q_INVOKABLE void submitFeedback(const QString& feedbackText,
                                   const qint8 rating, const QString& category);
-  Q_INVOKABLE void openAppStoreReviewLink();
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
-  Q_INVOKABLE void crashTest();
-  Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
-#ifdef MZ_ANDROID
-  Q_INVOKABLE void launchPlayStore();
-#endif
 
   void authenticateWithType(
       AuthenticationListener::AuthenticationType authenticationType);
@@ -161,7 +158,6 @@ class MozillaVPN final : public QObject {
   StatusIcon* statusIcon() const;
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
-  Theme* theme() const;
   User* user() const;
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -186,19 +182,7 @@ class MozillaVPN final : public QObject {
 
   void silentSwitch();
 
-  static QString devVersion();
-  static QString graphicsApi();
-
-  const Env* env() const { return &m_env; }
-
   void logout();
-
-  UserState userState() const;
-
-  static bool isUserAuthenticated() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    return vpn->userState() == MozillaVPN::UserAuthenticated;
-  }
 
   bool startMinimized() const { return m_startMinimized; }
 
@@ -206,15 +190,11 @@ class MozillaVPN final : public QObject {
     m_startMinimized = startMinimized;
   }
 
-  void setToken(const QString& token);
-
   [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
   bool modelsInitialized() const;
-
-  void quit();
 
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
@@ -229,16 +209,13 @@ class MozillaVPN final : public QObject {
 
   void hardReset();
 
-  static QByteArray authorizationHeader();
-
   void requestAbout();
 
+  static QString appVersionForUpdate();
+  static bool mockFreeTrial();
+
  private:
-  void setState(State state);
-
   void maybeStateMain();
-
-  void setUserState(UserState userState);
 
   void startSchedulingPeriodicOperations();
 
@@ -278,9 +255,17 @@ class MozillaVPN final : public QObject {
 
   static void registerErrorHandlers();
 
+  static void registerNavigatorScreens();
+
+  static void registerInspectorCommands();
+
+  static void registerNavigationBarButtons();
+
+  static void registerAddonApis();
+
+  static void registerExternalOperations();
+
  signals:
-  void stateChanged();
-  void userStateChanged();
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);
   void aboutNeeded();
@@ -303,12 +288,6 @@ class MozillaVPN final : public QObject {
  private:
   bool m_initialized = false;
   struct MozillaVPNPrivate* m_private = nullptr;
-
-  Env m_env;
-
-  State m_state = StateInitialize;
-
-  UserState m_userState = UserNotAuthenticated;
 
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;

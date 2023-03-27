@@ -25,18 +25,9 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
-
-MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
-
-MozillaVPN::UserState MozillaVPN::userState() const {
-  return TestHelper::userState;
-}
-
-bool MozillaVPN::stagingMode() const { return true; }
-bool MozillaVPN::debugMode() const { return true; }
 
 CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 
@@ -75,15 +66,11 @@ Location* MozillaVPN::location() const {
 
 void MozillaVPN::initialize() {}
 
-void MozillaVPN::setState(State) {}
-
 bool MozillaVPN::setServerList(QByteArray const&) { return true; }
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType) {}
-
-void MozillaVPN::setToken(const QString&) {}
 
 void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
@@ -109,8 +96,6 @@ void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 
-void MozillaVPN::setUserState(UserState) {}
-
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {}
@@ -119,15 +104,11 @@ bool MozillaVPN::modelsInitialized() const { return true; }
 
 void MozillaVPN::requestAbout() {}
 
-void MozillaVPN::storeInClipboard(const QString&) {}
-
 void MozillaVPN::activate() {}
 
 void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
-
-void MozillaVPN::quit() {}
 
 void MozillaVPN::update() {}
 
@@ -148,8 +129,6 @@ void MozillaVPN::createSupportTicket(const QString&, const QString&,
 
 void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {}
 
-void MozillaVPN::openAppStoreReviewLink() {}
-
 bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 
 void MozillaVPN::reset(bool) {}
@@ -159,14 +138,6 @@ void MozillaVPN::maybeRegenerateDeviceKey() {}
 void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
-
-void MozillaVPN::crashTest() {}
-
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
-
-QString MozillaVPN::devVersion() { return qVersion(); }
-
-QString MozillaVPN::graphicsApi() { return ""; }
 
 void MozillaVPN::requestDeleteAccount() {}
 
@@ -184,4 +155,4 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 void MozillaVPN::registerUrlOpenerLabels() {}
 
 // static
-QByteArray MozillaVPN::authorizationHeader() { return ""; }
+QString MozillaVPN::appVersionForUpdate() { return "42"; }

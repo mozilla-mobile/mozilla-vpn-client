@@ -23,8 +23,14 @@ constexpr const char* LOG_FILE_NAME = "foobar.txt";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "foo_bar";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "foo-bar";
+
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "foobar";
+
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "foobar";
 
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
@@ -43,6 +49,16 @@ constexpr const wchar_t* WINDOWS_CRED_KEY = L"Foo bar";
 
 #if defined(MZ_ANDROID)
 constexpr const char* ANDROID_LOG_NAME = "foobar";
+
+constexpr const char* GOOGLE_PLAYSTORE_URL =
+    "https://play.google.com/store/apps/details?id=FOOBAR";
+#endif
+
+#ifdef MZ_IOS
+constexpr const char* APPLE_STORE_URL =
+    "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id123456789";
+constexpr const char* APPLE_STORE_REVIEW_URL =
+    "https://apps.apple.com/app/id123456789?action=write-review";
 #endif
 
 #if defined(MZ_LINUX)

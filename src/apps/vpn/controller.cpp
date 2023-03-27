@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
@@ -32,6 +33,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
+#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -175,6 +177,9 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  connect(this, &Controller::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -227,7 +232,7 @@ bool Controller::activate(const ServerData& serverData,
   if (m_state == StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
-      Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
+      Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
 
       m_portalDetected = false;
       return true;
@@ -242,7 +247,7 @@ bool Controller::activate(const ServerData& serverData,
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
-    request->auth(MozillaVPN::authorizationHeader());
+    request->auth(App::authorizationHeader());
     request->get(AppConstants::apiUrl(AppConstants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
@@ -255,7 +260,7 @@ bool Controller::activate(const ServerData& serverData,
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
               // subscribed.
-              if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+              if (App::instance()->state() != App::StateMain) {
                 return;
               }
 
@@ -415,15 +420,16 @@ void Controller::activateNext() {
   setState(StateConfirming);
 }
 
-bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
-  logger.debug() << "Silently switch servers";
+bool Controller::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
   if (m_state != StateOn) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
   }
 
-  if (serverCoolDownNeeded) {
+  if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     QList<Server> servers = m_serverData.exitServers();
     Q_ASSERT(!servers.isEmpty());
@@ -440,7 +446,7 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
   }
 
   m_nextServerData = m_serverData;
-  m_nextServerSelectionPolicy = serverCoolDownNeeded
+  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
                                     ? RandomizeServerSelection
                                     : DoNotRandomizeServerSelection;
 
@@ -836,6 +842,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Filtering out multicast addresses";
   excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
   excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
+  logger.debug() << "Filtering out explicitely-set network address ranges";
+  for (const QString& ipv4String :
+       SettingsHolder::instance()->excludedIpv4Addresses()) {
+    excludeIPv4s.append(IPAddress(ipv4String));
+  }
+  for (const QString& ipv6String :
+       SettingsHolder::instance()->excludedIpv6Addresses()) {
+    excludeIPv6s.append(IPAddress(ipv6String));
+  }
 
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
