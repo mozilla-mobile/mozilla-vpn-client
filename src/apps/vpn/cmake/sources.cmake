@@ -107,8 +107,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/keys.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.cpp
@@ -196,8 +194,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/removedevice/taskremovedevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/removedevice/taskremovedevice.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/sendfeedback/tasksendfeedback.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.cpp

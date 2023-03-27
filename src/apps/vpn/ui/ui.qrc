@@ -25,11 +25,6 @@
         <file>screens/getHelp/developerMenu/ViewFeatureList.qml</file>
         <file>screens/getHelp/developerMenu/ViewMessages.qml</file>
         <file>screens/getHelp/developerMenu/ViewThemeList.qml</file>
-        <file>screens/getHelp/giveFeedback/GiveFeedbackRadioDelegate.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedback.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionCheckmarkList.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoContent.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoError.qml</file>

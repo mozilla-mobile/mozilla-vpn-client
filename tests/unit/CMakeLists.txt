@@ -58,8 +58,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/models/device.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/feedbackcategorymodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/keys.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp

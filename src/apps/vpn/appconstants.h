@@ -22,7 +22,6 @@ enum ApiEndpoint {
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
-  Feedback,
   Heartbeat,
   IPInfo,
   LoginVerify,
@@ -248,8 +247,6 @@ constexpr const char* GOOGLE_PLAYSTORE_URL =
 #ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id1489407738?action=write-review";
 #endif
 
 // TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn

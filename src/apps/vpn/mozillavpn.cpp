@@ -57,7 +57,6 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
@@ -696,28 +695,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // background and work aync.
     m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
   }
-}
-
-void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
-                                const QString& category) {
-  logger.debug() << "Submit Feedback";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, feedbackText, rating, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskSendFeedback so we can delete it
-        // afterwards
-        TaskScheduler::scheduleTask(
-            new TaskSendFeedback(feedbackText, *buffer, rating, category));
-
-        delete buffer;
-        delete out;
-      });
 }
 
 void MozillaVPN::createSupportTicket(const QString& email,

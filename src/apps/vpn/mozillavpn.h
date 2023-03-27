@@ -23,7 +23,6 @@ class ConnectionBenchmark;
 class ConnectionHealth;
 class Controller;
 class DeviceModel;
-class FeedbackCategoryModel;
 class IpAddressLookup;
 class Keys;
 class Location;
@@ -122,8 +121,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
-  Q_INVOKABLE void submitFeedback(const QString& feedbackText,
-                                  const qint8 rating, const QString& category);
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
@@ -145,7 +142,6 @@ class MozillaVPN final : public App {
   Controller* controller() const;
   ServerData* serverData() const;
   DeviceModel* deviceModel() const;
-  FeedbackCategoryModel* feedbackCategoryModel() const;
   IpAddressLookup* ipAddressLookup() const;
   SupportCategoryModel* supportCategoryModel() const;
   Keys* keys() const;
