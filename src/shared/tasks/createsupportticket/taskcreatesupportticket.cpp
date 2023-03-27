@@ -13,9 +13,9 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/user.h"
-#include "mozillavpn.h"
 #include "networkmanager.h"
 #include "networkrequest.h"
+#include "utils.h"
 
 constexpr uint32_t SUPPORT_TICKET_SUBJECT_MAX_LENGTH = 300;
 
@@ -68,14 +68,14 @@ void TaskCreateSupportTicket::run() {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
             logger.error() << "Failed to create support ticket" << error;
-            MozillaVPN::instance()->createTicketAnswerRecieved(false);
+            Utils::instance()->createTicketAnswerRecieved(false);
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray&) {
             logger.debug() << "Support ticket created";
-            MozillaVPN::instance()->createTicketAnswerRecieved(true);
+            Utils::instance()->createTicketAnswerRecieved(true);
             emit completed();
           });
 }
