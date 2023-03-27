@@ -30,6 +30,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -173,6 +174,9 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  connect(this, &Controller::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,

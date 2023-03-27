@@ -10,13 +10,6 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 INCLUDEPATH += \
             $$PWD/.. \
-            $$PWD/../addons \
-            $$PWD/../composer \
-            $$PWD/../../../shared \
-            $$PWD/../../../shared/glean \
-            $$PWD/../../../shared/hacl-star \
-            $$PWD/../../../shared/hacl-star/kremlin \
-            $$PWD/../../../shared/hacl-star/kremlin/minimal \
             $$PWD/../../../../lottie/lib
 
 DEPENDPATH  += $${INCLUDEPATH}

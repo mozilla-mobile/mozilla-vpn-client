@@ -185,8 +185,6 @@ void TestModels::deviceFromJson() {
   QCOMPARE(deviceC.publicKey(), device.publicKey());
   QCOMPARE(deviceC.ipv4Address(), device.ipv4Address());
   QCOMPARE(deviceC.ipv6Address(), device.ipv6Address());
-
-  device = device;
 }
 
 // DeviceModel
@@ -1211,8 +1209,6 @@ void TestModels::serverFromJson() {
   QCOMPARE(sC.weight(), s.weight());
   QCOMPARE(sC.socksName(), s.socksName());
   QCOMPARE(sC.multihopPort(), s.multihopPort());
-
-  s = s;
 }
 
 void TestModels::serverWeightChooser() {
@@ -1322,8 +1318,6 @@ void TestModels::serverCityFromJson() {
   scC = sc;
   QCOMPARE(scC.name(), sc.name());
   QCOMPARE(scC.code(), sc.code());
-
-  sc = sc;
 }
 
 // ServerCountry
@@ -1391,8 +1385,6 @@ void TestModels::serverCountryFromJson() {
   scC = sc;
   QCOMPARE(scC.name(), sc.name());
   QCOMPARE(scC.code(), sc.code());
-
-  sc = sc;
 }
 
 // ServerCountryModel

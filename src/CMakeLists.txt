@@ -65,7 +65,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 qt6_add_qml_module(mozillavpn
-  URI Mozilla.VPN.qmlcomponents
+  URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
 

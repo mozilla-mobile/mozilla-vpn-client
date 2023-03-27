@@ -75,10 +75,22 @@ target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
     mocsentryadapter.cpp
+    testaddon.cpp
+    testaddon.h
+    testaddonapi.cpp
+    testaddonapi.h
+    testaddonindex.cpp
+    testaddonindex.h
+    testaddonsessionstate.cpp
+    testaddonsessionstate.h
+    testaddonstatebase.cpp
+    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
-    testcheckedint.h
     testcheckedint.cpp
+    testcheckedint.h
+    testcomposer.cpp
+    testcomposer.h
     testenv.cpp
     testenv.h
     testfeature.cpp
@@ -144,8 +156,11 @@ endforeach()
 
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
+    addons/addons.qrc
+    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
+    tutorials/tutorials.qrc
 )
 
 qt_finalize_target(app_unit_tests)
