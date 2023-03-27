@@ -35,10 +35,11 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
  *             so we can ping guardian and then show the sub expired page.
  */
 
-  connect(MozillaVPN::instance()->connectionHealth(), &ConnectionHealth::stabilityChanged, this, [this] () {
+  connect(MozillaVPN::instance()->connectionHealth(), &ConnectionHealth::stabilityChanged, this, [] () {
     if (MozillaVPN::instance()->connectionHealth()->stability() == ConnectionHealth::NoSignal)
     {
       logger.debug() << "VPN connection stability is NoSignal";
+      //What else do I need to do here?
     }
   });
  
