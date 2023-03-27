@@ -22,6 +22,7 @@ QString UuidMetric::generateAndSet() const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_uuid_generate_and_set(m_id);
 #endif
+  return QString();
 }
 
 int32_t UuidMetric::testGetNumRecordedErrors(ErrorType errorType) const {
