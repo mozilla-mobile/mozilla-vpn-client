@@ -56,6 +56,7 @@ object Utils {
             ),
             configuration = Configuration(channel = channel),
         )
+    }
 
     @JvmStatic
     fun launchPlayStore(activity: Activity) {
