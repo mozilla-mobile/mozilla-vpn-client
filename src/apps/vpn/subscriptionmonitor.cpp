@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "settingswatcher.h"
+#include "subscriptionmonitor.h"
 
 #include <QCoreApplication>
 #include <QMetaMethod>
@@ -17,79 +17,85 @@
 #include "taskscheduler.h"
 
 namespace {
-Logger logger("SettingsWatcher");
+Logger logger("SubscriptionMonitor");
 }
 
-SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
-  MZ_COUNT_CTOR(SettingsWatcher);
+/**
+     * Finally, any singleton should define some business logic, which can be
+     * executed on its instance.
+     * link: https://refactoring.guru/design-patterns/singleton/cpp/example#example-1
+*/
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
+SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
+  MZ_COUNT_CTOR(SubscriptionMonitor);
 
-#define CONNECT(x)                                  \
-  connect(settingsHolder, &SettingsHolder::x, this, \
-          &SettingsWatcher::maybeServerSwitch);
+//   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  CONNECT(captivePortalAlertChanged);
-  CONNECT(protectSelectedAppsChanged);
-  CONNECT(vpnDisabledAppsChanged);
+// #define CONNECT(x)                                  \
+//   connect(settingsHolder, &SettingsHolder::x, this, \
+//           &SubscriptionMonitor::maybeServerSwitch);
 
-#undef CONNECT
+//   CONNECT(captivePortalAlertChanged);
+//   CONNECT(protectSelectedAppsChanged);
+//   CONNECT(vpnDisabledAppsChanged);
 
-#define DNS_CONNECT(x)                                                  \
-  connect(settingsHolder, &SettingsHolder::x, this, [this]() {          \
-    SettingsHolder* settingsHolder = SettingsHolder::instance();        \
-    if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
-        DNSHelper::validateUserDNS(settingsHolder->userDNS())) {        \
-      maybeServerSwitch();                                              \
-    }                                                                   \
-  });
+// #undef CONNECT
 
-  DNS_CONNECT(dnsProviderFlagsChanged);
-  DNS_CONNECT(userDNSChanged);
+// #define DNS_CONNECT(x)                                                  \
+//   connect(settingsHolder, &SettingsHolder::x, this, [this]() {          \
+//     SettingsHolder* settingsHolder = SettingsHolder::instance();        \
+//     if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
+//         DNSHelper::validateUserDNS(settingsHolder->userDNS())) {        \
+//       maybeServerSwitch();                                              \
+//     }                                                                   \
+//   });
 
-#undef DNS_CONNECT
+//   DNS_CONNECT(dnsProviderFlagsChanged);
+//   DNS_CONNECT(userDNSChanged);
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          [this]() {
-            Controller::State state =
-                MozillaVPN::instance()->controller()->state();
-            // m_operationRunning is set to true when the Controller is in
-            // StateOn. So, if we see a change, it means that the new settings
-            // values have been taken in consideration. We are ready to
-            // schedule a new TaskControllerAction if needed.
-            if (state != Controller::StateOn && state != Controller::StateOff &&
-                m_operationRunning) {
-              logger.debug() << "Resetting the operation running state";
-              m_operationRunning = false;
-            }
-          });
+// #undef DNS_CONNECT
+
+//   connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+//           [this]() {
+//             Controller::State state =
+//                 MozillaVPN::instance()->controller()->state();
+//             // m_operationRunning is set to true when the Controller is in
+//             // StateOn. So, if we see a change, it means that the new settings
+//             // values have been taken in consideration. We are ready to
+//             // schedule a new TaskControllerAction if needed.
+//             if (state != Controller::StateOn && state != Controller::StateOff &&
+//                 m_operationRunning) {
+//               logger.debug() << "Resetting the operation running state";
+//               m_operationRunning = false;
+//             }
+//           });
 }
 
-SettingsWatcher::~SettingsWatcher() { MZ_COUNT_DTOR(SettingsWatcher); }
+SubscriptionMonitor::~SubscriptionMonitor() { MZ_COUNT_DTOR(SubscriptionMonitor); }
 
 // static
-SettingsWatcher* SettingsWatcher::instance() {
-  static SettingsWatcher* s_instance = nullptr;
+SubscriptionMonitor* SubscriptionMonitor::instance() {
+  static SubscriptionMonitor* s_instance = nullptr;
   if (!s_instance) {
-    s_instance = new SettingsWatcher(qApp);
+    s_instance = new SubscriptionMonitor(qApp);
   }
   return s_instance;
 }
 
-void SettingsWatcher::maybeServerSwitch() {
-  logger.debug() << "Settings changed!";
+// void SubscriptionMonitor::maybeServerSwitch() {
+//   logger.debug() << "Settings changed!";
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
-      m_operationRunning) {
-    return;
-  }
+//   if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
+//       m_operationRunning) {
+//     return;
+//   }
 
-  m_operationRunning = true;
+//   m_operationRunning = true;
 
-  TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNotNeeded));
-}
+//   TaskScheduler::deleteTasks();
+//   TaskScheduler::scheduleTask(
+//       new TaskControllerAction(TaskControllerAction::eSilentSwitch,
+//                                TaskControllerAction::eServerCoolDownNotNeeded));
+// }
 
-void SettingsWatcher::operationCompleted() { m_operationRunning = false; }
+void SubscriptionMonitor::operationCompleted() { m_operationRunning = false; }

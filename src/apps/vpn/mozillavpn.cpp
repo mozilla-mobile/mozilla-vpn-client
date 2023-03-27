@@ -41,6 +41,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "subscriptionmonitor.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -68,7 +69,7 @@
 #include "websocket/pushmessage.h"
 #include "websocket/websockethandler.h"
 
-#include "subscriptionmonitor.h"
+// #include "subscriptionmonitor.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
