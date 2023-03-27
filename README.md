@@ -346,72 +346,22 @@ You are now ready to build!
 
 ### How to build from source code for iOS
 
-There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
-and we have also added experimental support for `cmake`.
-
 > **Note**: Due to lack of low level networking support, it is not possible to turn on
 > the VPN from the iOS simulator in Xcode.
 
-#### Building with QMake
+iOS builds are done in two steps. The first step will build the xcodeproj file , which can then be 
+opened on Xcode to compile the application. The first step is done on the terminal using CMake, the
+second can be done directly on Xcode.
+
+> **Note**: Building for the aarch64 simulator is not currently supported. 
+> Follow [VPN-4450](https://mozilla-hub.atlassian.net/browse/VPN-4450) for updates.
 
 1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
-
-2. We use `qmake` to generate the Xcode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on.
-
-We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
-install it:
-```
-gem install xcodeproj # probably you want to run this command with `sudo`
-```
-
-3. You also need to install go >= v1.18. If you don't have it done already,
-download go from the [official website](https://golang.org/dl/).
-
-4. Copy `xcode.xconfig.template` to `xcode.xconfig`
-```bash
-cp xcode.xconfig.template xcode.xconfig
-```
-
-5. Modify the xcode.xconfig to something like:
-```
-APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
-
-GROUP_ID_IOS = group.org.mozilla.ios.Guardian
-APP_ID_IOS = org.mozilla.ios.FirefoxVPN
-NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
-```
-
-6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
-
-```
-export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
-```
-
-Then generate the Xcode project using our script (and an optional adjust token):
-
-```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
-```
-
-7. Xcode should automatically open. You can then run/test/archive/ship the app.
-If you prefer to compile the app in command-line mode, use the following
-command:
-```bash
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
-```
-
-#### Building with CMake (Experimental)
-
-We also support building from sources for iOS using CMake.
-
-1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
-version 6.3.2.
+[Xcode](https://developer.apple.com/xcode/) version 13 or higher and [Qt](https://www.qt.io/download)
+version 6.2.4.
 
 2. Ensure rust targets for iOS development are installed.
+
 ```bash
 rustup target add x86_64-apple-ios aarch64-apple-ios
 ```
@@ -419,7 +369,7 @@ rustup target add x86_64-apple-ios aarch64-apple-ios
 3. We use `qt-cmake` from the Qt installation to configure the Xcode project.
 ```bash
 mkdir build-ios
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
+/Users/example/Qt/6.2.4/ios/bin/qt-cmake . -B build-ios -GXcode
 ```
 
 Some variables that might be useful when configuring the project:
@@ -435,9 +385,7 @@ Some variables that might be useful when configuring the project:
 5. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
-6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
-results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must
-be completely deleted and the app must be re-built.)
+6. Click on the Play button to start building and signing of the Mozilla VPN app.
 
 ### How to build from source code for Android
 
@@ -484,7 +432,7 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
   - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.
 - Go (go version >= v1.18 required): https://golang.org/dl/
 
-We strongly recommend using CMake version 3.21 or later when building with Visual
+We strongly recommend using CMake version 2.41 or later when building with Visual
 Studio. Earlier versions of CMake have bugs that can cause the build to hang.
 
 It is also recommended to use the `x64 Native Tools Command Prompt for VS 2019` for CLI builds on Windows.
