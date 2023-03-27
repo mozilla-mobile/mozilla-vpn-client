@@ -202,6 +202,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/telemetry.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorialvpn.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tutorialvpn.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/updater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/updater.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/versionapi.cpp

@@ -85,6 +85,7 @@ SOURCES += \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
         apps/vpn/telemetry.cpp \
+        apps/vpn/tutorialvpn.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
         apps/vpn/update/webupdater.cpp \
@@ -180,6 +181,7 @@ HEADERS += \
         apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
         apps/vpn/telemetry.h \
+        apps/vpn/tutorialvpn.h \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
         apps/vpn/update/webupdater.h \

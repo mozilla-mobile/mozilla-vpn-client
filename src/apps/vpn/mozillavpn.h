@@ -263,8 +263,6 @@ class MozillaVPN final : public App {
 
   static void registerAddonApis();
 
-  static void registerTutorialSteps();
-
   static void registerExternalOperations();
 
  signals:
