@@ -123,6 +123,12 @@ target_sources(app_unit_tests PRIVATE
     testthemes.h
     testurlopener.cpp
     testurlopener.h
+    websocket/testexponentialbackoffstrategy.cpp
+    websocket/testexponentialbackoffstrategy.h
+    websocket/testpushmessage.cpp
+    websocket/testpushmessage.h
+    websocket/testwebsockethandler.cpp
+    websocket/testwebsockethandler.h
     ${MZ_SOURCE_DIR}/shared/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h

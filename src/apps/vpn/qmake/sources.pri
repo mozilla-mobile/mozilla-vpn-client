@@ -86,10 +86,7 @@ SOURCES += \
         apps/vpn/tutorialvpn.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
-        apps/vpn/update/webupdater.cpp \
-        apps/vpn/websocket/exponentialbackoffstrategy.cpp \
-        apps/vpn/websocket/pushmessage.cpp \
-        apps/vpn/websocket/websockethandler.cpp
+        apps/vpn/update/webupdater.cpp
 
 HEADERS += \
         apps/vpn/appconstants.h \
@@ -180,10 +177,7 @@ HEADERS += \
         apps/vpn/tutorialvpn.h \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
-        apps/vpn/update/webupdater.h \
-        apps/vpn/websocket/exponentialbackoffstrategy.h \
-        apps/vpn/websocket/pushmessage.h \
-        apps/vpn/websocket/websockethandler.h
+        apps/vpn/update/webupdater.h
 
 
 RESOURCES += apps/vpn/ui/resources.qrc

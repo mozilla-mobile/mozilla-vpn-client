@@ -15,6 +15,9 @@ void TestPushMessage::tst_invalidMessagesAreIgnored() {
 }
 
 void TestPushMessage::tst_validMessagesAreParsedAndExecuted() {
+  PushMessage::registerPushMessageType(
+      "TEST_MESSAGE", [](const QJsonObject& payload) -> bool { return true; });
+
   QString msg = "{\"type\": \"TEST_MESSAGE\"}";
   PushMessage message(msg);
   message.executeAction();
