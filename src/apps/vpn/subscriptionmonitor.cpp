@@ -5,8 +5,6 @@
 #include "subscriptionmonitor.h"
 
 #include <QCoreApplication>
-#include <QMetaMethod>
-#include <QMetaObject>
 
 #include "appconstants.h"
 #include "connectionhealth.h"
@@ -16,6 +14,8 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "tasks/function/taskfunction.h"
+#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger("SubscriptionMonitor");
@@ -40,21 +40,59 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
             }
           });
 
+  //
+  // Send a network request to check if the subscription status is
+  // active
+  //    TaskFunction* task = new TaskFunction([]() {});
+  //    NetworkRequest* request = new NetworkRequest(task, 200);
+  //    request->auth(MozillaVPN::authorizationHeader());
+  //    request->get(AppConstants::apiUrl(AppConstants::Account));
+
+  TaskGetSubscriptionDetails* subscriptionDetailsTask =
+      new TaskGetSubscriptionDetails(
+          TaskGetSubscriptionDetails::RunAuthenticationFlowIfNeeded,
+          ErrorHandler::PropagateError);
+
   connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          []() {
+          [subscriptionDetailsTask]() {
             Controller::State state =
                 MozillaVPN::instance()->controller()->state();
             if (state == Controller::StateOff) {
               logger.debug() << "User has toggled the VPN off";
 
-              // Send a network request to check if the subscription status is
-              // active
-              TaskFunction* task = new TaskFunction([]() {});
-              NetworkRequest* request = new NetworkRequest(task, 200);
-              request->auth(MozillaVPN::authorizationHeader());
-              request->get(AppConstants::apiUrl(AppConstants::Account));
+              TaskScheduler::scheduleTask(subscriptionDetailsTask);
             }
           });
+
+  connect(subscriptionDetailsTask,
+          &TaskGetSubscriptionDetails::needsAuthentication, this, [] {
+            // TODO
+          });
+
+  connect(subscriptionDetailsTask,
+          &TaskGetSubscriptionDetails::operationCompleted, this, []() {
+            // TODO
+          });
+
+  //    connect(request, &NetworkRequest::requestFailed, this,
+  //            [](QNetworkReply::NetworkError error,
+  //                                          const QByteArray&) {
+  //              logger.error() << "Account request failed" << error;
+  //              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
+  //                                 "PreActivationSubscriptionCheck");
+  //
+  //              // Check if the error propagation has changed the Mozilla VPN
+  //              // state. Continue only if the user is still authenticated and
+  //              // subscribed.
+  //              if (App::instance()->state() != App::StateMain) {
+  //                return;
+  //              }
+  //            });
+  //
+  //    connect(request, &NetworkRequest::requestCompleted, this,
+  //            [](const QByteArray& data) {
+  //              MozillaVPN::instance()->accountChecked(data);
+  //            });
 }
 
 SubscriptionMonitor::~SubscriptionMonitor() {
