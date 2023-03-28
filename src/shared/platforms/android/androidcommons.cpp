@@ -71,7 +71,7 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
   runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
     QJniObject::callStaticMethod<void>(
-        UTILS_CLASS, "initializeGlean",
+        COMMON_UTILS_CLASS, "initializeGlean",
         "(Landroid/content/Context;ZLjava/lang/String;)V",
         getActivity().object(), (jboolean)isTelemetryEnabled,
         QJniObject::fromString(channel).object());
@@ -95,4 +95,30 @@ void AndroidCommons::dispatchToMainThread(std::function<void()> callback) {
     timer->deleteLater();
   });
   QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
+}
+
+QString AndroidCommons::GetManufacturer() {
+  QJniEnvironment env;
+  jclass buildClass = env->FindClass("android/os/Build");
+  jfieldID manuFacturerField =
+      env->GetStaticFieldID(buildClass, "MANUFACTURER", "Ljava/lang/String;");
+  jstring value =
+      (jstring)env->GetStaticObjectField(buildClass, manuFacturerField);
+
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    logger.error() << "Failed to fetch MANUFACTURER";
+    return QByteArray();
+  }
+  QString res(buffer);
+  logger.info() << "MANUFACTURER: " << res;
+  env->ReleaseStringUTFChars(value, buffer);
+  return res;
+}
+
+void AndroidCommons::launchPlayStore() {
+  auto appActivity = AndroidCommons::getActivity();
+  QJniObject::callStaticMethod<void>(UTILS_CLASS, "launchPlayStore",
+                                     "(Landroid/app/Activity;)V",
+                                     appActivity.object());
 }

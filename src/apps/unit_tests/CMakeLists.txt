@@ -51,6 +51,7 @@ target_link_libraries(app_unit_tests PRIVATE
     glean
     qtglean
     shared-sources
+    translations_unit_tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -74,10 +75,22 @@ target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
     mocsentryadapter.cpp
+    testaddon.cpp
+    testaddon.h
+    testaddonapi.cpp
+    testaddonapi.h
+    testaddonindex.cpp
+    testaddonindex.h
+    testaddonsessionstate.cpp
+    testaddonsessionstate.h
+    testaddonstatebase.cpp
+    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
-    testcheckedint.h
     testcheckedint.cpp
+    testcheckedint.h
+    testcomposer.cpp
+    testcomposer.h
     testenv.cpp
     testenv.h
     testfeature.cpp
@@ -110,7 +123,12 @@ target_sources(app_unit_tests PRIVATE
     testthemes.h
     testurlopener.cpp
     testurlopener.h
-    ${GENERATED_DIR}/translations.qrc
+    websocket/testexponentialbackoffstrategy.cpp
+    websocket/testexponentialbackoffstrategy.h
+    websocket/testpushmessage.cpp
+    websocket/testpushmessage.h
+    websocket/testwebsockethandler.cpp
+    websocket/testwebsockethandler.h
     ${MZ_SOURCE_DIR}/shared/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h
@@ -124,32 +142,6 @@ if(NOT BUILD_ADJUST_SDK_TOKEN)
         ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
     )
 endif()
-
-file(WRITE ${GENERATED_DIR}/translations.qrc "<RCC>\n    <qresource prefix=\"/i18n\">\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"languages.json\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/languages.json</file>\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"completeness_empty.txt\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/completeness_empty.txt</file>\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"completeness_invalid.txt\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/completeness_invalid.txt</file>\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"completeness_ok.txt\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/completeness_ok.txt</file>\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"translations_fallback.json\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/translations_fallback.json</file>\n")
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"translations.completeness\">${MZ_SOURCE_DIR}/apps/unit_tests/languages/translations.completeness</file>\n")
-
-execute_process(
-    COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_en.ts -qm ${GENERATED_DIR}/unit_test_en.qm)
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_en.qm\">${GENERATED_DIR}/unit_test_en.qm</file>\n")
-
-execute_process(
-    COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_es_CL.ts -qm ${GENERATED_DIR}/unit_test_es_CL.qm)
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_es_CL.qm\">${GENERATED_DIR}/unit_test_es_CL.qm</file>\n")
-
-execute_process(
-    COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_es_ES.ts -qm ${GENERATED_DIR}/unit_test_es_ES.qm)
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_es_ES.qm\">${GENERATED_DIR}/unit_test_es_ES.qm</file>\n")
-
-execute_process(
-    COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${MZ_SOURCE_DIR}/apps/unit_tests/languages/unit_test_es_MX.ts -qm ${GENERATED_DIR}/unit_test_es_MX.qm)
-file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"unit_test_es_MX.qm\">${GENERATED_DIR}/unit_test_es_MX.qm</file>\n")
-
-file(APPEND ${GENERATED_DIR}/translations.qrc "    </qresource>\n</RCC>\n")
 
 ## Add the tests to be run, one for each test class.
 get_target_property(UTEST_SOURCES app_unit_tests SOURCES)
@@ -170,8 +162,11 @@ endforeach()
 
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
+    addons/addons.qrc
+    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
+    tutorials/tutorials.qrc
 )
 
 qt_finalize_target(app_unit_tests)

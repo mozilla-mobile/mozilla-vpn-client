@@ -12,8 +12,7 @@ import components 0.1
 
 MZViewBase {
     id: vpnFlickable
-    //% "Get help"
-    _menuTitle: qsTrId("vpn.main.getHelp2")
+    _menuTitle: MZI18n.GetHelpLinkTitle
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
     _viewContentData: Column {
 
@@ -69,19 +68,6 @@ MZViewBase {
             }
         }
 
-        MZExternalLinkListItem {
-            objectName: "settingsGiveFeedback"
-
-            accessibleName: title
-            title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedback.qml")
-            iconSource: "qrc:/nebula/resources/chevron.svg"
-            iconMirror: MZLocalizer.isRightToLeft
-            backgroundColor: MZTheme.theme.iconButtonLightBackground
-            width: parent.width - MZTheme.theme.windowMargin
-            visible: VPN.userState === VPN.UserAuthenticated
-        }
-
         MZSettingsItem {
             objectName: "developer"
 
@@ -89,8 +75,7 @@ MZViewBase {
             spacing: MZTheme.theme.listSpacing
             anchors.horizontalCenter: parent.horizontalCenter
 
-            //% "Developer Options"
-            settingTitle: qsTrId("vpn.settings.developer")
+            settingTitle: MZI18n.GetHelpDeveloperOptions
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft

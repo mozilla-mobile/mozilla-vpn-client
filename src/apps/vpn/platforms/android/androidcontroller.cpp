@@ -200,12 +200,13 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   args["city"] = localizedCityName;
 
   QJsonObject messages;
-  messages["productName"] = qtTrId("vpn.main.productName");
+  messages["productName"] =
+      I18nStrings::instance()->t(I18nStrings::ProductName);
   messages["connectedHeader"] = I18nStrings::instance()->t(
       I18nStrings::NotificationsVPNConnectedTitle);  // Connected
   messages["connectedBody"] =
       I18nStrings::instance()
-          ->t(I18nStrings::NotificationsVPNConnectedMessage)
+          ->t(I18nStrings::NotificationsVPNConnectedMessages)
           .arg(localizedCityName);
   messages["disconnectedHeader"] = I18nStrings::instance()->t(
       I18nStrings::NotificationsVPNDisconnectedTitle);

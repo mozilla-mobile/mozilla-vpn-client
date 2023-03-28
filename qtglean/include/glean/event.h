@@ -25,8 +25,8 @@ struct EventMetricExtra {
   // a static cast of a specific extra struct into an `EventMetricExtra` struct.
   //
   // We need to static cast, because template classes cannot be annotated with
-  // Q_GADGET or Q_OBJECT like the EventMetric class needs to be, so we have to
-  // have this generic class to use as an argument for `record()`.
+  // Q_OBJECT like the EventMetric class needs to be, so we have to have this
+  // generic class to use as an argument for `record()`.
   //
   // Aggregate initialization is also not available for structs with private
   // fields, so we stick to this ugly __PRIVATE__ prefix.
@@ -53,19 +53,13 @@ struct EventMetricExtraParser {
   }
 };
 
-class EventMetric final {
-  Q_GADGET
+class EventMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(EventMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  EventMetric() = default;
-  EventMetric(const EventMetric&) = default;
-  EventMetric& operator=(const EventMetric&) = default;
-
   explicit EventMetric(
       int id, EventMetricExtraParser* parser = new EventMetricExtraParser());
-  ~EventMetric() = default;
 
   Q_INVOKABLE void record() const;
 
@@ -81,7 +75,7 @@ class EventMetric final {
       const QString& pingName = "") const;
 
  private:
-  int m_id;
+  const int m_id;
   EventMetricExtraParser* m_parser;
 };
 

@@ -117,12 +117,10 @@ MZViewBase {
                                                     _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                                   })
             }
-
+            
             MZSettingsItem {
-                //% "Give feedback"
-                property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
                 objectName: "settingsGetHelp"
-                settingTitle: qsTrId("vpn.main.getHelp2")
+                settingTitle: MZI18n.GetHelpLinkTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -135,7 +133,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "settingsAboutUs"
-                settingTitle: qsTrId("vpn.settings.aboutUs")
+                settingTitle: MZI18n.AboutUsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft

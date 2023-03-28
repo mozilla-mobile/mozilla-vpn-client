@@ -581,6 +581,7 @@ sample:
     lifetime: ping
     send_in_pings:
       - main
+      - vpnsession
     description: |
       The connection has no signal
     bugs:
@@ -598,6 +599,7 @@ sample:
     lifetime: ping
     send_in_pings:
       - main
+      - vpnsession
     description: |
       The connection is unstable
     bugs:
@@ -608,6 +610,23 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+    expires: never
+
+  connection_health_stable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+    description: |
+      The connection health check has no problems
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4065
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6456#pullrequestreview-1360843302
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
     expires: never
 
   connection_info_opened:
@@ -1032,6 +1051,7 @@ sample:
     lifetime: ping
     send_in_pings:
       - main
+      - vpnsession
     description: |
       The controller state flow (off, connecting, switching, etc).
     bugs:
@@ -1544,7 +1564,6 @@ sample:
       type:
         description: |
           The message type.
-          Either 'DEVICE_DELETED', 'TEST_MESSAGE' or 'unknown'.
         type: string
 
   device_removed:

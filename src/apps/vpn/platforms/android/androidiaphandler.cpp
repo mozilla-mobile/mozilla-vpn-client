@@ -130,15 +130,6 @@ void AndroidIAPHandler::nativeRestoreSubscription() {
   emit subscriptionFailed();
 }
 
-void AndroidIAPHandler::launchPlayStore() {
-  maybeInit();
-  Q_ASSERT(m_init);
-  auto appActivity = AndroidCommons::getActivity();
-  QJniObject::callStaticMethod<void>(
-      "org/mozilla/firefox/vpn/qt/InAppPurchase", "launchPlayStore",
-      "(Landroid/app/Activity;)V", appActivity.object());
-}
-
 // Call backs from JNI - Successes
 
 // static

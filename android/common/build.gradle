@@ -14,6 +14,9 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         Config.targetSdkVersion
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
+
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -39,4 +42,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
+    implementation project(path: ':qtglean')
 }

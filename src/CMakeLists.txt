@@ -43,7 +43,16 @@ endif()
 include(shared/sources.cmake)
 include(apps/vpn/cmake/sources.cmake)
 
-target_link_libraries(mozillavpn PRIVATE shared-sources mozillavpn-sources glean lottie nebula translations qtglean)
+target_link_libraries(mozillavpn PRIVATE
+    shared-sources
+    mozillavpn-sources
+    glean
+    lottie
+    nebula
+    translations_vpn
+    qtglean
+)
+
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
 target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
@@ -56,7 +65,7 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 qt6_add_qml_module(mozillavpn
-  URI Mozilla.VPN.qmlcomponents
+  URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
 

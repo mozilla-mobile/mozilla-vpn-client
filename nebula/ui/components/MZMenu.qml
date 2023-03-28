@@ -49,7 +49,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: MZTheme.theme.windowMargin / 2
 
-        accessibleName: _menuIconButtonSource.includes("close") ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
+        accessibleName: _menuIconButtonSource.includes("close") ? MZI18n.GlobalClose : MZI18n.GlobalGoBack
         Accessible.ignored: accessibleIgnored
         height: MZTheme.theme.rowHeight
         width: MZTheme.theme.rowHeight

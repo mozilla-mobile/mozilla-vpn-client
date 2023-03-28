@@ -449,8 +449,7 @@ Item {
         id: connectionInfoToggleButton
         objectName: "connectionInfoToggleButton"
 
-        //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             left: parent.left
@@ -458,7 +457,7 @@ Item {
             top: parent.top
             topMargin: MZTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoOpenButton
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoStartSpeedTest
         Accessible.ignored: !visible
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && !ipInfoPanel.isOpen
@@ -637,8 +636,7 @@ Item {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
-        //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             right: parent.right
@@ -648,7 +646,7 @@ Item {
         }
         accessibleName: ipInfoPanel.isOpen
             ? connectionInfoCloseText
-            : MZI18n.ConnectionInfoIpInfoButtonLabel
+            : MZI18n.ConnectionInfoConnectionInformation
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0

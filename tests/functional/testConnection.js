@@ -55,7 +55,7 @@ describe('Connectivity', function() {
     });
 
     assert.equal(vpn.lastNotification().title, 'VPN Connected');
-    assert(vpn.lastNotification().message.startsWith('Connected to '));
+    assert(vpn.lastNotification().message.startsWith('Connected through '));
   });
 
   it('Disconnecting and disconnected', async () => {

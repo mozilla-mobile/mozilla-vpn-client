@@ -17,9 +17,9 @@ MZScreenBase {
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")
     }
     Connections {
-        target: VPNTutorial
+        target: MZTutorial
         function onPlayingChanged() {
-           if (VPNTutorial.playing) {
+           if (MZTutorial.playing) {
                getStack().pop(null, StackView.Immediate)
            }
         }

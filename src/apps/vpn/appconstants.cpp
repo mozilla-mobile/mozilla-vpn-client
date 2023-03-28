@@ -41,11 +41,9 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
       {ApiEndpoint::Device, "/api/v1/vpn/device"},
       {ApiEndpoint::DeviceWithPublicKeyArgument, "/api/v1/vpn/device/%1"},
       {ApiEndpoint::DNSDetectPortal, "/api/v1/vpn/dns/detectportal"},
-      {ApiEndpoint::Feedback, "/api/v1/vpn/feedback"},
       {ApiEndpoint::Heartbeat, "/__heartbeat__"},
       {ApiEndpoint::IPInfo, "/api/v1/vpn/ipinfo"},
       {ApiEndpoint::LoginVerify, "/api/v2/vpn/login/verify"},
-      {ApiEndpoint::Products, "/api/v3/vpn/products"},
 #ifdef MZ_ANDROID
       {ApiEndpoint::PurchasesAndroid, "/api/v1/vpn/purchases/android"},
 #endif

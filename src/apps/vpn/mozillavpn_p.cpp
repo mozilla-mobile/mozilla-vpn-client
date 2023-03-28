@@ -27,10 +27,6 @@ DeviceModel* MozillaVPN::deviceModel() const {
   return &m_private->m_deviceModel;
 }
 
-FeedbackCategoryModel* MozillaVPN::feedbackCategoryModel() const {
-  return &m_private->m_feedbackCategoryModel;
-}
-
 IpAddressLookup* MozillaVPN::ipAddressLookup() const {
   return &m_private->m_ipAddressLookup;
 }

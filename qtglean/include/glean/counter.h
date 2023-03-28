@@ -8,18 +8,12 @@
 
 #include "errortype.h"
 
-class CounterMetric final {
-  Q_GADGET
+class CounterMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(CounterMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  CounterMetric() = default;
-  CounterMetric(const CounterMetric&) = default;
-  CounterMetric& operator=(const CounterMetric&) = default;
-
   explicit CounterMetric(int aId);
-  ~CounterMetric() = default;
 
   Q_INVOKABLE void add(int amount = 1) const;
 
@@ -29,7 +23,7 @@ class CounterMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // COUNTER_H

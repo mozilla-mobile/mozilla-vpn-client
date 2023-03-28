@@ -12,7 +12,8 @@ import websocket from 'websocket';
 import WBK from 'wikibase-sdk';
 
 const DEFAULT_MOZILLAVPN = '../../build/src/mozillavpn';
-const LANGUAGES_OUTPUT_FILE = '../../translations/languages.json';
+const LANGUAGES_OUTPUT_FILE =
+    '../../src/apps/vpn/translations/extras/languages.json';
 
 const LanguageLocalizer = {
   get vpn() {

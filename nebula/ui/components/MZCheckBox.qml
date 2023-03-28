@@ -47,6 +47,7 @@ CheckBox {
     Accessible.focusable: true
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
+    font.pixelSize: undefined
 
     states: [
         State {
@@ -99,7 +100,8 @@ CheckBox {
     indicator: Rectangle {
         id: checkBoxIndicator
 
-        anchors.fill: parent
+        height: MZTheme.theme.checkBoxHeightWidth
+        width: MZTheme.theme.checkBoxHeightWidth
         color: MZTheme.theme.bgColor
         border.color: checkBox.checked ? MZTheme.theme.blue : MZTheme.theme.fontColor
         border.width: 2

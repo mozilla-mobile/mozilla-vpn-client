@@ -54,7 +54,9 @@ git submodule update --init --depth 1 || die "Failed to init submodules"
 # Technically we do not need the following line because we later call the
 # apple compile script which calls import languages. However when we move to cmake
 # for iOS we can remove the call to import languages and this step will be necessary
-git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+for i in src/apps/*/translations/i18n; do
+  git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
+done
 print G "done."
 
 print Y "Configuring the build..."

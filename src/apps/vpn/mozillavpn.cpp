@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 
+#include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
@@ -40,6 +41,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "subscriptionmonitor.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -56,11 +58,11 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
 #include "telemetry/gleansample.h"
+#include "tutorialvpn.h"
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
@@ -218,6 +220,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   registerInspectorCommands();
 
+  registerAddonApis();
+
+  TutorialVPN::registerTutorialSteps();
+
+  registerExternalOperations();
+
+  registerPushMessageTypes();
+
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
 }
@@ -276,6 +286,8 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  SubscriptionMonitor::instance();
 
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
@@ -690,28 +702,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   }
 }
 
-void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
-                                const QString& category) {
-  logger.debug() << "Submit Feedback";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, feedbackText, rating, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskSendFeedback so we can delete it
-        // afterwards
-        TaskScheduler::scheduleTask(
-            new TaskSendFeedback(feedbackText, *buffer, rating, category));
-
-        delete buffer;
-        delete out;
-      });
-}
-
 void MozillaVPN::createSupportTicket(const QString& email,
                                      const QString& subject,
                                      const QString& issueText,
@@ -1011,9 +1001,8 @@ void MozillaVPN::silentSwitch() {
   // here, the connection does not work and we don't want to wait for timeouts
   // to run the silenct-switch.
   TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNeeded));
+  TaskScheduler::scheduleTask(new TaskControllerAction(
+      TaskControllerAction::eSilentSwitch, Controller::eServerCoolDownNeeded));
 }
 
 void MozillaVPN::refreshDevices() {
@@ -1669,26 +1658,11 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededIAP,
+      MozillaVPN::ScreenSubscriptionNeeded,
       Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededIAP.qml",
+      "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
       QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
-                                                                         : 99;
-      },
-      []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededWeb,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
-      QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
-                                                                         : -1;
-      },
-      []() -> bool { return false; });
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSubscriptionNotValidated,
@@ -1827,11 +1801,6 @@ void MozillaVPN::registerNavigationBarButtons() {
           [messageIcon]() { resetNotification(messageIcon); });
 
   resetNotification(messageIcon);
-}
-
-bool MozillaVPN::handleCloseEvent() {
-  return !ExternalOpHandler::instance()->request(
-      ExternalOpHandler::OpCloseEvent);
 }
 
 // static
@@ -2170,4 +2139,90 @@ QString MozillaVPN::appVersionForUpdate() {
   }
 
   return s_updateVersion;
+}
+
+// static
+void MozillaVPN::registerAddonApis() {
+  AddonApi::setConstructorCallback([](AddonApi* addonApi) {
+    QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+    {
+      QObject* obj = MozillaVPN::instance()->controller();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+
+      addonApi->insert("controller", QVariant::fromValue(value));
+    }
+
+    {
+      QObject* obj = MozillaVPN::instance()->subscriptionData();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(
+          engine->newQMetaObject(&SubscriptionData::staticMetaObject));
+
+      addonApi->insert("subscriptionData", QVariant::fromValue(value));
+    }
+
+    {
+      QObject* obj = MozillaVPN::instance();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(engine->newQMetaObject(&MozillaVPN::staticMetaObject));
+
+      addonApi->insert("vpn", QVariant::fromValue(value));
+    }
+  });
+}
+
+// static
+void MozillaVPN::registerExternalOperations() {
+  ExternalOpHandler* eoh = ExternalOpHandler::instance();
+
+  eoh->registerExternalOperation(
+      OpAbout, []() { MozillaVPN::instance()->requestAbout(); });
+
+  eoh->registerExternalOperation(OpActivate, []() {
+    TaskScheduler::deleteTasks();
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eActivate));
+  });
+
+  eoh->registerExternalOperation(OpDeactivate, []() {
+    TaskScheduler::deleteTasks();
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eDeactivate));
+  });
+
+  eoh->registerExternalOperation(OpNotificationClicked, []() {});
+
+  eoh->registerExternalOperation(
+      OpQuit, []() { MozillaVPN::instance()->controller()->quit(); });
+}
+
+void MozillaVPN::registerPushMessageTypes() {
+  PushMessage::registerPushMessageType(
+      "DEVICE_DELETED", [](const QJsonObject& payload) -> bool {
+        const QString& publicKey = payload["publicKey"].toString();
+        if (publicKey.isEmpty()) {
+          logger.error() << "Malformed message payload for DeviceDeleted "
+                            "message. Ignoring.";
+          return false;
+        }
+
+        MozillaVPN* vpn = MozillaVPN::instance();
+        if (vpn->keys()->publicKey() == publicKey) {
+          logger.info()
+              << "Current device has been deleted from this subscription.";
+          vpn->reset(true);
+          return true;
+        }
+
+        MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
+        return true;
+      });
 }

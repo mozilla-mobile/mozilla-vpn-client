@@ -8,18 +8,12 @@
 
 #include "errortype.h"
 
-class BooleanMetric final {
-  Q_GADGET
+class BooleanMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(BooleanMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  BooleanMetric() = default;
-  BooleanMetric(const BooleanMetric&) = default;
-  BooleanMetric& operator=(const BooleanMetric&) = default;
-
   explicit BooleanMetric(int aId);
-  ~BooleanMetric() = default;
 
   Q_INVOKABLE void set(bool value = true) const;
 
@@ -28,7 +22,7 @@ class BooleanMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // BOOLEAN_H

@@ -63,7 +63,7 @@ MZFlickable {
                     MZLottieAnimation {
                         id: speedometerAnimation
                         loop: false
-                        source: ":/nebula/resources/animations/speedometer_animation.json"
+                        source: ":/ui/resources/animations/speedometer_animation.json"
                     }
                 }
 

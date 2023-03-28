@@ -15,7 +15,7 @@ MZInAppAuthenticationBase {
     _menuButtonOnClick: () => { VPN.cancelAuthentication() }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
-    _menuButtonAccessibleName:  qsTrId("vpn.main.back")
+    _menuButtonAccessibleName:  MZI18n.GlobalGoBack
     _headlineText: "Mozilla VPN"
     _subtitleText: MZI18n.InAppAuthEnterEmailAddressDescription
     _imgSource: "qrc:/ui/resources/logo.svg"
@@ -25,7 +25,7 @@ MZInAppAuthenticationBase {
         objectName: "authStart"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)
         _buttonOnClicked: (inputText) => { MZAuthInApp.checkAccount(inputText); }
-        _buttonText: qsTrId("vpn.postAuthentication.continue")
+        _buttonText: MZI18n.GlobalContinue
         _inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhEmailCharactersOnly | Qt.ImhNoAutoUppercase | Qt.ImhSensitiveData
         _inputPlaceholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
     }

@@ -7,23 +7,17 @@
 
 #include <QObject>
 
-class Ping final {
-  Q_GADGET
+class Ping final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(Ping)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  Ping() = default;
-  Ping(const Ping&) = default;
-  Ping& operator=(const Ping&) = default;
-
   explicit Ping(int aId);
-  ~Ping() = default;
 
   Q_INVOKABLE void submit() const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // PING_H

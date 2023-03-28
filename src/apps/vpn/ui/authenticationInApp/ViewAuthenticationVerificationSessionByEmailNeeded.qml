@@ -22,7 +22,7 @@ MZInAppAuthenticationBase {
             MZAuthInApp.reset();
         }
     }
-    _menuButtonAccessibleName: qsTrId("vpn.connectionInfo.close")
+    _menuButtonAccessibleName: MZI18n.GlobalClose
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"

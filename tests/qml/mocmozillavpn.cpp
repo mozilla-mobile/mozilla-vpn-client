@@ -115,8 +115,6 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
 
-void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
-
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
@@ -143,8 +141,6 @@ void MozillaVPN::updateViewShown() {}
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
-
-bool MozillaVPN::handleCloseEvent() { return true; }
 
 // static
 QString MozillaVPN::appVersionForUpdate() { return "42"; }

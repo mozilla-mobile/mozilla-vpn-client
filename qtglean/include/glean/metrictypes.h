@@ -13,5 +13,6 @@
 #include "quantity.h"
 #include "string.h"
 #include "timingdistribution.h"
+#include "uuid.h"
 
 #endif
