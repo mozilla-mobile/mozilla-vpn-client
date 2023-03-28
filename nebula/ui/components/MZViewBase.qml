@@ -16,6 +16,7 @@ Item {
    property var _menuOnBackClicked
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
+   property alias _contentHeight: vpnFlickable.contentHeight
 
    anchors {
        top: if (parent) parent.top

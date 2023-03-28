@@ -16,6 +16,26 @@ MZViewBase {
 
     //% "Language"
     _menuTitle :  qsTrId("vpn.settings.language")
+
+    function centerSelectedLanguage() {
+        for (let idx = 0; idx < repeater.count; idx++) {
+            const langItem = repeater.itemAt(idx);
+            if (langItem.isSelectedLanguage) {
+                //If the item is near the top and can't be centered, don't scroll
+                if(langItem.mapToItem(vpnFlickable, 0, 0).y < (vpnFlickable.height / 2) + (langItem.height / 2)) {
+                    return
+                }
+                //If the item is near the bottom and can't be centered, scroll all the way to the bottom
+                if(langItem.mapToItem(vpnFlickable, 0, 0).y - (vpnFlickable.height / 2) + (langItem.height / 2) + vpnFlickable.height > vpnFlickable._contentHeight) {
+                    vpnFlickable.setContentY(vpnFlickable._contentHeight - vpnFlickable.height)
+                    return
+                }
+                //Otherwise center the item
+                vpnFlickable.setContentY(langItem.mapToItem(vpnFlickable, 0, 0).y - (vpnFlickable.height / 2) + (langItem.height / 2))
+            }
+        }
+    }
+
     _viewContentData: ColumnLayout {
         id: col
         objectName: "languageList"
@@ -82,7 +102,7 @@ MZViewBase {
                 text: MZI18n.LanguageViewSystemLanguageButtonDescription
             }
 
-            Rectangle {                
+            Rectangle {
                 Layout.preferredHeight: 1
                 Layout.fillWidth: true
                 Layout.topMargin: MZTheme.theme.vSpacing
@@ -98,20 +118,7 @@ MZViewBase {
 
             model: searchBar.getProxyModel()
 
-            Component.onCompleted: {
-                for (let idx = 0; idx < repeater.count; idx++) {
-                    const langItem = repeater.itemAt(idx);
-                    if (langItem.isSelectedLanguage) {
-                        const yCenter = vpnFlickable.height / 2;
-                        const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + MZTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
-                        const destinationY = (selectedItemYPosition + vpnFlickable.height >col.implicitHeight) ? col.implicitHeight - vpnFlickable.height / 2: selectedItemYPosition;
-                        if (destinationY < 0) {
-                            return;
-                        }
-                        setContentY(destinationY)
-                    }
-                }
-            }
+            Component.onCompleted: vpnFlickable.centerSelectedLanguage()
 
             delegate: ColumnLayout {
                 id: del
