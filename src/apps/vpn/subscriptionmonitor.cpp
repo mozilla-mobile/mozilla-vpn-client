@@ -12,9 +12,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
-#include "tasks/function/taskfunction.h"
-#include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
+#include "tasks/account/taskaccount.h"
 #include "taskscheduler.h"
 
 namespace {
@@ -32,67 +30,29 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
    */
 
   connect(MozillaVPN::instance()->connectionHealth(),
-          &ConnectionHealth::stabilityChanged, this, []() {
+          &ConnectionHealth::stabilityChanged, this, [this]() {
             if (MozillaVPN::instance()->connectionHealth()->stability() ==
-                ConnectionHealth::NoSignal) {
-              logger.debug() << "VPN connection stability is NoSignal";
-              // TODO: What else do I need to do here?
+                    ConnectionHealth::NoSignal &&
+                MozillaVPN::instance()->controller()->state() ==
+                    Controller::StateOn) {
+              logger.debug() << "VPN connection stability is No Signal";
+              m_noSignalState = true;
             }
           });
-
-  //
-  // Send a network request to check if the subscription status is
-  // active
-  //    TaskFunction* task = new TaskFunction([]() {});
-  //    NetworkRequest* request = new NetworkRequest(task, 200);
-  //    request->auth(MozillaVPN::authorizationHeader());
-  //    request->get(AppConstants::apiUrl(AppConstants::Account));
-
-  TaskGetSubscriptionDetails* subscriptionDetailsTask =
-      new TaskGetSubscriptionDetails(
-          TaskGetSubscriptionDetails::RunAuthenticationFlowIfNeeded,
-          ErrorHandler::PropagateError);
 
   connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          [subscriptionDetailsTask]() {
+          [this]() {
             Controller::State state =
                 MozillaVPN::instance()->controller()->state();
-            if (state == Controller::StateOff) {
-              logger.debug() << "User has toggled the VPN off";
+            if (state == Controller::StateOff && m_noSignalState == true) {
+              logger.debug() << "User has toggled the VPN off after No Signal";
+              TaskScheduler::scheduleTask(
+                  new TaskAccount(ErrorHandler::DoNotPropagateError));
 
-              TaskScheduler::scheduleTask(subscriptionDetailsTask);
+              // Reset the state tracker
+              m_noSignalState = false;
             }
           });
-
-  connect(subscriptionDetailsTask,
-          &TaskGetSubscriptionDetails::needsAuthentication, this, [] {
-            // TODO
-          });
-
-  connect(subscriptionDetailsTask,
-          &TaskGetSubscriptionDetails::operationCompleted, this, []() {
-            // TODO
-          });
-
-  //    connect(request, &NetworkRequest::requestFailed, this,
-  //            [](QNetworkReply::NetworkError error,
-  //                                          const QByteArray&) {
-  //              logger.error() << "Account request failed" << error;
-  //              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
-  //                                 "PreActivationSubscriptionCheck");
-  //
-  //              // Check if the error propagation has changed the Mozilla VPN
-  //              // state. Continue only if the user is still authenticated and
-  //              // subscribed.
-  //              if (App::instance()->state() != App::StateMain) {
-  //                return;
-  //              }
-  //            });
-  //
-  //    connect(request, &NetworkRequest::requestCompleted, this,
-  //            [](const QByteArray& data) {
-  //              MozillaVPN::instance()->accountChecked(data);
-  //            });
 }
 
 SubscriptionMonitor::~SubscriptionMonitor() {
