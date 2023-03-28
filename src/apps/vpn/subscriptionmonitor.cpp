@@ -49,8 +49,14 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
               TaskScheduler::scheduleTask(
                   new TaskAccount(ErrorHandler::DoNotPropagateError));
 
-              // Reset the state tracker
-              m_noSignalState = false;
+              // Reset the state tracker if the VPN is in StateOn and we are no
+              // longer in No Signal
+              if (MozillaVPN::instance()->controller()->state() ==
+                  Controller::StateOn) {
+                m_noSignalState =
+                    (MozillaVPN::instance()->connectionHealth()->stability() ==
+                     ConnectionHealth::NoSignal);
+              }
             }
           });
 }
