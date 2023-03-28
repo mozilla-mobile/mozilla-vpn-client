@@ -39,11 +39,11 @@ extern {{ obj|type_name }} {{obj.name|snake_case }};
 } // namespace mozilla::glean
 
 {% for category_name, objs in all_objs.items() %}
-class __DONOTUSE__{{ category_name|Camelize }} final {
-  Q_GADGET
+class __DONOTUSE__{{ category_name|Camelize }} final : public QObject {
+  Q_OBJECT
 
 {% for obj in objs.values() %}
-  Q_PROPERTY({{ obj|type_name }} {{obj.name|camelize }} READ {{ obj.name|camelize }} CONSTANT);
+  Q_PROPERTY({{ obj|type_name }}* {{obj.name|camelize }} READ {{ obj.name|camelize }}Getter CONSTANT);
 {% endfor %}
 
   public:
@@ -51,7 +51,8 @@ class __DONOTUSE__{{ category_name|Camelize }} final {
     ~__DONOTUSE__{{ category_name|Camelize }}() = default;
 
     {% for obj in objs.values() %}
-    {{ obj|type_name }} {{obj.name|camelize }} () const { return mozilla::glean::{{ category_name|snake_case }}::{{obj.name|snake_case }}; };
+    {{ obj|type_name }}* {{obj.name|camelize }}Getter () { return &mozilla::glean::{{ category_name|snake_case }}::{{obj.name|snake_case }}; };
+    const {{ obj|type_name }}& {{obj.name|camelize }} () const { return mozilla::glean::{{ category_name|snake_case }}::{{obj.name|snake_case }}; };
     {% endfor %}
 };
 {% endfor %}
@@ -67,7 +68,7 @@ class __DONOTUSE__GleanMetrics final : public QObject {
     Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanMetrics)
 
     {% for category_name, _ in all_objs.items() %}
-    Q_PROPERTY(__DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} READ {{ category_name|camelize }} CONSTANT);
+    Q_PROPERTY(__DONOTUSE__{{ category_name|Camelize }}* {{ category_name|camelize }} READ {{ category_name|camelize }}Getter CONSTANT);
     {% endfor %}
 
     private:
@@ -85,7 +86,8 @@ class __DONOTUSE__GleanMetrics final : public QObject {
         }
 
         {% for category_name, _ in all_objs.items() %}
-        __DONOTUSE__{{ category_name|Camelize }} {{ category_name|camelize }} () const { return m_{{ category_name|camelize }}; };
+        __DONOTUSE__{{ category_name|Camelize }}* {{ category_name|camelize }}Getter () { return &m_{{ category_name|camelize }}; };
+        const __DONOTUSE__{{ category_name|Camelize }}& {{ category_name|camelize }} () const { return m_{{ category_name|camelize }}; };
         {% endfor %}
 
     private:

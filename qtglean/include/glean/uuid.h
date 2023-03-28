@@ -8,16 +8,11 @@
 
 #include "errortype.h"
 
-class UuidMetric final {
-  Q_GADGET
+class UuidMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(UuidMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  UuidMetric() = default;
-  UuidMetric(const UuidMetric&) = default;
-  UuidMetric& operator=(const UuidMetric&) = default;
-
   explicit UuidMetric(int aId);
   ~UuidMetric() = default;
 
@@ -29,7 +24,7 @@ class UuidMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // UUID_H
