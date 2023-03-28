@@ -622,7 +622,7 @@ sample:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4065
     data_reviews:
-      - ADD THIS AFTER DATA REVIEW COMES BACK
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6456#pullrequestreview-1360843302
     data_sensitivity:
       - technical
     notification_emails:
