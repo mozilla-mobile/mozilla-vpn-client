@@ -78,7 +78,7 @@ cmake --build $MOZ_FETCHES_DIR/build --config Release || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
-cp -r $MOZ_FETCHES_DIR/build/build/Release-iphoneos/* tmp || die
+cp -r $MOZ_FETCHES_DIR/build/build/mozillavpn.build/Release-iphoneos/* tmp || die
 cd tmp || die
 
 # From checkout dir to actual task base directory
