@@ -49,6 +49,8 @@ to manually installed. (For example, using Homebrew on macOS:
 `CLANG_FORMAT_DIFF` must be exported. On a standard conda installation:
 `export CLANG_FORMAT_DIFF=$(find ~/miniconda3/pkgs -name clang-format-diff.py)`
 
+3. Install the pre-commit hook: `./scripts/git-pre-commit-format install`
+
 ## Checking out the source code
 
 ```bash
