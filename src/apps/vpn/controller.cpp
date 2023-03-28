@@ -6,11 +6,13 @@
 
 #include "app.h"
 #include "appconstants.h"
+#include "apppermission.h"
 #include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -30,6 +32,8 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
+#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -173,6 +177,9 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  connect(this, &Controller::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -520,6 +527,9 @@ void Controller::connected(const QString& pubkey,
   } else {
     resetConnectedTime();
   }
+
+  mozilla::glean::session::apps_excluded.set(
+      AppPermission::instance()->disabledAppCount());
 
   if (m_nextStep != None) {
     deactivate();

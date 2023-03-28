@@ -62,7 +62,7 @@ void MacOSMenuBar::initialize() {
 
   // Do not use qtTrId here!
   m_aboutAction = fileMenu->addAction("about.vpn", []() {
-    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpAbout);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpAbout);
   });
   m_aboutAction->setMenuRole(QAction::AboutRole);
   m_aboutAction->setVisible(vpn->state() == App::StateMain);

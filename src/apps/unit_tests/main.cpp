@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+
 #include "app.h"
 #include "appconstants.h"
 #include "helper.h"
@@ -14,8 +16,13 @@ QVector<QObject*> TestHelper::testList;
 
 // static
 App* App::instance() {
-  qFatal("This method should not be called");
-  return nullptr;
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
 }
 
 QObject* TestHelper::findTest(const QString& name) {

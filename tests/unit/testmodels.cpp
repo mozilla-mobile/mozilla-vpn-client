@@ -13,7 +13,6 @@
 #include "localizer.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
-#include "models/feedbackcategorymodel.h"
 #include "models/keys.h"
 #include "models/location.h"
 #include "models/recentconnections.h"
@@ -185,8 +184,6 @@ void TestModels::deviceFromJson() {
   QCOMPARE(deviceC.publicKey(), device.publicKey());
   QCOMPARE(deviceC.ipv4Address(), device.ipv4Address());
   QCOMPARE(deviceC.ipv6Address(), device.ipv6Address());
-
-  device = device;
 }
 
 // DeviceModel
@@ -460,29 +457,6 @@ void TestModels::deviceModelRemoval() {
   // We have only 1 device left.
   dm.stopDeviceRemovalFromPublicKey("devicePubkey1", &keys);
   QCOMPARE(dm.rowCount(QModelIndex()), 1);
-}
-
-// Feedback Category
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-void TestModels::feedbackCategoryBasic() {
-  FeedbackCategoryModel fcm;
-
-  QHash<int, QByteArray> rn = fcm.roleNames();
-  QCOMPARE(rn.count(), 2);
-  QCOMPARE(rn[FeedbackCategoryModel::CategoryNameRole], "value");
-  QCOMPARE(rn[FeedbackCategoryModel::LocalizedNameRole], "name");
-
-  QVERIFY(fcm.rowCount(QModelIndex()) > 0);
-  for (int i = 0; i < fcm.rowCount(QModelIndex()); ++i) {
-    QModelIndex index = fcm.index(i, 0);
-    QVERIFY(!fcm.data(index, FeedbackCategoryModel::CategoryNameRole)
-                 .toString()
-                 .isEmpty());
-    QVERIFY(!fcm.data(index, FeedbackCategoryModel::LocalizedNameRole)
-                 .toString()
-                 .isEmpty());
-  }
 }
 
 // Keys
@@ -1211,8 +1185,6 @@ void TestModels::serverFromJson() {
   QCOMPARE(sC.weight(), s.weight());
   QCOMPARE(sC.socksName(), s.socksName());
   QCOMPARE(sC.multihopPort(), s.multihopPort());
-
-  s = s;
 }
 
 void TestModels::serverWeightChooser() {
@@ -1322,8 +1294,6 @@ void TestModels::serverCityFromJson() {
   scC = sc;
   QCOMPARE(scC.name(), sc.name());
   QCOMPARE(scC.code(), sc.code());
-
-  sc = sc;
 }
 
 // ServerCountry
@@ -1391,8 +1361,6 @@ void TestModels::serverCountryFromJson() {
   scC = sc;
   QCOMPARE(scC.name(), sc.name());
   QCOMPARE(scC.code(), sc.code());
-
-  sc = sc;
 }
 
 // ServerCountryModel

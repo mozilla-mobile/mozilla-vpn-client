@@ -19,8 +19,6 @@ class Utils final : public QObject {
 
   Q_INVOKABLE static void storeInClipboard(const QString& text);
 
-  Q_INVOKABLE static void openAppStoreReviewLink();
-
   Q_INVOKABLE static void crashTest();
 
 #ifdef MZ_ANDROID

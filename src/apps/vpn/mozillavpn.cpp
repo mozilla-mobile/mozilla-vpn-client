@@ -4,6 +4,7 @@
 
 #include "mozillavpn.h"
 
+#include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
@@ -56,11 +57,11 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
-#include "tasks/sendfeedback/tasksendfeedback.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
 #include "telemetry/gleansample.h"
+#include "tutorialvpn.h"
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
@@ -217,6 +218,12 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   registerErrorHandlers();
 
   registerInspectorCommands();
+
+  registerAddonApis();
+
+  TutorialVPN::registerTutorialSteps();
+
+  registerExternalOperations();
 
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
@@ -688,28 +695,6 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
     // background and work aync.
     m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
   }
-}
-
-void MozillaVPN::submitFeedback(const QString& feedbackText, const qint8 rating,
-                                const QString& category) {
-  logger.debug() << "Submit Feedback";
-
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, feedbackText, rating, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskSendFeedback so we can delete it
-        // afterwards
-        TaskScheduler::scheduleTask(
-            new TaskSendFeedback(feedbackText, *buffer, rating, category));
-
-        delete buffer;
-        delete out;
-      });
 }
 
 void MozillaVPN::createSupportTicket(const QString& email,
@@ -1828,11 +1813,6 @@ void MozillaVPN::registerNavigationBarButtons() {
   resetNotification(messageIcon);
 }
 
-bool MozillaVPN::handleCloseEvent() {
-  return !ExternalOpHandler::instance()->request(
-      ExternalOpHandler::OpCloseEvent);
-}
-
 // static
 bool MozillaVPN::mockFreeTrial() { return s_mockFreeTrial; }
 
@@ -2169,4 +2149,67 @@ QString MozillaVPN::appVersionForUpdate() {
   }
 
   return s_updateVersion;
+}
+
+// static
+void MozillaVPN::registerAddonApis() {
+  AddonApi::setConstructorCallback([](AddonApi* addonApi) {
+    QJSEngine* engine = QmlEngineHolder::instance()->engine();
+
+    {
+      QObject* obj = MozillaVPN::instance()->controller();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+
+      addonApi->insert("controller", QVariant::fromValue(value));
+    }
+
+    {
+      QObject* obj = MozillaVPN::instance()->subscriptionData();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(
+          engine->newQMetaObject(&SubscriptionData::staticMetaObject));
+
+      addonApi->insert("subscriptionData", QVariant::fromValue(value));
+    }
+
+    {
+      QObject* obj = MozillaVPN::instance();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(engine->newQMetaObject(&MozillaVPN::staticMetaObject));
+
+      addonApi->insert("vpn", QVariant::fromValue(value));
+    }
+  });
+}
+
+// static
+void MozillaVPN::registerExternalOperations() {
+  ExternalOpHandler* eoh = ExternalOpHandler::instance();
+
+  eoh->registerExternalOperation(
+      OpAbout, []() { MozillaVPN::instance()->requestAbout(); });
+
+  eoh->registerExternalOperation(OpActivate, []() {
+    TaskScheduler::deleteTasks();
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eActivate));
+  });
+
+  eoh->registerExternalOperation(OpDeactivate, []() {
+    TaskScheduler::deleteTasks();
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eDeactivate));
+  });
+
+  eoh->registerExternalOperation(OpNotificationClicked, []() {});
+
+  eoh->registerExternalOperation(
+      OpQuit, []() { MozillaVPN::instance()->controller()->quit(); });
 }

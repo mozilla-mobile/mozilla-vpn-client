@@ -6,7 +6,6 @@
         <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/animations/vpnlogo-drop_animation.json</file>
         <file>resources/animations/vpnlogo-kinetic_animation.json</file>
-        <file>resources/app-rating.svg</file>
         <file>resources/chevron-purple.svg</file>
         <file>resources/connection-error-unstable.svg</file>
         <file>resources/connection-info-dark.svg</file>
@@ -14,11 +13,6 @@
         <file>resources/devices.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/encodedPassword.txt</file>
-        <file>resources/faces/average.svg</file>
-        <file>resources/faces/good.svg</file>
-        <file>resources/faces/poor.svg</file>
-        <file>resources/faces/veryGood.svg</file>
-        <file>resources/faces/veryPoor.svg</file>
          <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -327,7 +321,6 @@
         <file>resources/settings/apps.svg</file>
         <file>resources/settings/apppermissions.svg</file>
         <file>resources/settings/dnssettings.svg</file>
-        <file>resources/settings/feedback.svg</file>
         <file>resources/settings/getHelp.svg</file>
         <file>resources/settings/language.svg</file>
         <file>resources/settings/notifications.svg</file>
