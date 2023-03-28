@@ -26,7 +26,8 @@ class SubscriptionMonitor final : public QObject {
   explicit SubscriptionMonitor(QObject* parent);
 
  private:
-  ConnectionHealth::ConnectionStability m_lastKnownStabilityState;
+  ConnectionHealth::ConnectionStability m_lastKnownStabilityState =
+      ConnectionHealth::ConnectionStability::Stable;
 };
 
 #endif  // SUBSCRIPTIONMONITOR_H
