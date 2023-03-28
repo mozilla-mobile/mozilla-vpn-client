@@ -30,7 +30,6 @@ class SupportCategoryModel final : public QAbstractListModel {
   int rowCount(const QModelIndex&) const override;
 
   QVariant data(const QModelIndex& index, int role) const override;
-
 };
 
 #endif  // SUPPORTCATEGORYMODEL_H
