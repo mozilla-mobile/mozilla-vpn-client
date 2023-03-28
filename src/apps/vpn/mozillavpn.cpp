@@ -41,6 +41,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "subscriptionmonitor.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -285,6 +286,8 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  SubscriptionMonitor::instance();
 
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();

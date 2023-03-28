@@ -170,6 +170,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/subscriptionmonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/subscriptionmonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.cpp
