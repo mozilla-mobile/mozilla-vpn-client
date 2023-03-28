@@ -7,9 +7,9 @@
 #include "constants.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "telemetry/gleansample.h"
 #include "versionapi.h"
 #include "webupdater.h"
@@ -75,7 +75,7 @@ Updater::~Updater() {
 // static
 QString Updater::appVersion() {
   if (!Constants::inProduction()) {
-    return InspectorHandler::appVersionForUpdate();
+    return MozillaVPN::appVersionForUpdate();
   }
   return Constants::versionString();
 }

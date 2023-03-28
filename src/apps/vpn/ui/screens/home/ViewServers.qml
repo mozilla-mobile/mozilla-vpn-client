@@ -55,7 +55,7 @@ Item {
             }
         }
 
-        target: VPNNavigator
+        target: MZNavigator
     }
 
     MZSegmentedNavigation {
@@ -123,12 +123,12 @@ Item {
 
         ViewMultiHop {
             id: multiHopStackView
-            visible: VPNFeatureList.get("multiHop").isSupported
+            visible: MZFeatureList.get("multiHop").isSupported
         }
     }
 
     Component.onCompleted: {
-        if (!VPNFeatureList.get("multiHop").isSupported) {
+        if (!MZFeatureList.get("multiHop").isSupported) {
             return;
         }
 

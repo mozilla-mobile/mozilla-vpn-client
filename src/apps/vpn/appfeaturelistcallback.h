@@ -48,14 +48,6 @@ bool FeatureCallback_captivePortal() {
 #endif
 }
 
-bool FeatureCallback_webPurchase() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool FeatureCallback_splitTunnel() {
 #if defined(MZ_ANDROID) || defined(MZ_DUMMY)
   return true;
@@ -115,7 +107,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_ANDROID)
+    defined(MZ_DUMMY) || defined(MZ_WASM)
   return true;
 #else
   return false;

@@ -9,6 +9,7 @@ $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
 $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
 # Switch to the work dir, enable qt, enable msvc, enable rust
+$env:PATH ="$FETCHES_PATH;$QTPATH;$env:PATH"
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
@@ -28,10 +29,6 @@ Remove-Item $FETCHES_PATH/VisualStudio/VC/Tools/MSVC/14.30.30705/bin/HostX64/x64
 # Install python build tooling
 python3 -m pip install -r $SOURCE_DIR/requirements.txt --user
 python3 -m pip install -r $SOURCE_DIR/taskcluster/scripts/requirements.txt --user
-
-# Fix: pip scripts are not on path by default on tc, so glean would fail
-$PYTHON_SCRIPTS =resolve-path "$env:APPDATA\Python\Python36\Scripts"
-$env:PATH ="$FETCHES_PATH;$QTPATH;$PYTHON_SCRIPTS;$env:PATH"
 
 # Setup Go and MinGW up (for gco)
 $env:GOROOT="$FETCHES_PATH\go\"
@@ -64,9 +61,9 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 cmake --version
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-    python3  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #

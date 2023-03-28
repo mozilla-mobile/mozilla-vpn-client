@@ -4,11 +4,11 @@
 
 #include "taskproducts.h"
 
+#include "app.h"
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "productshandler.h"
 
@@ -24,8 +24,8 @@ TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(MozillaVPN::authorizationHeader());
-  request->get(AppConstants::apiUrl(AppConstants::Products));
+  request->get(QString("%1/v1/oauth/subscriptions/iap/plans/%2")
+                   .arg(Constants::fxaApiBaseUrl(), AppConstants::IAP_PLANS));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

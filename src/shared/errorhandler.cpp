@@ -97,15 +97,6 @@ ErrorHandler::ErrorHandler(QObject* parent) : QObject(parent) {
 
 ErrorHandler::~ErrorHandler() { MZ_COUNT_DTOR(ErrorHandler); }
 
-#define ERRORSTATE(name)                           \
-  void ErrorHandler::name##Error() {               \
-    logger.warning() << #name << " error handled"; \
-    emit name();                                   \
-  }
-
-#include "errorlist.h"
-#undef ERRORSTATE
-
 // static
 ErrorHandler::ErrorType ErrorHandler::toErrorType(
     QNetworkReply::NetworkError error) {

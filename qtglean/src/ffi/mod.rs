@@ -15,3 +15,4 @@ pub mod ping;
 pub mod quantity;
 pub mod string;
 pub mod timing_distribution;
+pub mod uuid;

@@ -12,6 +12,20 @@
 #  error No supported
 #endif
 
+FEATURE(addon,                 // Feature ID
+        "Addon support",       // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_true)
+
+FEATURE(addonSignature,             // Feature ID
+        "Addons Signature",         // Feature name
+        FeatureCallback_inStaging,  // Can be flipped on
+        FeatureCallback_inStaging,  // Can be flipped off
+        QStringList{"addon"},       // feature dependencies
+        FeatureCallback_true)
+
 FEATURE(appReview,              // Feature ID
         "App Review",           // Feature name
         FeatureCallback_false,  // Can be flipped on
@@ -53,6 +67,13 @@ FEATURE(shareLogs,              // Feature ID
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
         FeatureCallback_shareLogs)
+
+FEATURE(webPurchase,           // Feature ID
+        "Web Purchase",        // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_webPurchase)
 
 // The app must implement its feature list file.
 #include "appfeaturelist.h"

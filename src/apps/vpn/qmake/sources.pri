@@ -3,27 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 SOURCES += \
-        apps/vpn/addons/addon.cpp \
-        apps/vpn/addons/addonapi.cpp \
-        apps/vpn/addons/addonguide.cpp \
-        apps/vpn/addons/addoni18n.cpp \
-        apps/vpn/addons/addonmessage.cpp \
-        apps/vpn/addons/addonproperty.cpp \
-        apps/vpn/addons/addonpropertylist.cpp \
-        apps/vpn/addons/addontutorial.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcher.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchergroup.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherjavascript.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherlocales.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertime.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp \
-        apps/vpn/addons/manager/addondirectory.cpp \
-        apps/vpn/addons/manager/addonindex.cpp \
-        apps/vpn/addons/manager/addonmanager.cpp \
-        apps/vpn/addons/state/addonsessionstate.cpp \
-        apps/vpn/addons/state/addonstatebase.cpp \
         apps/vpn/appconstants.cpp \
         apps/vpn/apppermission.cpp \
         apps/vpn/captiveportal/captiveportal.cpp \
@@ -44,13 +23,6 @@ SOURCES += \
         apps/vpn/commands/commandservers.cpp \
         apps/vpn/commands/commandstatus.cpp \
         apps/vpn/commands/commandui.cpp \
-        apps/vpn/composer/composer.cpp \
-        apps/vpn/composer/composerblock.cpp \
-        apps/vpn/composer/composerblockbutton.cpp \
-        apps/vpn/composer/composerblocktext.cpp \
-        apps/vpn/composer/composerblocktitle.cpp \
-        apps/vpn/composer/composerblockorderedlist.cpp \
-        apps/vpn/composer/composerblockunorderedlist.cpp \
         apps/vpn/connectionbenchmark/benchmarktask.cpp \
         apps/vpn/connectionbenchmark/benchmarktaskping.cpp \
         apps/vpn/connectionbenchmark/benchmarktasktransfer.cpp \
@@ -60,23 +32,12 @@ SOURCES += \
         apps/vpn/controller.cpp \
         apps/vpn/dnshelper.cpp \
         apps/vpn/dnspingsender.cpp \
-        apps/vpn/externalophandler.cpp \
-        apps/vpn/frontend/navigator.cpp \
-        apps/vpn/frontend/navigatorreloader.cpp \
         apps/vpn/keyregenerator.cpp \
         apps/vpn/imageproviderfactory.cpp \
-        apps/vpn/inspector/inspectorhandler.cpp \
-        apps/vpn/inspector/inspectoritempicker.cpp \
-        apps/vpn/inspector/inspectorutils.cpp \
-        apps/vpn/inspector/inspectorwebsocketconnection.cpp \
-        apps/vpn/inspector/inspectorwebsocketserver.cpp \
         apps/vpn/ipaddresslookup.cpp \
-        apps/vpn/logoutobserver.cpp \
         apps/vpn/main.cpp \
         apps/vpn/models/device.cpp \
         apps/vpn/models/devicemodel.cpp \
-        apps/vpn/models/featuremodel.cpp \
-        apps/vpn/models/feedbackcategorymodel.cpp \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
@@ -110,10 +71,7 @@ SOURCES += \
         apps/vpn/statusicon.cpp \
         apps/vpn/tasks/account/taskaccount.cpp \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
-        apps/vpn/tasks/addon/taskaddon.cpp \
-        apps/vpn/tasks/addonindex/taskaddonindex.cpp \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.cpp \
         apps/vpn/tasks/getlocation/taskgetlocation.cpp \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp \
@@ -123,13 +81,9 @@ SOURCES += \
         apps/vpn/tasks/products/taskproducts.cpp \
         apps/vpn/tasks/release/taskrelease.cpp \
         apps/vpn/tasks/removedevice/taskremovedevice.cpp \
-        apps/vpn/tasks/sendfeedback/tasksendfeedback.cpp \
         apps/vpn/tasks/servers/taskservers.cpp \
         apps/vpn/telemetry.cpp \
-        apps/vpn/tutorial/tutorial.cpp \
-        apps/vpn/tutorial/tutorialstep.cpp \
-        apps/vpn/tutorial/tutorialstepbefore.cpp \
-        apps/vpn/tutorial/tutorialstepnext.cpp \
+        apps/vpn/tutorialvpn.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
         apps/vpn/update/webupdater.cpp \
@@ -138,30 +92,6 @@ SOURCES += \
         apps/vpn/websocket/websockethandler.cpp
 
 HEADERS += \
-        apps/vpn/addons/addon.h \
-        apps/vpn/addons/addonapi.h \
-        apps/vpn/addons/addonguide.h \
-        apps/vpn/addons/addoni18n.h \
-        apps/vpn/addons/addonmessage.h \
-        apps/vpn/addons/addonproperty.h \
-        apps/vpn/addons/addonpropertylist.h \
-        apps/vpn/addons/addontutorial.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcher.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchergroup.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherjavascript.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatcherlocales.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertime.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertimeend.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertimestart.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h \
-        apps/vpn/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h \
-        apps/vpn/addons/manager/addondirectory.h \
-        apps/vpn/addons/manager/addonindex.h \
-        apps/vpn/addons/manager/addonmanager.h \
-        apps/vpn/addons/state/addonsessionstate.h \
-        apps/vpn/addons/state/addonstatebase.h \
-        apps/vpn/addons/state/addonstate.h \
         apps/vpn/appconstants.h \
         apps/vpn/appimageprovider.h \
         apps/vpn/apppermission.h \
@@ -184,13 +114,6 @@ HEADERS += \
         apps/vpn/commands/commandservers.h \
         apps/vpn/commands/commandstatus.h \
         apps/vpn/commands/commandui.h \
-        apps/vpn/composer/composer.h \
-        apps/vpn/composer/composerblock.h \
-        apps/vpn/composer/composerblockbutton.h \
-        apps/vpn/composer/composerblocktext.h \
-        apps/vpn/composer/composerblocktitle.h \
-        apps/vpn/composer/composerblockorderedlist.h \
-        apps/vpn/composer/composerblockunorderedlist.h \
         apps/vpn/connectionbenchmark/benchmarktask.h \
         apps/vpn/connectionbenchmark/benchmarktaskping.h \
         apps/vpn/connectionbenchmark/benchmarktasksentinel.h \
@@ -202,23 +125,12 @@ HEADERS += \
         apps/vpn/controllerimpl.h \
         apps/vpn/dnshelper.h \
         apps/vpn/dnspingsender.h \
-        apps/vpn/externalophandler.h \
-        apps/vpn/frontend/navigator.h \
-        apps/vpn/frontend/navigatorreloader.h \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
-        apps/vpn/inspector/inspectorhandler.h \
-        apps/vpn/inspector/inspectoritempicker.h \
-        apps/vpn/inspector/inspectorutils.h \
-        apps/vpn/inspector/inspectorwebsocketconnection.h \
-        apps/vpn/inspector/inspectorwebsocketserver.h \
         apps/vpn/ipaddresslookup.h \
         apps/vpn/localizer.h \
-        apps/vpn/logoutobserver.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
-        apps/vpn/models/featuremodel.h \
-        apps/vpn/models/feedbackcategorymodel.h \
         apps/vpn/models/keys.h \
         apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
@@ -253,10 +165,7 @@ HEADERS += \
         apps/vpn/statusicon.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
-        apps/vpn/tasks/addon/taskaddon.h \
-        apps/vpn/tasks/addonindex/taskaddonindex.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
-        apps/vpn/tasks/getfeaturelist/taskgetfeaturelist.h \
         apps/vpn/tasks/getlocation/taskgetlocation.h \
         apps/vpn/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h \
         apps/vpn/tasks/controlleraction/taskcontrolleraction.h \
@@ -266,13 +175,9 @@ HEADERS += \
         apps/vpn/tasks/products/taskproducts.h \
         apps/vpn/tasks/release/taskrelease.h \
         apps/vpn/tasks/removedevice/taskremovedevice.h \
-        apps/vpn/tasks/sendfeedback/tasksendfeedback.h \
         apps/vpn/tasks/servers/taskservers.h \
         apps/vpn/telemetry.h \
-        apps/vpn/tutorial/tutorial.h \
-        apps/vpn/tutorial/tutorialstep.h \
-        apps/vpn/tutorial/tutorialstepbefore.h \
-        apps/vpn/tutorial/tutorialstepnext.h \
+        apps/vpn/tutorialvpn.h \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
         apps/vpn/update/webupdater.h \
@@ -285,7 +190,3 @@ RESOURCES += apps/vpn/ui/resources.qrc
 RESOURCES += apps/vpn/ui/ui.qrc
 RESOURCES += apps/vpn/resources/certs/certs.qrc
 RESOURCES += apps/vpn/resources/public_keys/public_keys.qrc
-
-CONFIG += qmltypes
-QML_IMPORT_NAME = Mozilla.VPN.qmlcomponents
-QML_IMPORT_MAJOR_VERSION = 1.0

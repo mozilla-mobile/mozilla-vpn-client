@@ -6,7 +6,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 import telemetry 0.30
 
@@ -37,7 +36,7 @@ Item {
 
             _menuIconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
             _menuIconButtonMirror:  stackview.depth !== 1 && MZLocalizer.isRightToLeft
-            _iconButtonAccessibleName: stackview.depth === 1 ? qsTrId("vpn.connectionInfo.close") : qsTrId("vpn.main.back")
+            _iconButtonAccessibleName: stackview.depth === 1 ? MZI18n.GlobalClose : MZI18n.GlobalGoBack
             _menuOnBackClicked: () => maybeRequestPreviousScreen()
             titleComponent: stackview.currentItem.titleComponent ? stackview.currentItem.titleComponent : null
             rightButtonComponent: stackview.currentItem.rightMenuButton ? stackview.currentItem.rightMenuButton : null
@@ -48,7 +47,7 @@ Item {
                 if (stackview.depth !== 1) {
                     return stackview.pop();
                 }
-                VPNNavigator.requestPreviousScreen();
+                MZNavigator.requestPreviousScreen();
             }
         }
 

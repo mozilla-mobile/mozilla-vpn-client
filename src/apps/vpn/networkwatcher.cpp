@@ -122,7 +122,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn->state() != MozillaVPN::StateMain) {
+  if (vpn->state() != App::StateMain) {
     logger.debug() << "VPN not ready. Ignoring unsecured network";
     return;
   }

@@ -24,6 +24,9 @@ constexpr const char* SETTINGS_APP_NAME = "AuthTest";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "auth_test";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "auth-test";
+
 // The prefix for the user-agent requests. This needs to be kept as MozillaVPN
 // to make guardian happy.
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
@@ -33,6 +36,9 @@ constexpr const char* LOG_FILE_NAME = "auth-test.txt";
 
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
+
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "auth-test";
 
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file

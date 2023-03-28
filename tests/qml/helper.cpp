@@ -11,7 +11,6 @@
 
 TestHelper::TestHelper() {
   m_i18nstrings = I18nStrings::instance();
-  m_theme = new Theme();
   m_mozillavpn = MozillaVPN::instance();
 }
 
@@ -105,9 +104,9 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
 
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.Shared", 1, 0, "MZTheme",
-      [this](QQmlEngine*, QJSEngine* engine) -> QObject* {
-        m_theme->initialize(engine);
-        QObject* obj = m_theme;
+      [](QQmlEngine*, QJSEngine* engine) -> QObject* {
+        Theme::instance()->initialize(engine);
+        QObject* obj = Theme::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

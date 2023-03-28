@@ -17,7 +17,7 @@ MZStackView {
     }
 
     Component.onCompleted: {
-        VPNNavigator.addStackView(VPNNavigator.ScreenBillingNotAvailable, stackview)
+        MZNavigator.addStackView(VPN.ScreenBillingNotAvailable, stackview)
 
         stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
             // Sign in to Google Account

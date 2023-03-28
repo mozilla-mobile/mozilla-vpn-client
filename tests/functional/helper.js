@@ -556,7 +556,7 @@ module.exports = {
 
   async resetAddons(addonPath) {
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
+        'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 
@@ -574,7 +574,7 @@ module.exports = {
 
   async fetchAddons(addonPath) {
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
+        'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 

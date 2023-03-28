@@ -6,7 +6,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 
 // MZSegmentedToggle
 Rectangle {
@@ -75,7 +74,7 @@ Rectangle {
             z: -1
 
             visible: {
-                if (VPNTutorial.playing || root.focusedViaClick) return false
+                if (MZTutorial.playing || root.focusedViaClick) return false
                 return root.anySegmentFocused()
             }
         }
@@ -115,7 +114,7 @@ Rectangle {
                     border.width: MZTheme.theme.focusBorderWidth
                     border.color: "black"
                     color: MZTheme.theme.transparent
-                    visible: VPNTutorial.playing && parent.focus
+                    visible: MZTutorial.playing && parent.focus
                     radius: root.radius
                 }
 

@@ -8,7 +8,6 @@ package org.mozilla.firefox.vpn.qt
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener
@@ -118,15 +117,6 @@ class InAppPurchase private constructor(ctx: Context) :
         @JvmStatic
         fun deinit() {
             instance?.billingClient?.endConnection()
-        }
-
-        @JvmStatic
-        fun launchPlayStore(activity: Activity) {
-            val intent = Intent.makeMainSelectorActivity(
-                Intent.ACTION_MAIN,
-                Intent.CATEGORY_APP_MARKET
-            )
-            activity.startActivity(intent)
         }
 
         @JvmStatic

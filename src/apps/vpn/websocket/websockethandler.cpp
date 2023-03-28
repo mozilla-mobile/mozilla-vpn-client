@@ -7,13 +7,13 @@
 #include <QApplication>
 #include <QGuiApplication>
 
+#include "app.h"
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "pushmessage.h"
 #include "settingsholder.h"
@@ -97,9 +97,7 @@ void WebSocketHandler::initialize() {
 
   m_initialized = true;
 
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  connect(vpn, &MozillaVPN::userStateChanged, this,
+  connect(App::instance(), &App::userStateChanged, this,
           &WebSocketHandler::onUserStateChanged);
 
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
@@ -143,9 +141,9 @@ void WebSocketHandler::initialize() {
  */
 void WebSocketHandler::onUserStateChanged() {
   logger.debug() << "User state change detected:"
-                 << MozillaVPN::instance()->userState();
+                 << App::instance()->userState();
 
-  if (MozillaVPN::isUserAuthenticated()) {
+  if (App::isUserAuthenticated()) {
     open();
   } else {
     close();
@@ -249,7 +247,7 @@ void WebSocketHandler::onClose() {
 
   m_pingTimer.stop();
 
-  if (MozillaVPN::isUserAuthenticated()) {
+  if (App::isUserAuthenticated()) {
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
     if (QGuiApplication::applicationState() == Qt::ApplicationSuspended ||
         QGuiApplication::applicationState() == Qt::ApplicationInactive) {

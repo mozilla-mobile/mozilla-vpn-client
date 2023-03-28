@@ -81,8 +81,7 @@ Window {
     maximumWidth: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
-    //% "Mozilla VPN"
-    title: qsTrId("vpn.main.productName")
+    title: MZI18n.ProductName
     color: MZTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");
@@ -94,7 +93,7 @@ Window {
             return;
         }
 
-        if (VPNNavigator.eventHandled()) {
+        if (MZNavigator.eventHandled()) {
             close.accepted = false;
             return;
         }
@@ -137,7 +136,7 @@ Window {
         anchors.top: parent.top
     }
 
-    VPNNavigatorLoader {
+    MZNavigatorLoader {
       objectName: "screenLoader"
       anchors {
           top: iosSafeAreaTopMargin.bottom
@@ -150,13 +149,13 @@ Window {
     Connections {
         target: MZLog
         function onViewLogsNeeded() {
-            if (VPNFeatureList.get("shareLogs").isSupported)  {
+            if (MZFeatureList.get("shareLogs").isSupported)  {
                 if(MZLog.viewLogs()){
                     return;
                 }
             }
 
-            VPNNavigator.requestScreen(VPNNavigator.ScreenViewLogs);
+            MZNavigator.requestScreen(VPN.ScreenViewLogs);
         }
     }
 
@@ -254,8 +253,49 @@ Window {
         }
     }
 
-    VPNBottomNavigationBar {
+    MZBottomNavigationBar {
         id: navbar
+
+        property var showNavigationBar: [
+            VPN.ScreenSettings,
+            VPN.ScreenHome,
+            VPN.ScreenMessaging,
+            VPN.ScreenGetHelp,
+            VPN.ScreenTipsAndTricks
+        ]
+
+        visible: showNavigationBar.includes(MZNavigator.screen) &&
+                 VPN.userState === VPN.UserAuthenticated &&
+                 VPN.state === VPN.StateMain && opacity !== 0
+
+        function setNavBarOpacity() {
+            if (MZNavigator.screen === VPN.ScreenHome) {
+                navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            } else {
+                navbar.opacity = 1;
+            }
+        }
+
+        Connections {
+            target: VPNConnectionBenchmark
+            function onStateChanged() {
+                navbar.setNavBarOpacity();
+            }
+        }
+
+        Connections {
+          target: MZNavigator
+
+          function onCurrentComponentChanged() {
+              navbar.setNavBarOpacity();
+           }
+        }
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
     }
 
     Connections {

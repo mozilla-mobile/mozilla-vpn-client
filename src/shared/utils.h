@@ -15,9 +15,9 @@ class Utils final : public QObject {
   static Utils* instance();
   ~Utils() = default;
 
-  Q_INVOKABLE static void storeInClipboard(const QString& text);
+  Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
 
-  Q_INVOKABLE static void openAppStoreReviewLink();
+  Q_INVOKABLE static void storeInClipboard(const QString& text);
 
   Q_INVOKABLE static void crashTest();
 

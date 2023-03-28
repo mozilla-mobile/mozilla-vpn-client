@@ -12,7 +12,6 @@
 #include "controller.h"
 #include "ipaddresslookup.h"
 #include "models/devicemodel.h"
-#include "models/feedbackcategorymodel.h"
 #include "models/keys.h"
 #include "models/location.h"
 #include "models/servercountrymodel.h"
@@ -26,7 +25,6 @@
 #include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
-#include "theme.h"
 #include "websocket/websockethandler.h"
 
 struct MozillaVPNPrivate {
@@ -36,7 +34,6 @@ struct MozillaVPNPrivate {
   ConnectionHealth m_connectionHealth;
   Controller m_controller;
   DeviceModel m_deviceModel;
-  FeedbackCategoryModel m_feedbackCategoryModel;
   IpAddressLookup m_ipAddressLookup;
   Keys m_keys;
   Location m_location;
@@ -50,7 +47,6 @@ struct MozillaVPNPrivate {
   SupportCategoryModel m_supportCategoryModel;
   ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
-  Theme m_theme;
   WebSocketHandler m_webSocketHandler;
   User m_user;
 };

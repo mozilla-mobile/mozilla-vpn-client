@@ -26,7 +26,7 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
 
@@ -57,20 +57,11 @@ Location* MozillaVPN::location() const {
   return location;
 }
 
-MozillaVPN::State MozillaVPN::state() const { return StateInitialize; }
-MozillaVPN::UserState MozillaVPN::userState() const {
-  return UserNotAuthenticated;
-}
-
 void MozillaVPN::initialize() {}
-
-void MozillaVPN::setState(State) {}
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType) {}
-
-void MozillaVPN::setToken(const QString&) {}
 
 void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
@@ -98,8 +89,6 @@ void MozillaVPN::mainWindowLoaded() {
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 
-void MozillaVPN::setUserState(UserState) {}
-
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {}
@@ -114,8 +103,6 @@ void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
 
-void MozillaVPN::quit() {}
-
 void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
@@ -127,8 +114,6 @@ void MozillaVPN::backendServiceRestore() {}
 void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
-
-void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
@@ -147,8 +132,6 @@ void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
 
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
-
 void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelReauthentication() {}
@@ -158,3 +141,6 @@ void MozillaVPN::updateViewShown() {}
 void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
+
+// static
+QString MozillaVPN::appVersionForUpdate() { return "42"; }

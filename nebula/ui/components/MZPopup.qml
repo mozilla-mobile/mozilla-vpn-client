@@ -39,7 +39,7 @@ Popup {
         visible: showCloseButton
 
         objectName: closeButtonObjectName
-        accessibleName: qsTrId("menubar.file.close")
+        accessibleName: MZI18n.GlobalClose
 
         onClicked: {
             popup.close();

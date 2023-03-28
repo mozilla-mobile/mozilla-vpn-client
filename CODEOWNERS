@@ -69,8 +69,8 @@ src/apps/vpn/tasks/ @bakulf @birdsarah
 /ools/serverlocalizer/ @bakulf @birdsarah
 /tools/wasm_chrome/ @strseb
 /translations/ @bakulf @birdsarah
-/translations/strings.yaml @flodolo
-/translations/servers.json @flodolo
+/src/apps/**/translations/strings.yaml @flodolo
+/src/apps/**/translations/extras @flodolo
 
 /qtglean/ @brizental
 /wasm/ @bakulf @strseb

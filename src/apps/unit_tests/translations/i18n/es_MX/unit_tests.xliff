@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="foo.qml" datatype="plaintext" source-language="en" target-language="es_MX">
+    <body>
+      <trans-unit id="foo.1" xml:space="preserve">
+        <source>Hello world 1</source>
+        <target>hello world 1 es_MX</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

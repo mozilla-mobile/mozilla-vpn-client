@@ -5,6 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -12,13 +13,13 @@ MZScreenBase {
 
     objectName: "screenHome"
     Component.onCompleted: () => {
-        VPNNavigator.addStackView(VPNNavigator.ScreenHome, getStack())
+        MZNavigator.addStackView(VPN.ScreenHome, getStack())
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")
     }
     Connections {
-        target: VPNTutorial
+        target: MZTutorial
         function onPlayingChanged() {
-           if (VPNTutorial.playing) {
+           if (MZTutorial.playing) {
                getStack().pop(null, StackView.Immediate)
            }
         }

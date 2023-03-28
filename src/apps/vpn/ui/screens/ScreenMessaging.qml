@@ -4,6 +4,8 @@
 
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
+
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -12,7 +14,7 @@ MZScreenBase {
     _menuIconVisibility: getStack().depth > 1
 
     Component.onCompleted: () => {
-       VPNNavigator.addStackView(VPNNavigator.ScreenMessaging, getStack())
+       MZNavigator.addStackView(VPN.ScreenMessaging, getStack())
        getStack().push("qrc:/ui/screens/messaging/ViewMessagesInbox.qml")
    }
 }

@@ -5,8 +5,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.14
 
-import Mozilla.VPN 1.0
-
+import Mozilla.Shared 1.0
 
 StackView {
     id: stackView
@@ -19,14 +18,14 @@ StackView {
             // 
             // See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2638
             console.error("Using the initialItem property does not work on some platforms. Use Component.onCompleted: stackview.push(someURI)");
-            VPN.exitForUnrecoverableError("Setting initialItem on a StackView is illegal. See previous logs for more information.");
+            MZUtils.exitForUnrecoverableError("Setting initialItem on a StackView is illegal. See previous logs for more information.")
 
         }
 
     }
 
     Connections {
-        target: VPNNavigator
+        target: MZNavigator
         function onGoBack(item) {
             if (item === stackView) {
                 stackView.pop();

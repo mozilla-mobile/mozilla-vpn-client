@@ -94,27 +94,27 @@ Item {
 
                 ListElement {
                     name: "VPN Logo (drop)"
-                    value: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
+                    value: ":/ui/resources/animations/vpnlogo-drop_animation.json"
                 }
                 ListElement {
                     name: "VPN Logo (kinetic)"
-                    value: ":/nebula/resources/animations/vpnlogo-kinetic_animation.json"
+                    value: ":/ui/resources/animations/vpnlogo-kinetic_animation.json"
                 }
                 ListElement {
                     name: "Lock"
-                    value: ":/nebula/resources/animations/lock_animation.json"
+                    value: ":/ui/resources/animations/lock_animation.json"
                 }
                 ListElement {
                     name: "Globe"
-                    value: ":/nebula/resources/animations/globe_animation.json"
+                    value: ":/ui/resources/animations/globe_animation.json"
                 }
                 ListElement {
                     name: "VPN Active"
-                    value: ":/nebula/resources/animations/vpnactive_animation.json"
+                    value: ":/ui/resources/animations/vpnactive_animation.json"
                 }
                 ListElement {
                     name: "Speedometer"
-                    value: ":/nebula/resources/animations/speedometer_animation.json"
+                    value: ":/ui/resources/animations/speedometer_animation.json"
                 }
             }
 

@@ -24,7 +24,7 @@ MZClickableRow {
     Layout.fillWidth: true
     Layout.leftMargin: MZTheme.theme.windowMargin / 2
     Layout.rightMargin: MZTheme.theme.windowMargin / 2
-    accessibleName: qsTrId("vpn.main.manageAccount")
+    accessibleName: MZI18n.SettingsManageAccount
     objectName: _objNameBase + "-manageAccountButton"
     onClicked: _buttonOnClicked()
     height: undefined

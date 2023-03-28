@@ -25,15 +25,9 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() {}
+MozillaVPN::MozillaVPN() : App(nullptr) {}
 
 MozillaVPN::~MozillaVPN() {}
-
-MozillaVPN::State MozillaVPN::state() const { return TestHelper::vpnState; }
-
-MozillaVPN::UserState MozillaVPN::userState() const {
-  return TestHelper::userState;
-}
 
 CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 
@@ -72,15 +66,11 @@ Location* MozillaVPN::location() const {
 
 void MozillaVPN::initialize() {}
 
-void MozillaVPN::setState(State) {}
-
 bool MozillaVPN::setServerList(QByteArray const&) { return true; }
 
 void MozillaVPN::authenticate() {}
 void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType) {}
-
-void MozillaVPN::setToken(const QString&) {}
 
 void MozillaVPN::completeAuthentication(const QByteArray&, const QString&) {}
 
@@ -106,8 +96,6 @@ void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::telemetryPolicyCompleted() {}
 
-void MozillaVPN::setUserState(UserState) {}
-
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {}
@@ -122,8 +110,6 @@ void MozillaVPN::deactivate() {}
 
 void MozillaVPN::refreshDevices() {}
 
-void MozillaVPN::quit() {}
-
 void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
@@ -135,8 +121,6 @@ void MozillaVPN::backendServiceRestore() {}
 void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
-
-void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
@@ -152,8 +136,6 @@ void MozillaVPN::maybeRegenerateDeviceKey() {}
 void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
-
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
 
 void MozillaVPN::requestDeleteAccount() {}
 
@@ -171,4 +153,4 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
 void MozillaVPN::registerUrlOpenerLabels() {}
 
 // static
-QByteArray MozillaVPN::authorizationHeader() { return ""; }
+QString MozillaVPN::appVersionForUpdate() { return "42"; }

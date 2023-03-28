@@ -20,6 +20,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/timingdistribution.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/uuid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/boolean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/datetime.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/quantity.cpp
@@ -28,6 +29,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/ping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/timingdistribution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/uuid.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp

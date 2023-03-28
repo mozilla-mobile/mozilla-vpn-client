@@ -73,9 +73,9 @@ MZFlickable {
                 Layout.preferredHeight: menuButton.height
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: MZTheme.theme.windowMargin
-                labelText: qsTrId("vpn.main.getHelp2")
+                labelText: MZI18n.GetHelpLinkTitle
                 horizontalPadding: MZTheme.theme.windowMargin / 2
-                onClicked: VPNNavigator.requestScreen(VPNNavigator.ScreenGetHelp)
+                onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
             }
         }
 

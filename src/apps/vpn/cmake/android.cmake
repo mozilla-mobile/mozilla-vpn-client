@@ -42,31 +42,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxpingsender.h
 )
 
-if(ADJUST_TOKEN)
-    message(Adjust SDK enabled)
-    # SDK Token present, let's enable that.
-    add_compile_definitions("MVPN_ADJUST")
-    target_sources(mozillavpn PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustfiltering.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusthandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxyconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjustproxypackagehandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/adjust/adjusttasksubmission.h
-    )
-else()
-    if (${CMAKE_BUILD_TYPE} STREQUAL "Release")
-        message(${CMAKE_BUILD_TYPE})
-        message( FATAL_ERROR "Adjust token cannot be empty for release builds")
-    endif()
-endif()
-
 target_include_directories(mozillavpn PUBLIC ${ssl_module}/include)
 
 get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
