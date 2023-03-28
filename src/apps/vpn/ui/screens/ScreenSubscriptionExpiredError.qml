@@ -23,10 +23,10 @@ MZStackView {
            // Please try again or contact our support team for further assistance.
            errorMessage: MZI18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
 
-           // Try again (Error SubscriptionExpiredError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
+           // Try again (Error SubscriptionExpiredError only happens on iOS, so ok to point to ScreenSubscriptionNeeded)
            primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
-           primaryButtonOnClick: () => { MZNavigator.requestScreen(VPN.ScreenSubscriptionNeededIAP) },
+           primaryButtonOnClick: () => { MZNavigator.requestScreen(VPN.ScreenSubscriptionNeeded) },
            secondaryButtonIsSignOff: false,
            getHelpLinkVisible: true
        });
