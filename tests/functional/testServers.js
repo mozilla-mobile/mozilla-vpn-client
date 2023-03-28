@@ -162,7 +162,7 @@ describe('Server list', function() {
     assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
     assert.strictEqual(
         vpn.lastNotification().message,
-        `Connected to ${currentCity}`);
+        `Connected through ${currentCity}`);
 
     await vpn.waitForQueryAndClick(
         queries.screenHome.SERVER_LIST_BUTTON.visible());
