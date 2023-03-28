@@ -775,15 +775,6 @@ subscriptionManagement:
   addFirefoxRelay:
     value: Add Firefox Relay
     comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
-  valueProp1:
-    value: No logging of your network activity
-    comment: Value proposition used to promote the product
-  valueProp2:
-    value: No one can track you
-    comment: Value proposition used to promote the product
-  valueProp3:
-    value: 500+ servers in 30+ countries
-    comment: Value proposition used to promote the product
   manageAccount:
     value: Manage account
 

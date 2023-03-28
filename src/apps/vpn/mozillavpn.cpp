@@ -1655,26 +1655,11 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededIAP,
+      MozillaVPN::ScreenSubscriptionNeeded,
       Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededIAP.qml",
+      "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
       QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
-                                                                         : 99;
-      },
-      []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededWeb,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
-      QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
-                                                                         : -1;
-      },
-      []() -> bool { return false; });
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSubscriptionNotValidated,
