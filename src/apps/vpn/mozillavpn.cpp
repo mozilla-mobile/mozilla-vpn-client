@@ -1657,10 +1657,7 @@ void MozillaVPN::registerNavigatorScreens() {
       Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
       QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return 0;
-      },
-      []() -> bool { return false; });
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSubscriptionNotValidated,
