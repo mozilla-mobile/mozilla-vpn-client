@@ -119,7 +119,7 @@ describe("Server list", function () {
     assert.strictEqual(vpn.lastNotification().title, "VPN Connected");
     assert.strictEqual(
       vpn.lastNotification().message,
-      `Connected to ${currentCity}, through ${currentCity}`
+      `Connected through ${currentCity} via ${currentCity}`
     );
   });
 
@@ -181,7 +181,7 @@ describe("Server list", function () {
     assert.strictEqual(vpn.lastNotification().title, "VPN Connected");
     assert.strictEqual(
       vpn.lastNotification().message,
-      `Connected to ${currentCity}`
+      `Connected through ${currentCity}`
     );
   });
 
