@@ -4,14 +4,19 @@
 
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
+import android.content.Context
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.pkcs.RSAPublicKey
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.RSAPublicKeySpec
+import java.util.*
 
 // Companion for Utils.cpp
 object Utils {
@@ -35,6 +40,22 @@ object Utils {
             Log.e("VPNUtils", "Signature Exception $e")
             false
         }
+    }
+    @SuppressLint("NewApi")
+    @JvmStatic
+    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
+        Glean.initialize(
+            applicationContext = ctx.applicationContext,
+            uploadEnabled = isTelemetryEnabled,
+            // GleanBuildInfo can only be generated for application,
+            // We are in a library so we have to build it ourselves.
+            buildInfo = BuildInfo(
+                BuildConfig.VERSIONCODE,
+                BuildConfig.SHORTVERSION,
+                Calendar.getInstance(),
+            ),
+            configuration = Configuration(channel = channel),
+        )
     }
 
     @JvmStatic

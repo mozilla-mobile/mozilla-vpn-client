@@ -15,9 +15,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import mozilla.telemetry.glean.BuildInfo
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
 import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -105,22 +102,5 @@ object VPNUtils {
             intent.putExtra("app_uid", context.getApplicationInfo().uid)
         }
         context.startActivity(intent)
-    }
-
-    @SuppressLint("NewApi")
-    @JvmStatic
-    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
-        Glean.initialize(
-            applicationContext = ctx.applicationContext,
-            uploadEnabled = isTelemetryEnabled,
-            // GleanBuildInfo can only be generated for application,
-            // We are in a library so we have to build it ourselves.
-            buildInfo = BuildInfo(
-                BuildConfig.VERSIONCODE,
-                BuildConfig.SHORTVERSION,
-                Calendar.getInstance()
-            ),
-            configuration = Configuration(channel = channel)
-        )
     }
 }
