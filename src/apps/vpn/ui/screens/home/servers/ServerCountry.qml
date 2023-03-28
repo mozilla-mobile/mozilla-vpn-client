@@ -160,7 +160,7 @@ MZClickableRow {
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
         anchors.left: parent.left
-        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 6
+        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 4
         width: serverCountry.width - anchors.leftMargin
 
         Accessible.role: Accessible.List

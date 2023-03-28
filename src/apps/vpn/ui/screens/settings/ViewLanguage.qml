@@ -11,152 +11,170 @@ import components 0.1
 import components.forms 0.1
 
 MZViewBase {
-    property var useSystemLanguageEnabled: toggleCard.toggleChecked
-
     id: vpnFlickable
     objectName: "settingsLanguagesView"
 
     //% "Language"
     _menuTitle :  qsTrId("vpn.settings.language")
-    _viewContentData: ColumnLayout {
-        id: col
 
-        Layout.fillWidth: true
-        spacing: MZTheme.theme.windowMargin
-
-        MZToggleCard {
-            id: toggleCard
-            toggleObjectName: "settingsSystemLanguageToggle"
-            Layout.fillWidth: true
-            Layout.topMargin: -MZTheme.theme.windowMargin
-            Layout.preferredHeight: childrenRect.height
-
-            //% "Use system language"
-            //: Title for the language switcher toggle.
-            labelText: qsTrId("vpn.settings.systemLanguageTitle")
-
-            //% "Mozilla VPN will use the default system language."
-            //: Description for the language switcher toggle when
-            //: "Use system language" is enabled.
-            sublabelText: qsTrId("vpn.settings.systemLangaugeSubtitle")
-
-            toolTipTitleText: {
-                if (toggleChecked) {
-                   //% "Disable to select a different language"
-                   //: Tooltip for the language switcher toggle
-                   return qsTrId("vpn.settings.systemLanguageEnabled");
+    function centerSelectedLanguage() {
+        for (let idx = 0; idx < repeater.count; idx++) {
+            const langItem = repeater.itemAt(idx);
+            if (langItem.isSelectedLanguage) {
+                //If the item is near the top and can't be centered, don't scroll
+                if(langItem.mapToItem(vpnFlickable, 0, 0).y < (vpnFlickable.height / 2) + (langItem.height / 2)) {
+                    return
                 }
-                return qsTrId("vpn.settings.systemLanguageTitle");
-            }
-
-            toggleChecked: MZSettings.languageCode === ""
-            function handleClick() {
-                toggleChecked = !toggleChecked
-                if (toggleChecked) {
-                    MZSettings.languageCode = "";
-                } else {
-                    MZSettings.languageCode = MZSettings.previousLanguageCode;
+                //If the item is near the bottom and can't be centered, scroll all the way to the bottom
+                if(langItem.mapToItem(vpnFlickable, 0, 0).y - (vpnFlickable.height / 2) + (langItem.height / 2) + vpnFlickable.height > vpnFlickable._contentHeight) {
+                    vpnFlickable.setContentY(vpnFlickable._contentHeight - vpnFlickable.height)
+                    return
                 }
-            }
-        }
-
-        Column {
-            id: languageList
-            objectName: "languageList"
-            opacity: useSystemLanguageEnabled ? .5 : 1
-            spacing: MZTheme.theme.hSpacing
-            Layout.fillWidth: true
-            Layout.topMargin: MZTheme.theme.windowMargin * 1.5
-            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
-
-            MZSearchBar {
-                id: searchBar
-                _filterProxySource: MZLocalizer
-                _filterProxyCallback: obj => {
-                     const filterValue = getSearchBarText();
-                     return obj.nativeLanguageName.toLowerCase().includes(filterValue) ||
-                             obj.localizedLanguageName.toLowerCase().includes(filterValue);
-                 }
-                _searchBarHasError: repeater.count === 0
-                _searchBarPlaceholderText: MZI18n.LanguageViewSearchPlaceholder
-
-                enabled: !useSystemLanguageEnabled
-                anchors.left: parent.left
-                anchors.right: parent.right
-            }
-
-            Repeater {
-                id: repeater
-
-                model: searchBar.getProxyModel()
-
-                Component.onCompleted: {
-                    for (let idx = 0; idx < repeater.count; idx++) {
-                        const langItem = repeater.itemAt(idx);
-                        if (langItem.isSelectedLanguage) {
-                            const yCenter = vpnFlickable.height / 2;
-                            const selectedItemYPosition = langItem.y + (languageList.y + repeater.y + MZTheme.theme.menuHeight + toggleCard.height + langItem.height) - yCenter;
-                            const destinationY = (selectedItemYPosition + vpnFlickable.height >col.implicitHeight) ? col.implicitHeight - vpnFlickable.height / 2: selectedItemYPosition;
-                            if (destinationY < 0) {
-                                return;
-                            }
-                            setContentY(destinationY)
-                        }
-                    }
-                }
-
-                delegate: ColumnLayout {
-                    property bool isSelectedLanguage: delRadio.checked
-                    id: del
-                    spacing: 0
-                    objectName: "language-column-" + code
-                    width: parent.width
-
-                    LayoutMirroring.enabled: isRightToLeft
-                    LayoutMirroring.childrenInherit: true
-
-                    function pushFocusToRadio() {
-                        delRadio.forceActiveFocus();
-                    }
-
-                    MZRadioDelegate {
-                        id: delRadio
-                        objectName: "language-" + code
-                        enabled: !useSystemLanguageEnabled
-                        radioButtonLabelText: nativeLanguageName
-                        checked: MZSettings.languageCode === code && !useSystemLanguageEnabled
-                        onClicked: {
-                            MZSettings.languageCode = code;
-                        }
-
-                        Layout.alignment: Qt.AlignLeft
-
-                        //% "%1 %2"
-                        //: This string is read by accessibility tools.
-                        //: %1 is the language name, %2 is the localized language name.
-                        accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                                            .arg(nativeLanguageName)
-                                            .arg(localizedLanguageName)
-
-                        activeFocusOnTab: !useSystemLanguageEnabled
-                        Keys.onDownPressed: repeater.itemAt(index + 1) ? repeater.itemAt(index + 1).pushFocusToRadio() : repeater.itemAt(0).pushFocusToRadio()
-                        Keys.onUpPressed: repeater.itemAt(index - 1) ? repeater.itemAt(index - 1).pushFocusToRadio() : searchBar.forceActiveFocus()
-                    }
-
-                    MZTextBlock {
-                        Layout.leftMargin: delRadio.indicator.implicitWidth + MZTheme.theme.hSpacing - 2
-                        Layout.topMargin: 4
-                        Layout.fillWidth: true
-                        text: localizedLanguageName
-                        Layout.alignment: Qt.AlignLeft
-                    }
-                }
+                //Otherwise center the item
+                vpnFlickable.setContentY(langItem.mapToItem(vpnFlickable, 0, 0).y - (vpnFlickable.height / 2) + (langItem.height / 2))
             }
         }
     }
-    ButtonGroup {
-        id: radioButtonGroup
+
+    _viewContentData: ColumnLayout {
+        id: col
+        objectName: "languageList"
+
+        Layout.fillWidth: true
+
+        spacing: MZTheme.theme.vSpacing
+
+        ButtonGroup {
+            id: radioButtonGroup
+        }
+
+        MZSearchBar {
+            id: searchBar
+
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
+
+            _filterProxySource: MZLocalizer
+            _filterProxyCallback: obj => {
+                                      const filterValue = getSearchBarText();
+                                      return obj.nativeLanguageName.toLowerCase().includes(filterValue) ||
+                                      obj.localizedLanguageName.toLowerCase().includes(filterValue);
+                                  }
+            _searchBarHasError: repeater.count === 0
+            _searchBarPlaceholderText: MZI18n.LanguageViewSearchPlaceholder
+
+        }
+
+        ColumnLayout {
+            spacing: 0
+            visible: searchBar.isEmpty
+
+            MZRadioDelegate {
+                id: systemLanguageRadioButton
+                objectName: "systemLanguageRadioButton"
+
+                Layout.fillWidth: true
+                Layout.leftMargin: MZTheme.theme.windowMargin
+                Layout.rightMargin: MZTheme.theme.windowMargin
+
+                radioButtonLabelText: MZI18n.LanguageViewSystemLanguageButtonTitle
+                checked: MZSettings.languageCode === ""
+                activeFocusOnTab: true
+                onClicked: {
+                    MZSettings.languageCode = ""
+                }
+
+                Keys.onDownPressed: if(repeater.itemAt(0)) repeater.itemAt(0).pushFocusToRadio()
+
+                accessibleName: `${radioButtonLabelText}. ${systemLanguageRadioButtonDescription.text}`
+            }
+
+            MZTextBlock {
+                id: systemLanguageRadioButtonDescription
+
+                Layout.fillWidth: true
+                Layout.topMargin: 4
+                Layout.leftMargin: MZTheme.theme.windowMargin + systemLanguageRadioButton.labelX
+                Layout.rightMargin: MZTheme.theme.windowMargin
+
+                text: MZI18n.LanguageViewSystemLanguageButtonDescription
+            }
+
+            Rectangle {
+                Layout.preferredHeight: 1
+                Layout.fillWidth: true
+                Layout.topMargin: MZTheme.theme.vSpacing
+                Layout.leftMargin: 18.5
+                Layout.rightMargin: 18.5
+
+                color: "#E7E7E7"
+            }
+        }
+
+        Repeater {
+            id: repeater
+
+            model: searchBar.getProxyModel()
+
+            Component.onCompleted: vpnFlickable.centerSelectedLanguage()
+
+            delegate: ColumnLayout {
+                id: del
+                objectName: "language-column-" + code
+
+                property bool isSelectedLanguage: delRadio.checked
+
+                function pushFocusToRadio() {
+                    delRadio.forceActiveFocus();
+                }
+
+                spacing: 0
+                width: parent.width
+
+                LayoutMirroring.enabled: isRightToLeft
+                LayoutMirroring.childrenInherit: true
+
+                MZRadioDelegate {
+                    id: delRadio
+                    objectName: "language-" + code
+
+                    Layout.fillWidth: true
+                    Layout.leftMargin: MZTheme.theme.windowMargin
+                    Layout.rightMargin: MZTheme.theme.windowMargin
+
+                    radioButtonLabelText: nativeLanguageName
+                    checked: MZSettings.languageCode === code
+                    activeFocusOnTab: true
+                    onClicked: {
+                        MZSettings.languageCode = code;
+                    }
+
+                    Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
+                    Keys.onUpPressed: {
+                        if(repeater.itemAt(index - 1)) repeater.itemAt(index - 1).pushFocusToRadio()
+                        else systemLanguageRadioButton.forceActiveFocus()
+                    }
+
+                    //% "%1 %2"
+                    //: This string is read by accessibility tools.
+                    //: %1 is the language name, %2 is the localized language name.
+                    accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                    .arg(nativeLanguageName)
+                    .arg(localizedLanguageName)
+                }
+
+                MZTextBlock {
+                    Layout.leftMargin: MZTheme.theme.windowMargin + delRadio.labelX
+                    Layout.topMargin: 4
+                    Layout.rightMargin: MZTheme.theme.windowMargin
+                    Layout.fillWidth: true
+
+                    text: localizedLanguageName
+                }
+            }
+        }
     }
 }
 
