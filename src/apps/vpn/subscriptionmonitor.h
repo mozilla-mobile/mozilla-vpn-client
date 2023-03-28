@@ -7,6 +7,8 @@
 
 #include <QObject>
 
+#include "connectionhealth.h"
+
 /**
  * @brief this class monitors the Controller and ConnectionHealth to check for
  * subscription status after the controller enters the No Signal state
@@ -24,7 +26,7 @@ class SubscriptionMonitor final : public QObject {
   explicit SubscriptionMonitor(QObject* parent);
 
  private:
-  bool m_lastKnownStabilityState = false;
+  ConnectionHealth::ConnectionStability m_lastKnownStabilityState;
 };
 
 #endif  // SUBSCRIPTIONMONITOR_H

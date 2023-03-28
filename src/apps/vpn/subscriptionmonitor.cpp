@@ -35,8 +35,7 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
             if (MozillaVPN::instance()->controller()->state() ==
                 Controller::StateOn) {
               m_lastKnownStabilityState =
-                  (MozillaVPN::instance()->connectionHealth()->stability() ==
-                   ConnectionHealth::NoSignal);
+                  MozillaVPN::instance()->connectionHealth()->stability();
             }
           });
 
@@ -44,13 +43,16 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
           [this]() {
             Controller::State state =
                 MozillaVPN::instance()->controller()->state();
-            if (state == Controller::StateOff && m_lastKnownStabilityState) {
+            if (state == Controller::StateOff &&
+                m_lastKnownStabilityState ==
+                    ConnectionHealth::ConnectionStability::NoSignal) {
               logger.debug() << "User has toggled the VPN off after No Signal";
               TaskScheduler::scheduleTask(
                   new TaskAccount(ErrorHandler::DoNotPropagateError));
 
               // Reset the state tracker
-              m_lastKnownStabilityState = false;
+              m_lastKnownStabilityState =
+                  ConnectionHealth::ConnectionStability::Stable;
             }
           });
 }
