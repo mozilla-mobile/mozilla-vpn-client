@@ -120,47 +120,43 @@ MZFlickable {
         }
 
 
-        Loader {
+        RowLayout {
             Layout.fillWidth: true
             Layout.topMargin: MZTheme.theme.vSpacingSmall
             Layout.alignment: Qt.AlignHCenter
 
-            active: vpnFlickable.isMobile
-            sourceComponent: RowLayout {
+            spacing: 0
 
-                spacing: 0
+            Item {
+                Layout.fillWidth: true
+            }
 
-                Item {
-                    Layout.fillWidth: true
-                }
+            MZGreyLink {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
 
-                MZGreyLink {
-                    Layout.fillWidth: true
-                    Layout.maximumWidth: implicitWidth
+                labelText: MZI18n.AboutUsTermsOfService
+                onClicked: MZUrlOpener.openUrlLabel("termsOfService")
+            }
 
-                    labelText: MZI18n.AboutUsTermsOfService
-                    onClicked: MZUrlOpener.openUrlLabel("termsOfService")
-                }
+            Rectangle {
+                width: 4
+                height: 4
+                radius: 2
+                opacity: .8
+                color: MZTheme.theme.greyLink.defaultColor
+            }
 
-                Rectangle {
-                    width: 4
-                    height: 4
-                    radius: 2
-                    opacity: .8
-                    color: MZTheme.theme.greyLink.defaultColor
-                }
+            MZGreyLink {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
 
-                MZGreyLink {
-                    Layout.fillWidth: true
-                    Layout.maximumWidth: implicitWidth
+                labelText: MZI18n.AboutUsPrivacyNotice
+                onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
+            }
 
-                    labelText: MZI18n.AboutUsPrivacyNotice
-                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
+            Item {
+                Layout.fillWidth: true
             }
         }
 

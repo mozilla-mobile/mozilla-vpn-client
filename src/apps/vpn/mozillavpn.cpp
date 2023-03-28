@@ -1658,8 +1658,7 @@ void MozillaVPN::registerNavigatorScreens() {
       "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
       QVector<int>{App::StateSubscriptionNeeded},
       [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
-                                                                         : -1;
+        return 0;
       },
       []() -> bool { return false; });
 
