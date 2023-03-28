@@ -13,7 +13,6 @@
 #include "feature.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
-#include "glean/generated/pings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
