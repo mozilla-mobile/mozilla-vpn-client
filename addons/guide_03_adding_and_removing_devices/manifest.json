@@ -32,7 +32,7 @@
         "content": [
           { "id": "l_1",
             "content": "Open Mozilla VPN in your chosen desktop or mobile device" },
-          { "id": "l_2",
+          { "id": "l_2_0",
             "content": "Go to Settings and select “My Devices”" },
           { "id": "l_3",
             "content": "Select the “Trash” icon next to the device you want to remove from your list of connected devices" }
