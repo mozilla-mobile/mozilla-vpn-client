@@ -24,7 +24,7 @@ class SubscriptionMonitor final : public QObject {
   explicit SubscriptionMonitor(QObject* parent);
 
  private:
-  bool m_noSignalState = false;
+  bool m_lastKnownStabilityState = false;
 };
 
 #endif  // SUBSCRIPTIONMONITOR_H

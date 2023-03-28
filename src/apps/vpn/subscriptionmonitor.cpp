@@ -31,12 +31,12 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
 
   connect(MozillaVPN::instance()->connectionHealth(),
           &ConnectionHealth::stabilityChanged, this, [this]() {
-            if (MozillaVPN::instance()->connectionHealth()->stability() ==
-                    ConnectionHealth::NoSignal &&
-                MozillaVPN::instance()->controller()->state() ==
-                    Controller::StateOn) {
-              logger.debug() << "VPN connection stability is No Signal";
-              m_noSignalState = true;
+            logger.debug() << "VPN connection stability has changed";
+            if (MozillaVPN::instance()->controller()->state() ==
+                Controller::StateOn) {
+              m_lastKnownStabilityState =
+                  (MozillaVPN::instance()->connectionHealth()->stability() ==
+                   ConnectionHealth::NoSignal);
             }
           });
 
@@ -44,19 +44,13 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
           [this]() {
             Controller::State state =
                 MozillaVPN::instance()->controller()->state();
-            if (state == Controller::StateOff && m_noSignalState == true) {
+            if (state == Controller::StateOff && m_lastKnownStabilityState) {
               logger.debug() << "User has toggled the VPN off after No Signal";
               TaskScheduler::scheduleTask(
                   new TaskAccount(ErrorHandler::DoNotPropagateError));
 
-              // Reset the state tracker if the VPN is in StateOn and we are no
-              // longer in No Signal
-              if (MozillaVPN::instance()->controller()->state() ==
-                  Controller::StateOn) {
-                m_noSignalState =
-                    (MozillaVPN::instance()->connectionHealth()->stability() ==
-                     ConnectionHealth::NoSignal);
-              }
+              // Reset the state tracker
+              m_lastKnownStabilityState = false;
             }
           });
 }
