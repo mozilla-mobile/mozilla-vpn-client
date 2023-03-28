@@ -32,8 +32,8 @@
         "content": [
           { "id": "l_1",
             "content": "Open Mozilla VPN in your chosen desktop or mobile device" },
-          { "id": "l_2",
-            "content": "Tap on “My Devices” in your VPN homescreen" },
+          { "id": "l_2_0",
+            "content": "Go to Settings and select “My devices”" },
           { "id": "l_3",
             "content": "Select the “Trash” icon next to the device you want to remove from your list of connected devices" }
         ]
