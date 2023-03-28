@@ -139,56 +139,15 @@ void NotificationHandler::showNotification() {
         }
 
         // "VPN Switched Servers"
-        ServerData* serverData = vpn->serverData();
-        
-        if (serverData->multihop()) {
-            
-            QString localizedEntryCityName =
-                vpn->controller()->currentServer().localizedEntryCityName();
+        notifyInternal(
+            None,
+            I18nStrings::instance()->t(
+                I18nStrings::NotificationsVPNSwitchedServersTitle),
+            I18nStrings::instance()
+                ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
+                .arg(localizedPreviousExitCityName, localizedCityName),
+            NOTIFICATION_TIME_MSEC);
 
-            QString localizedExitCityName =
-                vpn->controller()->currentServer().localizedExitCityName();
-            
-            // We hit this when going multi to single hop ?
-            if (localizedEntryCityName.isEmpty()) {
-                notifyInternal(
-                    None,
-                    I18nStrings::instance()->t(
-                        I18nStrings::NotificationsVPNConnectedTitle),
-                    I18nStrings::instance()
-                        ->t(I18nStrings::NotificationsVPNSwitchedSingleToMultiHopMessage)
-                        .arg(localizedExitCityName, localizedCityName),
-                    NOTIFICATION_TIME_MSEC);
-            }
-              
-        } else {
-            QString localizedEntryCityName =
-                vpn->controller()->currentServer().localizedEntryCityName();
-
-            QString localizedExitCityName =
-                vpn->controller()->currentServer().localizedExitCityName();
-            // singlehop to singlehop
-            if (localizedEntryCityName.isEmpty()) {
-                notifyInternal(
-                    None,
-                    I18nStrings::instance()->t(
-                        I18nStrings::NotificationsVPNConnectedTitle),
-                    I18nStrings::instance()
-                        ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
-                        .arg(localizedPreviousExitCityName, localizedCityName),
-                    NOTIFICATION_TIME_MSEC);
-            }
-            
-//            notifyInternal(
-//                None,
-//                I18nStrings::instance()->t(
-//                    I18nStrings::NotificationsVPNSwitchedServersTitle),
-//                I18nStrings::instance()
-//                    ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
-//                    .arg(localizedPreviousExitCityName, localizedCityName),
-//                NOTIFICATION_TIME_MSEC);
-        }
-          
         return;
       }
 
@@ -239,29 +198,30 @@ void NotificationHandler::showNotification() {
         }
         // "VPN Disconnected"
         ServerData* serverData = vpn->serverData();
-        if (serverData->multihop())
-        {
-            QString localizedEntryCityName =
-                vpn->controller()->currentServer().localizedEntryCityName();
+        if (serverData->multihop()) {
+          QString localizedEntryCityName =
+              vpn->controller()->currentServer().localizedEntryCityName();
 
-            QString localizedExitCityName =
-                vpn->controller()->currentServer().localizedExitCityName();
-            
-            notifyInternal(None,
-                           I18nStrings::instance()->t(
-                               I18nStrings::NotificationsVPNDisconnectedTitle),
-                           I18nStrings::instance()
-                               ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
-                               .arg(localizedExitCityName, localizedEntryCityName),
-                           NOTIFICATION_TIME_MSEC);
+          QString localizedExitCityName =
+              vpn->controller()->currentServer().localizedExitCityName();
+
+          notifyInternal(
+              None,
+              I18nStrings::instance()->t(
+                  I18nStrings::NotificationsVPNDisconnectedTitle),
+              I18nStrings::instance()
+                  ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
+                  .arg(localizedExitCityName, localizedEntryCityName),
+              NOTIFICATION_TIME_MSEC);
         } else {
-            notifyInternal(None,
-                           I18nStrings::instance()->t(
-                               I18nStrings::NotificationsVPNDisconnectedTitle),
-                           I18nStrings::instance()
-                               ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
-                               .arg(localizedCityName),
-                           NOTIFICATION_TIME_MSEC);
+          notifyInternal(
+              None,
+              I18nStrings::instance()->t(
+                  I18nStrings::NotificationsVPNDisconnectedTitle),
+              I18nStrings::instance()
+                  ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
+                  .arg(localizedCityName),
+              NOTIFICATION_TIME_MSEC);
         }
       }
       return;
