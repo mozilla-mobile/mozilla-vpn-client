@@ -580,7 +580,8 @@ void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
   mozilla::glean::session::session_end.set();
 
-  // TODO: This must be after submission of ping - ensure it comes after the submissino
+  // This generateAndSet must be called after submission of ping.
+  // When doing VPN-4443 ensure it comes after the submission.
 
   // We never expect to see this UUID in Glean metrics, as it is also
   // updated before the next session begins. Rotating it here is a

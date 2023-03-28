@@ -94,7 +94,8 @@ session:
     description: |
       A unique identifier for each session, shared with the daemon instance
       of Glean. This is used to connect unique VPN sessions across pings, and
-      as a safety check on edge cases of VPN activation/deactivation.
+      as a safety check on edge cases of VPN activation/deactivation, such as
+      a session being started/ended from mobile system settings.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4064
     data_reviews:
