@@ -73,7 +73,7 @@ $MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B $MOZ_FETCHES_DIR/bui
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
 
 print Y "Compiling..."
-cmake --build build -j$(nproc) || die
+cmake --build build || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
