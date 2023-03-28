@@ -129,12 +129,6 @@ void ConnectionHealth::startIdle() {
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
-  if (m_stability == stability) {
-    return;
-  }
-
-  logger.debug() << "Stability changed:" << stability;
-
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
@@ -145,7 +139,15 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     mozilla::glean::sample::connection_health_no_signal.record();
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
+  } else {
+    mozilla::glean::sample::connection_health_stable.record();
   }
+
+  if (m_stability == stability) {
+    return;
+  }
+
+  logger.debug() << "Stability changed:" << stability;
 
   m_stability = stability;
   emit stabilityChanged();
