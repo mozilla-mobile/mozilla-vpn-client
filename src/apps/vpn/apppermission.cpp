@@ -103,6 +103,12 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
   }
 }
 
+int AppPermission::disabledAppCount() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QStringList applist = settingsHolder->vpnDisabledApps();
+  return applist.count();
+}
+
 void AppPermission::flip(const QString& appID) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   QStringList applist = settingsHolder->vpnDisabledApps();

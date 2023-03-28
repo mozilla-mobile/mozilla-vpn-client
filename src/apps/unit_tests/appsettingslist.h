@@ -4,6 +4,17 @@
 
 // NOTE! Do not include this file directly. Include settingslist.h instead.
 
+SETTING_BOOL(addonApiSetting,        // getter
+             setAddonApiSetting,     // setter
+             removeAddonApiSetting,  // remover
+             hasAddonApiSetting,     // has
+             "addonApiSetting",      // key
+             false,                  // default value
+             true,                   // user setting
+             false,                  // remove when reset
+             false                   // sensitive (do not log)
+)
+
 SETTING_STRING(foobar,        // getter
                setFoobar,     // setter
                removeFoobar,  // remover

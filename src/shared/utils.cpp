@@ -40,16 +40,6 @@ void Utils::storeInClipboard(const QString& text) {
   QApplication::clipboard()->setText(text);
 }
 
-void Utils::openAppStoreReviewLink() {
-  Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-
-#if defined(MZ_IOS)
-  UrlOpener::instance()->openUrl(AppConstants::APPLE_STORE_REVIEW_URL);
-#elif defined(MZ_ANDROID)
-  UrlOpener::instance()->openUrl(AppConstants::GOOGLE_PLAYSTORE_URL);
-#endif
-}
-
 // static
 void Utils::crashTest() {
   logger.debug() << "Crashing Application";

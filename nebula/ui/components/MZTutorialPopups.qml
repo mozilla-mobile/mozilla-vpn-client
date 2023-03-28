@@ -62,7 +62,7 @@ Item {
         id: tutorialTooltip
 
         closePolicy: Popup.NoAutoClose
-        onClipChanged: VPNTutorial.stop();
+        onClipChanged: MZTutorial.stop();
         verticalPadding: MZTheme.theme.windowMargin
         horizontalPadding: MZTheme.theme.windowMargin
 
@@ -85,7 +85,7 @@ Item {
         }
 
         width: root.width - MZTheme.theme.windowMargin * 2
-        visible: VPNTutorial.tooltipShown
+        visible: MZTutorial.tooltipShown
         x: MZTheme.theme.windowMargin
 
         background: Rectangle {
@@ -180,7 +180,7 @@ Item {
                 Layout.preferredWidth: MZTheme.theme.rowHeight
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Component.onCompleted: VPNTutorial.allowItem(leaveTutorialBtn.objectName)
+                Component.onCompleted: MZTutorial.allowItem(leaveTutorialBtn.objectName)
                 buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
                 onClicked: openLeaveTutorialPopup()
 
@@ -215,7 +215,7 @@ Item {
         imageSize: Qt.size(116, 80)
 
         Component.onCompleted: {
-            [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
+            [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => MZTutorial.allowItem(objName));
         }
 
         title: ""
@@ -247,11 +247,11 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
-            Glean.sample.tutorialAborted.record({ id: VPNTutorial.currentTutorial.id });
+            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": MZTutorial.currentTutorial.id});
+            Glean.sample.tutorialAborted.record({ id: MZTutorial.currentTutorial.id });
             tutorialPopup._onClosed = () => {
-                if (op !== null) VPNTutorial.interruptAccepted(op);
-                else VPNTutorial.stop();
+                if (op !== null) MZTutorial.interruptAccepted(op);
+                else MZTutorial.stop();
             }
             tutorialPopup.close();
         }
@@ -281,14 +281,14 @@ Item {
     }
 
     Connections {
-        target: VPNTutorial
+        target: MZTutorial
 
         function onInterruptRequest(op) {
           openLeaveTutorialPopup(op)
         }
 
         function onPlayingChanged() {
-            if (!VPNTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
+            if (!MZTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
                 tutorialPopup.close();
             }
         }
@@ -325,9 +325,9 @@ Item {
             tutorialPopup.title = MZI18n.TutorialPopupTutorialWarningTitle;
             tutorialPopup.description = MZI18n.TutorialPopupTutorialWarningDescription
             tutorialPopup._onClosed = () => {
-                VPNTutorial.stop()
+                MZTutorial.stop()
                 if(shouldPlayTutorial) {
-                    VPNTutorial.play(tutorial)
+                    MZTutorial.play(tutorial)
                     MZNavigator.requestScreen(VPN.ScreenHome)
                 }
             }

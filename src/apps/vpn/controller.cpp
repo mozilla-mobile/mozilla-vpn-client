@@ -6,6 +6,7 @@
 
 #include "app.h"
 #include "appconstants.h"
+#include "apppermission.h"
 #include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
@@ -21,7 +22,6 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
-#include <QUuid>
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -34,6 +34,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 #include "telemetry/gleansample.h"
+#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -177,6 +178,9 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  connect(this, &Controller::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -525,9 +529,10 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
   mozilla::glean::session::session_start.set();
-  QUuid sessionId = QUuid::createUuid();
-  mozilla::glean::session::session_id.set(sessionId); // this probably needs to be cast to a string or something, depending on how we bring UUID Glean in
+  mozilla::glean::session::apps_excluded.set(
+      AppPermission::instance()->disabledAppCount());
 
   if (m_nextStep != None) {
     deactivate();
@@ -575,14 +580,14 @@ void Controller::handshakeTimeout() {
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
   mozilla::glean::session::session_end.set();
-  // TODO: This must be after submission of ping
+
+  // TODO: This must be after submission of ping - ensure it comes after the submissino
 
   // We never expect to see this UUID in Glean metrics, as it is also
   // updated before the next session begins. Rotating it here is a
   // safety measure.
-  QUuid sessionId = QUuid::createUuid();
-  mozilla::glean::session::session_id.set(sessionId); // this probably needs to be cast to a string or something, depending on how we bring UUID Glean in
-
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
+  
   clearConnectedTime();
   clearRetryCounter();
 

@@ -106,17 +106,6 @@ languageView:
     value: Search languages
     comment: Placeholder text for a search field that can be used to search through a list of languages
 
-feedbackForm:
-  chooseCategory: Choose a category
-  excellentLabel:
-    value: Excellent
-    comment:
-      - One of the answers on the feedback question about the user
-      - experience with the VPN client.
-  reviewHeader: Give us 5 stars!
-  reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
-  leaveReviewButton: Leave a Review
-
 settingsDev:
   title: Developer Options
   showOptionTitle: Show Developer Options

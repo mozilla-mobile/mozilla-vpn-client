@@ -199,16 +199,11 @@ const screenAuthenticationInApp = {
 
 const screenGetHelp = {
   BACK_BUTTON: new QmlQueryComposer('//getHelpBack'),
-  FEEDBACK: new QmlQueryComposer('//settingsGiveFeedback'),
   HELP_CENTER: new QmlQueryComposer('//helpCenter'),
   LINKS: new QmlQueryComposer('//getHelpLinks'),
   LOGS: new QmlQueryComposer('//viewLogs'),
   STACKVIEW: new QmlQueryComposer('//getHelpStackView'),
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
-
-  giveFeedbackView: {
-    SCREEN: new QmlQueryComposer('//giveFeedbackView'),
-  },
 
   contactSupportView: {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),

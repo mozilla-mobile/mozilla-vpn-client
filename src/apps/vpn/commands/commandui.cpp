@@ -33,7 +33,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
-#include "models/feedbackcategorymodel.h"
 #include "models/recentconnections.h"
 #include "models/servercountrymodel.h"
 #include "models/subscriptiondata.h"
@@ -52,7 +51,6 @@
 #include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "temporarydir.h"
-#include "tutorial/tutorial.h"
 #include "update/updater.h"
 
 #ifdef MZ_DEBUG
@@ -306,9 +304,6 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
                                  MozillaVPN::instance()->deviceModel());
 
-    qmlRegisterSingletonInstance(
-        "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
-        MozillaVPN::instance()->feedbackCategoryModel());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
                                  "VPNRecentConnectionsModel",
                                  RecentConnections::instance());
@@ -348,11 +343,6 @@ int CommandUI::run(QStringList& tokens) {
       qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
                                    ProductsHandler::instance());
     }
-
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNTutorial",
-                                 Tutorial::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAddonManager",
-                                 AddonManager::instance());
 
     // TODO: MZI18n should be moved to QmlEngineHolder but it requires extra
     // work for the generation of i18nstrings.h/cpp for the unit-test app.

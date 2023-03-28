@@ -22,7 +22,6 @@ void TestServerLatency::init() {
 
 void TestServerLatency::latency() {
   constexpr int start = 1234;
-  int value;
 
   // Insert some latency values and see that get/set/avg works as expected.
   ServerLatency serverLatency;

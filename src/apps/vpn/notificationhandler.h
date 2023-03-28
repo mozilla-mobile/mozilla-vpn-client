@@ -7,7 +7,12 @@
 
 #include <QObject>
 
+class Addon;
 class QMenu;
+
+#ifdef UNIT_TEST
+class TestAddon;
+#endif
 
 class NotificationHandler : public QObject {
   Q_OBJECT
@@ -71,6 +76,9 @@ class NotificationHandler : public QObject {
   virtual void notifyInternal(Message type, const QString& title,
                               const QString& message, int timerMsec);
 
+  void addonCreated(Addon* addon);
+  void maybeAddonNotification(Addon* addon);
+
  protected:
   Message m_lastMessage = None;
 
@@ -80,6 +88,10 @@ class NotificationHandler : public QObject {
   // We want to show a 'disconnected' notification only if we were actually
   // connected.
   bool m_connected = false;
+
+#ifdef UNIT_TEST
+  friend class TestAddon;
+#endif
 };
 
 #endif  // NOTIFICATIONHANDLER_H

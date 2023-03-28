@@ -16,7 +16,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 0;
     });
   });
@@ -26,7 +26,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
@@ -34,7 +34,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
   });
@@ -44,7 +44,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
@@ -52,7 +52,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 0;
     });
 
@@ -60,7 +60,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
   });
@@ -72,7 +72,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
@@ -153,7 +153,7 @@ describe('Addons', function () {
         async () =>
             (parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) > 0));
     const loadedMessages = await vpn.messages();
     const updateMessages = loadedMessages.filter(message => message.startsWith('message_update_'));
@@ -217,7 +217,7 @@ describe('Addons', function () {
             async () =>
                 (parseInt(
                      await vpn.getMozillaProperty(
-                         'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                         'Mozilla.Shared', 'MZAddonManager', 'count'),
                      10) > 0));
 
 
@@ -236,7 +236,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 2;
     });
 
@@ -245,7 +245,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
@@ -253,7 +253,7 @@ describe('Addons', function () {
     await vpn.waitForCondition(async () => {
       return parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 2;
     });
   });

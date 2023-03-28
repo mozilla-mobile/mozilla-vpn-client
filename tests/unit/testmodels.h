@@ -18,8 +18,6 @@ class TestModels final : public TestHelper {
   void deviceModelFromJson();
   void deviceModelRemoval();
 
-  void feedbackCategoryBasic();
-
   void keysBasic();
 
   void recentConnectionBasic();
