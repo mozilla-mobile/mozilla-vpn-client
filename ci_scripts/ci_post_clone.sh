@@ -74,4 +74,5 @@ sed -i.bak -E \
 $QT_IOS_BIN/qt-cmake -S . -GXcode \
   -DQT_HOST_PATH="/Volumes/workspace/repository/qt_ios/$QTVERSION/macos" \
   -DCMAKE_PREFIX_PATH="/Volumes/workspace/repository/qt_ios/cmake" \
-  -DCMAKE_OSX_ARCHITECTURES="arm64"
+  -DCMAKE_OSX_ARCHITECTURES="arm64" \
+  -DCMAKE_BUILD_TYPE=Release

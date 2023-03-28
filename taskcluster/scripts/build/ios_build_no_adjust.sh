@@ -71,13 +71,14 @@ $MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B $MOZ_FETCHES_DIR/bui
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
+  -DCMAKE_BUILD_TYPE=Release
 
 print Y "Compiling..."
-cmake --build $MOZ_FETCHES_DIR/build || die
+cmake --build $MOZ_FETCHES_DIR/build --config Release || die
 
 print Y "Exporting the artifact..."
 mkdir -p tmp || die
-cp -r Release-iphoneos/* tmp || die
+cp -r $MOZ_FETCHES_DIR/build/build/Release-iphoneos/* tmp || die
 cd tmp || die
 
 # From checkout dir to actual task base directory
