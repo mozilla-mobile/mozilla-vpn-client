@@ -757,14 +757,24 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (m_private->m_user.subscriptionNeeded() && state() == StateMain) {
+  if (!m_private->m_user.subscriptionNeeded() || state() != StateMain) {
+    return;
+  }
+
+  ProductsHandler* products = ProductsHandler::instance();
+  // If the products are loaded, go to the subscription screen,
+  // otherwise scheudle the screen to show up after registration.
+  if (products->hasProductsRegistered()) {
     NotificationHandler::instance()->subscriptionNotFoundNotification();
     maybeStateMain();
     return;
   }
-
-  // To test the subscription needed view, comment out this line:
-  // m_private->m_controller.subscriptionNeeded();
+  logger.debug() << "Scheudling TaskProducts for Subsription View";
+  TaskScheduler::scheduleTask(new TaskProducts());
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    NotificationHandler::instance()->subscriptionNotFoundNotification();
+    maybeStateMain();
+  }));
 }
 
 void MozillaVPN::cancelAuthentication() {
