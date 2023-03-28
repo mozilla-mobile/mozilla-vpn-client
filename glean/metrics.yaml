@@ -1032,6 +1032,7 @@ sample:
     lifetime: ping
     send_in_pings:
       - main
+      - vpnsession
     description: |
       The controller state flow (off, connecting, switching, etc).
     bugs:
