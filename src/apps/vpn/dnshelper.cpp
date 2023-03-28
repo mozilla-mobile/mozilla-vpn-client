@@ -40,7 +40,7 @@ QString DNSHelper::getDNSType() {
   return getDNSDetails("pretendDNS").dnsType;
 }
 
-//static
+// static
 dnsData DNSHelper::getDNSDetails(const QString& fallback) {
   if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
     return dnsData{fallback, "NoCustomDNSAvailable"};
@@ -71,17 +71,20 @@ dnsData DNSHelper::getDNSDetails(const QString& fallback) {
 
   static QMap<int, dnsData> dnsMap{
       {SettingsHolder::BlockAds, dnsData{BLOCK_ADS_DNS, "BlockAds"}},
-      {SettingsHolder::BlockTrackers, dnsData{BLOCK_TRACKERS_DNS, "BlockTrackers"}},
+      {SettingsHolder::BlockTrackers,
+       dnsData{BLOCK_TRACKERS_DNS, "BlockTrackers"}},
       {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers,
        dnsData{BLOCK_ADS_TRACKERS_DNS, "BlockAdsAndTrackers"}},
-      {SettingsHolder::BlockMalware, dnsData{BLOCK_MALWARE_DNS, "BlockMalware"}},
+      {SettingsHolder::BlockMalware,
+       dnsData{BLOCK_MALWARE_DNS, "BlockMalware"}},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds,
        dnsData{BLOCK_MALWARE_ADS_DNS, "BlockMalwareAndAds"}},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
        dnsData{BLOCK_MALWARE_TRACKERS_DNS, "BlockMalwareAndTrackers"}},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds +
            SettingsHolder::BlockTrackers,
-       dnsData{BLOCK_MALWARE_ADS_TRACKERS_DNS, "BlockMalwareAndAdsAndTrackers"}},
+       dnsData{BLOCK_MALWARE_ADS_TRACKERS_DNS,
+               "BlockMalwareAndAdsAndTrackers"}},
   };
 
   Q_ASSERT(dnsMap.contains(dnsProviderFlags));
