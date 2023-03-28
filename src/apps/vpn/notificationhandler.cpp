@@ -109,7 +109,7 @@ void NotificationHandler::showNotification() {
   // We want to show notifications about the location in use by the controller,
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
-  QString localizedCityName =
+  QString localizedExitCityName =
       vpn->controller()->currentServer().localizedExitCityName();
   QString localizedCountryName =
       vpn->controller()->currentServer().localizedExitCountryName();
@@ -132,7 +132,7 @@ void NotificationHandler::showNotification() {
             vpn->controller()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
-            (localizedPreviousExitCityName == localizedCityName)) {
+            (localizedPreviousExitCityName == localizedExitCityName)) {
           // Don't show notifications unless the exit server changed, see:
           // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
           return;
@@ -145,7 +145,7 @@ void NotificationHandler::showNotification() {
                 I18nStrings::NotificationsVPNSwitchedServersTitle),
             I18nStrings::instance()
                 ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
-                .arg(localizedPreviousExitCityName, localizedCityName),
+                .arg(localizedPreviousExitCityName, localizedExitCityName),
             NOTIFICATION_TIME_MSEC);
 
         return;
@@ -183,7 +183,7 @@ void NotificationHandler::showNotification() {
                              I18nStrings::NotificationsVPNConnectedTitle),
                          I18nStrings::instance()
                              ->t(I18nStrings::NotificationsVPNConnectedMessages)
-                             .arg(localizedCityName),
+                             .arg(localizedExitCityName),
                          NOTIFICATION_TIME_MSEC);
         }
       }
@@ -220,7 +220,7 @@ void NotificationHandler::showNotification() {
                   I18nStrings::NotificationsVPNDisconnectedTitle),
               I18nStrings::instance()
                   ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
-                  .arg(localizedCityName),
+                  .arg(localizedExitCityName),
               NOTIFICATION_TIME_MSEC);
         }
       }
