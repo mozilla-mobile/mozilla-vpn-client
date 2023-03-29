@@ -151,15 +151,15 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   });
 
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    // On iAP make sure the Products are loaded in time. 
-    // If we Move into any State adjecent to iAP - load the 
-    // products if we don't have that already. 
-    connect(this, &MozillaVPN::stateChanged, this, [this]() {  
-    if ( (state() == StateSubscriptionNeeded || 
-          state() == StateSubscriptionInProgress || 
-          state() == StateAuthenticating) 
-        && !ProductsHandler::instance()->hasProductsRegistered()) { 
-        TaskScheduler::scheduleTask(new TaskProducts()); 
+    // On iAP make sure the Products are loaded in time.
+    // If we Move into any State adjecent to iAP - load the
+    // products if we don't have that already.
+    connect(this, &MozillaVPN::stateChanged, this, [this]() {
+      if ((state() == StateSubscriptionNeeded ||
+           state() == StateSubscriptionInProgress ||
+           state() == StateAuthenticating) &&
+          !ProductsHandler::instance()->hasProductsRegistered()) {
+        TaskScheduler::scheduleTask(new TaskProducts());
       }
     });
   }

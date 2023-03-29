@@ -240,14 +240,15 @@ void LogHandler::addLog(const Log& log,
 
   emit logEntryAdded(buffer);
 
-  #if defined(MZ_ANDROID) 
-    if(!Constants::inProduction()){
-      const char* str = buffer.constData();
-      if (str) {
-        __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME, str);
-      }
+#if defined(MZ_ANDROID)
+  if (!Constants::inProduction()) {
+    const char* str = buffer.constData();
+    if (str) {
+      __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME,
+                          str);
     }
-  #endif
+  }
+#endif
 }
 
 // static
