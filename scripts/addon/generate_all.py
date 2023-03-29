@@ -30,6 +30,7 @@ args = parser.parse_args()
 lang_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "import_languages.py")
 build_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "build.py")
 index_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "index.py")
+i18n_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "src", "apps", "vpn", "translations", "i18n")
 addons_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
     "addons",
@@ -58,7 +59,7 @@ for file in os.listdir(addons_path):
        print(f"Ignoring path {file}.")
        continue
 
-    build_cmd = [sys.executable, build_path, "vpn", addon_path, generated_path]
+    build_cmd = [sys.executable, build_path, "--i18n", i18n_path, addon_path, generated_path]
     if args.qtpath:
         build_cmd.append("-q")
         build_cmd.append(args.qtpath)

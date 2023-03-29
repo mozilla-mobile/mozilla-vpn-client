@@ -248,13 +248,6 @@ def get_file_list(path, prefix):
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
-    "project",
-    metavar="PROJECT",
-    type=str,
-    action="store",
-    help="The project name (vpn, relay, foobar, ...)",
-)
-parser.add_argument(
     "source",
     metavar="MANIFEST",
     type=str,
@@ -282,6 +275,13 @@ parser.add_argument(
     default=None,
     dest="depfile",
     help="Generate a dependency file"
+)
+parser.add_argument(
+    "-i",
+    "--i18n",
+    default=None,
+    dest="i18npath",
+    help="Internationalization project path"
 )
 args = parser.parse_args()
 
@@ -346,10 +346,6 @@ if not os.path.isdir(args.dest):
 
 script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-i18n_path = os.path.join(os.path.dirname(script_path), "src", "apps", args.project, "translations", "i18n")
-if not os.path.isdir(i18n_path):
-    exit(f"The translation for project `{args.project}` does not exist at path {i18n_path}")
-
 jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
     exit(f"The JSONSchema {jsonSchema} does not exist")
@@ -389,13 +385,17 @@ with open(args.source, "r", encoding="utf-8") as file:
         shutil.copyfile(template_ts_file, ts_file)
         os.system(f"{lrelease} -idbased {ts_file}")
 
-        completeness = [];
-        for locale in os.listdir(i18n_path):
-            if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
+        # Include internationalization if the i18n path was specified.
+        completeness = []
+        i18nlocales = []
+        if args.i18npath is not None:
+            i18nlocales = os.listdir(args.i18npath)
+        for locale in i18nlocales:
+            if not os.path.isdir(os.path.join(args.i18npath, locale)) or locale.startswith("."):
                 continue
 
             xliff_path = os.path.join(
-                i18n_path, locale, "addons", manifest["id"], "strings.xliff"
+                args.i18npath, locale, "addons", manifest["id"], "strings.xliff"
             )
 
             if os.path.isfile(xliff_path):
