@@ -36,8 +36,8 @@ QString DNSHelper::getDNS(const QString& fallback) {
 QString DNSHelper::getDNSType() {
   // `getDNSDetails` takes a string for its fallback DNS server.
   // As `getDNSType` doesn't return a DNS address, it can send
-  // any string, including `pretenedDNS`.
-  return getDNSDetails("pretendDNS").dnsType;
+  // any string, including `IMPOSSIBLE`.
+  return getDNSDetails("IMPOSSIBLE").dnsType;
 }
 
 // static

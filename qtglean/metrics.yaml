@@ -59,13 +59,17 @@ session:
   dns_type:
     type: string
     description: |
-      The type of DNS a user has active.
-      NoCustomDNSAvailable - Custom DNS app feature isn't available
-      Default - App's default DNS server
-      Custom - User has provided a valid IP address for their DNS
-      (BlockAds | BlockTrackers | BlockAdsAndTrackers
-      | BlockMalware | BlockMalwareAndAds | BlockMalwareAndTrackers
-      | BlockMalwareAndAdsAndTrackers) - Using app's privacy DNS option
+      The type of DNS a user has active:
+      - NoCustomDNSAvailable: Custom DNS app feature isn't available
+      - Default: App's default DNS server
+      - Custom: User has provided a custom valid IP address for their DNS
+      - BlockAds: One of app's privacy DNS options
+      - BlockTrackers: One of app's privacy DNS options
+      - BlockAdsAndTrackers: One of app's privacy DNS options
+      - BlockMalware: One of app's privacy DNS options
+      - BlockMalwareAndAds: One of app's privacy DNS options
+      - BlockMalwareAndTrackers: One of app's privacy DNS options
+      - BlockMalwareAndAdsAndTrackers: One of app's privacy DNS options
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
