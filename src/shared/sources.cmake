@@ -20,8 +20,15 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 )
 
 if (IOS)
+    # We may import the default files from the app folder. So it needs to be in the include paths.
+    # For now, we getting away with not adding it to the include paths because cmake just piles on include paths.
+    # EXCEPT FOR, Xcode cloud. Thus this little piece of hacky code.
     set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared
+        ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
         ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn
+        ${CMAKE_CURRENT_BINARY_DIR}    
     )
 endif()
 
