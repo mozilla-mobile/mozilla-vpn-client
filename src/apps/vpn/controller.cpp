@@ -331,6 +331,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
+    logger.info() << "Activating single hop";
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -344,6 +345,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
+    logger.info() << "Activating multi-hop (through platform controller)";
     HopConnection hop;
 
     hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -373,6 +375,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
+    logger.info() << "Activating multi-hop (not through platform controller)";
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
