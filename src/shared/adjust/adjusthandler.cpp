@@ -28,7 +28,8 @@ namespace {
 Logger logger("AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
-constexpr auto CORE_APPLICATION = "org/mozilla/firefox/qt/common/CoreApplication";
+constexpr auto CORE_APPLICATION =
+    "org/mozilla/firefox/qt/common/CoreApplication";
 }  // namespace
 
 void AdjustHandler::initialize() {
@@ -98,9 +99,9 @@ void AdjustHandler::initialize() {
   }
 
 #ifdef MZ_ANDROID
-  QJniObject::callStaticMethod<void>(
-      CORE_APPLICATION, "initializeAdjust", "(ZI)V",
-      Constants::inProduction(), s_adjustProxy->serverPort());
+  QJniObject::callStaticMethod<void>(CORE_APPLICATION, "initializeAdjust",
+                                     "(ZI)V", Constants::inProduction(),
+                                     s_adjustProxy->serverPort());
 #endif
 
 #ifdef MZ_IOS
@@ -121,9 +122,9 @@ void AdjustHandler::trackEvent(const QString& event) {
 
 #ifdef MZ_ANDROID
   QJniObject javaMessage = QJniObject::fromString(event);
-  QJniObject::callStaticMethod<void>(
-      CORE_APPLICATION, "trackEvent",
-      "(Ljava/lang/String;)V", javaMessage.object<jstring>());
+  QJniObject::callStaticMethod<void>(CORE_APPLICATION, "trackEvent",
+                                     "(Ljava/lang/String;)V",
+                                     javaMessage.object<jstring>());
 #endif
 
 #ifdef MZ_IOS
@@ -142,9 +143,9 @@ void AdjustHandler::forget() {
 
 #ifdef MZ_ANDROID
   QJniObject activity = AndroidCommons::getActivity();
-  QJniObject::callStaticMethod<void>(
-      CORE_APPLICATION, "forget",
-      "(Landroid/app/Activity;)V", activity.object());
+  QJniObject::callStaticMethod<void>(CORE_APPLICATION, "forget",
+                                     "(Landroid/app/Activity;)V",
+                                     activity.object());
 #endif
 
 #ifdef MZ_IOS
