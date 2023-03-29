@@ -19,6 +19,12 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+if (IOS)
+    set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn
+    )
+endif()
+
 # Shared components
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addon.cpp
