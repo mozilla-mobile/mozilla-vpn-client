@@ -150,6 +150,20 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
     }
   });
 
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    // On iAP make sure the Products are loaded in time. 
+    // If we Move into any State adjecent to iAP - load the 
+    // products if we don't have that already. 
+    connect(this, &MozillaVPN::stateChanged, this, [this]() {  
+    if ( (state() == StateSubscriptionNeeded || 
+          state() == StateSubscriptionInProgress || 
+          state() == StateAuthenticating) 
+        && !ProductsHandler::instance()->hasProductsRegistered()) { 
+        TaskScheduler::scheduleTask(new TaskProducts()); 
+      }
+    });
+  }
+
   connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
@@ -524,11 +538,7 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
-    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      TaskScheduler::scheduleTask(new TaskProducts());
-    }
-    TaskScheduler::scheduleTask(
-        new TaskFunction([this]() { maybeStateMain(); }));
+    maybeStateMain();
     return;
   }
 
@@ -760,21 +770,8 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   if (!m_private->m_user.subscriptionNeeded() || state() != StateMain) {
     return;
   }
-
-  ProductsHandler* products = ProductsHandler::instance();
-  // If the products are loaded, go to the subscription screen,
-  // otherwise scheudle the screen to show up after registration.
-  if (products->hasProductsRegistered()) {
-    NotificationHandler::instance()->subscriptionNotFoundNotification();
-    maybeStateMain();
-    return;
-  }
-  logger.debug() << "Scheudling TaskProducts for Subsription View";
-  TaskScheduler::scheduleTask(new TaskProducts());
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    NotificationHandler::instance()->subscriptionNotFoundNotification();
-    maybeStateMain();
-  }));
+  NotificationHandler::instance()->subscriptionNotFoundNotification();
+  maybeStateMain();
 }
 
 void MozillaVPN::cancelAuthentication() {
@@ -1030,20 +1027,8 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionInProgress);
-
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    ProductsHandler* products = ProductsHandler::instance();
-
-    // If products are not ready (race condition), register the products again.
-    if (!products->hasProductsRegistered()) {
-      TaskScheduler::scheduleTask(new TaskProducts());
-      TaskScheduler::scheduleTask(new TaskFunction([this, productIdentifier]() {
-        subscriptionStarted(productIdentifier);
-      }));
-
-      return;
-    }
-  }
+  ProductsHandler* products = ProductsHandler::instance();
+  Q_ASSERT(products->hasProductsRegistered());
 
   PurchaseHandler::instance()->startSubscription(productIdentifier);
 }
