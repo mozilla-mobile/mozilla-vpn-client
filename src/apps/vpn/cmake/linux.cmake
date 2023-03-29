@@ -114,7 +114,9 @@ install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.policy
 install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.conf
     DESTINATION /usr/share/dbus-1/system.d)
 
-install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.service
+configure_file(apps/vpn/platforms/linux/daemon/org.mozilla.vpn.dbus.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
     DESTINATION /usr/share/dbus-1/system-services)
 
 pkg_check_modules(SYSTEMD systemd)
