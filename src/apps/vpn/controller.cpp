@@ -345,7 +345,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
-    logger.info() << "Activating multi-hop (in controller)";
+    logger.info() << "Activating multi-hop (through platform controller)";
     HopConnection hop;
 
     hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -375,7 +375,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    logger.info() << "Activating multi-hop (not in controller)";
+    logger.info() << "Activating multi-hop (not through platform controller)";
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
