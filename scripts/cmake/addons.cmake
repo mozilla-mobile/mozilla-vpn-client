@@ -10,7 +10,7 @@
 function(add_addon_target NAME)
     cmake_parse_arguments(ADDON
         ""
-        "SOURCE_DIR;OUTPUT_DIR"
+        "SOURCE_DIR;OUTPUT_DIR;I18N_DIR"
         "SOURCES"
         ${ARGN})
 
@@ -46,6 +46,12 @@ function(add_addon_target NAME)
         endforeach()
     endif()
 
+    # Prepare some common addon build arguments.
+    set(ADDON_BUILD_ARGS -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH})
+    if (ADDON_I18N_DIR)
+        list(APPEND ADDON_BUILD_ARGS -i ${ADDON_I18N_DIR})
+    endif()
+
     # Add commands to build the addons
     foreach(MANIFEST_FILE ${ADDON_SOURCES})
         # Parse the manifest to get the addon ID.
@@ -60,16 +66,14 @@ function(add_addon_target NAME)
                 DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
                 COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
                             -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
-                            -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
-                            ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
+                            ${ADDON_BUILD_ARGS} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
             )
         else()
             add_custom_command(
                 OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
                 DEPENDS ${MANIFEST_FILE}
                 COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
-                            -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH}
-                            ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
+                            ${ADDON_BUILD_ARGS} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
             )
         endif()
         list(APPEND ADDON_OUTPUT_FILES ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc)

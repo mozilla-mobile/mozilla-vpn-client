@@ -139,8 +139,9 @@ add_subdirectory(translations)
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/addons.cmake)
     add_addon_target(addons
-        OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/addons
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/addons
+        OUTPUT_DIR ${CMAKE_BINARY_DIR}/addons
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/addons
+        I18N_DIR ${CMAKE_SOURCE_DIR}/src/apps/vpn
     )
     set_target_properties(addons PROPERTIES EXCLUDE_FROM_ALL FALSE)
 endif()
