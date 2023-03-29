@@ -20,9 +20,25 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
     new NavigatorReloader(qApp);
   }
 
+  // Callback for QT.
   QUrl intercept(const QUrl& url,
                  QQmlAbstractUrlInterceptor::DataType type) override;
+
+  /**
+   * @brief Announces a qml replacement path is available
+   * Will redirect all requests that match path.filename
+   * to that URL
+   *
+   * supported schemes: qrc://, file://, http://
+   *
+   * @param path - The Replacement Path
+   */
   void annonceReplacedFile(const QUrl& path);
+
+  // Removes all injected paths
+  // Reload's the current screen with the internal
+  // Components
+  void resetAllFiles();
 
  private:
   QQmlEngine* m_target;

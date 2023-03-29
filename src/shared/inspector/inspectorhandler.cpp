@@ -152,7 +152,14 @@ static QList<InspectorCommand> s_commands{
                        s_hotreloader->annonceReplacedFile(url);
                        return QJsonObject();
                      }},
-
+    InspectorCommand{"reset_live_reload", "Reset all hot reloaded files", 0,
+                     [](InspectorHandler*, const QList<QByteArray>& args) {
+                       if (s_hotreloader == nullptr) {
+                         return QJsonObject();
+                       }
+                       s_hotreloader->resetAllFiles();
+                       return QJsonObject();
+                     }},
     InspectorCommand{"pick", "Wait for a click to select an element", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        if (!s_itemPicker) {
