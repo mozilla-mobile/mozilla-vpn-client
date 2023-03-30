@@ -29,13 +29,27 @@ target_sources(glean PRIVATE
     telemetry/gleansample.h
 )
 
+list(APPEND PINGS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
+list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
+
+get_filename_component(APPS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
+file(GLOB APPS_NAMES LIST_DIRECTORIES true RELATIVE ${APPS_DIR} ${APPS_DIR}/*)
+foreach(APP ${APPS_NAMES})
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+        list(APPEND PINGS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+        list(APPEND METRICS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+    endif()
+endforeach()
+
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/telemetry)
 add_custom_command(
     OUTPUT telemetry/gleansample.h
-    DEPENDS metrics.yaml
+    DEPENDS ${METRICS_DEP_LIST}
     COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_gleandefs.py
                 -o ${CMAKE_CURRENT_BINARY_DIR}/telemetry/gleansample.h
-                ${CMAKE_CURRENT_SOURCE_DIR}/metrics.yaml
+                ${METRICS_DEP_LIST}
 )
 
 add_custom_command(
@@ -45,7 +59,7 @@ add_custom_command(
         telemetry/sample.js
         telemetry/telemetry.qrc
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    DEPENDS metrics.yaml pings.yaml
+    DEPENDS ${METRICS_DEP_LIST} ${PINGS_DEP_LIST}
     COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_glean.py
 )
 set_source_files_properties(

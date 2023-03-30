@@ -30,7 +30,7 @@ plugins {
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml"]
+ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/metrics_deprecated.yaml"]
 
 android {
     //namespace 'org.mozilla.firefox.vpn'

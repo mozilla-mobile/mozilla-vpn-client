@@ -163,6 +163,28 @@ else()
     )
 endif()
 
+list(APPEND PINGS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
+list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings.yaml)
+list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
+list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics.yaml)
+
+get_filename_component(APPS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
+file(GLOB APPS_NAMES LIST_DIRECTORIES true RELATIVE ${APPS_DIR} ${APPS_DIR}/*)
+foreach(APP ${APPS_NAMES})
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+        list(APPEND PINGS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+        list(APPEND METRICS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+    endif()
+endforeach()
+
 ## Generate metrics and pings files
 add_custom_command(
     OUTPUT
@@ -181,9 +203,10 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/macros.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust_pings.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust.jinja2
-        ${CMAKE_CURRENT_SOURCE_DIR}/metrics.yaml
-        ${CMAKE_SOURCE_DIR}/glean/pings.yaml
-        ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
+        ${PINGS_DEP_LIST}
+        ${PINGS_LIST}
+        ${METRICS_DEP_LIST}
+        ${METRICS_LIST}
     COMMAND ${GENERATE_GLEAN_CMD}
 )
 set_source_files_properties(
