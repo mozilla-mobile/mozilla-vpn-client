@@ -533,6 +533,7 @@ void Controller::connected(const QString& pubkey,
 
   QString sessionId = mozilla::glean::session::session_id.generateAndSet();
   mozilla::glean::session::session_start.set();
+  mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
   mozilla::glean::session::apps_excluded.set(
       AppPermission::instance()->disabledAppCount());
 

@@ -19,10 +19,31 @@ namespace {
 Logger logger("DNSHelper");
 }
 
+const QString BLOCK_ADS_DNS = "100.64.0.1";
+const QString BLOCK_TRACKERS_DNS = "100.64.0.2";
+const QString BLOCK_ADS_TRACKERS_DNS = "100.64.0.3";
+const QString BLOCK_MALWARE_DNS = "100.64.0.4";
+const QString BLOCK_MALWARE_ADS_DNS = "100.64.0.5";
+const QString BLOCK_MALWARE_TRACKERS_DNS = "100.64.0.6";
+const QString BLOCK_MALWARE_ADS_TRACKERS_DNS = "100.64.0.7";
+
 // static
 QString DNSHelper::getDNS(const QString& fallback) {
+  return getDNSDetails(fallback).ipAddress;
+}
+
+// static
+QString DNSHelper::getDNSType() {
+  // `getDNSDetails` takes a string for its fallback DNS server.
+  // As `getDNSType` doesn't return a DNS address, it can send
+  // any string, including `IMPOSSIBLE`.
+  return getDNSDetails("IMPOSSIBLE").dnsType;
+}
+
+// static
+dnsData DNSHelper::getDNSDetails(const QString& fallback) {
   if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
-    return fallback;
+    return dnsData{fallback, "NoCustomDNSAvailable"};
   }
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -32,7 +53,7 @@ QString DNSHelper::getDNS(const QString& fallback) {
 
   // Gateway DNS
   if (dnsProviderFlags == SettingsHolder::Gateway) {
-    return fallback;
+    return dnsData{fallback, "Default"};
   }
 
   // Custom DNS
@@ -42,23 +63,28 @@ QString DNSHelper::getDNS(const QString& fallback) {
     if (dns.isEmpty() || !validateUserDNS(dns)) {
       logger.debug()
           << "Saved Custom DNS seems invalid, defaulting to gateway DNS";
-      return fallback;
+      return dnsData{fallback, "Default"};
     }
 
-    return dns;
+    return dnsData{dns, "Custom"};
   }
 
-  static QMap<int, QString> dnsMap{
-      {SettingsHolder::BlockAds, "100.64.0.1"},
-      {SettingsHolder::BlockTrackers, "100.64.0.2"},
-      {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers, "100.64.0.3"},
-      {SettingsHolder::BlockMalware, "100.64.0.4"},
-      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds, "100.64.0.5"},
+  static QMap<int, dnsData> dnsMap{
+      {SettingsHolder::BlockAds, dnsData{BLOCK_ADS_DNS, "BlockAds"}},
+      {SettingsHolder::BlockTrackers,
+       dnsData{BLOCK_TRACKERS_DNS, "BlockTrackers"}},
+      {SettingsHolder::BlockAds + SettingsHolder::BlockTrackers,
+       dnsData{BLOCK_ADS_TRACKERS_DNS, "BlockAdsAndTrackers"}},
+      {SettingsHolder::BlockMalware,
+       dnsData{BLOCK_MALWARE_DNS, "BlockMalware"}},
+      {SettingsHolder::BlockMalware + SettingsHolder::BlockAds,
+       dnsData{BLOCK_MALWARE_ADS_DNS, "BlockMalwareAndAds"}},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockTrackers,
-       "100.64.0.6"},
+       dnsData{BLOCK_MALWARE_TRACKERS_DNS, "BlockMalwareAndTrackers"}},
       {SettingsHolder::BlockMalware + SettingsHolder::BlockAds +
            SettingsHolder::BlockTrackers,
-       "100.64.0.7"},
+       dnsData{BLOCK_MALWARE_ADS_TRACKERS_DNS,
+               "BlockMalwareAndAdsAndTrackers"}},
   };
 
   Q_ASSERT(dnsMap.contains(dnsProviderFlags));
