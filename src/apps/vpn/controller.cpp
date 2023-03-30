@@ -531,6 +531,8 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
+  mozilla::glean::session::session_start.set();
   mozilla::glean::session::apps_excluded.set(
       AppPermission::instance()->disabledAppCount());
 
@@ -579,6 +581,16 @@ void Controller::handshakeTimeout() {
 
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
+  mozilla::glean::session::session_end.set();
+
+  // This generateAndSet must be called after submission of ping.
+  // When doing VPN-4443 ensure it comes after the submission.
+
+  // We rotating the UUID here as a safety measure. It is rotated
+  // again before the next session start, and we expect to see the
+  // UUID created here in only one ping: The session ping with a
+  // "flush" reason, which should contain this UUID and no other metrics.
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
 
   clearConnectedTime();
   clearRetryCounter();
