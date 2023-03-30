@@ -12,32 +12,19 @@ endif()
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
+get_filename_component(MZ_SHARED_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/shared ABSOLUTE)
 
-if (IOS)
-    # We may import the default files from the app folder. So they need to be in the include paths.
-    # For now, we are getting away with not adding them to the include paths because cmake just seems to 
-    # pile on include paths and these are included by the app sources.
-    #
-    # EXCEPT FOR, Xcode cloud. Thus this little piece of hacky code.
-    set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin/minimal
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
-        ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn
-        ${CMAKE_CURRENT_BINARY_DIR}   
-    )
-endif()
+target_include_directories(shared-sources INTERFACE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${MZ_SHARED_SOURCE_DIR}
+    ${MZ_SHARED_SOURCE_DIR}/addons
+    ${MZ_SHARED_SOURCE_DIR}/composer
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star/kremlin
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${MZ_SHARED_SOURCE_DIR}/glean
+)
 
 # Shared components
 target_sources(shared-sources INTERFACE
