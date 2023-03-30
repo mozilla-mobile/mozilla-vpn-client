@@ -117,6 +117,7 @@ json
 libpolkit
 licensable
 licensor
+linter
 linuxdaemon
 llvm
 loopback
