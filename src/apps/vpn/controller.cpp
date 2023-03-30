@@ -331,6 +331,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
+    logger.info() << "Activating single hop";
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
@@ -344,6 +345,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
+    logger.info() << "Activating multi-hop (through platform controller)";
     HopConnection hop;
 
     hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -373,6 +375,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
+    logger.info() << "Activating multi-hop (not through platform controller)";
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
@@ -528,6 +531,8 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
+  mozilla::glean::session::session_start.set();
   mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
   mozilla::glean::session::apps_excluded.set(
       AppPermission::instance()->disabledAppCount());
@@ -577,6 +582,16 @@ void Controller::handshakeTimeout() {
 
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
+  mozilla::glean::session::session_end.set();
+
+  // This generateAndSet must be called after submission of ping.
+  // When doing VPN-4443 ensure it comes after the submission.
+
+  // We rotating the UUID here as a safety measure. It is rotated
+  // again before the next session start, and we expect to see the
+  // UUID created here in only one ping: The session ping with a
+  // "flush" reason, which should contain this UUID and no other metrics.
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
 
   clearConnectedTime();
   clearRetryCounter();

@@ -27,19 +27,12 @@ struct DistributionData {
   DistributionData() : sum(0), count(0) {}
 };
 
-class TimingDistributionMetric final {
-  Q_GADGET
+class TimingDistributionMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(TimingDistributionMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  TimingDistributionMetric() = default;
-  TimingDistributionMetric(const TimingDistributionMetric&) = default;
-  TimingDistributionMetric& operator=(const TimingDistributionMetric&) =
-      default;
-
   explicit TimingDistributionMetric(int aId);
-  ~TimingDistributionMetric() = default;
 
   Q_INVOKABLE int start() const;
   Q_INVOKABLE void stopAndAccumulate(int timerId) const;
@@ -51,7 +44,7 @@ class TimingDistributionMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // TIMING_DISTRIBUTION_H

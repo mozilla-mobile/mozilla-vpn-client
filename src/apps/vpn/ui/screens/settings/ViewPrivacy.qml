@@ -21,7 +21,6 @@ MZViewBase {
     objectName: "privacySettingsView"
 
     _menuTitle: MZI18n.SettingsPrivacySettings
-    _interactive: false
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5

@@ -9,18 +9,12 @@
 
 #include "errortype.h"
 
-class QuantityMetric final {
-  Q_GADGET
+class QuantityMetric final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(QuantityMetric)
 
  public:
-  // QML custom types require these three declarations.
-  // See: https://doc.qt.io/qt-6/custom-types.html#creating-a-custom-type
-  QuantityMetric() = default;
-  QuantityMetric(const QuantityMetric&) = default;
-  QuantityMetric& operator=(const QuantityMetric&) = default;
-
   explicit QuantityMetric(int aId);
-  ~QuantityMetric() = default;
 
   Q_INVOKABLE void set(int value = 0) const;
 
@@ -30,7 +24,7 @@ class QuantityMetric final {
   Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  int m_id;
+  const int m_id;
 };
 
 #endif  // QUANTITY_H

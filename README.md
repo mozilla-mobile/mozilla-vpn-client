@@ -354,8 +354,14 @@ and we have also added experimental support for `cmake`.
 
 #### Building with QMake
 
-1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
+1. On iOS, we compile the app using [Xcode](https://developer.apple.com/xcode/).
+Using [xcodes](https://github.com/RobotsAndPencils/xcodes) you can install the right version: 
+``` bash
+brew install robotsandpencils/made/xcodes
+cd mozilla-vpn-client
+xcodes install 
+```
+Or manually install the required version in [.xcode-version](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/.xcode-version)
 
 2. We use `qmake` to generate the Xcode project and then we "patch" it to add
 extra components such as the wireguard, the browser bridge and so on.

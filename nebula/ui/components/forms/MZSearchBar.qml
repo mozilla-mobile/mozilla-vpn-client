@@ -17,6 +17,7 @@ ColumnLayout {
     property alias _filterProxySource: model.source
     property alias _searchBarPlaceholderText: searchBar._placeholderText
     property bool _searchBarHasError: false
+    readonly property bool isEmpty: searchBar.length === 0
 
     spacing: MZTheme.theme.windowMargin / 2
 

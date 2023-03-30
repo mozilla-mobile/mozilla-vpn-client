@@ -170,6 +170,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/subscriptionmonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/subscriptionmonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.cpp
@@ -206,12 +208,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/exponentialbackoffstrategy.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/pushmessage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/pushmessage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/websockethandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/websocket/websockethandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
 )

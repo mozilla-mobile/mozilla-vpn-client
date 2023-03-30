@@ -39,9 +39,6 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
-        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
-        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -72,7 +69,6 @@ dependencies {
 
     implementation project(path: ":common")
     implementation project(path: ":qtBindings")
-    implementation project(path: ':adjust')
 
 
     implementation SharedDependencies.androidx_core

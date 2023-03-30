@@ -41,6 +41,7 @@
 #include "serveri18n.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "subscriptionmonitor.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -225,6 +226,8 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   registerExternalOperations();
 
+  registerPushMessageTypes();
+
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
 }
@@ -283,6 +286,8 @@ void MozillaVPN::initialize() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
+
+  SubscriptionMonitor::instance();
 
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
@@ -1653,26 +1658,11 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededIAP,
+      MozillaVPN::ScreenSubscriptionNeeded,
       Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededIAP.qml",
+      "qrc:/ui/screens/ScreenSubscriptionNeeded.qml",
       QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
-                                                                         : 99;
-      },
-      []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenSubscriptionNeededWeb,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenSubscriptionNeededWeb.qml",
-      QVector<int>{App::StateSubscriptionNeeded},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
-                                                                         : -1;
-      },
-      []() -> bool { return false; });
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSubscriptionNotValidated,
@@ -2212,4 +2202,27 @@ void MozillaVPN::registerExternalOperations() {
 
   eoh->registerExternalOperation(
       OpQuit, []() { MozillaVPN::instance()->controller()->quit(); });
+}
+
+void MozillaVPN::registerPushMessageTypes() {
+  PushMessage::registerPushMessageType(
+      "DEVICE_DELETED", [](const QJsonObject& payload) -> bool {
+        const QString& publicKey = payload["publicKey"].toString();
+        if (publicKey.isEmpty()) {
+          logger.error() << "Malformed message payload for DeviceDeleted "
+                            "message. Ignoring.";
+          return false;
+        }
+
+        MozillaVPN* vpn = MozillaVPN::instance();
+        if (vpn->keys()->publicKey() == publicKey) {
+          logger.info()
+              << "Current device has been deleted from this subscription.";
+          vpn->reset(true);
+          return true;
+        }
+
+        MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
+        return true;
+      });
 }

@@ -72,8 +72,7 @@ class MozillaVPN final : public App {
     ScreenSubscriptionInProgressIAP,
     ScreenSubscriptionInProgressWeb,
     ScreenSubscriptionInUseError,
-    ScreenSubscriptionNeededIAP,
-    ScreenSubscriptionNeededWeb,
+    ScreenSubscriptionNeeded,
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
     ScreenTipsAndTricks,
@@ -260,6 +259,8 @@ class MozillaVPN final : public App {
   static void registerAddonApis();
 
   static void registerExternalOperations();
+
+  static void registerPushMessageTypes();
 
  signals:
   void deviceRemoving(const QString& publicKey);

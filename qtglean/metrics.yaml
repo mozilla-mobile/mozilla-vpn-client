@@ -56,6 +56,58 @@ settings:
     expires: never
 
 session:
+  session_start:
+    type: datetime
+    description: |
+      The time the user starts a VPN session from the app
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4064
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    send_in_pings:
+      - vpnsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  session_end:
+    type: datetime
+    description: |
+      The time the user ends a VPN session from the app
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4064
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    send_in_pings:
+      - vpnsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
+  session_id:
+    type: uuid
+    lifetime: user
+    description: |
+      A unique identifier for each session, shared with the daemon instance
+      of Glean. This is used to connect unique VPN sessions across pings, and
+      as a safety check on edge cases of VPN activation/deactivation, such as
+      a session being started/ended from mobile system settings.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4064
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6303#pullrequestreview-1359040451
+    send_in_pings:
+      - vpnsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+
   dns_type:
     type: string
     description: |

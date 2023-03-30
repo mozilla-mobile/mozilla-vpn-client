@@ -69,6 +69,7 @@ SOURCES += \
         apps/vpn/serverlatency.cpp \
         apps/vpn/settingswatcher.cpp \
         apps/vpn/statusicon.cpp \
+        apps/vpn/subscriptionmonitor.cpp \
         apps/vpn/tasks/account/taskaccount.cpp \
         apps/vpn/tasks/adddevice/taskadddevice.cpp \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.cpp \
@@ -86,10 +87,7 @@ SOURCES += \
         apps/vpn/tutorialvpn.cpp \
         apps/vpn/update/updater.cpp \
         apps/vpn/update/versionapi.cpp \
-        apps/vpn/update/webupdater.cpp \
-        apps/vpn/websocket/exponentialbackoffstrategy.cpp \
-        apps/vpn/websocket/pushmessage.cpp \
-        apps/vpn/websocket/websockethandler.cpp
+        apps/vpn/update/webupdater.cpp
 
 HEADERS += \
         apps/vpn/appconstants.h \
@@ -163,6 +161,7 @@ HEADERS += \
         apps/vpn/serverlatency.h \
         apps/vpn/settingswatcher.h \
         apps/vpn/statusicon.h \
+        apps/vpn/subscriptionmonitor.h \
         apps/vpn/tasks/account/taskaccount.h \
         apps/vpn/tasks/adddevice/taskadddevice.h \
         apps/vpn/tasks/captiveportallookup/taskcaptiveportallookup.h \
@@ -180,10 +179,7 @@ HEADERS += \
         apps/vpn/tutorialvpn.h \
         apps/vpn/update/updater.h \
         apps/vpn/update/versionapi.h \
-        apps/vpn/update/webupdater.h \
-        apps/vpn/websocket/exponentialbackoffstrategy.h \
-        apps/vpn/websocket/pushmessage.h \
-        apps/vpn/websocket/websockethandler.h
+        apps/vpn/update/webupdater.h
 
 
 RESOURCES += apps/vpn/ui/resources.qrc

@@ -316,8 +316,8 @@ const screenSettings = {
       },
 
       SCREEN: new QmlQueryComposer('//settingsLanguagesView-flickable'),
-      SYSTEM_LANGUAGE_TOGGLE:
-          new QmlQueryComposer('//settingsSystemLanguageToggle'),
+      SYSTEM_LANGUAGE_RADIO_BUTTON:
+          new QmlQueryComposer('//systemLanguageRadioButton'),
     },
 
     notificationView: {

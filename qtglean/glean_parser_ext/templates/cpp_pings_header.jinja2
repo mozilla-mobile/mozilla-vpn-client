@@ -26,7 +26,7 @@ class __DONOTUSE__GleanPings final : public QObject {
     Q_DISABLE_COPY_MOVE(__DONOTUSE__GleanPings)
 
     {% for obj in all_objs['pings'].values() %}
-    Q_PROPERTY(Ping {{ obj.name|Camelize }} READ {{ obj.name|Camelize }} CONSTANT)
+    Q_PROPERTY(Ping* {{ obj.name|Camelize }} READ {{ obj.name|Camelize }}Getter CONSTANT)
     {% endfor %}
 
     private:
@@ -44,7 +44,8 @@ class __DONOTUSE__GleanPings final : public QObject {
         }
 
         {% for obj in all_objs['pings'].values() %}
-        Ping {{ obj.name|Camelize }} () const { return m_{{ obj.name|camelize }}; };
+        Ping* {{ obj.name|Camelize }}Getter () { return &m_{{ obj.name|camelize }}; };
+        const Ping& {{ obj.name|Camelize }} () const { return m_{{ obj.name|camelize }}; };
         {% endfor %}
 
     private:
@@ -62,7 +63,7 @@ namespace mozilla::glean_pings {
      *
      * {{ obj.description|wordwrap() | replace('\n', '\n * ') }}
      */
-    inline Ping {{ obj.name|Camelize }} = __DONOTUSE__GleanPings::instance()->{{ obj.name|Camelize }}();
+    inline const Ping& {{ obj.name|Camelize }} = __DONOTUSE__GleanPings::instance()->{{ obj.name|Camelize }}();
     {% endfor %}
 } // namespace mozilla::glean_pings
 

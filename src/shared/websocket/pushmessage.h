@@ -7,7 +7,6 @@
 
 #include <QJsonObject>
 #include <QObject>
-#include <QVariant>
 
 class PushMessage final : public QObject {
   Q_OBJECT
@@ -18,26 +17,13 @@ class PushMessage final : public QObject {
 
   bool executeAction();
 
-  enum MessageType {
-    MessageType_DeviceDeleted,
-#ifdef UNIT_TEST
-    MessageType_TestMessage,
-#endif
-    MessageType_UnknownMessage
-  };
-  Q_ENUM(MessageType)
+  const QString& type() const { return m_messageType; }
 
-  MessageType type() const { return m_messageType; }
+  static void registerPushMessageType(
+      const QString& messageType, bool (*callback)(const QJsonObject& payload));
 
  private:
-  static MessageType messageTypeFromString(const QString& str);
-  void parseMessage(const QString& message);
-
-  // Action handlers
-  static bool handleDeviceDeleted(const QJsonObject& payload);
-
- private:
-  MessageType m_messageType;
+  QString m_messageType;
   QJsonObject m_messagePayload;
 };
 
