@@ -40,6 +40,8 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(MZ_PLATFORM_NAME "wasm")
 endif()
 
+
+
 include(shared/sources.cmake)
 include(apps/vpn/cmake/sources.cmake)
 

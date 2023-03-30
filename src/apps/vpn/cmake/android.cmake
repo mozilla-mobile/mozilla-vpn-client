@@ -33,3 +33,20 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxpingsender.h
 )
 
+
+add_dependencies(mozillavpn ndk_openssl_merged)
+
+get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
+get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
+
+target_include_directories(mozillavpn INTERFACE ${ssl_module}/include)
+
+get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
+set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
+    ${openssl_libs}/libcrypto_1_1.so
+    ${openssl_libs}/libssl_1_1.so)
+
+target_link_directories(mozillavpn INTERFACE ${openssl_libs})
+target_link_libraries(mozillavpn INTERFACE libcrypto.so)
+target_link_libraries(mozillavpn INTERFACE libssl.so)
+target_link_libraries(mozillavpn INTERFACE -ljnigraphics)

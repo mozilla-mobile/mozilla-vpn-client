@@ -117,6 +117,12 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
         Sql
     )
 endif()
+
+if(ANDROID)
+    # Don't move, this provides OpenSSL on android.
+    include(src/shared/cmake/android_openssl.cmake)
+endif()
+
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
