@@ -15,7 +15,11 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/user.h"
 #include "mozillavpn.h"
+#include "taskscheduler.h"
+#include "tasks/products/taskproducts.h"
+#include "notificationhandler.h"
 #include "purchasehandler.h"
 
 namespace {
@@ -41,6 +45,30 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(ProductsHandler);
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  // On iAP make sure the Products are loaded in time.
+  // If we Move into any State adjecent to iAP - load the
+  // products if we don't have that already.
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
+    auto state = MozillaVPN::instance()->state();
+    if ((state == App::StateSubscriptionNeeded ||
+         state == App::StateSubscriptionInProgress ||
+         state == App::StateAuthenticating) &&
+        !this->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+    }
+  });
+
+  // If the user already has a Subscription
+  // Register so if that changes, we fire a notification.
+  if (!MozillaVPN::instance()->user()->subscriptionNeeded()) {
+    connect(MozillaVPN::instance()->user(), &User::changed, [] {
+      if (!MozillaVPN::instance()->user()->subscriptionNeeded()) {
+        return;
+      }
+      NotificationHandler::instance()->subscriptionNotFoundNotification();
+    });
+  }
 }
 
 ProductsHandler::~ProductsHandler() {
