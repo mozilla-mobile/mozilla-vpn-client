@@ -9,28 +9,11 @@ documentation](https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server
 ## Authentication methods
 
 The authentication is triggered by the frontend component, calling the method
-`VPN.authenticate()`. The client picks the right authentication method based on
-what is supported by the current platform. There are mainly 3 methods. The
-current configuration for 2.8 is the following:
-- Android: in-app authentication with account creation
-- iOS: in-app authentication with account creation
-- Linux: web-based authentication
-- Windows: in-app authentication without account creation
-- MacOS: in-app authentication without account creation.
+`VPN.authenticate()`. After an initial phase-in period, all clients from 2.12 onwards
+use in-app authentication with account creation that allows sign-up and sign-in.
 
-### In-app authentication with account creation
-
-The client allows sign-in and sign-up.
-
-### In-app authentication without account creation
-
-The client allows the sign-in. But if the account doesn’t exist, instead of
-starting the account creation in-app, the flow continues in the browser as we
-used to do in previous versions.
-
-### Web-based authentication
-
-This flow is what we currently use in v2.7 and previous versions.
+We also have an in-browser authentication flow that is not currently used by default
+but is available behind a feature flag.
 
 ## Finite State machine
 
