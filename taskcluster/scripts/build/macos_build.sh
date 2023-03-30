@@ -104,7 +104,7 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
 
 
 print Y "Building the client..."
-cmake --build ${MOZ_FETCHES_DIR}/build
+cmake --build ${MOZ_FETCHES_DIR}/build --target vpn
 
 print Y "Building the installer..."
 cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
@@ -114,7 +114,7 @@ mkdir -p tmp || die
 
 
 print Y "Extracting the Symbols..."
-dsymutil ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
+dsymutil ${MOZ_FETCHES_DIR}/build/src/apps/vpn/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
 
 
 print Y "Checking & genrating a symbols bundle"
@@ -128,7 +128,7 @@ if [[ "$RELEASE" ]]; then
     sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
-cp -r ${MOZ_FETCHES_DIR}/build/src/Mozilla\ VPN.app tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/src/apps/vpn/Mozilla\ VPN.app tmp || die
 cp -r ${MOZ_FETCHES_DIR}/build/macos/pkg/Resources tmp || die
 cp -r ./macos/pkg/scripts tmp || die
 cp -r ./macos/pkg/Distribution tmp || die

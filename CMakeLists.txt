@@ -4,6 +4,11 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+project("Mozilla P&S" VERSION 2.16.0 LANGUAGES C CXX
+        DESCRIPTION "Mozilla P&S"
+        HOMEPAGE_URL "https://mozilla.org"
+)
+
 message("Configuring for ${CMAKE_GENERATOR}")
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
@@ -12,10 +17,19 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-project("Mozilla VPN" VERSION 2.16.0 LANGUAGES C CXX
-        DESCRIPTION "Mozilla VPN"
-        HOMEPAGE_URL "https://vpn.mozilla.org"
-)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set(MZ_PLATFORM_NAME "linux")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(MZ_PLATFORM_NAME "windows")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    set(MZ_PLATFORM_NAME "macos")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    set(MZ_PLATFORM_NAME "android")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    set(MZ_PLATFORM_NAME "ios")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(MZ_PLATFORM_NAME "wasm")
+endif()
 
 ## Some workarounds for platform build quirks
 if(WIN32)
@@ -37,29 +51,13 @@ if(WIN32)
             CACHE PATH "default install path" FORCE)
     endif()
 endif()
+
 if(APPLE)
     enable_language(OBJC)
     enable_language(OBJCXX)
     if(IOS)
         enable_language(Swift)
     endif()
-
-    ## Setup some defaults for code signing.
-    if(NOT BUILD_OSX_APP_IDENTIFIER)
-        set(BUILD_OSX_APP_IDENTIFIER org.mozilla.macos.FirefoxVPN CACHE STRING "OSX Application identifier")
-    endif()
-    if(NOT BUILD_IOS_APP_IDENTIFIER)
-        set(BUILD_IOS_APP_IDENTIFIER org.mozilla.ios.FirefoxVPN CACHE STRING "iOS Application identifier")
-    endif()
-    if(NOT BUILD_IOS_GROUP_IDENTIFIER)
-        set(BUILD_IOS_GROUP_IDENTIFIER group.org.mozilla.ios.Guardian CACHE STRING "iOS Group identifier")
-    endif()
-    if(NOT BUILD_VPN_DEVELOPMENT_TEAM)
-        set(BUILD_VPN_DEVELOPMENT_TEAM 43AQ936H96 CACHE STRING "Mozilla VPN Development Team")
-    endif()
-    set(CMAKE_XCODE_GENERATE_SCHEME FALSE)
-    set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM ${BUILD_VPN_DEVELOPMENT_TEAM})
-    set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
 
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
@@ -87,10 +85,12 @@ endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 if(MSVC)
-    include(src/apps/vpn/cmake/msvc.cmake)
+    add_compile_options(/MP /Zc:preprocessor)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
-    include(src/apps/vpn/cmake/clang.cmake)
+    if(NOT IOS)
+        add_compile_options(-fvisibility=hidden)
+    endif()
 endif()
 
 set(CMAKE_AUTOMOC ON)
@@ -127,15 +127,14 @@ message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
-# VPN Client build targets
-add_subdirectory(src)
-# Glean.js
-add_subdirectory(glean)
-# Glean.rs
-add_subdirectory(qtglean)
+add_subdirectory(glean) # Glean.js
+add_subdirectory(qtglean) # Glean.rs
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
+
+# List of projects
+add_subdirectory(src/apps/vpn EXCLUDE_FROM_ALL)
 
 add_custom_target(relayapp)
 add_subdirectory(src/apps/relay EXCLUDE_FROM_ALL)

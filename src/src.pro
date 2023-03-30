@@ -17,7 +17,6 @@ include($$PWD/../nebula/nebula.pri)
 include($$PWD/../lottie/lottie.pri)
 include($$PWD/../translations/translations.pri)
 include($$PWD/../qtglean/qtglean.pri)
-include($$PWD/apps/vpn/crashreporter/crashreporter.pri)
 
 unix {
    include($$PWD/apps/vpn/qmake/ccache.pri)

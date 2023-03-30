@@ -51,10 +51,10 @@ jobs:
           export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           mkdir build
           /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release
-          cmake --build build -j4
-          cp $(pwd)/build/src/mozillavpn.wasm wasm
-          cp $(pwd)/build/src/mozillavpn.js wasm
-          cp $(pwd)/build/src/qtloader.js wasm
+          cmake --build build -j4 --target vpn
+          cp $(pwd)/build/src/apps/vpn/mozillavpn.wasm wasm
+          cp $(pwd)/build/src/apps/vpn/mozillavpn.js wasm
+          cp $(pwd)/build/src/apps/vpn/qtloader.js wasm
           cp $(pwd)/tests/functional/servers/fxa_endpoints.js wasm
           cp $(pwd)/tests/functional/servers/guardian_endpoints.js wasm
           cp -r $(pwd)/tools/logviewer wasm

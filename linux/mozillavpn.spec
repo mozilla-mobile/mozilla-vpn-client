@@ -44,7 +44,7 @@ Read more on https://vpn.mozilla.org
 %build
 %define _vpath_srcdir %{_srcdir}
 %cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
-%cmake_build
+%cmake_build --target vpn
 
 %install
 %cmake_install

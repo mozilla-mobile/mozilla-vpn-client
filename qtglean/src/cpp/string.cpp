@@ -14,20 +14,26 @@ StringMetric::StringMetric(int id) : m_id(id) {}
 
 void StringMetric::set(QString value) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_string_set(m_id, value.toLocal8Bit());
+  glean_string_set(m_id, value.toLocal8Bit());
+#else
+  Q_UNUSED(value);
 #endif
 }
 
 int32_t StringMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_string_test_get_num_recorded_errors(m_id, errorType);
-#endif
+#else
+  Q_UNUSED(errorType);
   return 0;
+#endif
 }
 
 QString StringMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_string_test_get_value(m_id, pingName.toLocal8Bit());
-#endif
+#else
+  Q_UNUSED(pingName);
   return "";
+#endif
 }

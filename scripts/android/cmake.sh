@@ -118,7 +118,7 @@ fi
 printn Y "Cleaning the folder... "
 print G "done."
 
-rm -rf .tmp/src/android-build || die "Failed to remove the temporary directory"
+rm -rf .tmp/src/apps/vpn/android-build || die "Failed to remove the temporary directory"
 mkdir -p .tmp || die "Failed to create the temporary directory"
 
 print Y "Patch Adjust files..."
@@ -167,12 +167,15 @@ fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp -j$JOBS
+cmake --build .tmp -j$JOBS --target mozillavpn_make_apk
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
 
-#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
+#androiddeployqt \
+#  --input .tmp/src/apps/vpn/android-mozillavpn-deployment-settings.json \
+#  --output .tmp/src/apps/vpn/android-build \
+#  --builddir .tmp || die
 
 # Warning: this is hacky.
 #
@@ -189,7 +192,7 @@ print Y "Generate Android Project"
 mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
 mv $WORKSPACE_ROOT/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
 
-cd .tmp/src/android-build/
+cd .tmp/src/apps/vpn/android-build/
 # This will combine the qt-libs + qt-resources and the client
 # Into a single gradle project
 if [[ "$RELEASE" ]]; then
@@ -198,13 +201,13 @@ if [[ "$RELEASE" ]]; then
   ./gradlew assemble || die
 
   print G "Done 🎉"
-  print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
+  print G "Your Release APK is under .tmp/src/apps/vpn/android-build/build/outputs/apk/release/"
 else
   print Y "Generating Debug APK..."
   ./gradlew compileDebugSources
   ./gradlew assembleDebug || die
   print G "Done 🎉"
-  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
+  print G "Your Debug APK is under .tmp/src/apps/vpn/android-build/build/outputs/apk/debug/"
 fi
 
 rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml

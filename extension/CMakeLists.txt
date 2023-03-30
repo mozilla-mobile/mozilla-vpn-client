@@ -14,6 +14,8 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_
 ## Wrap the build artifacts as a CMake target.
 add_executable(mozillavpnnp IMPORTED GLOBAL)
 add_dependencies(mozillavpnnp cargo_mozillavpnnp)
+add_dependencies(vpn mozillavpnnp)
+
 set_property(TARGET mozillavpnnp PROPERTY
     IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp${CMAKE_EXECUTABLE_SUFFIX})
 

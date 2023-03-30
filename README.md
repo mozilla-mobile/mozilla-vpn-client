@@ -164,7 +164,7 @@ The following variables may be of use:
 
 2. Once the makefiles have been generated, the next step is to compile the source code:
 ```bash
-cmake --build build -j$(nproc)
+cmake --build build -j$(nproc) --target vpn
 ```
 
 The following sections go into further detail for each of the supported platforms.
@@ -204,7 +204,7 @@ mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt install path>/lib/cma
 
 4. Compile the source code:
 ```bash
-cmake --build build -j$(nproc)
+cmake --build build -j$(nproc) --target vpn
 ```
 
 5. Installation:
@@ -268,7 +268,7 @@ Some variables that might be useful when configuring the project:
 
 4. Compile the source code:
 ```bash
-cmake --build build -j$(nproc)
+cmake --build build -j$(nproc) --target vpn
 ```
 
 This will produce the application bundle in `build/src/Mozilla VPN.app`.
@@ -353,7 +353,7 @@ You are now ready to build!
 
 ```bash
 (vpn) $ mkdir build && cmake -S . -B build -DCMAKE_PREFIX_PATH=${Path to QT}/lib/cmake
-(vpn) $ cmake --build build
+(vpn) $ cmake --build build --target vpn
 ```
 
 
@@ -515,7 +515,7 @@ mkdir build && cmake -S . -B build
 
 3. Compile the source code.
 ```bash
-cmake --build build --config Release
+cmake --build build --config Release --target vpn
 ```
 
 4.  **Optional**: To build the MSI installer package, we can specify the `msi` target
@@ -552,7 +552,7 @@ mkdir build && qt-cmake cmake -S . -B build
 
 Compile the source code:
 ```bash
-cmake --build build -j$(nproc)
+cmake --build build -j$(nproc) --target vpn
 ```
 
 ## Testing

@@ -126,7 +126,6 @@ HEADERS += \
         apps/vpn/keyregenerator.h \
         apps/vpn/imageproviderfactory.h \
         apps/vpn/ipaddresslookup.h \
-        apps/vpn/localizer.h \
         apps/vpn/models/device.h \
         apps/vpn/models/devicemodel.h \
         apps/vpn/models/keys.h \

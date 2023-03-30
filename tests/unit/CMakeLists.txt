@@ -348,7 +348,7 @@ target_sources(unit_tests PRIVATE
 )
 
 # Generate the version header
-configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+configure_file(${MZ_SOURCE_DIR}/apps/vpn/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE

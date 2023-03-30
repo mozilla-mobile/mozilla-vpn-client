@@ -14,27 +14,34 @@ UuidMetric::UuidMetric(int id) : m_id(id) {}
 
 void UuidMetric::set(const QString& uuid) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_uuid_set(m_id, uuid.toLocal8Bit());
+  glean_uuid_set(m_id, uuid.toLocal8Bit());
+#else
+  Q_UNUSED(uuid);
 #endif
 }
 
 QString UuidMetric::generateAndSet() const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_uuid_generate_and_set(m_id);
-#endif
+#else
   return QString();
+#endif
 }
 
 int32_t UuidMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_uuid_test_get_num_recorded_errors(m_id, errorType);
-#endif
+#else
+  Q_UNUSED(errorType);
   return 0;
+#endif
 }
 
 QString UuidMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_uuid_test_get_value(m_id, pingName.toLocal8Bit());
-#endif
+#else
+  Q_UNUSED(pingName);
   return "";
+#endif
 }

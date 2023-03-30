@@ -18,64 +18,64 @@ target_compile_options(mozillavpn
 )
 
 # Generate the Windows version resource file.
-configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+configure_file(${CMAKE_SOURCE_DIR}/windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/dnsutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.cpp 
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsapplistprovider.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsappimageprovider.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsappimageprovider.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/dnsutilswindows.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/dnsutilswindows.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemonserver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemonserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemontunnel.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsdaemontunnel.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsroutemonitor.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsroutemonitor.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowstunnellogger.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowstunnellogger.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowstunnelservice.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowstunnelservice.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/wireguardutilswindows.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/wireguardutilswindows.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsfirewall.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowsfirewall.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowssplittunnel.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/daemon/windowssplittunnel.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsservicemanager.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsservicemanager.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowscommons.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowscommons.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsnetworkwatcher.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsnetworkwatcher.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowspingsender.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowspingsender.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsstartatbootwatcher.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/windows/windowsstartatbootwatcher.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/interfaceconfig.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.cpp 
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsfirewall.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsfirewall.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowssplittunnel.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowssplittunnel.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowspingsender.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowspingsender.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsstartatbootwatcher.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsstartatbootwatcher.h
 )
 
 # Windows Qt6 UI workaround resources
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
 else()
-    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
+    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
@@ -93,14 +93,14 @@ add_custom_target(balrogdll ALL
             go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
-add_dependencies(mozillavpn balrogdll)
+add_dependencies(mozillavpn balrogdll tunneldll)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
 
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )
 
 install(TARGETS mozillavpn DESTINATION .)
@@ -121,4 +121,4 @@ cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_P
 install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm
     DESTINATION . RENAME Microsoft_CRT_x64.msm)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/resources/logo.ico DESTINATION .)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/logo.ico DESTINATION .)

@@ -34,11 +34,11 @@ mkdir -p /builds/worker/artifacts/
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
-sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
+sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/apps/vpn/android-build/build/intermediates/merged_native_libs
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
-cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+cp .tmp/src/apps/vpn/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
 
 # The Sign task will not rename them, so marking them as unsigned is a bit off. :)
 mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86_64-release.apk

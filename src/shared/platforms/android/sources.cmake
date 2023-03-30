@@ -2,10 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+get_filename_component(MZ_SHARED_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/shared ABSOLUTE)
+
 target_sources(shared-sources INTERFACE
-     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.h
+     ${MZ_SHARED_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
+     ${MZ_SHARED_SOURCE_DIR}/platforms/android/androidcommons.cpp
+     ${MZ_SHARED_SOURCE_DIR}/platforms/android/androidcommons.h
 )
 
 if(ADJUST_TOKEN)
@@ -14,18 +16,18 @@ if(ADJUST_TOKEN)
     target_compile_definitions(shared-sources INTERFACE MZ_ADJUST)
 
     target_sources(shared-sources INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusthandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusthandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxyconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxyconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusttasksubmission.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusttasksubmission.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustfiltering.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustfiltering.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjusthandler.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjusthandler.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxy.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxy.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxyconnection.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxyconnection.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjusttasksubmission.cpp
+        ${MZ_SHARED_SOURCE_DIR}/adjust/adjusttasksubmission.h
     )
 else()
     if (${CMAKE_BUILD_TYPE} STREQUAL "Release")

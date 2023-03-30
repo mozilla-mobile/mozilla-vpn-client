@@ -40,10 +40,10 @@ if( ${_SUPPORTED} GREATER -1 )
 
     # Sentry support is given
     target_sources(shared-sources INTERFACE
-        shared/sentry/sentryadapter.cpp
-        shared/sentry/sentryadapter.h
-        shared/tasks/sentry/tasksentry.cpp
-        shared/tasks/sentry/tasksentry.h
+        ${MZ_SHARED_SOURCE_DIR}/sentry/sentryadapter.cpp
+        ${MZ_SHARED_SOURCE_DIR}/sentry/sentryadapter.h
+        ${MZ_SHARED_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
+        ${MZ_SHARED_SOURCE_DIR}/tasks/sentry/tasksentry.h
     )
 
     # Configure Linking and Compile
