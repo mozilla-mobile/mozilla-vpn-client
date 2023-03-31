@@ -8,6 +8,7 @@
 #include <QVector>
 
 #include "applistprovider.h"
+#include "collator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -30,6 +31,23 @@
 namespace {
 Logger logger("AppPermission");
 AppPermission* s_instance = nullptr;
+
+bool sortApplicationCallback(const AppPermission::AppDescription& a,
+                             const AppPermission::AppDescription& b,
+                             Collator* collator) {
+  Q_ASSERT(collator);
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  bool appADisabled = settingsHolder->vpnDisabledApps().contains(a.id);
+  bool appBDisabled = settingsHolder->vpnDisabledApps().contains(b.id);
+
+  if (appADisabled == appBDisabled) {
+    return collator->compare(a.name.toLower(), b.name.toLower()) < 0;
+  }
+
+  return appADisabled;
+}
+
 }  // namespace
 
 AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
@@ -192,15 +210,11 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
     m_applist.append(AppDescription(id, applistCopy[id]));
   }
 
-  std::sort(
-      m_applist.begin(), m_applist.end(),
-      [&](const AppDescription& a, const AppDescription& b) -> bool {
-        bool appADisabled = settingsHolder->vpnDisabledApps().contains(a.id);
-        bool appBDisabled = settingsHolder->vpnDisabledApps().contains(b.id);
-        return (appADisabled == appBDisabled) ? a.name < b.name
-               : (appADisabled)               ? -1
-                                              : 0;
-      });
+  Collator collator;
+  std::sort(m_applist.begin(), m_applist.end(),
+            std::bind(sortApplicationCallback, std::placeholders::_1,
+                      std::placeholders::_2, &collator));
+
   endResetModel();
 
   // In Case we removed Missing Apps during cleanup,
