@@ -69,8 +69,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         if (NOT DEFINED RUST_ARCH)
             set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
         endif()
-
-        message(FATAL_ERROR ${RUST_ARCH})
     elseif(ANDROID)
         file(READ ${CMAKE_CURRENT_SOURCE_DIR}/uniffi.toml.in UNIFFI_TOML_CONTENT)
 
