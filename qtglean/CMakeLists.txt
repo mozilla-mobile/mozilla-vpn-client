@@ -36,7 +36,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(qtglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
@@ -58,7 +58,17 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     if(IOS)
-        set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+        if (DEFINED CMAKE_OSX_ARCHITECTURES)
+            if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+                set(RUST_ARCH aarch64-apple-ios)
+            elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+                set(RUST_ARCH x86_64-apple-ios)
+            endif()
+        endif()
+        
+        if (NOT DEFINED RUST_ARCH)
+            set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+        endif()
     elseif(ANDROID)
         file(READ ${CMAKE_CURRENT_SOURCE_DIR}/uniffi.toml.in UNIFFI_TOML_CONTENT)
 
