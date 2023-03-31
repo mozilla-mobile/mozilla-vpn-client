@@ -7,6 +7,8 @@
 
 #include "statebase.h"
 
+class QJsonObject;
+
 /**
  * @brief Session State implementation,
  * in which state does not persist throughout restarts.
@@ -36,7 +38,7 @@ class SessionState final : public StateBase {
    * @param manifest The addon's manifest.
    * @return State the generated state.
    */
-  SessionState(const QJsonObject& manifest);
+  explicit SessionState(const QJsonObject& initialState);
 
  private:
   QJsonValue getInternal(const QString& key) const override;

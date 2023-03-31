@@ -24,6 +24,7 @@ void SessionState::setInternal(const QString& key, const QJsonValue& value) {
 void SessionState::clearInternal(const QString& key) {
   if (key.isEmpty()) {
     m_state.clear();
+    return;
   }
 
   m_state.remove(key);

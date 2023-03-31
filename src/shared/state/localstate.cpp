@@ -20,28 +20,29 @@ Logger logger("LocalState");
 QList<QString> s_registeredStorageIdentifiers;
 // The identifier of the settings group that will contain
 // ALL of the persisted state.
-const char* s_localStateStorageIdentifier = "mzLocalState";
+constexpr const char * LOCALSTATE_STORAGE_IDENTIFIER = "mzLocalState";
 }  // namespace
 
 // static
 QString LocalState::getStorageIdentifierForKey(const QString& storageIdentifier,
                                                const QString& key) {
   return QString("%1/%2/%3")
-      .arg(s_localStateStorageIdentifier, storageIdentifier, key);
+      .arg(LOCALSTATE_STORAGE_IDENTIFIER, storageIdentifier, key);
 }
 
 LocalState::LocalState(const QString& storageIdentifier,
                        const QJsonObject& initialState)
     : StateBase(initialState), m_storageIdentifier(storageIdentifier) {
+  MZ_COUNT_CTOR(LocalState);
+  
   if (s_registeredStorageIdentifiers.contains(storageIdentifier)) {
     logger.warning() << "Creating a new LocalState instance with the same "
                         "storageIdentifier as an existing LocalState "
                         "instance. That is likely a bad idea.";
-  } else {
-    s_registeredStorageIdentifiers.append(storageIdentifier);
+    return;
   }
 
-  MZ_COUNT_CTOR(LocalState);
+  s_registeredStorageIdentifiers.append(storageIdentifier);
 }
 
 LocalState::~LocalState() { MZ_COUNT_DTOR(LocalState); }
@@ -58,7 +59,7 @@ void LocalState::setInternal(const QString& key, const QJsonValue& value) {
 }
 
 void LocalState::clearInternal(const QString& key) {
-  settings()->beginGroup(s_localStateStorageIdentifier);
+  settings()->beginGroup(LOCALSTATE_STORAGE_IDENTIFIER);
 
   if (key.isEmpty()) {
     settings()->remove(m_storageIdentifier);

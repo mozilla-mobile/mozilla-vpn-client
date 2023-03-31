@@ -66,7 +66,7 @@ class LocalState final : public StateBase {
   static QString getStorageIdentifierForKey(const QString& storageIdentifier,
                                             const QString& key);
 
-  QString m_storageIdentifier;
+  const QString m_storageIdentifier;
 };
 
 #endif  // ADDONLOCALSTATE_H

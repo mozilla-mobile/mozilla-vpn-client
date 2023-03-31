@@ -79,8 +79,8 @@ class StateBase {
   Q_INVOKABLE void clear(const QString& key = "");
 
  protected:
-  StateBase(const QJsonObject& spec);
-  StateBase(const StateHash& spec) : m_defaults(spec) {}
+  explicit StateBase(const QJsonObject& spec);
+  explicit StateBase(const StateHash& spec) : m_defaults(spec) {}
   StateHash m_defaults;
 
   // Methods to override.
@@ -89,7 +89,7 @@ class StateBase {
   virtual void clearInternal(const QString& key = "") = 0;
 
  private:
-  static QJsonValue::Type typeToQJsonValueType(QString type);
+  static QJsonValue::Type typeToQJsonValueType(const QString& type);
   static StateHash parseAddonManifest(const QJsonObject& initialState);
 };
 

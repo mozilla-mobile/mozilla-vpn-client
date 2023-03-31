@@ -13,7 +13,7 @@ Logger logger("StateBase");
 }
 
 // static
-QJsonValue::Type StateBase::typeToQJsonValueType(QString type) {
+QJsonValue::Type StateBase::typeToQJsonValueType(const QString& type) {
   if (type == "boolean") {
     return QJsonValue::Bool;
   }
