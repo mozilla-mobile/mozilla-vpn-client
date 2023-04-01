@@ -110,7 +110,7 @@ QString ServerCity::hashKey(const QString& country, const QString cityName) {
 }
 
 const QString ServerCity::localizedName() const {
-  return ServerI18N::translateCityName(m_country, m_name);
+  return ServerI18N::instance()->translateCityName(m_country, m_name);
 }
 
 unsigned int ServerCity::latency() const {

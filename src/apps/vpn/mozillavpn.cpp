@@ -2096,7 +2096,8 @@ void MozillaVPN::registerInspectorCommands() {
             QJsonObject cityObj;
             cityObj["name"] = city.name();
             cityObj["localizedName"] =
-                ServerI18N::translateCityName(country.code(), city.name());
+                ServerI18N::instance()->translateCityName(country.code(),
+                                                          city.name());
             cityObj["code"] = city.code();
             cityArray.append(cityObj);
           }
@@ -2104,7 +2105,8 @@ void MozillaVPN::registerInspectorCommands() {
           QJsonObject countryObj;
           countryObj["name"] = country.name();
           countryObj["localizedName"] =
-              ServerI18N::translateCountryName(country.code(), country.name());
+              ServerI18N::instance()->translateCountryName(country.code(),
+                                                           country.name());
           countryObj["code"] = country.code();
           countryObj["cities"] = cityArray;
 

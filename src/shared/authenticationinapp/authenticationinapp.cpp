@@ -16,6 +16,7 @@
 #include "incrementaldecoder.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "resourceloader.h"
 #include "telemetry/gleansample.h"
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
@@ -38,6 +39,9 @@ AuthenticationInApp::AuthenticationInApp(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(AuthenticationInApp);
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          [this]() { m_encodedPassword.clear(); });
 }
 
 AuthenticationInApp::~AuthenticationInApp() {
@@ -298,7 +302,8 @@ bool AuthenticationInApp::validatePasswordCommons(const QString& password) {
 
   // Let's cache the encoded-password content.
   if (m_encodedPassword.isEmpty()) {
-    QFile file(":/resources/encodedPassword.txt");
+    QFile file(ResourceLoader::instance()->loadFile(
+        ":/resources/encodedPassword.txt"));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
       logger.error() << "Failed to open the encodedPassword.txt";
       return true;

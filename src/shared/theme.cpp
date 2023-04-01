@@ -9,6 +9,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "qmlengineholder.h"
+#include "resourceloader.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS
@@ -16,6 +18,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QQmlEngine>
 
 namespace {
 Logger logger("Theme");
@@ -23,6 +26,12 @@ Logger logger("Theme");
 
 Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(Theme);
+
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          [this]() {
+            m_themes.clear();
+            initialize(QmlEngineHolder::instance()->engine());
+          });
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
@@ -39,7 +48,7 @@ Theme* Theme::instance() {
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();
 
-  QDir dir(":/nebula/themes");
+  QDir dir(ResourceLoader::instance()->loadDir(":/nebula/themes"));
   QStringList files = dir.entryList();
 
   for (const QString& file : files) {
@@ -65,7 +74,7 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
   {
     QString resource = path;
     resource.append("/theme.js");
-    QFile file(resource);
+    QFile file(ResourceLoader::instance()->loadFile(resource));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
       logger.error() << "Failed to open the theme.js for the" << themeName
                      << "theme";

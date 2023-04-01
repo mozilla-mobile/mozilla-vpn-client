@@ -8,6 +8,7 @@
 #include <QFontDatabase>
 
 #include "logger.h"
+#include "resourceloader.h"
 
 namespace {
 Logger logger("FontLoader");
@@ -15,7 +16,7 @@ Logger logger("FontLoader");
 
 // static
 void FontLoader::loadFonts() {
-  QDir dir(":/nebula/resources/fonts");
+  QDir dir(ResourceLoader::instance()->loadDir(":/nebula/resources/fonts"));
   QStringList files = dir.entryList();
   for (const QString& file : files) {
     logger.debug() << "Loading font:" << file;

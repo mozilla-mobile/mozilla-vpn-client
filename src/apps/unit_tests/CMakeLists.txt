@@ -111,6 +111,8 @@ target_sources(app_unit_tests PRIVATE
     testnetworkmanager.h
     testqmlpath.cpp
     testqmlpath.h
+    testresourceloader.cpp
+    testresourceloader.h
     testtasksentry.cpp
     testtasksentry.h
     testsettings.cpp
@@ -167,6 +169,7 @@ target_sources(app_unit_tests PRIVATE
     qml/qml.qrc
     themes/themes.qrc
     tutorials/tutorials.qrc
+    resourceloader/resourceloader.qrc
 )
 
 qt_finalize_target(app_unit_tests)
