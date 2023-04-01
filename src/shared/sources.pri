@@ -10,6 +10,7 @@ SOURCES += \
         $$PWD/addons/addonmessage.cpp \
         $$PWD/addons/addonproperty.cpp \
         $$PWD/addons/addonpropertylist.cpp \
+        $$PWD/addons/addonreplacer.cpp \
         $$PWD/addons/addontutorial.cpp \
         $$PWD/addons/conditionwatchers/addonconditionwatcher.cpp \
         $$PWD/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp \
@@ -78,6 +79,7 @@ SOURCES += \
         $$PWD/networkrequest.cpp \
         $$PWD/qmlengineholder.cpp \
         $$PWD/qmlpath.cpp \
+        $$PWD/resourceloader.cpp \
         $$PWD/rfc/rfc1112.cpp \
         $$PWD/rfc/rfc1918.cpp \
         $$PWD/rfc/rfc4193.cpp \
@@ -115,6 +117,7 @@ HEADERS += \
         $$PWD/addons/addonmessage.h \
         $$PWD/addons/addonproperty.h \
         $$PWD/addons/addonpropertylist.h \
+        $$PWD/addons/addonreplacer.h \
         $$PWD/addons/addontutorial.h \
         $$PWD/addons/conditionwatchers/addonconditionwatcher.h \
         $$PWD/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h \
@@ -182,6 +185,7 @@ HEADERS += \
         $$PWD/networkrequest.h \
         $$PWD/qmlengineholder.h \
         $$PWD/qmlpath.h \
+        $$PWD/resourceloader.h \
         $$PWD/rfc/rfc1112.h \
         $$PWD/rfc/rfc1918.h \
         $$PWD/rfc/rfc4193.h \

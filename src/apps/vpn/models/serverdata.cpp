@@ -163,35 +163,38 @@ bool ServerData::settingsChanged() {
 
 QString ServerData::localizedExitCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCityName(m_exitCountryCode, m_exitCityName);
+  return ServerI18N::instance()->translateCityName(m_exitCountryCode,
+                                                   m_exitCityName);
 }
 
 QString ServerData::localizedEntryCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCityName(m_entryCountryCode, m_entryCityName);
+  return ServerI18N::instance()->translateCityName(m_entryCountryCode,
+                                                   m_entryCityName);
 }
 
 QString ServerData::localizedPreviousExitCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCityName(m_previousExitCountryCode,
-                                       m_previousExitCountryName);
+  return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
+                                                   m_previousExitCountryName);
 }
 
 QString ServerData::localizedPreviousExitCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCityName(m_previousExitCountryCode,
-                                       m_previousExitCityName);
+  return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
+                                                   m_previousExitCityName);
 }
 
 QString ServerData::localizedEntryCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCountryName(m_entryCountryCode,
-                                          m_entryCountryName);
+  return ServerI18N::instance()->translateCountryName(m_entryCountryCode,
+                                                      m_entryCountryName);
 }
 
 QString ServerData::localizedExitCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::translateCountryName(m_exitCountryCode, m_exitCountryName);
+  return ServerI18N::instance()->translateCountryName(m_exitCountryCode,
+                                                      m_exitCountryName);
 }
 
 void ServerData::changeServer(const QString& countryCode,

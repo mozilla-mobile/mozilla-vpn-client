@@ -177,8 +177,8 @@ QVariant RecentConnectionModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedExitCityNameRole: {
       const RecentConnection& rc = m_list.at(id);
-      return QVariant(ServerI18N::translateCityName(rc.m_exitCountryCode,
-                                                    rc.m_exitCityName));
+      return QVariant(ServerI18N::instance()->translateCityName(
+          rc.m_exitCountryCode, rc.m_exitCityName));
     }
 
     case IsMultiHopRole: {
@@ -195,8 +195,8 @@ QVariant RecentConnectionModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedEntryCityNameRole: {
       const RecentConnection& rc = m_list.at(id);
-      return QVariant(ServerI18N::translateCityName(rc.m_entryCountryCode,
-                                                    rc.m_entryCityName));
+      return QVariant(ServerI18N::instance()->translateCityName(
+          rc.m_entryCountryCode, rc.m_entryCityName));
     }
 
     default:

@@ -15,6 +15,7 @@
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
+#include "addonreplacer.h"
 #include "addontutorial.h"
 #include "conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
@@ -372,6 +373,10 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   else if (type == "message") {
     addon = AddonMessage::create(parent, manifestFileName, id, name, obj);
+  }
+
+  else if (type == "replacer") {
+    addon = AddonReplacer::create(parent, manifestFileName, id, name, obj);
   }
 
   else {

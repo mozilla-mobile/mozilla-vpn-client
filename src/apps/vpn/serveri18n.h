@@ -5,15 +5,38 @@
 #ifndef SERVERI18N_H
 #define SERVERI18N_H
 
-#include <QString>
+#include <QHash>
+#include <QObject>
 
-class ServerI18N final {
+class ServerI18N final : public QObject {
  public:
-  static QString translateCountryName(const QString& countryCode,
-                                      const QString& countryName);
+  static ServerI18N* instance();
 
-  static QString translateCityName(const QString& countryCode,
-                                   const QString& cityName);
+  ~ServerI18N();
+
+  QString translateCountryName(const QString& countryCode,
+                               const QString& countryName);
+
+  QString translateCityName(const QString& countryCode,
+                            const QString& cityName);
+
+ private:
+  ServerI18N(QObject* parent);
+
+  void initialize();
+
+  QString translateItem(const QString& countryCode, const QString& cityName,
+                        const QString& fallback);
+
+  QString translateItemWithLanguage(const QString& languageCode,
+                                    const QString& countryCode,
+                                    const QString& cityName);
+
+  void addCity(const QString& countryCode, const QJsonValue& value);
+  void addCountry(const QJsonValue& value);
+
+ private:
+  QHash<QString, QString> m_items;
 };
 
 #endif  // SERVERI18N_H

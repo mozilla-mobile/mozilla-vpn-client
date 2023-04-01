@@ -35,6 +35,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonpropertylist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonpropertylist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonreplacer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonreplacer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addontutorial.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addontutorial.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcher.cpp
@@ -170,6 +172,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlengineholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/qmlpath.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/resourceloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/resourceloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1112.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/rfc/rfc1918.cpp

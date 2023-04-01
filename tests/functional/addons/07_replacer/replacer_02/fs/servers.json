@@ -1,0 +1,57 @@
+[
+ {
+  "countryCode": "au",
+  "languages": {
+   "en": "4ustr4l14"
+  },
+  "cities": [
+   {
+    "city": "Melbourne",
+    "languages": {
+     "en": "М4lb0urn3"
+    },
+    "wikiDataID": "Q3141"
+   },
+   {
+    "city": "Sydney",
+    "languages": {
+     "en": "S1dn3y"
+    },
+    "wikiDataID": "Q3130"
+   }
+  ],
+  "wikiDataID": "Q408"
+ },
+ {
+  "countryCode": "at",
+  "languages": {
+   "en": "4ustr14"
+  },
+  "cities": [
+   {
+    "city": "Vienna",
+    "languages": {
+     "en": "V13nn4"
+    },
+    "wikiDataID": "Q1741"
+   }
+  ],
+  "wikiDataID": "Q40"
+ },
+ {
+  "countryCode": "be",
+  "languages": {
+   "en": "B3lg1um"
+  },
+  "cities": [
+   {
+    "city": "Brussels",
+    "languages": {
+     "en": "C1ty 0f Bruss3ls"
+    },
+    "wikiDataID": "Q239"
+   }
+  ],
+  "wikiDataID": "Q31"
+ }
+]

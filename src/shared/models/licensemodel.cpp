@@ -9,6 +9,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "resourceloader.h"
 
 namespace {
 Logger logger("LicenseModel");
@@ -25,6 +26,12 @@ LicenseModel* LicenseModel::instance() {
 
 LicenseModel::LicenseModel(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(LicenseModel);
+
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          [this]() {
+            m_licenses.clear();
+            initialize();
+          });
 }
 
 LicenseModel::~LicenseModel() { MZ_COUNT_DTOR(LicenseModel); }
@@ -63,7 +70,7 @@ QVariant LicenseModel::data(const QModelIndex& index, int role) const {
 void LicenseModel::initialize() {
   if (!m_licenses.isEmpty()) return;
 
-  QFile file(":/license/LICENSE.md");
+  QFile file(ResourceLoader::instance()->loadFile(":/license/LICENSE.md"));
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
     logger.error() << "Failed to open the license file";
     return;

@@ -356,8 +356,10 @@ with open(args.source, "r", encoding="utf-8") as file:
             strings = retrieve_strings_guide(manifest, args.source)
         elif manifest["type"] == "message":
             strings = retrieve_strings_message(manifest, args.source)
+        elif manifest["type"] == "replacer":
+          pass
         else:
-            exit(f"Unupported manifest type `{manifest['type']}`")
+            exit(f"Unsupported manifest type `{manifest['type']}`")
 
         print("Create localization file...")
         os.mkdir(os.path.join(tmp_path, "i18n"))

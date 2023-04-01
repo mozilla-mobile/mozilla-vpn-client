@@ -1,0 +1,14 @@
+{
+  "api_version": "0.1",
+  "id": "replacer_02",
+  "name": "Replacer test",
+  "type": "replacer",
+  "conditions": {
+    "translation_threshold": 0
+  },
+  "replacer": {
+    "urls": [
+      { "request": "qrc:/i18n/servers.json", "response": "fs/servers.json" }
+    ]
+  }
+}

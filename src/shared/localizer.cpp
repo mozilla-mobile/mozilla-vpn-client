@@ -20,6 +20,7 @@
 #include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "resourceloader.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -165,13 +166,24 @@ void Localizer::initialize() {
   connect(settingsHolder, &SettingsHolder::languageCodeChanged, this,
           &Localizer::settingsChanged);
   settingsChanged();
+
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          [this]() {
+            m_translationFallback.clear();
+            m_translationCompleteness.clear();
+            m_languages.clear();
+
+            loadLanguagesFromI18n();
+          });
 }
 
 void Localizer::loadLanguagesFromI18n() {
+  beginResetModel();
+
   m_translationCompleteness =
       loadTranslationCompleteness(":/i18n/translations.completeness");
 
-  QDir dir(":/i18n");
+  QDir dir(ResourceLoader::instance()->loadDir(":/i18n"));
   QStringList files = dir.entryList();
   for (const QString& file : files) {
     if (!file.startsWith(AppConstants::LOCALIZER_FILENAME_PREFIX) ||
@@ -209,8 +221,11 @@ void Localizer::loadLanguagesFromI18n() {
 
   std::sort(m_languages.begin(), m_languages.end(),
             [&](const Language& a, const Language& b) -> bool {
-              return LanguageI18N::languageCompare(a.m_code, b.m_code) < 0;
+              return LanguageI18N::instance()->languageCompare(a.m_code,
+                                                               b.m_code) < 0;
             });
+
+  endResetModel();
 }
 
 // static
@@ -361,7 +376,8 @@ bool Localizer::createTranslator(const QLocale& locale) {
 
 void Localizer::maybeLoadLanguageFallback(const QString& code) {
   if (m_translationFallback.isEmpty()) {
-    QFile file(":/i18n/translations_fallback.json");
+    QFile file(ResourceLoader::instance()->loadFile(
+        ":/i18n/translations_fallback.json"));
     Q_ASSERT(file.exists());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -404,14 +420,14 @@ QString Localizer::nativeLanguageName(const QLocale& locale,
                                       const QString& code) {
 #ifndef UNIT_TEST
   if (!Constants::inProduction()) {
-    Q_ASSERT_X(LanguageI18N::languageExists(code), "localizer",
+    Q_ASSERT_X(LanguageI18N::instance()->languageExists(code), "localizer",
                "Languages are out of sync with the translations");
   }
 #endif
 
   // Let's see if we have the translation of this language in this language. We
   // can use it as native language name.
-  QString name = LanguageI18N::translateLanguage(code, code);
+  QString name = LanguageI18N::instance()->translateLanguage(code, code);
   if (!name.isEmpty()) {
     return name;
   }
@@ -453,8 +469,8 @@ QString Localizer::localizedLanguageName(const Language& language) const {
     translationCode = Localizer::instance()->languageCodeOrSystem();
   }
 
-  QString value =
-      LanguageI18N::translateLanguage(translationCode, language.m_code);
+  QString value = LanguageI18N::instance()->translateLanguage(translationCode,
+                                                              language.m_code);
   if (!value.isEmpty()) {
     return value;
   }
@@ -463,7 +479,8 @@ QString Localizer::localizedLanguageName(const Language& language) const {
   if (translationCode.contains('_')) {
     QStringList parts = translationCode.split('_');
 
-    QString value = LanguageI18N::translateLanguage(parts[0], language.m_code);
+    QString value =
+        LanguageI18N::instance()->translateLanguage(parts[0], language.m_code);
     if (!value.isEmpty()) {
       return value;
     }
