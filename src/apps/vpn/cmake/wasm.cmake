@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.cpp

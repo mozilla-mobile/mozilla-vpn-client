@@ -11,7 +11,7 @@ if(IOS)
 endif()
 
 # Configure the application bundle Info.plist
-set_target_properties(mozillavpn PROPERTIES
+set_target_properties(${MAIN_TARGET} PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
     MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/ios/app/Info.plist.in
@@ -27,7 +27,7 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
     XCODE_GENERATE_SCHEME TRUE
 )
-target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(${MAIN_TARGET} PRIVATE ${CMAKE_SOURCE_DIR})
 
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
@@ -35,17 +35,17 @@ find_library(FW_STORE_KIT StoreKit)
 find_library(FW_USER_NOTIFICATIONS UserNotifications)
 find_library(FW_NETWORK Network)
 
-target_link_libraries(mozillavpn PRIVATE ${FW_UI_KIT})
-target_link_libraries(mozillavpn PRIVATE ${FW_FOUNDATION})
-target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
-target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
-target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_UI_KIT})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_FOUNDATION})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_STORE_KIT})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_USER_NOTIFICATIONS})
+target_link_libraries(${MAIN_TARGET} PRIVATE ${FW_NETWORK})
 
 ## Hack: IOSUtils needs QtGui internals...
-target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+target_include_directories(${MAIN_TARGET} PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 # iOS platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.cpp
@@ -63,7 +63,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
 )
 
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard)
 set_source_files_properties(
@@ -72,11 +72,11 @@ set_source_files_properties(
     PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 ## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn
+osx_bundle_assetcatalog(${MAIN_TARGET}
     DEVICES iphone ipad
     CATALOG ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets)
 
-set_target_properties(mozillavpn PROPERTIES
+set_target_properties(${MAIN_TARGET} PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_SOURCE_DIR}/ios/app/WireGuard-Bridging-Header.h"
@@ -84,16 +84,16 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL "-Onone"
     XCODE_ATTRIBUTE_SWIFT_OBJC_INTERFACE_HEADER_NAME "Mozilla-Swift.h"
 )
-target_compile_options(mozillavpn PRIVATE
+target_compile_options(${MAIN_TARGET} PRIVATE
     -DGROUP_ID=\"${BUILD_IOS_GROUP_IDENTIFIER}\"
     -DVPN_NE_BUNDLEID=\"${BUILD_IOS_APP_IDENTIFIER}.network-extension\"
 )
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.swift
 )
 
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/Shared/Keychain.swift
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/IPAddressRange.swift
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/InterfaceConfiguration.swift
@@ -111,10 +111,10 @@ target_sources(mozillavpn PRIVATE
 )
 
 ## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
+add_dependencies(${MAIN_TARGET} networkextension)
+set_target_properties(${MAIN_TARGET} PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
 
 ## Install the Glean iOS SDK into the bundle.
 include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
-add_dependencies(mozillavpn iosglean)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS iosglean)
+add_dependencies(${MAIN_TARGET} iosglean)
+set_target_properties(${MAIN_TARGET} PROPERTIES XCODE_EMBED_APP_EXTENSIONS iosglean)

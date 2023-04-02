@@ -4,7 +4,7 @@
 
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 
-set_target_properties(mozillavpn PROPERTIES
+set_target_properties(${MAIN_TARGET} PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
     VERSION ${CMAKE_PROJECT_VERSION}
     WIN32_EXECUTABLE ON
@@ -12,17 +12,17 @@ set_target_properties(mozillavpn PROPERTIES
 # Todo: This will force the generation of a .pdb
 # ignoring buildmode. we need to fix the relwithdebug target
 # and then we can remove this :) 
-target_compile_options(mozillavpn
+target_compile_options(${MAIN_TARGET}
     PRIVATE 
     $<$<CONFIG:Release>:/ZI>
 )
 
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
-target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+target_sources(${MAIN_TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(${MAIN_TARGET} PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserver.cpp
@@ -75,7 +75,7 @@ target_sources(mozillavpn PRIVATE
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
 else()
-    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
+    target_sources(${MAIN_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ui/qt6winhack.qrc)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
@@ -93,18 +93,18 @@ add_custom_target(balrogdll ALL
             go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
-add_dependencies(mozillavpn balrogdll)
+add_dependencies(${MAIN_TARGET} balrogdll)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
 
 # Use Balrog for update support.
-target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
-target_sources(mozillavpn PRIVATE
+target_compile_definitions(${MAIN_TARGET} PRIVATE MVPN_BALROG)
+target_sources(${MAIN_TARGET} PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.h
 )
 
-install(TARGETS mozillavpn DESTINATION .)
-install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
+install(TARGETS ${MAIN_TARGET} DESTINATION .)
+install(FILES $<TARGET_PDB_FILE:${MAIN_TARGET}> DESTINATION . OPTIONAL)
 
 # Deploy Qt runtime dependencies during installation.
 get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
@@ -114,7 +114,7 @@ find_program(QT_WINDEPLOY_EXECUTABLE
     PATHS ${QT_TOOL_PATH}
     NO_DEFAULT_PATH)
 set(WINDEPLOYQT_FLAGS "--verbose 1 --no-translations --compiler-runtime --dir . --plugindir plugins")
-install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:mozillavpn>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
+install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:${MAIN_TARGET}>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
 
 # Use the merge module that comes with our version of Visual Studio
 cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)

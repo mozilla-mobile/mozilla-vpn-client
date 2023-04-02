@@ -12,11 +12,18 @@ endif()
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
+get_filename_component(MZ_SHARED_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/shared ABSOLUTE)
+
+target_include_directories(shared-sources INTERFACE
+    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${MZ_SHARED_SOURCE_DIR}
+    ${MZ_SHARED_SOURCE_DIR}/addons
+    ${MZ_SHARED_SOURCE_DIR}/composer
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star/kremlin
+    ${MZ_SHARED_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${MZ_SHARED_SOURCE_DIR}/glean
 )
 
 # Shared components

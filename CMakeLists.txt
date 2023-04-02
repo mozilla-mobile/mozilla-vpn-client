@@ -4,6 +4,8 @@
 
 cmake_minimum_required(VERSION 3.16)
 
+set(MAIN_TARGET mozillavpn)
+
 message("Configuring for ${CMAKE_GENERATOR}")
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
