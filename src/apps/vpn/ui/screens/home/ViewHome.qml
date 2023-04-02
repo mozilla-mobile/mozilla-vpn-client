@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import Mozilla.Shared.qmlcomponents 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
@@ -188,7 +189,7 @@ MZFlickable {
     function maybeActivateTipsAndTricksIntro() {
         if (!MZSettings.tipsAndTricksIntroShown &&
             MZAddonManager.loadCompleted &&
-            !!MZAddonManager.pick(addon => addon.type === "tutorial" || addon.type === "guide")) {
+            !!MZAddonManager.pick(addon => !!addon.as(MZAddon.TypeTutorial) || !!addon.as(MZAddon.TypeGuide))) {
             tipsAndTricksIntroPopupLoader.active = true
         }
     }

@@ -368,7 +368,7 @@ void NotificationHandler::messageClickHandle() {
 }
 
 void NotificationHandler::addonCreated(Addon* addon) {
-  if (addon->type() != "message") {
+  if (!addon->as(Addon::TypeMessage)) {
     return;
   }
 
@@ -384,9 +384,10 @@ void NotificationHandler::addonCreated(Addon* addon) {
 }
 
 void NotificationHandler::maybeAddonNotification(Addon* addon) {
-  Q_ASSERT(addon->type() == "message");
+  AddonMessage* addonMessage =
+      qobject_cast<AddonMessage*>(addon->as(Addon::TypeMessage));
+  Q_ASSERT(addonMessage);
 
-  AddonMessage* addonMessage = qobject_cast<AddonMessage*>(addon);
   if (addonMessage->isReceived()) {
     newInAppMessageNotification(addon->property("title").toString(),
                                 addon->property("subtitle").toString());

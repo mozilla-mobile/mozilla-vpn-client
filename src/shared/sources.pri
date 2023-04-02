@@ -5,6 +5,7 @@
 SOURCES += \
         $$PWD/addons/addon.cpp \
         $$PWD/addons/addonapi.cpp \
+        $$PWD/addons/addongroup.cpp \
         $$PWD/addons/addonguide.cpp \
         $$PWD/addons/addoni18n.cpp \
         $$PWD/addons/addonmessage.cpp \
@@ -112,6 +113,7 @@ SOURCES += \
 HEADERS += \
         $$PWD/addons/addon.h \
         $$PWD/addons/addonapi.h \
+        $$PWD/addons/addongroup.h \
         $$PWD/addons/addonguide.h \
         $$PWD/addons/addoni18n.h \
         $$PWD/addons/addonmessage.h \

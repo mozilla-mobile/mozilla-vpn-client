@@ -22,7 +22,7 @@ GridLayout {
     visible: count > 0
 
     function tutorialFilter(addon) {
-        return addon.type === "tutorial" && customFilter(addon);
+        return !!addon.as(MZAddon.TypeTutorial) && customFilter(addon);
     }
 
     MZFilterProxyModel {
@@ -36,17 +36,19 @@ GridLayout {
         model: tutorialModel
 
         delegate: MZTutorialCard {
-            objectName: addon.highlighted ? "highlightedTutorial" : addon.id
+            property var addonTutorial: addon.as(MZAddon.TypeTutorial)
+
+            objectName: addonTutorial.highlighted ? "highlightedTutorial" : addonTutorial.id
 
             Layout.preferredHeight: MZTheme.theme.tutorialCardHeight
             Layout.fillWidth: true
 
-            imageSrc: addon.image
-            title: addon.title
-            description: addon.subtitle
+            imageSrc: addonTutorial.image
+            title: addonTutorial.title
+            description: addonTutorial.subtitle
             onClicked: {
-                if (addon.settingsRollbackNeeded) {
-                    MZTutorial.showWarning(addon)
+                if (addonTutorial.settingsRollbackNeeded) {
+                    MZTutorial.showWarning(addonTutorial)
                 }
                 else {
                     MZTutorial.play(addon);

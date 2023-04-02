@@ -1,0 +1,37 @@
+{
+  "api_version": "0.1",
+  "id": "group_demo",
+  "name": "Group Demo",
+  "translatable": false,
+  "type": [ "message", "replacer" ],
+  "conditions": {
+    "translation_threshold": 0,
+    "env": "staging"
+  },
+  "javascript": {
+    "enable": "enable.js"
+  },
+  "message": {
+    "id": "group_demo",
+    "title": "✨ DEMO ✨",
+    "subtitle": "Hello world",
+    "badge": "new_update",
+    "blocks": [
+      { "id": "a",
+        "type": "text",
+        "content": "Enable the game clicking this button"
+      },
+      { "id": "b",
+        "type": "button",
+        "style": "link",
+        "content": "Enable the gamo",
+        "javascript": "button.js"
+      }
+    ]
+  },
+  "replacer": {
+    "urls": [
+      { "request": "qrc:/ui/screens/getHelp/ViewGetHelp.qml", "response": "fs/tictactoe.qml" }
+    ]
+  }
+}

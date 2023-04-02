@@ -13,6 +13,8 @@ class TestAddon final : public TestHelper {
   void init();
   void cleanup();
 
+  void group_create();
+
   void property();
   void property_list();
 

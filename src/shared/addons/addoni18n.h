@@ -17,6 +17,8 @@ class AddonI18n final : public Addon {
 
   ~AddonI18n();
 
+  Addon* as(Type type) override { return type == TypeI18n ? this : nullptr; }
+
  private:
   void enable() override;
   void disable() override;

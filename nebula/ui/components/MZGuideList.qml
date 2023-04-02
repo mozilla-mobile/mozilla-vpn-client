@@ -16,7 +16,7 @@ GridLayout {
     property var count: guideRepeater.count
 
     function guideFilter(addon) {
-        return addon.type === "guide" && customFilter(addon);
+        return !!addon.as(MZAddon.TypeGuide) && customFilter(addon);
     }
 
     MZFilterProxyModel {
@@ -34,20 +34,22 @@ GridLayout {
         model: guideModel
 
         delegate: MZGuideCard {
-            objectName: addon.id
+            property var addonGuide: addon.as(MZAddon.TypeGuide)
+
+            objectName: addonGuide.id
 
             Layout.preferredHeight: MZTheme.theme.guideCardHeight
             Layout.fillWidth: true
 
-            imageSrc: addon.image
-            title: addon.title
+            imageSrc: addonGuide.image
+            title: addonGuide.title
 
             onClicked:{
-                stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addon, "imageBgColor": imageBgColor})
+                stackview.push("qrc:/ui/screens/settings/ViewGuide.qml", {"guide": addonGuide, "imageBgColor": imageBgColor})
                 MZGleanDeprecated.recordGleanEventWithExtraKeys("guideOpened", {
-                    "id": addon.id
+                    "id": addonGuide.id
                 });
-                Glean.sample.guideOpened.record({ id: addon.id });
+                Glean.sample.guideOpened.record({ id: addonGuide.id });
             }
         }
     }

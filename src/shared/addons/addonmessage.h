@@ -82,6 +82,8 @@ class AddonMessage final : public Addon {
   static qint64 planDateRetranslationInternal(const QDateTime& nowDateTime,
                                               const QDateTime& messageDateTime);
 
+  Addon* as(Type type) override { return type == TypeMessage ? this : nullptr; }
+
  signals:
   void statusChanged(AddonMessage::MessageStatus status);
   void badgeChanged();

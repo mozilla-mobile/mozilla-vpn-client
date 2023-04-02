@@ -27,5 +27,5 @@
       }
     }
   },
-  "required": [ "replacer" ]
+  "required": [ "urls" ]
 }

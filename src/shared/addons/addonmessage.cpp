@@ -75,7 +75,7 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "message") {
+    : Addon(parent, manifestFileName, id, name) {
   MZ_COUNT_CTOR(AddonMessage);
 }
 

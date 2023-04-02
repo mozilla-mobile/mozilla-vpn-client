@@ -5,6 +5,7 @@
 #include "mozillavpn.h"
 
 #include "addons/addonapi.h"
+#include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
 #include "appconstants.h"
 #include "authenticationinapp/authenticationinapp.h"
@@ -1765,7 +1766,13 @@ static void resetNotification(NavigationBarButton* icon) {
   int unreadMessages = 0;
   AddonManager::instance()->forEach(
       [unreadMessages = &unreadMessages](Addon* addon) {
-        if (addon->type() == "message" && !addon->property("isRead").toBool()) {
+        AddonMessage* message =
+            qobject_cast<AddonMessage*>(addon->as(Addon::TypeMessage));
+        if (!message) {
+          return;
+        }
+
+        if (!message->isRead()) {
           (*unreadMessages)++;
         }
       });
@@ -1900,7 +1907,7 @@ void MozillaVPN::registerInspectorCommands() {
 
         QJsonArray guides;
         am->forEach([&](Addon* addon) {
-          if (addon->type() == "guide") {
+          if (!!addon->as(Addon::TypeGuide)) {
             guides.append(addon->id());
           }
         });
@@ -2008,7 +2015,7 @@ void MozillaVPN::registerInspectorCommands() {
 
         QJsonArray messages;
         am->forEach([&](Addon* addon) {
-          if (addon->type() == "message") {
+          if (!!addon->as(Addon::TypeMessage)) {
             messages.append(addon->id());
           }
         });

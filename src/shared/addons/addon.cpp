@@ -12,6 +12,7 @@
 #include <QJsonObject>
 
 #include "addonapi.h"
+#include "addongroup.h"
 #include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
@@ -351,44 +352,75 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     return nullptr;
   }
 
-  QString type = obj["type"].toString();
-  if (type.isEmpty()) {
+  QStringList types;
+
+  if (obj["type"].isString()) {
+    types.append(obj["type"].toString());
+  } else if (obj["type"].isArray()) {
+    for (const QJsonValue& value : obj["type"].toArray()) {
+      types.append(value.toString());
+    }
+  }
+
+  if (types.isEmpty()) {
     logger.warning() << "No type in the manifest" << manifestFileName;
     return nullptr;
   }
 
+  QList<Addon*> addonList;
+
+  for (const QString& type : types) {
+    Addon* addon = nullptr;
+
+    if (type == "i18n") {
+      addon = new AddonI18n(parent, manifestFileName, id, name);
+    }
+
+    else if (type == "tutorial") {
+      addon = AddonTutorial::create(parent, manifestFileName, id, name, obj);
+    }
+
+    else if (type == "guide") {
+      addon = AddonGuide::create(parent, manifestFileName, id, name, obj);
+    }
+
+    else if (type == "message") {
+      addon = AddonMessage::create(parent, manifestFileName, id, name, obj);
+    }
+
+    else if (type == "replacer") {
+      addon = AddonReplacer::create(parent, manifestFileName, id, name, obj);
+    }
+
+    else {
+      logger.warning() << "Unsupported type" << type << manifestFileName;
+      return nullptr;
+    }
+
+    if (!addon) {
+      return nullptr;
+    }
+
+    addonList.append(addon);
+  }
+
   Addon* addon = nullptr;
+  switch (addonList.length()) {
+    case 0:
+      return nullptr;
 
-  if (type == "i18n") {
-    addon = new AddonI18n(parent, manifestFileName, id, name);
+    case 1:
+      addon = addonList[0];
+      break;
+
+    default: {
+      QList<Type> types;
+      addon = new AddonGroup(parent, addonList, manifestFileName, id, name);
+      break;
+    }
   }
 
-  else if (type == "tutorial") {
-    addon = AddonTutorial::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "guide") {
-    addon = AddonGuide::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "message") {
-    addon = AddonMessage::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else if (type == "replacer") {
-    addon = AddonReplacer::create(parent, manifestFileName, id, name, obj);
-  }
-
-  else {
-    logger.warning() << "Unsupported type" << type << manifestFileName;
-    return nullptr;
-  }
-
-  if (!addon) {
-    return nullptr;
-  }
-
-  addon->m_state = new AddonState(addon, obj["state"].toObject());
+  addon->setState(new AddonState(addon, obj["state"].toObject()));
 
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {
@@ -421,12 +453,11 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 }
 
 Addon::Addon(QObject* parent, const QString& manifestFileName,
-             const QString& id, const QString& name, const QString& type)
+             const QString& id, const QString& name)
     : QObject(parent),
       m_manifestFileName(manifestFileName),
       m_id(id),
-      m_name(name),
-      m_type(type) {
+      m_name(name) {
   MZ_COUNT_CTOR(Addon);
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();

@@ -7,6 +7,7 @@
 
 #include <QJSValue>
 #include <QObject>
+#include <QQmlEngine>
 #include <QTranslator>
 
 #include "settingsholder.h"
@@ -23,13 +24,24 @@ constexpr const char* ADDON_SETTINGS_STATUS_KEY = "state";
 class Addon : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Addon)
+  QML_NAMED_ELEMENT(MZAddon)
+  QML_UNCREATABLE("")
 
   Q_PROPERTY(QString id READ id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
-  Q_PROPERTY(QString type READ type CONSTANT)
   Q_PROPERTY(AddonState* state READ state CONSTANT)
+  Q_PROPERTY(Addon* parent MEMBER m_parent CONSTANT)
 
  public:
+  enum Type {
+    TypeGuide,
+    TypeI18n,
+    TypeMessage,
+    TypeReplacer,
+    TypeTutorial,
+  };
+  Q_ENUM(Type);
+
   enum Status {
     // Initial status. This should be used only during the loading.
     Unknown,
@@ -56,8 +68,9 @@ class Addon : public QObject {
   virtual ~Addon();
 
   const QString& id() const { return m_id; }
-  const QString& type() const { return m_type; }
   const QString& manifestFileName() const { return m_manifestFileName; }
+
+  virtual void setState(AddonState* state) { m_state = state; }
   AddonState* state() const {
     Q_ASSERT(m_state);
     return m_state;
@@ -72,13 +85,19 @@ class Addon : public QObject {
   virtual void enable();
   virtual void disable();
 
+  Q_INVOKABLE virtual Addon* as(Type) { return nullptr; }
+
+  void setParent(Addon* addon) { m_parent = addon; }
+
  signals:
   void conditionChanged(bool enabled);
+  void dataChanged();
+
   void retranslationCompleted();
 
  protected:
   Addon(QObject* parent, const QString& manifestFileName, const QString& id,
-        const QString& name, const QString& type);
+        const QString& name);
 
  private:
   void updateAddonStatus(Status newStatus);
@@ -97,12 +116,12 @@ class Addon : public QObject {
   const QString m_manifestFileName;
   const QString m_id;
   const QString m_name;
-  const QString m_type;
 
   QTranslator m_translator;
 
   AddonState* m_state = nullptr;
 
+  Addon* m_parent = nullptr;
   AddonApi* m_api = nullptr;
   AddonConditionWatcher* m_conditionWatcher = nullptr;
 

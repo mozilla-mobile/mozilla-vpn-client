@@ -58,7 +58,7 @@ Addon* AddonGuide::create(QObject* parent, const QString& manifestFileName,
 
 AddonGuide::AddonGuide(QObject* parent, const QString& manifestFileName,
                        const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "guide") {
+    : Addon(parent, manifestFileName, id, name) {
   MZ_COUNT_CTOR(AddonGuide);
 }
 

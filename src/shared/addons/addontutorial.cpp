@@ -105,7 +105,7 @@ Addon* AddonTutorial::create(QObject* parent, const QString& manifestFileName,
 
 AddonTutorial::AddonTutorial(QObject* parent, const QString& manifestFileName,
                              const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "tutorial"),
+    : Addon(parent, manifestFileName, id, name),
       m_itemPicker(new TutorialItemPicker(this)) {
   MZ_COUNT_CTOR(AddonTutorial);
 }

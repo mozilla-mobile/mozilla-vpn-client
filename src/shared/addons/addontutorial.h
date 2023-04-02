@@ -49,6 +49,10 @@ class AddonTutorial final : public Addon {
 
   bool itemPicked(const QList<QQuickItem*>& list);
 
+  Addon* as(Type type) override {
+    return type == TypeTutorial ? this : nullptr;
+  }
+
  private:
   AddonTutorial(QObject* parent, const QString& manifestFileName,
                 const QString& id, const QString& name);

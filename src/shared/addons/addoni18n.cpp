@@ -9,7 +9,7 @@
 
 AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,
                      const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "i18n") {
+    : Addon(parent, manifestFileName, id, name) {
   MZ_COUNT_CTOR(AddonI18n);
 }
 

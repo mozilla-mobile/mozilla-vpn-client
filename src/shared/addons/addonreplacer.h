@@ -28,6 +28,10 @@ class AddonReplacer final : public Addon, public QQmlAbstractUrlInterceptor {
   QUrl intercept(const QUrl& url,
                  QQmlAbstractUrlInterceptor::DataType type) override;
 
+  Addon* as(Type type) override {
+    return type == TypeReplacer ? this : nullptr;
+  }
+
  private:
   AddonReplacer(QObject* parent, const QString& manifestFileName,
                 const QString& id, const QString& name);

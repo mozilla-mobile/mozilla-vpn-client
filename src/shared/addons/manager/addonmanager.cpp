@@ -191,6 +191,20 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
     }
   });
 
+  connect(addon, &Addon::dataChanged, this, [this, addon]() {
+    int pos = 0;
+    for (QMap<QString, AddonData>::const_iterator i(m_addons.constBegin());
+         i != m_addons.constEnd(); ++i) {
+      if (!i.value().m_addon) continue;
+      if (i.value().m_addon != addon) {
+        if (i.value().m_addon->enabled()) ++pos;
+        continue;
+      }
+      emit dataChanged(createIndex(pos, 0), createIndex(pos, 0));
+      break;
+    }
+  });
+
   emit addonCreated(addon);
 
   return true;

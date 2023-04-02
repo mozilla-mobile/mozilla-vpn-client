@@ -93,8 +93,8 @@ MZViewBase {
             _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
 
             _filterProxySource: MZAddonManager
-            _filterProxyCallback: obj => obj.addon.type === "message" && obj.addon.containsSearchString(getSearchBarText())
-            _sortProxyCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
+            _filterProxyCallback: obj => !!obj.addon.as(MZAddon.TypeMessage) && obj.addon.as(MZAddon.TypeMessage).containsSearchString(getSearchBarText())
+            _sortProxyCallback: (obj1, obj2) => obj1.addon.as(MZAddon.TypeMessage).date > obj2.addon.as(MZAddon.TypeMessage).date
             _editCallback: () => { vpnFlickable.isEditing = false }
         }
 
@@ -186,10 +186,12 @@ MZViewBase {
 
                     property real deleteLabelWidth: 0.0
 
+                    property var addonMessage: addon.as(MZAddon.TypeMessage)
+
                     //avoids qml warnings when addon messages get disabled via condition
-                    property string title: typeof(addon) !== "undefined" ? addon.title : ""
-                    property string formattedDate: typeof(addon) !== "undefined" ? addon.formattedDate : ""
-                    property string subtitle: typeof(addon) !== "undefined" ? addon.subtitle : ""
+                    property string title: typeof(addonMessage) !== "undefined" ? addonMessage.title : ""
+                    property string formattedDate: typeof(addonMessage) !== "undefined" ? addonMessage.formattedDate : ""
+                    property string subtitle: typeof(addonMessage) !== "undefined" ? addonMessage.subtitle : ""
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: content.item.implicitHeight
@@ -207,8 +209,8 @@ MZViewBase {
                     onClicked: {
                         if (vpnFlickable.anySwipesOpen()) vpnFlickable.closeAllSwipes()
                         else {
-                            addon.markAsRead()
-                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
+                            addonMessage.markAsRead()
+                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addonMessage})
                         }
                     }
 
@@ -236,7 +238,7 @@ MZViewBase {
                         }
 
                         function dismissAddon() {
-                            addon.dismiss()
+                            addonMessage.dismiss()
                             //Since opening up all (even if there is just 1) visible messages swipes turns on edit mode, make sure to turn it off if there are no more visible messages
                             if (searchBar.getProxyModel().rowCount() === 0) {
                                 vpnFlickable.isEditing = false
@@ -272,7 +274,7 @@ MZViewBase {
                                 Layout.preferredHeight: 8
                                 Layout.preferredWidth: 8
 
-                                opacity: addon.isRead? 0 : 1
+                                opacity: swipeDelegate.addonMessage.isRead? 0 : 1
                                 radius: Layout.preferredHeight / 2
                                 color: MZTheme.theme.blue
                             }
@@ -341,7 +343,7 @@ MZViewBase {
     MZFilterProxyModel {
         id: messagesModel
         source: MZAddonManager
-        filterCallback: obj => { return obj.addon.type === "message" }
+        filterCallback: obj => { return !!obj.addon.as(MZAddon.TypeMessage) }
         Component.onCompleted: {
             vpnFlickable.isEmptyState = Qt.binding(() => { return messagesModel.count === 0} )
         }

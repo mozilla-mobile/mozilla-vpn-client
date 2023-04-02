@@ -5,7 +5,6 @@
 #include "addonapi.h"
 
 #include <QCoreApplication>
-#include <QQmlEngine>
 
 #include "addon.h"
 #include "env.h"

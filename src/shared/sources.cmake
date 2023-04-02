@@ -25,6 +25,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonapi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonapi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addongroup.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addongroup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonguide.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonguide.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addoni18n.cpp

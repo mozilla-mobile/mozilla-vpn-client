@@ -30,6 +30,8 @@ class AddonGuide final : public Addon {
 
   ~AddonGuide();
 
+  Addon* as(Type type) override { return type == TypeGuide ? this : nullptr; }
+
  private:
   AddonGuide(QObject* parent, const QString& manifestFileName,
              const QString& id, const QString& name);

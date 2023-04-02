@@ -9,7 +9,6 @@
 #include <QFileInfo>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QQmlEngine>
 #include <QScopeGuard>
 
 #include "leakdetector.h"
@@ -105,7 +104,7 @@ Addon* AddonReplacer::create(QObject* parent, const QString& manifestFileName,
 
 AddonReplacer::AddonReplacer(QObject* parent, const QString& manifestFileName,
                              const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "replacer") {
+    : Addon(parent, manifestFileName, id, name) {
   MZ_COUNT_CTOR(AddonReplacer);
 }
 
@@ -115,12 +114,14 @@ void AddonReplacer::enable() {
   Addon::enable();
   QmlEngineHolder::instance()->engine()->addUrlInterceptor(this);
   ResourceLoader::instance()->addUrlInterceptor(this);
+  QmlEngineHolder::instance()->engine()->clearComponentCache();
 }
 
 void AddonReplacer::disable() {
   Addon::disable();
   QmlEngineHolder::instance()->engine()->removeUrlInterceptor(this);
   ResourceLoader::instance()->removeUrlInterceptor(this);
+  QmlEngineHolder::instance()->engine()->clearComponentCache();
 }
 
 QUrl AddonReplacer::intercept(const QUrl& url,

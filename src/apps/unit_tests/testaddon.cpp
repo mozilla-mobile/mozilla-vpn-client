@@ -8,6 +8,7 @@
 #include <QTemporaryFile>
 
 #include "addons/addon.h"
+#include "addons/addongroup.h"
 #include "addons/addonguide.h"
 #include "addons/addonmessage.h"
 #include "addons/addonproperty.h"
@@ -615,6 +616,10 @@ void TestAddon::guide_create() {
     return;
   }
 
+  QCOMPARE(guide, guide->as(Addon::TypeGuide));
+  QVERIFY(!guide->as(Addon::TypeMessage));
+  QVERIFY(!guide->as(Addon::TypeTutorial));
+
   QCOMPARE(guide->property("title").type(), QMetaType::QString);
   QCOMPARE(guide->property("subtitle").type(), QMetaType::QString);
 
@@ -774,6 +779,10 @@ void TestAddon::tutorial_create() {
     return;
   }
 
+  QCOMPARE(tutorial, tutorial->as(Addon::TypeTutorial));
+  QVERIFY(!tutorial->as(Addon::TypeMessage));
+  QVERIFY(!tutorial->as(Addon::TypeGuide));
+
   Tutorial* tm = Tutorial::instance();
   QVERIFY(!!tm);
   QVERIFY(!tm->isPlaying());
@@ -834,6 +843,10 @@ void TestAddon::message_create() {
   if (!message) {
     return;
   }
+
+  QCOMPARE(message, message->as(Addon::TypeMessage));
+  QVERIFY(!message->as(Addon::TypeTutorial));
+  QVERIFY(!message->as(Addon::TypeGuide));
 
   QCOMPARE(message->property("title").type(), QMetaType::QString);
 }
@@ -993,6 +1006,80 @@ void TestAddon::telemetry_status_change() {
       mozilla::glean::sample::addon_state_changed.testGetValue();
 
   QCOMPARE(postDisableValues.length(), 3);
+}
+
+void TestAddon::group_create() {
+  Localizer l;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  QObject parent;
+
+  Addon* guide = nullptr;
+  {
+    QJsonArray blocks;
+
+    QJsonObject content;
+    content["blocks"] = blocks;
+    content["id"] = "foo";
+    content["image"] = "foo";
+
+    QJsonObject obj;
+    obj["guide"] = content;
+
+    guide = AddonGuide::create(&parent, "foo", "bar", "name", obj);
+    QVERIFY(!!guide);
+  }
+
+  Addon* message = nullptr;
+  {
+    QJsonArray blocks;
+
+    QJsonObject content;
+    content["id"] = "foo";
+    content["blocks"] = blocks;
+
+    QJsonObject obj;
+    obj["message"] = content;
+
+    message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+    QVERIFY(!!message);
+  }
+
+  Addon* group = new AddonGroup(&parent, QList<Addon*>{guide, message}, "foo",
+                                "bar", "name");
+  QCOMPARE(group->enabled(), false);
+
+  QCOMPARE(group->as(Addon::TypeGuide), nullptr);
+  QCOMPARE(group->as(Addon::TypeMessage), nullptr);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
+
+  group->enable();
+  QCOMPARE(group->enabled(), true);
+  QCOMPARE(group->as(Addon::TypeGuide), guide);
+  QCOMPARE(group->as(Addon::TypeMessage), message);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
+
+  qobject_cast<AddonGroup*>(group)->disable(Addon::TypeGuide);
+  QCOMPARE(group->as(Addon::TypeGuide), nullptr);
+  QCOMPARE(group->as(Addon::TypeMessage), message);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
+
+  qobject_cast<AddonGroup*>(group)->disable(Addon::TypeMessage);
+  QCOMPARE(group->as(Addon::TypeGuide), nullptr);
+  QCOMPARE(group->as(Addon::TypeMessage), nullptr);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
+
+  qobject_cast<AddonGroup*>(group)->enable(Addon::TypeGuide);
+  QCOMPARE(group->as(Addon::TypeGuide), guide);
+  QCOMPARE(group->as(Addon::TypeMessage), nullptr);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
+
+  qobject_cast<AddonGroup*>(group)->enable(Addon::TypeMessage);
+  QCOMPARE(group->as(Addon::TypeGuide), guide);
+  QCOMPARE(group->as(Addon::TypeMessage), message);
+  QCOMPARE(group->as(Addon::TypeTutorial), nullptr);
 }
 
 static TestAddon s_testAddon;

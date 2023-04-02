@@ -40,37 +40,39 @@ Item {
             MZFilterProxyModel {
                 id: messagesModel
                 source: MZAddonManager
-                filterCallback: obj => obj.addon.type === "message"
+                filterCallback: obj => !!obj.addon.as(MZAddon.TypeMessage)
             }
 
             Text {
-               text: "Unread messages: " + MZAddonManager.reduce((addon, initialValue) => initialValue + (addon.type === "message" ? 1 : 0), 0);
+               text: "Unread messages: " + MZAddonManager.reduce((addon, initialValue) => initialValue + (!!addon.as(MZAddon.TypeMessage) ? 1 : 0), 0);
             }
 
             Repeater {
                 model: messagesModel
                 delegate: MZCheckBoxRow {
+                    property var addonMessage: addon.as(MZAddon.TypeMessage)
+
                     // I'm too lazy to create a proper view.
-                    function showMessageContent(addon) {
+                    function showMessageContent(addonMessage) {
                         const list = [];
-                        list.push("Translate title: " + addon.title);
-                        list.push("Is read: " + addon.isRead);
-                        list.push("Blocks: " + addon.composer.blocks.length);
+                        list.push("Translate title: " + addonMessage.title);
+                        list.push("Is read: " + addonMessage.isRead);
+                        list.push("Blocks: " + addonMessage.composer.blocks.length);
                         return list.join("\n");
                     }
 
                     showDivider: false
-                    labelText: addon.id
-                    subLabelText: showMessageContent(addon)
+                    labelText: addonMessage.id
+                    subLabelText: showMessageContent(addonMessage)
                     // Only enable the list on features where devModeEnable has any impact
                     enabled: true
                     Layout.minimumHeight: MZTheme.theme.rowHeight * 1.5
 
                     onClicked: {
-                       if (addon.isRead) {
-                         addon.dismiss();
+                       if (addonMessage.isRead) {
+                         addonMessage.dismiss();
                        } else {
-                         addon.markAsRead();
+                         addonMessage.markAsRead();
                        }
                     }
                 }

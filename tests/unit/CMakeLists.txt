@@ -126,6 +126,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/addons/addon.h
     ${MZ_SOURCE_DIR}/shared/addons/addonapi.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addonapi.h
+    ${MZ_SOURCE_DIR}/shared/addons/addongroup.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addongroup.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addonguide.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addonguide.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addonguide.h

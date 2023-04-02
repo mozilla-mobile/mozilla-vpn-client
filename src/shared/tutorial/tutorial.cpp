@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QDir>
 
+#include "addons/addongroup.h"
 #include "addons/addontutorial.h"
 #include "app.h"
 #include "frontend/navigator.h"
@@ -45,9 +46,11 @@ void Tutorial::allowItem(const QString& objectName) {
 
 void Tutorial::showWarning(Addon* tutorial) {
   Q_ASSERT(tutorial);
-  Q_ASSERT(tutorial->type() == "tutorial");
 
-  m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+  m_currentTutorial =
+      qobject_cast<AddonTutorial*>(tutorial->as(Addon::TypeTutorial));
+  Q_ASSERT(m_currentTutorial);
+
   ExternalOpHandler::instance()->registerBlocker(this);
 
   if (m_currentTutorial->settingsRollbackNeeded()) {
@@ -57,11 +60,12 @@ void Tutorial::showWarning(Addon* tutorial) {
 
 void Tutorial::play(Addon* tutorial) {
   Q_ASSERT(tutorial);
-  Q_ASSERT(tutorial->type() == "tutorial");
+  Q_ASSERT(!!tutorial->as(Addon::TypeTutorial));
 
   stop();
 
-  m_currentTutorial = qobject_cast<AddonTutorial*>(tutorial);
+  m_currentTutorial =
+      qobject_cast<AddonTutorial*>(tutorial->as(Addon::TypeTutorial));
 
   if (!m_currentTutorial) {
     logger.error() << "Tutorial::play works only with AddonTutorial";
