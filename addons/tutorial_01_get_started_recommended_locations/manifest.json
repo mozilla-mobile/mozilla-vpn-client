@@ -34,6 +34,19 @@
         }
       },
       {
+        "id": "recommendedTab",
+        "query": "//tabRecommendedServers",
+        "tooltip": "Select the “Recommended” tab",
+        "conditions": {
+           "javascript": "isRecommendedSelected.js"
+        },
+        "next": {
+          "op": "signal",
+          "query_emitter": "//tabRecommendedServers",
+          "signal": "clicked"
+        }
+      },
+      {
         "id": "firstCity",
         "query": "//serverListRecommended/{isAvailable=true}[0]",
         "tooltip": "Select the top recommended location",
