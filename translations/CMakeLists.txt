@@ -131,7 +131,7 @@ foreach(PROJECT ${PROJECTS_NAMES})
 
     # In case the translations.completeness is still missing (does i18n folder
     # exist?), let's create it now.
-    if (NOT EXISTS ${PROJECTS_DIR}/${PROJECT}/translations/extras/translations.completeness AND 
+    if (NOT EXISTS ${PROJECTS_DIR}/${PROJECT}/translations/extras/translations.completeness AND
         NOT EXISTS ${GENERATED_DIR}/${PROJECT}/translations.completeness)
       message("Creating an empty tanslations.completeness file")
       file(WRITE ${GENERATED_DIR}/${PROJECT}/translations.completeness "")

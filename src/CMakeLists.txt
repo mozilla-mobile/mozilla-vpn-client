@@ -7,7 +7,7 @@
 # statically.
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(mozillavpn PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
