@@ -12,7 +12,6 @@ fi
 
 
 JOBS=8
-QTPATH=
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
@@ -31,7 +30,7 @@ helpFunction() {
   exit 0
 }
 print N "This script compiles MozillaVPN for Android"
-echo $QT_HOST_PATH
+echo $QTPATH
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -70,11 +69,9 @@ while [[ $# -gt 0 ]]; do
     helpFunction
     ;;
   *)
-    if [[ "$QTPATH" ]]; then
-      helpFunction
+    if ! [[ "$$1" ]]; then
+      QTPATH="$1"
     fi
-
-    QTPATH="$1"
     shift
     ;;
   esac
@@ -137,7 +134,8 @@ if [[ "$ADJUST_SDK_TOKEN" ]]; then
 else
   ADJUST="CONFIG-=adjust"
 fi
-
+export CC=armv7a-linux-androideabi19-clang
+export CXX=armv7a-linux-androideabi19-clang++
 
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
