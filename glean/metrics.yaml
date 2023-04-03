@@ -1043,7 +1043,7 @@ sample:
         description: |
           The name of the app state, e.g. "authenticating", "device-limit",
           "main", "subscription-needed", etc. The list can be found in
-          `mozillavpn.h`.
+          `src/shared/app.h` and custom states for individual apps.
         type: string
 
   controller_step:
