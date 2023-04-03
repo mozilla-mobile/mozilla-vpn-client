@@ -17,10 +17,10 @@
 #include "logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "taskscheduler.h"
-#include "tasks/products/taskproducts.h"
 #include "notificationhandler.h"
 #include "purchasehandler.h"
+#include "tasks/products/taskproducts.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger("ProductsHandler");
@@ -59,16 +59,17 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
     }
   });
 
-  // If the user already has a Subscription
-  // Register so if that changes, we fire a notification.
-  if (!MozillaVPN::instance()->user()->subscriptionNeeded()) {
-    connect(MozillaVPN::instance()->user(), &User::changed, [] {
-      if (!MozillaVPN::instance()->user()->subscriptionNeeded()) {
-        return;
-      }
+  m_last_userSubscriptionNeeded =
+      MozillaVPN::instance()->user()->subscriptionNeeded();
+
+  connect(MozillaVPN::instance()->user(), &User::changed, [this] {
+    auto userSubscriptionNeeded =
+        MozillaVPN::instance()->user()->subscriptionNeeded();
+    if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
       NotificationHandler::instance()->subscriptionNotFoundNotification();
-    });
-  }
+    }
+    m_last_userSubscriptionNeeded = userSubscriptionNeeded;
+  });
 }
 
 ProductsHandler::~ProductsHandler() {

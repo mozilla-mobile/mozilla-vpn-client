@@ -753,7 +753,6 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   if (!m_private->m_user.subscriptionNeeded() || state() != StateMain) {
     return;
   }
-  NotificationHandler::instance()->subscriptionNotFoundNotification();
   maybeStateMain();
 }
 
