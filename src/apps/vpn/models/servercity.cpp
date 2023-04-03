@@ -139,11 +139,10 @@ int ServerCity::connectionScore() const {
     return score;
   }
 
-  // If there is no latency data, then we haven't actually measured anything
-  // and have no connectivity signals to report.
+  // If there is no latency data (zero), then we haven't measured anything yet.
   unsigned int cityLatencyMsec = latency();
   if (cityLatencyMsec == 0) {
-    return ServerLatency::NoData;
+    return score;
   }
 
   // Increase the score if the location has better than average latency.
