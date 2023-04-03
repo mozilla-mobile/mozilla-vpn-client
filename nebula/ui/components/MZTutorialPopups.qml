@@ -42,15 +42,21 @@ Item {
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
 
-    onTargetElementChanged: tooltipRepositionTimer.start()
+    onTargetElementChanged: {
+        if(targetElement && MZTutorial.playing) {
+            tutorialTooltip.close()
+            pauseTimer.start()
+        }
+    }
 
-    //Bandaid fix to position *ALL* tutorial tooltips in the correct position
+
     Timer {
-        id: tooltipRepositionTimer
-        interval: 1
+        id: pauseTimer
+        interval: 100
         onTriggered: {
             tutorialTooltip.repositionTooltip()
             notch.repositionNotch()
+            tutorialTooltip.open()
         }
     }
 
@@ -296,7 +302,6 @@ Item {
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
             tutorialTooltip.tooltipText = text;
-            tutorialTooltip.open();
         }
 
         function onTutorialCompleted(tutorial) {
