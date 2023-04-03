@@ -52,7 +52,7 @@ Item {
 
     Timer {
         id: pauseTimer
-        interval: 100
+        interval: 300
         onTriggered: {
             tutorialTooltip.repositionTooltip()
             notch.repositionNotch()
