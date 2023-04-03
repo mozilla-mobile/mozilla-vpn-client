@@ -49,7 +49,7 @@ Item {
         }
     }
 
-
+    //Adds a delay between tooltip popups in tutorials
     Timer {
         id: pauseTimer
         interval: 300
