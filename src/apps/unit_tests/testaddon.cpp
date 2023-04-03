@@ -307,8 +307,8 @@ void TestAddon::conditionWatcher_locale() {
   // No locales -> no watcher.
   QVERIFY(!AddonConditionWatcherLocales::maybeCreate(&parent, QStringList()));
 
-  AddonConditionWatcher* acw =
-      AddonConditionWatcherLocales::maybeCreate(&parent, QStringList{"it"});
+  AddonConditionWatcher* acw = AddonConditionWatcherLocales::maybeCreate(
+      &parent, QStringList{"it", "fo_BAR"});
   QVERIFY(!!acw);
 
   QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
@@ -338,6 +338,12 @@ void TestAddon::conditionWatcher_locale() {
   QVERIFY(!acw->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("it_RU");
+  QVERIFY(acw->conditionApplied());
+
+  SettingsHolder::instance()->setLanguageCode("fo");
+  QVERIFY(!acw->conditionApplied());
+
+  SettingsHolder::instance()->setLanguageCode("fo_BAR");
   QVERIFY(acw->conditionApplied());
 }
 
