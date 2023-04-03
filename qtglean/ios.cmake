@@ -22,18 +22,14 @@ target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
 set_target_properties(iosglean PROPERTIES
-    FRAMEWORK TRUE
-    FRAMEWORK_VERSION C
     OUTPUT_NAME "Glean"
-    MACOSX_FRAMEWORK_INFO_PLIST "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Info.plist"
-    MACOSX_FRAMEWORK_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.Glean"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
-    XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
     XCODE_ATTRIBUTE_MACH_O_TYPE "staticlib"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
+    
 )
 
 target_sources(iosglean PRIVATE
@@ -141,5 +137,4 @@ target_sources(${MAIN_TARGET} PRIVATE
     ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
 )
 
-target_link_libraries(iosglean PRIVATE qtglean)
 target_link_libraries(${MAIN_TARGET} PRIVATE iosglean)
