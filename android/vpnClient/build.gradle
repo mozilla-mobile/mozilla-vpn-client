@@ -18,7 +18,7 @@ buildscript {
     }
 }
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    id "com.jetbrains.python.envs" version "0.0.31"
     id "org.jetbrains.kotlin.plugin.serialization"
 }
 
