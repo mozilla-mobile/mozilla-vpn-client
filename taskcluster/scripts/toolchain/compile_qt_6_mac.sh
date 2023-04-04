@@ -16,8 +16,8 @@ brew install cmake
 brew install ninja
 
 echo "Download QT $QT_VERSION"
-curl -o qt.zip -L https://download.qt.io/archive/qt/$QT_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip
-unzip -q -aa qt.zip || true
+curl -o qt.tar.xz -L https://download.qt.io/archive/qt/$QT_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.tar.xz
+tar -xf qt.tar.xz
 
 echo "Building QT"
 ./scripts/utils/qt6_compile.sh qt-everywhere-src-$QT_VERSION qt_dist
