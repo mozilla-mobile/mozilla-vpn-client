@@ -68,6 +68,11 @@ if(APPLE)
     endif()
 endif()
 
+if(ANDROID)
+    # Don't move, this provides OpenSSL on android.
+    include(src/shared/cmake/android_openssl.cmake)
+endif()
+
 if(NOT DEFINED BUILD_ID)
     string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
     message("Generated BUILD_ID: ${BUILD_ID}")
@@ -116,11 +121,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
         NetworkAuth
         Sql
     )
-endif()
-
-if(ANDROID)
-    # Don't move, this provides OpenSSL on android.
-    include(src/shared/cmake/android_openssl.cmake)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")
