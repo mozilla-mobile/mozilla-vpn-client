@@ -231,6 +231,7 @@ target_sources(shared-sources INTERFACE
 
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/license.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/resources.qrc
 )
 
 # Signal handling for unix platforms

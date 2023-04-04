@@ -298,7 +298,7 @@ bool AuthenticationInApp::validatePasswordCommons(const QString& password) {
 
   // Let's cache the encoded-password content.
   if (m_encodedPassword.isEmpty()) {
-    QFile file(":/ui/resources/encodedPassword.txt");
+    QFile file(":/resources/encodedPassword.txt");
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
       logger.error() << "Failed to open the encodedPassword.txt";
       return true;

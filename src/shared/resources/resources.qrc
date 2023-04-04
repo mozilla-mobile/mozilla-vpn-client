@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>encodedPassword.txt</file>
+    </qresource>
+</RCC>
