@@ -11,7 +11,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-add_library(iosglean SHARED)
+add_library(iosglean STATIC)
 
 if(NOT MSVC AND NOT IOS)
   target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
@@ -25,11 +25,9 @@ set_target_properties(iosglean PROPERTIES
     OUTPUT_NAME "Glean"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
-    XCODE_ATTRIBUTE_MACH_O_TYPE "staticlib"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
-    XCODE_ATTRIBUTE_SKIP_INSTALL "YES"
 )
 
 target_sources(iosglean PRIVATE
@@ -137,4 +135,5 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
 )
 
+target_link_libraries(iosglean PRIVATE qtglean)
 target_link_libraries(mozillavpn PRIVATE iosglean)
