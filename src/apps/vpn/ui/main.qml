@@ -169,7 +169,7 @@ Window {
     // Glean Connections
     Connections {
         target: VPN
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onInitializeGlean() {
             if (MZEnv.debugMode) {
@@ -213,7 +213,7 @@ Window {
 
     Connections {
         target: MZGleanDeprecated
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onRecordGleanEvent(sample) {
             console.debug("recording Glean event");
@@ -228,6 +228,8 @@ Window {
 
     Connections {
         target: MZSettings
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
+        
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", MZSettings.gleanEnabled);
             Glean.setUploadEnabled(MZSettings.gleanEnabled);
