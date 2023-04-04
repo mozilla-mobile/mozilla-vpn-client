@@ -1,0 +1,25 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "Android (arm64) Dev Container",
+    "image": "cuddlebuild:android-arm64",
+    
+    "containerEnv": {
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_EXPORT_COMPILE_COMMANDS":"true"
+    },
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+                "dev.containers.mountWaylandSocket":false
+            },
+			"extensions": [
+		        "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack"
+            ]
+		}
+    }   
+}

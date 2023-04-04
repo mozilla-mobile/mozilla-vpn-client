@@ -2,15 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+ARG DOCKER_IMAGE_PARENT=ubuntu:20.04
 FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
-
-# The build will be run as worker, which has no access
-# thus we should prep the folders
-RUN mkdir -p /builds/worker/.cache/go-build &&\
-    chown -R worker:worker /builds/worker/.cache/ &&\
-    chmod -R 777 /builds/worker/
 
 #NDK Version:
 ARG NDK_VERSION=android-ndk-r23b
@@ -22,7 +17,7 @@ ARG SENTRY_CLI_VERSION="2.9.0"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -q update &&\
-    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev &&\
+    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev cargo &&\
     # add zulu-jdk to the
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 &&\
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb &&\

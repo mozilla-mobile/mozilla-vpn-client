@@ -106,7 +106,6 @@ ios/gobridge/wireguard-go-version.h
 # Editors
 *.swp
 .idea/
-.vscode/
 vscode-cpptools/*
 *.xcodeproj/
 MozillaVPN.vcxproj*

@@ -1,0 +1,20 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "WASM Dev Container",
+    "image" : "cuddlebuild:wasm",
+	"mounts": [ ],
+    "containerEnv": {},
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+                "dev.containers.mountWaylandSocket":false
+            },
+			"extensions": [
+		        "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack"
+            ]
+		}
+    }   
+}

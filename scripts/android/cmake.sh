@@ -11,7 +11,7 @@ if [ -f .env ]; then
 fi
 
 
-JOBS=8
+JOBS=24
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
@@ -134,8 +134,6 @@ if [[ "$ADJUST_SDK_TOKEN" ]]; then
 else
   ADJUST="CONFIG-=adjust"
 fi
-export CC=armv7a-linux-androideabi19-clang
-export CXX=armv7a-linux-androideabi19-clang++
 
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"

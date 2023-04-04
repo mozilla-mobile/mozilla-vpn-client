@@ -1,0 +1,13 @@
+# 🙋 
+# As in this folder is lot's of personal dev config
+# let's keep this opt-in: 
+*
+!.gitignore
+!*/
+# Those can be shared:
+!android_arm64/*
+!android_x86_64/*
+!android_arm64.build/*
+!android_x86_64.build/*
+!wasm.build/*
+!wasm/*
