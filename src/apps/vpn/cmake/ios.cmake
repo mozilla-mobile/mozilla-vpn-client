@@ -26,8 +26,18 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/ios/app/main.entitlements"
     XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
     XCODE_ATTRIBUTE_PRODUCT_NAME "${PROJECT_NAME}"
+    XCODE_GENERATE_SCHEME TRUE
+    # Name of the .appiconset file
+    XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
+    # Required for this target to be added to the archive?
     XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
     XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+    # Set device target family to iPhone and iPad
+    XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+    # Make sure the network extension is added as a plugin to the final bundle
+    XCODE_EMBED_PLUGINS networkextension
+    XCODE_EMBED_PLUGINS_REMOVE_HEADERS_ON_COPY YES
+    XCODE_EMBED_PLUGINS_CODE_SIGN_ON_COPY YES
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -36,6 +46,31 @@ target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 # just wraps mozillavpn
 add_custom_target(MozillaVPN DEPENDS mozillavpn)
 set_target_properties(MozillaVPN PROPERTIES XCODE_GENERATE_SCHEME TRUE)
+
+# Begin: App icons related block
+# Reference: https://discourse.cmake.org/t/how-to-incorporate-app-icon-files-for-ios-into-xcode-14/7386/2
+
+# Asset catalog root
+target_sources(${MAIN_TARGET} PRIVATE "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets")
+set_source_files_properties("${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets" PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources
+)
+
+# Asset catalog app icon set
+list(APPEND app_icon_set "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets/AppIcon.appiconset")
+list(APPEND app_icon_set "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets/Contents.json")
+set_source_files_properties(${app_icon_set} PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources/Images.xcassets
+)
+
+# Asset catalog icon files
+file(GLOB app_icon_files CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets/AppIcon.appiconset/*.png")
+list(APPEND app_icon_files "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets/AppIcon.appiconset/Contents.json")
+set_source_files_properties(${app_icon_set} PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources/Images.xcassets/AppIcon.appiconset
+)
+
+# End: App icons related block
 
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
