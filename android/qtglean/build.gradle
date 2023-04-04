@@ -31,7 +31,7 @@ def versions = [
     coroutines: '1.6.4',
     jna: '5.12.1',
     junit: '4.12',
-    mockito: '5.1.1',
+    mockito: '5.2.0',
     mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
     kotlin: '1.7.20',
     robolectric: '4.9.2',
