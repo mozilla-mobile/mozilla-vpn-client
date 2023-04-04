@@ -41,7 +41,7 @@ void addLanguage(const QJsonValue& value) {
     return;
   }
 
-  QJsonValue translations = obj["translations"];
+  QJsonValue translations = obj["languages"];
   if (!translations.isObject()) {
     logger.error() << "Empty translation list";
     return;
@@ -49,7 +49,8 @@ void addLanguage(const QJsonValue& value) {
 
   QJsonObject translationObj = translations.toObject();
   for (const QString& translationCode : translationObj.keys()) {
-    s_translations.insert(itemKey(translationCode, languageCode),
+    QString translation(translationObj[translationCode].toString());
+    s_translations.insert(itemKey(languageCode, translationCode),
                           translationObj[translationCode].toString());
   }
 

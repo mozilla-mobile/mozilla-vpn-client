@@ -41,6 +41,10 @@ QMap<QString, QString> s_languageMap{
     {"es_MX", "Español, México"},
 };
 
+QString toUpper(const QLocale& locale, QString input) {
+  return input.replace(0, 1, locale.toUpper(QString(input[0])));
+}
+
 }  // namespace
 
 // static
@@ -413,7 +417,7 @@ QString Localizer::nativeLanguageName(const QLocale& locale,
   // can use it as native language name.
   QString name = LanguageI18N::translateLanguage(code, code);
   if (!name.isEmpty()) {
-    return name;
+    return toUpper(locale, name);
   }
 
   if (s_languageMap.contains(code)) {
@@ -429,9 +433,7 @@ QString Localizer::nativeLanguageName(const QLocale& locale,
     return locale.languageToString(locale.language());
   }
 
-  // Capitalize the string.
-  name.replace(0, 1, locale.toUpper(QString(name[0])));
-  return name;
+  return toUpper(locale, name);
 }
 
 QHash<int, QByteArray> Localizer::roleNames() const {
@@ -456,7 +458,7 @@ QString Localizer::localizedLanguageName(const Language& language) const {
   QString value =
       LanguageI18N::translateLanguage(translationCode, language.m_code);
   if (!value.isEmpty()) {
-    return value;
+    return toUpper(QLocale(translationCode), value);
   }
 
   // If we don't have 'ab_BC', but we have 'ab'
@@ -465,7 +467,7 @@ QString Localizer::localizedLanguageName(const Language& language) const {
 
     QString value = LanguageI18N::translateLanguage(parts[0], language.m_code);
     if (!value.isEmpty()) {
-      return value;
+      return toUpper(QLocale(translationCode), value);
     }
   }
 
