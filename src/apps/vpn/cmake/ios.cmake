@@ -10,6 +10,13 @@ if(IOS)
     set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
 endif()
 
+## Install the Network Extension into the bundle.
+add_dependencies(mozillavpn networkextension)
+
+## Install the Glean iOS SDK into the bundle.
+include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
+add_dependencies(mozillavpn iosglean)
+
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
@@ -35,9 +42,9 @@ set_target_properties(mozillavpn PROPERTIES
     # Set device target family to iPhone and iPad
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
     # Make sure the network extension is added as a plugin to the final bundle
-    XCODE_EMBED_PLUGINS networkextension
-    XCODE_EMBED_PLUGINS_REMOVE_HEADERS_ON_COPY YES
-    XCODE_EMBED_PLUGINS_CODE_SIGN_ON_COPY YES
+    XCODE_EMBED_APP_EXTENSIONS networkextension
+    XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY YES
+    XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY YES
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -152,12 +159,3 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitC/x25519.c
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift
 )
-
-## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
-
-## Install the Glean iOS SDK into the bundle.
-include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
-add_dependencies(mozillavpn iosglean)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS iosglean)
