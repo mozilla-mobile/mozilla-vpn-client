@@ -21,7 +21,8 @@ Logger logger("LanguageI18N");
 bool s_initialized = false;
 
 QList<QString> s_languageList;
-QHash<QString, QString> s_items;
+QHash<QString, QString> s_translations;
+QHash<QString, QString> s_currencies;
 
 QString itemKey(const QString& translationCode, const QString& languageCode) {
   return QString("%1^%2").arg(translationCode, languageCode);
@@ -42,14 +43,26 @@ void addLanguage(const QJsonValue& value) {
 
   QJsonValue translations = obj["translations"];
   if (!translations.isObject()) {
-    logger.error() << "Empty language list";
+    logger.error() << "Empty translation list";
     return;
   }
 
   QJsonObject translationObj = translations.toObject();
   for (const QString& translationCode : translationObj.keys()) {
-    s_items.insert(itemKey(translationCode, languageCode),
-                   translationObj[translationCode].toString());
+    s_translations.insert(itemKey(translationCode, languageCode),
+                          translationObj[translationCode].toString());
+  }
+
+  QJsonValue currencies = obj["currencies"];
+  if (!currencies.isObject()) {
+    logger.error() << "Empty currency list";
+    return;
+  }
+
+  QJsonObject currencyObj = currencies.toObject();
+  for (const QString& currencyIso4217 : currencyObj.keys()) {
+    s_currencies.insert(itemKey(currencyIso4217, languageCode),
+                        currencyObj[currencyIso4217].toString());
   }
 
   s_languageList.append(languageCode);
@@ -92,7 +105,7 @@ bool LanguageI18N::languageExists(const QString& languageCode) {
 QString LanguageI18N::translateLanguage(const QString& translationCode,
                                         const QString& languageCode) {
   maybeInitialize();
-  return s_items.value(itemKey(translationCode, languageCode));
+  return s_translations.value(itemKey(translationCode, languageCode));
 }
 
 // static
@@ -123,4 +136,11 @@ int LanguageI18N::languageCompare(const QString& languageCodeA,
   }
 
   return 1;
+}
+
+// static
+QString LanguageI18N::currencySymbolForLanguage(
+    const QString& languageCode, const QString& currencyIso4217) {
+  maybeInitialize();
+  return s_currencies.value(itemKey(currencyIso4217, languageCode));
 }

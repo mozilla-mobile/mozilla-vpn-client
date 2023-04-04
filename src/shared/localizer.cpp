@@ -523,7 +523,8 @@ QString Localizer::languageCodeOrSystem() const {
 
 QString Localizer::localizeCurrency(double value,
                                     const QString& currencyIso4217) {
-  QLocale locale(languageCodeOrSystem());
+  QString languageCode = languageCodeOrSystem();
+  QLocale locale(languageCode);
 
   if (currencyIso4217.length() != 3) {
     logger.warning() << "Invalid currency iso 4217 value:" << currencyIso4217;
@@ -535,61 +536,13 @@ QString Localizer::localizeCurrency(double value,
     return locale.toCurrencyString(value);
   }
 
-  QString symbol = retrieveCurrencySymbolFallback(currencyIso4217, locale);
-  if (symbol.isEmpty()) {
-    return locale.toCurrencyString(value, currencyIso4217);
+  QString symbol =
+      LanguageI18N::currencySymbolForLanguage(languageCode, currencyIso4217);
+  if (!symbol.isEmpty()) {
+    return locale.toCurrencyString(value, symbol);
   }
 
-  return locale.toCurrencyString(value, symbol);
-}
-
-// static
-QString Localizer::retrieveCurrencySymbolFallback(
-    const QString& currencyIso4217, const QLocale& currentLocale) {
-  // Let's find the locale that matches most of the current locale:
-  // - L: language
-  // - S: script
-  // - C: country
-  QList<QLocale> currencyLocalesLSC;
-  QList<QLocale> currencyLocalesLS;
-  QList<QLocale> currencyLocalesL;
-  for (QLocale& l : QLocale::matchingLocales(
-           QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry)) {
-    if (l.currencySymbol(QLocale::CurrencyIsoCode) != currencyIso4217) continue;
-
-    if (l.language() == currentLocale.language()) {
-      if (l.script() == currentLocale.script()) {
-        if (l.country() == currentLocale.country()) {
-          currencyLocalesLSC.append(l);
-          continue;
-        }
-        currencyLocalesLS.append(l);
-        continue;
-      }
-      currencyLocalesL.append(l);
-    }
-  }
-
-  if (!currencyLocalesLSC.isEmpty()) {
-    logger.warning() << "Fallback LSC" << currencyIso4217
-                     << currencyLocalesLSC[0].bcp47Name();
-    return currencyLocalesLSC[0].currencySymbol();
-  }
-
-  if (!currencyLocalesLS.isEmpty()) {
-    logger.warning() << "Fallback LS" << currencyIso4217
-                     << currencyLocalesLS[0].bcp47Name();
-    return currencyLocalesLS[0].currencySymbol();
-  }
-
-  if (!currencyLocalesL.isEmpty()) {
-    logger.warning() << "Fallback L" << currencyIso4217
-                     << currencyLocalesL[0].bcp47Name();
-    return currencyLocalesL[0].currencySymbol();
-  }
-
-  logger.warning() << "Fallback not found" << currencyIso4217;
-  return currencyIso4217;
+  return locale.toCurrencyString(value, currencyIso4217);
 }
 
 // static

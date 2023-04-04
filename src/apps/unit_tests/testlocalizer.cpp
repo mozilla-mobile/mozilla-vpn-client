@@ -100,8 +100,8 @@ void TestLocalizer::localizeCurrency() {
   // Let's guess - invalid currency
   QCOMPARE(l.localizeCurrency(123.123, "AAA"), "AAA123.12");
 
-  // Let's guess - valid currency
-  QVERIFY(l.localizeCurrency(123.123, "EUR").contains("€"));
+  // Let's guess - valid currency for CLDR
+  QCOMPARE(l.localizeCurrency(123.123, "BBB"), "WOW123.12");
 }
 
 void TestLocalizer::majorLanguageCode() {

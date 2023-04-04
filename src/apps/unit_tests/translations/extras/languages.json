@@ -7,6 +7,17 @@
    "en": "Klingon",
    "it": "lingua klingon",
    "fr": "klingon"
+  },
+  "currencies": {
+   "EUR": "€"
+  }
+ },
+ {
+  "wikiDataID": "Q7979",
+  "languageCode": "en_GB",
+  "translations": {},
+  "currencies": {
+   "BBB": "WOW"
   }
  }
 ]
