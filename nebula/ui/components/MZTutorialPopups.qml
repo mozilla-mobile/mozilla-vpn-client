@@ -350,7 +350,7 @@ Item {
                 return
 
             if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
-                tutorialTooltip.forceActiveFocus();
+                leaveTutorialBtn.forceActiveFocus();
             }
         }
     }
