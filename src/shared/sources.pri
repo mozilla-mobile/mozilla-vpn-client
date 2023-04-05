@@ -266,6 +266,7 @@ ios {
 }
 
 RESOURCES += shared/resources/license.qrc
+RESOURCES += shared/resources/resources.qrc
 
 CONFIG += qmltypes
 QML_IMPORT_NAME = Mozilla.Shared.qmlcomponents
