@@ -95,7 +95,9 @@ bool Env::stagingMode() { return !Constants::inProduction(); }
 
 #ifdef UNIT_TEST
 void Env::setStagingMode(bool stagingMode) {
-  Constants::setStaging();
+  if (stagingMode) {
+    Constants::setStaging();
+  }
   emit stagingModeChanged();
 }
 #endif
