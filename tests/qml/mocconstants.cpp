@@ -6,7 +6,11 @@
 
 #include "appconstants.h"
 
-bool Constants::inProduction() { return false; }
+namespace {
+bool s_productionMode = true;
+}  // namespace
+
+bool Constants::inProduction() { return s_productionMode; }
 
 const QString& AppConstants::getStagingServerAddress() {
   static QString stagingServerAddress = AppConstants::API_STAGING_URL;
@@ -17,8 +21,8 @@ QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
 
 QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }
 
-void Constants::setStaging() {}
-void AppConstants::setStaging() {}
+void Constants::setStaging() { s_productionMode = false; }
+void AppConstants::setStaging() { s_productionMode = false; }
 
 QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");

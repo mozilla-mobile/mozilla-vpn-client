@@ -181,7 +181,7 @@ Window {
                 //
                 // Glean.setDebugViewTag("MozillaVPN");
             }
-            var channel = VPN.stagingMode ? "staging" : "production";
+            var channel = MZEnv.stagingMode ? "staging" : "production";
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
