@@ -577,7 +577,7 @@ Item {
             text: qsTrId("vpn.controller.active") + " • "
           }
 
-          MZSemiMonoLabel {
+          ConnectionTimer {
             id: connectionTime
             Accessible.ignored: true
           }
@@ -592,7 +592,7 @@ Item {
 
     }
 
-    MZToggle {
+    VPNToggle {
         id: toggle
         objectName: "controllerToggle"
 

@@ -241,7 +241,7 @@ Window {
     MZSystemAlert {
     }
 
-    MZServerUnavailablePopup {
+    ServerUnavailablePopup {
         id: serverUnavailablePopup
     }
 
