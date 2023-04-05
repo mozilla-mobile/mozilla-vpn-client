@@ -12,6 +12,7 @@
 namespace Constants {
 
 enum ApiEndpoint {
+  Adjust,
   FeatureList,
 };
 
