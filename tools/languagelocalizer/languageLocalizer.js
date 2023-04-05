@@ -161,6 +161,15 @@ const LanguageLocalizer = {
       await this.localizeLanguage(language);
     }
 
+    // `localizeLanguage` creates a `translations` object with all the language
+    // translations in language X using Wikidata as a data source (via SPARQL
+    // queries).  Now we use CLDR which will give us X translated in all the
+    // languages in an object called `languages`. We need to normalize these 2
+    // objects and then drop the `translations`. Wikidata is used fallback.
+    for (let language of this.newData) {
+      await this.cldrLanguage(language);
+    }
+
     this.writeData();
     console.log(chalk.green('Languages known file written.'));
 
@@ -171,10 +180,20 @@ const LanguageLocalizer = {
     console.log(chalk.yellow('Sorting data...'));
 
     for (let language of this.newData) {
-      if ('translations' in language) {
-        language.translations =
-            Object.keys(language.translations).sort().reduce((obj, key) => {
-              obj[key] = language.translations[key];
+      delete language.translations;
+
+      if ('currencies' in language) {
+        language.currencies =
+            Object.keys(language.currencies).sort().reduce((obj, key) => {
+              obj[key] = language.currencies[key];
+              return obj;
+            }, {});
+      }
+
+      if ('languages' in language) {
+        language.languages =
+            Object.keys(language.languages).sort().reduce((obj, key) => {
+              obj[key] = language.languages[key];
               return obj;
             }, {});
       }
@@ -194,29 +213,32 @@ const LanguageLocalizer = {
       languageData = {
         wikiDataID: null,
         languageCode: language,
-        translations: {},
         currencies: {},
+        languages: {},
       }
     } else if (!languageData.wikiDataID) {
       console.log(
           '    Language found but we do not have a valid wikiDataID. Please update the file!');
       languageData.wikiDataID = null;
-      languageData.translations = {};
       languageData.currencies = {};
+      languageData.languages = {};
     }
+
+    // This is a temporary object to unify Wikidata and CLDR values
+    languageData.translations = {};
 
     if (!languageData.wikiDataID) {
       while (true) {
         let answer = await inquirer.prompt([{
           type: 'confirm',
           name: 'value',
-          message: 'No WikiData ID found. Do you know it?',
+          message: 'No Wikidata ID found. Do you know it?',
         }]);
 
         if (answer.value) {
           answer = await inquirer.prompt([{
             name: 'value',
-            message: 'WikiData ID:',
+            message: 'Wikidata ID:',
           }]);
 
           if (answer.value != '') {
@@ -229,7 +251,7 @@ const LanguageLocalizer = {
 
         answer = await inquirer.prompt([{
           name: 'value',
-          message: `Alternative WikiData ID: ${
+          message: `Alternative Wikidata ID: ${
               languageData.alternativeWikiDataID ?
                   '(' + languageData.alternativeWikiDataID + ')' :
                   ''}:`
@@ -307,8 +329,7 @@ const LanguageLocalizer = {
       }
     }
 
-    let currencies = {};
-
+    const currencies = {};
     if (languageData.IETFcode) {
       const currencyData = await this.retrieveJson(
           `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-numbers-modern/main/${
@@ -327,6 +348,40 @@ const LanguageLocalizer = {
     languageData.translations = translations;
     languageData.currencies = currencies;
     this.newData.push(languageData);
+  },
+
+  async cldrLanguage(languageData) {
+    console.log(`  - Fetching CLDR language values for language ${
+        chalk.yellow(languageData.languageCode)}...`);
+    const languages = {};
+
+    if (languageData.IETFcode) {
+      const ietfToCode =
+          this.newData.filter(a => 'IETFcode' in a)
+              .map(a => ({languageCode: a.languageCode, IETFcode: a.IETFcode}));
+
+      const cldrLanguages =
+          (await this.retrieveJson(
+               `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-modern/main/${
+                   languageData.IETFcode}/languages.json`))
+              .main[languageData.IETFcode]
+              .localeDisplayNames.languages;
+
+      Object.keys(cldrLanguages)
+          .filter(l => !!ietfToCode.find(ietf => ietf.IETFcode === l))
+          .forEach(
+              code => languages[ietfToCode.find(ietf => ietf.IETFcode === code)
+                                    .languageCode] = cldrLanguages[code]);
+    }
+
+    // Let's add languages from Wikidata if CLDR does not have them yet.
+    this.newData.filter(l => languageData.languageCode in l.translations)
+        .filter(l => !(languageData.languageCode in languages))
+        .forEach(
+            l => languages[l.languageCode] =
+                l.translations[languageData.languageCode]);
+
+    languageData.languages = languages;
   },
 
   languages: new Map(),
