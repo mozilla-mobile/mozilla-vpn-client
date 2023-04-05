@@ -4,6 +4,8 @@
 
 #include "supportcategorymodel.h"
 
+#include <QCoreApplication>
+
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -12,25 +14,30 @@ namespace {
 SupportCategoryModel* s_instance = nullptr;
 Logger logger("SupportCategoryModel");
 
-struct SupportCategory {
-  const char* m_categoryName;
-};
-
-static QList<SupportCategory> s_supportCategories{
-    SupportCategory{"InAppSupportWorkflowPaymentDropdownListItem"},
-    SupportCategory{"InAppSupportWorkflowAccountDropdownListItem"},
-    SupportCategory{"InAppSupportWorkflowTechnicaDropdownListItem"},
-    SupportCategory{"InAppSupportWorkflowFeatureRequestDropdownListItem"},
-    SupportCategory{"InAppSupportWorkflowOtherDropdownListItem"},
+static QStringList s_supportCategories{
+    "InAppSupportWorkflowPaymentDropdownListItem",
+    "InAppSupportWorkflowAccountDropdownListItem",
+    "InAppSupportWorkflowTechnicaDropdownListItem",
+    "InAppSupportWorkflowFeatureRequestDropdownListItem",
+    "InAppSupportWorkflowOtherDropdownListItem",
 };
 
 }  // namespace
 
 SupportCategoryModel* SupportCategoryModel::instance() {
   if (!s_instance) {
-    s_instance = new SupportCategoryModel();
+    s_instance = new SupportCategoryModel(qApp);
   };
   return s_instance;
+}
+
+SupportCategoryModel::SupportCategoryModel(QObject* parent)
+    : QAbstractListModel(parent) {
+  MZ_COUNT_CTOR(SupportCategoryModel);
+}
+
+SupportCategoryModel::~SupportCategoryModel() {
+  MZ_COUNT_DTOR(SupportCategoryModel);
 }
 
 QHash<int, QByteArray> SupportCategoryModel::roleNames() const {
@@ -47,12 +54,5 @@ QVariant SupportCategoryModel::data(const QModelIndex& index, int role) const {
   if (!index.isValid()) {
     return QVariant();
   }
-
-  switch (role) {
-    case CategoryNameRole:
-      return QVariant(s_supportCategories.at(index.row()).m_categoryName);
-
-    default:
-      return QVariant();
-  }
+  return QVariant(s_supportCategories.at(index.row()));
 }

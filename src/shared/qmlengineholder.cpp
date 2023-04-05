@@ -77,14 +77,14 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                NavigationBarModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSupportCategoryModel",
+                               SupportCategoryModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTutorial",
                                Tutorial::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
                                Utils::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSupportCategoryModel",
-                               SupportCategoryModel::instance());
 
   Theme::instance()->initialize(engine);
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme",

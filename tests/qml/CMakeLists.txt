@@ -38,7 +38,6 @@ target_compile_definitions(qml_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
