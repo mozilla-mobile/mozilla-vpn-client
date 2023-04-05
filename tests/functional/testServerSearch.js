@@ -17,6 +17,7 @@ describe("Server list", function () {
   beforeEach(async () => {
     await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
     servers = await vpn.servers();
     currentCountryCode = await vpn.getMozillaProperty(
