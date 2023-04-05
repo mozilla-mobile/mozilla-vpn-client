@@ -69,7 +69,8 @@ if(APPLE)
 endif()
 
 if(ANDROID)
-    include(src/apps/vpn/cmake/android_openssl.cmake)
+    # Don't move, this provides OpenSSL on android.
+    include(src/shared/cmake/android_openssl.cmake)
 endif()
 
 if(NOT DEFINED BUILD_ID)
@@ -121,6 +122,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
         Sql
     )
 endif()
+
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
