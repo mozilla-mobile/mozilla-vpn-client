@@ -52,6 +52,7 @@ SettingsHolder
 Speedtest
 TBD
 TODO
+TORTIOUS
 TOTP
 TP
 UniFFI
@@ -83,6 +84,7 @@ boolean
 bugfixes
 byteorder
 cancelled
+cldr
 cmake
 codebase
 conda

@@ -14,6 +14,9 @@ class LanguageI18N final {
   static QString translateLanguage(const QString& translationCode,
                                    const QString& languageCode);
 
+  static QString currencySymbolForLanguage(const QString& languageCode,
+                                           const QString& currencyIso4217);
+
   static int languageCompare(const QString& languageCodeA,
                              const QString& languageCodeB);
 };

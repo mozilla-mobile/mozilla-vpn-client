@@ -8,7 +8,7 @@
 #include "localizer.h"
 #include "settingsholder.h"
 
-void TestLanguageI18n::basic() {
+void TestLanguageI18n::translations() {
   QVERIFY(LanguageI18N::languageExists("tlh"));
   QVERIFY(!LanguageI18N::languageExists("FOO"));
 
@@ -23,6 +23,17 @@ void TestLanguageI18n::basic() {
 
   // Non existing translation
   QVERIFY(LanguageI18N::translateLanguage("fi", "tlh").isEmpty());
+}
+
+void TestLanguageI18n::currencies() {
+  // Non existing language
+  QVERIFY(LanguageI18N::currencySymbolForLanguage("FOO", "FOO").isEmpty());
+
+  // Not existing currency
+  QVERIFY(LanguageI18N::currencySymbolForLanguage("tlh", "FOO").isEmpty());
+
+  // OK
+  QCOMPARE(LanguageI18N::currencySymbolForLanguage("tlh", "EUR"), "€");
 }
 
 static TestLanguageI18n s_testLanguageI18n;

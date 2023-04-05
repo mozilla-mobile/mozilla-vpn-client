@@ -100,9 +100,6 @@ class Localizer final : public QAbstractListModel {
   QString findLanguageCode(const QString& languageCode,
                            const QString& countryCode) const;
 
-  static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
-                                                const QLocale& currentLocale);
-
   void settingsChanged();
 
   bool createTranslator(const QLocale& locale);

@@ -195,12 +195,14 @@ const LanguageLocalizer = {
         wikiDataID: null,
         languageCode: language,
         translations: {},
+        currencies: {},
       }
     } else if (!languageData.wikiDataID) {
       console.log(
           '    Language found but we do not have a valid wikiDataID. Please update the file!');
       languageData.wikiDataID = null;
       languageData.translations = {};
+      languageData.currencies = {};
     }
 
     if (!languageData.wikiDataID) {
@@ -237,6 +239,32 @@ const LanguageLocalizer = {
           languageData.alternativeWikiDataID = answer.value;
           break;
         }
+      }
+    }
+
+    if (!languageData.IETFcode) {
+      while (true) {
+        let answer = await inquirer.prompt([{
+          type: 'confirm',
+          name: 'value',
+          message: 'No IETF ID found. Do you know it?',
+        }]);
+
+        if (!answer.value) {
+          break;
+        }
+
+        answer = await inquirer.prompt([{
+          name: 'value',
+          message: 'IETF language code:',
+        }]);
+
+        if (answer.value != '') {
+          languageData.IETFcode = answer.value;
+          break;
+        }
+
+        continue;
       }
     }
 
@@ -279,7 +307,25 @@ const LanguageLocalizer = {
       }
     }
 
+    let currencies = {};
+
+    if (languageData.IETFcode) {
+      const currencyData = await this.retrieveJson(
+          `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-numbers-modern/main/${
+              languageData.IETFcode}/currencies.json`);
+      Object.keys(currencyData.main[languageData.IETFcode].numbers.currencies)
+          .map(c => ({
+                 c,
+                 s: currencyData.main[languageData.IETFcode]
+                        .numbers.currencies[c]
+                        .symbol
+               }))
+          .filter(a => a.c != a.s)
+          .forEach(a => currencies[a.c] = a.s);
+    }
+
     languageData.translations = translations;
+    languageData.currencies = currencies;
     this.newData.push(languageData);
   },
 

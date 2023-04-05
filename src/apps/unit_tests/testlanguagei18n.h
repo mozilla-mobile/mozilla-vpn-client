@@ -8,5 +8,6 @@ class TestLanguageI18n : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void basic();
+  void translations();
+  void currencies();
 };

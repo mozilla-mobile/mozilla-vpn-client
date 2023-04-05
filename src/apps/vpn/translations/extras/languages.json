@@ -37,6 +37,16 @@
       "uk": "Болгарська мова",
       "zh": "保加利亞語",
       "zh_CN": "保加利亚语"
+    },
+    "IETFcode": "bg",
+    "currencies": {
+      "BGN": "лв.",
+      "EUR": "€",
+      "USD": "щ.д.",
+      "XAF": "FCFA",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -69,7 +79,8 @@
       "sv": "Korsikanska",
       "uk": "Корсиканська мова",
       "zh": "科西嘉语"
-    }
+    },
+    "currencies": {}
   },
   {
     "wikiDataID": "Q9056",
@@ -110,6 +121,29 @@
       "zh": "捷克語",
       "zh_CN": "捷克语",
       "zh_TW": "捷克語"
+    },
+    "IETFcode": "cs",
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "CSK": "Kčs",
+      "CZK": "Kč",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "TWD": "NT$",
+      "USD": "US$",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XEU": "ECU",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -150,6 +184,29 @@
       "uk": "Валлійська мова",
       "zh": "威爾士語",
       "zh_CN": "威尔士语"
+    },
+    "IETFcode": "cy",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -191,6 +248,34 @@
       "zh": "德语",
       "zh_CN": "德语",
       "zh_TW": "德語"
+    },
+    "IETFcode": "de",
+    "currencies": {
+      "ATS": "öS",
+      "AUD": "AU$",
+      "BGM": "BGK",
+      "BGO": "BGJ",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "DEM": "DM",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -226,6 +311,32 @@
       "sv": "Lågsorbiska",
       "uk": "Нижньолужицька мова",
       "zh": "下索布语"
+    },
+    "IETFcode": "dsb",
+    "currencies": {
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "PLN": "zł",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -266,6 +377,32 @@
       "zh": "希腊语",
       "zh_CN": "希腊语",
       "zh_TW": "希臘語"
+    },
+    "IETFcode": "el",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "GRD": "Δρχ",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -307,6 +444,31 @@
       "zh": "英語",
       "zh_CN": "英语",
       "zh_TW": "英語"
+    },
+    "IETFcode": "en",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -338,6 +500,31 @@
       "uk": "Канадська англійська",
       "zh": "加拿大英语",
       "zh_TW": "加拿大英語"
+    },
+    "IETFcode": "en-CA",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -374,6 +561,31 @@
       "zh": "英國英語",
       "zh_CN": "英国英语",
       "zh_TW": "英式英語"
+    },
+    "IETFcode": "en-GB",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -383,6 +595,14 @@
       "de": "Argentinisches Spanisch",
       "en": "Argentine Spanish",
       "it": "Spagnolo argentino"
+    },
+    "IETFcode": "es-AR",
+    "currencies": {
+      "ARS": "$",
+      "ESP": "₧",
+      "USD": "US$",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -425,7 +645,15 @@
       "zh_CN": "西班牙语",
       "zh_TW": "西班牙語"
     },
-    "alternativeWikiDataID": "Q1321"
+    "alternativeWikiDataID": "Q1321",
+    "currencies": {
+      "CLP": "$",
+      "ESP": "₧",
+      "USD": "US$",
+      "XPF": "CFPF",
+      "XXX": "¤"
+    },
+    "IETFcode": "es-CL"
   },
   {
     "wikiDataID": "Q7162990",
@@ -434,6 +662,7 @@
       "en": "Peninsular Spanish",
       "es": "Español de España",
       "fr": "Espagnol d'Espagne",
+      "it": "Spagnolo",
       "ja": "ヨーロッパのスペイン語",
       "pt": "Espanhol da Espanha",
       "ru": "Испанский язык в Испании",
@@ -441,6 +670,16 @@
       "zh": "西班牙語（西班牙）",
       "zh_CN": "半岛西班牙语",
       "zh_TW": "歐陸西班牙語"
+    },
+    "IETFcode": "es",
+    "currencies": {
+      "ESP": "₧",
+      "EUR": "€",
+      "THB": "฿",
+      "USD": "US$",
+      "VND": "₫",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -468,6 +707,15 @@
       "uk": "Іспанська мова в Мексиці",
       "zh": "墨西哥西班牙語",
       "zh_CN": "墨西哥西班牙语"
+    },
+    "IETFcode": "es-MX",
+    "currencies": {
+      "ESP": "₧",
+      "MRO": "MRU",
+      "MRU": "UM",
+      "MXN": "$",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -509,6 +757,33 @@
       "zh": "波斯語",
       "zh_CN": "波斯语",
       "zh_TW": "波斯語"
+    },
+    "IETFcode": "fa",
+    "currencies": {
+      "AFN": "؋",
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "$CA",
+      "CNY": "¥CN",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "$HK",
+      "ILS": "₪",
+      "INR": "₹",
+      "IRR": "ریال",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "$MX",
+      "NZD": "$NZ",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "$EC",
+      "XOF": "فرانک CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -550,6 +825,16 @@
       "zh": "芬兰语",
       "zh_CN": "芬兰语",
       "zh_TW": "芬蘭語"
+    },
+    "IETFcode": "fi",
+    "currencies": {
+      "EUR": "€",
+      "FIM": "mk",
+      "GBP": "£",
+      "JPY": "¥",
+      "USD": "$",
+      "XAF": "FCFA",
+      "XOF": "F CFA"
     }
   },
   {
@@ -591,6 +876,50 @@
       "zh": "法语",
       "zh_CN": "法语",
       "zh_TW": "法語"
+    },
+    "IETFcode": "fr",
+    "currencies": {
+      "ARS": "$AR",
+      "AUD": "$AU",
+      "BEF": "FB",
+      "BMD": "$BM",
+      "BND": "$BN",
+      "BRL": "R$",
+      "BZD": "$BZ",
+      "CAD": "$CA",
+      "CLP": "$CL",
+      "COP": "$CO",
+      "CYP": "£CY",
+      "EUR": "€",
+      "FJD": "$FJ",
+      "FKP": "£FK",
+      "FRF": "F",
+      "GBP": "£GB",
+      "GIP": "£GI",
+      "IEP": "£IE",
+      "ILP": "£IL",
+      "ILS": "₪",
+      "INR": "₹",
+      "ITL": "₤IT",
+      "KRW": "₩",
+      "LBP": "£LB",
+      "MTP": "£MT",
+      "MXN": "$MX",
+      "NAD": "$NA",
+      "NZD": "$NZ",
+      "RHD": "$RH",
+      "SBD": "$SB",
+      "SGD": "$SG",
+      "SRD": "$SR",
+      "TTD": "$TT",
+      "USD": "$US",
+      "UYU": "$UY",
+      "VND": "₫",
+      "WST": "$WS",
+      "XAF": "FCFA",
+      "XOF": "F CFA",
+      "XPF": "FCFP",
+      "XXX": "¤"
     }
   },
   {
@@ -627,7 +956,8 @@
       "zh_CN": "西弗里斯兰语",
       "zh_TW": "西菲士蘭語"
     },
-    "alternativeWikiDataID": "Q27175"
+    "alternativeWikiDataID": "Q27175",
+    "currencies": {}
   },
   {
     "wikiDataID": "Q13248",
@@ -663,6 +993,32 @@
       "uk": "Верхньолужицька мова",
       "zh": "上索布语",
       "zh_CN": "上索布语"
+    },
+    "IETFcode": "hsb",
+    "currencies": {
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "PLN": "zł",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -701,6 +1057,15 @@
       "zh": "匈牙利語",
       "zh_CN": "匈牙利语",
       "zh_TW": "匈牙利語"
+    },
+    "IETFcode": "hu",
+    "currencies": {
+      "HUF": "Ft",
+      "JPY": "¥",
+      "XAF": "FCFA",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -735,7 +1100,8 @@
       "sv": "Interlingua",
       "uk": "Інтерлінгва",
       "zh": "因特語"
-    }
+    },
+    "currencies": {}
   },
   {
     "wikiDataID": "Q9240",
@@ -773,6 +1139,31 @@
       "uk": "Індонезійська мова",
       "zh": "印度尼西亞語",
       "zh_TW": "印尼語"
+    },
+    "IETFcode": "id",
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "IDR": "Rp",
+      "ILS": "₪",
+      "INR": "Rs",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -811,6 +1202,19 @@
       "sv": "Isländska",
       "uk": "Ісландська мова",
       "zh": "冰岛语"
+    },
+    "IETFcode": "is",
+    "currencies": {
+      "CNY": "CN¥",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "ISK": "kr.",
+      "JPY": "JP¥",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -835,7 +1239,7 @@
       "hsb": "Italšćina",
       "hu": "Olasz",
       "ia": "Italiano",
-      "id": "Italia",
+      "id": "Bahasa Italia",
       "is": "Ítalska",
       "it": "Italiano",
       "ja": "イタリア語",
@@ -852,6 +1256,23 @@
       "zh": "意大利語",
       "zh_CN": "意大利语",
       "zh_TW": "義大利語"
+    },
+    "IETFcode": "it",
+    "currencies": {
+      "AUD": "A$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "ILS": "₪",
+      "NZD": "NZ$",
+      "PHP": "₱",
+      "THB": "฿",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -882,7 +1303,7 @@
       "ja": "日本語",
       "nl": "Japans",
       "oc": "Japonés",
-      "pa": "ਜਾਪਾਨੀ ਭਾਸ਼ਾ",
+      "pa": "ਜਾਪਾਨੀ",
       "pt": "Japonês",
       "pt_BR": "Língua japonesa",
       "ru": "Японский язык",
@@ -893,6 +1314,29 @@
       "zh": "日語",
       "zh_CN": "日语",
       "zh_TW": "日語"
+    },
+    "IETFcode": "ja",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "元",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "￥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "TWD": "NT$",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -917,7 +1361,7 @@
       "hsb": "Nižozemšćina",
       "hu": "Holland",
       "ia": "Nederlandese",
-      "id": "Belanda",
+      "id": "Bahasa Belanda",
       "is": "Hollenska",
       "it": "Olandese",
       "ja": "オランダ語",
@@ -934,6 +1378,31 @@
       "zh": "荷蘭語",
       "zh_CN": "荷兰语",
       "zh_TW": "荷蘭語"
+    },
+    "IETFcode": "nl",
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "C$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "FJD": "FJ$",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "SBD": "SI$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA"
     }
   },
   {
@@ -973,7 +1442,8 @@
       "sv": "Occitanska",
       "uk": "Окситанська мова",
       "zh": "奥克语"
-    }
+    },
+    "currencies": {}
   },
   {
     "wikiDataID": "Q58635",
@@ -1007,6 +1477,30 @@
       "uk": "Пенджабська мова",
       "zh": "旁遮普語",
       "zh_CN": "旁遮普语"
+    },
+    "IETFcode": "pa",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -1039,7 +1533,33 @@
       "uk": "Бразильський варіант португальської мови",
       "zh": "巴西葡萄牙语",
       "zh_CN": "巴西葡萄牙语"
-    }
+    },
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PTE": "Esc.",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
+    },
+    "IETFcode": "pt"
   },
   {
     "wikiDataID": "Q922399",
@@ -1055,6 +1575,7 @@
       "fr": "Portugais européen",
       "hu": "Európai portugál",
       "id": "Bahasa Portugis (versi Eropa)",
+      "it": "Portoghese europeo",
       "ja": "イベリアポルトガル語",
       "nl": "Europees-Portugees",
       "pt": "Português europeu",
@@ -1064,7 +1585,33 @@
       "zh": "歐洲葡萄牙語",
       "zh_CN": "歐洲葡萄牙语",
       "zh_TW": "歐洲葡萄牙語"
-    }
+    },
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "PTE": "​",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
+    },
+    "IETFcode": "pt-PT"
   },
   {
     "wikiDataID": "Q7737",
@@ -1094,7 +1641,7 @@
       "ja": "ロシア語",
       "nl": "Russisch",
       "oc": "Rus",
-      "pa": "ਰੂਸੀ ਭਾਸ਼ਾ",
+      "pa": "ਰੂਸੀ",
       "pt": "Russo",
       "pt_BR": "Russo",
       "ru": "Русский язык",
@@ -1105,6 +1652,35 @@
       "zh": "俄語",
       "zh_CN": "俄语",
       "zh_TW": "俄語"
+    },
+    "IETFcode": "ru",
+    "currencies": {
+      "AUD": "A$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "RUB": "₽",
+      "RUR": "р.",
+      "THB": "฿",
+      "TMT": "ТМТ",
+      "TWD": "NT$",
+      "UAH": "₴",
+      "USD": "$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "XXXX"
     }
   },
   {
@@ -1144,6 +1720,16 @@
       "sv": "Slovakiska",
       "uk": "Словацька мова",
       "zh": "斯洛伐克語"
+    },
+    "IETFcode": "sk",
+    "currencies": {
+      "EUR": "€",
+      "ILS": "NIS",
+      "MXN": "MX$",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -1185,6 +1771,31 @@
       "zh": "阿爾巴尼亞語",
       "zh_CN": "阿尔巴尼亚语",
       "zh_TW": "阿爾巴尼亞語"
+    },
+    "IETFcode": "sq",
+    "currencies": {
+      "ALL": "Lekë",
+      "AUD": "A$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "₩",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "THB": "฿",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -1225,6 +1836,33 @@
       "uk": "Шведська мова",
       "zh": "瑞典語",
       "zh_CN": "瑞典语"
+    },
+    "IETFcode": "sv",
+    "currencies": {
+      "BBD": "Bds$",
+      "BMD": "BM$",
+      "BRL": "BR$",
+      "BSD": "BS$",
+      "BZD": "BZ$",
+      "CAD": "CA$",
+      "DKK": "Dkr",
+      "DOP": "RD$",
+      "EEK": "Ekr",
+      "EGP": "EG£",
+      "EUR": "€",
+      "IEP": "IE£",
+      "ILS": "₪",
+      "ISK": "Ikr",
+      "JMD": "JM$",
+      "MXN": "MX$",
+      "NOK": "Nkr",
+      "SEK": "kr",
+      "USD": "US$",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -1265,6 +1903,16 @@
       "zh": "乌克兰语",
       "zh_CN": "乌克兰语",
       "zh_TW": "烏克蘭語"
+    },
+    "IETFcode": "uk",
+    "currencies": {
+      "JPY": "¥",
+      "UAH": "₴",
+      "UAK": "крб.",
+      "XAF": "FCFA",
+      "XOF": "F CFA",
+      "XPF": "CFPF",
+      "XXX": "¤"
     }
   },
   {
@@ -1292,6 +1940,30 @@
       "zh": "简体中文",
       "zh_CN": "简体中文",
       "zh_TW": "簡體中文"
+    },
+    "IETFcode": "zh-Hans",
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILR": "ILS",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "JP¥",
+      "KRW": "￦",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "TWD": "NT$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   },
   {
@@ -1317,6 +1989,29 @@
       "zh": "繁体中文",
       "zh_CN": "繁体中文",
       "zh_TW": "正體中文"
+    },
+    "IETFcode": "zh-Hant",
+    "currencies": {
+      "AUD": "AU$",
+      "BRL": "R$",
+      "CAD": "CA$",
+      "CNY": "CN¥",
+      "EUR": "€",
+      "GBP": "£",
+      "HKD": "HK$",
+      "ILS": "₪",
+      "INR": "₹",
+      "JPY": "¥",
+      "KRW": "￦",
+      "MXN": "MX$",
+      "NZD": "NZ$",
+      "TWD": "$",
+      "USD": "US$",
+      "VND": "₫",
+      "XAF": "FCFA",
+      "XCD": "EC$",
+      "XOF": "F CFA",
+      "XPF": "CFPF"
     }
   }
 ]
