@@ -12,12 +12,28 @@
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-                "dev.containers.mountWaylandSocket":false
+                "dev.containers.mountWaylandSocket":false,
+                "task.autoDetect": "off",
+				"task.allowAutomaticTasks": "off"
             },
 			"extensions": [
 		        "ms-vscode.cpptools",
                 "ms-vscode.cpptools-extension-pack"
             ]
 		}
-    }   
+    },
+    "mounts": [
+        // Move .tmp/ into a volume: 
+        // Given this is the default build dir, putting lot's of i/o this speeds up things DRASTICLY. 
+        // Remove this line if you want to inspect the output of .tmp locally. beware, a build takes 40 Min's on a threadripper without this.
+        "source=${localWorkspaceFolderBasename}-android_x86_64-tmp,target=${containerWorkspaceFolder}/.tmp,type=volume",
+        // Move .vscode into a volume - so that we can have tasks tailored for this container
+        "source=${localWorkspaceFolderBasename}-android_x86_64-vscode,target=${containerWorkspaceFolder}/.vscode,type=volume"
+    ],
+    "postAttachCommand": {
+        "copy_code_config": "cp -r ${containerWorkspaceFolder}/.devcontainer/android_x86_64/.vscode/* ${containerWorkspaceFolder}/.vscode",
+        // Nothing unique here, just use the arm64 one.
+        "copy_code_tasks": "cp -r ${containerWorkspaceFolder}/.devcontainer/android_arm64/.vscode/tasks.json ${containerWorkspaceFolder}/.vscode/tasks.json"
+    }
+   
 }

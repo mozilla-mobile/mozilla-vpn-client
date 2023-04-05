@@ -11,3 +11,4 @@
 !android_x86_64.build/*
 !wasm.build/*
 !wasm/*
+!*/**.vscode/*.json

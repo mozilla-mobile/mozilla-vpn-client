@@ -2,19 +2,37 @@
 {
 	"name": "WASM Dev Container",
     "image" : "cuddlebuild:wasm",
-	"mounts": [ ],
-    "containerEnv": {},
+
+    "containerEnv": {
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_EXPORT_COMPILE_COMMANDS":"true"
+    },
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-                "dev.containers.mountWaylandSocket":false
+                "dev.containers.mountWaylandSocket":false,
+				"task.autoDetect": "off",
+				"task.allowAutomaticTasks": "off"
             },
 			"extensions": [
 		        "ms-vscode.cpptools",
                 "ms-vscode.cpptools-extension-pack"
             ]
 		}
+    },
+    "mounts": [
+        // Move .tmp/ into a volume: 
+        // Given this is the default build dir, putting lot's of i/o this speeds up things DRASTICLY. 
+        // Remove this line if you want to inspect the output of .tmp locally. beware, a build takes 40 Min's on a threadripper without this.
+        "source=${localWorkspaceFolderBasename}-wasm-build,target=${containerWorkspaceFolder}/build,type=volume",
+        // Move .vscode into a volume - so that we can have tasks tailored for this container
+        "source=${localWorkspaceFolderBasename}-wasm-vscode,target=${containerWorkspaceFolder}/.vscode,type=volume",
+    ],
+    "postAttachCommand": {
+        "copy_vs_code": "cp -r ${containerWorkspaceFolder}/.devcontainer/wasm/.vscode/* ${containerWorkspaceFolder}/.vscode"
+		// TODO: Install Node JS for Functional Testing. 
     }   
 }
