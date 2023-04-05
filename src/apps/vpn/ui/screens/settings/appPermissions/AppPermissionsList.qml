@@ -96,19 +96,20 @@ ColumnLayout {
                     Layout.maximumWidth: MZTheme.theme.windowMargin * 2
                     Layout.alignment: Qt.AlignVCenter
                     color: MZTheme.theme.transparent
-                    radius: MZTheme.theme.cornerRadius
 
                     Image {
+                        height: MZTheme.theme.windowMargin * 2
+                        width: MZTheme.theme.windowMargin * 2
                         sourceSize.width: MZTheme.theme.windowMargin * 2
                         sourceSize.height: MZTheme.theme.windowMargin * 2
                         anchors.centerIn: parent
-                        asynchronous: true
                         fillMode:  Image.PreserveAspectFit
                         Component.onCompleted: {
                             if (appID !== "") {
                                 source = "image://app/"+appID
                             }
                         }
+                        
                     }
                 }
 
