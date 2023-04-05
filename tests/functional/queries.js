@@ -102,6 +102,8 @@ const screenHome = {
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
+    ALL_SERVERS_TAB: new QmlQueryComposer(
+      '//tabAllServers')
   }
 };
 
