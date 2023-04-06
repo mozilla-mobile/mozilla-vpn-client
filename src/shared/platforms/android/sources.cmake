@@ -11,7 +11,8 @@ target_sources(shared-sources INTERFACE
 if(ADJUST_TOKEN)
     message(Adjust SDK enabled)
     # SDK Token present, let's enable that.
-    add_compile_definitions("MZ_ADJUST")
+    target_compile_definitions(shared-sources INTERFACE MZ_ADJUST)
+
     target_sources(shared-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.h
