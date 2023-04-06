@@ -40,7 +40,7 @@ RUN apt-get -y install libfontconfig1-dev \
                        libxcb-xinerama0-dev \
                        libxcb-xkb-dev \
                        libxkbcommon-dev \
-                       libxkbcommon-x11-dev \
+                       libxkbcommon-x11-dev
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
