@@ -196,7 +196,7 @@ class MozillaVPN final : public App {
 
   void heartbeatCompleted(bool success);
 
-  void addCurrentDeviceAndRefreshData(bool refreshProducts);
+  void addCurrentDeviceAndRefreshData();
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);

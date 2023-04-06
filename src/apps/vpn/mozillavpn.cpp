@@ -57,7 +57,6 @@
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "tasks/products/taskproducts.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
@@ -371,7 +370,7 @@ void MozillaVPN::initialize() {
     Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 
-  scheduleRefreshDataTasks(true);
+  scheduleRefreshDataTasks();
   setUserState(UserAuthenticated);
   maybeStateMain();
 }
@@ -576,7 +575,7 @@ void MozillaVPN::completeActivation() {
     addCurrentDeviceAndRefreshData(true);
   } else {
     // Let's fetch user and server data.
-    scheduleRefreshDataTasks(true);
+    scheduleRefreshDataTasks();
   }
 
   // Finally we are able to activate the client.
@@ -1182,7 +1181,7 @@ void MozillaVPN::triggerHeartbeat() {
 void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
-  scheduleRefreshDataTasks(refreshProducts);
+  scheduleRefreshDataTasks();
 }
 
 bool MozillaVPN::validateUserDNS(const QString& dns) const {
@@ -1258,7 +1257,7 @@ void MozillaVPN::updateViewShown() {
   Updater::updateViewShown();
 }
 
-void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
+void MozillaVPN::scheduleRefreshDataTasks() {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
       new TaskServers(ErrorHandler::PropagateError),
@@ -1279,12 +1278,6 @@ void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {
     if (st == Controller::StateOff || st == Controller::StateInitializing) {
       TaskScheduler::scheduleTask(
           new TaskGetLocation(ErrorHandler::PropagateError));
-    }
-  }
-
-  if (refreshProducts) {
-    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      refreshTasks.append(new TaskProducts());
     }
   }
 
