@@ -54,3 +54,17 @@ qt-ios:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
+
+qt-linux:
+    description: "Linux QT compile Task"
+    run:
+        script: compile_qt_6_linux.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-linux
+        toolchain-artifact: public/build/qt6_linux.tar.xz
+    treeherder:
+        symbol: TL(qt-linux)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}
