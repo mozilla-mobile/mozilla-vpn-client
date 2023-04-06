@@ -113,7 +113,7 @@ Rectangle {
                 Rectangle {
                     anchors.fill: parent
                     border.width: MZTheme.theme.focusBorderWidth
-                    border.color: "black"
+                    border.color: MZTheme.theme.fontColor
                     color: MZTheme.theme.transparent
                     visible: VPNTutorial.playing && parent.focus
                     radius: root.radius
