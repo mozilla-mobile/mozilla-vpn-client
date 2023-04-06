@@ -29,7 +29,7 @@ for project in src/apps/*; do
   mkdir -p translations/generated/$project || die
 
   printn Y "$project - Generating strings... "
-  python3 cache/generate_strings.py src/apps/$project/translations/strings.yaml -o translations/generated/$project
+  python3 cache/generate_strings.py src/apps/$project/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated/$project
   print G "done."
 
   printn Y "$project - Generating a dummy PRO file... "
@@ -76,7 +76,11 @@ EOF
         python3 cache/generate_strings.py -o translations/generated/$project translations/generated/dummy_strings.yaml || die
       fi
     elif [ -f src/apps/$project/translations/strings.yaml ]; then
-      python3 cache/generate_strings.py -o translations/generated/$project src/apps/$project/translations/strings.yaml || die
+      EXTRA_STRINGS=
+      if [ -f src/shared/translations/strings.yaml ]; then
+        EXTRA_STRINGS=src/shared/translations/strings.yaml
+      fi
+      python3 cache/generate_strings.py -o translations/generated/$project src/apps/$project/translations/strings.yaml $EXTRA_STRINGS || die
     else
       die "Unable to find the strings.yaml"
     fi

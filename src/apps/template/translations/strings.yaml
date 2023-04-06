@@ -71,6 +71,3 @@
 # Remember! When you change this file, you must run the
 # `./scripts/utils/generate_strings.py` script to regenerate the string files.
 #
-
-inAppMessaging:
-  dateTimeYesterday: Yesterday

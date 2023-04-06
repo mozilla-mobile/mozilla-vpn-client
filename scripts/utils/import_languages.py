@@ -164,7 +164,9 @@ for project in os.listdir(os.path.join('src', 'apps')):
     title("Generate the Js/C++ string definitions...")
     try:
         subprocess.call([sys.executable, os.path.join('scripts', 'utils', 'generate_strings.py'),
-                         '-o', gendir, os.path.join('src', 'apps', project, 'translations', 'strings.yaml')])
+                         '-o', gendir,
+                         os.path.join('src', 'apps', project, 'translations', 'strings.yaml'),
+                         os.path.join('src', 'shared', 'translations', 'strings.yaml')])
     except Exception as e:
         print("generate_strings.py failed. Try with:\n\tpip3 install -r requirements.txt --user")
         print(e)

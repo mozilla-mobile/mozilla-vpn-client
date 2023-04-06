@@ -225,7 +225,7 @@ if __name__ == "__main__":
         metavar="SOURCE",
         type=str,
         action="store",
-        nargs="?",
+        nargs='+',
         help="YAML strings file to process",
     )
     parser.add_argument(
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.source is None:
+    if not args.source:
         exit("No source argument.")
 
     # If no output directory was provided, use the current directory.
@@ -246,7 +246,10 @@ if __name__ == "__main__":
         args.output = os.getcwd()
 
     # Parse the inputs for their sweet juicy strings.
-    strings = parseTranslationStrings(args.source)
+    strings = {}
+    for source in args.source:
+        substrings = parseTranslationStrings(source)
+        strings.update(substrings)
 
     # Render the strings into generated content.
     generateStrings(strings, args.output)
