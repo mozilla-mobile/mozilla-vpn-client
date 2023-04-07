@@ -32,8 +32,6 @@
         "query": "//serverListButton-btn{visible=true}",
         "tooltip": "Select your location",
         "before": [{
-          "op": "vpn_off"
-        },{
           "op": "vpn_location_set",
           "exitCountryCode": "it",
           "exitCity": "Milan",
