@@ -12,6 +12,10 @@ echo "Building QT"
 mkdir qt_dist
 ./vcs/scripts/utils/qt6_compile.sh qt-everywhere-src-$QT_VERSION $(pwd)/qt_dist
 
+echo "Bundling extra libs"
+SYSTEM_LIB_DIR="/usr/lib/$(dpkg-architecture -q DEB_BUILD_MULTIARCH)"
+cp -dv $(find ${SYSTEM_LIB_DIR} -name 'libicu*') qt_dist/lib/
+
 echo "Build Qt- Creating dist artifact"
 ls
 echo $UPLOAD_DIR
