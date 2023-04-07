@@ -10,6 +10,7 @@ RUN apt-get update -q && \
     apt-get -y install build-essential \
                        clang \
                        cmake \
+                       curl \
                        libclang-dev \
                        libgl1-mesa-dev \
                        ninja-build

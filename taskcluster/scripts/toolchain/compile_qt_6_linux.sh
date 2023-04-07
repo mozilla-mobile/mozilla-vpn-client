@@ -12,10 +12,9 @@ curl -o qt.tar.xz -L https://download.qt.io/archive/qt/$QT_MAJOR/$QT_VERSION/sin
 tar -xf qt.tar.xz
 
 echo "Building QT"
-./scripts/utils/qt6_compile.sh qt-everywhere-src-$QT_VERSION qt_dist
+./vcs/scripts/utils/qt6_compile.sh qt-everywhere-src-$QT_VERSION $(pwd)/qt_dist
 echo "Build Qt- Creating dist artifact"
 ls
 echo $PWD
-mv qt-everywhere-src-$QT_VERSION/qt_dist/* qt_dist
 mkdir -p ../../public/build
 tar -cJf ../../public/build/qt6_linux.tar.xz qt_dist/
