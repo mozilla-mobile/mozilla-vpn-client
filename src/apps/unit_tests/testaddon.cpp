@@ -311,6 +311,11 @@ void TestAddon::conditionWatcher_locale() {
       &parent, QStringList{"it", "fo_BAR"});
   QVERIFY(!!acw);
 
+  AddonConditionWatcher* acw2 = AddonConditionWatcherLocales::maybeCreate(
+      &parent, QStringList{"it", "fo_BAR"},
+      AddonConditionWatcherLocales::DoNotCheckMajorLanguageCode);
+  QVERIFY(!!acw2);
+
   QSignalSpy signalSpy(acw, &AddonConditionWatcher::conditionChanged);
   QCOMPARE(signalSpy.count(), 0);
   SettingsHolder::instance()->setLanguageCode("en");
@@ -324,27 +329,35 @@ void TestAddon::conditionWatcher_locale() {
 
   SettingsHolder::instance()->setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("it");
   QVERIFY(acw->conditionApplied());
+  QVERIFY(acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("ru");
   QVERIFY(!acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("it-IT");
   QVERIFY(acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("en");
   QVERIFY(!acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("it_RU");
   QVERIFY(acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("fo");
   QVERIFY(!acw->conditionApplied());
+  QVERIFY(!acw2->conditionApplied());
 
   SettingsHolder::instance()->setLanguageCode("fo_BAR");
   QVERIFY(acw->conditionApplied());
+  QVERIFY(acw2->conditionApplied());
 }
 
 void TestAddon::conditionWatcher_featuresEnabled() {
