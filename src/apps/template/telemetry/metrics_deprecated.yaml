@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these pings are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# For the Metrics YAML Registry Format, see the official documentation:
+# https://mozilla.github.io/glean/book/reference/yaml/metrics.html
+
+# All the samples are stored in a single category (`sample`) to simplify the
+# C++-JS integration which is currently based on QT signals. The samples are
+# "normalized" as const strings via a script (`scripts/utils/generate_glean.py
+# template`), and used in the C++ code to communicate with the JS code.
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0

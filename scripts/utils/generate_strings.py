@@ -238,7 +238,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # If no source was provided, find it relative to this script file.
     if args.source is None:
         exit("No source argument.")
 

@@ -12,7 +12,6 @@ MZCallout 0.1 MZCallout.qml
 MZCancelButton 0.1 MZCancelButton.qml
 MZCard 0.1 MZCard.qml
 MZCheckBox 0.1 MZCheckBox.qml
-MZCheckBoxAlert 0.1 MZCheckBoxAlert.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
 MZChevron 0.1 MZChevron.qml
 MZClickableRow 0.1 MZClickableRow.qml
@@ -54,8 +53,6 @@ MZRadioDelegate 0.1 MZRadioDelegate.qml
 MZScreenBase 0.1 MZScreenBase.qml
 MZSegmentedNavigation 0.1 MZSegmentedNavigation.qml
 MZSegmentedToggle 0.1 MZSegmentedToggle.qml
-MZSemiMonoLabel 0.1 MZSemiMonoLabel.qml
-MZServerUnavailablePopup 0.1 MZServerUnavailablePopup.qml
 MZSettingsItem 0.1 MZSettingsItem.qml
 MZSettingsToggle 0.1 MZSettingsToggle.qml
 MZSignOut 0.1 MZSignOut.qml
@@ -69,7 +66,6 @@ MZSystemAlert 0.1 MZSystemAlert.qml
 MZTabNavigation 0.1 MZTabNavigation.qml
 MZTextBlock 0.1 MZTextBlock.qml
 MZTimer 0.1 MZTimer.qml
-MZToggle 0.1 MZToggle.qml
 MZToggleCard 0.1 MZToggleCard.qml
 MZToolTip 0.1 MZToolTip.qml
 MZTutorialCard 0.1 MZTutorialCard.qml

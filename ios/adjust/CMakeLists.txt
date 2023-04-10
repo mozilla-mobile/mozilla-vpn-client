@@ -4,7 +4,7 @@
 
 add_library(adjust STATIC)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(adjust-sources PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 

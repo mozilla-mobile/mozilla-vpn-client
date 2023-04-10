@@ -9,7 +9,6 @@
         <file>resources/avatar-delete-account.svg</file>
         <file>resources/back-dark.svg</file>
         <file>resources/back.svg</file>
-        <file>resources/bandwidth.svg</file>
         <file>resources/buttonLoader.svg</file>
         <file>resources/checkmark.svg</file>
         <file>resources/checkmark-green.svg</file>
@@ -19,15 +18,9 @@
         <file>resources/close-darker.svg</file>
         <file>resources/close-dark.svg</file>
         <file>resources/close-white.svg</file>
-        <file>resources/connection-info.svg</file>
-        <file>resources/connection.svg</file>
-        <file>resources/connection-green.svg</file>
-        <file>resources/download.svg</file>
         <file>resources/delete.svg</file>
         <file>resources/delete-white.svg</file>
         <file>resources/delete-gray.svg</file>
-        <file>resources/devicesLimit.svg</file>
-        <file>resources/devicesRemove.svg</file>
         <file>resources/down.svg</file>
         <file>resources/dropdown-closed.svg</file>
         <file>resources/externalLink.svg</file>
@@ -37,28 +30,18 @@
         <file>resources/fonts/InterSemiBold.otf</file>
         <file>resources/fonts/Metropolis.otf</file>
         <file>resources/fonts/Metropolis-SemiBold.otf</file>
-        <file>resources/gift-dark.svg</file>
-        <file>resources/globe.svg</file>
-        <file>resources/Icon1024.png</file>
-        <file>resources/location-dark.svg</file>
-        <file>resources/magic-dark.svg</file>
         <file>resources/open-in-new.svg</file>
         <file>resources/plus.svg</file>
         <file>resources/refresh.svg</file>
         <file>resources/search.svg</file>
-        <file>resources/server-unavailable.svg</file>
         <file>resources/settings.svg</file>
         <file>resources/settings-white.svg</file>
         <file>resources/shaders/baked/animatedRings.frag.qsb</file>
         <file>resources/shaders/src/animatedRings.frag</file>
-        <file>resources/shield-off.svg</file>
-        <file>resources/shield-on.svg</file>
         <file>resources/spinner.svg</file>
-        <file>resources/switching.svg</file>
         <file>resources/update-lock.svg</file>
         <file>resources/updateStatusUpdateAvailable.svg</file>
         <file>resources/updateStatusUpToDate.svg</file>
-        <file>resources/upload.svg</file>
         <file>resources/verification-code.svg</file>
         <file>resources/warning-dark-orange.svg</file>
         <file>resources/warning-orange.svg</file>

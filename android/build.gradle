@@ -16,7 +16,7 @@ buildscript {
         classpath SharedDependencies.com_android_tools_build_gradle
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.3.1"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.4.3"
     }
 }
 

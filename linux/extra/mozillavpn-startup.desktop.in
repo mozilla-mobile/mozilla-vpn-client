@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=MozillaVPN
-Version=@CMAKE_PROJECT_VERSION@
+Version=1.5
 Exec=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn ui -m -s
 Comment=A fast, secure and easy to use VPN. Built by the makers of Firefox.
 Type=Application

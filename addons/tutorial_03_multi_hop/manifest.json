@@ -56,7 +56,7 @@
       },
       {
         "id": "s4",
-        "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
+        "query": "//serverCountryList/{hasAvailableCities=true}[0]//serverCityList/{isAvailable=true}[0]{visible=true}",
         "tooltip": "Select a new exit location",
         "before": [{
           "op": "property_set",
@@ -65,13 +65,13 @@
           "value": 0
         },{
           "op": "property_set",
-          "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]{visible=true}",
+          "query": "//serverCountryList/{hasAvailableCities=true}[0]{visible=true}",
           "property": "cityListVisible",
           "value": true
         }],
         "next": {
           "op": "signal",
-          "query_emitter": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
+          "query_emitter": "//serverCountryList/{hasAvailableCities=true}[0]//serverCityList/{isAvailable=true}[0]{visible=true}",
           "signal": "visibleChanged"
         }
       },

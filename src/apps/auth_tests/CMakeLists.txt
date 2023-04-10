@@ -97,9 +97,4 @@ foreach(filename ${UTEST_SOURCES})
     endforeach()
 endforeach()
 
-# Unit test mock resources
-target_sources(app_auth_tests PRIVATE
-    auth.qrc
-)
-
 qt_finalize_target(app_auth_tests)

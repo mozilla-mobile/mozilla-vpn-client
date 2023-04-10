@@ -13,7 +13,7 @@ set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
 add_library(iosglean SHARED)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
@@ -76,18 +76,18 @@ target_sources(iosglean PUBLIC
 # and build the internal Glean metrics file
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env
-        ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml 
+        ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml
             -- generate --language swift --out-dir ${CMAKE_CURRENT_BINARY_DIR}/glean
             ${GLEAN_VENDORED_PATH}/glean-core/src/glean.udl
-    COMMAND ${CMAKE_COMMAND} -E env     
-            SOURCE_ROOT=${CMAKE_CURRENT_BINARY_DIR} 
-            PROJECT=${BUILD_IOS_APP_IDENTIFIER} 
-        ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
+    COMMAND ${CMAKE_COMMAND} -E env
+            SOURCE_ROOT=${CMAKE_CURRENT_BINARY_DIR}
+            PROJECT=${BUILD_IOS_APP_IDENTIFIER}
+        ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh
             -o ${CMAKE_CURRENT_BINARY_DIR}/glean/generated --allow-reserved
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND_ERROR_IS_FATAL ANY
 )
-target_sources(iosglean PRIVATE 
+target_sources(iosglean PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.modulemap
     ${CMAKE_CURRENT_BINARY_DIR}/glean/glean.swift
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/Metrics.swift
@@ -96,15 +96,37 @@ target_sources(iosglean PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
+list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
+list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings.yaml)
+list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
+list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics.yaml)
+
+get_filename_component(APPS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
+file(GLOB APPS_NAMES LIST_DIRECTORIES true RELATIVE ${APPS_DIR} ${APPS_DIR}/*)
+foreach(APP ${APPS_NAMES})
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+    endif()
+endforeach()
+
 # We execute this as a command and not a process,
-# because different from the Glean internal stuff 
-# the VPN metrics and pings files can change constantly 
+# because different from the Glean internal stuff
+# the VPN metrics and pings files can change constantly
 # and we want to re-run the command for each build
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    DEPENDS ${CMAKE_SOURCE_DIR}/glean/metrics.yaml ${CMAKE_SOURCE_DIR}/glean/pings.yaml
+    DEPENDS ${PINGS_LIST} ${METRICS_LIST}
     COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh -o ${CMAKE_CURRENT_BINARY_DIR}/generated
-        ${CMAKE_SOURCE_DIR}/glean/metrics.yaml ${CMAKE_SOURCE_DIR}/glean/pings.yaml
+        ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
     COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
 )

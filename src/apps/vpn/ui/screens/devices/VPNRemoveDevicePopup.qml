@@ -21,7 +21,7 @@ MZSimplePopup {
     anchors.centerIn: Overlay.overlay
     topPadding: 24
     showCloseButton: false
-    imageSrc: "qrc:/nebula/resources/devicesRemove.svg"
+    imageSrc: "qrc:/ui/resources/devicesRemove.svg"
     imageSize: Qt.size(116, 80)
     //% "Remove device?"
     title: qsTrId("vpn.devices.removeDeviceQuestion")

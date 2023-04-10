@@ -43,6 +43,10 @@ bool AddonConditionWatcherLocales::conditionApplied() const {
   QString code = Localizer::instance()->languageCodeOrSystem();
   Q_ASSERT(!code.isEmpty());
 
+  if (m_locales.contains(code)) {
+    return true;
+  }
+
   code = Localizer::majorLanguageCode(code);
   return m_locales.contains(code.toLower());
 }

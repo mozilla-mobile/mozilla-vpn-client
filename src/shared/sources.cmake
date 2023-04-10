@@ -4,7 +4,7 @@
 
 add_library(shared-sources INTERFACE)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
 endif()
 
@@ -231,6 +231,7 @@ target_sources(shared-sources INTERFACE
 
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/license.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/resources.qrc
 )
 
 # Signal handling for unix platforms

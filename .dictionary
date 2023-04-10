@@ -52,6 +52,7 @@ SettingsHolder
 Speedtest
 TBD
 TODO
+TORTIOUS
 TOTP
 TP
 UniFFI
@@ -83,6 +84,7 @@ boolean
 bugfixes
 byteorder
 cancelled
+cldr
 cmake
 codebase
 conda
@@ -117,6 +119,7 @@ json
 libpolkit
 licensable
 licensor
+linter
 linuxdaemon
 llvm
 loopback
@@ -184,6 +187,7 @@ wgutils
 wifi
 wireguard
 xcode
+xcodes
 xcodeproj
 xconfig
 yaml

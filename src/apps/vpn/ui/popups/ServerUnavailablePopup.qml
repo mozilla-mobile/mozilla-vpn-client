@@ -7,13 +7,15 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
+import compat 0.1
+import components 0.1
 
 MZSimplePopup {
     id: root
     property bool receivedPing: false;
 
     anchors.centerIn: parent
-    imageSrc: "qrc:/nebula/resources/server-unavailable.svg"
+    imageSrc: "qrc:/ui/resources/server-unavailable.svg"
     imageSize: Qt.size(80, 80)
     title: MZI18n.ServerUnavailableModalHeaderText
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message

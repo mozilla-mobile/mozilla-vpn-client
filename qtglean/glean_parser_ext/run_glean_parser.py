@@ -109,15 +109,51 @@ if __name__ == "__main__":
     if args.filename is None:
         print("Generating Mozilla VPN Glean files.")
 
-        yaml_files_path = os.path.join(workspace_root, "glean")
-        qtglean_yaml_files_path = os.path.join(workspace_root, "qtglean")
-
         os.makedirs(args.outdir, exist_ok=True)
+
+        pings_files = []
+        metrics_files = []
+        for project in os.listdir(os.path.join(workspace_root, "src", "apps")):
+            telemetry_path = os.path.join(workspace_root, "src", "apps", project, "telemetry")
+            if os.path.isdir(telemetry_path):
+                pings_file = os.path.join(telemetry_path, "pings.yaml")
+                if os.path.isfile(pings_file):
+                    pings_files.append(pings_file)
+
+                pings_file = os.path.join(telemetry_path, "pings_deprecated.yaml")
+                if os.path.isfile(pings_file):
+                    pings_files.append(pings_file)
+
+                metrics_file = os.path.join(telemetry_path, "metrics.yaml")
+                if os.path.isfile(metrics_file):
+                    metrics_files.append(metrics_file)
+
+                metrics_file = os.path.join(telemetry_path, "metrics_deprecated.yaml")
+                if os.path.isfile(metrics_file):
+                    metrics_files.append(metrics_file)
+
+        telemetry_path = os.path.join(workspace_root, "src", "shared", "telemetry")
+        if os.path.isdir(telemetry_path):
+            pings_file = os.path.join(telemetry_path, "pings.yaml")
+            if os.path.isfile(pings_file):
+                pings_files.append(pings_file)
+
+            pings_file = os.path.join(telemetry_path, "pings_deprecated.yaml")
+            if os.path.isfile(pings_file):
+                pings_files.append(pings_file)
+
+            metrics_file = os.path.join(telemetry_path, "metrics.yaml")
+            if os.path.isfile(metrics_file):
+                metrics_files.append(metrics_file)
+
+            metrics_file = os.path.join(telemetry_path, "metrics_deprecated.yaml")
+            if os.path.isfile(metrics_file):
+                metrics_files.append(metrics_file)
 
         # Generate C++ header files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.h"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.h"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "pings.h"), pings_files],
+            [os.path.join(args.outdir, "metrics.h"), metrics_files],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -125,8 +161,8 @@ if __name__ == "__main__":
 
         # Generate C++ source files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.cpp"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.cpp"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "pings.cpp"), pings_files],
+            [os.path.join(args.outdir, "metrics.cpp"), metrics_files],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:
@@ -134,8 +170,8 @@ if __name__ == "__main__":
 
         # Generate Rust files
         for [ output, input ] in [
-            [os.path.join(args.outdir, "pings.rs"), [os.path.join(yaml_files_path, "pings.yaml"), os.path.join(qtglean_yaml_files_path, "pings.yaml")]],
-            [os.path.join(args.outdir, "metrics.rs"), [os.path.join(yaml_files_path, "metrics.yaml"), os.path.join(qtglean_yaml_files_path, "metrics.yaml")]],
+            [os.path.join(args.outdir, "pings.rs"), pings_files],
+            [os.path.join(args.outdir, "metrics.rs"), metrics_files],
         ]:
             print("Generating {} from {}".format(output, input))
             with open(output, 'w+', encoding='utf-8') as f:

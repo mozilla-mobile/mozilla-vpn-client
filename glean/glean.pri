@@ -33,9 +33,11 @@ gleandefs.output = $$PWD/telemetry/gleansample.h
 gleandefs.commands = @echo Generating gleansample.h from ${QMAKE_FILE_IN} \
     && $$PYTHON_BIN $$PWD/../scripts/utils/generate_gleandefs.py \
         -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_IN} -f cpp
+gleandefs.CONFIG = combine
 gleandefs.variable_out = HEADERS
 
-GLEAN_METRICS = $$PWD/metrics.yaml
+GLEAN_METRICS = $$PWD/../src/apps/vpn/telemetry/metrics_deprecated.yaml \
+                $$PWD/../src/shared/telemetry/metrics_deprecated.yaml
 QMAKE_EXTRA_COMPILERS += gleandefs
 
 QML_IMPORT_PATH += $$PWD
