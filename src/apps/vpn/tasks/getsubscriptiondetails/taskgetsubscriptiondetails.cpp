@@ -110,7 +110,7 @@ void TaskGetSubscriptionDetails::runInternal() {
 
 void TaskGetSubscriptionDetails::maybeComplete(bool status) {
   if (!status) {
-    MozillaVPN::instance()->subscriptionData()->reset();
+    MozillaVPN::instance()->subscriptionData()->resetData();
   }
 
   emit operationCompleted(status);
