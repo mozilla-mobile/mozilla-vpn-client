@@ -8,7 +8,8 @@ const vpn = require('./helper.js');
 const { SubscriptionDetails } = require('./servers/guardian_endpoints.js');
 const { env, TestingEnvironments } = require('./helper.js');
 
-describe('Addons', function () {
+describe('Addons', function() {
+  this.timeout(3000000);
   this.ctx.authenticationNeeded = true;
 
   it('Empty addon index', async () => {
@@ -164,22 +165,56 @@ describe('Addons', function () {
   describe('test message_subscription_expiring addon condition', async () => {
     const testCases = [
       ...Array.from(
-        { length: 7 },
-        // 1 to 7 days out from expiring.
-        (_, i) => [Date.now() + 1000 * 60 * 60 * 24 * (i + 1), true, `is ${i + 1} day(s) away`]
-      ),
+          {length: 7},
+          // 1 to 7 days out from expiring.
+          (_, i) =>
+              [true, () => Date.now() + 1000 * 60 * 60 * 24 * (i + 1), true,
+               `is ${i + 1} day(s) away (expiring)`]),
+      ...Array.from(
+          {length: 7},
+          // 1 to 7 days out from auto-renewing
+          (_, i) =>
+              [false, () => Date.now() + 1000 * 60 * 60 * 24 * (i + 1), false,
+               `is ${i + 1} day(s) away (renewing)`]),
       // Seven days out + five minutes  from expiring.
-      [Date.now() + 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 5, false, "is 7 days and five minutes away"],
+      [
+        true, () => Date.now() + 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 5, false,
+        'is 7 days and five minutes away'
+      ],
+      // Seven days out + five minutes  from auto-renewing
+      [
+        false, () => Date.now() + 1000 * 60 * 60 * 24 * 7 + 1000 * 60 * 5,
+        false, 'is 7 days and five minutes away'
+      ],
       // Eight days from expiring.
-      [Date.now() + 1000 * 60 * 60 * 24 * 8, false, "is 8 days away"],
+      [
+        true, () => Date.now() + 1000 * 60 * 60 * 24 * 8, false,
+        'is 8 days away'
+      ],
+      // Eight days from auto-renewing
+      [
+        false, () => Date.now() + 1000 * 60 * 60 * 24 * 8, false,
+        'is 8 days away'
+      ],
       // One month from expiring.
-      [Date.now() + 1000 * 60 * 60 * 24 * 30, false, "is one month away"],
+      [
+        true, () => Date.now() + 1000 * 60 * 60 * 24 * 30, false,
+        'is one month away'
+      ],
+      // One month from auto-renewing
+      [
+        false, () => Date.now() + 1000 * 60 * 60 * 24 * 30, false,
+        'is one month away'
+      ],
       // Literally, has just expired.
-      [Date.now(), false, "just happened"],
+      [true, () => Date.now(), false, 'just happened'],
       // Has been expired for a day.
-      [Date.now() - 1000 * 60 * 60 * 24, false, "was yesterday"],
+      [true, () => Date.now() - 1000 * 60 * 60 * 24, false, 'was yesterday'],
       // Has been expired for 30 days.
-      [Date.now() - 1000 * 60 * 60 * 24 * 30, false, "was last month"],
+      [
+        true, () => Date.now() - 1000 * 60 * 60 * 24 * 30, false,
+        'was last month'
+      ],
     ];
 
     const getNextTestCase = testCases[Symbol.iterator]();
@@ -188,9 +223,10 @@ describe('Addons', function () {
       const nextTestCase = getNextTestCase.next().value;
 
       if (nextTestCase) {
-        const [expiresOn] = nextTestCase;
+        const [expiring, expiresOn] = nextTestCase;
         // We are faking a Stripe subscription, so this value is expected to be in seconds.
-        mockDetails.subscription.current_period_end = expiresOn / 1000;
+        mockDetails.subscription.current_period_end = expiresOn() / 1000;
+        mockDetails.subscription.cancel_at_period_end = expiring;
 
         ctx.guardianSubscriptionDetailsCallback = () => {
           ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails'].status = 200;
@@ -208,7 +244,7 @@ describe('Addons', function () {
     setNextSubscriptionExpiry(this.ctx);
     afterEach(() => setNextSubscriptionExpiry(this.ctx));
 
-    testCases.forEach(([_, shouldBeAvailable, testCase]) => {
+    testCases.forEach(([_1, _2, shouldBeAvailable, testCase]) => {
       it(`message display is correct when subscription expiration ${testCase}`, async () => {
         // Load all production addons.
         // These are loaded all together, so we don't know the exact number of addons.
@@ -220,15 +256,89 @@ describe('Addons', function () {
                          'Mozilla.Shared', 'MZAddonManager', 'count'),
                      10) > 0));
 
-
         // Check if the message is there or not.
         await vpn.waitForCondition(async () => {
           const loadedMessages = await vpn.messages();
-          const isSubscriptionExpiringMessageAvailable = loadedMessages.includes("message_subscription_expiring");
+          const isSubscriptionExpiringMessageAvailable =
+              loadedMessages.includes('message_subscription_expiring');
           return shouldBeAvailable ? isSubscriptionExpiringMessageAvailable : !isSubscriptionExpiringMessageAvailable;
         });
       });
     });
+
+    it(`message display is correct when subscription expiration (no addon reload)`,
+       async () => {
+         if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
+           await vpn.flipFeatureOn('subscriptionManagement');
+         }
+         if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
+           await vpn.flipFeatureOff('accountDeletion');
+         }
+
+         // Load all production addons.
+         // These are loaded all together, so we don't know the exact number of
+         // addons.
+         await vpn.resetAddons('prod');
+         await vpn.waitForCondition(
+             async () =>
+                 (parseInt(
+                      await vpn.getMozillaProperty(
+                          'Mozilla.Shared', 'MZAddonManager', 'count'),
+                      10) > 0));
+
+         for (const testCase of testCases) {
+           const [expiring, expiresOn, shouldBeAvailable, message] = testCase;
+
+           console.log(` - Running ${message}`);
+
+           const mockDetails = {...SubscriptionDetails};
+           mockDetails.subscription.current_period_end = expiresOn() / 1000;
+           mockDetails.subscription.cancel_at_period_end = expiring;
+
+           this.ctx.guardianSubscriptionDetailsCallback = () => {
+             this.ctx.guardianOverrideEndpoints
+                 .GETs['/api/v1/vpn/subscriptionDetails']
+                 .status = 200;
+             this.ctx.guardianOverrideEndpoints
+                 .GETs['/api/v1/vpn/subscriptionDetails']
+                 .body = mockDetails;
+           };
+
+
+           await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE.visible());
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+                   'text', 'Test'));
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+                   'text', 'test@mozilla.com'));
+           await vpn.waitForQueryAndClick(
+               queries.screenSettings.USER_PROFILE.visible());
+           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+           await vpn.waitForQuery(
+               queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+
+           const loadedMessages = await vpn.messages();
+           assert.equal(
+               shouldBeAvailable,
+               loadedMessages.includes('message_subscription_expiring'));
+
+           await vpn.waitForQueryAndClick(
+               queries.screenSettings.BACK.visible());
+           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE.visible());
+
+           await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+         }
+       });
   });
 
   it('Translations threshold', async () => {
