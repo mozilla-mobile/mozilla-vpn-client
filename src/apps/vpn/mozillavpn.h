@@ -244,7 +244,7 @@ class MozillaVPN final : public App {
 
   void errorHandled();
 
-  void scheduleRefreshDataTasks(bool refreshProducts);
+  void scheduleRefreshDataTasks();
 
   static void registerUrlOpenerLabels();
 
