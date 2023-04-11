@@ -107,7 +107,7 @@ MZFlickable {
 
         MZButton {
             id: subscribeNow
-            objectName: "vpnSubscriptionNeededView"
+            objectName: "vpnSubscriptionNeededButton"
 
             text: MZI18n.PurchaseSubscribeNow
 

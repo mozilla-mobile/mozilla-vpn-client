@@ -5,6 +5,110 @@
 const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
+const {validators} = require('./servers/guardian_endpoints.js');
+
+const SUBSCRIPTION_DETAILS = {
+  plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
+  payment: {
+    payment_provider: 'stripe',
+    payment_type: 'credit',
+    last4: '1234',
+    exp_month: 12,
+    exp_year: 2022,
+    brand: 'visa',
+  },
+  subscription: {
+    _subscription_type: 'web',
+    created: 1,
+    current_period_end: 2,
+    cancel_at_period_end: true,
+    status: 'active'
+  },
+};
+
+// describe('Subscription manager', function() {
+//   describe('Expired subscription', function() {
+//     this.timeout(30000);
+
+//     // There are two constants defined below: userDataActive and
+//     // userDataInactive which are used to override the Guardian endpoint to mock
+//     // a subscription expiration by changing the VPN subscription from true to
+//     // false. Because this override should be happening on the same device, the
+//     // device is defined here and used later in both userDataActive and
+//     // userDataInactive. Simply copying the same device definition in both cases
+//     // will actually result in two distinct objects, causing the test to fail.
+//     const device = {
+//       name: 'Current device',
+//       unique_id: '',
+//       pubkey: '',
+//       ipv4_address: '127.0.0.1',
+//       ipv6_address: '::1',
+//       created_at: new Date().toISOString()
+//     };
+
+//     const userDataActive = {
+//       avatar: '',
+//       display_name: 'Test',
+//       email: 'test@mozilla.com',
+//       max_devices: 5,
+//       subscriptions: {vpn: {active: true}},
+//       devices: [device],
+//     };
+//     const userDataInactive = {
+//       avatar: '',
+//       display_name: 'Test test',
+//       email: 'test@mozilla.com',
+//       max_devices: 5,
+//       subscriptions: {vpn: {active: false}},
+//       devices: [device]
+//     };
+
+//     this.ctx.guardianOverrideEndpoints = {
+//       GETs: {
+//         '/api/v1/vpn/account': {
+//           status: 200,
+//           requiredHeaders: ['Authorization'],
+//           body: userDataActive
+//         }
+//       },
+//       POSTs: {
+//         '/api/v1/vpn/device': {
+//           status: 201,
+//           requiredHeaders: ['Authorization'],
+//           bodyValidator: validators.guardianDevice,
+//           callback: (req) => {
+//             device.name = req.body.name;
+//             device.pubkey = req.body.pubkey;
+//             device.unique_id = req.body.unique_id;
+//           },
+//           body: {}
+//         },
+//       }
+//     };
+
+//     it.only('Purchase subscription and authenticate in browser',
+//        async () => {
+//          // This test verifies the case where a user is logged in
+//          // but the VPN is off when their subscription expires.
+//          // When they try to turn the VPN on, they get the
+//          // "Subscribe to Mozilla VPN" screen.
+
+//          await vpn.authenticateInApp(true, true);
+
+//          // Step 1: Override the Guardian endpoint to mock an expired
+//          // subscription.
+//          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+//              userDataInactive;
+
+//          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+//          await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+//          // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+//          await vpn.waitForQuery(
+//              queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+//        });
+//   });
+// });
 
 describe('User authentication in browser', function() {
   this.timeout(60000);
@@ -12,6 +116,109 @@ describe('User authentication in browser', function() {
   beforeEach(async () => {
     await vpn.flipFeatureOff('inAppAuthentication');
   })
+
+  describe('Expired subscription', function() {
+    this.timeout(30000);
+
+    // There are two constants defined below: userDataActive and
+    // userDataInactive which are used to override the Guardian endpoint to mock
+    // a subscription expiration by changing the VPN subscription from true to
+    // false. Because this override should be happening on the same device, the
+    // device is defined here and used later in both userDataActive and
+    // userDataInactive. Simply copying the same device definition in both cases
+    // will actually result in two distinct objects, causing the test to fail.
+    const device = {
+      name: 'Current device',
+      unique_id: '',
+      pubkey: '',
+      ipv4_address: '127.0.0.1',
+      ipv6_address: '::1',
+      created_at: new Date().toISOString()
+    };
+
+    const userDataActive = {
+      avatar: '',
+      display_name: 'Test',
+      email: 'test@mozilla.com',
+      max_devices: 5,
+      subscriptions: {vpn: {active: true}},
+      devices: [device],
+    };
+    const userDataInactive = {
+      avatar: '',
+      display_name: 'Test test',
+      email: 'test@mozilla.com',
+      max_devices: 5,
+      subscriptions: {vpn: {active: false}},
+      devices: [device]
+    };
+
+    this.ctx.guardianOverrideEndpoints = {
+      GETs: {
+        '/api/v1/vpn/account': {
+          status: 200,
+          requiredHeaders: ['Authorization'],
+          body: userDataInactive
+        }
+      },
+      POSTs: {
+        '/api/v1/vpn/device': {
+          status: 201,
+          requiredHeaders: ['Authorization'],
+          bodyValidator: validators.guardianDevice,
+          callback: (req) => {
+            device.name = req.body.name;
+            device.pubkey = req.body.pubkey;
+            device.unique_id = req.body.unique_id;
+          },
+          body: {}
+        },
+      }
+    };
+
+    it.only('Purchase subscription and authenticate in browser',
+       async () => {
+        await vpn.waitForInitialView();
+        await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+
+        // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+         await vpn.waitForQuery(
+             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+
+        // Click on subscribe now
+        // await vpn.clickOnQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+        await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+        await vpn.waitForQueryAndClick(
+          queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+
+          // Mock in browser sub authentication (code from helper.js)
+          // We don't really want to go through the authentication flow because we
+          // are mocking everything. So this next chunk of code manually
+          // makes a call to the DesktopAuthenticationListener to mock
+          // a successful authentication in browser.
+          const url = await this.getLastUrl();
+          const authListenerPort = (new URL(url)).searchParams.get('port');
+          const options = {
+            // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+            // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+            hostname: '127.0.0.1',
+            port: parseInt(authListenerPort, 10),
+            path: '/?code=the_code',
+            method: 'GET',
+          };
+
+          await new Promise(resolve => {
+            const req = http.request(options, res => {});
+            req.on('close', resolve);
+            req.on('error', error => {
+              throw new Error(
+                  `Unable to connect to ${urlObj.hostname} to complete the
+                  auth. ${error.name}, ${error.message}, ${error.stack}`);
+            });
+            req.end();
+          });
+       });
+  });
 
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForInitialView();
