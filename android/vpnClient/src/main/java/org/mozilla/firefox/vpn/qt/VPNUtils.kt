@@ -7,18 +7,10 @@
 package org.mozilla.firefox.vpn.qt
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Log
-import java.io.IOException
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {

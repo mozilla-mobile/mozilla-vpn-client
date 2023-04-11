@@ -4,31 +4,26 @@
 
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
-import android.content.Context
 import android.app.Activity
-import android.content.Intent
-import android.util.Log
-import mozilla.telemetry.glean.BuildInfo
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
-import org.bouncycastle.asn1.ASN1Sequence
-import org.bouncycastle.asn1.pkcs.RSAPublicKey
-import java.security.KeyFactory
-import java.security.Signature
-import java.security.spec.RSAPublicKeySpec
-import java.util.*
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
+import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
+import org.bouncycastle.asn1.ASN1Sequence
+import org.bouncycastle.asn1.pkcs.RSAPublicKey
 import java.io.IOException
+import java.security.KeyFactory
+import java.security.Signature
+import java.security.spec.RSAPublicKeySpec
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import java.util.Calendar
 
 // Companion for Utils.cpp
@@ -54,6 +49,7 @@ object Utils {
             false
         }
     }
+
     @SuppressLint("NewApi")
     @JvmStatic
     fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
@@ -75,7 +71,7 @@ object Utils {
     fun launchPlayStore(activity: Activity) {
         val intent = Intent.makeMainSelectorActivity(
             Intent.ACTION_MAIN,
-            Intent.CATEGORY_APP_MARKET
+            Intent.CATEGORY_APP_MARKET,
         )
         activity.startActivity(intent)
     }
