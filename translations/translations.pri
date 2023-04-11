@@ -25,7 +25,7 @@ stringgen.input = STRING_SOURCES
 stringgen.output = $$PWD/generated/vpn/i18nstrings.h
 stringgen.commands = @echo Generating strings from ${QMAKE_FILE_IN} \
     && python3 $$PWD/../scripts/utils/generate_strings.py \
-        -o ${QMAKE_FILE_OUT_PATH} ${QMAKE_FILE_IN}
+        -o ${QMAKE_FILE_OUT_PATH} -p vpn ${QMAKE_FILE_IN}
 stringgen.depends += ${QMAKE_FILE_IN}
 stringgen.variable_out = HEADERS
 stringgen.CONFIG = combine

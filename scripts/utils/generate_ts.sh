@@ -29,7 +29,7 @@ for project in src/apps/*; do
   mkdir -p translations/generated/$project || die
 
   printn Y "$project - Generating strings... "
-  python3 cache/generate_strings.py src/apps/$project/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated/$project
+  python3 cache/generate_strings.py src/apps/$project/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated/$project -p $project
   print G "done."
 
   printn Y "$project - Generating a dummy PRO file... "
@@ -70,17 +70,17 @@ EOF
     printn Y "Importing main strings from $branch..."
     if [ -f translations/strings.yaml ]; then
       if [ $project = "vpn" ]; then
-        python3 cache/generate_strings.py -o translations/generated/$project translations/strings.yaml || die
+        python3 cache/generate_strings.py -o translations/generated/$project -p $project translations/strings.yaml || die
       else
         echo "# dummy" > translations/generated/dummy_strings.yaml
-        python3 cache/generate_strings.py -o translations/generated/$project translations/generated/dummy_strings.yaml || die
+        python3 cache/generate_strings.py -o translations/generated/$project -p $project translations/generated/dummy_strings.yaml || die
       fi
     elif [ -f src/apps/$project/translations/strings.yaml ]; then
       EXTRA_STRINGS=
       if [ -f src/shared/translations/strings.yaml ]; then
         EXTRA_STRINGS=src/shared/translations/strings.yaml
       fi
-      python3 cache/generate_strings.py -o translations/generated/$project src/apps/$project/translations/strings.yaml $EXTRA_STRINGS || die
+      python3 cache/generate_strings.py -o translations/generated/$project -p $project src/apps/$project/translations/strings.yaml $EXTRA_STRINGS || die
     else
       die "Unable to find the strings.yaml"
     fi
