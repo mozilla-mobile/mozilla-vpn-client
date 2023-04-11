@@ -22,7 +22,7 @@ target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
 set_target_properties(iosglean PROPERTIES
-    OUTPUT_NAME "Glean"
+    OUTPUT_NAME "IOSGlean"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
@@ -119,7 +119,8 @@ endforeach()
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
-    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh -o ${CMAKE_CURRENT_BINARY_DIR}/generated
+    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
+        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
     COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
