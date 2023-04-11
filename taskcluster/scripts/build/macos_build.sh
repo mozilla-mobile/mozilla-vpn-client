@@ -63,7 +63,7 @@ export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
-git submodule update --init --depth 1 || die "Failed to init submodules"
+git submodule update --init --recursive || die "Failed to init submodules"
 for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
 done
