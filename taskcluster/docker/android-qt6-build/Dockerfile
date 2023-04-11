@@ -22,26 +22,35 @@ RUN apt-get -q update &&\
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 &&\
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb &&\
     apt-get -y  install ./zulu-repo_1.0.0-3_all.deb &&\
+    rm zulu-repo_1.0.0-3_all.deb &&\
     # update the package sources
     # install Azul Zulu JDK 11
     apt-get update &&\
     apt-get -y --no-install-recommends install zulu11-jdk unzip \
                python3-pip wget git rsync ccache make patch &&\
-    #Install QT
+    #QT Installer
     python3 -m pip install aqtinstall
+# Rust
 RUN wget https://sh.rustup.rs && CARGO_HOME=/opt/.cargo sh index.html -y &&\
     /opt/.cargo/bin/rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
+# Sentry tools
 RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=${SENTRY_CLI_VERSION} bash
+# Python deps
+RUN wget -q https://raw.githubusercontent.com/mozilla-mobile/mozilla-vpn-client/main/requirements.txt &&\
+    pip install -r requirements.txt 
+# QT Target
 RUN python3 -m aqt install-qt --outputdir /opt linux desktop ${QT_VERSION} gcc_64
-RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all &&\
-    #Download Additional stuff that is not in a repo
-    wget -q https://dl.google.com/android/repository/${NDK_FILE} &&\
-    wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip &&\
-    wget -q https://raw.githubusercontent.com/mozilla-mobile/mozilla-vpn-client/main/requirements.txt &&\
-    pip install -r requirements.txt &&\
-    unzip commandlinetools-linux-7583922_latest.zip -d /opt &&\
+# QT Host Tools
+RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${ANDROID_ARCH} -m all 
+# Install NDK
+RUN wget -q https://dl.google.com/android/repository/${NDK_FILE} &&\
     unzip ${NDK_FILE} -d /opt/NDK/ &&\
-    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-31" &&\
+    rm ${NDK_FILE}
+# Install Android SDK Tools
+RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip &&\
+    unzip commandlinetools-linux-7583922_latest.zip -d /opt &&\
+    rm commandlinetools-linux-7583922_latest.zip
+RUN echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-31" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-33" &&\
     # :qtBindings:compileDebugAidl requires build-tools;29.0.2
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\
@@ -56,11 +65,6 @@ RUN python3 -m aqt install-qt --outputdir /opt linux android ${QT_VERSION} ${AND
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "patcher;v4" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platform-tools" &&\
     # Cleanup
-    rm -rf /opt/cmdline-tools &&\
-    rm commandlinetools-linux-7583922_latest.zip &&\
-    rm ${NDK_FILE} &&\
-    rm zulu-repo_1.0.0-3_all.deb &&\
-    rm -rf /var/lib/apt/lists/* &&\
     mkdir /opt/ccache
 
 ENV QTPATH=/opt/${QT_VERSION}/${ANDROID_ARCH}

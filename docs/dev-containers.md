@@ -4,7 +4,12 @@ Dev-Containers are a small experiment, they allow you to run our CI docker Image
 
 ## Requirements: 
 - Node
-- A Container Engine (Docker, Podman, lima, Rancher)
+- A Docker compatible Container Engine: 
+    - docker, podman, colima, rancher) 
+    - MacOS users see Q/A
+    - VS-Code Extension: [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+    
+ 
 
 ## Example Build using CLI only: 
 ```bash 
@@ -54,7 +59,21 @@ therefore running a build like
 Should just work / or give you the same error as in CI. 
 
 
-
 ## Help Section 
 ### Q: Why is it slow?
 Currently all Tasks are probably writing to the workspace-folder, which is mounted on the Host's OS. Unless you are running this on Linux, this is very costly. 
+
+### Q: Get a Container Engine On MacOS: 
+Given that docker-desktop is not on option due to licenceing - Basti is a big fan of [Colima](https://github.com/abiosoft/colima). 
+```
+brew install colima
+# Feel free to adjust this to your specs:
+#
+colima start --cpu 12 \
+             --memory 32 \
+             --disk 30 \
+             --arch x86_64
+```
+In case colima at somepoint uses too much storage, feel free to nuke the vm with `colima delete` and re-create with colima start. 
+
+
