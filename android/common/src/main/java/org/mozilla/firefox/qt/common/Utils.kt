@@ -83,7 +83,7 @@ object Utils {
             // Not supported on oldies. :c
             return false
         }
-        val ctx: Context = VPNActivity.getInstance()
+        val ctx: Context = CoreApplication.instance
         val resolver = ctx.contentResolver
 
         // Find the right volume to use:
