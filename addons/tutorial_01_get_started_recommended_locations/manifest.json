@@ -15,12 +15,23 @@
     "completion_message": "You’ve learned how to choose the most reliable server location. Would you like to learn more tips and tricks?",
     "steps": [
       {
+        "id": "turnOffVPN",
+        "query": "//controllerToggle{visible=true}",
+        "tooltip": "Toggle this switch to deactivate the VPN",
+        "conditions": {
+           "javascript": "vpnIsOn.js"
+        },
+        "next": {
+          "op": "signal",
+          "vpn_emitter": "controller",
+          "signal": "stateChanged"
+        }
+      },
+      {
         "id": "mainScreen",
         "query": "//serverListButton-btn{visible=true}",
         "tooltip": "Select your location",
         "before": [{
-          "op": "vpn_off"
-        },{
           "op": "vpn_location_set",
           "exitCountryCode": "it",
           "exitCity": "Milan",
