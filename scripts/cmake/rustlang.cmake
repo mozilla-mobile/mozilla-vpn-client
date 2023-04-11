@@ -60,6 +60,12 @@ function(build_rust_archives)
         ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
 
+    ## For iOS simulator targets, ensure that we unset the `SDKROOT` variable as
+    ## this will result in broken simulation builds in Xcode.
+    if((RUST_BUILD_ARCH STREQUAL "aarch64-apple-ios-sim") OR (RUST_BUILD_ARCH STREQUAL "x86_64-apple-ios"))
+        list(PREPEND RUST_BUILD_CARGO_ENV "--unset=SDKROOT")
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
