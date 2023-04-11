@@ -40,10 +40,13 @@ NDK
 NONINFRINGEMENT
 OpenSSL
 QMake
+QML
+QMLs
 Qt's
 QtLottie
 RCC
 README
+Replacer
 RSA
 SDKs
 SHA
@@ -157,6 +160,7 @@ rdparty
 reftag
 relink
 relinking
+replacer
 repo
 resolvconf
 rlottie
@@ -176,6 +180,7 @@ tooltip
 ui
 ulist
 uploader
+urls
 utils
 uuid
 vml

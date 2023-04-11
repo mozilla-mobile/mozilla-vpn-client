@@ -137,6 +137,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/addons/addonproperty.h
     ${MZ_SOURCE_DIR}/shared/addons/addonpropertylist.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addonpropertylist.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonreplacer.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonreplacer.h
     ${MZ_SOURCE_DIR}/shared/addons/addontutorial.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addontutorial.h
     ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcher.cpp
@@ -260,6 +262,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
     ${MZ_SOURCE_DIR}/shared/qmlpath.h
+    ${MZ_SOURCE_DIR}/shared/resourceloader.cpp
+    ${MZ_SOURCE_DIR}/shared/resourceloader.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
     ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.cpp

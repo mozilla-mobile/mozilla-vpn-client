@@ -21,7 +21,7 @@
     },
     "type": {
       "type": "string",
-      "description": "The type of the addon: tutorial, guide, i18n"
+      "description": "The type of the addon: tutorial, guide, i18n, message, replacer, ..."
     },
     "conditions": {
       "$ref": "conditions.json"
@@ -67,6 +67,9 @@
     },
     "message": {
       "$ref": "message.json#"
+    },
+    "replacer": {
+      "$ref": "replacer.json#"
     },
     "javascript": {
       "$ref": "javascript.json#"
