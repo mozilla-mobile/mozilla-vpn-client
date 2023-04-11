@@ -10,17 +10,22 @@
 
 // static
 AddonConditionWatcher* AddonConditionWatcherLocales::maybeCreate(
-    QObject* parent, const QStringList& locales) {
+    QObject* parent, const QStringList& locales,
+    MajorLanguageCodePolicy majorLanguageCodePolicy) {
   if (locales.isEmpty()) {
     return nullptr;
   }
 
-  return new AddonConditionWatcherLocales(parent, locales);
+  return new AddonConditionWatcherLocales(parent, locales,
+                                          majorLanguageCodePolicy);
 }
 
 AddonConditionWatcherLocales::AddonConditionWatcherLocales(
-    QObject* parent, const QStringList& locales)
-    : AddonConditionWatcher(parent), m_locales(locales) {
+    QObject* parent, const QStringList& locales,
+    MajorLanguageCodePolicy majorLanguageCodePolicy)
+    : AddonConditionWatcher(parent),
+      m_locales(locales),
+      m_majorLanguageCodePolicy(majorLanguageCodePolicy) {
   MZ_COUNT_CTOR(AddonConditionWatcherLocales);
 
   m_currentStatus = conditionApplied();
@@ -47,6 +52,10 @@ bool AddonConditionWatcherLocales::conditionApplied() const {
     return true;
   }
 
-  code = Localizer::majorLanguageCode(code);
-  return m_locales.contains(code.toLower());
+  if (m_majorLanguageCodePolicy == CheckMajorLanguageCode) {
+    code = Localizer::majorLanguageCode(code);
+    return m_locales.contains(code.toLower());
+  }
+
+  return false;
 }

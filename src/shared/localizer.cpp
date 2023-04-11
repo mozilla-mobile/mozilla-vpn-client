@@ -359,7 +359,7 @@ bool Localizer::createTranslator(const QLocale& locale) {
                           ":/i18n");
 }
 
-void Localizer::maybeLoadLanguageFallback(const QString& code) {
+void Localizer::maybeLoadLanguageFallbackData() {
   if (m_translationFallback.isEmpty()) {
     QFile file(":/i18n/translations_fallback.json");
     Q_ASSERT(file.exists());
@@ -381,6 +381,15 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
       m_translationFallback.insert(key, languages);
     }
   }
+}
+
+QStringList Localizer::fallbackForLanguage(const QString& code) {
+  maybeLoadLanguageFallbackData();
+  return m_translationFallback.value(code, QStringList());
+}
+
+void Localizer::maybeLoadLanguageFallback(const QString& code) {
+  maybeLoadLanguageFallbackData();
 
   // First fallback, English where we are 100% sure we have all the
   // translations. If something goes totally wrong, we use English strings.

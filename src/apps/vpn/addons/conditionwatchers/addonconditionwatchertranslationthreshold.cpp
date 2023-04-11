@@ -35,10 +35,24 @@ AddonConditionWatcher* AddonConditionWatcherTranslationThreshold::maybeCreate(
   QMapIterator<QString, double> i(map);
   while (i.hasNext()) {
     i.next();
+
     if (i.value() >= translationThreshold) {
       locales.append(i.key());
+      continue;
+    }
+
+    QStringList languageCodeFallback =
+        Localizer::instance()->fallbackForLanguage(i.key());
+
+    for (const QString& languageCode : languageCodeFallback) {
+      if (map.value(languageCode, 0) >= translationThreshold) {
+        locales.append(i.key());
+        break;
+      }
     }
   }
 
-  return AddonConditionWatcherLocales::maybeCreate(addon, locales);
+  return AddonConditionWatcherLocales::maybeCreate(
+      addon, locales,
+      AddonConditionWatcherLocales::DoNotCheckMajorLanguageCode);
 }
