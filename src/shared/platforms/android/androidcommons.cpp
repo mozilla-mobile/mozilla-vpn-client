@@ -61,8 +61,7 @@ bool AndroidCommons::verifySignature(const QByteArray& publicKey,
 // static
 bool AndroidCommons::shareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "sharePlainText",
-      "(Landroid/content/Context;Ljava/lang/String;)Z", getActivity().object(),
+      UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
       QJniObject::fromString(text).object());
 }
 
