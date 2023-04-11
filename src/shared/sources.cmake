@@ -136,8 +136,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hkdf.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhotreloader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/inspector/inspectorhotreloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhotreloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorhotreloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectoritempicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectoritempicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
