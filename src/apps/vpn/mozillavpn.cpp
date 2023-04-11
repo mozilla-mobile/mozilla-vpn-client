@@ -572,7 +572,7 @@ void MozillaVPN::completeActivation() {
 
   // Here we add the current device.
   if (option != DeviceStillValid) {
-    addCurrentDeviceAndRefreshData(true);
+    addCurrentDeviceAndRefreshData();
   } else {
     // Let's fetch user and server data.
     scheduleRefreshDataTasks();
@@ -632,7 +632,7 @@ void MozillaVPN::removeDevice(const QString& publicKey, const QString& source) {
   Q_ASSERT(!m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   // Here we add the current device.
-  addCurrentDeviceAndRefreshData(false);
+  addCurrentDeviceAndRefreshData();
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
@@ -1178,7 +1178,7 @@ void MozillaVPN::triggerHeartbeat() {
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 }
 
-void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {
+void MozillaVPN::addCurrentDeviceAndRefreshData() {
   TaskScheduler::scheduleTask(
       new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
   scheduleRefreshDataTasks();
@@ -1211,7 +1211,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   // We do not need to remove the current device! guardian-website "overwrites"
   // the current device key when we submit a new one.
-  addCurrentDeviceAndRefreshData(true);
+  addCurrentDeviceAndRefreshData();
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
