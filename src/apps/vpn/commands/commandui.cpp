@@ -231,10 +231,8 @@ int CommandUI::run(QStringList& tokens) {
     QQmlContext* ctx = engine->rootContext();
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
-#if not(defined(MZ_IOS) || defined(MZ_ANDROID))
     // Glean.js
     Glean::Initialize(engine);
-#endif
     // Glean.rs
     MZGlean::initialize();
 
