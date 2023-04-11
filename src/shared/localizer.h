@@ -78,6 +78,8 @@ class Localizer final : public QAbstractListModel {
                                  const QDateTime& messageDateTime,
                                  const QString& yesterday);
 
+  QStringList fallbackForLanguage(const QString& code);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -105,6 +107,8 @@ class Localizer final : public QAbstractListModel {
   bool createTranslator(const QLocale& locale);
 
   void maybeLoadLanguageFallback(const QString& code);
+
+  void maybeLoadLanguageFallbackData();
 
  private:
   QList<QTranslator*> m_translators;
