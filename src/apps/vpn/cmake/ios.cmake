@@ -58,7 +58,7 @@ set_target_properties(MozillaVPN PROPERTIES XCODE_GENERATE_SCHEME TRUE)
 # Reference: https://discourse.cmake.org/t/how-to-incorporate-app-icon-files-for-ios-into-xcode-14/7386/2
 
 # Asset catalog root
-target_sources(${MAIN_TARGET} PRIVATE "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets")
+target_sources(mozillavpn PRIVATE "${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets")
 set_source_files_properties("${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets" PROPERTIES
     MACOSX_PACKAGE_LOCATION Resources
 )
