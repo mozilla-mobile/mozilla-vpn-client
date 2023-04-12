@@ -68,11 +68,15 @@ Given that docker-desktop is not on option due to licenceing - Basti is a big fa
 ```
 brew install colima
 # Feel free to adjust this to your specs:
-#
 colima start --cpu 12 \
              --memory 32 \
-             --disk 30 \
-             --arch x86_64
+             --disk 40 \
+             --aarch x86_64
+
+# In case of an m1 Mac, you can use rosetta to help
+# This requires MacOS 13
+colima start --vm-type vz --vz-rosetta -m 32 -d 40
+
 ```
 In case colima at somepoint uses too much storage, feel free to nuke the vm with `colima delete` and re-create with colima start. 
 
