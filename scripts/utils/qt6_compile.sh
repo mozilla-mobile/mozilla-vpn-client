@@ -58,7 +58,7 @@ make distclean -j $JOBS &>/dev/null;
 print G "done."
 
 LINUX="
-  -platform linux-g++ \
+  -platform linux-clang \
   -egl \
   -opengl es2 \
   -no-linuxfb \
