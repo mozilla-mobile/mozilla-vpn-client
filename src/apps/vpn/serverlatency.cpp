@@ -15,6 +15,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
+#include "tutorial/tutorial.h"
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
@@ -42,6 +43,7 @@ ServerLatency::~ServerLatency() { MZ_COUNT_DTOR(ServerLatency); }
 
 void ServerLatency::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
+  Tutorial* tutorial = Tutorial::instance();
 
   connect(vpn->serverCountryModel(), &ServerCountryModel::changed, this,
           &ServerLatency::start);
@@ -51,6 +53,15 @@ void ServerLatency::initialize() {
 
   connect(&m_pingTimeout, &QTimer::timeout, this,
           &ServerLatency::maybeSendPings);
+
+  connect(tutorial, &Tutorial::playingChanged, this, [this, tutorial](){
+      if(tutorial->isPlaying()) {
+          stop();
+          m_refreshTimer.stop();
+          return;
+      }
+      m_refreshTimer.start();
+  });
 
   m_refreshTimer.setSingleShot(true);
   connect(&m_refreshTimer, &QTimer::timeout, this, &ServerLatency::start);
