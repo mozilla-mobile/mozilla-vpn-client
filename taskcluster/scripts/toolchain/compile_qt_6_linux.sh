@@ -16,7 +16,7 @@ echo "Bundling extra libs"
 for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
     ldd $qttool | grep '=>' | awk '{print $3}' >> qtlibdeps.txt
 done
-cp -dv $(sort -u qtlibdebs.txt) $(pwd)/qt_dist/lib/
+cp -dv $(sort -u qtlibdeps.txt) $(pwd)/qt_dist/lib/
 
 echo "Build Qt- Creating dist artifact"
 ls
