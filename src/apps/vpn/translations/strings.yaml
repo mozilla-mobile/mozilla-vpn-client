@@ -817,7 +817,6 @@ inAppMessaging:
   menuTitle: Messages
   editButton: Edit
   searchBarPlaceholderText: Search messages
-  dateTimeYesterday: Yesterday
   emptyStateTitle: No messages
   emptyStateDescription: You’re up to date!
   deleteMessage:

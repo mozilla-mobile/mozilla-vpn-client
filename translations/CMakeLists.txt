@@ -61,8 +61,8 @@ foreach(PROJECT ${PROJECTS_NAMES})
     ## Generate the string database (language agnostic) for the current ${PROJECT}
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/${PROJECT}/i18nstrings_p.cpp ${GENERATED_DIR}/${PROJECT}/i18nstrings.h
-        MAIN_DEPENDENCY ${PROJECTS_DIR}/${PROJECT}/translations/strings.yaml
-        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -o ${GENERATED_DIR}/${PROJECT} ${PROJECTS_DIR}/${PROJECT}/translations/strings.yaml
+        MAIN_DEPENDENCY ${PROJECTS_DIR}/${PROJECT}/translations/strings.yaml ${CMAKE_SOURCE_DIR}/src/shared/translations/strings.yaml
+        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py -p ${PROJECT} -o ${GENERATED_DIR}/${PROJECT} ${PROJECTS_DIR}/${PROJECT}/translations/strings.yaml ${CMAKE_SOURCE_DIR}/src/shared/translations/strings.yaml
     )
 
     ## Build the list of supported locales and add rules to build them.

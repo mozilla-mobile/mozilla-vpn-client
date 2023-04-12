@@ -13,7 +13,9 @@ exists($$PWD/generated/vpn/translations.qrc) {
 INCLUDEPATH += $$PWD/generated
 SOURCES += $$PWD/i18nstrings.cpp
 
-STRING_SOURCES = $$PWD/../src/apps/vpn/translations/strings.yaml
+STRING_SOURCES = \
+    $$PWD/../src/shared/translations/strings.yaml \
+    $$PWD/../src/apps/vpn/translations/strings.yaml
 
 ## This is necessary to ensure MOC picks up this class.
 HEADERS += $$PWD/generated/vpn/i18nstrings.h
@@ -23,9 +25,10 @@ stringgen.input = STRING_SOURCES
 stringgen.output = $$PWD/generated/vpn/i18nstrings.h
 stringgen.commands = @echo Generating strings from ${QMAKE_FILE_IN} \
     && python3 $$PWD/../scripts/utils/generate_strings.py \
-        -o ${QMAKE_FILE_OUT_PATH} ${QMAKE_FILE_IN}
+        -o ${QMAKE_FILE_OUT_PATH} -p vpn ${QMAKE_FILE_IN}
 stringgen.depends += ${QMAKE_FILE_IN}
 stringgen.variable_out = HEADERS
+stringgen.CONFIG = combine
 
 ## Dummy rule for the private source file.
 stringsrc.input = STRING_SOURCES
@@ -33,5 +36,6 @@ stringsrc.output = $$PWD/generated/vpn/i18nstrings_p.cpp
 stringsrc.commands = $$escape_expand(\\n)  # force creation of rule
 stringsrc.depends += $$PWD/generated/vpn/i18nstrings.h
 stringsrc.variable_out = SOURCES
+stringsrc.CONFIG = combine
 
 QMAKE_EXTRA_COMPILERS += stringgen stringsrc

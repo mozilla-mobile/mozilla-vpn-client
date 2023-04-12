@@ -69,6 +69,7 @@ src/apps/vpn/tasks/ @bakulf
 /ools/serverlocalizer/ @bakulf
 /tools/wasm_chrome/ @strseb
 /translations/ @bakulf
+/src/shared/translations/strings.yaml @flodolo
 /src/apps/**/translations/strings.yaml @flodolo
 /src/apps/**/translations/extras @flodolo
 
