@@ -4,19 +4,27 @@
 
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
-import android.content.Context
 import android.app.Activity
+import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.pkcs.RSAPublicKey
+import java.io.IOException
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.RSAPublicKeySpec
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.Calendar
 
 // Companion for Utils.cpp
 object Utils {
@@ -41,6 +49,7 @@ object Utils {
             false
         }
     }
+
     @SuppressLint("NewApi")
     @JvmStatic
     fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String) {
@@ -62,8 +71,68 @@ object Utils {
     fun launchPlayStore(activity: Activity) {
         val intent = Intent.makeMainSelectorActivity(
             Intent.ACTION_MAIN,
-            Intent.CATEGORY_APP_MARKET
+            Intent.CATEGORY_APP_MARKET,
         )
         activity.startActivity(intent)
+    }
+
+    @SuppressLint("NewApi")
+    @JvmStatic
+    fun sharePlainText(text: String): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            // Not supported on oldies. :c
+            return false
+        }
+        val ctx: Context = CoreApplication.instance
+        val resolver = ctx.contentResolver
+
+        // Find the right volume to use:
+        val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-mm-dd-H-m-ss"))
+        val fileMetaData =
+            ContentValues().apply {
+                put(MediaStore.Downloads.MIME_TYPE, "text/plain")
+                put(MediaStore.Downloads.DISPLAY_NAME, "MozillaVPN_Logs_$dateTime")
+                put(MediaStore.Downloads.IS_PENDING, 1)
+            }
+        // Create the File and get the URI
+        val fileURI: Uri? = resolver.insert(collection, fileMetaData)
+        if (fileURI == null) {
+            return false
+        }
+
+        val tx = resolver.openOutputStream(fileURI)
+        if (tx == null) {
+            return false
+        }
+        try {
+            val writer = tx.writer(Charsets.UTF_8)
+            writer?.write(text)
+            writer?.flush()
+        } catch (e: IOException) {
+            return false
+        }
+        tx.flush()
+        tx.close()
+        // Now update the Files meta data that the file exists
+        fileMetaData.clear()
+        fileMetaData.put(MediaStore.Downloads.IS_PENDING, 0)
+
+        try {
+            val ok = resolver.update(fileURI, fileMetaData, null, null)
+            if (ok == 0) {
+                Log.e("MozillaVPNLogs", "resolver update - err: 0 Rows updated")
+            }
+        } catch (e: Exception) {
+            Log.e("MozillaVPNLogs", "resolver update - exception: " + e.message)
+        }
+
+        val sendIntent = Intent(Intent.ACTION_SEND)
+        sendIntent.putExtra(Intent.EXTRA_STREAM, fileURI)
+        sendIntent.setType("*/*")
+
+        val chooseIntent = Intent.createChooser(sendIntent, "Share Logs")
+        ctx.startActivity(chooseIntent)
+        return true
     }
 }
