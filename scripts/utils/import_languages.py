@@ -209,6 +209,6 @@ for project in os.listdir(os.path.join('src', 'apps')):
     print(f'Imported {len(l10n_files)} locales')
 
     if os.path.isdir(i18ndir):
-        git = os.popen(f'git submodule status f{i18ndir}')
+        git = os.popen(f'git submodule status {i18ndir}')
         git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
         print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')
