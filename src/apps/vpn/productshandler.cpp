@@ -57,18 +57,19 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
         !this->hasProductsRegistered()) {
       TaskScheduler::scheduleTask(new TaskProducts());
     }
-  });
+    if (state == App::StateMain) {
+      m_last_userSubscriptionNeeded =
+          MozillaVPN::instance()->user()->subscriptionNeeded();
 
-  m_last_userSubscriptionNeeded =
-      MozillaVPN::instance()->user()->subscriptionNeeded();
-
-  connect(MozillaVPN::instance()->user(), &User::changed, [this] {
-    auto userSubscriptionNeeded =
-        MozillaVPN::instance()->user()->subscriptionNeeded();
-    if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
-      NotificationHandler::instance()->subscriptionNotFoundNotification();
+      connect(MozillaVPN::instance()->user(), &User::changed, [this] {
+        auto userSubscriptionNeeded =
+            MozillaVPN::instance()->user()->subscriptionNeeded();
+        if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
+          NotificationHandler::instance()->subscriptionNotFoundNotification();
+        }
+        m_last_userSubscriptionNeeded = userSubscriptionNeeded;
+      });
     }
-    m_last_userSubscriptionNeeded = userSubscriptionNeeded;
   });
 }
 

@@ -83,7 +83,7 @@ class ProductsHandler : public QAbstractListModel {
   ProductsHandler(QObject* parent);
   ~ProductsHandler();
 
-  bool m_last_userSubscriptionNeeded = false;
+  bool m_last_userSubscriptionNeeded = true;
 
   enum {
     eNotRegistered,
