@@ -80,4 +80,8 @@ colima start --vm-type vz --vz-rosetta -m 32 -d 40
 ```
 In case colima at somepoint uses too much storage, feel free to nuke the vm with `colima delete` and re-create with colima start. 
 
-
+### Q: (M1) - My vscode consumes all i/o to do sig-checks: 
+If you feel fancy, you can disable them, or wait until it's done. 
+```
+"extensions.verifySignature": false
+```

@@ -51,18 +51,18 @@ RUN wget -q https://dl.google.com/android/repository/commandlinetools-linux-7583
     unzip commandlinetools-linux-7583922_latest.zip -d /opt &&\
     rm commandlinetools-linux-7583922_latest.zip
 RUN echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-33" &&\
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-31" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platforms;android-31" &&\
     # :qtBindings:compileDebugAidl requires build-tools;29.0.2
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;31.0.0" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;33.0.0" &&\
     # Todo: Dedupe cmake deps
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;${CMAKE_VERSION}" &&\
         # Note: Not sure why we need emulator, need to investiage the gradle dependencies
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\
-    #echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "patcher;v4" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "patcher;v4" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "platform-tools" &&\
     # Cleanup
     mkdir /opt/ccache
