@@ -1,0 +1,51 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Clean: Build",
+			"type": "shell",
+			"command": "rm -rf .tmp/*",
+			"group": "none",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build: Android Release",
+			"type": "shell",
+			"command": "./scripts/android/cmake.sh",
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc",
+				"$go"
+			]
+		},
+		{
+			"label": "Build: Android Debug",
+			"type": "shell",
+			"command": "./scripts/android/cmake.sh -d",
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc",
+				"$go"
+			]
+		},
+		{
+			"label": "Format: Kotlin",
+			"type": "shell",
+			"command": "./gradlew ktlintFormat",
+			"group": "none",
+			"options": {
+				"cwd": "${workspaceFolder}/android"
+			},
+			"problemMatcher": []
+		}
+	]
+}

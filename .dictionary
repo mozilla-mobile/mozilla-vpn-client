@@ -10,6 +10,7 @@ CMU
 CMake
 Changelog
 Conda
+colima
 DNS
 DevOps
 FFI
@@ -152,6 +153,7 @@ ppa
 pre
 prebuilt
 py
+podman
 qmake
 qml
 qmldir
@@ -170,6 +172,7 @@ serverData
 settingHolder
 shader
 shaders
+sig
 signup
 sublicense
 submodule
@@ -183,8 +186,10 @@ uploader
 urls
 utils
 uuid
+vm
 vml
 vpn
+vscode
 wasm
 webservice
 wgconf

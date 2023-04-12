@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+ARG DOCKER_IMAGE_PARENT=ubuntu:20.04
 FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
@@ -10,11 +11,11 @@ ARG QT_VERSION=6.2.4
 
 VOLUME /builds/worker/checkouts
 
-RUN mkdir -p /builds/worker/.cache/go-build &&\
-    chown -R worker:worker /builds/worker/.cache/ &&\
-    chmod -R 777 /builds/worker/ 
+ENV CURL='curl --location --retry 5' \
+    LANG='en_US.UTF-8' \
+    TERM='dumb'
 
-RUN apt-get -q update && apt-get install -y git ccache python3 python3-pip libglib2.0-0 && \
+RUN apt-get -q update && apt-get install -y tzdata && apt-get install -y git ccache python3 python3-pip wget libglib2.0-0 ninja-build && \
     python3 -m pip install aqtinstall && \
     # qt6 for wasm needs the desktop linux installation
     python3 -m aqt install-qt -O /opt linux desktop ${QT_VERSION} gcc_64 && \

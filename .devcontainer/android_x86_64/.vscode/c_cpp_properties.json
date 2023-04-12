@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Android",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/6.2.4/android_x86_64/**",
+                "${workspaceFolder}/src"
+            ],
+            "browse": {
+                "path": [
+                    "/opt/6.2.4/android_x86_64/**",
+                ]
+            },
+            "defines": [
+                "MVPN_ANDROID",
+                "SENTRY_ENABLED",
+                "APP_VERSION=\"2.7.0\""
+            ],
+            "compilerPath": "/opt/NDK/android-ndk-r23b/toolchains/llvm/prebuilt/linux-x86_64/bin/cl",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compileCommands": ".tmp/compile_commands.json"
+        }
+    ],
+    "version": 4
+}
