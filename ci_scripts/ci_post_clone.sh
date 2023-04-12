@@ -32,14 +32,13 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
 curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
-unzip qt_ios.zip
+unzip -q qt_ios.zip
 ls
 
 QTVERSION=$(ls qt_ios)
 echo "Using QT:$QTVERSION"
-
-export QT_IOS_BIN=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin
-export PATH=/Volumes/workspace/repository/qt_ios/$QTVERSION/ios/bin:/Volumes/workspace/repository/qt_ios/$QTVERSION/macos/bin:$PATH
+QT_IOS_PATH=$(pwd)/qt_ios/$QTVERSION/ios
+QT_MACOS_PATH=$(pwd)/qt_ios/$QTVERSION/macos
 
 export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
@@ -67,8 +66,8 @@ sed -i.bak -E \
     -e "s/\"Mozilla VPN\" VERSION/\"MozillaVPN\" VERSION/" \
     "CMakeLists.txt"
 
-$QT_IOS_BIN/qt-cmake -S . -GXcode \
-  -DQT_HOST_PATH="/Volumes/workspace/repository/qt_ios/$QTVERSION/macos" \
-  -DCMAKE_PREFIX_PATH="/Volumes/workspace/repository/qt_ios/cmake" \
+$QT_IOS_PATH/bin/qt-cmake -S . -GXcode \
+  -DQT_HOST_PATH="$QT_MACOS_PATH" \
+  -DCMAKE_PREFIX_PATH="$QT_IOS_PATH/lib/cmake" \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_BUILD_TYPE=Release
