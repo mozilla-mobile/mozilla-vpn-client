@@ -50,7 +50,7 @@ cd $PROJECT_HOME
 ln -s ../../fetches/qt_ios/ qt_ios
 
 print Y "Get the submodules..."
-git submodule update --init --depth 1 || die "Failed to init submodules"
+git submodule update --init --recursive || die "Failed to init submodules"
 # Technically we do not need the following line because we later call the
 # apple compile script which calls import languages. However when we move to cmake
 # for iOS we can remove the call to import languages and this step will be necessary
