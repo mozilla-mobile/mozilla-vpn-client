@@ -15,6 +15,7 @@
                 "dev.containers.mountWaylandSocket":false,
                 "task.autoDetect": "off",
 				"task.allowAutomaticTasks": "off"
+                "extensions.verifySignature": false // really not my fav. Boost's performance on m1 images, drastically. 
             },
 			"extensions": [
 		        "ms-vscode.cpptools",

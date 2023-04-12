@@ -64,7 +64,7 @@ Should just work / or give you the same error as in CI.
 Currently all Tasks are probably writing to the workspace-folder, which is mounted on the Host's OS. Unless you are running this on Linux, this is very costly. 
 
 ### Q: Get a Container Engine On MacOS: 
-Given that docker-desktop is not on option due to licenceing - Basti is a big fan of [Colima](https://github.com/abiosoft/colima). 
+Given that docker-desktop is not on option due to it's license -  big fan of [colima](https://github.com/abiosoft/colima). 
 ```
 brew install colima
 # Feel free to adjust this to your specs:
@@ -75,7 +75,7 @@ colima start --cpu 12 \
 
 # In case of an m1 Mac, you can use rosetta to help
 # This requires MacOS 13
-colima start --vm-type vz --vz-rosetta -m 32 -d 40
+colima start --vm-type vz --vz-rosetta -m 32 -d 40  --cpu 12
 
 ```
 In case colima at somepoint uses too much storage, feel free to nuke the vm with `colima delete` and re-create with colima start. 
