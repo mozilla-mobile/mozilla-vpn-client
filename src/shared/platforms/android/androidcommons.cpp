@@ -15,9 +15,6 @@
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
 
-// TODO - to remove:
-constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
-
 namespace {
 Logger logger("AndroidCommons");
 
@@ -61,8 +58,7 @@ bool AndroidCommons::verifySignature(const QByteArray& publicKey,
 // static
 bool AndroidCommons::shareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      UTILS_CLASS, "sharePlainText",
-      "(Landroid/content/Context;Ljava/lang/String;)Z", getActivity().object(),
+      COMMON_UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
       QJniObject::fromString(text).object());
 }
 
@@ -118,7 +114,7 @@ QString AndroidCommons::GetManufacturer() {
 
 void AndroidCommons::launchPlayStore() {
   auto appActivity = AndroidCommons::getActivity();
-  QJniObject::callStaticMethod<void>(UTILS_CLASS, "launchPlayStore",
+  QJniObject::callStaticMethod<void>(COMMON_UTILS_CLASS, "launchPlayStore",
                                      "(Landroid/app/Activity;)V",
                                      appActivity.object());
 }

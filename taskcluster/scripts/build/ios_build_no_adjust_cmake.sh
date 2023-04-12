@@ -46,7 +46,7 @@ brew install cmake
 export PATH=$PATH:$GOROOT/bin
 
 print Y "Get the submodules..."
-git submodule update --init --depth 1 || die "Failed to init submodules"
+git submodule update --init --recursive || die "Failed to init submodules"
 for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
 done

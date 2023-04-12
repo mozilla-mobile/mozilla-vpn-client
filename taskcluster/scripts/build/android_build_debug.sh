@@ -5,7 +5,7 @@
 set -e
 
 # This script is used in the Android Debug (universal) build task
-git submodule update --init --depth 1
+git submodule update --init --recursive
 
 for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i

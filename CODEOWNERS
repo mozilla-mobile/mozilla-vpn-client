@@ -1,3 +1,4 @@
 addons/**/manifest.json @flodolo
+/src/shared/translations/strings.yaml @flodolo
 /src/apps/**/translations/strings.yaml @flodolo
 /src/apps/**/translations/extras @flodolo
