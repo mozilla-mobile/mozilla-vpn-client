@@ -16,6 +16,7 @@
 #include "models/keys.h"
 #include "models/location.h"
 #include "models/recentconnections.h"
+#include "models/recommendedlocationmodel.h"
 #include "models/servercity.h"
 #include "models/servercountry.h"
 #include "models/servercountrymodel.h"
@@ -1642,13 +1643,14 @@ void TestModels::serverCountryModelPick() {
     SettingsHolder settingsHolder;
     Localizer l;
 
-    QList<QVariant> results = m.recommendedLocations(1);
+    QCOMPARE(MozillaVPN::instance()->serverCountryModel()->fromJson(json),
+             true);
+
+    QList<const ServerCity*> results =
+        RecommendedLocationModel::recommendedLocations(1);
     QCOMPARE(results.length(), 1);
 
-    QVariant qv = results.first();
-    QVERIFY(qv.canConvert<const ServerCity*>());
-
-    const ServerCity* city = qv.value<const ServerCity*>();
+    const ServerCity* city = results.first();
     QVERIFY(city != nullptr);
     QCOMPARE(city->country(), "serverCountryCode");
     QCOMPARE(city->name(), "serverCityName");

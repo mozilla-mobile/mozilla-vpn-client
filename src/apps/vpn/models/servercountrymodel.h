@@ -44,13 +44,13 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const QString countryName(const QString& countryCode) const;
 
+  const QHash<QString, ServerCity>& cities() const { return m_cities; }
+
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
   void setCooldownForAllServersInACity(const QString& countryCode,
                                        const QString& cityCode);
-
-  Q_INVOKABLE QList<QVariant> recommendedLocations(unsigned int count) const;
 
   // QAbstractListModel methods
 
