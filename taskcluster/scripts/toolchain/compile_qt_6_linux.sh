@@ -16,7 +16,10 @@ echo "Bundling extra libs"
 for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
     ldd $qttool | grep '=>' | awk '{print $3}' >> qtlibdeps.txt
 done
-cp -v $(sort -u qtlibdeps.txt) $(pwd)/qt_dist/lib/
+for qtlibdep in $(sort -u qtlibdeps.txt); do
+    cp -v $qtlibdep $(pwd)/qt_dist/lib/
+    patchelf --set-rpath '$ORIGIN/../lib' $(pwd)/qt_dist/lib/$(basename $qtlibdep) 
+done
 
 echo "Build Qt- Creating dist artifact"
 ls

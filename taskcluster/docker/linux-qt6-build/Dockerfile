@@ -13,7 +13,8 @@ RUN apt-get update -q && \
                        curl \
                        libclang-dev \
                        libgl1-mesa-dev \
-                       ninja-build
+                       ninja-build \
+                       patchelf
 
 ## Install Qt6/X11 build dependencies
 ## From: https://doc.qt.io/qt-6/linux-requirements.html
