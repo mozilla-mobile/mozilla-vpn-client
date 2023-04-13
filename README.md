@@ -389,7 +389,7 @@ Some variables that might be useful when configuring the project:
 
 4. Open the generated Xcode project with `open build-ios/Mozilla\ VPN.xcodeproj`.
 
-5. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
+5. Select the `mozillavpn` scheme and `Any iOS Device (arm64)` as the build configuration
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
 6. Click on the Play button to start building and signing of the Mozilla VPN app.

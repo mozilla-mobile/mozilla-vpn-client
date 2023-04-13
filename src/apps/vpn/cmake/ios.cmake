@@ -46,12 +46,6 @@ set_target_properties(mozillavpn PROPERTIES
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
-# XCode Cloud is setup to expect a scheme named "MozillaVPN" but in CMake the
-# scheme name is derived from the target name. So create an empty target that
-# just wraps mozillavpn
-add_custom_target(MozillaVPN DEPENDS mozillavpn)
-set_target_properties(MozillaVPN PROPERTIES XCODE_GENERATE_SCHEME TRUE)
-
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
 find_library(FW_STORE_KIT StoreKit)

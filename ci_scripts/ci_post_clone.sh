@@ -71,3 +71,7 @@ $QT_IOS_PATH/bin/qt-cmake -S . -GXcode \
   -DCMAKE_PREFIX_PATH="$QT_IOS_PATH/lib/cmake" \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_BUILD_TYPE=Release
+
+# Rename the default scheme to match the Xcode cloud configuration.
+XCPROJ_SCHEME_DIR=MozillaVPN.xcodeproj/xcshareddata/xcschemes
+mv $XCPROJ_SCHEME_DIR/mozillavpn.xcscheme $XCPROJ_SCHEME_DIR/MozillaVPN.xcscheme
