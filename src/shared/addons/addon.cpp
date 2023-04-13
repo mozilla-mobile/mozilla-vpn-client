@@ -446,6 +446,13 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   if (m_status == Unknown) {
     updateAddonStatus(Installed);
   }
+
+  QFileInfo manifestFileInfo(manifestFileName);
+  QDir addonPath = manifestFileInfo.dir();
+  if (addonPath.cd("i18n") && addonPath.exists("translations.completeness")) {
+    m_translationCompleteness = Localizer::loadTranslationCompleteness(
+        addonPath.filePath("translations.completeness"));
+  }
 }
 
 Addon::~Addon() { MZ_COUNT_DTOR(Addon); }
@@ -478,15 +485,24 @@ void Addon::updateAddonStatus(Status newStatus) {
 }
 
 void Addon::retranslate() {
+  unloadTranslators();
+
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
+  QString localeCode = Localizer::instance()->languageCodeOrSystem();
+
+  double completeness = m_translationCompleteness.value(localeCode, 0);
+  if (completeness < 1) {
+    logger.debug() << "Let's try to load another language as fallback for code"
+                   << localeCode;
+    maybeLoadLanguageFallback(localeCode);
+  }
+
   QLocale locale = Localizer::instance()->locale();
 
-  if (!m_translator.load(
-          locale, "locale", "_",
-          QFileInfo(m_manifestFileName).dir().filePath("i18n"))) {
-    logger.error() << "Loading the locale failed.";
+  if (!createTranslator(locale)) {
+    logger.error() << "Loading the locale failed - code:" << localeCode;
   }
 
   emit retranslationCompleted();
@@ -554,7 +570,6 @@ bool Addon::evaluateConditions(const QJsonObject& conditions) {
 void Addon::enable() {
   m_enabled = true;
 
-  QCoreApplication::installTranslator(&m_translator);
   retranslate();
 
   if (m_jsEnableFunction.isCallable()) {
@@ -576,7 +591,7 @@ void Addon::enable() {
 void Addon::disable() {
   m_enabled = false;
 
-  QCoreApplication::removeTranslator(&m_translator);
+  unloadTranslators();
 
   if (m_jsDisableFunction.isCallable()) {
     QJSEngine* engine = QmlEngineHolder::instance()->engine();
@@ -639,4 +654,39 @@ bool Addon::evaluateJavascriptInternal(const QString& javascript,
 
   *value = output;
   return true;
+}
+
+void Addon::unloadTranslators() {
+  for (QTranslator* translator : m_translators) {
+    QCoreApplication::removeTranslator(translator);
+    translator->deleteLater();
+  }
+  m_translators.clear();
+}
+
+void Addon::maybeLoadLanguageFallback(const QString& code) {
+  // First fallback, English where we are 100% sure we have all the
+  // translations. If something goes totally wrong, we use English strings.
+  if (!createTranslator(QLocale("en"))) {
+    logger.warning() << "Loading the fallback locale failed - code: en";
+  }
+
+  for (const QString& fallbackCode :
+       Localizer::instance()->fallbackForLanguage(code)) {
+    logger.debug() << "Fallback language:" << fallbackCode;
+
+    if (!createTranslator(QLocale(fallbackCode))) {
+      logger.warning() << "Loading the fallback locale failed - code:"
+                       << fallbackCode;
+    }
+  }
+}
+
+bool Addon::createTranslator(const QLocale& locale) {
+  QTranslator* translator = new QTranslator(this);
+  m_translators.append(translator);
+  QCoreApplication::installTranslator(translator);
+
+  return translator->load(locale, "locale", "_",
+                          QFileInfo(m_manifestFileName).dir().filePath("i18n"));
 }

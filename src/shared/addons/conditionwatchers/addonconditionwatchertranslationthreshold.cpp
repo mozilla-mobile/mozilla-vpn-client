@@ -19,19 +19,8 @@ AddonConditionWatcher* AddonConditionWatcherTranslationThreshold::maybeCreate(
     return nullptr;
   }
 
-  QFileInfo manifestFileInfo(addon->manifestFileName());
-  QDir addonPath = manifestFileInfo.dir();
-  if (!addonPath.cd("i18n")) {
-    return nullptr;
-  }
-
-  if (!addonPath.exists("translations.completeness")) {
-    return nullptr;
-  }
-
   QStringList locales;
-  QMap<QString, double> map = Localizer::loadTranslationCompleteness(
-      addonPath.filePath("translations.completeness"));
+  const QMap<QString, double>& map = addon->translationCompleteness();
   QMapIterator<QString, double> i(map);
   while (i.hasNext()) {
     i.next();
