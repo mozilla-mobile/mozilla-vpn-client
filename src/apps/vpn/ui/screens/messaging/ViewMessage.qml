@@ -11,8 +11,9 @@ import Mozilla.Shared.qmlcomponents 1.0
 import components 0.1
 
 MZViewBase {
-    id: vpnFlickable
+    id: root
     property var message
+    objectName: "messageView-" + message.id
 
     property Component titleComponent: Component {
         RowLayout {
@@ -181,6 +182,15 @@ MZViewBase {
 
                 view: MZComposerView.View.Message
                 addon: message
+            }
+        }
+    }
+
+    Connections {
+        target: message
+        function onAboutToDisable() {
+            if (stackview.currentItem === root) {
+                stackview.pop();
             }
         }
     }

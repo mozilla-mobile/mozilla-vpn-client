@@ -1,0 +1,22 @@
+{
+  "api_version": "0.1",
+  "id": "message_disabled",
+  "name": "Message",
+  "type": "message",
+  "conditions": {
+    "locales": [ "en" ],
+    "translation_threshold": 0
+  },
+  "message": {
+    "id": "message",
+    "title": "Hello!",
+    "subtitle": "This is a message",
+    "badge": "survey",
+    "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "Some content must be shown..."
+      }
+    ]
+  }
+}
