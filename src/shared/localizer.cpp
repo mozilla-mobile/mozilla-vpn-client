@@ -324,23 +324,23 @@ bool Localizer::loadLanguage(const QString& requestedLocalCode) {
   }
   m_translators.clear();
 
-  QString localCode = requestedLocalCode;
-  if (localCode.isEmpty()) {
-    localCode = systemLanguageCode();
+  QString localeCode = requestedLocalCode;
+  if (localeCode.isEmpty()) {
+    localeCode = systemLanguageCode();
   }
 
-  double completeness = m_translationCompleteness.value(localCode, 0);
+  double completeness = m_translationCompleteness.value(localeCode, 0);
   if (completeness < 1) {
     logger.debug() << "Let's try to load another language as fallback for code"
-                   << localCode;
-    maybeLoadLanguageFallback(localCode);
+                   << localeCode;
+    maybeLoadLanguageFallback(localeCode);
   }
 
-  QLocale locale = QLocale(localCode);
+  QLocale locale = QLocale(localeCode);
   QLocale::setDefault(locale);
 
   if (!createTranslator(locale)) {
-    logger.error() << "Loading the locale failed - code:" << localCode;
+    logger.error() << "Loading the locale failed - code:" << localeCode;
     return false;
   }
 

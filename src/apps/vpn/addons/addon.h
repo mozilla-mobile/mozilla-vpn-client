@@ -72,6 +72,10 @@ class Addon : public QObject {
   virtual void enable();
   virtual void disable();
 
+  const QMap<QString, double>& translationCompleteness() const {
+    return m_translationCompleteness;
+  }
+
  signals:
   void conditionChanged(bool enabled);
   void retranslationCompleted();
@@ -93,13 +97,18 @@ class Addon : public QObject {
                                             QString(ADDON_DEFAULT_STATUS)) {}
   };
 
+  void unloadTranslators();
+  bool createTranslator(const QLocale& locale);
+  void maybeLoadLanguageFallback(const QString& code);
+
  private:
   const QString m_manifestFileName;
   const QString m_id;
   const QString m_name;
   const QString m_type;
 
-  QTranslator m_translator;
+  QList<QTranslator*> m_translators;
+  QMap<QString, double> m_translationCompleteness;
 
   AddonState* m_state = nullptr;
 
