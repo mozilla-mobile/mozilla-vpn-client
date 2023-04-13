@@ -574,6 +574,7 @@ void Addon::enable() {
 }
 
 void Addon::disable() {
+  emit aboutToDisable();
   m_enabled = false;
 
   QCoreApplication::removeTranslator(&m_translator);

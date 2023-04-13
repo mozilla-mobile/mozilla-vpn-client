@@ -75,6 +75,7 @@ class Addon : public QObject {
  signals:
   void conditionChanged(bool enabled);
   void retranslationCompleted();
+  void aboutToDisable();
 
  protected:
   Addon(QObject* parent, const QString& manifestFileName, const QString& id,

@@ -183,6 +183,7 @@ MZViewBase {
 
                 MZSwipeDelegate {
                     id: swipeDelegate
+                    objectName: "messageItem-" + addon.id
 
                     property real deleteLabelWidth: 0.0
 
