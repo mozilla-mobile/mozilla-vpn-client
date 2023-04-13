@@ -336,7 +336,9 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (dnsPort == ForceDNSPort) {
+    if (dnsPort == ForceDNSPort ||
+        Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+      logger.info() << "Forcing port 53";
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -564,6 +566,7 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
+  logger.info() << "Connection attempt " << m_connectionRetry;
   if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
