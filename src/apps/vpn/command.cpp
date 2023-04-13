@@ -133,6 +133,10 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
+  // #ifdef MZ_WINDOWS
+  //   SetProcessDPIAware();
+  // #endif
+
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
@@ -166,10 +170,6 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
-
-#ifdef MZ_WINDOWS
-  SetProcessDPIAware();
-#endif
 
 #ifdef MZ_ANDROID
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
