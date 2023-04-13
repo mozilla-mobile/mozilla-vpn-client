@@ -32,6 +32,7 @@ MZFlickable {
 
     ColumnLayout {
         id: col
+        objectName: "vpnSubscriptionNeededView"
 
         anchors.top: headerLink.bottom
         anchors.left: parent.left

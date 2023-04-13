@@ -92,48 +92,52 @@ describe('User authentication in browser', function() {
       }
     };
 
-    it.only('Purchase subscription and authenticate in browser',
-       async () => {
-        await vpn.waitForInitialView();
-        await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+    it.only('Purchase subscription and authenticate in browser', async () => {
+      await vpn.waitForInitialView();
+      await vpn.authenticateInBrowser(false, true, this.ctx.wasm);
 
-        // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
 
-        // Click on subscribe now
-        // await vpn.clickOnQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
-        await vpn.waitForQuery(queries.screenHome.SUBSCRIPTION_NEEDED.visible());
-        await vpn.waitForQueryAndClick(
-          queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+      await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                 .SUBSCRIPTION_NEEDED_VIEW.visible());
 
-          // Mock in browser sub authentication (code from helper.js)
-          // We don't really want to go through the authentication flow because we
-          // are mocking everything. So this next chunk of code manually
-          // makes a call to the DesktopAuthenticationListener to mock
-          // a successful authentication in browser.
-          const url = await this.getLastUrl();
-          const authListenerPort = (new URL(url)).searchParams.get('port');
-          const options = {
-            // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
-            // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-            hostname: '127.0.0.1',
-            port: parseInt(authListenerPort, 10),
-            path: '/?code=the_code',
-            method: 'GET',
-          };
+      // Click on the Subscribe Now button.
+      await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView
+                                         .SUBSCRIPTION_NEEDED_BUTTON.visible());
 
-          await new Promise(resolve => {
-            const req = http.request(options, res => {});
-            req.on('close', resolve);
-            req.on('error', error => {
-              throw new Error(
-                  `Unable to connect to ${urlObj.hostname} to complete the
+      // Mock in browser sub authentication (code from helper.js)
+      // We don't really want to go through the authentication flow because we
+      // are mocking everything. So this next chunk of code manually
+      // makes a call to the DesktopAuthenticationListener to mock
+      // a successful authentication in browser.
+      const url = await this.getLastUrl();
+      const authListenerPort = (new URL(url)).searchParams.get('port');
+      const options = {
+        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+        hostname: '127.0.0.1',
+        port: parseInt(authListenerPort, 10),
+        path: '/?code=the_code',
+        method: 'GET',
+      };
+
+      await new Promise(resolve => {
+        const req = http.request(options, res => {});
+        req.on('close', resolve);
+        req.on('error', error => {
+          throw new Error(
+              `Unable to connect to ${urlObj.hostname} to complete the
                   auth. ${error.name}, ${error.message}, ${error.stack}`);
-            });
-            req.end();
-          });
-       });
+        });
+        req.end();
+      });
+
+      // Wait for VPN client screen to move from spinning wheel to next screen
+      await this.waitForMozillaProperty(
+          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+      await this.waitForQuery(
+          queries.screenPostAuthentication.BUTTON.visible());
+    });
   });
 
   it('returns to main view on canceling authentication', async () => {

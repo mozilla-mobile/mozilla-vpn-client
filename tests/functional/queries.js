@@ -80,7 +80,6 @@ const screenHome = {
   TUTORIAL_POPUP_SECONDARY_BUTTON:
       new QmlQueryComposer('//tutorialPopupSecondaryButton'),
   TUTORIAL_UI: new QmlQueryComposer('//tutorialUiRoot'),
-  SUBSCRIPTION_NEEDED: new QmlQueryComposer('//vpnSubscriptionNeededButton'),
 
   serverListView: {
     generateCountryId: (serverCode) => {
@@ -102,8 +101,7 @@ const screenHome = {
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
-    ALL_SERVERS_TAB: new QmlQueryComposer(
-      '//tabAllServers')
+    ALL_SERVERS_TAB: new QmlQueryComposer('//tabAllServers')
   }
 };
 
@@ -372,6 +370,11 @@ const screenSettings = {
         new QmlQueryComposer('//subscriptionUserProfile-manageAccountButton'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:
         new QmlQueryComposer('//manageSubscriptionButton'),
+
+    SUBSCRIPTION_NEEDED_VIEW:
+        new QmlQueryComposer('//vpnSubscriptionNeededView'),
+    SUBSCRIPTION_NEEDED_BUTTON:
+        new QmlQueryComposer('//vpnSubscriptionNeededButton'),
 
     RELAY_UPSELL_PLAN: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout'),
