@@ -44,6 +44,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp

@@ -113,6 +113,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/location.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recentconnections.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/server.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/server.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/models/servercity.cpp

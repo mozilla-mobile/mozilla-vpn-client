@@ -41,6 +41,7 @@ SOURCES += \
         apps/vpn/models/keys.cpp \
         apps/vpn/models/location.cpp \
         apps/vpn/models/recentconnections.cpp \
+        apps/vpn/models/recommendedlocationmodel.cpp \
         apps/vpn/models/server.cpp \
         apps/vpn/models/servercity.cpp \
         apps/vpn/models/servercountry.cpp \
@@ -132,6 +133,7 @@ HEADERS += \
         apps/vpn/models/keys.h \
         apps/vpn/models/location.h \
         apps/vpn/models/recentconnections.h \
+        apps/vpn/models/recommendedlocationmodel.h \
         apps/vpn/models/server.h \
         apps/vpn/models/servercity.h \
         apps/vpn/models/servercountry.h \

@@ -29,6 +29,7 @@
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/recentconnections.h"
+#include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn_p.h"
 #include "networkmanager.h"
@@ -275,6 +276,7 @@ void MozillaVPN::initialize() {
   AddonManager::instance();
 
   RecentConnections::instance()->initialize();
+  RecommendedLocationModel::instance()->initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
