@@ -58,13 +58,16 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
       TaskScheduler::scheduleTask(new TaskProducts());
     }
     if (state == App::StateMain) {
+      // When we reach main state, check current subscription status
+      // if the subscription runs out, show a notifiaction
       m_last_userSubscriptionNeeded =
           MozillaVPN::instance()->user()->subscriptionNeeded();
-
       connect(MozillaVPN::instance()->user(), &User::changed, [this] {
-        auto userSubscriptionNeeded =
-            MozillaVPN::instance()->user()->subscriptionNeeded();
-        if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
+        if (!App::isUserAuthenticated()) {
+          return;
+        }
+        auto user = MozillaVPN::instance()->user();
+        if (!m_last_userSubscriptionNeeded && user->subscriptionNeeded()) {
           NotificationHandler::instance()->subscriptionNotFoundNotification();
         }
         m_last_userSubscriptionNeeded = userSubscriptionNeeded;
