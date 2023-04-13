@@ -47,7 +47,11 @@ ServerData* MozillaVPN::serverData() const {
 }
 
 ServerCountryModel* MozillaVPN::serverCountryModel() const {
-  return new ServerCountryModel();
+  static ServerCountryModel* scm = nullptr;
+  if (!scm) {
+    scm = new ServerCountryModel();
+  }
+  return scm;
 }
 
 ServerLatency* MozillaVPN::serverLatency() const {

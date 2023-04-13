@@ -37,6 +37,7 @@
 #include "models/featuremodel.h"
 #include "models/feedbackcategorymodel.h"
 #include "models/recentconnections.h"
+#include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
@@ -316,6 +317,9 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
                                  "VPNRecentConnectionsModel",
                                  RecentConnections::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
+                                 "VPNRecommendedLocationModel",
+                                 RecommendedLocationModel::instance());
     qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
         MozillaVPN::instance()->supportCategoryModel());
