@@ -87,10 +87,10 @@ function(osx_bundle_assetcatalog TARGET)
         COMMAND ${CMAKE_SOURCE_DIR}/scripts/macos/merge_plist.py ${XCASSETS_GEN_PLIST} -o $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/Info.plist
     )
 
-    # Set name of the .appiconset file
-    set_target_properties(${TARGET} PROPERTIES XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon")
-
-    target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car)
+    target_sources(${TARGET} PRIVATE
+        ${XCASSETS_CATALOG}
+        ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car
+    )
     set_source_files_properties(
         ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car
         ${XCASSETS_GEN_PLIST}
