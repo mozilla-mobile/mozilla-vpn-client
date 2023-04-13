@@ -391,6 +391,12 @@ const screenBackendFailure = {
 
 const screenMessaging = {
   SCREEN: new QmlQueryComposer('//messageInboxView'),
+  messageItem: function(id) {
+    return new QmlQueryComposer(`//messageItem-${id}`);
+  },
+  messageView: function(id) {
+    return new QmlQueryComposer(`//messageView-${id}`);
+  },
 };
 
 const screenDeleteAccount = {

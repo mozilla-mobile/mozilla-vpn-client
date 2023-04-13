@@ -257,4 +257,33 @@ describe('Addons', function () {
                  10) === 2;
     });
   });
+
+  it('test message dismiss when the addon is disabled', async () => {
+    await vpn.resetAddons('08_message_disabled');
+    await vpn.waitForCondition(
+        async () =>
+            (parseInt(
+                 await vpn.getMozillaProperty(
+                     'Mozilla.Shared', 'MZAddonManager', 'count'),
+                 10) > 0));
+    const loadedMessages = await vpn.messages();
+    const updateMessages = loadedMessages.filter(
+        message => message.startsWith('message_disabled'));
+
+    await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+    await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenMessaging.messageItem('message_disabled').visible());
+    await vpn.waitForQuery(
+        queries.screenMessaging.messageView('message_disabled').visible());
+
+    // Changing the language to change the addon condition state.
+    await vpn.setSetting('languageCode', 'it');
+    await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+
+    // Resetting the language to 'en' to show the message again
+    await vpn.setSetting('languageCode', 'en');
+    await vpn.waitForQueryAndClick(
+        queries.screenMessaging.messageItem('message_disabled').visible());
+  });
 });
