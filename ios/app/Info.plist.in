@@ -24,16 +24,6 @@
 	<string>${MACOSX_BUNDLE_BUNDLE_VERSION}</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>${MACOSX_BUNDLE_COPYRIGHT}</string>
-	<key>CFBundleIcons</key>
-	<dict>
-			<key>CFBundlePrimaryIcon</key>
-			<dict>
-					<key>CFBundleIconFiles</key>
-					<array>
-					<string>Images</string>
-					</array>
-			</dict>
-	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
