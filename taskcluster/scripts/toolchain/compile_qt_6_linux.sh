@@ -4,12 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Find the fetched Qt sources.
-echo "Listing $MOZ_FETCHES_DIR:"
-ls -l $MOZ_FETCHES_DIR
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
-
-echo "Building QT"
+echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt_dist
 ./vcs/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist
 

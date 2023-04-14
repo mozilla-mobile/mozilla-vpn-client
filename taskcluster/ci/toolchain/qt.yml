@@ -11,6 +11,9 @@ task-defaults:
 
 qt-mac:
     description: "Mac QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball
     run:
         script: compile_qt_6_mac.sh
         resources:
