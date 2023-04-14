@@ -6,6 +6,7 @@ const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 const {validators} = require('./servers/guardian_endpoints.js');
+const http = require('http')
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -94,23 +95,19 @@ describe('User authentication in browser', function() {
 
     it.only('Purchase subscription and authenticate in browser', async () => {
       await vpn.waitForInitialView();
-      await vpn.authenticateInBrowser(false, true, this.ctx.wasm);
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
+      await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url.includes('/api/v2/vpn/login');
+      });
+      await vpn.wait();
 
-      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-      await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                 .SUBSCRIPTION_NEEDED_VIEW.visible());
-
-      // Click on the Subscribe Now button.
-      await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView
-                                         .SUBSCRIPTION_NEEDED_BUTTON.visible());
-
-      // Mock in browser sub authentication (code from helper.js)
       // We don't really want to go through the authentication flow because we
       // are mocking everything. So this next chunk of code manually
       // makes a call to the DesktopAuthenticationListener to mock
       // a successful authentication in browser.
-      const url = await this.getLastUrl();
+      const url = await vpn.getLastUrl();
       const authListenerPort = (new URL(url)).searchParams.get('port');
       const options = {
         // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
@@ -127,16 +124,24 @@ describe('User authentication in browser', function() {
         req.on('error', error => {
           throw new Error(
               `Unable to connect to ${urlObj.hostname} to complete the
-                  auth. ${error.name}, ${error.message}, ${error.stack}`);
+                auth. ${error.name}, ${error.message}, ${error.stack}`);
         });
         req.end();
       });
 
+      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+      await vpn.waitForQuery(queries.screenSettings.subscriptionView
+                                 .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+      // Click on the Subscribe Now button.
+      await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView
+                                         .SUBSCRIPTION_NEEDED_BUTTON.visible());
+
+
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await this.waitForMozillaProperty(
+      await vpn.waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
-      await this.waitForQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
     });
   });
 
