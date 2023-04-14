@@ -153,9 +153,17 @@ for project in os.listdir(os.path.join('src', 'apps')):
             qrcfile.write(f'        <file>{projectname}_{file["locale"]}.qm</file>\n')
 
         extradir = os.path.join('src', 'apps', project, 'translations', 'extras')
+        extras = []
         if os.path.isdir(extradir):
             for extra in os.listdir(extradir):
+                extras.append(extra)
                 qrcfile.write(f'      <file alias="{extra}">{os.path.join(os.getcwd(), extradir, extra)}</file>\n')
+
+        shred_extradir = os.path.join('src', 'shared', 'translations', 'extras')
+        if os.path.isdir(shred_extradir):
+            for shred_extra in os.listdir(shred_extradir):
+                if (not shred_extra in extras):
+                    qrcfile.write(f'      <file alias="{shred_extra}">{os.path.join(os.getcwd(), shred_extradir, shred_extra)}</file>\n')
 
         qrcfile.write('    </qresource>\n')
         qrcfile.write('</RCC>\n')
