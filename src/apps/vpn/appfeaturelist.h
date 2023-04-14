@@ -11,6 +11,13 @@ FEATURE(accountDeletion,        // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_accountDeletion)
 
+FEATURE(alwaysPort53,          // Feature ID
+        "Always use port 53",  // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(benchmarkUpload,       // Feature ID
         "Benchmark Upload",    // Feature name
         FeatureCallback_true,  // Can be flipped on
