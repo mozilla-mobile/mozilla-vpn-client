@@ -106,7 +106,7 @@ describe('Subscription manager', function() {
 
          // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
          await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+             queries.screenHome.SUBSCRIPTION_NEEDED_VIEW.visible());
        });
 
     it('Continues to try connecting if call to check subscription status fails',
