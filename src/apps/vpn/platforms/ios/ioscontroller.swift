@@ -214,6 +214,10 @@ public class IOSControllerImpl : NSObject {
             Logger.global?.log(message: "Activating includeAllNetworks")
             proto!.includeAllNetworks = true
             proto!.excludeLocalNetworks = true
+
+            if #available(iOS 16.4, *) {
+                proto?.excludeAPNs = false
+            }
         }
 
         tunnel!.protocolConfiguration = proto
