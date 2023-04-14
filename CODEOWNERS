@@ -1,4 +1,5 @@
 /addons/**/manifest.json @flodolo
 /src/shared/translations/strings.yaml @flodolo
+/src/shared/translations/extras @flodolo
 /src/apps/**/translations/strings.yaml @flodolo
 /src/apps/**/translations/extras @flodolo

@@ -129,6 +129,16 @@ foreach(PROJECT ${PROJECTS_NAMES})
         file(APPEND ${GENERATED_DIR}/${PROJECT}/translations.qrc "        <file alias=\"${EXTRA}\">${PROJECTS_DIR}/${PROJECT}/translations/extras/${EXTRA}</file>\n")
     endforeach()
 
+    ## Copy the shared extra files
+    get_filename_component(SHARED_EXTRASS_DIR ${CMAKE_SOURCE_DIR}/src/shared/translations/extras ABSOLUTE)
+    file(GLOB SHARED_EXTRASS_FILES LIST_DIRECTORIES true RELATIVE ${SHARED_EXTRASS_DIR} ${SHARED_EXTRASS_DIR}/*)
+    list(FILTER SHARED_EXTRASS_FILES EXCLUDE REGEX "^\\..+")
+    foreach(SHARED_EXTRAS ${SHARED_EXTRASS_FILES})
+        if (NOT ${SHARED_EXTRAS} IN_LIST EXTRAS_FILES)
+            file(APPEND ${GENERATED_DIR}/${PROJECT}/translations.qrc "        <file alias=\"${SHARED_EXTRAS}\">${CMAKE_SOURCE_DIR}/src/shared/translations/extras/${SHARED_EXTRAS}</file>\n")
+        endif()
+    endforeach()
+
     # In case the translations.completeness is still missing (does i18n folder
     # exist?), let's create it now.
     if (NOT EXISTS ${PROJECTS_DIR}/${PROJECT}/translations/extras/translations.completeness AND
