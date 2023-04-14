@@ -11,12 +11,27 @@ import components 0.1
 
 MZIcon {
     property int score: VPNServerLatency.NoData
+    property string accessibleName: {
+        switch(state) {
+        case "good":
+            return MZI18n.ServersViewServerCityWithGoodConnection
+        case "moderate":
+            return MZI18n.ServersViewServerCityWithModerateConnection
+        case "poor":
+            return MZI18n.ServersViewServerCityWithPoorConnection
+        case "unavailable":
+            return MZI18n.ServersViewServerCityWithNoConnection
+        default:
+            return "%1"
+        }
+    }
 
     id: latencyIndicator
 
     states: [
         // Low latency
         State {
+            name: "good"
             when: (score === VPNServerLatency.Good ||
                 score === VPNServerLatency.Excellent)
             PropertyChanges {
@@ -27,6 +42,7 @@ MZIcon {
         },
         // Moderate latency
         State {
+            name: "moderate"
             when: (score === VPNServerLatency.Moderate)
             PropertyChanges {
                 target: latencyIndicator
@@ -36,6 +52,7 @@ MZIcon {
         },
         // High latency
         State {
+            name: "poor"
             when: (score === VPNServerLatency.Poor)
             PropertyChanges {
                 target: latencyIndicator
@@ -45,6 +62,7 @@ MZIcon {
         },
         // Very high latency or server unavailable
         State {
+            name: "unavailable"
             when: score === VPNServerLatency.Unavailable
             PropertyChanges {
                 target: latencyIndicator
@@ -54,6 +72,7 @@ MZIcon {
         },
         // No data
         State {
+            name: "none"
             when: score === VPNServerLatency.NoData
             PropertyChanges {
                 target: latencyIndicator

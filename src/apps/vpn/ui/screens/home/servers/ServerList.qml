@@ -209,7 +209,8 @@ FocusScope {
                         property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
 
-                        accessibleName: city.localizedName
+                        accessibleName: latencyIndicator.accessibleName.arg(modelData.localizedName)
+
                         onClicked: {
                             if (!isAvailable) {
                                 return;
@@ -237,6 +238,7 @@ FocusScope {
                             }
 
                             ServerLatencyIndicator {
+                                id: latencyIndicator
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                                 score: city.connectionScore
                             }
