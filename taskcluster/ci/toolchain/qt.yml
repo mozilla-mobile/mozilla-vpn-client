@@ -57,6 +57,9 @@ qt-ios:
 
 qt-linux:
     description: "Linux QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball
     run:
         script: compile_qt_6_linux.sh
         resources:

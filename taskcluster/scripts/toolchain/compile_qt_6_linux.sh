@@ -4,13 +4,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-echo "Download QT $QT_VERSION"
-curl -o qt.tar.xz -L https://download.qt.io/archive/qt/$QT_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.tar.xz
-tar -xf qt.tar.xz
+# Find the fetched Qt sources.
+echo "Listing $MOZ_FETCHES_DIR:"
+ls -l $MOZ_FETCHES_DIR
+QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 
 echo "Building QT"
 mkdir qt_dist
-./vcs/scripts/utils/qt6_compile.sh qt-everywhere-src-$QT_VERSION $(pwd)/qt_dist
+./vcs/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist
 
 echo "Bundling extra libs"
 for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
