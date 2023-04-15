@@ -44,6 +44,7 @@ target_include_directories(qtglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+set_target_properties(qtglean PROPERTIES FOLDER "Libs")
 target_link_libraries(qtglean PRIVATE Qt6::Core Qt6::Qml)
 
 # glean-core cannot be compiled to WASM
