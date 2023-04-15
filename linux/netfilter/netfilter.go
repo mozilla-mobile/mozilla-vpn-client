@@ -178,7 +178,10 @@ func (ctx* nftCtx) nftIfup(ifname string) {
   })
 
   element := []nftables.SetElement{
+	  { Key: net.ParseIP("10.124.0.0").To4() },
+	  { Key: net.ParseIP("10.124.240.0").To4(), IntervalEnd: true },
 	  { Key: net.ParseIP("10.64.0.1").To4() },
+	  { Key: net.ParseIP("10.64.0.2").To4(), IntervalEnd: true },
   }
   mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.relayset, element)
 }
@@ -457,6 +460,7 @@ func NetfilterCreateTables() int32 {
     Table:      mozvpn_ctx.table_inet,
     Name:       "mozvpn-socks5-relays",
     KeyType:    nftables.TypeIPAddr,
+    Interval:   true,
   }
   mozvpn_ctx.conn.AddSet(mozvpn_ctx.relayset, nil)
 
