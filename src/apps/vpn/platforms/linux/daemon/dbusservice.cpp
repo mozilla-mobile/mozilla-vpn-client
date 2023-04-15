@@ -120,6 +120,10 @@ bool DBusService::activate(const QString& jsonConfig) {
     return false;
   }
 
+  if (!Daemon::activate(config)) {
+    return false;
+  }
+
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
@@ -127,7 +131,7 @@ bool DBusService::activate(const QString& jsonConfig) {
     }
   }
 
-  return Daemon::activate(config);
+  return true;
 }
 
 bool DBusService::deactivate(bool emitSignals) {
