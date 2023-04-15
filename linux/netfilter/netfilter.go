@@ -391,7 +391,7 @@ func NetfilterCreateTables() int32 {
     Table:      mozvpn_ctx.table_inet,
     Type:       nftables.ChainTypeRoute,
     Hooknum:    nftables.ChainHookOutput,
-    Priority:   nftables.ChainPriorityRaw,
+    Priority:   nftables.ChainPriorityMangle,
   })
   mozvpn_ctx.nat = mozvpn_ctx.conn.AddChain(&nftables.Chain{
     Name:       "mozvpn-nat",
