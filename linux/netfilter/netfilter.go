@@ -67,6 +67,7 @@ type nftCtx struct {
 	input       *nftables.Chain
 	output      *nftables.Chain
 	addrset     *nftables.Set
+	relayset    *nftables.Set
 	fwmark      uint32
 	conn        nftables.Conn
 }
@@ -405,6 +406,11 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 			},
 		},
 	})
+
+	element := []nftables.SetElement{
+		{ Key: net.ParseIP("10.64.0.1").To4() },
+	}
+	mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.relayset, element)
 }
 
 func nftXtCgroupMatch(cgroup string) expr.Match {
@@ -458,6 +464,19 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 				Op:       expr.CmpOpNeq,
 				Register: 1,
 				Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
+			},
+			// Do not match packets sent to wireguard socks5 relays
+			&expr.Payload{
+				DestRegister:   1,
+				Base:           expr.PayloadBaseNetworkHeader,
+				Offset:         16,
+				Len:            4,
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName:        ctx.relayset.Name,
+				SetID:          ctx.relayset.ID,
+				Invert:         true,
 			},
 			// Set the firewall mark to route this packet outside of the VPN.
 			&expr.Immediate{
@@ -669,6 +688,13 @@ func NetfilterCreateTables() int32 {
 		KeyType: nftables.TypeIPAddr,
 	}
 	mozvpn_ctx.conn.AddSet(mozvpn_ctx.addrset, nil)
+
+	mozvpn_ctx.relayset = &nftables.Set{
+		Table:      mozvpn_ctx.table,
+		Name:       "mozvpn-socks5-relays",
+		KeyType:    nftables.TypeIPAddr,
+	}
+	mozvpn_ctx.conn.AddSet(mozvpn_ctx.relayset, nil)
 
 	log.Println("Creating netfilter tables")
 	return mozvpn_ctx.nftCommit()
