@@ -368,8 +368,9 @@ can then open and build via the Xcode IDE.
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
 version 6.2.4.
 
-2. Ensure rust targets for iOS development are installed.
+2. Ensure that Rust, and the targets for iOS development are installed. We recommend installing rust using [Rustup](https://rustup.rs/)
 ```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add x86_64-apple-ios aarch64-apple-ios
 ```
 
