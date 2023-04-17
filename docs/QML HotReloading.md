@@ -1,7 +1,7 @@
-
-
 # Using QML hot reloading. 
-The Client has roudimentary support for Live-Reloading QML. While developing you can replace the loaded QML and have the Client automatically reload the Current Screen. 
+The Client has simple support for live reloading QML file. 
+
+https://user-images.githubusercontent.com/9611612/222613103-edca265c-f489-4762-afa7-22d344d62c19.mov
 
 ## Usage (Desktop): 
 - Have MozillaVPN open and in Dev Mode. 
