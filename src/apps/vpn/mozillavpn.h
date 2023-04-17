@@ -12,6 +12,7 @@
 
 #include "app.h"
 #include "authenticationlistener.h"
+#include "connectionhealth.h"
 #include "errorhandler.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
@@ -209,9 +210,9 @@ class MozillaVPN final : public App {
   static QString appVersionForUpdate();
   static bool mockFreeTrial();
 
-  static bool forceStableConnectionHealth();
-  static bool forceUnstableConnectionHealth();
-  static bool forceNoSignalConnectionHealth();
+  static ConnectionHealth::ConnectionStability forceStableConnectionHealth();
+  static ConnectionHealth::ConnectionStability forceUnstableConnectionHealth();
+  static ConnectionHealth::ConnectionStability forceNoSignalConnectionHealth();
 
  private:
   void maybeStateMain();
