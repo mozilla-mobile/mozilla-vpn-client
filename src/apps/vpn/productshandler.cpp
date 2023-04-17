@@ -66,7 +66,8 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
         if (!App::isUserAuthenticated()) {
           return;
         }
-        auto userSubscriptionNeeded = MozillaVPN::instance()->user()->subscriptionNeeded();
+        auto userSubscriptionNeeded =
+            MozillaVPN::instance()->user()->subscriptionNeeded();
         if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
           NotificationHandler::instance()->subscriptionNotFoundNotification();
         }
