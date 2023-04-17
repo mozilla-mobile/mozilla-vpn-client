@@ -1807,7 +1807,7 @@ void MozillaVPN::registerNavigationBarButtons() {
 
 // static
 bool MozillaVPN::mockFreeTrial() { return s_mockFreeTrial; }
-// ConnectionStability stability() const { return m_stability; }
+
 ConnectionHealth::ConnectionStability
 MozillaVPN::forceStableConnectionHealth() {
   return ConnectionHealth::ConnectionStability::Stable;
