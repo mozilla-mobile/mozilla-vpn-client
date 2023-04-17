@@ -84,16 +84,15 @@ target_sources(mozillavpn PRIVATE
 
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
-    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard)
-set_source_files_properties(
+    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
+    ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+)
+
+set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
-    PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-
-## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn
-    DEVICES iphone ipad
-    CATALOG ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets)
+    ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+)
 
 set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
