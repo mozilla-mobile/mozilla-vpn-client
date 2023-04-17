@@ -1,24 +1,20 @@
-//
-// Created by Basti on 02/03/2023.
-//
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #ifndef MOZILLA_VPN_INSPECTORHOTRELOADER_H
 #define MOZILLA_VPN_INSPECTORHOTRELOADER_H
 
 #include <QApplication>
-#include <QObject>
 #include <QQmlAbstractUrlInterceptor>
 #include <QQmlEngine>
 
-#include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
-#include "logger.h"
+
 
 class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
+  
  public:
-  InspectorHotreloader(QQmlEngine* target) : m_target(target) {
-    m_target->addUrlInterceptor(this);
-    new NavigatorReloader(qApp);
-  }
+  InspectorHotreloader(QQmlEngine* target);
 
   // Callback for QT.
   QUrl intercept(const QUrl& url,
@@ -40,9 +36,20 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
   // Components
   void resetAllFiles();
 
+  /**
+   * @brief Announces a qml replacement path is available
+   * Will download a file, store it in a temp directory and 
+   * redirect all matching files to to. 
+   * http://
+   *
+   * @param path - The Replacement Path
+   */
+  void fetchAndAnnounce(const QUrl& path);
+
  private:
-  QQmlEngine* m_target;
+  QQmlEngine* m_target = nullptr;
   QMap<QString, QUrl> m_announced_files;
+  QString m_qml_folder;
 };
 
 #endif  // MOZILLA_VPN_INSPECTORHOTRELOADER_H
