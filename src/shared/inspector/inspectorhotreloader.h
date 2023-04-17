@@ -39,8 +39,7 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
   /**
    * @brief Announces a qml replacement path is available
    * Will download a file, store it in a temp directory and 
-   * redirect all matching files to to. 
-   * http://
+   * redirect all matching files to that.
    *
    * @param path - The Replacement Path
    */
