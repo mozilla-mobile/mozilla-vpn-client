@@ -62,6 +62,11 @@ class Navigator final : public QObject {
 
   Q_INVOKABLE bool eventHandled();
 
+  /**
+   * @brief Request's the Load of the current screen with
+   * ForceReloadAll policy
+   *
+   */
   void reloadCurrentScreen();
 
   void registerReloader(NavigatorReloader* reloader);
