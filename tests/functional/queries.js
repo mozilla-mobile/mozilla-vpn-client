@@ -373,6 +373,11 @@ const screenSettings = {
     SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:
         new QmlQueryComposer('//manageSubscriptionButton'),
 
+    SUBSCRIPTION_NEEDED_VIEW:
+        new QmlQueryComposer('//vpnSubscriptionNeededView'),
+    SUBSCRIPTION_NEEDED_BUTTON:
+        new QmlQueryComposer('//vpnSubscriptionNeededButton'),
+
     RELAY_UPSELL_PLAN: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout'),
     RELAY_UPSELL_STATUS: new QmlQueryComposer(
