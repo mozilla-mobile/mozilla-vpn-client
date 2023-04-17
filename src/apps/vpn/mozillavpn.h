@@ -214,6 +214,9 @@ class MozillaVPN final : public App {
   static ConnectionHealth::ConnectionStability forceUnstableConnectionHealth();
   static ConnectionHealth::ConnectionStability forceNoSignalConnectionHealth();
 
+
+  static void setUnstableStability();
+
  private:
   void maybeStateMain();
 
