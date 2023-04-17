@@ -17,7 +17,7 @@ const WebSocket = require('ws');
 const chokidar = require('chokidar');
 
 var currentPath = process.cwd();
-const ws_url = 'ws://localhost:8765';
+const ws_url = 'ws://127.0.0.1:8765';
 
 const http_port = 8888
 
@@ -65,9 +65,6 @@ process.on('SIGINT', function() {
   process.exit();
 });
 
-// TODO: Theoretically we can serve this via http:
-// however i found that the first load was always screwed up lol
-//
 if(options.remote){
   const server = http.createServer(function (req, res) {
     console.log(`(Server) /t Requests for ${req.url}`)
