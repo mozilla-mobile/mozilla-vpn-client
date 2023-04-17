@@ -44,6 +44,7 @@ target_include_directories(qtglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+set_target_properties(qtglean PROPERTIES FOLDER "Libs")
 target_link_libraries(qtglean PRIVATE Qt6::Core Qt6::Qml)
 
 # glean-core cannot be compiled to WASM
@@ -58,15 +59,17 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     if(IOS)
-        if (DEFINED CMAKE_OSX_ARCHITECTURES)
-            if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
-                set(RUST_ARCH aarch64-apple-ios)
-            elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
-                set(RUST_ARCH x86_64-apple-ios)
-            endif()
+        set(RUST_ARCH "")
+        if("arm64" IN_LIST CMAKE_OSX_ARCHITECTURES)
+            list(APPEND RUST_ARCH aarch64-apple-ios)
         endif()
-        
-        if (NOT DEFINED RUST_ARCH)
+
+        if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES)
+            list(APPEND RUST_ARCH x86_64-apple-ios)
+        endif()
+
+        # If no architecure is defined, just do all of them.
+        if (RUST_ARCH STREQUAL "")
             set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
         endif()
     elseif(ANDROID)

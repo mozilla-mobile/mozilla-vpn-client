@@ -162,8 +162,8 @@ mozillavpnnp.vcxproj*
 /glean/glean_autogen/
 /glean/telemetry/*
 !/glean/telemetry/.keepme
-vpnglean/prebuilt/
-vpnglean/uniffi.toml
+qtglean/prebuilt/
+qtglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/

@@ -11,7 +11,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-add_library(iosglean SHARED)
+add_library(iosglean STATIC)
 
 if(NOT MSVC AND NOT IOS)
   target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
@@ -22,15 +22,10 @@ target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
 set_target_properties(iosglean PROPERTIES
-    FRAMEWORK TRUE
-    FRAMEWORK_VERSION C
-    OUTPUT_NAME "Glean"
-    MACOSX_FRAMEWORK_INFO_PLIST "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Info.plist"
-    MACOSX_FRAMEWORK_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.Glean"
+    OUTPUT_NAME "IOSGlean"
+    FOLDER "Libs"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
-    XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
-    XCODE_ATTRIBUTE_MACH_O_TYPE "staticlib"
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
@@ -125,7 +120,8 @@ endforeach()
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
-    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh -o ${CMAKE_CURRENT_BINARY_DIR}/generated
+    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
+        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
     COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
