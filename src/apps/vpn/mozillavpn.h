@@ -209,6 +209,10 @@ class MozillaVPN final : public App {
   static QString appVersionForUpdate();
   static bool mockFreeTrial();
 
+  static bool forceStableConnectionHealth();
+  static bool forceUnstableConnectionHealth();
+  static bool forceNoSignalConnectionHealth();
+
  private:
   void maybeStateMain();
 

@@ -1807,6 +1807,10 @@ void MozillaVPN::registerNavigationBarButtons() {
 
 // static
 bool MozillaVPN::mockFreeTrial() { return s_mockFreeTrial; }
+//ConnectionStability stability() const { return m_stability; }
+bool MozillaVPN::forceStableConnectionHealth() { return ConnectionHealth::ConnectionStability::Stable; }
+bool MozillaVPN::forceUnstableConnectionHealth() { return ConnectionHealth::ConnectionStability::Unstable; }
+bool MozillaVPN::forceNoSignalConnectionHealth() { return ConnectionHealth::ConnectionStability::NoSignal; }
 
 // static
 void MozillaVPN::registerInspectorCommands() {
@@ -2133,6 +2137,31 @@ void MozillaVPN::registerInspectorCommands() {
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->controller()->quit();
         return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
+      "force_no_signal_connection",
+      "Force VPN connection to No Signal", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+          MozillaVPN::instance()->forceNoSignalConnectionHealth();
+          return QJsonObject();
+      });
+
+      InspectorHandler::registerCommand(
+      "force_stable_connection",
+      "Force VPN connection to Stable", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+          MozillaVPN::instance()->forceStableConnectionHealth();
+          return QJsonObject();
+
+      });
+
+      InspectorHandler::registerCommand(
+      "force_unstable_connection",
+      "Force VPN connection to Unstable", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+          MozillaVPN::instance()->forceUnstableConnectionHealth();
+          return QJsonObject();
       });
 }
 
