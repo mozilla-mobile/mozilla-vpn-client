@@ -44,6 +44,8 @@ void PurchaseWebHandler::startSubscription(const QString&) {
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, vpn,
           &MozillaVPN::completeAuthentication);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
+          &PurchaseWebHandler::subscriptionDone);
 
   TaskScheduler::scheduleTask(taskAuthenticate);
 }
@@ -67,4 +69,10 @@ void PurchaseWebHandler::nativeRegisterProducts() {
   logger.error()
       << "nativeRegisterProducts should not be called for PurchaseWebHandler";
   Q_ASSERT(false);
+}
+
+void PurchaseWebHandler::subscriptionDone(const QByteArray& json,
+                                          const QString& token) {
+  // This calls a telemetry event recording
+  emit subscriptionCompleted();
 }

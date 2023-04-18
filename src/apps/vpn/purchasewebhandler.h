@@ -19,6 +19,9 @@ class PurchaseWebHandler final : public PurchaseHandler {
   void nativeRegisterProducts() override;
   void startSubscription(const QString& productIdentifier) override;
   void startRestoreSubscription() override;
+
+ private slots:
+  void subscriptionDone(const QByteArray& json, const QString& token);
 };
 
 #endif  // PURCHASEWEBHANDLER_H

@@ -37,6 +37,7 @@
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
+#include "purchaseiaphandler.h"
 #include "qmlengineholder.h"
 #include "releasemonitor.h"
 #include "serveri18n.h"
@@ -197,15 +198,20 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
   }
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  PurchaseHandler* purchaseHandler = PurchaseIAPHandler::createInstance();
+  connect(purchaseHandler, &PurchaseIAPHandler::subscriptionCompleted, this,
+          &MozillaVPN::subscriptionCompleted);
+#else
   PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
+#endif
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
           &MozillaVPN::subscriptionStarted);
   connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this,
           &MozillaVPN::subscriptionFailed);
   connect(purchaseHandler, &PurchaseHandler::subscriptionCanceled, this,
           &MozillaVPN::subscriptionCanceled);
-  connect(purchaseHandler, &PurchaseHandler::subscriptionCompleted, this,
-          &MozillaVPN::subscriptionCompleted);
   connect(purchaseHandler, &PurchaseHandler::restoreSubscriptionStarted, this,
           &MozillaVPN::restoreSubscriptionStarted);
   connect(purchaseHandler, &PurchaseHandler::alreadySubscribed, this,
