@@ -85,17 +85,19 @@ void InspectorHotreloader::fetchAndAnnounce(const QUrl& path) {
   TaskFunction* dummy_task = new TaskFunction([]() {});
   NetworkRequest* request = new NetworkRequest(dummy_task, 200);
   request->get(path.toString());
-  
-  QObject::connect(request, &NetworkRequest::requestFailed,[](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Get qml content failed" << error;
-  });
+
+  QObject::connect(
+      request, &NetworkRequest::requestFailed,
+      [dummy_task](QNetworkReply::NetworkError error, const QByteArray&) {
+        dummy_task->deleteLater();
+        logger.error() << "Get qml content failed" << error;
+      });
 
   QObject::connect(request, &NetworkRequest::requestCompleted,
           [this,path,dummy_task](const QByteArray& data) {
         dummy_task->deleteLater();
         auto temp_path = QString("%1/%2").arg(
             m_qml_folder,path.fileName());
-        logger.warning() << "writing" << temp_path;
         auto temp_file = new QFile(temp_path);
         temp_file->open(QIODevice::WriteOnly);
         if (!temp_file->write(data)) {
