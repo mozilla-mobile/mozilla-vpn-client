@@ -211,31 +211,34 @@ describe('Subscription manager', function() {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
           userDataActive;
 
-      // We don't really want to go through the authentication flow because we
-      // are mocking everything. So this next chunk of code manually
-      // makes a call to the DesktopAuthenticationListener to mock
-      // a successful authentication in browser.
-      const url = await vpn.getLastUrl();
-      const authListenerPort = (new URL(url)).searchParams.get('port');
-      const options = {
-        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
-        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-        hostname: '127.0.0.1',
-        port: parseInt(authListenerPort, 10),
-        path: '/?code=the_code',
-        method: 'GET',
-      };
+      if (!this.ctx.wasm) {
+        // We don't really want to go through the
+        // authentication flow because we
+        // are mocking everything. So this next chunk of code manually
+        // makes a call to the DesktopAuthenticationListener to mock
+        // a successful authentication in browser.
+        const url = await vpn.getLastUrl();
+        const authListenerPort = (new URL(url)).searchParams.get('port');
+        const options = {
+          // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+          // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+          hostname: '127.0.0.1',
+          port: parseInt(authListenerPort, 10),
+          path: '/?code=the_code',
+          method: 'GET',
+        };
 
-      await new Promise(resolve => {
-        const req = http.request(options, res => {});
-        req.on('close', resolve);
-        req.on('error', error => {
-          throw new Error(
-              `Unable to connect to ${urlObj.hostname} to complete the
+        await new Promise(resolve => {
+          const req = http.request(options, res => {});
+          req.on('close', resolve);
+          req.on('error', error => {
+            throw new Error(
+                `Unable to connect to ${urlObj.hostname} to complete the
                 auth. ${error.name}, ${error.message}, ${error.stack}`);
+          });
+          req.end();
         });
-        req.end();
-      });
+      }
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
