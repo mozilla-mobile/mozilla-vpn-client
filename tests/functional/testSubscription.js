@@ -178,7 +178,7 @@ describe('Subscription manager', function() {
              queries.screenHome.SUBSCRIPTION_NEEDED.visible());
        });
 
-    it.only('Mock Desktop Authentication listener success', async () => {
+    it('Mock Desktop Authentication listener success', async () => {
       // This test verifies the case where a user without an active subscription
       // logs in and is taken to the "Subscribtion Needed" screen. Once they
       // click on the "Subscribe Now" button, they will be taken to the browser
