@@ -4,7 +4,7 @@
 
 #include "glean/timingdistribution.h"
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
@@ -16,7 +16,7 @@
 TimingDistributionMetric::TimingDistributionMetric(int id) : m_id(id) {}
 
 qint64 TimingDistributionMetric::start() const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_timing_distribution_start(m_id);
 #else
   return 0;
@@ -24,7 +24,7 @@ qint64 TimingDistributionMetric::start() const {
 }
 
 void TimingDistributionMetric::stopAndAccumulate(qint64 timerId) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   glean_timing_distribution_stop_and_accumulate(m_id, timerId);
 #else
   Q_UNUSED(timerId);
@@ -32,7 +32,7 @@ void TimingDistributionMetric::stopAndAccumulate(qint64 timerId) const {
 }
 
 void TimingDistributionMetric::cancel(qint64 timerId) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   glean_timing_distribution_cancel(m_id, timerId);
 #else
   Q_UNUSED(timerId);
@@ -41,7 +41,7 @@ void TimingDistributionMetric::cancel(qint64 timerId) const {
 
 int32_t TimingDistributionMetric::testGetNumRecordedErrors(
     ErrorType errorType) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_timing_distribution_test_get_num_recorded_errors(m_id,
                                                                 errorType);
 #else
@@ -52,7 +52,7 @@ int32_t TimingDistributionMetric::testGetNumRecordedErrors(
 
 DistributionData TimingDistributionMetric::testGetValue(
     const QString& pingName) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   auto value = QJsonDocument::fromJson(
       glean_timing_distribution_test_get_value(m_id, pingName.toLocal8Bit()));
 
