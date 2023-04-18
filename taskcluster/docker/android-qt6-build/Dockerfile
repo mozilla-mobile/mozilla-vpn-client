@@ -17,7 +17,7 @@ ARG SENTRY_CLI_VERSION="2.9.0"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -q update &&\
-    apt-get -yq install --no-install-recommends gnupg curl ca-certificates libglib2.0-dev cargo python3-dev &&\
+    apt-get -yq install --no-install-recommends gnupg curl ca-certificates ninja-build libglib2.0-dev cargo python3-dev &&\
     # add zulu-jdk to the
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 &&\
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb &&\
@@ -56,9 +56,9 @@ RUN echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --ins
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;29.0.2" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;30.0.3" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;31.0.0" &&\
-    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;33.0.0" &&\
+    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "build-tools;33.0.0"
     # Todo: Dedupe cmake deps
-    echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
+RUN echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;3.10.2.4988404" &&\
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "cmake;${CMAKE_VERSION}" &&\
         # Note: Not sure why we need emulator, need to investiage the gradle dependencies
     echo y | /opt/cmdline-tools/bin/sdkmanager --sdk_root=/opt/android/sdk --install "emulator" &&\
