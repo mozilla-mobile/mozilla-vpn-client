@@ -102,7 +102,8 @@ MozillaVPN* s_instance = nullptr;
 bool s_mockFreeTrial = false;
 QString s_updateVersion;
 
-ConnectionHealth::ConnectionStability s_stability = ConnectionHealth::ConnectionStability::Stable;
+ConnectionHealth::ConnectionStability s_stability =
+    ConnectionHealth::ConnectionStability::Stable;
 }  // namespace
 
 // static
@@ -1824,8 +1825,7 @@ MozillaVPN::forceNoSignalConnectionHealth() {
 }
 
 // static
-void MozillaVPN::setUnstableStability()
-{
+void MozillaVPN::setUnstableStability() {
   s_stability = ConnectionHealth::ConnectionStability::Unstable;
 }
 
@@ -2173,8 +2173,8 @@ void MozillaVPN::registerInspectorCommands() {
   InspectorHandler::registerCommand(
       "force_unstable_connection", "Force VPN connection to Unstable", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
-        // MozillaVPN::instance()->forceUnstableConnectionHealth();
-        MozillaVPN::instance()->setUnstableStability();
+        MozillaVPN::instance()->forceUnstableConnectionHealth();
+        // MozillaVPN::instance()->setUnstableStability();
         return QJsonObject();
       });
 }

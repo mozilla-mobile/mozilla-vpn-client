@@ -33,6 +33,12 @@ class ConnectionHealth final : public QObject {
 
   ConnectionStability stability() const { return m_stability; }
 
+  void overwriteStabilityForInspector(ConnectionStability stability) {
+    m_stabilityOverwritten = true;
+    m_stability = stability;
+    emit stabilityChanged();
+  }
+
   uint latency() const { return m_pingHelper.latency(); }
   double loss() const { return m_pingHelper.loss(); }
   double stddev() const { return m_pingHelper.stddev(); }
@@ -63,6 +69,10 @@ class ConnectionHealth final : public QObject {
 
  private:
   ConnectionStability m_stability = Stable;
+
+  // This flag is used to check if the connection stability has been overwritten
+  // by the inspector command.
+  bool m_stabilityOverwritten = false;
 
   QTimer m_settlingTimer;
   QTimer m_noSignalTimer;
