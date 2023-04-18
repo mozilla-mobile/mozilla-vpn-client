@@ -178,16 +178,16 @@ describe('Subscription manager', function() {
              queries.screenHome.SUBSCRIPTION_NEEDED.visible());
        });
 
-    it('Mock Desktop Authentication listener success', async () => {
-      // This test verifies the case where a user is logged in
-      // but the VPN is off when their subscription expires.
-      // When they try to turn the VPN on, they get the
-      // "Subscribe to Mozilla VPN" screen.
+    it.only('Mock Desktop Authentication listener success', async () => {
+      // This test verifies the case where a user without an active subscription
+      // logs in and is taken to the "Subscribtion Needed" screen. Once they
+      // click on the "Subscribe Now" button, they will be taken to the browser
+      // to finish subscription and will be then redirected back to the
+      // controller home screen.
 
       await vpn.authenticateInApp(true, true);
 
-      // Step 1: Override the Guardian endpoint to mock an expired
-      // subscription.
+      // Mark the user subscription as inactive
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
           userDataInactive;
 
@@ -195,15 +195,12 @@ describe('Subscription manager', function() {
       await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
       // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-      await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                 .SUBSCRIPTION_NEEDED_VIEW.visible());
+      await vpn.waitForQuery(
+          queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_VIEW.visible());
 
-      // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-      // await vpn.waitForQuery(queries.screenSettings.subscriptionView
-      //   .SUBSCRIPTION_NEEDED_VIEW.visible());
 
       // Click on the Subscribe Now button.
-      await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView
+      await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded
                                          .SUBSCRIPTION_NEEDED_BUTTON.visible());
 
       await vpn.waitForCondition(async () => {
@@ -213,7 +210,6 @@ describe('Subscription manager', function() {
 
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
           userDataActive;
-
 
       // We don't really want to go through the authentication flow because we
       // are mocking everything. So this next chunk of code manually
