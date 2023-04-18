@@ -6,7 +6,8 @@
     "containerEnv": {
         "CMAKE_C_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_EXPORT_COMPILE_COMMANDS":"true"
+        "CMAKE_EXPORT_COMPILE_COMMANDS":"true",
+        "IS_DEV_CONTAINER":"ANDROID_ARM64"
     },
 
     "mounts": [
