@@ -38,6 +38,9 @@ qtglean/Cargo.lock
 # Translation pipeline
 addon_ts/
 
+# Cmake Presets
+# https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
+CMakeUserPresets.json
 # CMake build artifacts
 cmake_install.cmake
 CMakeCache.txt
