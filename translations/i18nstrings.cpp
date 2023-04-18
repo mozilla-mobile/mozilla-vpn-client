@@ -20,9 +20,7 @@ I18nStrings* I18nStrings::instance() {
 }
 
 // static
-void I18nStrings::initialize() {
-  Q_INIT_RESOURCE(translations);
-}
+void I18nStrings::initialize() { Q_INIT_RESOURCE(translations); }
 
 I18nStrings::I18nStrings(QObject* parent) : QQmlPropertyMap(parent) {
   retranslate();
