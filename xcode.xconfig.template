@@ -1,8 +1,0 @@
-# MacOS configuration
-APP_ID_MACOS = <>
-LOGIN_ID_MACOS = <>
-
-# IOS configuration
-GROUP_ID_IOS = <>
-APP_ID_IOS = <>
-NETEXT_ID_IOS = <>
