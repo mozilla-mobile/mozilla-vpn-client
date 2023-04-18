@@ -6,15 +6,15 @@
     "android_arm64:build": "devcontainer exec --id-label=\"arch=android_arm64\" --workspace-folder . --override-config ./.devcontainer/android_arm64/.devcontainer.json ./scripts/android/cmake.sh -d",
     "android_arm64:devcontainer:up": "devcontainer up --id-label=\"arch=android_arm64\" --workspace-folder . --override-config ./.devcontainer/android_arm64/.devcontainer.json",
     "android_arm64:devcontainer:fresh": "devcontainer up  --id-label=\"arch=android_arm64\" --workspace-folder . --override-config ./.devcontainer/android_arm64/.devcontainer.json --remove-existing-container",
-    "android_arm64:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:android-arm64\" --workspace-folder .devcontainer/android_arm64.build",
+    "android_arm64:devcontainer:build": "devcontainer build --platform=\"linux/amd64\" --image-name=\"cuddlebuild:android-arm64\" --workspace-folder .devcontainer/android_arm64.build",
     "android_x86_64:build": "devcontainer exec --id-label=\"arch=android_intel\" --workspace-folder . --override-config ./.devcontainer/android_x86_64/.devcontainer.json ./scripts/android/cmake.sh -d",
     "android_x86_64:devcontainer:up": "devcontainer up --id-label=\"arch=android_intel\" --workspace-folder . --override-config ./.devcontainer/android_x86_64/.devcontainer.json",
     "android_x86_64:devcontainer:fresh": "devcontainer up --id-label=\"arch=android_intel\" --workspace-folder . --override-config ./.devcontainer/android_x86_64/.devcontainer.json --remove-existing-container",
-    "android_x86_64:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:android-x86_64\" --workspace-folder .devcontainer/android_x86_64.build",
+    "android_x86_64:devcontainer:build": "devcontainer build --platform=\"linux/amd64\" --image-name=\"cuddlebuild:android-x86_64\" --workspace-folder .devcontainer/android_x86_64.build",
     "wasm:build": "devcontainer exec --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json ./taskcluster/scripts/build/wasm.sh ",
     "wasm:devcontainer:up": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json",
     "wasm:devcontainer:fresh": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json --remove-existing-container",
-    "wasm:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build"
+    "wasm:devcontainer:build": "devcontainer build --platform=\"linux/amd64\" --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build"
     
   },
   "devDependencies": {
