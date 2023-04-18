@@ -113,7 +113,7 @@ print Y "Generating qtglean samples..."
 python3 qtglean/glean_parser_ext/run_glean_parser.py || die "Failed to generate qtglean samples"
 
 printn Y "Extract the project version... "
-SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ )
+SHORTVERSION=$(scripts/utils/getversion.py)
 FULLVERSION=$(echo $SHORTVERSION | cut -d. -f1).$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION"
 
