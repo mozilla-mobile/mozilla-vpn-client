@@ -1808,24 +1808,6 @@ void MozillaVPN::registerNavigationBarButtons() {
 // static
 bool MozillaVPN::mockFreeTrial() { return s_mockFreeTrial; }
 
-// ConnectionHealth::ConnectionStability
-// MozillaVPN::forceStableConnectionHealth() {
-//   return ConnectionHealth::ConnectionStability::Stable;
-// }
-// ConnectionHealth::ConnectionStability
-// MozillaVPN::forceUnstableConnectionHealth() {
-//   return ConnectionHealth::ConnectionStability::Unstable;
-// }
-// ConnectionHealth::ConnectionStability
-// MozillaVPN::forceNoSignalConnectionHealth() {
-//   return ConnectionHealth::ConnectionStability::NoSignal;
-// }
-
-// static
-// void MozillaVPN::setUnstableStability() {
-//   s_stability = ConnectionHealth::ConnectionStability::Unstable;
-// }
-
 // static
 void MozillaVPN::registerInspectorCommands() {
   InspectorHandler::setConstructorCallback(
@@ -2154,32 +2136,31 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "force_no_signal_connection", "Force VPN connection to No Signal", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()
-            ->connectionHealth()
-            ->overwriteStabilityForInspector(
-                ConnectionHealth::ConnectionStability::NoSignal);
-        return QJsonObject();
-      });
+      "force_connection_health",
+      "Force VPN connection health stability. Possible values are: stable, "
+      "unstable, nosignal",
+      1, [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        auto stabilityMode = arguments[1];
 
-  InspectorHandler::registerCommand(
-      "force_stable_connection", "Force VPN connection to Stable", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()
-            ->connectionHealth()
-            ->overwriteStabilityForInspector(
-                ConnectionHealth::ConnectionStability::Stable);
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
-      "force_unstable_connection", "Force VPN connection to Unstable", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()
-            ->connectionHealth()
-            ->overwriteStabilityForInspector(
-                ConnectionHealth::ConnectionStability::Unstable);
+        if (stabilityMode == "stable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Stable);
+        } else if (stabilityMode == "unstable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Unstable);
+        } else if (stabilityMode == "nosignal") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::NoSignal);
+        } else {
+          obj["error"] = QString("Please enter a valid stability mode value.");
+        }
         return QJsonObject();
       });
 }
