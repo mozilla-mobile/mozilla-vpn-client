@@ -64,24 +64,38 @@ Should just work / or give you the same error as in CI.
 Currently all Tasks are probably writing to the workspace-folder, which is mounted on the Host's OS. Unless you are running this on Linux, this is very costly. 
 
 ### Q: Get a Container Engine On MacOS: 
-Given that docker-desktop is not on option due to it's license -  big fan of [colima](https://github.com/abiosoft/colima). 
-```
-brew install colima
-# Feel free to adjust this to your specs:
-colima start --cpu 12 \
-             --memory 32 \
-             --disk 40 \
-             --aarch x86_64
+- Grab [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mozillians: Get a Licence in Servicedesk!)
+- Install With Recommended Settings
+- If on M1
+  - Go to Docker Settings -> "Features in development" 
+  - Enable "Use Rosetta for x86/amd64 emulation"
+TODO: ADD IMAGES
 
-# In case of an m1 Mac, you can use rosetta to help
-# This requires MacOS 13
-colima start --vm-type vz --vz-rosetta -m 32 -d 40  --cpu 12
 
-```
-In case colima at some point uses too much storage, feel free to nuke the vm with `colima delete` and re-create with colima start. 
 
-### Q: (M1) - My vscode consumes all i/o to do sig-checks: 
+
+
+### Q: (M1) - Vscode consumes all i/o to do sig-checks: 
 If you feel fancy, you can disable them, or wait until it's done. 
 ```
 "extensions.verifySignature": false
+```
+
+### How can i quickly run something in a container?
+Step 1: 
+Get the Container ID using `docker ps`
+```
+docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED          STATUS          PORTS     NAMES
+584389fe6cc2   cuddlebuild:android-arm64   "/bin/sh -c 'echo Co…"   26 minutes ago   Up 26 minutes             sweet_franklin
+```
+
+The Container ID of the container i want is `584389fe6cc2` - therefore you can now run for example:
+
+```
+docker exec -it 584389fe6cc2 watch ccache -s
+```
+or to get an interactive shell: 
+```
+docker exec -it 584389fe6cc2 bash
 ```

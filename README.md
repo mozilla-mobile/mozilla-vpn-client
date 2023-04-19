@@ -397,36 +397,8 @@ for iOS devices, or select any of the simulation targets when building for the s
 
 ### How to build from source code for Android
 
-1. You need to install go >= v1.18. If you don't have it done already, download
-it from the [official website](https://golang.org/dl/).
+Moved: See [Wiki Article](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/android)
 
-2. Follow the [Getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
-
-3. Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.2.4/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.2.4/gcc_64/`.
-
-4. Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` environment variables,
-to point to the Android SDK and NDK installation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
-
-5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
-directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
-
-6. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
-
-7. Build the apk
-```bash
-./scripts/android/cmake.sh -d </path/to/Qt6/> -A <architecture> <debug|release>
-```
-Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
-
-Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by default it will use all.
-
-8. The apk will be located in
-`.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
-
-9. Install with adb on device/emulator
-```bash
-adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
-```
 
 ### How to build from source code for Windows
 
