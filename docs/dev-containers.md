@@ -58,6 +58,8 @@ therefore running a build like
 ```
 Should just work / or give you the same error as in CI. 
 
+![Screen_Recording_Of_Going_Into_VS_CODE](https://user-images.githubusercontent.com/9611612/233138266-4dd49973-0474-44c3-84fc-060dc19716b3.gif)
+
 
 ## Help Section 
 ### Q: Why is it slow?
@@ -69,8 +71,15 @@ Currently all Tasks are probably writing to the workspace-folder, which is mount
 - If on M1
   - Go to Docker Settings -> "Features in development" 
   - Enable "Use Rosetta for x86/amd64 emulation"
-TODO: ADD IMAGES
 
+![Screenshot Of docker setting](https://user-images.githubusercontent.com/9611612/233135351-563d42bb-8d5c-44c2-acf4-61d04a6354d0.png)
+- If Docker was loaded correctly, in a new terminal `docker ps` should not error and instead show something similar to: 
+
+```bash 
+(base) basti@MBP-von-Basti ~ % docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS       PORTS     NAMES
+
+```
 
 
 
