@@ -167,7 +167,7 @@ fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp -j$JOBS
+cmake --build .tmp -j$JOBS --target mozillavpn_make_apk
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
@@ -199,12 +199,27 @@ if [[ "$RELEASE" ]]; then
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
+
+  if [ -n "$IS_DEV_CONTAINER" ]; then
+    echo "In dev Container, Copying binary:"
+    cp .tmp/src/android-build/build/outputs/apk/release  $WORKSPACE_ROOT
+  else 
+    print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
+  fi
+
+
 else
   print Y "Generating Debug APK..."
   ./gradlew compileDebugSources
   ./gradlew assembleDebug || die
   print G "Done 🎉"
-  print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
+
+  if [ -n "$IS_DEV_CONTAINER" ]; then
+    echo "In dev Container, Copying binary:"
+    cp .tmp/src/android-build/build/outputs/apk/debug  $WORKSPACE_ROOT
+  else 
+     print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
+  fi
 fi
 
 rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
