@@ -136,6 +136,41 @@ describe('Subscription manager', function() {
                'VPN is on';
          });
        });
+
+    it('Go to "Subscribe to Mozilla VPN" screen once user toggles off VPN after subscription expires and they enter No Signal',
+       async () => {
+         // This test verifies the case where a user is logged in
+         // and the VPN is on when their subscription expires.
+         // They enter No Signal, and once they toggle the VPN off
+         // they get the "Subscribe to Mozilla VPN" screen.
+
+         await vpn.authenticateInApp(true, true);
+
+         // toggle on VPN here
+         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+         await vpn.waitForCondition(async () => {
+           return await vpn.getQueryProperty(
+                      queries.screenHome.CONTROLLER_TITLE, 'text') ==
+               'VPN is on';
+         });
+
+         // Override the Guardian endpoint to mock an expired
+         // subscription.
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataInactive;
+
+         // Because the subscription has expired, client enter the No Signal
+         // state
+         await vpn.forceConnectionStabilityStatus('nosignal');
+
+         // Once the VPN is toggled off, we are redirected to the "Subscribe to
+         // Mozilla VPN" screen.
+         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+         await vpn.waitForQuery(
+             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+       });
   });
 });
 
@@ -855,8 +890,8 @@ describe('Subscription view', function() {
             queries.screenSettings.subscriptionView.PLAN.visible());
         assert.equal(
             await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.PLAN.visible(),
-                'text'), data.plan.expected);
+                queries.screenSettings.subscriptionView.PLAN.visible(), 'text'),
+            data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
@@ -865,7 +900,8 @@ describe('Subscription view', function() {
         assert.equal(
             await vpn.getQueryProperty(
                 queries.screenSettings.subscriptionView.ACTIVATED.visible(),
-                'text'), data.subscription.expected.activated);
+                'text'),
+            data.subscription.expected.activated);
       }
 
       await vpn.waitForQuery(
@@ -873,11 +909,13 @@ describe('Subscription view', function() {
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED.visible(),
-              'text'), data.subscription.expected.cancelled);
+              'text'),
+          data.subscription.expected.cancelled);
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
-              'text'), data.subscription.expected.label);
+              'text'),
+          data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == 'web') {
         if (data.payment.expected.card) {
@@ -886,7 +924,8 @@ describe('Subscription view', function() {
           assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.BRAND.visible(),
-                  'text'), data.payment.expected.card);
+                  'text'),
+              data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
           await vpn.waitForQuery(
@@ -894,7 +933,8 @@ describe('Subscription view', function() {
           assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.EXPIRES.visible(),
-                  'text'), data.payment.expected.expires);
+                  'text'),
+              data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
           await vpn.waitForQuery(
@@ -903,7 +943,8 @@ describe('Subscription view', function() {
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD
                       .visible(),
-                  'text'), data.payment.expected.brand);
+                  'text'),
+              data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
           await vpn.waitForQuery(queries.screenSettings.subscriptionView
@@ -912,7 +953,8 @@ describe('Subscription view', function() {
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
                       .visible(),
-                  'text'), data.payment.expected.payment);
+                  'text'),
+              data.payment.expected.payment);
         }
       }
 
