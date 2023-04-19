@@ -41,7 +41,6 @@ Item {
     }
 
     MZFlickable {
-        property bool firstRun: true
         id: onboardingPanel
 
         flickContentHeight: Math.max(window.safeContentHeight / 2 + col.implicitHeight, parent.height)
@@ -143,7 +142,7 @@ Item {
                                     property: "opacity"
                                     from: 1
                                     to: panelAnimation.imageOpacityValue
-                                    duration: onboardingPanel.firstRun ? 1 : 100
+                                    duration: 100
                                 }
                                 PauseAnimation {
                                     duration: 0
@@ -160,7 +159,7 @@ Item {
                                         property: "imageScaleValue"
                                         from: panelAnimation.imageScaleValue
                                         to: 1
-                                        duration: onboardingPanel.firstRun ? 1 : 100
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
                                     PropertyAnimation {
@@ -168,14 +167,9 @@ Item {
                                         property: "opacity"
                                         from: panelAnimation.imageOpacityValue
                                         to: 1
-                                        duration: onboardingPanel.firstRun ? 1 : 100
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
-                                }
-                                PropertyAction {
-                                    target: onboardingPanel
-                                    property: "firstRun"
-                                    value: false
                                 }
                             }
 
