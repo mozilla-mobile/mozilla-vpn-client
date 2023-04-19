@@ -275,7 +275,7 @@ void ServerLatency::criticalPingError() {
   logger.info() << "Encountered Unrecoverable ping error";
 }
 
-unsigned int ServerLatency::avgLatency() const {
+qint64 ServerLatency::avgLatency() const {
   if (m_latency.isEmpty()) {
     return 0;
   }

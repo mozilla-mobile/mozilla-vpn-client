@@ -54,7 +54,7 @@ class ServerCity final : public QObject {
   Q_INVOKABLE int multiHopScore(const QString& country,
                                 const QString& cityName) const;
 
-  unsigned int latency() const;
+  qint64 latency() const;
 
   const QList<QString> servers() const { return m_servers; }
 

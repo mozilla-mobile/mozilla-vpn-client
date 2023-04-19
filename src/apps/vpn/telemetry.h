@@ -42,7 +42,7 @@ class Telemetry final : public QObject {
 #endif
 
   // The Glean timer id for the performance.time_to_main_screen metric.
-  int m_timeToFirstScreenTimerId = 0;
+  qint64 m_timeToFirstScreenTimerId = 0;
 };
 
 #endif  // TELEMETRY_H
