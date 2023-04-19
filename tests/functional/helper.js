@@ -600,12 +600,6 @@ module.exports = {
   },
 
   async forceConnectionStabilityStatus(connectionStabilityStatus) {
-    // const json = await this._writeCommand('force_connection_health');
-    // assert(
-    //     json.type === 'force_connection_health' && !('error' in json),
-    //     `Command failed: ${json.error}`);
-
-
     const json = await this._writeCommand(`force_connection_health ${
         encodeURIComponent(connectionStabilityStatus)}`);
     assert(
