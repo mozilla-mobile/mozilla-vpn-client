@@ -15,12 +15,12 @@
   "message": {
     "id": "message_paid_research",
     "title": "Participate in paid research to help make VPN better",
-    "subtitle": "This study will take place in April and May 2023, and you could receive up to $200 USD (or the equivalent in your local currency) as our thanks for your time and feedback.",
+    "subtitle": "This study will take place in April and May 2023, and you will receive up to $100 USD (or the equivalent in your local currency) as our thanks for your time and feedback.",
     "badge": "survey",
     "blocks": [
       { "id": "c_1",
         "type": "text",
-        "content": "We’re exploring ways to enhance the Mozilla VPN experience and want to hear your thoughts. This research can be completed right from your home computer."
+        "content": "We’re exploring ways to enhance the Mozilla VPN experience and want to hear your thoughts. This research can be completed right from your home computer."
       },
       { "id": "c_3",
         "type": "text",
@@ -31,11 +31,11 @@
         "content": [
           {
             "id": "l_1",
-            "content": "If you are invited to the study, you will be asked to log in to our research platform and complete 2-3 short activities. We estimate that it will take about 30 minutes of your time to complete them all, and you would be compensated $60."
+            "content": "If you are invited to the study, you will be asked to log into our research platform and complete 4 short activities over the course of 2 days, such as reviewing a new prototype and participating in discussions about new ideas."
           },
           {
             "id": "l_2",
-            "content": "Approximately half of our participants will be invited to join a 90-minute online focus group the following week, for an additional $140."
+            "content": "We estimate that all of this will take no more than 30-45 min of your time in total, and you will be compensated $100."
           }
        ]
       },
