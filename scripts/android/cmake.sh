@@ -147,7 +147,7 @@ if [[ "$RELEASE" ]]; then
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-    -GNinja \
+    -DCMAKE_AUTOGEN_PARALLEL=1 \
     -S . -B .tmp/
 else
   printn Y "Use debug config \n"
@@ -160,19 +160,22 @@ else
     -DCMAKE_BUILD_TYPE=Debug \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-    -GNinja \
+    -DCMAKE_AUTOGEN_PARALLEL=1 \
     -S . -B .tmp/
 
 fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp -j$JOBS --target mozillavpn_make_apk
+# Do not Build the default Project, as that will build other targets than vpn
+# Also try to build apk's which will fail because we need to prep some glean stuff. 
+# See Below. 
+cmake --build .tmp -j$JOBS --target mozillavpn_prepare_apk_dir 
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
-
-#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
+# We need to pass --no-build here, otherwise we get one useless timecostly invokation of gradle.
+androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build --no-build || die
 
 # Warning: this is hacky.
 #
@@ -201,8 +204,8 @@ if [[ "$RELEASE" ]]; then
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
 
   if [ -n "$IS_DEV_CONTAINER" ]; then
-    echo "In dev Container, Copying binary:"
-    cp .tmp/src/android-build/build/outputs/apk/release  $WORKSPACE_ROOT
+    echo "In dev Container, Copying binary to ./release"
+    cp -r .tmp/src/android-build/build/outputs/apk/release .
   else 
     print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
   fi
@@ -215,8 +218,8 @@ else
   print G "Done 🎉"
 
   if [ -n "$IS_DEV_CONTAINER" ]; then
-    echo "In dev Container, Copying binary:"
-    cp .tmp/src/android-build/build/outputs/apk/debug  $WORKSPACE_ROOT
+    echo "In dev Container, Copying binary: to ./debug"
+    cp -r .tmp/src/android-build/build/outputs/apk/debug .
   else 
      print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
   fi

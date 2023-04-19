@@ -7,21 +7,25 @@
 
 2. Make sure to run `npm install` 
 
-3. We offer 2 dev-image configs: 
+3. We offer 2 dev-images: 
     - Android-x86_64 - If you are on Intel/AMD and want to run on an Emulator/Chromebook/WSA
     - Android-Arm64 - If you are on an M1+Emulator or want to run this on a real device. 
 
 4. Build a dev container:
     - `npm run android_x86_64:devcontainer:build` 
-    - `npm run android_arm64:devcontainer:build` 
+    - `npm run android_arm64:devcontainer:build`
+
     This will take a while, grab a coffee! 
 5. (Optional): [If you want to use that container with VS-Code learn more](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/dev-containers)
 6. Trigger a Build directly from the Terminal: 
     - `npm run android_x86_64:build`
     - `npm run android_arm64:build`
     
-7. You should now have a `debug/` folder containg an *.apk
+7. You should now have a `debug/` folder containg *.apk
 
+## Cleaning: 
+In case you want to purge all build things do `rm .tmp/*` inside the container. 
+**Do not remove the .tmp folder** as that is a volume. 
 
 ## Installing on a Device / Emulator
 1. Install android command-line tools either:
