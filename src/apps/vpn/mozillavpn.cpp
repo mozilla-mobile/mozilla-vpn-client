@@ -2134,6 +2134,35 @@ void MozillaVPN::registerInspectorCommands() {
         MozillaVPN::instance()->controller()->quit();
         return QJsonObject();
       });
+
+  InspectorHandler::registerCommand(
+      "force_connection_health",
+      "Force VPN connection health stability. Possible values are: stable, "
+      "unstable, nosignal",
+      1, [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        auto stabilityMode = arguments[1];
+
+        if (stabilityMode == "stable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Stable);
+        } else if (stabilityMode == "unstable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Unstable);
+        } else if (stabilityMode == "nosignal") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::NoSignal);
+        } else {
+          obj["error"] = QString("Please enter a valid stability mode value.");
+        }
+        return QJsonObject();
+      });
 }
 
 // static

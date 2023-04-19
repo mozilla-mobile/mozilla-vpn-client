@@ -5,6 +5,7 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
+#include "constants.h"
 #include "dnspingsender.h"
 #include "pinghelper.h"
 
@@ -32,6 +33,17 @@ class ConnectionHealth final : public QObject {
   ~ConnectionHealth();
 
   ConnectionStability stability() const { return m_stability; }
+
+  void overwriteStabilityForInspector(ConnectionStability stability) {
+    if (Constants::inProduction()) {
+      qFatal(
+          "Connection health stability mode can only be overwritten in Dev "
+          "mode!");
+    }
+    m_stabilityOverwritten = true;
+    m_stability = stability;
+    emit stabilityChanged();
+  }
 
   uint latency() const { return m_pingHelper.latency(); }
   double loss() const { return m_pingHelper.loss(); }
@@ -63,6 +75,10 @@ class ConnectionHealth final : public QObject {
 
  private:
   ConnectionStability m_stability = Stable;
+
+  // This flag is used to check if the connection stability has been overwritten
+  // by the inspector command.
+  bool m_stabilityOverwritten = false;
 
   QTimer m_settlingTimer;
   QTimer m_noSignalTimer;

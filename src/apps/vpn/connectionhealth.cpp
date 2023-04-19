@@ -129,6 +129,15 @@ void ConnectionHealth::startIdle() {
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
+  // Check the stability overwritten flag to see if we are attempting to force
+  // overwrite the stability through the inspector command.
+  if (m_stabilityOverwritten) {
+    logger.debug() << "Connection health stability is overwritten through the "
+                      "Inspector commandline. Forced stability value: "
+                   << stability;
+    return;
+  }
+
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
 
