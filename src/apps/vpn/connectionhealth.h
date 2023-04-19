@@ -5,6 +5,7 @@
 #ifndef CONNECTIONHEALTH_H
 #define CONNECTIONHEALTH_H
 
+#include "appconstants.h"
 #include "dnspingsender.h"
 #include "pinghelper.h"
 
@@ -34,9 +35,10 @@ class ConnectionHealth final : public QObject {
   ConnectionStability stability() const { return m_stability; }
 
   void overwriteStabilityForInspector(ConnectionStability stability) {
-    // Only allow overriding the connection health stability in dev mode.
     if (Constants::inProduction()) {
-      qFatal << "Illegal invokation";
+      qFatal(
+          "Connection health stability mode can only be overwritten in Dev "
+          "mode!");
     }
     m_stabilityOverwritten = true;
     m_stability = stability;
