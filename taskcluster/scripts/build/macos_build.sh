@@ -105,7 +105,7 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
 
 
 print Y "Building the client..."
-cmake --build ${MOZ_FETCHES_DIR}/build
+cmake --build ${MOZ_FETCHES_DIR}/build --verbose
 
 print Y "Building the installer..."
 cmake --build ${MOZ_FETCHES_DIR}/build --target pkg
