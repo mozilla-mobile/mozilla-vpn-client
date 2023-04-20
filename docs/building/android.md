@@ -3,7 +3,7 @@
 
 ## Building the Client (using Dev-Containers) 
 
-1. You need Docker (or compatible) with the ability to run Linux/AMD64 images. 
+1. You need Docker (or compatible) with the ability to run Linux/AMD64 images. Checkout the Setup Section in the [Dev-Container Wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/dev-containers#setup)
 
 2. Make sure to run `npm install` 
 

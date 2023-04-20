@@ -2,13 +2,30 @@
 
 Dev-Containers are a small experiment, they allow you to run our CI docker Images locally. 
 
-## Requirements: 
+## Setup: 
 - Node
-- A Docker compatible Container Engine: 
-    - docker, podman, colima, rancher) 
-    - MacOS users see Q/A
-    - VS-Code Extension: [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-    
+- A docker Compatible Container engine ([rancher](https://rancherdesktop.io/), [colima](https://github.com/abiosoft/colima), [podman](https://podman-desktop.io/))
+- For simplicity we will continue with [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+> Note: Mozillians: Get a licence in servicedesk!
+- Install With Recommended Settings. 
+- (In case you are running on an M1 Mac)
+  - Go to Docker Settings -> "Features in development" 
+  - Enable "Use Rosetta for x86/amd64 emulation"
+
+![Screenshot Of docker setting](https://user-images.githubusercontent.com/9611612/233135351-563d42bb-8d5c-44c2-acf4-61d04a6354d0.png)
+
+- If docker was loaded correctly, open new terminal and run `docker ps`. Everything is setup correctly if the output looks similar to: 
+
+```bash 
+(base) basti@MBP-von-Basti ~ % docker ps
+CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS       PORTS     NAMES
+
+```
+
+- Optional: Install reccomended VS-Code plugins:
+  - [VS-Code Remote Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+  - [VS-Code Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker)
+
  
 
 ## Example Build using CLI only: 
@@ -64,24 +81,6 @@ Should just work / or give you the same error as in CI.
 ## Help Section 
 ### Q: Why is it slow?
 Currently all Tasks are probably writing to the workspace-folder, which is mounted on the Host's OS. Unless you are running this on Linux, this is very costly. 
-
-### Q: Get a Container Engine On MacOS: 
-- Grab [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mozillians: Get a licence in servicedesk!)
-- Install With Recommended Settings
-- If on M1
-  - Go to Docker Settings -> "Features in development" 
-  - Enable "Use Rosetta for x86/amd64 emulation"
-
-![Screenshot Of docker setting](https://user-images.githubusercontent.com/9611612/233135351-563d42bb-8d5c-44c2-acf4-61d04a6354d0.png)
-- If Docker was loaded correctly, in a new terminal `docker ps` should not error and instead show something similar to: 
-
-```bash 
-(base) basti@MBP-von-Basti ~ % docker ps
-CONTAINER ID   IMAGE                       COMMAND                  CREATED       STATUS       PORTS     NAMES
-
-```
-
-
 
 
 ### Q: (M1) - Vscode consumes all i/o to do sig-checks: 
