@@ -44,6 +44,9 @@ if(APPLE)
         enable_language(Swift)
     endif()
 
+    ## Ensure we are using Apple's toolchain
+    include(scripts/cmake/xcode-toolchain.cmake)
+
     ## Setup some defaults for code signing.
     if(NOT BUILD_OSX_APP_IDENTIFIER)
         set(BUILD_OSX_APP_IDENTIFIER org.mozilla.macos.FirefoxVPN CACHE STRING "OSX Application identifier")
