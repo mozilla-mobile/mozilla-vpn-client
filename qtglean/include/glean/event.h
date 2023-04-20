@@ -17,7 +17,8 @@ struct FfiExtra {
 
   FfiExtra() : keys(0), values(0) {}
 
-  FfiExtra(qsizetype keysSize, qsizetype valuesSize) : keys(keysSize), values(valuesSize) {}
+  FfiExtra(qsizetype keysSize, qsizetype valuesSize)
+      : keys(keysSize), values(valuesSize) {}
 };
 
 struct EventMetricExtra {
