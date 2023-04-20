@@ -70,9 +70,14 @@ function(build_rust_archives)
     )
 
     ## For iOS simulator targets, ensure that we unset the `SDKROOT` variable as
-    ## this will result in broken simulation builds in Xcode.
+    ## this will result in broken simulation builds in Xcode. For all other apple
+    ## platforms, attempt to set the SDKROOT via CMAKE_OSX_SYSROOT
     if((RUST_BUILD_ARCH STREQUAL "aarch64-apple-ios-sim") OR (RUST_BUILD_ARCH STREQUAL "x86_64-apple-ios"))
         list(PREPEND RUST_BUILD_CARGO_ENV "--unset=SDKROOT")
+    elseif(APPLE AND CMAKE_OSX_SYSROOT)
+        execute_process(OUTPUT_VARIABLE RUST_BUILD_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+        list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${RUST_BUILD_SDKROOT}")
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
