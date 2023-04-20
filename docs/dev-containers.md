@@ -66,7 +66,7 @@ Should just work / or give you the same error as in CI.
 Currently all Tasks are probably writing to the workspace-folder, which is mounted on the Host's OS. Unless you are running this on Linux, this is very costly. 
 
 ### Q: Get a Container Engine On MacOS: 
-- Grab [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mozillians: Get a Licence in Servicedesk!)
+- Grab [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mozillians: Get a licence in servicedesk!)
 - Install With Recommended Settings
 - If on M1
   - Go to Docker Settings -> "Features in development" 

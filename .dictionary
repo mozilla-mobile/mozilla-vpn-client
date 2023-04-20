@@ -1,5 +1,6 @@
 personal_ws-1.1 en 188 utf-8
 APIs
+amd
 Adblock
 AdjustSdk
 Affero
@@ -98,6 +99,7 @@ cpp
 de
 deeplink
 determing
+dockerfile
 dev
 dll
 embeddable
@@ -114,6 +116,7 @@ frontend
 gobject
 golang
 gps
+gradle
 iap
 idfv
 ie
@@ -135,6 +138,7 @@ makefiles
 md
 miniconda
 mozilla
+Mozillians
 mozillavpn
 mozillavpnbionic
 multicast
@@ -197,6 +201,7 @@ wgconf
 wgutils
 wifi
 wireguard
+WSA
 xcode
 xcodes
 xcodeproj

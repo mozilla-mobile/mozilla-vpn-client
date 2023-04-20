@@ -46,7 +46,7 @@ In case you want to purge all build things do `rm .tmp/*` inside the container.
 6. Good Luck!
 
 ## Archive: Building on your host System. 
-> This part of the guide is no longer maintained and might be out of date - Most accurate tip rn is to [Read the dockerfile](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/taskcluster/docker/android-qt6-build/Dockerfile) to see how we setup the build enviroment. 
+> This part of the guide is no longer maintained and might be out of date - Most accurate place for that is to [Read the dockerfile](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/taskcluster/docker/android-qt6-build/Dockerfile) to see how we setup the build environment. 
 
 1. You need to install go >= v1.18. If you don't have it done already, download
 it from the [official website](https://golang.org/dl/).
