@@ -14,6 +14,15 @@ else()
     error("Failed to find rustc host arch")
 endif()
 
+## For the Ninja generator, setup a job pool for Cargo targets, which share a
+## common lock on the package repository, and build aggressively in parallel
+## anyways.
+get_property(HAS_CARGO_POOL GLOBAL PROPERTY JOB_POOLS)
+list(FILTER HAS_CARGO_POOL INCLUDE REGEX "^cargo=")
+if(NOT HAS_CARGO_POOL)
+    set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
+endif()
+
 ### Helper function to build Rust static libraries.
 #
 # Accepts the following arguments:
@@ -84,6 +93,7 @@ function(build_rust_archives)
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
+            JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -93,6 +103,7 @@ function(build_rust_archives)
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
+            JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
