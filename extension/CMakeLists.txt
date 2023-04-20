@@ -20,7 +20,7 @@ set_property(TARGET mozillavpnnp PROPERTY
 ## Handle installation by platform.
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     if(NOT DEFINED WEBEXT_INSTALL_LIBDIR)
-        set(WEBEXT_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+        set(WEBEXT_INSTALL_LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
     endif()
 
     install(PROGRAMS $<TARGET_FILE:mozillavpnnp> DESTINATION ${WEBEXT_INSTALL_LIBDIR}/mozillavpn)
