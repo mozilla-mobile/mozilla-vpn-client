@@ -8,12 +8,20 @@ if(NOT CMAKE_OSX_SYSROOT)
 endif()
 
 # A helper function to find and replace tooling.
-function(_xcode_force_toolchain OUTPUT_VARIABLE TOOLNAME)
+function(_xcode_force_toolchain TOOLNAME)
     execute_process(OUTPUT_VARIABLE XCODE_TOOLPATH OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --find ${TOOLNAME})
     
-    set(${OUTPUT_VARIABLE} ${XCODE_TOOLPATH} CACHE FILEPATH "Xcode-provided ${TOOLNAME} tool" FORCE)
+    foreach(OUTVAR ${ARGV})
+        set(${OUTVAR} ${XCODE_TOOLPATH} CACHE FILEPATH "Xcode-provided ${TOOLNAME} tool" FORCE)
+    endforeach()
 endfunction(_xcode_force_toolchain)
 
 # The tools that we need to get from Apple's SDK.
-_xcode_force_toolchain(CMAKE_RANLIB "ranlib")
+_xcode_force_toolchain(ranlib
+    CMAKE_RANLIB
+    CMAKE_C_COMPILER_RANLIB
+    CMAKE_CXX_COMPILER_RANLIB
+    CMAKE_OBJC_COMPILER_RANLIB
+    CMAKE_OBJCXX_COMPILER_RANLIB
+)
