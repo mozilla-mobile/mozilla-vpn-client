@@ -80,6 +80,10 @@ MZFlickable {
             Accessible.name: text.replace(/<[^>]*>/g, "")
         }
 
+        ButtonGroup {
+            id: subscriptionOptions
+        }
+
         Loader {
             Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin
@@ -92,18 +96,15 @@ MZFlickable {
             sourceComponent: ColumnLayout {
                 spacing: 16
 
-                ButtonGroup {
-                    id: subscriptionOptions
-                }
-
                 Repeater {
                     id: productList
                     model: VPNProducts
-                    delegate: MZSubscriptionOption {}
+                    delegate: MZSubscriptionOption {
+                        ButtonGroup.group: subscriptionOptions
+                    }
                 }
             }
         }
-
 
         MZButton {
             id: subscribeNow
@@ -118,7 +119,6 @@ MZFlickable {
 
             onClicked: isMobile ? VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId) : VPNPurchase.subscribe("web")
         }
-
 
         RowLayout {
             Layout.fillWidth: true
