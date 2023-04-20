@@ -146,10 +146,13 @@ MZViewBase {
 
                     radioButtonLabelText: nativeLanguageName
                     checked: MZSettings.languageCode === code
+
+                    onClicked: MZSettings.languageCode = code
+                    
+                    // Workaround/hack to fix https://mozilla-hub.atlassian.net/browse/VPN-118
+                    onCheckedChanged: if (checked) MZSettings.languageCode = code
+
                     activeFocusOnTab: true
-                    onClicked: {
-                        MZSettings.languageCode = code;
-                    }
 
                     Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
                     Keys.onUpPressed: {
