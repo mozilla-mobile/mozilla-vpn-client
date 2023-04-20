@@ -92,6 +92,7 @@ then
     npm install -g @sentry/cli
 fi
 
+env
 
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
@@ -102,6 +103,9 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
+# Hmm, that's odd...
+cat ${MOZ_FETCHES_DIR}/build/CMakeCache.txt
 
 
 print Y "Building the client..."
