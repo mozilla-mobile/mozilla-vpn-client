@@ -13,7 +13,7 @@ function(_xcode_force_toolchain OUTPUT_VARIABLE TOOLNAME)
         COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --find ${TOOLNAME})
     
     set(${OUTPUT_VARIABLE} ${XCODE_TOOLPATH} CACHE FILEPATH "Xcode-provided ${TOOLNAME} tool" FORCE)
-endfunction(xcode_force_toolchain)
+endfunction(_xcode_force_toolchain)
 
 # The tools that we need to get from Apple's SDK.
 _xcode_force_toolchain(CMAKE_RANLIB "ranlib")
