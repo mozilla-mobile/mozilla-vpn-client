@@ -59,7 +59,7 @@ Rectangle {
 
             PropertyChanges {
                 target: buttonBackground
-                color: colorScheme.buttonDisabled
+                color: 'buttonDisabled' in colorScheme ? colorScheme.buttonDisabled : colorScheme.defaultColor
                 opacity: 1
             }
 
