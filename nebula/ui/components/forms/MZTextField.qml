@@ -15,6 +15,7 @@ TextField {
     property bool showInteractionStates: true
     property bool forceBlurOnOutsidePress: true
     property alias _placeholderText: centeredPlaceholderText.text
+    property bool focusReasonA11y: false
 
     id: textField
 
@@ -31,7 +32,6 @@ TextField {
     color: MZTheme.colors.input.default.text
     cursorDelegate: MZCursorDelegate {}
     echoMode: TextInput.Normal
-    focus: true
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSizeSmall
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
@@ -55,8 +55,10 @@ TextField {
     // active focus the screen reader keeps working as expected.
     onTextChanged: {
         if (Qt.platform.os === "osx") {
+            textField.focusReasonA11y = true
             textField.focus = false;
             textField.forceActiveFocus();
+            textField.focusReasonA11y = false
         }
     }
 
