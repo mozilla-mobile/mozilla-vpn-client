@@ -26,7 +26,7 @@ class NavigationBarModel final : public QAbstractListModel {
 
   void appendButton(NavigationBarButton* button);
 
-  int count() const { return m_buttons.length(); }
+  int count() const { return static_cast<int>(m_buttons.length()); }
 
   // QAbstractListModel methods
 

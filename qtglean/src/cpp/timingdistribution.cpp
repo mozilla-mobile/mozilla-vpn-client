@@ -15,7 +15,7 @@
 
 TimingDistributionMetric::TimingDistributionMetric(int id) : m_id(id) {}
 
-int TimingDistributionMetric::start() const {
+qint64 TimingDistributionMetric::start() const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   return glean_timing_distribution_start(m_id);
 #else
@@ -23,7 +23,7 @@ int TimingDistributionMetric::start() const {
 #endif
 }
 
-void TimingDistributionMetric::stopAndAccumulate(int timerId) const {
+void TimingDistributionMetric::stopAndAccumulate(qint64 timerId) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   glean_timing_distribution_stop_and_accumulate(m_id, timerId);
 #else
@@ -31,7 +31,7 @@ void TimingDistributionMetric::stopAndAccumulate(int timerId) const {
 #endif
 }
 
-void TimingDistributionMetric::cancel(int timerId) const {
+void TimingDistributionMetric::cancel(qint64 timerId) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
   glean_timing_distribution_cancel(m_id, timerId);
 #else

@@ -34,9 +34,9 @@ class TimingDistributionMetric final : public QObject {
  public:
   explicit TimingDistributionMetric(int aId);
 
-  Q_INVOKABLE int start() const;
-  Q_INVOKABLE void stopAndAccumulate(int timerId) const;
-  Q_INVOKABLE void cancel(int timerId) const;
+  Q_INVOKABLE qint64 start() const;
+  Q_INVOKABLE void stopAndAccumulate(qint64 timerId) const;
+  Q_INVOKABLE void cancel(qint64 timerId) const;
 
   // Test  only functions
 

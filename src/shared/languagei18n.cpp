@@ -123,8 +123,8 @@ QString LanguageI18N::translateLanguage(const QString& translationCode,
 
 int LanguageI18N::languageCompare(const QString& languageCodeA,
                                   const QString& languageCodeB) {
-  int a = m_languageList.indexOf(languageCodeA);
-  int b = m_languageList.indexOf(languageCodeB);
+  qsizetype a = m_languageList.indexOf(languageCodeA);
+  qsizetype b = m_languageList.indexOf(languageCodeB);
 
 #ifndef UNIT_TEST
   if (a < 0 || b < 0) {

@@ -41,7 +41,7 @@ QHash<int, QByteArray> NavigationBarModel::roleNames() const {
 }
 
 int NavigationBarModel::rowCount(const QModelIndex&) const {
-  return m_buttons.count();
+  return static_cast<int>(m_buttons.count());
 }
 
 QVariant NavigationBarModel::data(const QModelIndex& index, int role) const {

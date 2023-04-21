@@ -28,7 +28,7 @@ int CommandExcludeIP::run(QStringList& tokens) {
   return runCommandLineApp([&]() {
     QStringList commandList{"list", "add", "remove"};
 
-    int command = -1;
+    qsizetype command = -1;
     if (tokens.length() > 1) {
       command = commandList.indexOf(tokens[1]);
     }
