@@ -1,6 +1,6 @@
 {
   "api_version": "0.1",
-  "id": "message_paid_research",
+  "id": "message_paid_research_old",
   "name": "Participate in paid research to help make VPN better",
   "type": "message",
   "translatable": false,
