@@ -44,7 +44,7 @@ RUSTC_VERSION=$(rustc --version | awk '{print $2}')
 curl -o rust-std-aarch64-apple-ios.tar.gz --proto =https \
     https://static.rust-lang.org/dist/rust-std-${RUSTC_VERSION}-aarch64-apple-ios.tar.gz
 tar -xzf rust-std-aarch64-apple-ios.tar.gz
-rust-std-${RUSTC_VERSION}/install.sh --prefix=$(rustc --print sysroot)
+rust-std-${RUSTC_VERSION}-aarch64-apple-ios/install.sh --prefix=$(rustc --print sysroot)
 
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
