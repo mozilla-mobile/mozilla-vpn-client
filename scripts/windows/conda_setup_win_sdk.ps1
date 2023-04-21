@@ -6,13 +6,14 @@
 $X_WIN_VERSION = "0.2.10"
 
 $conda_env = conda info --json | ConvertFrom-Json
-
+$OLD_PWD = $PWD # Backup that to go back once we done. 
 
 if( $conda_env.active_prefix_name -eq "base"){
     Write-Output("Not in an active conda env. abort")
     return -1
 }
-
+$conda_folder = $conda_env.active_prefix 
+Set-Location $conda_folder
 Write-Output("Downloading x-win")
 # Small X-Win appretiation comment. 
 # It's really great, 
@@ -22,10 +23,14 @@ Write-Output("Downloading x-win")
 # 
 Invoke-WebRequest -Uri "https://github.com/Jake-Shadle/xwin/releases/download/$X_WIN_VERSION/xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc.tar.gz" -OutFile "xwin.tar.gz"  
 $ProgressPreference = 'Continue'
+Write-Output("Unpack x-win")
 tar -xf xwin.tar.gz
 Copy-Item -Path "xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc/xwin.exe"  -Destination "$conda_folder/bin"
-Remove-Item "xwin-0.2.10-x86_64-pc-windows-msvc" -Confirm  -ErrorAction SilentlyContinue -Force
-Remove-Item "xwin.tar.gz" -Confirm -ErrorAction SilentlyContinue -Force
+ls $conda_folder/bin
+Remove-Item "xwin-0.2.10-x86_64-pc-windows-msvc" -Confirm  -ErrorAction SilentlyContinue -Force -Recurse
+Remove-Item "xwin.tar.gz" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
+
+$env:PATH ="$conda_folder\bin;$env:PATH"
 
 # Splat the CRT and SDK files to /xwin/crt and /xwin/sdk respectively
 Write-Output("Downloading the windows SDK")
@@ -78,5 +83,7 @@ conda env config vars set LIB="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib
 # It's set in the MSVC dev enviroment but it seems we're fine without it. 
 #conda env config vars set LIBPATH="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
 
+
 Write-Output("You are SET! - Please re-activate your conda env to have stuff applied.")
 Set-Location $OLD_PWD
+Remove-Item ".xwin-cache" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
