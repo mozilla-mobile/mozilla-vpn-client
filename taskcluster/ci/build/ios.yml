@@ -11,6 +11,8 @@ ios/debug/cmake:
         platform: ios/debug/cmake
     worker-type: b-macos
     fetches:
+        fetch:
+            - miniconda-osx
         toolchain:
             - qt-ios
     worker:
