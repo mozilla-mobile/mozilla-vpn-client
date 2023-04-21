@@ -38,12 +38,11 @@ $Env:_CONDA_ROOT = "$CONDA_DIR"
 $Env:_CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
 $CondaModuleArgs = @{ChangePs1 = $False}
 Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaModuleArgs
-.\conda.exe "shell.powershell" "hook" | Out-String | ?{$_} | Invoke-Expression
 
 # Conda is now ready - let's enable the env
 conda env create --force -f $REPO_ROOT_PATH/env.yml
 conda activate VPN
-. "$REPO_ROOT_PATH/scripts/windows/conda_setup_win_sdk.ps1.ps1" # <- This download's all sdk things we need :3 
+. "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
 conda deactivate
 conda activate VPN  # We should now be able to compile!
 
