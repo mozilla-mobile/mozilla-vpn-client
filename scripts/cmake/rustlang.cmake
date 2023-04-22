@@ -80,6 +80,11 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${RUST_BUILD_SDKROOT}")
     endif()
 
+    ## For MacOS platforms, set the OS deployment version.
+    if(RUST_BUILD_ARCH MATCHES "-apple-darwin$")
+        list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
