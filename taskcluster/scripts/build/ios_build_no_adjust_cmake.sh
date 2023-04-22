@@ -72,7 +72,7 @@ cmake --build ${MOZ_FETCHES_DIR}/build --config Release || die
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
-cp -r ${MOZ_FETCHES_DIR}/build/build/mozillavpn.build/Release-iphoneos/* tmp || die
+cp -r ${MOZ_FETCHES_DIR}/build/src/Release-iphoneos/* tmp || die
 
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
