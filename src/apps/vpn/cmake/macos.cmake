@@ -115,6 +115,8 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
             COMMAND ${CMAKE_COMMAND} -E env
                         GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                        CC=${CMAKE_C_COMPILER}
+                        CXX=${CMAKE_CXX_COMPILER}
                         GOOS=darwin
                         CGO_ENABLED=1
                         GO111MODULE=on
