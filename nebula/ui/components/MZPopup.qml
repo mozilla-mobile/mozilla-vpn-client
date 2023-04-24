@@ -25,6 +25,14 @@ Popup {
     horizontalPadding: 0
     verticalPadding: 0
 
+    //Close popup if screen changes
+    Connections {
+        target: MZNavigator
+        function onCurrentComponentChanged() {
+            close()
+        }
+    }
+
     // Close button
     MZIconButton {
         id: closeButton
