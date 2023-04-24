@@ -175,7 +175,7 @@ cmake --build .tmp -j$JOBS --target mozillavpn_prepare_apk_dir
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
 # We need to pass --no-build here, otherwise we get one useless timecostly invokation of gradle.
-androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
+androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build
 
 # Warning: this is hacky.
 #
