@@ -135,6 +135,11 @@ describe('Subscription manager', function() {
                       queries.screenHome.CONTROLLER_TITLE, 'text') ==
                'VPN is on';
          });
+         // Test cleanup
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
+             200;
        });
 
     it('Go to "Subscribe to Mozilla VPN" screen once user toggles off VPN after subscription expires and they enter No Signal',
