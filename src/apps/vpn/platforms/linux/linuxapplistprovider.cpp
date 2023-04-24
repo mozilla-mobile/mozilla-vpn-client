@@ -15,6 +15,7 @@
 #include "logger.h"
 
 constexpr const char* DATA_DIRS_FALLBACK = "/usr/local/share/:/usr/share/";
+constexpr const char* CONFIG_DIRS_FALLBACK = "/etc/xdg/autostart/";
 
 namespace {
 Logger logger("LinuxAppListProvider");
@@ -56,8 +57,8 @@ void LinuxAppListProvider::getApplicationList() {
   QMap<QString, QString> out;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  QStringList parts = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK).split(":");
-  for (const QString& part : parts) {
+  QString dataDirs = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK);
+  for (const QString& part : dataDirs.split(":")) {
     fetchEntries(part.trimmed() + "/applications", out);
   }
 
@@ -65,6 +66,23 @@ void LinuxAppListProvider::getApplicationList() {
     fetchEntries(pe.value("XDG_DATA_HOME") + "/applications", out);
   } else if (pe.contains("HOME")) {
     fetchEntries(pe.value("HOME") + "/.local/share/applications", out);
+  }
+
+  QMap<QString, QString> autostart;
+  QString configDirs = pe.value("XDG_CONFIG_DIRS", CONFIG_DIRS_FALLBACK);
+  for (const QString& part : configDirs.split(":")) {
+    fetchEntries(part.trimmed() + "/autostart", autostart);
+  }
+
+  if (pe.contains("XDG_CONFIG_HOME")) {
+    fetchEntries(pe.value("XDG_CONFIG_HOME") + "/autostart", autostart);
+  } else if (pe.contains("HOME")) {
+    fetchEntries(pe.value("HOME") + "/.config/autostart", autostart);
+  }
+
+  for (auto itPathName = autostart.constKeyValueBegin();
+       itPathName != autostart.constKeyValueEnd(); ++itPathName) {
+    out[itPathName->first] = itPathName->second + " (autostart)";
   }
 
   emit newAppList(out);
