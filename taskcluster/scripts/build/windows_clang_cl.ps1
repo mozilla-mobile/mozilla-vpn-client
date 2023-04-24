@@ -15,6 +15,9 @@ $env:PATH ="$FETCHES_PATH;$QTPATH;$env:PATH"
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
+Write-Output "PATH PRE CONDA:"
+Write-Output $env:PATH
+
 # Setup Openssl Import
 $SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
 $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
@@ -27,7 +30,7 @@ tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
-## Insall MiniConda 
+## Install MiniConda 
 Start-Process "$FETCHES_PATH/miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$CONDA_DIR")
 # We don't have the ability to do conda init - as that need's admin rights.
 # So let's just do that ourselves :3
@@ -39,30 +42,48 @@ $Env:_CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
 $CondaModuleArgs = @{ChangePs1 = $False}
 Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaModuleArgs
 
-# Conda is now ready - let's enable the env
+## Conda is now ready - let's enable the env
 conda env create --force -f $REPO_ROOT_PATH/env.yml
 conda activate VPN
 . "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
 conda deactivate
 conda activate VPN  # We should now be able to compile!
 
-# We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :) 
-$env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
-# TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
-Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
-Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
-Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x64.msm
-Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
-
-git submodule update --init --recursive
-
-
 #Do not continune from this point on when we encounter an error
-$ErrorActionPreference = "Stop"
+# $ErrorActionPreference = "Stop"
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 cmake --version
+Write-Output "PATH POST CONDA:"
+Write-Output $env:PATH
+
+Get-ChildItem $CONDA_DIR
+Get-ChildItem $CONDA_DIR/bin
+Get-ChildItem $CONDA_DIR/envs/VPN
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/mingw-w64/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/usr/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Scripts
+Get-ChildItem $CONDA_DIR/envs/VPN/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/bin
+Get-ChildItem $CONDA_DIR/envs/VPN
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/mingw-w64/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/usr/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Library/bin
+Get-ChildItem $CONDA_DIR/envs/VPN/Scripts
+Get-ChildItem $CONDA_DIR/envs/VPN/bin
+Get-ChildItem $CONDA_DIR/condabin
+
+Start-Process "$CONDA_DIR/bin/python.exe" -Wait -ArgumentList @('-V',"-V")
+
+
+
+Write-Output "---TEST --"
+Get-Command "python"
+Get-Command "python3"
+
+$env:PATH 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
     python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
@@ -74,10 +95,22 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
 } else {
     # Do the generic build
-   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release
+   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -D
 }
 cmake --build $BUILD_DIR
+
+## Building the MSI Installer.
+
+# We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :) 
+$env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
+# TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x64.msm
+Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
 cmake --build $BUILD_DIR --target msi
+
+
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
