@@ -14,7 +14,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-constexpr const char* DESKTOP_ENTRY_LOCATION = "/usr/share/applications/";
+constexpr const char* DATA_DIRS_FALLBACK = "/usr/local/share/:/usr/share/";
 
 namespace {
 Logger logger("LinuxAppListProvider");
@@ -56,16 +56,14 @@ void LinuxAppListProvider::getApplicationList() {
   QMap<QString, QString> out;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("XDG_DATA_DIRS")) {
-    QStringList parts = pe.value("XDG_DATA_DIRS").split(":");
-    for (const QString& part : parts) {
-      fetchEntries(part.trimmed() + "/applications", out);
-    }
-  } else {
-    fetchEntries(DESKTOP_ENTRY_LOCATION, out);
+  QStringList parts = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK).split(":");
+  for (const QString& part : parts) {
+    fetchEntries(part.trimmed() + "/applications", out);
   }
 
-  if (pe.contains("HOME")) {
+  if (pe.contains("XDG_DATA_HOME")) {
+    fetchEntries(pe.value("XDG_DATA_HOME") + "/applications", out);
+  } else if (pe.contains("HOME")) {
     fetchEntries(pe.value("HOME") + "/.local/share/applications", out);
   }
 
