@@ -185,33 +185,34 @@ describe('Subscription manager', function() {
       // to finish subscription and will be then redirected back to the
       // controller home screen.
 
-      await vpn.authenticateInApp(true, true);
-
-      // Mark the user subscription as inactive
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          userDataInactive;
-
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
-
-      // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-      await vpn.waitForQuery(
-          queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_VIEW.visible());
-
-
-      // Click on the Subscribe Now button.
-      await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded
-                                         .SUBSCRIPTION_NEEDED_BUTTON.visible());
-
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-          userDataActive;
-
       if (!this.ctx.wasm) {
+        await vpn.authenticateInApp(true, true);
+
+        // Mark the user subscription as inactive
+        this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+            userDataInactive;
+
+        await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+        await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+        // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+        await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                   .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+
+        // Click on the Subscribe Now button.
+        await vpn.waitForQueryAndClick(
+            queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+                .visible());
+
+        await vpn.waitForCondition(async () => {
+          const url = await vpn.getLastUrl();
+          return url.includes('/api/v2/vpn/login');
+        });
+
+        this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+            userDataActive;
+
         // We don't really want to go through the
         // authentication flow because we
         // are mocking everything. So this next chunk of code manually
@@ -238,14 +239,14 @@ describe('Subscription manager', function() {
           });
           req.end();
         });
-      }
 
-      // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE, 'text'),
-          'VPN is off');
+        // Wait for VPN client screen to move from spinning wheel to next screen
+        await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+        assert.equal(
+            await vpn.getQueryProperty(
+                queries.screenHome.CONTROLLER_TITLE, 'text'),
+            'VPN is off');
+      }
     });
   });
 });
