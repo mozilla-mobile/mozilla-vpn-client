@@ -21,7 +21,7 @@
     - `npm run android_x86_64:build`
     - `npm run android_arm64:build`
     
-7. You should now have a `debug/` folder containg *.apk
+7. You should now have a `debug/` folder containing *.apk
 
 ## Cleaning: 
 In case you want to purge all build things do `rm .tmp/*` inside the container. 

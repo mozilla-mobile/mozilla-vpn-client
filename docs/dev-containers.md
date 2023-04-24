@@ -6,7 +6,7 @@ Dev-Containers are a small experiment, they allow you to run our CI docker Image
 - Node
 - A docker Compatible Container engine ([rancher](https://rancherdesktop.io/), [colima](https://github.com/abiosoft/colima), [podman](https://podman-desktop.io/))
 - For simplicity we will continue with [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-> Note: Mozillians: Get a licence in servicedesk!
+> Note: Mozillians: Get a license in servicedesk!
 - Install With Recommended Settings. 
 - (In case you are running on an M1 Mac)
   - Go to Docker Settings -> "Features in development" 
@@ -22,7 +22,7 @@ CONTAINER ID   IMAGE                       COMMAND                  CREATED     
 
 ```
 
-- Optional: Install reccomended VS-Code plugins:
+- Optional: Install the recommended VS-Code plugins:
   - [VS-Code Remote Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
   - [VS-Code Docker](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-docker)
 
