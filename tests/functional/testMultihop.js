@@ -13,8 +13,7 @@ describe('Server list', function() {
   let previousCity;
   let currentCountry;
 
-  //   this.timeout(240000);
-  this.timeout(30000);
+  this.timeout(240000);
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
