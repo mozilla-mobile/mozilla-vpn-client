@@ -158,6 +158,14 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
 
+PRODBETAEXPR(QString, mozillaSubscriptionsUrl,
+             "https://subscriptions.firefox.com/subscriptions",
+             "https://payments-stage.fxa.nonprod.cloudops.mozgcp.net/subscriptions")
+
+PRODBETAEXPR(QString, contactSupportUrl,
+             "https://accounts.firefox.com/support",
+             "https://accounts.stage.mozaws.net/support")
+
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
              Constants::envOrDefault(
