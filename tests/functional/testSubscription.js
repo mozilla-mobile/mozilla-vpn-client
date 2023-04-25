@@ -174,8 +174,8 @@ describe('Subscription manager', function() {
          // Once the VPN is toggled off, we are redirected to the "Subscribe to
          // Mozilla VPN" screen.
          await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
        });
   });
 });
