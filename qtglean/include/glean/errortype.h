@@ -5,7 +5,7 @@
 #ifndef ERROR_TYPE_H
 #define ERROR_TYPE_H
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #else
 enum ErrorType {};

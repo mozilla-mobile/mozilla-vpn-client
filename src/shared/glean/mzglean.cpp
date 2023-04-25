@@ -11,13 +11,13 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
 #  include "qtglean.h"
 #endif
-#if defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+#if defined(MZ_ANDROID)
 #  include "platforms/android/androidcommons.h"
 #endif
-#if defined(MZ_IOS) && not(defined(BUILD_QMAKE))
+#if defined(MZ_IOS)
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
@@ -46,10 +46,10 @@ MZGlean::~MZGlean() { MZ_COUNT_DTOR(MZGlean); }
 
 // static
 void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-  glean_register_log_handler(messageHandler);
-#else
+#if defined(MZ_WASM)
   Q_UNUSED(messageHandler);
+#else
+  glean_register_log_handler(messageHandler);
 #endif
 }
 
@@ -93,14 +93,14 @@ void MZGlean::initialize() {
 #if defined(UNIT_TEST)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
                            gleanDirectory.absolutePath().toLocal8Bit());
-#elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
+#elif defined(MZ_IOS)
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
-#elif defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+#elif defined(MZ_ANDROID)
     AndroidCommons::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
-#elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#elif not(defined(MZ_WASM))
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toLocal8Bit(),
                      Constants::inProduction() ? "production" : "staging");
@@ -112,14 +112,14 @@ void MZGlean::initialize() {
 void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing MZGlean upload status to" << isTelemetryEnabled;
 
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
   glean_set_upload_enabled(isTelemetryEnabled);
 #endif
 }
 
 // static
 void MZGlean::shutdown() {
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
   glean_shutdown();
 #endif
 }
