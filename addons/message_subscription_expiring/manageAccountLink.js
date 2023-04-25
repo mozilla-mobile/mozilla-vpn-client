@@ -1,3 +1,3 @@
 ((api) => {  
-  api.urlOpener.openLink(api.urlOpener.LinkAccount);
+  api.urlOpener.openUrlLabel("manageSubscriptions");
 });
