@@ -277,6 +277,7 @@ class MozillaVPN final : public App {
   void initializeGlean();
   void sendGleanPings();
   void setGleanSourceTags(const QStringList& tags);
+  void logSubscriptionCompleted();
 
   void aboutToQuit();
 

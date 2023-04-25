@@ -1045,6 +1045,7 @@ void MozillaVPN::restoreSubscriptionStarted() {
 }
 
 void MozillaVPN::subscriptionCompleted() {
+  emit logSubscriptionCompleted();
 #ifdef MZ_ANDROID
   // This is Android only
   // iOS can end up here if the subsciption get finished outside of the IAP
