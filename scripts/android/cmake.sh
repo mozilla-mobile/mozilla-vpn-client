@@ -198,28 +198,26 @@ cd .tmp/src/android-build/
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
-  ./gradlew assemble || die
+  ./gradlew assemble
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
 
   if [ -n "$IS_DEV_CONTAINER" ]; then
     echo "In dev Container, Copying binary to ./release"
-    cp -r .tmp/src/android-build/build/outputs/apk/release .
+    cp -r build/outputs/apk/release $WORKSPACE_ROOT
   else 
     print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
   fi
-
-
 else
   print Y "Generating Debug APK..."
   ./gradlew compileDebugSources
-  ./gradlew assembleDebug || die
+  ./gradlew assembleDebug
   print G "Done 🎉"
 
   if [ -n "$IS_DEV_CONTAINER" ]; then
     echo "In dev Container, Copying binary: to ./debug"
-    cp -r .tmp/src/android-build/build/outputs/apk/debug .
+    cp -r build/outputs/apk/debug $WORKSPACE_ROOT
   else 
      print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
   fi
