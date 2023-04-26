@@ -35,7 +35,8 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
                                         const QSet<QString>& desktopEnv) {
   logger.debug() << "Fetch Application list from" << dataDir;
 
-  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files);
+  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files,
+                    QDirIterator::Subdirectories);
   while (iter.hasNext()) {
     QFileInfo fileinfo(iter.next());
     QSettings entry(fileinfo.filePath(), QSettings::IniFormat);
