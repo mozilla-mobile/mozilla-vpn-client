@@ -194,7 +194,7 @@ void DBusService::appLaunched(const QString& cgroup, const QString& appId,
 
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  if (m_excludedApps.contains(AppData::getDesktopFileId(appId))) {
     m_wgutils->excludeCgroup(cgroup);
   }
 }
@@ -204,7 +204,7 @@ void DBusService::appTerminated(const QString& cgroup, const QString& appId) {
 
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  if (m_excludedApps.contains(AppData::getDesktopFileId(appId))) {
     m_wgutils->resetCgroup(cgroup);
   }
 }
@@ -217,9 +217,9 @@ QString DBusService::runningApps() {
     const AppData* data = *i;
     QJsonObject appObject;
     QJsonArray pidList;
-    appObject.insert("appId", QJsonValue(data->appId));
-    appObject.insert("cgroup", QJsonValue(data->cgroup));
-    appObject.insert("rootpid", QJsonValue(data->rootpid));
+    appObject.insert("appId", QJsonValue(data->appId()));
+    appObject.insert("cgroup", QJsonValue(data->cgroup()));
+    appObject.insert("rootpid", QJsonValue(data->rootpid()));
 
     for (int pid : data->pids()) {
       pidList.append(QJsonValue(pid));
@@ -240,25 +240,26 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
   }
 
   logger.debug() << "Setting" << appName << "to firewall state" << state;
+  QString desktopFileId = AppData::getDesktopFileId(appName);
 
   // Update the split tunnelling state for any running apps.
   for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
     const AppData* data = *i;
-    if (data->appId != appName) {
+    if (data->desktopFileId() != desktopFileId) {
       continue;
     }
     if (state == APP_STATE_EXCLUDED) {
-      m_wgutils->excludeCgroup(data->cgroup);
+      m_wgutils->excludeCgroup(data->cgroup());
     } else {
-      m_wgutils->resetCgroup(data->cgroup);
+      m_wgutils->resetCgroup(data->cgroup());
     }
   }
 
   // Update the list of apps to exclude from the VPN.
   if (state != APP_STATE_EXCLUDED) {
-    m_excludedApps.removeAll(appName);
-  } else if (!m_excludedApps.contains(appName)) {
-    m_excludedApps.append(appName);
+    m_excludedApps.removeAll(desktopFileId);
+  } else if (!m_excludedApps.contains(desktopFileId)) {
+    m_excludedApps.append(desktopFileId);
   }
   return true;
 }

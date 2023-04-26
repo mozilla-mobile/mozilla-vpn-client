@@ -126,16 +126,16 @@ void AppTracker::appHeuristicMatch(AppData* data) {
   // strong indication of which application this control group is running.
   for (int pid : data->pids()) {
     if ((pid != 0) && (pid == m_lastLaunchPid)) {
-      logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
-      data->appId = m_lastLaunchName;
-      data->rootpid = m_lastLaunchPid;
+      logger.debug() << data->cgroup() << "matches app:" << m_lastLaunchName;
+      data->setAppId(m_lastLaunchName);
+      data->setRootPid(m_lastLaunchPid);
       break;
     }
   }
 
   // Query the systemd unit for its SourcePath property, which is set to the
   // desktop file's full path on KDE
-  QString unit = QFileInfo(data->cgroup).fileName();
+  QString unit = QFileInfo(data->cgroup()).fileName();
   QDBusReply<QDBusObjectPath> objPath =
       m_systemdInterface->call("GetUnit", unit);
 
@@ -144,7 +144,7 @@ void AppTracker::appHeuristicMatch(AppData* data) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    data->appId = source;
+    data->setAppId(source);
   }
 
   // TODO: Some comparison between the .desktop file and the directory name
@@ -177,7 +177,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       m_runningApps[path] = data;
       appHeuristicMatch(data);
 
-      emit appLaunched(data->cgroup, data->appId, data->rootpid);
+      emit appLaunched(data->cgroup(), data->appId(), data->rootpid());
     }
   }
 
@@ -189,15 +189,25 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       Q_ASSERT(m_runningApps.contains(scope));
       AppData* data = m_runningApps.take(scope);
 
-      emit appTerminated(data->cgroup, data->appId);
+      emit appTerminated(data->cgroup(), data->appId());
       delete data;
     }
   }
 }
 
+QString AppData::getDesktopFileId(const QString& filePath) {
+  QStringList parts =
+      filePath.chopped(filePath.endsWith(".desktop") ? 8 : 0).split("/");
+  // id is "-" separated path relative to applications directory w/o extension.
+  // desktop files can also be copied in autostart directory
+  int from = 1 + std::max(parts.lastIndexOf("applications"),
+                          parts.lastIndexOf("autostart"));
+  return parts.sliced(from).join("-");
+}
+
 QList<int> AppData::pids() const {
   QList<int> results;
-  QFile cgroupProcs(s_cgroupMount + cgroup + "/cgroup.procs");
+  QFile cgroupProcs(s_cgroupMount + cgroup() + "/cgroup.procs");
 
   if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
     while (true) {

@@ -15,14 +15,28 @@ class QDBusInterface;
 
 class AppData {
  public:
-  AppData(const QString& path) : cgroup(path) { MZ_COUNT_CTOR(AppData); }
+  AppData(const QString& path) : m_cgroup(path) { MZ_COUNT_CTOR(AppData); }
   ~AppData() { MZ_COUNT_DTOR(AppData); }
 
-  QList<int> pids() const;
+  static QString getDesktopFileId(const QString& filePath);
 
-  const QString cgroup;
-  QString appId;
-  int rootpid = 0;
+  QList<int> pids() const;
+  const QString& cgroup() const { return m_cgroup; }
+  const QString& appId() const { return m_appId; }
+  const QString& desktopFileId() const { return m_appDesktopFileId; }
+  int rootpid() const { return m_rootpid; }
+
+  void setAppId(const QString& appId) {
+    m_appId = appId;
+    m_appDesktopFileId = getDesktopFileId(appId);
+  }
+  void setRootPid(int rootpid) { m_rootpid = rootpid; }
+
+ private:
+  const QString m_cgroup;
+  QString m_appId;
+  QString m_appDesktopFileId;
+  int m_rootpid = 0;
 };
 
 class AppTracker final : public QObject {
