@@ -220,6 +220,7 @@ QString DBusService::runningApps() {
     appObject.insert("appId", QJsonValue(data->appId()));
     appObject.insert("cgroup", QJsonValue(data->cgroup()));
     appObject.insert("rootpid", QJsonValue(data->rootpid()));
+    appObject.insert("desktopFileId", QJsonValue(data->desktopFileId()));
 
     for (int pid : data->pids()) {
       pidList.append(QJsonValue(pid));
