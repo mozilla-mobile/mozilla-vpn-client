@@ -316,8 +316,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() &&
-      settingsHolder->protectSelectedApps()) {
+  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
