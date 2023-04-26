@@ -45,6 +45,27 @@ In case you want to purge all build things do `rm .tmp/*` inside the container.
 5. In android Studio to go Run->Attach to Process-> Select `org.mozilla.firefox.vpn.debug`
 6. Good Luck!
 
+
+
+
+## Help Zone!
+
+
+### QT Cannot find Android related files?
+> CMake Error at /opt/6.2.4/android_arm64_v8a/lib/cmake/Qt6/qt.toolchain.cmake:47 (message):
+  Cannot find the toolchain file
+  '/Users/test/Library/Android/sdk/ndk/23.1.7779620/build/cmake/android.toolchain.cmake'.
+  Please specify the toolchain file with
+  -DQT_CHAINLOAD_TOOLCHAIN_FILE=<file>.
+Call Stack (most recent call first):
+  /opt/android/sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake:124 (include)
+  CMakeLists.txt:15 (project)
+
+Check your `.env` if it set's `ANDROID_SDK`, `ANDROID_NDK_*` related variables, or changes the PATH. 
+See .env.example if you want to not set' envs per dev-containers. 
+
+
+
 ## Archive: Building on your host System. 
 > This part of the guide is no longer maintained and might be out of date - Most accurate place for that is to [Read the dockerfile](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/taskcluster/docker/android-qt6-build/Dockerfile) to see how we setup the build environment. 
 
