@@ -749,10 +749,10 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (!m_private->m_user.subscriptionNeeded() || state() != StateMain) {
-    return;
+  if (m_private->m_user.subscriptionNeeded() && state() == StateMain) {
+    NotificationHandler::instance()->subscriptionNotFoundNotification();
+    maybeStateMain();
   }
-  maybeStateMain();
 }
 
 void MozillaVPN::cancelAuthentication() {

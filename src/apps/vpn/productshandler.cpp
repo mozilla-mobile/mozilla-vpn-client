@@ -15,9 +15,7 @@
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/user.h"
 #include "mozillavpn.h"
-#include "notificationhandler.h"
 #include "purchasehandler.h"
 #include "tasks/products/taskproducts.h"
 #include "taskscheduler.h"
@@ -56,23 +54,6 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
          state == App::StateAuthenticating) &&
         !this->hasProductsRegistered()) {
       TaskScheduler::scheduleTask(new TaskProducts());
-    }
-    if (state == App::StateMain) {
-      // When we reach main state, check current subscription status
-      // if the subscription runs out, show a notifiaction
-      m_last_userSubscriptionNeeded =
-          MozillaVPN::instance()->user()->subscriptionNeeded();
-      connect(MozillaVPN::instance()->user(), &User::changed, [this] {
-        if (!App::isUserAuthenticated()) {
-          return;
-        }
-        auto userSubscriptionNeeded =
-            MozillaVPN::instance()->user()->subscriptionNeeded();
-        if (!m_last_userSubscriptionNeeded && userSubscriptionNeeded) {
-          NotificationHandler::instance()->subscriptionNotFoundNotification();
-        }
-        m_last_userSubscriptionNeeded = userSubscriptionNeeded;
-      });
     }
   });
 }
