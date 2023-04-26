@@ -1357,10 +1357,6 @@ void MozillaVPN::registerUrlOpenerLabels() {
     return AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
   });
 
-  uo->registerUrlLabel("manageSubscriptions", []() -> QString {
-    return AppConstants::mozillaSubscriptionsUrl();
-  });
-
   uo->registerUrlLabel("subscriptionFxa", []() -> QString {
     return QString("%1/subscriptions").arg(Constants::fxaUrl());
   });
