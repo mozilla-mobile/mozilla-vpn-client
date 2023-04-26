@@ -76,7 +76,6 @@ def add_dependencies(config, tasks):
 
         task.setdefault("dependencies", {}).update(dependencies)
         task.setdefault("if-dependencies", []).extend(list(dependencies.keys()))
-        print(task["dependencies"])
         yield task
 
 
