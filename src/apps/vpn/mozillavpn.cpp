@@ -1361,6 +1361,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
     return QString("%1/subscriptions").arg(Constants::fxaUrl());
   });
 
+  uo->registerUrlLabel("contactSupport", []() -> QString {
+    return AppConstants::contactSupportUrl();
+  });
+
   uo->registerUrlLabel(
       "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
 
