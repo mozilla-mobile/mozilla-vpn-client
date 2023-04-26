@@ -18,7 +18,8 @@ class LinuxAppListProvider final : public AppListProvider {
   void getApplicationList() override;
 
  private:
-  void fetchEntries(const QString& dataDir, QMap<QString, QString>& map,
+  void fetchEntries(const QString& dataDir,
+                    QMap<QString, QPair<QString, QString>>& map,
                     const QSet<QString>& desktopEnv);
 };
 

@@ -30,13 +30,13 @@ LinuxAppListProvider::~LinuxAppListProvider() {
   MZ_COUNT_DTOR(LinuxAppListProvider);
 }
 
-void LinuxAppListProvider::fetchEntries(const QString& dataDir,
-                                        QMap<QString, QString>& map,
-                                        const QSet<QString>& desktopEnv) {
-  logger.debug() << "Fetch Application list from" << dataDir;
+void LinuxAppListProvider::fetchEntries(
+    const QString& dataDirPath, QMap<QString, QPair<QString, QString>>& map,
+    const QSet<QString>& desktopEnv) {
+  logger.debug() << "Fetch Application list from" << dataDirPath;
 
-  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files,
-                    QDirIterator::Subdirectories);
+  QDir dataDir(dataDirPath, "*.desktop", QDir::NoSort, QDir::Files);
+  QDirIterator iter(dataDir, QDirIterator::Subdirectories);
   while (iter.hasNext()) {
     QFileInfo fileinfo(iter.next());
     QSettings entry(fileinfo.filePath(), QSettings::IniFormat);
@@ -67,13 +67,18 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
       }
     }
 
-    map[fileinfo.absoluteFilePath()] = entry.value("Name").toString();
+    QString id = dataDir.relativeFilePath(fileinfo.filePath())
+                     .chopped(8)
+                     .split("/")
+                     .join("-");
+    map[id] = QPair<QString, QString>(fileinfo.absoluteFilePath(),
+                                      entry.value("Name").toString());
   }
 }
 
 void LinuxAppListProvider::getApplicationList() {
   logger.debug() << "Fetch Application list from Linux desktop";
-  QMap<QString, QString> out;
+  QMap<QString, QPair<QString, QString>> entries;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   QSet<QString> env;
@@ -82,33 +87,32 @@ void LinuxAppListProvider::getApplicationList() {
     env += QSet<QString>(parts.begin(), parts.end());
   }
 
-  QString dataDirs = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK);
-  for (const QString& part : dataDirs.split(":")) {
-    fetchEntries(part.trimmed() + "/applications", out, env);
-  }
-
-  if (pe.contains("XDG_DATA_HOME")) {
-    fetchEntries(pe.value("XDG_DATA_HOME") + "/applications", out, env);
-  } else if (pe.contains("HOME")) {
-    fetchEntries(pe.value("HOME") + "/.local/share/applications", out, env);
-  }
-
-  QMap<QString, QString> autostart;
+  // Check dekstop file locations by increasing priority to overwrite ids
   QString configDirs = pe.value("XDG_CONFIG_DIRS", CONFIG_DIRS_FALLBACK);
   for (const QString& part : configDirs.split(":")) {
-    fetchEntries(part.trimmed() + "/autostart", autostart, env);
+    fetchEntries(part.trimmed() + "/autostart", entries, env);
   }
 
   if (pe.contains("XDG_CONFIG_HOME")) {
-    fetchEntries(pe.value("XDG_CONFIG_HOME") + "/autostart", autostart, env);
+    fetchEntries(pe.value("XDG_CONFIG_HOME") + "/autostart", entries, env);
   } else if (pe.contains("HOME")) {
-    fetchEntries(pe.value("HOME") + "/.config/autostart", autostart, env);
+    fetchEntries(pe.value("HOME") + "/.config/autostart", entries, env);
   }
 
-  for (auto itPathName = autostart.constKeyValueBegin();
-       itPathName != autostart.constKeyValueEnd(); ++itPathName) {
-    out[itPathName->first] = itPathName->second + " (autostart)";
+  QString dataDirs = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK);
+  for (const QString& part : dataDirs.split(":")) {
+    fetchEntries(part.trimmed() + "/applications", entries, env);
   }
 
+  if (pe.contains("XDG_DATA_HOME")) {
+    fetchEntries(pe.value("XDG_DATA_HOME") + "/applications", entries, env);
+  } else if (pe.contains("HOME")) {
+    fetchEntries(pe.value("HOME") + "/.local/share/applications", entries, env);
+  }
+
+  QMap<QString, QString> out;
+  for (const auto& [path, name] : entries.values()) {
+    out[path] = name;
+  }
   emit newAppList(out);
 }
