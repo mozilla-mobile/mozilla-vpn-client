@@ -30,7 +30,6 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
           &SettingsWatcher::maybeServerSwitch);
 
   CONNECT(captivePortalAlertChanged);
-  CONNECT(protectSelectedAppsChanged);
   CONNECT(vpnDisabledAppsChanged);
 
 #undef CONNECT
