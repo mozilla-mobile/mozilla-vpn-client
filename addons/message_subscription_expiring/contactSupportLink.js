@@ -1,3 +1,3 @@
 ((api) => {
-  api.urlOpener.openLink(api.urlOpener.LinkHelpSupport);
+  api.urlOpener.openUrlLabel("contactSupport");
 });
