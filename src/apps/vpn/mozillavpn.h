@@ -160,7 +160,7 @@ class MozillaVPN final : public App {
 
   void heartbeatCompleted(bool success);
 
-  void addCurrentDeviceAndRefreshData(bool refreshProducts);
+  void addCurrentDeviceAndRefreshData();
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
@@ -205,7 +205,7 @@ class MozillaVPN final : public App {
 
   void errorHandled();
 
-  void scheduleRefreshDataTasks(bool refreshProducts);
+  void scheduleRefreshDataTasks();
 
   static void registerUrlOpenerLabels();
 
