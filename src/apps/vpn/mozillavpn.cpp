@@ -1008,8 +1008,11 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionInProgress);
-  ProductsHandler* products = ProductsHandler::instance();
-  Q_ASSERT(products->hasProductsRegistered());
+  if (!Feature::get(Feature::Feature_webPurchase)->isSupported())
+  {
+    ProductsHandler* products = ProductsHandler::instance();
+    Q_ASSERT(products->hasProductsRegistered());
+  }
 
   PurchaseHandler::instance()->startSubscription(productIdentifier);
 }
