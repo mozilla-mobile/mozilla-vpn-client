@@ -7,6 +7,7 @@ const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const fxaEndpoints = require('./servers/fxa_endpoints.js')
 const {validators} = require('./servers/guardian_endpoints.js');
+const http = require('http')
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -104,9 +105,91 @@ describe('Subscription manager', function() {
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
          await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-         // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+         // Step 2: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+         // Reset guardian endpoint for the next test
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
+       });
+
+    it('Returns user to Main Screen after user successfully completes Web Subscription flow',
+       async () => {
+         // This test verifies the case where a user without an active
+         // subscription logs in and is taken to the "Subscribtion Needed"
+         // screen. Once they click on the "Subscribe Now" button, they will be
+         // taken to the browser to finish subscription and then will be then
+         // redirected back to the controller home screen.
+
+         if (!this.ctx.wasm) {
+           await vpn.authenticateInApp(true, true);
+
+           // Mark the user subscription as inactive
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataInactive;
+
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           await vpn.clickOnQuery(
+               queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+           // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+           await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                      .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+
+           // Click on the Subscribe Now button.
+           await vpn.waitForQueryAndClick(
+               queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+                   .visible());
+
+           await vpn.waitForCondition(async () => {
+             const url = await vpn.getLastUrl();
+             return url.includes('/api/v2/vpn/login');
+           });
+
+           // Mark the user subscription as active
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataActive;
+
+           // We don't really want to go through the
+           // authentication flow because we
+           // are mocking everything. So this next chunk of code manually
+           // makes a call to the DesktopAuthenticationListener to mock
+           // a successful authentication in browser.
+           const url = await vpn.getLastUrl();
+           const authListenerPort = (new URL(url)).searchParams.get('port');
+           const options = {
+             // We hardcode 127.0.0.1 to match listening on
+             // QHostAddress:LocalHost
+             // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+             hostname: '127.0.0.1',
+             port: parseInt(authListenerPort, 10),
+             path: '/?code=the_code',
+             method: 'GET',
+           };
+
+           await new Promise(resolve => {
+             const req = http.request(options, res => {});
+             req.on('close', resolve);
+             req.on('error', error => {
+               throw new Error(
+                   `Unable to connect to ${urlObj.hostname} to complete the
+                  auth. ${error.name}, ${error.message}, ${error.stack}`);
+             });
+             req.end();
+           });
+
+           // Wait for VPN client screen to move from spinning wheel to next
+           // screen
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           assert.equal(
+               await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE, 'text'),
+               'VPN is off');
+         }
        });
 
     it('Continues to try connecting if call to check subscription status fails',
@@ -135,7 +218,7 @@ describe('Subscription manager', function() {
                       queries.screenHome.CONTROLLER_TITLE, 'text') ==
                'VPN is on';
          });
-         // Test cleanup
+         // Reset guardian endpoint for the next test
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
              userDataActive;
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
@@ -173,8 +256,8 @@ describe('Subscription manager', function() {
          // Once the VPN is toggled off, we are redirected to the "Subscribe to
          // Mozilla VPN" screen.
          await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
        });
   });
 });
