@@ -264,7 +264,7 @@ describe('Addons', function () {
         async () =>
             (parseInt(
                  await vpn.getMozillaProperty(
-                     'Mozilla.Shared', 'MZAddonManager', 'count'),
+                     'Mozilla.VPN', 'VPNAddonManager', 'count'),
                  10) > 0));
     const loadedMessages = await vpn.messages();
     const updateMessages = loadedMessages.filter(
