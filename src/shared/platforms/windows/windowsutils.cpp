@@ -5,6 +5,7 @@
 #include "windowsutils.h"
 
 #include <Windows.h>
+#include <errhandlingapi.h>
 
 #include <QSettings>
 #include <QSysInfo>
@@ -50,4 +51,9 @@ QString WindowsUtils::windowsVersion() {
     return "11";
   }
   return QSysInfo::productVersion();
+}
+
+// static
+void WindowsUtils::forceCrash() {
+  RaiseException(0x0000DEAD, EXCEPTION_NONCONTINUABLE, 0, NULL);
 }
