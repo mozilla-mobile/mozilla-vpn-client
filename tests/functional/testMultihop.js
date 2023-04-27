@@ -8,15 +8,15 @@ const vpn = require('./helper.js');
 
 async function selectCityFromList(cityId, countryId) {
   await vpn.setQueryProperty(
-      COUNTRY_VIEW, 'contentY',
-      parseInt(await vpn.getElementProperty(cityId, 'y')) +
-          parseInt(await vpn.getElementProperty(countryId, 'y')));
+      queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
+      parseInt(await vpn.getQueryProperty(cityId, 'y')) +
+          parseInt(await vpn.getQueryProperty(countryId, 'y')));
 }
 
 async function selectCountryFromList(countryId) {
   await vpn.setQueryProperty(
-      COUNTRY_VIEW, 'contentY',
-      parseInt(await vpn.getElementProperty(countryId, 'y')));
+      queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
+      parseInt(await vpn.getQueryProperty(countryId, 'y')));
 }
 
 describe('Server list', function() {
@@ -111,50 +111,49 @@ describe('Server list', function() {
     }
   })
 
+
+  it('check the countries and cities for multihop exits', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.EXIT_BUTTON.visible());
+
+    for (let server of servers) {
+      const countryId =
+          queries.screenHome.serverListView.generateCountryId(server.code);
+
+      await vpn.waitForQuery(countryId.visible());
+
+      await selectCountryFromList(countryId);
+      await vpn.wait();
+
+      if (currentCountryCode === server.code) {
+        assert(
+            (await vpn.getQueryProperty(countryId, 'cityListVisible')) ===
+            'true');
+      }
+
+      if ((await vpn.getQueryProperty(countryId, 'cityListVisible')) ===
+          'false') {
+        await vpn.clickOnQuery(countryId);
+      }
+
+      for (let city of server.cities) {
+        const cityId = countryId + '/serverCityList/serverCity-' +
+            city.name.replace(/ /g, '_');
+
+        await vpn.waitForQuery(cityId);
+        await vpn.getQueryProperty(cityId, 'visible', 'true');
+        await vpn.getQueryProperty(
+            cityId, 'checked',
+            currentCountryCode === server.code &&
+                    currentCity === city.localizedName ?
+                'true' :
+                'false');
+      }
+    }
+  });
   /* TODO
-     it('check the countries and cities for multihop exits', async () => {
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       for (let server of servers) {
-         const countryId =
-             homeScreen.serverListView.generateCountryId(server.code);
-
-         await vpn.waitForElement(countryId);
-         await vpn.waitForElementProperty(countryId, 'visible', 'true');
-
-         await selectCountryFromList(countryId);
-         await vpn.wait();
-
-         if (currentCountryCode === server.code) {
-           assert(
-               await vpn.getElementProperty(
-                   countryId, elementState.CITYLIST_VISIBLE) === 'true');
-         }
-
-         if (await vpn.getElementProperty(
-                 countryId, elementState.CITYLIST_VISIBLE) === 'false') {
-           await vpn.clickOnElement(countryId);
-         }
-
-         for (let city of server.cities) {
-           const cityId = countryId + '/serverCityList/serverCity-' +
-               city.name.replace(/ /g, '_');
-
-           await vpn.waitForElement(cityId);
-           await vpn.waitForElementProperty(cityId, 'visible', 'true');
-           await vpn.waitForElementProperty(
-               cityId, 'checked',
-               currentCountryCode === server.code &&
-                       currentCity === city.localizedName ?
-                   'true' :
-                   'false');
-         }
-       }
-     })
-
      it('Pick cities for entries', async () => {
        let countryId;
        await vpn.waitForElementAndClick(
