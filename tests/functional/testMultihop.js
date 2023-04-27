@@ -6,7 +6,6 @@ const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
-/* TODO
 async function selectCityFromList(cityId, countryId) {
   await vpn.setQueryProperty(
       COUNTRY_VIEW, 'contentY',
@@ -19,7 +18,6 @@ async function selectCountryFromList(countryId) {
       COUNTRY_VIEW, 'contentY',
       parseInt(await vpn.getElementProperty(countryId, 'y')));
 }
-*/
 
 describe('Server list', function() {
   let servers;
@@ -54,35 +52,30 @@ describe('Server list', function() {
         '| Current country code:', currentCountryCode);
   });
 
-  /* TODO
-     it('opening the entry and exit server list', async () => {
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       assert(
-           await vpn.getElementProperty(
-               homeScreen.selectMultiHopServerView.VPN_COLLAPSIBLE_CARD,
-               'expanded') === 'false');
+  it('opening the entry and exit server list', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
+    await vpn.waitForQuery(
+        queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD.visible());
 
-       await
-     vpn.waitForElement(homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
-       await vpn.waitForElementProperty(
-           homeScreen.selectMultiHopServerView.ENTRY_BUTTON, 'visible',
-     'true');
+    assert(
+        await vpn.getQueryProperty(
+            queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD,
+            'expanded') === 'false');
 
-       await
-     vpn.waitForElement(homeScreen.selectMultiHopServerView.EXIT_BUTTON); await
-     vpn.waitForElementProperty(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON, 'visible', 'true');
+    await vpn.waitForQuery(
+        queries.screenHome.serverListView.ENTRY_BUTTON.visible());
 
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.VPN_MULTHOP_CHEVRON)
-       assert(await vpn.getElementProperty(
-           homeScreen.selectMultiHopServerView.VPN_COLLAPSIBLE_CARD,
-     'expanded'))
-     });
-  */
+    await vpn.waitForQuery(
+        queries.screenHome.serverListView.EXIT_BUTTON.visible());
 
-  it.only('check the countries and cities for multihop entries', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.VPN_MULTHOP_CHEVRON.visible())
+    assert(await vpn.getQueryProperty(
+        queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD, 'expanded'))
+  });
+
+  it('check the countries and cities for multihop entries', async () => {
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
     await vpn.waitForQueryAndClick(
@@ -101,8 +94,7 @@ describe('Server list', function() {
 
       if (currentCountryCode === server.code) {
         assert.equal(
-            await vpn.getQueryProperty(countryId, 'cityListVisible'),
-            'true');
+            await vpn.getQueryProperty(countryId, 'cityListVisible'), 'true');
       }
 
       if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
