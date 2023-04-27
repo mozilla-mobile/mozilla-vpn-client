@@ -153,479 +153,455 @@ describe('Server list', function() {
       }
     }
   });
+
+  it('Pick cities for entries', async () => {
+    let countryId;
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.ENTRY_BUTTON.visible());
+
+    for (let server of servers) {
+      countryId =
+          queries.screenHome.serverListView.generateCountryId(server.code);
+      await vpn.waitForQuery(countryId.visible());
+      await selectCountryFromList(countryId);
+      await vpn.wait();
+
+      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+          'false') {
+        await vpn.clickOnQuery(countryId);
+      }
+
+      for (let city of server.cities) {
+        const cityId = countryId + '/serverCityList/serverCity-' +
+            city.name.replace(/ /g, '_');
+
+        await vpn.waitForQuery(cityId);
+        await selectCityFromList(cityId, countryId);
+        await vpn.getQueryProperty(cityId, 'visible', 'true');
+
+        const cityName = await vpn.getQueryProperty(
+            cityId, 'radioButtonLabelText'.split(' '));
+
+        await vpn.wait();
+        await vpn.clickOnQuery(cityId);
+        await vpn.wait();
+
+        assert(cityName.includes(city.name))
+      }
+    }
+  });
+
+  it('Pick cities for exits', async () => {
+    let countryId;
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.EXIT_BUTTON.visible());
+
+    for (let server of servers) {
+      countryId =
+          queries.screenHome.serverListView.generateCountryId(server.code);
+      await vpn.waitForQuery(countryId.visible());
+
+      await selectCountryFromList(countryId);
+      await vpn.wait();
+
+      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+          'false') {
+        await vpn.clickOnQuery(countryId);
+      }
+
+      for (let city of server.cities) {
+        const cityId = countryId + '/serverCityList/serverCity-' +
+            city.name.replace(/ /g, '_');
+        await vpn.waitForQuery(cityId);
+
+        await selectCityFromList(cityId, countryId)
+            await vpn.getQueryProperty(cityId, 'visible', 'true');
+
+        const cityName = await vpn.getQueryProperty(
+            cityId, 'radioButtonLabelText'.split(' '));
+
+        await vpn.wait();
+        await vpn.clickOnQuery(cityId);
+        await vpn.wait();
+
+        // One selected
+        await vpn.waitForQuery(cityId);
+        await vpn.getQueryProperty(cityId, 'checked', 'true');
+        assert(cityName.includes(city.name))
+      }
+    }
+  });
   /* TODO
-     it('Pick cities for entries', async () => {
-       let countryId;
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
+       it('Server switching -- same country different cities', async () => {
+         await vpn.setSetting('serverSwitchNotification', true);
+         await vpn.setSetting('connectionChangeNotification', true);
 
-       for (let server of servers) {
-         countryId = homeScreen.serverListView.generateCountryId(server.code);
-         await vpn.waitForElement(countryId);
+         let newCurrentCountry;
+         let newCurrentCity;
+         let currentCountry;
+         let currentCity;
 
-         await selectCountryFromList(countryId);
+         // wait for select entry and select entry
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
+
+         // exit server details
+         const firstServer = servers[0];
+         const cityTwo = firstServer.cities[0];
+         const cityThree = firstServer.cities[1];
+         const exitFirstCountryId =
+             homeScreen.serverListView.generateCountryId(firstServer.code);
+
+         // entry server details
+         const secondServer = servers[1];
+         const cityOne = secondServer.cities[0];
+         const entryCountryId =
+             homeScreen.serverListView.generateCountryId(secondServer.code);
+
+         // select the first country
+         await selectCountryFromList(entryCountryId);
+         await vpn.wait()
+         if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
+             'false') {
+           await vpn.clickOnElement(entryCountryId);
+         }
+         await vpn.waitForElementProperty(
+             entryCountryId, 'cityListVisible', 'true');
+
+         // select first city
+         const cityOneId =
+             homeScreen.serverListView.generateCityId(entryCountryId,
+       cityOne.name);
+
+         await selectCityFromList(cityOneId, entryCountryId);
+         await vpn.wait();
+         await vpn.waitForElementAndClick(cityOneId);
+
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.EXIT_BUTTON);
+
+         // select first country again
+         await selectCountryFromList(exitFirstCountryId);
+         await vpn.wait();
+         if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
+       === 'false') { await vpn.clickOnElement(exitFirstCountryId);
+         }
+         await vpn.waitForElementProperty(
+             exitFirstCountryId, 'cityListVisible', 'true');
+
+         // select first city in exit country
+         const cityTwoId = homeScreen.serverListView.generateCityId(
+             exitFirstCountryId, cityTwo.name);
+
+         await selectCityFromList(cityTwoId, exitFirstCountryId);
+         await vpn.wait();
+         await vpn.waitForElementAndClick(cityTwoId);
+
+         // navigate back to connection view
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.BACK_BUTTON);
+
+         // define connected server
+         currentCountry = firstServer.localizedName;
+         currentCity = cityTwo.localizedName;
+
+         // connect vpn
+         await vpn.activate();
+
+         // wait and assert vpn connection
+         await vpn.waitForCondition(async () => {
+           return await vpn.getElementProperty(
+                      generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+         });
+         assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Connected to ${currentCountry}, ${currentCity}`);
+
+         // back to main view
+         await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
+
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.EXIT_BUTTON);
+
+         // select first country again
+         await selectCountryFromList(exitFirstCountryId);
+         await vpn.wait();
+         if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
+       === 'false') { await vpn.clickOnElement(exitFirstCountryId);
+         }
+         await vpn.waitForElementProperty(
+             exitFirstCountryId, 'cityListVisible', 'true');
+
+         // select first city in exit country
+         const cityThreeId = homeScreen.serverListView.generateCityId(
+             exitFirstCountryId, cityThree.name);
+
+         await selectCityFromList(
+             cityThreeId, exitFirstCountryId);
+         await vpn.waitForElementAndClick(cityThreeId);
+
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.BACK_BUTTON);
+
+         // define new connected server
+         newCurrentCountry = firstServer.localizedName;
+         newCurrentCity = cityThree.localizedName;
+
+         // wait and assert server switching for multihop
+         await vpn.waitForCondition(
+             async () => {return vpn.lastNotification().title ==
+                          'VPN Switched Servers'},
+             20)
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Switched from ${currentCountry}, ${currentCity} to ${
+                 newCurrentCountry}, ${newCurrentCity}`);
+       });
+
+       it('Server switching -- different country different cities', async ()
+     => { await vpn.setSetting('serverSwitchNotification', true); await
+     vpn.setSetting('connectionChangeNotification', true);
+
+         let newCurrentCountry;
+         let newCurrentCity;
+         let currentCountry;
+         let currentCity;
+
+         // wait for select entry and select entry
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
+
+         // exit server details
+         const firstServer = servers[0];
+         const cityTwo = firstServer.cities[0];
+         const exitFirstCountryId =
+             homeScreen.serverListView.generateCountryId(firstServer.code);
+
+         // second exit server details
+         const thirdServer = servers[2];
+         const cityThree = thirdServer.cities[0];
+         const exitThirdCountryId =
+             homeScreen.serverListView.generateCountryId(thirdServer.code);
+
+         // entry server details
+         const secondServer = servers[1];
+         const cityOne = secondServer.cities[0];
+         const entryCountryId =
+             homeScreen.serverListView.generateCountryId(secondServer.code);
+
+         // select the first country
+         await selectCountryFromList(entryCountryId);
          await vpn.wait();
 
-         if (await vpn.getElementProperty(
-                 countryId, elementState.CITYLIST_VISIBLE) === 'false') {
-           await vpn.clickOnElement(countryId);
+         if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
+             'false') {
+           await vpn.clickOnElement(entryCountryId);
          }
-
          await vpn.waitForElementProperty(
-             countryId, elementState.CITYLIST_VISIBLE, 'true');
+             entryCountryId, 'cityListVisible', 'true');
 
-         for (let city of server.cities) {
-           const cityId = countryId + '/serverCityList/serverCity-' +
-               city.name.replace(/ /g, '_');
-           await vpn.waitForElement(cityId);
+         // select first city
+         const cityOneId =
+             homeScreen.serverListView.generateCityId(entryCountryId,
+       cityOne.name); await selectCityFromList(cityOneId, entryCountryId); await
+       vpn.waitForElementAndClick(cityOneId);
 
-           await selectCityFromList(cityId, countryId);
-           await vpn.waitForElementProperty(cityId, 'visible', 'true');
-           const cityName = await vpn.getElementProperty(
-               cityId, 'radioButtonLabelText'.split(' '));
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.EXIT_BUTTON);
 
-           await vpn.wait();
-           await vpn.clickOnElement(cityId);
-           await vpn.wait();
-
-           // Back to the main view.
-           await vpn.waitForElement(
-               homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
-           await vpn.waitForElementProperty(
-               homeScreen.selectMultiHopServerView.ENTRY_BUTTON, 'visible',
-               'true');
-           await vpn.waitForElementAndClick(
-               homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
-
-           // One selected
-           await vpn.waitForElement(cityId);
-           await vpn.waitForElementProperty(cityId, 'checked', 'true');
-           assert(cityName.includes(city.name))
+         // select first country again
+         await selectCountryFromList(exitFirstCountryId);
+         await vpn.wait();
+         if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
+       === 'false') { await vpn.clickOnElement(exitFirstCountryId);
          }
-       }
-     });
-
-     it('Pick cities for exits', async () => {
-       let countryId;
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       for (let server of servers) {
-         countryId = homeScreen.serverListView.generateCountryId(server.code);
-         await vpn.waitForElement(countryId);
-
-         await selectCountryFromList(countryId)
-             await vpn.wait();
-
-         if (await vpn.getElementProperty(
-                 countryId, elementState.CITYLIST_VISIBLE) === 'false') {
-           await vpn.clickOnElement(countryId);
-         }
-
          await vpn.waitForElementProperty(
-             countryId, elementState.CITYLIST_VISIBLE, 'true');
+             exitFirstCountryId, 'cityListVisible', 'true');
 
-         for (let city of server.cities) {
-           const cityId = countryId + '/serverCityList/serverCity-' +
-               city.name.replace(/ /g, '_');
-           await vpn.waitForElement(cityId);
+         // select first city in exit country
+         const cityTwoId = homeScreen.serverListView.generateCityId(
+             exitFirstCountryId, cityTwo.name);
+         await selectCityFromList(cityTwoId, exitFirstCountryId);
+         await vpn.waitForElementAndClick(cityTwoId);
 
-           await selectCityFromList(cityId, countryId)
-                   await vpn.waitForElementProperty(cityId, 'visible', 'true');
-           const cityName = await vpn.getElementProperty(
-               cityId, 'radioButtonLabelText'.split(' '));
+         // navigate back to connection view
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.BACK_BUTTON);
 
-           await vpn.wait();
-           await vpn.clickOnElement(cityId);
-           await vpn.wait();
+         // define connected server
+         currentCountry = firstServer.localizedName;
+         currentCity = cityTwo.localizedName;
 
-           // Back to the main view.
-           await vpn.waitForElement(
-               homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-           await vpn.waitForElementProperty(
-               homeScreen.selectMultiHopServerView.EXIT_BUTTON, 'visible',
-               'true');
-           await vpn.waitForElementAndClick(
-               homeScreen.selectMultiHopServerView.EXIT_BUTTON);
+         // connect vpn
+         await vpn.activate();
 
-           // One selected
-           await vpn.waitForElement(cityId);
-           await vpn.waitForElementProperty(cityId, 'checked', 'true');
-           assert(cityName.includes(city.name))
+         // wait and assert vpn connection
+         await vpn.waitForCondition(async () => {
+           return await vpn.getElementProperty(
+                      generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+         });
+         assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Connected to ${currentCountry}, ${currentCity}`);
+
+         // back to main view
+         await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
+
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.EXIT_BUTTON);
+
+         // select first country again
+         await selectCountryFromList(exitThirdCountryId);
+         await vpn.wait();
+         if (await vpn.getElementProperty(exitThirdCountryId, 'cityListVisible')
+       === 'false') { await vpn.clickOnElement(exitThirdCountryId);
          }
-       }
-     });
+         await vpn.waitForElementProperty(
+             exitThirdCountryId, 'cityListVisible', 'true');
 
-     it('Server switching -- same country different cities', async () => {
-       await vpn.setSetting('serverSwitchNotification', true);
-       await vpn.setSetting('connectionChangeNotification', true);
+         // select first city in exit country
+         const cityThreeId = homeScreen.serverListView.generateCityId(
+             exitThirdCountryId, cityThree.name);
+         await selectCityFromList(cityThreeId, exitThirdCountryId)
+                 await vpn.waitForElementAndClick(cityThreeId);
 
-       let newCurrentCountry;
-       let newCurrentCity;
-       let currentCountry;
-       let currentCity;
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.BACK_BUTTON);
 
-       // wait for select entry and select entry
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
+         // define new connected server
+         newCurrentCountry = thirdServer.localizedName;
+         newCurrentCity = cityThree.localizedName;
 
-       // exit server details
-       const firstServer = servers[0];
-       const cityTwo = firstServer.cities[0];
-       const cityThree = firstServer.cities[1];
-       const exitFirstCountryId =
-           homeScreen.serverListView.generateCountryId(firstServer.code);
-
-       // entry server details
-       const secondServer = servers[1];
-       const cityOne = secondServer.cities[0];
-       const entryCountryId =
-           homeScreen.serverListView.generateCountryId(secondServer.code);
-
-       // select the first country
-       await selectCountryFromList(entryCountryId);
-       await vpn.wait()
-       if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
-           'false') {
-         await vpn.clickOnElement(entryCountryId);
-       }
-       await vpn.waitForElementProperty(
-           entryCountryId, 'cityListVisible', 'true');
-
-       // select first city
-       const cityOneId =
-           homeScreen.serverListView.generateCityId(entryCountryId,
-     cityOne.name);
-
-       await selectCityFromList(cityOneId, entryCountryId);
-       await vpn.wait();
-       await vpn.waitForElementAndClick(cityOneId);
-
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       // select first country again
-       await selectCountryFromList(exitFirstCountryId);
-       await vpn.wait();
-       if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
-     === 'false') { await vpn.clickOnElement(exitFirstCountryId);
-       }
-       await vpn.waitForElementProperty(
-           exitFirstCountryId, 'cityListVisible', 'true');
-
-       // select first city in exit country
-       const cityTwoId = homeScreen.serverListView.generateCityId(
-           exitFirstCountryId, cityTwo.name);
-
-       await selectCityFromList(cityTwoId, exitFirstCountryId);
-       await vpn.wait();
-       await vpn.waitForElementAndClick(cityTwoId);
-
-       // navigate back to connection view
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.BACK_BUTTON);
-
-       // define connected server
-       currentCountry = firstServer.localizedName;
-       currentCity = cityTwo.localizedName;
-
-       // connect vpn
-       await vpn.activate();
-
-       // wait and assert vpn connection
-       await vpn.waitForCondition(async () => {
-         return await vpn.getElementProperty(
-                    generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+         // wait and assert server switching for multihop
+         await vpn.waitForCondition(
+             async () => {return vpn.lastNotification().title ==
+                          'VPN Switched Servers'},
+             20)
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Switched from ${currentCountry}, ${currentCity} to ${
+                 newCurrentCountry}, ${newCurrentCity}`);
        });
-       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Connected to ${currentCountry}, ${currentCity}`);
 
-       // back to main view
-       await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
+       it('Single and multihop switching', async () => {
+         await vpn.setSetting('serverSwitchNotification', true);
+         await vpn.setSetting('connectionChangeNotification', true);
 
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
+         let currentCountry;
+         let currentCity;
 
-       // select first country again
-       await selectCountryFromList(exitFirstCountryId);
-       await vpn.wait();
-       if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
-     === 'false') { await vpn.clickOnElement(exitFirstCountryId);
-       }
-       await vpn.waitForElementProperty(
-           exitFirstCountryId, 'cityListVisible', 'true');
+         // wait for select entry and select entry
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
 
-       // select first city in exit country
-       const cityThreeId = homeScreen.serverListView.generateCityId(
-           exitFirstCountryId, cityThree.name);
+         // exit server details
+         const firstServer = servers[0];
+         const cityTwo = firstServer.cities[0];
+         const exitFirstCountryId =
+             homeScreen.serverListView.generateCountryId(firstServer.code);
 
-       await selectCityFromList(
-           cityThreeId, exitFirstCountryId);
-       await vpn.waitForElementAndClick(cityThreeId);
+         // entry server details
+         const secondServer = servers[1];
+         const cityOne = secondServer.cities[0];
+         const entryCountryId =
+             homeScreen.serverListView.generateCountryId(secondServer.code);
 
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.BACK_BUTTON);
+         // select the first country
+         await selectCountryFromList(entryCountryId);
+         await vpn.wait()
+         if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
+             'false') {
+           await vpn.clickOnElement(entryCountryId);
+         }
+         await vpn.waitForElementProperty(
+             entryCountryId, 'cityListVisible', 'true');
 
-       // define new connected server
-       newCurrentCountry = firstServer.localizedName;
-       newCurrentCity = cityThree.localizedName;
+         // select first city
+         const cityOneId =
+             homeScreen.serverListView.generateCityId(entryCountryId,
+       cityOne.name); await selectCityFromList(cityOneId, entryCountryId); await
+       vpn.waitForElementAndClick(cityOneId);
 
-       // wait and assert server switching for multihop
-       await vpn.waitForCondition(
-           async () => {return vpn.lastNotification().title ==
-                        'VPN Switched Servers'},
-           20)
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Switched from ${currentCountry}, ${currentCity} to ${
-               newCurrentCountry}, ${newCurrentCity}`);
-     });
+         // Back at the main view. select the exit entries
+         await vpn.waitForElementAndClick(
+             homeScreen.selectMultiHopServerView.EXIT_BUTTON);
 
-     it('Server switching -- different country different cities', async () => {
-       await vpn.setSetting('serverSwitchNotification', true);
-       await vpn.setSetting('connectionChangeNotification', true);
+         // select first country again
+         await selectCountryFromList(exitFirstCountryId);
+         await vpn.wait();
+         if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
+       === 'false') { await vpn.clickOnElement(exitFirstCountryId);
+         }
+         await vpn.waitForElementProperty(
+             exitFirstCountryId, 'cityListVisible', 'true');
 
-       let newCurrentCountry;
-       let newCurrentCity;
-       let currentCountry;
-       let currentCity;
+         // select first city in exit country
+         const cityTwoId = homeScreen.serverListView.generateCityId(
+             exitFirstCountryId, cityTwo.name);
+         await selectCityFromList(cityTwoId, exitFirstCountryId)
+                 await vpn.waitForElementAndClick(cityTwoId);
 
-       // wait for select entry and select entry
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
+         // navigate back to connection view
+         await vpn.waitForElementAndClick(
+             homeScreen.selectSingleHopServerView.BACK_BUTTON);
 
-       // exit server details
-       const firstServer = servers[0];
-       const cityTwo = firstServer.cities[0];
-       const exitFirstCountryId =
-           homeScreen.serverListView.generateCountryId(firstServer.code);
+         // define connected server
+         currentCountry = firstServer.localizedName;
+         currentCity = cityTwo.localizedName;
 
-       // second exit server details
-       const thirdServer = servers[2];
-       const cityThree = thirdServer.cities[0];
-       const exitThirdCountryId =
-           homeScreen.serverListView.generateCountryId(thirdServer.code);
+         // connect vpn
+         await vpn.activate();
 
-       // entry server details
-       const secondServer = servers[1];
-       const cityOne = secondServer.cities[0];
-       const entryCountryId =
-           homeScreen.serverListView.generateCountryId(secondServer.code);
+         // wait and assert vpn connection
+         await vpn.waitForCondition(async () => {
+           return await vpn.getElementProperty(
+                      generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+         });
+         assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Connected to ${currentCountry}, ${currentCity}`);
 
-       // select the first country
-       await selectCountryFromList(entryCountryId);
-       await vpn.wait();
+         // back to main view
+         await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
 
-       if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
-           'false') {
-         await vpn.clickOnElement(entryCountryId);
-       }
-       await vpn.waitForElementProperty(
-           entryCountryId, 'cityListVisible', 'true');
 
-       // select first city
-       const cityOneId =
-           homeScreen.serverListView.generateCityId(entryCountryId,
-     cityOne.name); await selectCityFromList(cityOneId, entryCountryId); await
-     vpn.waitForElementAndClick(cityOneId);
+         // switch from multihop to singlehop
+         await vpn
+             .waitForElementAndClick(
+                 homeScreen.selectSingleHopServerView.SINGLEHOP_SELECTOR_TAB)
+                 await vpn
+             .waitForElementAndClick(
+                 homeScreen.selectSingleHopServerView.BACK_BUTTON)
 
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       // select first country again
-       await selectCountryFromList(exitFirstCountryId);
-       await vpn.wait();
-       if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
-     === 'false') { await vpn.clickOnElement(exitFirstCountryId);
-       }
-       await vpn.waitForElementProperty(
-           exitFirstCountryId, 'cityListVisible', 'true');
-
-       // select first city in exit country
-       const cityTwoId = homeScreen.serverListView.generateCityId(
-           exitFirstCountryId, cityTwo.name);
-       await selectCityFromList(cityTwoId, exitFirstCountryId);
-       await vpn.waitForElementAndClick(cityTwoId);
-
-       // navigate back to connection view
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.BACK_BUTTON);
-
-       // define connected server
-       currentCountry = firstServer.localizedName;
-       currentCity = cityTwo.localizedName;
-
-       // connect vpn
-       await vpn.activate();
-
-       // wait and assert vpn connection
-       await vpn.waitForCondition(async () => {
-         return await vpn.getElementProperty(
-                    generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+             // wait and assert vpn connection
+             await vpn.waitForCondition(async () => {
+               return await vpn.getElementProperty(
+                          generalElements.CONTROLLER_TITLE, 'text') == 'VPN is
+       on';
+             });
+         assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+         assert.strictEqual(
+             vpn.lastNotification().message,
+             `Connected to ${currentCountry}, ${currentCity}`);
        });
-       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Connected to ${currentCountry}, ${currentCity}`);
-
-       // back to main view
-       await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
-
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       // select first country again
-       await selectCountryFromList(exitThirdCountryId);
-       await vpn.wait();
-       if (await vpn.getElementProperty(exitThirdCountryId, 'cityListVisible')
-     === 'false') { await vpn.clickOnElement(exitThirdCountryId);
-       }
-       await vpn.waitForElementProperty(
-           exitThirdCountryId, 'cityListVisible', 'true');
-
-       // select first city in exit country
-       const cityThreeId = homeScreen.serverListView.generateCityId(
-           exitThirdCountryId, cityThree.name);
-       await selectCityFromList(cityThreeId, exitThirdCountryId)
-               await vpn.waitForElementAndClick(cityThreeId);
-
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.BACK_BUTTON);
-
-       // define new connected server
-       newCurrentCountry = thirdServer.localizedName;
-       newCurrentCity = cityThree.localizedName;
-
-       // wait and assert server switching for multihop
-       await vpn.waitForCondition(
-           async () => {return vpn.lastNotification().title ==
-                        'VPN Switched Servers'},
-           20)
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Switched from ${currentCountry}, ${currentCity} to ${
-               newCurrentCountry}, ${newCurrentCity}`);
-     });
-
-     it('Single and multihop switching', async () => {
-       await vpn.setSetting('serverSwitchNotification', true);
-       await vpn.setSetting('connectionChangeNotification', true);
-
-       let currentCountry;
-       let currentCity;
-
-       // wait for select entry and select entry
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.MULTIHOP_SELECTOR_TAB);
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.ENTRY_BUTTON);
-
-       // exit server details
-       const firstServer = servers[0];
-       const cityTwo = firstServer.cities[0];
-       const exitFirstCountryId =
-           homeScreen.serverListView.generateCountryId(firstServer.code);
-
-       // entry server details
-       const secondServer = servers[1];
-       const cityOne = secondServer.cities[0];
-       const entryCountryId =
-           homeScreen.serverListView.generateCountryId(secondServer.code);
-
-       // select the first country
-       await selectCountryFromList(entryCountryId);
-       await vpn.wait()
-       if (await vpn.getElementProperty(entryCountryId, 'cityListVisible') ===
-           'false') {
-         await vpn.clickOnElement(entryCountryId);
-       }
-       await vpn.waitForElementProperty(
-           entryCountryId, 'cityListVisible', 'true');
-
-       // select first city
-       const cityOneId =
-           homeScreen.serverListView.generateCityId(entryCountryId,
-     cityOne.name); await selectCityFromList(cityOneId, entryCountryId); await
-     vpn.waitForElementAndClick(cityOneId);
-
-       // Back at the main view. select the exit entries
-       await vpn.waitForElementAndClick(
-           homeScreen.selectMultiHopServerView.EXIT_BUTTON);
-
-       // select first country again
-       await selectCountryFromList(exitFirstCountryId);
-       await vpn.wait();
-       if (await vpn.getElementProperty(exitFirstCountryId, 'cityListVisible')
-     === 'false') { await vpn.clickOnElement(exitFirstCountryId);
-       }
-       await vpn.waitForElementProperty(
-           exitFirstCountryId, 'cityListVisible', 'true');
-
-       // select first city in exit country
-       const cityTwoId = homeScreen.serverListView.generateCityId(
-           exitFirstCountryId, cityTwo.name);
-       await selectCityFromList(cityTwoId, exitFirstCountryId)
-               await vpn.waitForElementAndClick(cityTwoId);
-
-       // navigate back to connection view
-       await vpn.waitForElementAndClick(
-           homeScreen.selectSingleHopServerView.BACK_BUTTON);
-
-       // define connected server
-       currentCountry = firstServer.localizedName;
-       currentCity = cityTwo.localizedName;
-
-       // connect vpn
-       await vpn.activate();
-
-       // wait and assert vpn connection
-       await vpn.waitForCondition(async () => {
-         return await vpn.getElementProperty(
-                    generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
-       });
-       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Connected to ${currentCountry}, ${currentCity}`);
-
-       // back to main view
-       await vpn.waitForElementAndClick(homeScreen.SERVER_LIST_BUTTON);
-
-
-       // switch from multihop to singlehop
-       await vpn
-           .waitForElementAndClick(
-               homeScreen.selectSingleHopServerView.SINGLEHOP_SELECTOR_TAB)
-               await vpn
-           .waitForElementAndClick(
-               homeScreen.selectSingleHopServerView.BACK_BUTTON)
-
-           // wait and assert vpn connection
-           await vpn.waitForCondition(async () => {
-             return await vpn.getElementProperty(
-                        generalElements.CONTROLLER_TITLE, 'text') == 'VPN is
-     on';
-           });
-       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-       assert.strictEqual(
-           vpn.lastNotification().message,
-           `Connected to ${currentCountry}, ${currentCity}`);
-     });
-  */
+    */
 });
