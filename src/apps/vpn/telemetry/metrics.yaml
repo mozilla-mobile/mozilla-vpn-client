@@ -150,3 +150,20 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
     expires: never
+
+  connection_health_stable_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+    description: |
+      Count of times that the connection health check is successful
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4700
+    data_reviews:
+      - TO BE ADDED
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
