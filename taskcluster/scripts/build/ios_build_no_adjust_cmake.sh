@@ -38,14 +38,6 @@ conda env create --force -f env.yml
 conda activate VPN
 conda info
 
-print Y "Installing rust-std-aarch64-apple-ios"
-# TODO: This should be turned into a proper conda feedstock
-RUSTC_VERSION=$(rustc --version | awk '{print $2}')
-curl -o rust-std-aarch64-apple-ios.tar.gz --proto =https \
-    https://static.rust-lang.org/dist/rust-std-${RUSTC_VERSION}-aarch64-apple-ios.tar.gz
-tar -xzf rust-std-aarch64-apple-ios.tar.gz
-rust-std-${RUSTC_VERSION}-aarch64-apple-ios/install.sh --prefix=$(rustc --print sysroot)
-
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
 git submodule update --init --recursive || die "Failed to init submodules"
