@@ -281,9 +281,9 @@ describe('Server list', function() {
     await vpn.wait();
     await vpn.waitForQueryAndClick(cityOneId);
 
-    // // Back at the main view. select the exit entries
-    // await vpn.waitForQueryAndClick(
-    //     queries.screenHome.serverListView.EXIT_BUTTON.visible());
+    // Back at the main view. select the exit entries
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.EXIT_BUTTON.visible());
 
     // select first country again
     await selectCountryFromList(exitFirstCountryId);
@@ -319,16 +319,15 @@ describe('Server list', function() {
                  queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
     });
     assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-    // assert.strictEqual(
-    //     vpn.lastNotification().message,
-    //     `Connected through ${currentCity}`);
+    assert.strictEqual(
+        vpn.lastNotification().message, `Connected through ${currentCity}`);
 
-    // // back to main view
-    // await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
+    // back to main view
+    await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
 
-    // // Back at the main view. select the exit entries
-    // await vpn.waitForQueryAndClick(
-    //     queries.screenHome.serverListView.EXIT_BUTTON.visible());
+    // Back at the main view. select the exit entries
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.EXIT_BUTTON.visible());
 
     // select first country again
     await selectCountryFromList(exitFirstCountryId);
@@ -340,30 +339,30 @@ describe('Server list', function() {
     await vpn.waitForElementProperty(
         exitFirstCountryId, 'cityListVisible', 'true');
 
-    // // select first city in exit country
-    // const cityThreeId = queries.screenHome.serverListView.generateCityId(
-    //     exitFirstCountryId, cityThree.name);
+    // select first city in exit country
+    const cityThreeId = queries.screenHome.serverListView.generateCityId(
+        exitFirstCountryId, cityThree.name);
 
-    // await selectCityFromList(cityThreeId, exitFirstCountryId);
-    // await vpn.waitForQueryAndClick(cityThreeId);
+    await selectCityFromList(cityThreeId, exitFirstCountryId);
+    await vpn.waitForQueryAndClick(cityThreeId);
 
-    // // Back at the main view. select the exit entries
-    // await vpn.waitForQueryAndClick(
-    //     queries.screenHome.serverListView.BACK_BUTTON.visible());
+    // Back at the main view. select the exit entries
+    await vpn.waitForQueryAndClick(
+        queries.screenHome.serverListView.BACK_BUTTON.visible());
 
-    // // define new connected server
-    // newCurrentCountry = firstServer.localizedName;
-    // newCurrentCity = cityThree.localizedName;
+    // define new connected server
+    newCurrentCountry = firstServer.localizedName;
+    newCurrentCity = cityThree.localizedName;
 
-    // // wait and assert server switching for multihop
-    // await vpn.waitForCondition(
-    //     async () => {return vpn.lastNotification().title ==
-    //                  'VPN Switched Servers'},
-    //     20)
-    // assert.strictEqual(
-    //     vpn.lastNotification().message,
-    //     `Switched from ${currentCountry}, ${currentCity} to ${
-    //         newCurrentCountry}, ${newCurrentCity}`);
+    // wait and assert server switching for multihop
+    await vpn.waitForCondition(
+        async () => {return vpn.lastNotification().title ==
+                     'VPN Switched Servers'},
+        20)
+    assert.strictEqual(
+        vpn.lastNotification().message,
+        `Switched from ${currentCountry}, ${currentCity} to ${
+            newCurrentCountry}, ${newCurrentCity}`);
   });
 
   it.skip(
@@ -532,8 +531,7 @@ describe('Server list', function() {
         'false') {
       await vpn.clickOnQuery(entryCountryId);
     }
-    // await vpn.waitForElementProperty(entryCountryId, 'cityListVisible',
-    // 'true');
+    await vpn.waitForElementProperty(entryCountryId, 'cityListVisible', 'true');
     assert.equal(
         await vpn.getQueryProperty(entryCountryId, 'cityListVisible'), 'true');
 
@@ -584,25 +582,24 @@ describe('Server list', function() {
         `Connected to ${currentCountry}, ${currentCity}`);
 
     // back to main view
-    // await vpn.waitForQueryAndClick(homeScreen.SERVER_LIST_BUTTON);
+    await vpn.waitForQueryAndClick(homeScreen.SERVER_LIST_BUTTON);
 
 
     // switch from multihop to singlehop
-    // await vpn
-    //     .waitForQueryAndClick(
-    //         homeScreen.selectSingleHopServerView.SINGLEHOP_SELECTOR_TAB)
-    //         await vpn
-    //     .waitForQueryAndClick(
-    //         homeScreen.selectSingleHopServerView.BACK_BUTTON)
+    await vpn
+        .waitForQueryAndClick(
+            homeScreen.selectSingleHopServerView.SINGLEHOP_SELECTOR_TAB)
+            await vpn
+        .waitForQueryAndClick(homeScreen.selectSingleHopServerView.BACK_BUTTON)
 
-    //     // wait and assert vpn connection
-    //     await vpn.waitForCondition(
-    //         async () => {return await vpn.getElementProperty(
-    //                                 generalElements.CONTROLLER_TITLE,
-    //                                 'text') == 'VPN is on'; });
-    // assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-    // assert.strictEqual(
-    //     vpn.lastNotification().message,
-    //     `Connected to ${currentCountry}, ${currentCity}`);
+        // wait and assert vpn connection
+        await vpn.waitForCondition(async () => {
+          return await vpn.getElementProperty(
+                     generalElements.CONTROLLER_TITLE, 'text') == 'VPN is on';
+        });
+    assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
+    assert.strictEqual(
+        vpn.lastNotification().message,
+        `Connected to ${currentCountry}, ${currentCity}`);
   });
 });
