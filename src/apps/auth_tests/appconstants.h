@@ -34,9 +34,6 @@ constexpr const char* LOG_FILE_NAME = "auth-test.txt";
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
 
-// The IAP plan on FxA
-constexpr const char* IAP_PLANS = "auth-test";
-
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
 constexpr const char* CRYPTO_SETTINGS_SERVICE = "App AuthTest";

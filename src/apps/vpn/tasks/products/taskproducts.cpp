@@ -24,8 +24,8 @@ TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->get(QString("%1/v1/oauth/subscriptions/iap/plans/%2")
-                   .arg(Constants::fxaApiBaseUrl(), AppConstants::IAP_PLANS));
+  request->auth(App::authorizationHeader());
+  request->get(AppConstants::apiUrl(AppConstants::Products));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

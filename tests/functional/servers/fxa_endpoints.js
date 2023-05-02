@@ -106,33 +106,7 @@ exports.validators = VALIDATORS;
 
 exports.generateEndpoints = function(guardianUrl) {
   return {
-    GETs: {
-      '/v1/oauth/subscriptions/iap/plans/guardian-vpn': {
-        status: 200,
-        body: {
-          products: [
-            {
-              platform: 'dummy',
-              id: 'monthly',
-              featured_product: false,
-              type: 'monthly'
-            },
-            {
-              platform: 'dummy',
-              id: 'half-monthly',
-              featured_product: false,
-              type: 'half-yearly'
-            },
-            {
-              platform: 'dummy',
-              id: 'yearly',
-              featured_product: true,
-              type: 'yearly'
-            },
-          ]
-        }
-      },
-    },
+    GETs: {},
 
     POSTs: {
       '/v1/account/status': {

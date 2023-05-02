@@ -392,18 +392,11 @@ const MVPNPresets = [
       await controller.clickOnQuery('//signUpButton');
     },
 
-    fxaOverrideEndpoints: {
-      GETs: {
-        '/v1/oauth/subscriptions/iap/plans/guardian-vpn':
-            {status: 200, body: {products: SubscriptionProducts}},
-      },
-      POSTs: {},
-      DELETEs: {},
-    },
-
     guardianOverrideEndpoints: {
       GETs: {
         '/api/v1/vpn/account': {status: 200, body: SubscriptionNeededUserData},
+        '/api/v3/vpn/products':
+            {status: 200, body: {products: SubscriptionProducts}},
       },
       POSTs: {
         '/api/v1/vpn/purchases/wasm': {
