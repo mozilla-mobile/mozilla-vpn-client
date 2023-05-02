@@ -69,7 +69,7 @@ while [[ $# -gt 0 ]]; do
     helpFunction
     ;;
   *)
-    if ! [[ "$$1" ]]; then
+    if [[ "$$1" ]]; then
       QTPATH="$1"
     fi
     shift

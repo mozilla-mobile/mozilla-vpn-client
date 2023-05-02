@@ -144,6 +144,9 @@ windows/split-tunnel/*.sys
 windows/split-tunnel/*.dll
 windows/split-tunnel/.status
 
+# Mac OS X
+.DS_Store
+
 # Rust
 .cargo_home/
 .rustc_info.json
