@@ -14,7 +14,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-constexpr const char* DESKTOP_ENTRY_LOCATION = "/usr/share/applications/";
+constexpr const char* DATA_DIRS_FALLBACK = "/usr/local/share/:/usr/share/";
+constexpr const char* CONFIG_DIRS_FALLBACK = "/etc/xdg/autostart/";
 
 namespace {
 Logger logger("LinuxAppListProvider");
@@ -30,10 +31,12 @@ LinuxAppListProvider::~LinuxAppListProvider() {
 }
 
 void LinuxAppListProvider::fetchEntries(const QString& dataDir,
-                                        QMap<QString, QString>& map) {
+                                        QMap<QString, QString>& map,
+                                        const QSet<QString>& desktopEnv) {
   logger.debug() << "Fetch Application list from" << dataDir;
 
-  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files);
+  QDirIterator iter(dataDir, QStringList() << "*.desktop", QDir::Files,
+                    QDirIterator::Subdirectories);
   while (iter.hasNext()) {
     QFileInfo fileinfo(iter.next());
     QSettings entry(fileinfo.filePath(), QSettings::IniFormat);
@@ -46,6 +49,23 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
     if (entry.value("NoDisplay", QVariant(false)).toBool()) {
       continue;
     }
+    if (entry.value("Hidden", QVariant(false)).toBool()) {
+      continue;
+    }
+    if (entry.contains("NotShowIn")) {
+      QStringList items =
+          entry.value("NotShowIn").toString().trimmed().split(":");
+      if (desktopEnv.intersects(QSet<QString>(items.begin(), items.end()))) {
+        continue;
+      }
+    }
+    if (entry.contains("OnlyShowIn")) {
+      QStringList items =
+          entry.value("OnlyShowIn").toString().trimmed().split(":");
+      if (!desktopEnv.intersects(QSet<QString>(items.begin(), items.end()))) {
+        continue;
+      }
+    }
 
     map[fileinfo.absoluteFilePath()] = entry.value("Name").toString();
   }
@@ -56,17 +76,38 @@ void LinuxAppListProvider::getApplicationList() {
   QMap<QString, QString> out;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains("XDG_DATA_DIRS")) {
-    QStringList parts = pe.value("XDG_DATA_DIRS").split(":");
-    for (const QString& part : parts) {
-      fetchEntries(part.trimmed() + "/applications", out);
-    }
-  } else {
-    fetchEntries(DESKTOP_ENTRY_LOCATION, out);
+  QSet<QString> env;
+  if (pe.contains("XDG_CURRENT_DESKTOP")) {
+    const QStringList parts = pe.value("XDG_CURRENT_DESKTOP").split(":");
+    env += QSet<QString>(parts.begin(), parts.end());
   }
 
-  if (pe.contains("HOME")) {
-    fetchEntries(pe.value("HOME") + "/.local/share/applications", out);
+  QString dataDirs = pe.value("XDG_DATA_DIRS", DATA_DIRS_FALLBACK);
+  for (const QString& part : dataDirs.split(":")) {
+    fetchEntries(part.trimmed() + "/applications", out, env);
+  }
+
+  if (pe.contains("XDG_DATA_HOME")) {
+    fetchEntries(pe.value("XDG_DATA_HOME") + "/applications", out, env);
+  } else if (pe.contains("HOME")) {
+    fetchEntries(pe.value("HOME") + "/.local/share/applications", out, env);
+  }
+
+  QMap<QString, QString> autostart;
+  QString configDirs = pe.value("XDG_CONFIG_DIRS", CONFIG_DIRS_FALLBACK);
+  for (const QString& part : configDirs.split(":")) {
+    fetchEntries(part.trimmed() + "/autostart", autostart, env);
+  }
+
+  if (pe.contains("XDG_CONFIG_HOME")) {
+    fetchEntries(pe.value("XDG_CONFIG_HOME") + "/autostart", autostart, env);
+  } else if (pe.contains("HOME")) {
+    fetchEntries(pe.value("HOME") + "/.config/autostart", autostart, env);
+  }
+
+  for (auto itPathName = autostart.constKeyValueBegin();
+       itPathName != autostart.constKeyValueEnd(); ++itPathName) {
+    out[itPathName->first] = itPathName->second + " (autostart)";
   }
 
   emit newAppList(out);
