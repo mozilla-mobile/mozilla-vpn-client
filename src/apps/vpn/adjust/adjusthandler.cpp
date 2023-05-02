@@ -47,8 +47,8 @@ void AdjustHandler::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   // If the app has not started yet, let's wait.
-  if (vpn->state() == App::StateInitialize) {
-    QObject::connect(vpn, &App::stateChanged, AdjustHandler::initialize);
+  if (vpn->state() == MozillaVPN::StateInitialize) {
+    QObject::connect(vpn, &MozillaVPN::stateChanged, AdjustHandler::initialize);
     return;
   }
 

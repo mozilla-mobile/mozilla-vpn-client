@@ -104,19 +104,10 @@ QJsonObject serializeStatus() {
   obj["location"] = locationObj;
 
   {
-    int stateValue = vpn->state();
-    if (stateValue > App::StateCustom) {
-      MozillaVPN::CustomState state =
-          static_cast<MozillaVPN::CustomState>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
-    } else {
-      App::State state = static_cast<App::State>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
-    }
+    MozillaVPN::State state = vpn->state();
+    const QMetaObject* meta = qt_getEnumMetaObject(state);
+    int index = meta->indexOfEnumerator(qt_getEnumName(state));
+    obj["app"] = meta->enumerator(index).valueToKey(state);
   }
 
   {

@@ -376,7 +376,8 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme", theme);
 
 #if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn,
+                     &MozillaVPN::quit);
 #else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, [] {
       // Submit the main ping one last time.
@@ -395,7 +396,7 @@ int CommandUI::run(QStringList& tokens) {
         []() { MozillaVPN::instance()->deactivate(); }, Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
-                     &App::quit, Qt::QueuedConnection);
+                     &MozillaVPN::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));

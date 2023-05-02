@@ -43,14 +43,25 @@ class MozillaVPN final : public App {
   Q_DISABLE_COPY_MOVE(MozillaVPN)
 
  public:
-  enum CustomState {
-    StateDeviceLimit = StateCustom + 1,
+  enum State {
+    StateAuthenticating,
     StateBackendFailure,
+    StateBillingNotAvailable,
+    StateDeviceLimit,
+    StateInitialize,
+    StateMain,
+    StatePostAuthentication,
+    StateSubscriptionBlocked,
+    StateSubscriptionNeeded,
+    StateSubscriptionInProgress,
+    StateSubscriptionNotValidated,
+    StateTelemetryPolicy,
     StateUpdateRequired,
   };
-  Q_ENUM(CustomState);
+  Q_ENUM(State);
 
  private:
+  Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
 
@@ -65,6 +76,8 @@ class MozillaVPN final : public App {
   static MozillaVPN* maybeInstance();
 
   void initialize();
+
+  State state() const;
 
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
@@ -155,6 +168,8 @@ class MozillaVPN final : public App {
 
   bool modelsInitialized() const;
 
+  void quit();
+
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
 
@@ -171,6 +186,8 @@ class MozillaVPN final : public App {
   void requestAbout();
 
  private:
+  void setState(State state);
+
   void maybeStateMain();
 
   void startSchedulingPeriodicOperations();
@@ -212,6 +229,7 @@ class MozillaVPN final : public App {
   static void registerErrorHandlers();
 
  signals:
+  void stateChanged();
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);
   void aboutNeeded();
@@ -234,6 +252,8 @@ class MozillaVPN final : public App {
  private:
   bool m_initialized = false;
   struct MozillaVPNPrivate* m_private = nullptr;
+
+  State m_state = StateInitialize;
 
   QTimer m_periodicOperationsTimer;
   QTimer m_gleanTimer;

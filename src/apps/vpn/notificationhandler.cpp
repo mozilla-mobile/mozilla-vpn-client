@@ -91,11 +91,11 @@ void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != App::StateMain &&
+  if (vpn->state() != MozillaVPN::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == App::StateInitialize &&
+      !(vpn->state() == MozillaVPN::StateInitialize &&
         vpn->controller()->state() == Controller::StateOff)) {
     return;
   }

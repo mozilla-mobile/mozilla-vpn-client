@@ -148,7 +148,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  bool isStateMain = vpn->state() == App::StateMain;
+  bool isStateMain = vpn->state() == MozillaVPN::StateMain;
 
   m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
                                                     Controller::StateOn);

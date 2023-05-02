@@ -119,14 +119,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
-    // If we are activating the app, let's initialize the controller and the
-    // periodic tasks.
-    if (state() == StateMain) {
-      m_private->m_controller.initialize();
-      startSchedulingPeriodicOperations();
-    } else {
-      stopSchedulingPeriodicOperations();
-
+    if (m_state != StateMain) {
       // We don't call deactivate() because that is meant to be used for
       // UI interactions only and it deletes all the pending tasks.
       TaskScheduler::scheduleTask(
@@ -218,6 +211,8 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+MozillaVPN::State MozillaVPN::state() const { return m_state; }
+
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 
@@ -225,7 +220,7 @@ void MozillaVPN::initialize() {
   m_initialized = true;
 
   // This is our first state.
-  Q_ASSERT(state() == StateInitialize);
+  Q_ASSERT(m_state == StateInitialize);
 
   m_private->m_releaseMonitor.runSoon();
 
@@ -344,17 +339,33 @@ void MozillaVPN::initialize() {
   maybeStateMain();
 }
 
+void MozillaVPN::setState(State state) {
+  logger.debug() << "Set state:" << state;
+
+  m_state = state;
+  emit stateChanged();
+
+  // If we are activating the app, let's initialize the controller and the
+  // periodic tasks.
+  if (m_state == StateMain) {
+    m_private->m_controller.initialize();
+    startSchedulingPeriodicOperations();
+  } else {
+    stopSchedulingPeriodicOperations();
+  }
+}
+
 void MozillaVPN::maybeStateMain() {
   logger.debug() << "Maybe state main";
 
   if (m_private->m_user.initialized()) {
-    if (state() != StateSubscriptionBlocked &&
+    if (m_state != StateSubscriptionBlocked &&
         m_private->m_user.subscriptionNeeded()) {
       logger.info() << "Subscription needed";
       setState(StateSubscriptionNeeded);
       return;
     }
-    if (state() == StateSubscriptionBlocked) {
+    if (m_state == StateSubscriptionBlocked) {
       logger.info() << "Subscription is blocked, stay blocked.";
       return;
     }
@@ -397,7 +408,7 @@ void MozillaVPN::maybeStateMain() {
   // feature. We can do it in background when the main view is shown.
   maybeRegenerateDeviceKey();
 
-  if (state() != StateUpdateRequired) {
+  if (m_state != StateUpdateRequired) {
     setState(StateMain);
   }
 
@@ -433,7 +444,7 @@ void MozillaVPN::authenticateWithType(
     Q_ASSERT(userState() == UserLoggingOut);
 
     LogoutObserver* lo = new LogoutObserver(this);
-    // Let's use QueuedConnection to avoid nested tasks executions.
+    // Let's use QueuedConnection to avoid nexted tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
         [this, authenticationType]() {
@@ -458,7 +469,7 @@ void MozillaVPN::authenticateWithType(
 
 void MozillaVPN::abortAuthentication() {
   logger.warning() << "Abort authentication";
-  Q_ASSERT(state() == StateAuthenticating);
+  Q_ASSERT(m_state == StateAuthenticating);
   setState(StateInitialize);
 
   emit authenticationAborted();
@@ -593,7 +604,7 @@ void MozillaVPN::removeDevice(const QString& publicKey, const QString& source) {
 
   emit deviceRemoved(source);
 
-  if (state() != StateDeviceLimit) {
+  if (m_state != StateDeviceLimit) {
     return;
   }
 
@@ -605,7 +616,7 @@ void MozillaVPN::removeDevice(const QString& publicKey, const QString& source) {
 
   // Finally we are able to activate the client.
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (state() != StateDeviceLimit) {
+    if (m_state != StateDeviceLimit) {
       return;
     }
 
@@ -658,7 +669,7 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
   emit deviceRemoving(publicKey);
   TaskScheduler::scheduleTask(new TaskRemoveDevice(publicKey));
 
-  if (state() != StateDeviceLimit) {
+  if (m_state != StateDeviceLimit) {
     // If we are not in the device-limit state, we can run the operation in
     // background and work aync.
     m_private->m_deviceModel.startDeviceRemovalFromPublicKey(publicKey);
@@ -740,7 +751,7 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
-  if (m_private->m_user.subscriptionNeeded() && state() == StateMain) {
+  if (m_private->m_user.subscriptionNeeded() && m_state == StateMain) {
     NotificationHandler::instance()->subscriptionNotFoundNotification();
     maybeStateMain();
   }
@@ -749,7 +760,7 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
 void MozillaVPN::cancelAuthentication() {
   logger.warning() << "Canceling authentication";
 
-  if (state() != StateAuthenticating) {
+  if (m_state != StateAuthenticating) {
     // We cannot cancel tasks if we are not in authenticating state.
     return;
   }
@@ -764,7 +775,7 @@ bool MozillaVPN::checkCurrentDevice() {
   Q_ASSERT(settingsHolder);
 
   // We are not able to check the device at this stage.
-  if (state() == StateDeviceLimit) {
+  if (m_state == StateDeviceLimit) {
     return false;
   }
 
@@ -807,7 +818,7 @@ void MozillaVPN::logout() {
   }
 
   // update-required state is the only one we want to keep when logging out.
-  if (state() != StateUpdateRequired) {
+  if (m_state != StateUpdateRequired) {
     setState(StateInitialize);
   }
 
@@ -853,7 +864,7 @@ void MozillaVPN::postAuthenticationCompleted() {
 
   // Super racy, but it could happen that we are already in update-required
   // state.
-  if (state() == StateUpdateRequired) {
+  if (m_state == StateUpdateRequired) {
     return;
   }
 
@@ -893,7 +904,7 @@ void MozillaVPN::telemetryPolicyCompleted() {
 
   // Super racy, but it could happen that we are already in update-required
   // state.
-  if (state() == StateUpdateRequired) {
+  if (m_state == StateUpdateRequired) {
     return;
   }
 
@@ -990,10 +1001,25 @@ void MozillaVPN::silentSwitch() {
 void MozillaVPN::refreshDevices() {
   logger.debug() << "Refresh devices";
 
-  if (state() == StateMain) {
+  if (m_state == StateMain) {
     TaskScheduler::scheduleTask(
         new TaskAccount(ErrorHandler::DoNotPropagateError));
   }
+}
+
+void MozillaVPN::quit() {
+  logger.debug() << "quit";
+  TaskScheduler::forceDeleteTasks();
+
+#if QT_VERSION < 0x060300
+  // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
+  // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
+
+  SettingsHolder::instance()->sync();
+  exit(0);
+#endif
+
+  qApp->quit();
 }
 
 void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
@@ -1019,7 +1045,7 @@ void MozillaVPN::subscriptionCompleted() {
   // This is Android only
   // iOS can end up here if the subsciption get finished outside of the IAP
   // process
-  if (state() != StateSubscriptionInProgress) {
+  if (m_state != StateSubscriptionInProgress) {
     // We could hit this in android flow if we're doing a late acknowledgement.
     // And ignoring is fine.
     logger.warning()
@@ -1061,7 +1087,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 #ifdef MZ_IOS
   // This is iOS only.
   // Android can legitimately end up here on a skuDetailsFailed.
-  if (state() != StateSubscriptionInProgress) {
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random subscription failure received. Let's ignore it.";
     return;
@@ -1079,7 +1105,7 @@ void MozillaVPN::subscriptionFailedInternal(bool canceledByUser) {
 
   TaskScheduler::scheduleTask(new TaskFunction([this]() {
     if (!m_private->m_user.subscriptionNeeded() &&
-        state() == StateSubscriptionNeeded) {
+        m_state == StateSubscriptionNeeded) {
       maybeStateMain();
       return;
     }
@@ -1090,7 +1116,7 @@ void MozillaVPN::alreadySubscribed() {
 #ifdef MZ_IOS
   // This randomness is an iOS only issue
   // TODO - How can we make this cleaner in the future
-  if (state() != StateSubscriptionInProgress) {
+  if (m_state != StateSubscriptionInProgress) {
     logger.warning()
         << "Random already-subscribed notification received. Let's ignore it.";
     return;
@@ -1156,7 +1182,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (state() != StateBackendFailure) {
+  if (m_state != StateBackendFailure) {
     return;
   }
 
@@ -1367,7 +1393,7 @@ void MozillaVPN::errorHandled() {
   ErrorHandler::AlertType alert = ErrorHandler::instance()->alert();
 
   // Any error in authenticating state sends to the Initial state.
-  if (state() == App::StateAuthenticating) {
+  if (m_state == MozillaVPN::StateAuthenticating) {
     if (alert == ErrorHandler::GeoIpRestrictionAlert) {
       mozilla::glean::sample::authentication_failure_by_geo.record();
       emit GleanDeprecated::instance()->recordGleanEvent(

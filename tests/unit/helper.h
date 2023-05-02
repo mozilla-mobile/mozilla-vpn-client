@@ -56,6 +56,8 @@ class TestHelper : public QObject {
 
   static QVector<NetworkConfig> networkConfig;
 
+  static MozillaVPN::State vpnState;
+
   static Controller::State controllerState;
 
   struct SystemNotification {

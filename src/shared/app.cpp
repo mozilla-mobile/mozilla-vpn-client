@@ -4,12 +4,9 @@
 
 #include "app.h"
 
-#include <QCoreApplication>
-
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-#include "taskscheduler.h"
 
 namespace {
 Logger logger("App");
@@ -19,16 +16,7 @@ App::App(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(App); }
 
 App::~App() { MZ_COUNT_DTOR(App); }
 
-int App::state() const { return m_state; }
-
 App::UserState App::userState() const { return m_userState; }
-
-void App::setState(int state) {
-  logger.debug() << "Set state:" << state;
-
-  m_state = state;
-  emit stateChanged();
-}
 
 void App::setUserState(UserState state) {
   logger.debug() << "User authentication state:" << state;
@@ -48,19 +36,4 @@ QByteArray App::authorizationHeader() {
   QByteArray authorizationHeader = "Bearer ";
   authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
   return authorizationHeader;
-}
-
-void App::quit() {
-  logger.debug() << "quit";
-  TaskScheduler::forceDeleteTasks();
-
-#if QT_VERSION < 0x060300
-  // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
-  // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
-
-  SettingsHolder::instance()->sync();
-  exit(0);
-#endif
-
-  qApp->quit();
 }
