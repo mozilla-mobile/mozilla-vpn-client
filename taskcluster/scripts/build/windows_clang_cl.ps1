@@ -11,12 +11,9 @@ New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
 $CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
 # Prep Env:
 # Switch to the work dir, enable qt, enable msvc, enable rust
-$env:PATH ="$FETCHES_PATH;$QTPATH;$env:PATH"
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
-Write-Output "PATH PRE CONDA:"
-Write-Output $env:PATH
 
 # Setup Openssl Import
 $SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
@@ -42,8 +39,13 @@ $Env:_CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
 $CondaModuleArgs = @{ChangePs1 = $False}
 Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaModuleArgs
 
+$env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
+
 ## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env.yml
+conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN -q
+
+conda info --envs
+
 conda activate VPN
 . "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
 . "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
@@ -55,7 +57,6 @@ conda activate VPN  # We should now be able to compile!
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
-cmake --version
 Write-Output "PATH POST CONDA:"
 Write-Output $env:PATH
 
