@@ -12,14 +12,6 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-# Force Apple platforms to use the Xcode compiler
-if(APPLE)
-    execute_process(OUTPUT_VARIABLE CMAKE_C_COMPILER OUTPUT_STRIP_TRAILING_WHITESPACE
-        COMMAND xcrun --find clang)
-    execute_process(OUTPUT_VARIABLE CMAKE_CXX_COMPILER OUTPUT_STRIP_TRAILING_WHITESPACE
-        COMMAND xcrun --find clang++)
-endif()
-
 project("Mozilla VPN" VERSION 2.16.0 LANGUAGES C CXX
         DESCRIPTION "Mozilla VPN"
         HOMEPAGE_URL "https://vpn.mozilla.org"
