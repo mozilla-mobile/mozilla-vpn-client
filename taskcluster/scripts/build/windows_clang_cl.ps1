@@ -62,17 +62,8 @@ conda activate VPN
 conda deactivate
 conda activate VPN  # We should now be able to compile!
 
-#Do not continune from this point on when we encounter an error
-# $ErrorActionPreference = "Stop"
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
-
-Write-Output "PATH POST CONDA:"
-Write-Output $env:PATH
-
-Write-Output "---TEST --"
-Get-Command "python"
-Get-Command "python3"
 
 $env:PATH 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
@@ -101,8 +92,7 @@ Write-Output "Writing Artifacts"
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
 $ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
 Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-# Note: vc140.pdb is just the default name for pdb files (as we are using vc14x)
-Copy-Item -Path "$BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
+
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
@@ -114,11 +104,3 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb
 }
 
-# mspdbsrv might be stil running after the build, so we need to kill it
-Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
-Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
-Stop-Process -Name "vctip.exe" -Force -ErrorAction SilentlyContinue
-
-Write-Output "Open Processes:"
-
-wmic process get description,executablepath

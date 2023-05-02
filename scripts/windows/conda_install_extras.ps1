@@ -4,15 +4,11 @@
 
 
 # Installs Extra Conda Packages needed for windows only. 
-#
-
-
 $conda_env = conda info --json | ConvertFrom-Json
 
 if( $conda_env.active_prefix_name -eq "base"){
     Write-Output("Not in an active conda env. abort")
     return -1
 }
-
 
 conda install -y m2w64-gcc=5.3.0

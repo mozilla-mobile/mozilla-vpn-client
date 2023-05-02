@@ -28,6 +28,10 @@ task-defaults:
         taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
+        artifacts:
+            - type: file
+              name: public/build/MozillaVPN.msi
+              path: artifacts/MozillaVPN.msi
     release-artifacts:
         - unsigned.zip
     run:
