@@ -46,6 +46,7 @@ Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaM
 conda env create --force -f $REPO_ROOT_PATH/env.yml
 conda activate VPN
 . "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
+. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
 conda deactivate
 conda activate VPN  # We should now be able to compile!
 
@@ -57,27 +58,6 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 cmake --version
 Write-Output "PATH POST CONDA:"
 Write-Output $env:PATH
-
-Get-ChildItem $CONDA_DIR
-Get-ChildItem $CONDA_DIR/bin
-Get-ChildItem $CONDA_DIR/envs/VPN
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/mingw-w64/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/usr/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Scripts
-Get-ChildItem $CONDA_DIR/envs/VPN/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/bin
-Get-ChildItem $CONDA_DIR/envs/VPN
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/mingw-w64/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/usr/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Library/bin
-Get-ChildItem $CONDA_DIR/envs/VPN/Scripts
-Get-ChildItem $CONDA_DIR/envs/VPN/bin
-Get-ChildItem $CONDA_DIR/condabin
-
-Start-Process "$CONDA_DIR/bin/python.exe" -Wait -ArgumentList @('-V',"-V")
-
-
 
 Write-Output "---TEST --"
 Get-Command "python"
@@ -92,10 +72,10 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DPYTHON_EXECUTABLE="$CONDA_DIR\python.exe"
 } else {
     # Do the generic build
-   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -D
+   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE="$CONDA_DIR\python.exe"
 }
 cmake --build $BUILD_DIR
 
