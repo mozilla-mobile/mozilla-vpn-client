@@ -50,9 +50,9 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   // products if we don't have that already.
   connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
     auto state = MozillaVPN::instance()->state();
-    if ((state == App::StateSubscriptionNeeded ||
-         state == App::StateSubscriptionInProgress ||
-         state == App::StateAuthenticating) &&
+    if ((state == MozillaVPN::StateSubscriptionNeeded ||
+         state == MozillaVPN::StateSubscriptionInProgress ||
+         state == MozillaVPN::StateAuthenticating) &&
         !this->hasProductsRegistered()) {
       TaskScheduler::scheduleTask(new TaskProducts());
     }
