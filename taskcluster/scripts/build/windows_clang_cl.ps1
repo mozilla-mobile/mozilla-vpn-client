@@ -73,10 +73,10 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DPYTHON_EXECUTABLE="$CONDA_DIR\python.exe"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
 } else {
     # Do the generic build
-   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE="$CONDA_DIR\python.exe"
+   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
 }
 cmake --build $BUILD_DIR
 
