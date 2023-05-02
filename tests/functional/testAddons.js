@@ -320,7 +320,6 @@ describe('Addons', function() {
                   .body = mockDetails;
             };
 
-
             await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
             await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
