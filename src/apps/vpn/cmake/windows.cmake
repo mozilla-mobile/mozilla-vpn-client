@@ -10,6 +10,17 @@ set_target_properties(mozillavpn PROPERTIES
     WIN32_EXECUTABLE ON
 )
 
+# When used with MSVC, we find that RelWithDebInfo produces rather suboptimal
+# compiler flags. If we want to generate debugging symbols, then we should
+# add them to the Release configuration instead.
+#
+# See: https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+#
+if(MSVC)
+    target_compile_options(mozillavpn PRIVATE $<$<CONFIG:Release>:/Zi>)
+    target_link_options(mozillavpn PRIVATE $<$<CONFIG:Release>:/debug>)
+endif()
+
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
