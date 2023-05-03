@@ -10,11 +10,14 @@ const { existsSync, writeFileSync } = require('node:fs');
 const guardian = require('../servers/guardian');
 const fxa = require('../servers/fxa');
 
+const websocket = require('websocket').w3cwebsocket;
+
 
 const maybe_adb = ADB.createADB();
 
 
 let client;
+
 module.exports = {
   async connect(options = {
     "guardian": new URL(),
@@ -74,7 +77,7 @@ module.exports = {
         console.error("Your screen is locked!")
     }
     
-    console.log("Installing APK")
+    //console.log("Installing APK")
     /* 
     await adb.install(target);
 
@@ -97,9 +100,9 @@ module.exports = {
     
     // Now we need to forward some port's so i don't have to figure out the network
     // so that the 2 devices can talk .__."
-    await adb.forwardPort(guardian.port,guardian.port)
-    await adb.forwardPort(fxa.port,fxa.port)
-    await adb.reversePort("8765","8765")
+    await adb.reversePort(guardian.port,guardian.port)
+    await adb.reversePort(fxa.port,fxa.port)
+    await adb.forwardPort("8765", "8765");
 
     //await adb.forwardPort(addon.port,addon.port)
     
@@ -107,11 +110,8 @@ module.exports = {
     // Okay cross fingers, let's boot that thing. 
     await adb.shell("am start -n org.mozilla.firefox.vpn.debug/org.mozilla.firefox.vpn.qt.VPNActivity")
 
-
-   // await new Promise(()=>{});
-    
     return await new Promise(resolve => {
-      client = new websocket(`ws://${options.hostname}:8765/`, '');
+      client = new websocket(`ws://127.0.0.1:8765/`, '');
 
       client.onopen = async () => {
         await onopen();
@@ -119,7 +119,9 @@ module.exports = {
       };
 
       client.onclose = () => onclose();
-      client.onerror = () => resolve(false);
+      client.onerror = (e) => {
+        resolve(false);
+      }
 
       client.onmessage = data => onmessage(JSON.parse(data.data));
     });
@@ -132,22 +134,4 @@ module.exports = {
   async send(msg) {
     return client.send(msg);
   },
-  // Read a Settings File from the remote device
-  async pullSettingFile(){
-    const adb = await maybe_adb;
-    const path = "/data/user/0/org.mozilla.firefox.vpn.debug/files/.config/mozilla/vpn.moz"
-    try{
-      return await adb.shell(`run-as org.mozilla.firefox.vpn.debug cat ${path}`)
-    } catch(e){
-      return {};
-    }
-  },
-  // Push a Settings File to the remote device
-  async pushSettingsFile(contentString){
-    const adb = await maybe_adb;
-    const path = "/data/user/0/org.mozilla.firefox.vpn.debug/files/.config/mozilla/vpn.moz"
-    writeFileSync("vpn.moz",contentString);
-    await adb.push("vpn.moz","/sdcard/vpn.moz")
-    return await adb.shell(`run-as org.mozilla.firefox.vpn.debug  cp /sdcard/vpn.moz ${path}`)
-  }
 }

@@ -56,7 +56,7 @@ exports.mochaHooks = {
     addonServer.stop();
     networkBenchmark.stop();
     captivePortalServer.stop();
-    wasm.stop();
+
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
