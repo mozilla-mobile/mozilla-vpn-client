@@ -81,8 +81,7 @@ Write-Output "Writing Artifacts"
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
 $ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
 Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
-# Note: vc140.pdb is just the default name for pdb files (as we are using vc14x)
-Copy-Item -Path "$BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
+Copy-Item -Path "$BUILD_DIR/src/Mozilla VPN.pdb" -Destination "$ARTIFACTS_PATH/Mozilla VPN.pdb"
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
@@ -91,7 +90,7 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
     # This will ask sentry to scan all files in there and upload
     # missing debug info, for symbolification
-    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb
+    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client "$BUILD_DIR/src/Mozilla VPN.pdb"
 }
 
 # mspdbsrv might be stil running after the build, so we need to kill it
