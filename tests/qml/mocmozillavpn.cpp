@@ -126,7 +126,7 @@ void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshData) {}
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 void MozillaVPN::abortAuthentication() {}
 
@@ -148,6 +148,6 @@ void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
 
-void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}

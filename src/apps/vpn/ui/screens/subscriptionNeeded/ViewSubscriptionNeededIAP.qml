@@ -13,6 +13,7 @@ import components 0.1
 MZFlickable {
     id: vpnFlickable
 
+    readonly property bool isMobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
     property bool wasmView: false
 
     flickContentHeight: col.y + col.height
@@ -88,6 +89,62 @@ MZFlickable {
             }
         }
 
+        ColumnLayout{
+            visible:  vpnFlickable.isMobile && productList.count == 0
+
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            spacing: MZTheme.theme.windowMargin
+
+            Image {
+                id: spinner
+                sourceSize.height: 40
+                fillMode: Image.PreserveAspectFit
+                Layout.topMargin: MZTheme.theme.windowMargin
+                Layout.leftMargin: MZTheme.theme.windowMargin
+                Layout.rightMargin: MZTheme.theme.windowMargin
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+
+                source: "qrc:/nebula/resources/spinner.svg"
+
+                ParallelAnimation {
+                    id: startSpinning
+
+                    running: true
+
+                    PropertyAnimation {
+                        target: spinner
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        duration: 300
+                    }
+
+                    PropertyAnimation {
+                        target: spinner
+                        property: "scale"
+                        from: 0.7
+                        to: 1
+                        duration: 300
+                    }
+
+                    PropertyAnimation {
+                        target: spinner
+                        property: "rotation"
+                        from: 0
+                        to: 360
+                        duration: 8000
+                        loops: Animation.Infinite
+                    }
+
+                }
+            }
+        }
+
         ColumnLayout {
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
@@ -117,6 +174,7 @@ MZFlickable {
                 //% "Subscribe now"
                 text: qsTrId("vpn.updates.subscribeNow")
 
+                visible: vpnFlickable.isMobile ? productList.count != 0 : true
                 Layout.topMargin: MZTheme.theme.windowMargin
                 Layout.leftMargin: MZTheme.theme.windowMargin
                 Layout.rightMargin: MZTheme.theme.windowMargin
