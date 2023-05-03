@@ -7,7 +7,7 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android" "ios")
+set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android" "iOS")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
 
