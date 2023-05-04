@@ -150,7 +150,6 @@ MZFlickable {
             }
         }
 
-
         MZButton {
             id: subscribeNow
             objectName: "vpnSubscriptionNeededButton"
