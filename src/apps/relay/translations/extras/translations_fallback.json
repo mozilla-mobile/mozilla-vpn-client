@@ -1,8 +1,0 @@
-{
-    "en_CA": ["en_GB"],
-    "en_GB": ["en_CA"],
-    "es_AR": ["es_MX", "es_ES", "es_CL"],
-    "es_CL": ["es_MX", "es_ES", "es_AR"],
-    "es_ES": ["es_MX", "es_CL", "es_AR"],
-    "es_MX": ["es_CL", "es_ES", "es_AR"]
-}
