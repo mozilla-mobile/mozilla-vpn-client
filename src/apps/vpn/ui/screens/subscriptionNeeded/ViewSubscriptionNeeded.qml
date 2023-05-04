@@ -86,7 +86,7 @@ MZFlickable {
         }
 
         ColumnLayout{
-            visible:  vpnFlickable.isMobile && productList.count == 0
+            visible: isMobile ? VPNProducts.count == 0 : false
 
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
@@ -171,7 +171,7 @@ MZFlickable {
 
             text: MZI18n.PurchaseSubscribeNow
 
-            visible: isMobile ? productList.count != 0 : true
+            visible: isMobile ? VPNProducts.count != 0 : true
 
             Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin * 2
