@@ -34,7 +34,7 @@ def versions = [
     mockito: '5.1.1',
     mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
     kotlin: '1.7.20',
-    robolectric: '4.9.2',
+    robolectric: '4.10',
     rust_android_plugin: '0.9.3',
 
     // Android X dependencies
