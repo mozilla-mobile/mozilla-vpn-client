@@ -1,0 +1,16 @@
+{
+  "name": "conda_preset_generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "command-line-args": "^5.2.1",
+    "terminal-kit": "^3.0.0"
+  }
+}

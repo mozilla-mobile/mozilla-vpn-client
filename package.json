@@ -14,7 +14,8 @@
     "wasm:build": "devcontainer exec --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json ./taskcluster/scripts/build/wasm.sh ",
     "wasm:devcontainer:up": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json",
     "wasm:devcontainer:fresh": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json --remove-existing-container",
-    "wasm:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build"
+    "wasm:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build",
+    "conda:exportToCmake": "node tools/conda_preset_generator/index.js"
     
   },
   "devDependencies": {
@@ -27,5 +28,8 @@
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.8.2",
     "websocket": "^1.0.34"
-  }
+  },
+  "workspaces":[
+    "tools/conda_preset_generator"
+  ]
 }
