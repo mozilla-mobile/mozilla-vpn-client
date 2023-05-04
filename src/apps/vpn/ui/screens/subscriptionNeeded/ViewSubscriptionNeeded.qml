@@ -105,7 +105,7 @@ MZFlickable {
                 }
                 Image {
                     id: spinner
-                    visible: productListRepeater.count == 0
+                    visible: productListRepeater.count === 0
                     sourceSize.height: 40
                     fillMode: Image.PreserveAspectFit
                     Layout.topMargin: MZTheme.theme.windowMargin
