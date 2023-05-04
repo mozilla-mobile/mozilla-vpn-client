@@ -84,19 +84,28 @@ MZFlickable {
         ButtonGroup {
             id: subscriptionOptions
         }
-
-        ColumnLayout{
-            visible: isMobile ? VPNProducts.count == 0 : false
-
+        Loader {
+            Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-            spacing: MZTheme.theme.windowMargin
+            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
+            Layout.alignment: Qt.AlignHCenter
 
-            Image {
+            active: vpnFlickable.isMobile
+            sourceComponent: ColumnLayout {
+                spacing: 16
+
+                Repeater {
+                    id: productListRepeater
+                    model: VPNProducts
+                    delegate: MZSubscriptionOption {
+                        ButtonGroup.group: subscriptionOptions
+                    }
+                }
+                Image {
                     id: spinner
+                    visible: productListRepeater.count == 0
                     sourceSize.height: 40
                     fillMode: Image.PreserveAspectFit
                     Layout.topMargin: MZTheme.theme.windowMargin
@@ -138,32 +147,10 @@ MZFlickable {
                         }
 
                     }
-            }
-                
-        }
-
-
-        Loader {
-            Layout.topMargin: MZTheme.theme.vSpacing
-            Layout.leftMargin: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.fillWidth: true
-            Layout.maximumWidth: MZTheme.theme.maxHorizontalContentWidth
-            Layout.alignment: Qt.AlignHCenter
-
-            active: vpnFlickable.isMobile
-            sourceComponent: ColumnLayout {
-                spacing: 16
-
-                Repeater {
-                    id: productList
-                    model: VPNProducts
-                    delegate: MZSubscriptionOption {
-                        ButtonGroup.group: subscriptionOptions
-                    }
                 }
             }
         }
+
 
         MZButton {
             id: subscribeNow
@@ -171,7 +158,7 @@ MZFlickable {
 
             text: MZI18n.PurchaseSubscribeNow
 
-            visible: isMobile ? VPNProducts.count != 0 : true
+            visible: isMobile ? subscriptionOptions.buttons.length != 0 : true
 
             Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin * 2
