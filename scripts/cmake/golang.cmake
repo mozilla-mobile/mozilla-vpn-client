@@ -48,6 +48,8 @@ function(build_go_archive OUTPUT_NAME MODULE_FILE)
         DEPENDS ${MODULE_FILE} ${GOBUILD_SOURCES}
         WORKING_DIRECTORY ${GOBUILD_MODULE_DIR}
         COMMAND ${CMAKE_COMMAND} -E env GOCACHE=${GOCACHE}
+                    CC=${CMAKE_C_COMPILER}
+                    CXX=${CMAKE_CXX_COMPILER}
                     CGO_ENABLED=1
                     CGO_CFLAGS="${GOBUILD_CGO_CFLAGS}"
                     CGO_LDFLAGS="${GOBUILD_CGO_LDFLAGS}"

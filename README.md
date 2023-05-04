@@ -410,9 +410,11 @@ to point to the Android SDK and NDK installation directories. Required NDK versi
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
 
-6. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
+6. The Android build additionally requires cmake 3.10.2. You can install it using: `./sdkmanager --install "cmake;3.10.2.4988404"`.
 
-7. Build the apk
+7. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
+
+8. Build the apk
 ```bash
 ./scripts/android/cmake.sh -d </path/to/Qt6/> -A <architecture> <debug|release>
 ```
@@ -420,10 +422,10 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
 
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by default it will use all.
 
-8. The apk will be located in
+9. The apk will be located in
 `.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
 
-9. Install with adb on device/emulator
+10. Install with adb on device/emulator
 ```bash
 adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 ```

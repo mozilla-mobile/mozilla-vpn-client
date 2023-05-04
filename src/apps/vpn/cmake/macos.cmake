@@ -84,10 +84,16 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
+# Find the SDK root
+execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 add_go_library(balrog-api ../balrog/balrog-api.go
-    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
+    CGO_LDFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
+)
 target_link_libraries(mozillavpn PRIVATE balrog-api)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
@@ -109,10 +115,14 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
             COMMAND ${CMAKE_COMMAND} -E env
                         GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                        CC=${CMAKE_C_COMPILER}
+                        CXX=${CMAKE_CXX_COMPILER}
                         GOOS=darwin
                         CGO_ENABLED=1
                         GO111MODULE=on
                         GOARCH=${GOARCH}
+                        CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+                        CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
                     ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
                         -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
         )
