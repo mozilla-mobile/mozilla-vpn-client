@@ -94,3 +94,5 @@ linux/static:
             - qt-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
+    run:
+        command: /builds/worker/builder.sh -s
