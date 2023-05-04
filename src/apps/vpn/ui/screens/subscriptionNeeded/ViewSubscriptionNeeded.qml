@@ -108,7 +108,6 @@ MZFlickable {
                     visible: productListRepeater.count === 0
                     sourceSize.height: 40
                     fillMode: Image.PreserveAspectFit
-                    Layout.topMargin: MZTheme.theme.windowMargin
                     Layout.leftMargin: MZTheme.theme.windowMargin
                     Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.fillWidth: true
