@@ -18,6 +18,14 @@ class MZGlean final : public QObject {
 
   static void setUploadEnabled(bool isTelemetryEnabled);
 
+  /**
+   * @brief Broadcast to the mobile VPN daemon instances of Glean,
+   * that the telemetry uploadEnabled state has changed.
+   *
+   * @param isTelemetryEnabled The new upload enabled state.
+   */
+  static void broadcastUploadEnabledChange(bool isTelemetryEnabled);
+
  public:
   ~MZGlean();
 

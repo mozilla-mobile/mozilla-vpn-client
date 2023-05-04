@@ -15,6 +15,7 @@
 #  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID)
+#  include "../apps/vpn/platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidcommons.h"
 #endif
 #if defined(MZ_IOS)
@@ -26,6 +27,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
+#if defined(MZ_ANDROID)
+#  include <QJsonDocument>
+#  include <QJsonObject>
+#endif
 
 namespace {
 Logger logger("Glean");
@@ -40,7 +45,18 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-MZGlean::MZGlean(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(MZGlean); }
+MZGlean::MZGlean(QObject* parent) : QObject(parent) {
+  MZ_COUNT_CTOR(MZGlean);
+
+#if defined(MZ_ANDROID)
+  connect(AndroidVPNActivity::instance(),
+          &AndroidVPNActivity::eventRequestGleanUploadEnabledState, this,
+          [&]() {
+            broadcastUploadEnabledChange(
+                SettingsHolder::instance()->gleanEnabled());
+          });
+#endif
+}
 
 MZGlean::~MZGlean() { MZ_COUNT_DTOR(MZGlean); }
 
@@ -114,6 +130,22 @@ void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
 
 #if not(defined(MZ_WASM))
   glean_set_upload_enabled(isTelemetryEnabled);
+#endif
+
+  broadcastUploadEnabledChange(isTelemetryEnabled);
+}
+
+// static
+void MZGlean::broadcastUploadEnabledChange(bool isTelemetryEnabled) {
+#if defined(MZ_ANDROID)
+  logger.debug() << "Broadcasting MZGlean upload status to Android Daemon.";
+
+  QJsonObject args;
+  args["uploadEnabled"] = isTelemetryEnabled;
+  QJsonDocument doc(args);
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_SET_GLEAN_UPLOAD_ENABLED,
+      doc.toJson(QJsonDocument::Compact));
 #endif
 }
 
