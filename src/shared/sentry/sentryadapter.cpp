@@ -64,6 +64,11 @@ void SentryAdapter::init() {
                                    sentryFolder.toLocal8Bit().constData());
   sentry_options_set_on_crash(options, &SentryAdapter::onCrash, NULL);
 
+#ifdef MZ_IOS
+  sentry_set_tag("os.name", "iOS");
+  sentry_set_tag("os.version", QSysInfo::productVersion().toLocal8Bit().constData());
+#endif
+
 #ifdef SENTRY_NONE_TRANSPORT
   sentry_transport_t* transport =
       sentry_transport_new(&SentryAdapter::transportEnvelope);
