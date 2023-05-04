@@ -6,15 +6,21 @@ FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
-RUN apt-get update -q && \
-    apt-get -y install build-essential \
+RUN apt-get update -q
+RUN apt-get -y install tzdata
+RUN apt-get -y install build-essential \
                        clang \
                        cmake \
                        curl \
+                       debhelper \
+                       devscripts \
+                       equivs \
                        libclang-dev \
                        libgl1-mesa-dev \
+                       locales \
                        ninja-build \
-                       patchelf
+                       patchelf \
+                       sudo
 
 ## Install Qt6/X11 build dependencies
 ## From: https://doc.qt.io/qt-6/linux-requirements.html
