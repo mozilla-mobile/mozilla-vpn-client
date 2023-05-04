@@ -14,8 +14,11 @@ helpFunction() {
   echo ""
   echo "Build options:"
   echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${VERSION_CODENAME})"
+  echo "  -s, --static        Build packages for statically linked Qt."
   echo "  -h, --help          Display this message and exit"
 }
+
+STATICQT=N
 
 ## Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -25,6 +28,12 @@ while [[ $# -gt 0 ]]; do
     -d|--dist)
       DIST="$2"
       shift
+      shift
+      ;;
+    
+    -s|--static)
+      STATICQT=Y
+      DIST="static"
       shift
       ;;
 
@@ -74,6 +83,12 @@ else
 fi
 dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} -D ${DIST} \
     "Release for ${DIST}"
+
+# For static Qt, strip out the Qt build and runtime dependencies.
+if [[ "$STATICQT" == "Y" ]]; then
+  export PATH=${mOZ_FETCHES_DIR}/qt_dist/bin:${PATH}
+  sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' linux/debian/control
+fi
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control

@@ -84,3 +84,13 @@ linux/fedora-fc37:
     add-index-routes:
         name: linux-fedora-fc37
         type: build
+
+linux/static:
+    description: "Linux Build (Static Qt)"
+    treeherder:
+        platform: linux/static
+    fetches:
+        toolchain:
+            - qt-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}
