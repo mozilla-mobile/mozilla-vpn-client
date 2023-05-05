@@ -81,8 +81,8 @@ else
   export DEBEMAIL="${TASK_OWNER}"
   export DEBFULLNAME=$(echo ${TASK_OWNER} | cut -d@ -f1)
 fi
-dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} -D ${DIST} \
-    "Release for ${DIST}"
+dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} \
+    -D ${DIST} --force-distribution "Release for ${DIST}"
 
 # For static Qt, strip out the Qt build and runtime dependencies.
 if [[ "$STATICQT" == "Y" ]]; then
