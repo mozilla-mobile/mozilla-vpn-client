@@ -9,6 +9,17 @@ echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt_dist
 ./vcs/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist
 
+echo "Patch Qt configuration"
+cat << EOF > $(pwd)/qt_dist/bin/qt.conf
+[Paths]
+Prefix=..
+EOF
+
+cat << EOF > $(pwd)/qt_dist/libexec/qt.conf
+[Paths]
+Prefix=..
+EOF
+
 echo "Bundling extra libs"
 for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
     ldd $qttool | grep '=>' | awk '{print $3}' >> qtlibdeps.txt
