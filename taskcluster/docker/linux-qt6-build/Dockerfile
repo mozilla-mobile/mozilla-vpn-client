@@ -26,6 +26,7 @@ RUN apt-get -y install build-essential \
 ## From: https://doc.qt.io/qt-6/linux-requirements.html
 RUN apt-get -y install libfontconfig1-dev \
                        libfreetype6-dev \
+                       libssl-dev \
                        libx11-dev \
                        libx11-xcb-dev \
                        libxext-dev \
