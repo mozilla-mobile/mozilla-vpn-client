@@ -1,0 +1,32 @@
+From cd3803ec016258366b56607355f1a63738ddaf2c Mon Sep 17 00:00:00 2001
+From: Naomi Kirby <oskirby@gmail.com>
+Date: Wed, 26 Apr 2023 15:53:11 -0700
+Subject: [PATCH 2/2] Fix tests on Ubuntu/bionic too
+
+---
+ qtglean/vendor/openssl-sys/src/handwritten/ssl.rs | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/qtglean/vendor/openssl-sys/src/handwritten/ssl.rs b/qtglean/vendor/openssl-sys/src/handwritten/ssl.rs
+index f179a04a..039e2d91 100644
+--- a/qtglean/vendor/openssl-sys/src/handwritten/ssl.rs
++++ b/qtglean/vendor/openssl-sys/src/handwritten/ssl.rs
+@@ -905,9 +905,13 @@ extern "C" {
+     #[cfg(ossl111)]
+     pub fn SSL_set_num_tickets(s: *mut SSL, num_tickets: size_t) -> c_int;
+ 
+-    #[cfg(ossl111)]
++    #[cfg(ossl111b)]
+     pub fn SSL_CTX_get_num_tickets(ctx: *const SSL_CTX) -> size_t;
++    #[cfg(all(ossl111, not(ossl111b)))]
++    pub fn SSL_CTX_get_num_tickets(ctx: *mut SSL_CTX) -> size_t;
+ 
+-    #[cfg(ossl111)]
++    #[cfg(ossl111b)]
+     pub fn SSL_get_num_tickets(s: *const SSL) -> size_t;
++    #[cfg(all(ossl111, not(ossl111b)))]
++    pub fn SSL_get_num_tickets(s: *mut SSL) -> size_t;
+ }
+-- 
+2.40.0
+

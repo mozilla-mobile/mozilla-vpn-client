@@ -1,0 +1,81 @@
+From 7756ab8a9a0faed77b674f2b44736ec31a726713 Mon Sep 17 00:00:00 2001
+From: Naomi Kirby <oskirby@gmail.com>
+Date: Wed, 26 Apr 2023 14:46:10 -0700
+Subject: [PATCH 1/2] Fix link errors for X509_get0_authority_xxx methods on
+ Ubuntu/bionic
+
+---
+ qtglean/vendor/openssl-sys/build/cfgs.rs             | 3 +++
+ qtglean/vendor/openssl-sys/src/handwritten/x509v3.rs | 4 ++--
+ qtglean/vendor/openssl/src/x509/mod.rs               | 4 ++--
+ qtglean/vendor/openssl/src/x509/tests.rs             | 2 +-
+ 4 files changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/qtglean/vendor/openssl-sys/build/cfgs.rs b/qtglean/vendor/openssl-sys/build/cfgs.rs
+index 960515f0..f09ec29b 100644
+--- a/qtglean/vendor/openssl-sys/build/cfgs.rs
++++ b/qtglean/vendor/openssl-sys/build/cfgs.rs
+@@ -91,6 +91,9 @@ pub fn get(openssl_version: Option<u64>, libressl_version: Option<u64>) -> Vec<&
+         if openssl_version >= 0x1_01_01_03_0 {
+             cfgs.push("ossl111c");
+         }
++        if openssl_version >= 0x1_01_01_04_0 {
++            cfgs.push("ossl111d");
++        }
+     }
+ 
+     cfgs
+diff --git a/qtglean/vendor/openssl-sys/src/handwritten/x509v3.rs b/qtglean/vendor/openssl-sys/src/handwritten/x509v3.rs
+index 09a92640..7789b629 100644
+--- a/qtglean/vendor/openssl-sys/src/handwritten/x509v3.rs
++++ b/qtglean/vendor/openssl-sys/src/handwritten/x509v3.rs
+@@ -106,9 +106,9 @@ extern "C" {
+     pub fn X509_get0_subject_key_id(x: *mut X509) -> *const ASN1_OCTET_STRING;
+     #[cfg(ossl110)]
+     pub fn X509_get0_authority_key_id(x: *mut X509) -> *const ASN1_OCTET_STRING;
+-    #[cfg(ossl111)]
++    #[cfg(ossl111d)]
+     pub fn X509_get0_authority_issuer(x: *mut X509) -> *const stack_st_GENERAL_NAME;
+-    #[cfg(ossl111)]
++    #[cfg(ossl111d)]
+     pub fn X509_get0_authority_serial(x: *mut X509) -> *const ASN1_INTEGER;
+ }
+ 
+diff --git a/qtglean/vendor/openssl/src/x509/mod.rs b/qtglean/vendor/openssl/src/x509/mod.rs
+index 2753d091..a8e298bf 100644
+--- a/qtglean/vendor/openssl/src/x509/mod.rs
++++ b/qtglean/vendor/openssl/src/x509/mod.rs
+@@ -505,7 +505,7 @@ impl X509Ref {
+ 
+     /// Returns this certificate's authority issuer name entries, if they exist.
+     #[corresponds(X509_get0_authority_issuer)]
+-    #[cfg(ossl111)]
++    #[cfg(ossl111d)]
+     pub fn authority_issuer(&self) -> Option<&StackRef<GeneralName>> {
+         unsafe {
+             let stack = ffi::X509_get0_authority_issuer(self.as_ptr());
+@@ -515,7 +515,7 @@ impl X509Ref {
+ 
+     /// Returns this certificate's authority serial number, if it exists.
+     #[corresponds(X509_get0_authority_serial)]
+-    #[cfg(ossl111)]
++    #[cfg(ossl111d)]
+     pub fn authority_serial(&self) -> Option<&Asn1IntegerRef> {
+         unsafe {
+             let r = ffi::X509_get0_authority_serial(self.as_ptr());
+diff --git a/qtglean/vendor/openssl/src/x509/tests.rs b/qtglean/vendor/openssl/src/x509/tests.rs
+index d4dbf316..c5ea6acc 100644
+--- a/qtglean/vendor/openssl/src/x509/tests.rs
++++ b/qtglean/vendor/openssl/src/x509/tests.rs
+@@ -195,7 +195,7 @@ fn test_authority_key_id() {
+ }
+ 
+ #[test]
+-#[cfg(ossl111)]
++#[cfg(ossl111d)]
+ fn test_authority_issuer_and_serial() {
+     let cert = include_bytes!("../../test/authority_key_identifier.pem");
+     let cert = X509::from_pem(cert).unwrap();
+-- 
+2.40.0
+

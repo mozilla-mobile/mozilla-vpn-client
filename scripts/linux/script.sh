@@ -192,6 +192,11 @@ build_deb_source() {
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
 
+  # If there are patches to be applied, (re)generate the debian/patches/series file.
+  if [[ -d $WORKDIR/debian/patches ]]; then
+    ls $WORKDIR/debian/patches | grep -v '^series$' > $WORKDIR/debian/patches/series
+  fi
+
   # If a target distribution was provided, add a changelog entry targeting that distro.
   if [[ $# -gt 0 ]]; then
     export DEBEMAIL=${DEBEMAIL:-"vpn@mozilla.com"}
