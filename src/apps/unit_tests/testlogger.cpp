@@ -54,7 +54,7 @@ void TestLogger::logTruncation() {
   auto guard = qScopeGuard([&] { LogHandler::setStderr(true); });
 
   // Write a megabyte log data.
-  const QString example = QStringLiteral("All work and no play makes Jack a dull boy");
+  const QString example = "All work and no play makes Jack a dull boy";
   qsizetype count = (1024 * 1024) / example.size();
   while (count-- > 0) {
     l.info() << example;
@@ -68,13 +68,13 @@ void TestLogger::logTruncation() {
     QVERIFY(hugeBuffer.size() > 1024 * 1024);
   }
 
-  // After writing the logs, they should be truncated to something well under 1MB of text.
-  // But it should still contain a sizeable chunk of the log.
+  // After writing the logs, the log file should still contain roughly
+  // LOG_MAX_FILE_SIZE/2 bytes of log data.
   QString truncatedBuffer;
   QTextStream out(&truncatedBuffer);
   lh->writeLogs(out);
   QVERIFY(truncatedBuffer.size() > 64 * 1024);
-  QVERIFY(truncatedBuffer.size() < 128 * 1024); // somewhere around LOG_MAX_FILE_SIZE/2
+  QVERIFY(truncatedBuffer.size() < 128 * 1024);
 }
 
 static TestLogger s_testLogger;

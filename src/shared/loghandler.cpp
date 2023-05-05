@@ -309,7 +309,8 @@ void LogHandler::setLocation(const QString& path) {
 }
 
 // static
-void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock, const QString& filename) {
+void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
+                                 const QString& filename) {
   QFile oldLogFile(filename);
 
   // Nothing to do if the log file is already undersize.
@@ -336,7 +337,7 @@ void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock, const 
   // Re-create the original log file and copy the truncated contents.
   QFile newLogFile(filename);
   if (newLogFile.open(QIODevice::WriteOnly | QIODevice::Truncate |
-                       QIODevice::Text)) {
+                      QIODevice::Text)) {
     newLogFile.write(oldLogFile.readAll());
   }
 }
