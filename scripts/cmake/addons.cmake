@@ -47,6 +47,7 @@ function(add_addon_target NAME)
     endif()
 
     # Prepare some common addon build arguments.
+    get_filename_component(ADDON_SCRIPT_DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../addon REALPATH)
     set(ADDON_BUILD_ARGS -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH})
     if (ADDON_I18N_DIR)
         list(APPEND ADDON_BUILD_ARGS -i ${ADDON_I18N_DIR})
@@ -64,7 +65,7 @@ function(add_addon_target NAME)
                 OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
                 DEPENDS ${MANIFEST_FILE}
                 DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
-                COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
+                COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/build.py
                             -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
                             ${ADDON_BUILD_ARGS} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
             )
@@ -72,7 +73,7 @@ function(add_addon_target NAME)
             add_custom_command(
                 OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
                 DEPENDS ${MANIFEST_FILE}
-                COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/build.py
+                COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/build.py
                             ${ADDON_BUILD_ARGS} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
             )
         endif()
@@ -86,7 +87,7 @@ function(add_addon_target NAME)
     add_custom_command(
         OUTPUT ${ADDON_OUTPUT_DIR}/manifest.json
         DEPENDS ${ADDON_OUTPUT_FILES}
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/addon/index.py
+        COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/index.py
                     -o ${ADDON_OUTPUT_DIR}/manifest.json ${ADDON_OUTPUT_FILES}
     )
 
