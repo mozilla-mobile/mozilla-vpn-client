@@ -18,6 +18,7 @@ mkdir build-addons
 cmake -S $(pwd)/addons -B build-addons -GNinja
 cmake --build build-addons
 
-zip -r /builds/worker/artifacts/addons.zip build-addons/generated
-cp build-addons/*.rcc $TASK_WORKDIR/artifacts
-cp build-addons/manifest.json $TASK_WORKDIR/artifacts
+cp -r build-addons/generated/ $TASK_WORKDIR/addons
+zip -r /builds/worker/artifacts/addons.zip $TASK_WORKDIR/addons 
+cp build-addons/generated/*.rcc $TASK_WORKDIR/artifacts
+cp build-addons/generated/manifest.json $TASK_WORKDIR/artifacts
