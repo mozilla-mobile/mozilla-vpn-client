@@ -73,3 +73,7 @@ rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCH
 
 # Gather the build artifacts for export
 tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
+
+# Check for unintended writes to the source directory.
+echo "Ensuring the source dir is clean:"
+$(pwd)/mozillavpn-source/scripts/utils/dirtycheck.sh

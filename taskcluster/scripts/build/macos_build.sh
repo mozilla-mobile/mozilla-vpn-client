@@ -136,4 +136,8 @@ print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
 
+# Check for unintended writes to the source directory.
+print G "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh
+
 print G "Done!"

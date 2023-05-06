@@ -85,3 +85,7 @@ rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
 
 # Gather the build artifacts for export
 tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes *.dsc *.debian.tar.xz
+
+# Check for unintended writes to the source directory.
+echo "Ensuring the source dir is clean:"
+$(pwd)/mozillavpn-source/scripts/utils/dirtycheck.sh
