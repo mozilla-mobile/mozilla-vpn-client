@@ -16,7 +16,9 @@ function(add_addon_target NAME)
 
     # Fix Ninja dependency tracking when dealing with absolute paths. 
     cmake_policy(PUSH)
-    cmake_policy(SET CMP0116 NEW)
+    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
+        cmake_policy(SET CMP0116 NEW)
+    endif()
 
     if(NOT ADDON_OUTPUT_DIR)
         set(ADDON_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
