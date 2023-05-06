@@ -136,11 +136,7 @@ add_subdirectory(qtglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
-
-# Addons - Requires CMake 3.20 and later
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
-    add_subdirectory(addons)
-endif()
+add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
