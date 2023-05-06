@@ -61,12 +61,13 @@ function(add_addon_target NAME)
 
         if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
             ## Depfiles are great, but they only work for some generators.
+            file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_deps)
             add_custom_command(
                 OUTPUT ${ADDON_OUTPUT_DIR}/${ADDON_ID}.rcc
                 DEPENDS ${MANIFEST_FILE}
-                DEPFILE ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
+                DEPFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_deps/${ADDON_ID}.d
                 COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/build.py
-                            -d ${ADDON_OUTPUT_DIR}/${ADDON_ID}.d
+                            -d ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_deps/${ADDON_ID}.d
                             ${ADDON_BUILD_ARGS} ${MANIFEST_FILE} ${ADDON_OUTPUT_DIR}
             )
         else()

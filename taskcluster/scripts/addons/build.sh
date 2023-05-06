@@ -14,9 +14,10 @@ done
 
 pip3 install -r requirements.txt
 
-python3 scripts/addon/generate_all.py
-cd addons/generated/
+mkdir build-addons
+cmake -S $(pwd)/addons -B build-addons -GNinja
+cmake --build build-addons
 
-zip -r /builds/worker/artifacts/addons.zip addons
-cp addons/*.rcc $TASK_WORKDIR/artifacts
-cp addons/manifest.json $TASK_WORKDIR/artifacts
+zip -r /builds/worker/artifacts/addons.zip build-addons/generated
+cp build-addons/*.rcc $TASK_WORKDIR/artifacts
+cp build-addons/manifest.json $TASK_WORKDIR/artifacts
