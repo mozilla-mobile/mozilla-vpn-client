@@ -248,13 +248,6 @@ def get_file_list(path, prefix):
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
-    "project",
-    metavar="PROJECT",
-    type=str,
-    action="store",
-    help="The project name (vpn, relay, foobar, ...)",
-)
-parser.add_argument(
     "source",
     metavar="MANIFEST",
     type=str,
@@ -271,9 +264,24 @@ parser.add_argument(
 parser.add_argument(
     "-q",
     "--qt_path",
-    default=None,
+    default=[],
+    action='append',
     dest="qtpath",
     help="The QT binary path. If not set, we try to guess.",
+)
+parser.add_argument(
+    "-d",
+    "--depfile",
+    default=None,
+    dest="depfile",
+    help="Generate a dependency file"
+)
+parser.add_argument(
+    "-i",
+    "--i18n",
+    default=None,
+    dest="i18npath",
+    help="Internationalization project path"
 )
 args = parser.parse_args()
 
@@ -288,40 +296,46 @@ def qtquery(qmake, propname):
     return None
 
 
-qtbinpath = args.qtpath
-if qtbinpath is None:
-    qtbinpath = qtquery("qmake", "QT_INSTALL_BINS")
-if qtbinpath is None:
-    qtbinpath = qtquery("qmake6", "QT_INSTALL_BINS")
-if qtbinpath is None:
-    print("Unable to locate qmake tool.")
+qtpathsep = ";" if (os.name == "nt") else ":"
+
+if len(args.qtpath) == 0:
+    # Try to get the Qt tooling paths from qmake.
+    p = qtquery("qmake", "QT_INSTALL_BINS")
+    if p is not None:
+        args.qtpath.append(p)
+    p = qtquery("qmake", "QT_INSTALL_LIBEXECS")
+    if p is not None:
+        args.qtpath.append(p)
+
+    p = qtquery("qmake6", "QT_INSTALL_BINS")
+    if p is not None:
+        args.qtpath.append(p)
+    p = qtquery("qmake6", "QT_INSTALL_LIBEXECS")
+    if p is not None:
+        args.qtpath.append(p)
+else:
+    # If we can find a qmake, then add libexec to our search path too.
+    qmake = shutil.which("qmake", path=qtpathsep.join(args.qtpath))
+    libexecs = qtquery(qmake, "QT_INSTALL_LIBEXECS")
+    if libexecs is not None:
+        args.qtpath.append(libexecs)
+
+qtsearchpath=qtpathsep.join(args.qtpath)
+
+# Lookup our required tools for addon generation.
+lconvert = shutil.which("lconvert", path=qtsearchpath)
+if lconvert is None:
+    print("Unable to locate lconvert path.", file=sys.stderr)
     sys.exit(1)
 
-if not os.path.isdir(qtbinpath):
-    print(f"QT path is not a diretory: {qtbinpath}")
+lrelease = shutil.which("lrelease", path=qtsearchpath)
+if lrelease is None:
+    print("Unable to locate lrelease path.", file=sys.stderr)
+
+rcc = shutil.which("rcc", path=qtsearchpath)
+if rcc is None:
+    print("Unable to locate rcc path.", file=sys.stderr)
     sys.exit(1)
-
-lconvert = os.path.join(qtbinpath, "lconvert")
-lrelease = os.path.join(qtbinpath, "lrelease")
-
-rcc_bin = "rcc"
-if os.name == "nt":
-    rcc_bin = "rcc.exe"
-
-rcc = os.path.join(qtbinpath, rcc_bin)
-if not os.path.isfile(rcc):
-    qtlibexecpath = qtquery(os.path.join(qtbinpath, "qmake"), "QT_INSTALL_LIBEXECS")
-    if qtlibexecpath is None:
-        qtlibexecpath = qtquery(
-            os.path.join(qtbinpath, "qmake6"), "QT_INSTALL_LIBEXECS"
-        )
-    if qtlibexecpath is None:
-        print("Unable to locate qmake libexec path.")
-        sys.exit(1)
-    rcc = os.path.join(qtlibexecpath, rcc_bin)
-    if not os.path.isfile(rcc):
-        print("Unable to locate rcc path.")
-        sys.exit(1)
 
 if not os.path.isfile(args.source):
     exit(f"`{args.source}` is not a file")
@@ -330,10 +344,6 @@ if not os.path.isdir(args.dest):
     exit(f"`{args.dest}` is not a directory")
 
 script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-
-i18n_path = os.path.join(os.path.dirname(script_path), "src", "apps", args.project, "translations", "i18n")
-if not os.path.isdir(i18n_path):
-    exit(f"The translation for project `{args.project}` does not exist at path {i18n_path}")
 
 jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
@@ -381,13 +391,17 @@ with open(args.source, "r", encoding="utf-8") as file:
         shutil.copyfile(template_ts_file, ts_file)
         os.system(f"{lrelease} -idbased {ts_file}")
 
-        completeness = [];
-        for locale in os.listdir(i18n_path):
-            if not os.path.isdir(os.path.join(i18n_path, locale)) or locale.startswith("."):
+        # Include internationalization if the i18n path was specified.
+        completeness = []
+        i18nlocales = []
+        if args.i18npath is not None:
+            i18nlocales = os.listdir(args.i18npath)
+        for locale in i18nlocales:
+            if not os.path.isdir(os.path.join(args.i18npath, locale)) or locale.startswith("."):
                 continue
 
             xliff_path = os.path.join(
-                i18n_path, locale, "addons", manifest["id"], "strings.xliff"
+                args.i18npath, locale, "addons", manifest["id"], "strings.xliff"
             )
 
             if os.path.isfile(xliff_path):
@@ -400,13 +414,13 @@ with open(args.source, "r", encoding="utf-8") as file:
                 if locale in translations_fallback:
                     # The fallback translations are computed in reverse order.
                     # First "en" where we have 100% of translations by default.
-                    xliff_path_en = os.path.join(i18n_path, "en", "addons", manifest["id"], "strings.xliff")
+                    xliff_path_en = os.path.join(args.i18npath, "en", "addons", manifest["id"], "strings.xliff")
                     locale_file_en = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                     os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
                     # Then the fallback languages
                     for fallback in translations_fallback[locale]:
-                        xliff_path_fallback = os.path.join(i18n_path, fallback, "addons", manifest["id"], "strings.xliff")
+                        xliff_path_fallback = os.path.join(args.i18npath, fallback, "addons", manifest["id"], "strings.xliff")
                         locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                         os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
 
@@ -436,6 +450,14 @@ with open(args.source, "r", encoding="utf-8") as file:
 
     else:
        print("Addon not translatable")
+
+    if args.depfile is not None:
+        print("Generate the dependency file...")
+        with open(args.depfile, "w") as f:
+            f.write(f"{os.path.join(args.dest, manifest['id'])}.rcc: {args.source}")
+            srcdir = os.path.dirname(args.source)
+            for file in get_file_list(srcdir, ""):
+                f.write(f" {os.path.join(srcdir, file)}")
 
     print("Generate the RCC file...")
     files = get_file_list(tmp_path, "")
