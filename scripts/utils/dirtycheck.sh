@@ -9,4 +9,4 @@ GITDIR=$(cd $(dirname $0) && git rev-parse --show-toplevel)
 
 # List all untracked and modified files and print them to stderr
 # We permit the build directories to exist as per CMake build instructions.
-git -C $GITDIR ls-files -m -o -x 'build/' -x 'build-*/' >&2
+git -C $GITDIR ls-files -m -o -x '.tmp/' -x 'build/' -x 'build-*/' >&2
