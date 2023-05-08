@@ -100,19 +100,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             AR=llvm-ar)
     endif()
 
-    ## Don't trust Xcode to provide us with a usable linker.
-    if(APPLE AND XCODE)
-        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
-        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_BUILD_TOOL} -C linker=/usr/bin/cc \$@\n")
-        file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
-            OWNER_READ OWNER_WRITE OWNER_EXECUTE
-            GROUP_READ GROUP_WRITE GROUP_EXECUTE
-            WORLD_READ WORLD_EXECUTE
-        )
-        list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
-    endif()
-
-
     ## Build the qtglean Rust library
     add_rust_library(qtglean_bindings
         ARCH ${RUST_ARCH}
