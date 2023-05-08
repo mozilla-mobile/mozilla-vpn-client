@@ -13,5 +13,5 @@ git -C $GITDIR ls-files -m -o -x '.tmp/' -x 'build/' -x 'build-*/' >&2
 
 ## Do the same for submodules.
 for SUBMODULE in $(git submodule foreach --recursive --quiet 'echo $sm_path'); do
-    git -C $GITDIR/$SUBMODULE ls-files -m -o | xargs -d '\n' --replace=filename echo "$SUBMODULE/filename" >&2
+    git -C $GITDIR/$SUBMODULE ls-files -m -o | tr '\n' '\0' | xargs -0 -I filename echo "$SUBMODULE/filename" >&2
 done
