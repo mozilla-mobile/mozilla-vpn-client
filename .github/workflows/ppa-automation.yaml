@@ -2,7 +2,7 @@ name: PPA Automated Releases
 on:
   push:
     branches:
-      - 'releases/**'
+      - 'releases/[0-9]+.[0-9a-z]+.[0-9a-z]+'
     tags:
       - 'v[0-9]+.[0-9a-z]+.[0-9a-z]+'
   schedule:
