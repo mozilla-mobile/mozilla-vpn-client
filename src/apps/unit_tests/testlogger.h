@@ -11,4 +11,6 @@ class TestLogger final : public TestHelper {
   void logger();
 
   void logHandler();
+
+  void logTruncation();
 };
