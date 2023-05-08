@@ -6,7 +6,7 @@ const Server = require('./server.js');
 const fs = require('fs');
 const path = require('path');
 
-const TEST_ADDONS_PATH = './tests/functional/addons';
+const TEST_ADDONS_PATH = './tests/functional/addons/generated';
 const PROD_ADDONS_PATH = './addons';
 
 // This function exposes all the files for a particular addon scenario through
@@ -74,6 +74,9 @@ module.exports = {
       const addonPath = path.join(TEST_ADDONS_PATH, dir);
       const stat = fs.statSync(addonPath);
       if (!stat.isDirectory()) {
+        continue;
+      }
+      if (!fs.existsSync(path.join(addonPath, 'manifest.json'))) {
         continue;
       }
 

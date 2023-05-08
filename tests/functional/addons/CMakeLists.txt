@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+cmake_minimum_required(VERSION 3.16)
+
+project(testing_addons VERSION 1.0.0 LANGUAGES CXX
+        DESCRIPTION "Mozilla VPN Addons for Functional Testing"
+)
+
+find_program(PYTHON_EXECUTABLE NAMES python3 python)
+find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+
+# Build the addons for testing.
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
+
+add_custom_target(test_01_empty_manifest
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_CURRENT_SOURCE_DIR}/01_empty_manifest/
+                ${CMAKE_CURRENT_BINARY_DIR}/01_empty_manifest/
+)
+set_target_properties(test_01_empty_manifest PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_custom_target(test_02_broken_manifest
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_CURRENT_SOURCE_DIR}/02_broken_manifest/
+                ${CMAKE_CURRENT_BINARY_DIR}/02_broken_manifest/
+)
+set_target_properties(test_02_broken_manifest PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_03_single_addon
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/03_single_addon/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/03_single_addon/
+)
+set_target_properties(test_03_single_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_04_tutorials_basic
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/04_tutorials_basic/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/04_tutorials_basic/
+)
+set_target_properties(test_04_tutorials_basic PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_05_settings_rollback
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/05_settings_rollback/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/05_settings_rollback/
+)
+set_target_properties(test_05_settings_rollback PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_06_translation_threshold
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/06_translation_threshold/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/06_translation_threshold/
+)
+set_target_properties(test_06_translation_threshold PROPERTIES EXCLUDE_FROM_ALL FALSE)

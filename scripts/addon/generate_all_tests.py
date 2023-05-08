@@ -6,7 +6,6 @@
 import argparse
 import os
 import subprocess
-import sys
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
@@ -18,25 +17,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-generateall_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "generate_all.py")
-
-# Generate production addons files
-build_cmd = [sys.executable, generateall_path]
-if args.qtpath:
-    build_cmd.append("-q")
-    build_cmd.append(args.qtpath)
-subprocess.call(build_cmd)
-
-# Generate test addons files
+# Use CMake to build the addons.
+# TODO: At some point we should stop generating in the source directory.
 test_addons_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "functional", "addons")
-for file in os.listdir(test_addons_path):
-    manifest_path = os.path.join(test_addons_path, file, "manifest.json")
-    if os.path.exists(manifest_path):
-       print(f"Ignoring path {file} because the manifest already exists.")
-       continue
-
-    build_cmd = [sys.executable, generateall_path, "-p", os.path.join(test_addons_path, file)]
-    if args.qtpath:
-        build_cmd.append("-q")
-        build_cmd.append(args.qtpath)
-    subprocess.call(build_cmd)
+subprocess.call(['cmake', '-S', test_addons_path, '-B', os.path.join(test_addons_path, 'generated')])
+subprocess.call(['cmake', '--build', os.path.join(test_addons_path, 'generated')])
