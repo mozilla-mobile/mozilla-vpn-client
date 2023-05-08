@@ -52,7 +52,7 @@ Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaM
 $env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 
 ## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN -q
+conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN
 
 conda info --envs
 

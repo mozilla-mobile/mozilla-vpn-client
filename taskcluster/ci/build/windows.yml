@@ -48,9 +48,6 @@ windows/opt:
     worker:
         artifacts:
             - type: file
-              name: public/build/MozillaVPN.msi
-              path: artifacts/MozillaVPN.msi
-            - type: file
               name: public/build/Mozilla VPN.pdb
               path: artifacts/Mozilla VPN.pdb
     scopes:

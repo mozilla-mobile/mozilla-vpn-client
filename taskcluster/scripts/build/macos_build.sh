@@ -48,6 +48,7 @@ print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml
 conda activate VPN
+./scripts/macos/conda_install_extras.sh  
 conda info
 
 # Conda Cannot know installed MacOS SDK'S

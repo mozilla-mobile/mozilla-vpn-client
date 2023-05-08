@@ -340,6 +340,7 @@ Prerequisites:
 ```bash
 $ conda env create -f env.yml
 $ conda activate VPN
+$ ./scripts/macos/conda_install_extras.sh  
 ```
  - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) )
     - Set `SDKROOT` to the target SDK: `export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)`
