@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+get_filename_component(ADDON_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR}/../addon REALPATH)
+
 ### Helper function to build a VPN Addon
 #
 # This function takes one mandatory argument: ADDON_DIR which provides
@@ -44,7 +46,6 @@ function(add_addon_target NAME)
     endif()
 
     # Prepare some common addon build arguments.
-    get_filename_component(ADDON_SCRIPT_DIR ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../addon REALPATH)
     set(ADDON_BUILD_ARGS -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH})
     if (ADDON_I18N_DIR)
         list(APPEND ADDON_BUILD_ARGS -i ${ADDON_I18N_DIR})
