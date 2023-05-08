@@ -39,6 +39,9 @@ Item {
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
 
+    //Temporarily holds the next tooltips text (fixes bug on android where text was changing before the tooltip moved)
+    property var tempTooltipText
+
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
 
@@ -56,7 +59,7 @@ Item {
         onTriggered: {
             tutorialTooltip.repositionTooltip()
             notch.repositionNotch()
-            tutorialTooltip.open()
+            tutorialTooltip.tooltipText = root.tempTooltipText;
         }
     }
 
@@ -81,17 +84,21 @@ Item {
                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
                    tooltipPositionedAboveTargetElement = true;
                    y = targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
+                   tutorialTooltip.open()
+                   tutorialTooltip.visible = true
                    return
                }
 
                tooltipPositionedAboveTargetElement = false;
                y = targetElementDistanceFromTop + targetElement.height + notchHeight;
+               tutorialTooltip.open()
+               tutorialTooltip.visible = true
                return
            }
         }
 
         width: root.width - MZTheme.theme.windowMargin * 2
-        visible: MZTutorial.tooltipShown
+        visible: false
         x: MZTheme.theme.windowMargin
 
         background: Rectangle {
@@ -294,14 +301,18 @@ Item {
         }
 
         function onPlayingChanged() {
-            if (!MZTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
-                tutorialPopup.close();
+            if (!MZTutorial.playing) {
+                tutorialTooltip.close()
+                tutorialTooltip.visible = false
+                if (tutorialPopup.opened && tutorialPopup.dismissOnStop) {
+                    tutorialPopup.close();
+                }
             }
         }
 
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = text;
+            root.tempTooltipText= text;
         }
 
         function onTutorialCompleted(tutorial) {
