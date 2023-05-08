@@ -12,15 +12,6 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
 add_library(iosglean STATIC)
-
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
-endif()
-
-target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
-
 set_target_properties(iosglean PROPERTIES
     OUTPUT_NAME "IOSGlean"
     FOLDER "Libs"
@@ -30,6 +21,10 @@ set_target_properties(iosglean PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
 )
+
+target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
 target_sources(iosglean PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Config/Configuration.swift
@@ -130,12 +125,5 @@ set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     PROPERTIES GENERATED TRUE
 )
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.mm
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
-)
 
 target_link_libraries(iosglean PRIVATE qtglean)
-target_link_libraries(mozillavpn PRIVATE iosglean)
