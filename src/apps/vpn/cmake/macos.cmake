@@ -102,6 +102,17 @@ target_sources(mozillavpn PRIVATE
 
 # Build the Wireguard Go tunnel
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
+set(WIREGUARD_GO_ENV
+    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+    CC=${CMAKE_C_COMPILER}
+    CXX=${CMAKE_CXX_COMPILER}
+    GOOS=darwin
+    CGO_ENABLED=1
+    GO111MODULE=on
+    CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+    CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+)
+
 if(CMAKE_OSX_ARCHITECTURES)
     foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
         string(REPLACE "x86_64" "amd64" GOARCH ${OSXARCH})
@@ -113,16 +124,7 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${WIREGUARD_GO_DEPS}
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-            COMMAND ${CMAKE_COMMAND} -E env
-                        GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-                        CC=${CMAKE_C_COMPILER}
-                        CXX=${CMAKE_CXX_COMPILER}
-                        GOOS=darwin
-                        CGO_ENABLED=1
-                        GO111MODULE=on
-                        GOARCH=${GOARCH}
-                        CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
-                        CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+            COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV} GOARCH=${GOARCH}
                     ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
                         -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
         )
@@ -143,11 +145,7 @@ else()
             ${WIREGUARD_GO_DEPS}
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-        COMMAND ${CMAKE_COMMAND} -E env
-                    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-                    GOOS=darwin
-                    CGO_ENABLED=1
-                    GO111MODULE=on
+        COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV}
                 ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
                     -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     )
