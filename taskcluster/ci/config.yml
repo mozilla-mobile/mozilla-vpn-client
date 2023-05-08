@@ -53,7 +53,7 @@ workers:
             provisioner: 'releng-hardware'
             implementation: generic-worker
             os: macosx
-            worker-type: 'mozillavpn-b-1-osx-staging'
+            worker-type: 'mozillavpn-b-1-osx-macos13'
         images:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
