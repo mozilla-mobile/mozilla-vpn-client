@@ -1,1 +1,73 @@
-# Nothing here
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file contains the strings for the MozillaVPN client.
+# At the top level of this document, you must specify the categories. For each
+# category, there is a list of string IDs. Each string ID can be:
+# - a string: this will be the English translation of that string ID
+# - an object composed of a `value` key and, optional, a `comment` key. Both
+#   keys can be a string or an array of strings. The `value` contains the
+#   English translation; the comment is useful to describe what the string is
+#   and where it is used.
+#
+# Example:
+#
+#initialView:
+#  # This is a simple string
+#  getStartedButton: Get started
+#
+#  # StringID with a value and a comment
+#  learnMore:
+#    value: Learn more
+#    comment: This is the `learn more` link shown in the initial view
+#
+#  # Multiple line string (with a multiple line comment)
+#  subTitle:
+#    value:
+#      - A fast, secure and easy to use VPN. Built
+#      - by the makers of Firefox
+#    comment:
+#      - Also comments can be written using
+#      - multiple lines!
+#
+# In QML/JS, you can use the string IDs via the `MZI18n` object. Each string
+# is converted in an enum composed by categoryName + stringId, in pascal case.
+# For instance:
+# ```
+# Text {
+#   text: MZI18n.InitialViewSubTitle
+# ```
+#
+# In C++, you can do basically the same:
+# ```
+# QString foo =
+#    I18nStrings::instance()->t(I18nStrings::InitialViewGetStartedButton)
+# ```
+#
+# If a string contains arguments, add '%<number>' for each argument. For
+# instance, you can write 2 strings in these way:
+#   foo:
+#     value: You have %1 active devices
+#     comment: %1 is the number of active devices.
+#   bar:
+#     value: Your device %1 has been created at %2.
+#     comment: %1 is the device name. %2 is a date/time value.
+#
+# Please, write a comment to describe what the arguments are about.
+#
+# When you use a string with arguments, in QML, you can write:
+# ```
+# Text {
+#   text: MZI18n.Something.arg("hello")
+#   otherText: MZI18n.Something.arg("hello").arg("second argument")
+# ```
+# In C++:
+# ```
+# QString foo =
+#    I18nStrings::instance()->t(I18nStrings::Something).arg("hello")
+# ```
+#
+# Remember! When you change this file, you must run the
+# `./scripts/utils/generate_strings.py` script to regenerate the string files.
+#

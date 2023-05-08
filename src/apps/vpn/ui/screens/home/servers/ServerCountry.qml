@@ -160,7 +160,7 @@ MZClickableRow {
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
         anchors.left: parent.left
-        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 6
+        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 4
         width: serverCountry.width - anchors.leftMargin
 
         Accessible.role: Accessible.List
@@ -185,7 +185,7 @@ MZClickableRow {
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
                 radioButtonLabelText: _localizedCityName
-                accessibleName: _localizedCityName
+                accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
                 implicitWidth: parent.width
 
                 onClicked: {
@@ -207,6 +207,7 @@ MZClickableRow {
                 }
 
                 ServerLatencyIndicator {
+                    id: latencyIndicator
                     anchors {
                         right: parent.right
                         rightMargin: MZTheme.theme.hSpacing

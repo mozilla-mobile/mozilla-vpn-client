@@ -56,7 +56,16 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
+        SET(SENTRY_ARGS
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+            -DSENTRY_BACKEND=breakpad
+            -DSENTRY_BUILD_SHARED_LIBS=false
+            -DSENTRY_TRANSPORT=none
+            -DSENTRY_BUILD_TESTS=off
+            -DSENTRY_BUILD_EXAMPLES=off
+        )
         if(CMAKE_OSX_ARCHITECTURES)
             STRING(REPLACE ";" "$<SEMICOLON>" OSX_ARCH_LISTSAFE "${CMAKE_OSX_ARCHITECTURES}")
             LIST(APPEND SENTRY_ARGS -DCMAKE_OSX_ARCHITECTURES:STRING=${OSX_ARCH_LISTSAFE})
@@ -89,8 +98,8 @@ if( ${_SUPPORTED} GREATER -1 )
     include(ExternalProject)
     ExternalProject_Add(sentry
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
-        GIT_REPOSITORY https://github.com/getsentry/sentry-native/
-        GIT_TAG 0.5.0
+        GIT_SUBMODULES 3rdparty/sentry
+        GIT_SUBMODULES_RECURSE true
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 

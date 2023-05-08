@@ -100,22 +100,29 @@ serversView:
     value: "Last updated: %1. To update this list please disconnect from the VPN."
     comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated and instructions to re-enable the refresh button. Argument is the time or date/day
   recommendedRefreshLastUpdatedLabelYesterday: yesterday
+  serverCityWithGoodConnection:
+    value: "%1. Good connectivity"
+    comment: Button label that reads out a city name whose connection is good. Argument is the city name.
+  serverCityWithModerateConnection:
+    value: "%1. Moderate connectivity"
+    comment: Button label that reads out a city name whose connection is moderate. Argument is the city name.
+  serverCityWithPoorConnection:
+    value: "%1. Poor connectivity"
+    comment: Button label that reads out a city name whose connection is poor. Argument is the city name.
+  serverCityWithNoConnection:
+    value: "%1. No connectivity"
+    comment: Button label that reads out a city name whose connection is unavailable. Argument is the city name.
 
 languageView:
   searchPlaceholder:
     value: Search languages
     comment: Placeholder text for a search field that can be used to search through a list of languages
-
-feedbackForm:
-  chooseCategory: Choose a category
-  excellentLabel:
-    value: Excellent
-    comment:
-      - One of the answers on the feedback question about the user
-      - experience with the VPN client.
-  reviewHeader: Give us 5 stars!
-  reviewBody: If you enjoy using Mozilla VPN, would you review it? Thanks for your support!
-  leaveReviewButton: Leave a Review
+  systemLanguageButtonTitle:
+    value: System language
+    comment: the title for the system language radio button
+  systemLanguageButtonDescription:
+    value: Mozilla VPN will use the default system language.
+    comment: the description for the system lagnague radio button
 
 settingsDev:
   title: Developer Options
@@ -280,16 +287,19 @@ notifications:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"
   VPNConnectedTitle: VPN Connected
-  VPNConnectedMessage:
-    value: "Connected to %1"
+  VPNConnectedMessages:
+    value: "Connected through %1"
     comment: "%1 is the name of the city the VPN is connected to."
-  VPNMultihopConnectedMessage:
-    value: "Connected to %1, through %2"
+  VPNMultihopConnectedMessages:
+    value: "Connected through %1 via %2"
     comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNDisconnectedTitle: VPN Disconnected
   VPNDisconnectedMessage:
     value: "Disconnected from %1"
     comment: "%1 is the name of the city the VPN disconnected from."
+  VPNMultihopDisconnectedMessage:
+    value: "Disconnected from %1 and %2"
+    comment: "%1 is the name of the exit server, %2 is the name of the entry server."
   VPNSwitchedServersTitle: VPN Switched Servers
   VPNSwitchedServersMessage:
     value: "Switched from %1 to %2"
@@ -786,15 +796,6 @@ subscriptionManagement:
   addFirefoxRelay:
     value: Add Firefox Relay
     comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
-  valueProp1:
-    value: No logging of your network activity
-    comment: Value proposition used to promote the product
-  valueProp2:
-    value: No one can track you
-    comment: Value proposition used to promote the product
-  valueProp3:
-    value: 500+ servers in 30+ countries
-    comment: Value proposition used to promote the product
   manageAccount:
     value: Manage account
 
@@ -828,7 +829,6 @@ inAppMessaging:
   menuTitle: Messages
   editButton: Edit
   searchBarPlaceholderText: Search messages
-  dateTimeYesterday: Yesterday
   emptyStateTitle: No messages
   emptyStateDescription: You’re up to date!
   deleteMessage:

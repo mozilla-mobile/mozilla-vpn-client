@@ -20,6 +20,7 @@
 #include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "resourceloader.h"
 #include "settingsholder.h"
 #include "telemetry/gleansample.h"
 
@@ -40,6 +41,10 @@ QMap<QString, QString> s_languageMap{
     {"es_CL", "Español, Chile"},
     {"es_MX", "Español, México"},
 };
+
+QString toUpper(const QLocale& locale, QString input) {
+  return input.replace(0, 1, locale.toUpper(QString(input[0])));
+}
 
 }  // namespace
 
@@ -165,13 +170,24 @@ void Localizer::initialize() {
   connect(settingsHolder, &SettingsHolder::languageCodeChanged, this,
           &Localizer::settingsChanged);
   settingsChanged();
+
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          [this]() {
+            m_translationFallback.clear();
+            m_translationCompleteness.clear();
+            m_languages.clear();
+
+            loadLanguagesFromI18n();
+          });
 }
 
 void Localizer::loadLanguagesFromI18n() {
+  beginResetModel();
+
   m_translationCompleteness =
       loadTranslationCompleteness(":/i18n/translations.completeness");
 
-  QDir dir(":/i18n");
+  QDir dir(ResourceLoader::instance()->loadDir(":/i18n"));
   QStringList files = dir.entryList();
   for (const QString& file : files) {
     if (!file.startsWith(AppConstants::LOCALIZER_FILENAME_PREFIX) ||
@@ -209,8 +225,11 @@ void Localizer::loadLanguagesFromI18n() {
 
   std::sort(m_languages.begin(), m_languages.end(),
             [&](const Language& a, const Language& b) -> bool {
-              return LanguageI18N::languageCompare(a.m_code, b.m_code) < 0;
+              return LanguageI18N::instance()->languageCompare(a.m_code,
+                                                               b.m_code) < 0;
             });
+
+  endResetModel();
 }
 
 // static
@@ -324,23 +343,23 @@ bool Localizer::loadLanguage(const QString& requestedLocalCode) {
   }
   m_translators.clear();
 
-  QString localCode = requestedLocalCode;
-  if (localCode.isEmpty()) {
-    localCode = systemLanguageCode();
+  QString localeCode = requestedLocalCode;
+  if (localeCode.isEmpty()) {
+    localeCode = systemLanguageCode();
   }
 
-  double completeness = m_translationCompleteness.value(localCode, 0);
+  double completeness = m_translationCompleteness.value(localeCode, 0);
   if (completeness < 1) {
     logger.debug() << "Let's try to load another language as fallback for code"
-                   << localCode;
-    maybeLoadLanguageFallback(localCode);
+                   << localeCode;
+    maybeLoadLanguageFallback(localeCode);
   }
 
-  QLocale locale = QLocale(localCode);
+  QLocale locale = QLocale(localeCode);
   QLocale::setDefault(locale);
 
   if (!createTranslator(locale)) {
-    logger.error() << "Loading the locale failed - code:" << localCode;
+    logger.error() << "Loading the locale failed - code:" << localeCode;
     return false;
   }
 
@@ -359,9 +378,10 @@ bool Localizer::createTranslator(const QLocale& locale) {
                           ":/i18n");
 }
 
-void Localizer::maybeLoadLanguageFallback(const QString& code) {
+void Localizer::maybeLoadLanguageFallbackData() {
   if (m_translationFallback.isEmpty()) {
-    QFile file(":/i18n/translations_fallback.json");
+    QFile file(ResourceLoader::instance()->loadFile(
+        ":/i18n/translations_fallback.json"));
     Q_ASSERT(file.exists());
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -381,6 +401,15 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
       m_translationFallback.insert(key, languages);
     }
   }
+}
+
+QStringList Localizer::fallbackForLanguage(const QString& code) {
+  maybeLoadLanguageFallbackData();
+  return m_translationFallback.value(code, QStringList());
+}
+
+void Localizer::maybeLoadLanguageFallback(const QString& code) {
+  maybeLoadLanguageFallbackData();
 
   // First fallback, English where we are 100% sure we have all the
   // translations. If something goes totally wrong, we use English strings.
@@ -404,16 +433,16 @@ QString Localizer::nativeLanguageName(const QLocale& locale,
                                       const QString& code) {
 #ifndef UNIT_TEST
   if (!Constants::inProduction()) {
-    Q_ASSERT_X(LanguageI18N::languageExists(code), "localizer",
+    Q_ASSERT_X(LanguageI18N::instance()->languageExists(code), "localizer",
                "Languages are out of sync with the translations");
   }
 #endif
 
   // Let's see if we have the translation of this language in this language. We
   // can use it as native language name.
-  QString name = LanguageI18N::translateLanguage(code, code);
+  QString name = LanguageI18N::instance()->translateLanguage(code, code);
   if (!name.isEmpty()) {
-    return name;
+    return toUpper(locale, name);
   }
 
   if (s_languageMap.contains(code)) {
@@ -429,9 +458,7 @@ QString Localizer::nativeLanguageName(const QLocale& locale,
     return locale.languageToString(locale.language());
   }
 
-  // Capitalize the string.
-  name.replace(0, 1, locale.toUpper(QString(name[0])));
-  return name;
+  return toUpper(locale, name);
 }
 
 QHash<int, QByteArray> Localizer::roleNames() const {
@@ -453,19 +480,20 @@ QString Localizer::localizedLanguageName(const Language& language) const {
     translationCode = Localizer::instance()->languageCodeOrSystem();
   }
 
-  QString value =
-      LanguageI18N::translateLanguage(translationCode, language.m_code);
+  QString value = LanguageI18N::instance()->translateLanguage(translationCode,
+                                                              language.m_code);
   if (!value.isEmpty()) {
-    return value;
+    return toUpper(QLocale(translationCode), value);
   }
 
   // If we don't have 'ab_BC', but we have 'ab'
   if (translationCode.contains('_')) {
     QStringList parts = translationCode.split('_');
 
-    QString value = LanguageI18N::translateLanguage(parts[0], language.m_code);
+    QString value =
+        LanguageI18N::instance()->translateLanguage(parts[0], language.m_code);
     if (!value.isEmpty()) {
-      return value;
+      return toUpper(QLocale(translationCode), value);
     }
   }
 
@@ -523,7 +551,8 @@ QString Localizer::languageCodeOrSystem() const {
 
 QString Localizer::localizeCurrency(double value,
                                     const QString& currencyIso4217) {
-  QLocale locale(languageCodeOrSystem());
+  QString languageCode = languageCodeOrSystem();
+  QLocale locale(languageCode);
 
   if (currencyIso4217.length() != 3) {
     logger.warning() << "Invalid currency iso 4217 value:" << currencyIso4217;
@@ -535,61 +564,13 @@ QString Localizer::localizeCurrency(double value,
     return locale.toCurrencyString(value);
   }
 
-  QString symbol = retrieveCurrencySymbolFallback(currencyIso4217, locale);
-  if (symbol.isEmpty()) {
-    return locale.toCurrencyString(value, currencyIso4217);
+  QString symbol = LanguageI18N::instance()->currencySymbolForLanguage(
+      languageCode, currencyIso4217);
+  if (!symbol.isEmpty()) {
+    return locale.toCurrencyString(value, symbol);
   }
 
-  return locale.toCurrencyString(value, symbol);
-}
-
-// static
-QString Localizer::retrieveCurrencySymbolFallback(
-    const QString& currencyIso4217, const QLocale& currentLocale) {
-  // Let's find the locale that matches most of the current locale:
-  // - L: language
-  // - S: script
-  // - C: country
-  QList<QLocale> currencyLocalesLSC;
-  QList<QLocale> currencyLocalesLS;
-  QList<QLocale> currencyLocalesL;
-  for (QLocale& l : QLocale::matchingLocales(
-           QLocale::AnyLanguage, QLocale::AnyScript, QLocale::AnyCountry)) {
-    if (l.currencySymbol(QLocale::CurrencyIsoCode) != currencyIso4217) continue;
-
-    if (l.language() == currentLocale.language()) {
-      if (l.script() == currentLocale.script()) {
-        if (l.country() == currentLocale.country()) {
-          currencyLocalesLSC.append(l);
-          continue;
-        }
-        currencyLocalesLS.append(l);
-        continue;
-      }
-      currencyLocalesL.append(l);
-    }
-  }
-
-  if (!currencyLocalesLSC.isEmpty()) {
-    logger.warning() << "Fallback LSC" << currencyIso4217
-                     << currencyLocalesLSC[0].bcp47Name();
-    return currencyLocalesLSC[0].currencySymbol();
-  }
-
-  if (!currencyLocalesLS.isEmpty()) {
-    logger.warning() << "Fallback LS" << currencyIso4217
-                     << currencyLocalesLS[0].bcp47Name();
-    return currencyLocalesLS[0].currencySymbol();
-  }
-
-  if (!currencyLocalesL.isEmpty()) {
-    logger.warning() << "Fallback L" << currencyIso4217
-                     << currencyLocalesL[0].bcp47Name();
-    return currencyLocalesL[0].currencySymbol();
-  }
-
-  logger.warning() << "Fallback not found" << currencyIso4217;
-  return currencyIso4217;
+  return locale.toCurrencyString(value, currencyIso4217);
 }
 
 // static

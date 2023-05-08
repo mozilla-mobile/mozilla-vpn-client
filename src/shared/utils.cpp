@@ -14,6 +14,9 @@
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
 #endif
+#ifdef MZ_WINDOWS
+#  include "platforms/windows/windowsutils.h"
+#endif
 
 #include <QApplication>
 #include <QClipboard>
@@ -40,29 +43,13 @@ void Utils::storeInClipboard(const QString& text) {
   QApplication::clipboard()->setText(text);
 }
 
-void Utils::openAppStoreReviewLink() {
-  Q_ASSERT(Feature::get(Feature::Feature_appReview)->isSupported());
-
-#if defined(MZ_IOS)
-  UrlOpener::instance()->openUrl(AppConstants::APPLE_STORE_REVIEW_URL);
-#elif defined(MZ_ANDROID)
-  UrlOpener::instance()->openUrl(AppConstants::GOOGLE_PLAYSTORE_URL);
-#endif
-}
-
 // static
 void Utils::crashTest() {
   logger.debug() << "Crashing Application";
 
 #ifdef MZ_WINDOWS
   // Windows does not have "signals"
-  //   qFatal("Ready to crash!") does not work as expected.
-  // QT raises a debugmessage (in debugmode) - which we would handle
-  // in release-mode however this end's with QT just doing a clean shutdown
-  // so breakpad does not kick in.
-  int i = 1;
-  QString* ohno = (QString*)i--;
-  ohno->at(1);
+  WindowsUtils::forceCrash();
 #else
   // On Linux/osx this generates a Sigabort, which is handled
   qFatal("Ready to crash!");

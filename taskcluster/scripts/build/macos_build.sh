@@ -63,7 +63,7 @@ export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
-git submodule update --init --depth 1 || die "Failed to init submodules"
+git submodule update --init --recursive || die "Failed to init submodules"
 for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
 done
@@ -92,7 +92,6 @@ then
     npm install -g @sentry/cli
 fi
 
-
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
 
@@ -100,8 +99,8 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build

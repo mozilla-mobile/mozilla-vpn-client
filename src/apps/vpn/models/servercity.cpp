@@ -110,15 +110,15 @@ QString ServerCity::hashKey(const QString& country, const QString cityName) {
 }
 
 const QString ServerCity::localizedName() const {
-  return ServerI18N::translateCityName(m_country, m_name);
+  return ServerI18N::instance()->translateCityName(m_country, m_name);
 }
 
-unsigned int ServerCity::latency() const {
+qint64 ServerCity::latency() const {
   ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   int numLatencySamples = 0;
-  uint32_t sumLatencyMsec = 0;
+  qint64 sumLatencyMsec = 0;
   for (const QString& pubkey : m_servers) {
-    unsigned int rtt = serverLatency->getLatency(pubkey);
+    qint64 rtt = serverLatency->getLatency(pubkey);
     if (rtt > 0) {
       sumLatencyMsec += rtt;
       numLatencySamples++;
@@ -139,11 +139,10 @@ int ServerCity::connectionScore() const {
     return score;
   }
 
-  // If there is no latency data, then we haven't actually measured anything
-  // and have no connectivity signals to report.
-  unsigned int cityLatencyMsec = latency();
+  // If there is no latency data (zero), then we haven't measured anything yet.
+  qint64 cityLatencyMsec = latency();
   if (cityLatencyMsec == 0) {
-    return ServerLatency::NoData;
+    return score;
   }
 
   // Increase the score if the location has better than average latency.

@@ -5,7 +5,7 @@
   "type": "message",
   "conditions": {
     "javascript": "isExpiring.js",
-    "min_client_version": "2.15.0"
+    "min_client_version": "100.15.0"
   },
   "message": {
     "id": "message_subscription_expiring",

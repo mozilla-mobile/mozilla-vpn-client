@@ -54,5 +54,11 @@ ENV SHELL=/bin/bash \
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
 
+# The build will be run as worker, which has no access
+# thus we should prep the folders
+RUN mkdir -p /builds/worker/.cache/go-build &&\
+    chown -R worker:worker /builds/worker/.cache/ &&\
+    chmod -R 777 /builds/worker/
+
 # run-task expects to run as root
 USER root

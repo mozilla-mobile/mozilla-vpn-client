@@ -14,6 +14,9 @@ class WindowsUtils final {
 
   // Returns the major version of Windows
   static QString windowsVersion();
+
+  // Force an application crash for testing
+  static void forceCrash();
 };
 
 #endif  // WINDOWSUTILS_H

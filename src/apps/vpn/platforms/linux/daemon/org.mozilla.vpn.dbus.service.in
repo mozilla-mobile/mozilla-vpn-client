@@ -1,0 +1,5 @@
+[D-BUS Service]
+User=root
+Name=org.mozilla.vpn.dbus
+Exec=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn linuxdaemon
+SystemdService=mozillavpn.service

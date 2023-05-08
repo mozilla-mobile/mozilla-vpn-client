@@ -4,99 +4,51 @@
 
 #include "serveri18n.h"
 
+#include <QCoreApplication>
 #include <QFile>
-#include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "resourceloader.h"
 #include "settingsholder.h"
 
 namespace {
 Logger logger("ServerI18N");
 
-bool s_initialized = false;
-
-QHash<QString, QString> s_items;
-
 QString itemKey(const QString& languageCode, const QString& countryCode,
                 const QString& city = QString()) {
   return QString("%1^%2^%3").arg(languageCode, countryCode, city);
 }
+}  // namespace
 
-void addCity(const QString& countryCode, const QJsonValue& value) {
-  if (!value.isObject()) {
-    return;
+// static
+ServerI18N* ServerI18N::instance() {
+  static ServerI18N* s_instance = nullptr;
+  if (!s_instance) {
+    s_instance = new ServerI18N(qApp);
   }
-
-  QJsonObject obj = value.toObject();
-
-  QString cityName = obj["city"].toString();
-  if (cityName.isEmpty()) {
-    logger.error() << "Empty city string";
-    return;
-  }
-
-  QJsonValue languages = obj["languages"];
-  if (!languages.isObject()) {
-    logger.error() << "Empty language list";
-    return;
-  }
-
-  QJsonObject languageObj = languages.toObject();
-  for (const QString& languageCode : languageObj.keys()) {
-    s_items.insert(itemKey(languageCode, countryCode, cityName),
-                   languageObj[languageCode].toString());
-  }
+  return s_instance;
 }
 
-void addCountry(const QJsonValue& value) {
-  if (!value.isObject()) {
-    return;
-  }
+ServerI18N::ServerI18N(QObject* parent) : QObject(parent) {
+  MZ_COUNT_CTOR(ServerI18N);
 
-  QJsonObject obj = value.toObject();
+  initialize();
 
-  QString countryCode = obj["countryCode"].toString();
-  if (countryCode.isEmpty()) {
-    logger.error() << "Empty countryCode string";
-    return;
-  }
-
-  QJsonValue languages = obj["languages"];
-  if (!languages.isObject()) {
-    logger.error() << "Empty language list";
-    return;
-  }
-
-  QJsonObject languageObj = languages.toObject();
-  for (const QString& languageCode : languageObj.keys()) {
-    s_items.insert(itemKey(languageCode, countryCode),
-                   languageObj[languageCode].toString());
-  }
-
-  QJsonValue cities = obj["cities"];
-  if (!cities.isArray()) {
-    logger.error() << "Empty city list";
-    return;
-  }
-
-  QJsonArray cityArray = cities.toArray();
-  for (const QJsonValue& city : cityArray) {
-    addCity(countryCode, city);
-  }
+  connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
+          &ServerI18N::initialize);
 }
 
-void maybeInitialize() {
-  if (s_initialized) {
-    return;
-  }
+ServerI18N::~ServerI18N() { MZ_COUNT_DTOR(ServerI18N); }
 
-  s_initialized = true;
+void ServerI18N::initialize() {
+  m_items.clear();
 
-  QFile file(":/i18n/servers.json");
+  QFile file(ResourceLoader::instance()->loadFile(":/i18n/servers.json"));
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
     logger.error() << "Failed to open the servers.json";
     return;
@@ -114,60 +66,19 @@ void maybeInitialize() {
   }
 }
 
-QString translateItemWithLanguage(const QString& languageCode,
-                                  const QString& countryCode,
-                                  const QString& cityName) {
-  QString languageCodeCopy(languageCode);
-
-  QString result = s_items.value(itemKey(languageCode, countryCode, cityName));
-  if (!result.isEmpty()) {
-    return result;
-  }
-
-  // if the language code contains the 'region' part too, we check if we have
-  // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
-  bool trimmed = false;
-  qsizetype pos = languageCodeCopy.indexOf("-");
-  if (pos > 0) {
-    languageCodeCopy = languageCodeCopy.left(pos);
-    trimmed = true;
-  }
-
-  pos = languageCodeCopy.indexOf("_");
-  if (pos > 0) {
-    languageCodeCopy = languageCodeCopy.left(pos);
-    trimmed = true;
-  }
-
-  if (trimmed) {
-    result = s_items.value(itemKey(languageCodeCopy, countryCode, cityName));
-    if (!result.isEmpty()) {
-      return result;
-    }
-  } else {
-    // If the language code is not trimmed e.g "es" and we did not have a match
-    // so far, lets try itself as region e.g es -> es_ES, de -> de_DE
-    QString concat_code = languageCodeCopy + "_" + languageCodeCopy.toUpper();
-    result = s_items.value(itemKey(concat_code, countryCode, cityName));
-    if (!result.isEmpty()) {
-      return result;
-    }
-  }
-
-  // Let's use 'en' translation, which is still better than what we obtain from
-  // Guardian.
-  result = s_items.value(itemKey("en", countryCode, cityName));
-  if (!result.isEmpty()) {
-    return result;
-  }
-
-  return QString();
+QString ServerI18N::translateCountryName(const QString& countryCode,
+                                         const QString& countryName) {
+  return translateItem(countryCode, "", countryName);
 }
 
-QString translateItem(const QString& countryCode, const QString& cityName,
-                      const QString& fallback) {
-  maybeInitialize();
+QString ServerI18N::translateCityName(const QString& countryCode,
+                                      const QString& cityName) {
+  return translateItem(countryCode, cityName, cityName);
+}
 
+QString ServerI18N::translateItem(const QString& countryCode,
+                                  const QString& cityName,
+                                  const QString& fallback) {
   QString languageCode = SettingsHolder::instance()->languageCode();
   if (languageCode.isEmpty()) {
     languageCode = Localizer::instance()->languageCodeOrSystem();
@@ -189,16 +100,115 @@ QString translateItem(const QString& countryCode, const QString& cityName,
   return fallback;
 }
 
-}  // namespace
+QString ServerI18N::translateItemWithLanguage(const QString& languageCode,
+                                              const QString& countryCode,
+                                              const QString& cityName) {
+  QString languageCodeCopy(languageCode);
 
-// static
-QString ServerI18N::translateCountryName(const QString& countryCode,
-                                         const QString& countryName) {
-  return translateItem(countryCode, "", countryName);
+  QString result = m_items.value(itemKey(languageCode, countryCode, cityName));
+  if (!result.isEmpty()) {
+    return result;
+  }
+
+  // if the language code contains the 'region' part too, we check if we have
+  // translations for the whole 'primary language'. Ex: 'de-AT' vs 'de'.
+  bool trimmed = false;
+  qsizetype pos = languageCodeCopy.indexOf("-");
+  if (pos > 0) {
+    languageCodeCopy = languageCodeCopy.left(pos);
+    trimmed = true;
+  }
+
+  pos = languageCodeCopy.indexOf("_");
+  if (pos > 0) {
+    languageCodeCopy = languageCodeCopy.left(pos);
+    trimmed = true;
+  }
+
+  if (trimmed) {
+    result = m_items.value(itemKey(languageCodeCopy, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
+  } else {
+    // If the language code is not trimmed e.g "es" and we did not have a match
+    // so far, lets try itself as region e.g es -> es_ES, de -> de_DE
+    QString concat_code = languageCodeCopy + "_" + languageCodeCopy.toUpper();
+    result = m_items.value(itemKey(concat_code, countryCode, cityName));
+    if (!result.isEmpty()) {
+      return result;
+    }
+  }
+
+  // Let's use 'en' translation, which is still better than what we obtain from
+  // Guardian.
+  result = m_items.value(itemKey("en", countryCode, cityName));
+  if (!result.isEmpty()) {
+    return result;
+  }
+
+  return QString();
 }
 
-// static
-QString ServerI18N::translateCityName(const QString& countryCode,
-                                      const QString& cityName) {
-  return translateItem(countryCode, cityName, cityName);
+void ServerI18N::addCity(const QString& countryCode, const QJsonValue& value) {
+  if (!value.isObject()) {
+    return;
+  }
+
+  QJsonObject obj = value.toObject();
+
+  QString cityName = obj["city"].toString();
+  if (cityName.isEmpty()) {
+    logger.error() << "Empty city string";
+    return;
+  }
+
+  QJsonValue languages = obj["languages"];
+  if (!languages.isObject()) {
+    logger.error() << "Empty language list";
+    return;
+  }
+
+  QJsonObject languageObj = languages.toObject();
+  for (const QString& languageCode : languageObj.keys()) {
+    m_items.insert(itemKey(languageCode, countryCode, cityName),
+                   languageObj[languageCode].toString());
+  }
+}
+
+void ServerI18N::addCountry(const QJsonValue& value) {
+  if (!value.isObject()) {
+    return;
+  }
+
+  QJsonObject obj = value.toObject();
+
+  QString countryCode = obj["countryCode"].toString();
+  if (countryCode.isEmpty()) {
+    logger.error() << "Empty countryCode string";
+    return;
+  }
+
+  QJsonValue languages = obj["languages"];
+  if (!languages.isObject()) {
+    logger.error() << "Empty language list";
+    return;
+  }
+
+  QJsonObject languageObj = languages.toObject();
+  for (const QString& languageCode : languageObj.keys()) {
+    m_items.insert(itemKey(languageCode, countryCode),
+                   languageObj[languageCode].toString());
+  }
+
+  QJsonValue cities = obj["cities"];
+  if (!cities.isArray()) {
+    logger.error() << "Empty city list";
+    return;
+  }
+
+  QJsonArray cityArray = cities.toArray();
+  for (const QJsonValue& city : cityArray) {
+    addCity(countryCode, city);
+  }
 }

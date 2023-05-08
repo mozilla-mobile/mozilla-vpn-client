@@ -25,14 +25,14 @@ var vpnBundleID = "";
 public class IOSControllerImpl : NSObject {
 
     private var tunnel: NETunnelProviderManager? = nil
-    private var stateChangeCallback: ((Bool) -> Void?)? = nil
+    private var stateChangeCallback: ((Bool, Date?) -> Void?)? = nil
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
-    @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
+    @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool, Date?) -> Void) {
         super.init()
 
         Logger.configureGlobal(tagged: "APP", withFilePath: "")
@@ -108,7 +108,7 @@ public class IOSControllerImpl : NSObject {
 
         // If disconnected, we know for sure that this is true
         if (session.status == .disconnected) {
-            stateChangeCallback?(false)
+            stateChangeCallback?(false, nil)
             return
         }
 
@@ -131,7 +131,7 @@ public class IOSControllerImpl : NSObject {
             if let line = lines.first(where: { $0.starts(with: "last_handshake_time_sec") }) {
                 let parts = line.splitToArray(separator: "=")
                 if parts.count > 1 && Int(parts[1]) ?? 0 > 0 {
-                    self.stateChangeCallback?(true)
+                    self.stateChangeCallback?(true, self.tunnel?.connection.connectedDate)
                     return
                 }
             }

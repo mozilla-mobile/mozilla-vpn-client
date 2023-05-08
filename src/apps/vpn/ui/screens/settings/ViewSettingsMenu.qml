@@ -117,10 +117,8 @@ MZViewBase {
                                                     _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                                   })
             }
-
+            
             MZSettingsItem {
-                //% "Give feedback"
-                property string giveFeedbackTitle: qsTrId("vpn.settings.giveFeedback")
                 objectName: "settingsGetHelp"
                 settingTitle: MZI18n.GetHelpLinkTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"

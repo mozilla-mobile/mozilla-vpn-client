@@ -145,7 +145,7 @@ MZFlickable {
                     ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelPing
                         subtitle: VPNConnectionBenchmark.pingLatency + " " + MZI18n.ConnectionInfoUnitPing
-                        iconPath: "qrc:/nebula/resources/connection-green.svg"
+                        iconPath: "qrc:/ui/resources/connection-green.svg"
                     }
 
                     Rectangle {
@@ -159,7 +159,7 @@ MZFlickable {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
-                        iconPath: "qrc:/nebula/resources/download.svg"
+                        iconPath: "qrc:/ui/resources/download.svg"
                     }
 
                     Rectangle {
@@ -174,7 +174,7 @@ MZFlickable {
                     ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelUpload
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
-                        iconPath: "qrc:/nebula/resources/upload.svg"
+                        iconPath: "qrc:/ui/resources/upload.svg"
                         visible: MZFeatureList.get("benchmarkUpload").isSupported
                     }
                 }

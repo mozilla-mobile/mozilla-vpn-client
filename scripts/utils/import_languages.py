@@ -153,9 +153,17 @@ for project in os.listdir(os.path.join('src', 'apps')):
             qrcfile.write(f'        <file>{projectname}_{file["locale"]}.qm</file>\n')
 
         extradir = os.path.join('src', 'apps', project, 'translations', 'extras')
+        extras = []
         if os.path.isdir(extradir):
             for extra in os.listdir(extradir):
+                extras.append(extra)
                 qrcfile.write(f'      <file alias="{extra}">{os.path.join(os.getcwd(), extradir, extra)}</file>\n')
+
+        shred_extradir = os.path.join('src', 'shared', 'translations', 'extras')
+        if os.path.isdir(shred_extradir):
+            for shred_extra in os.listdir(shred_extradir):
+                if (not shred_extra in extras):
+                    qrcfile.write(f'      <file alias="{shred_extra}">{os.path.join(os.getcwd(), shred_extradir, shred_extra)}</file>\n')
 
         qrcfile.write('    </qresource>\n')
         qrcfile.write('</RCC>\n')
@@ -164,7 +172,10 @@ for project in os.listdir(os.path.join('src', 'apps')):
     title("Generate the Js/C++ string definitions...")
     try:
         subprocess.call([sys.executable, os.path.join('scripts', 'utils', 'generate_strings.py'),
-                         '-o', gendir, os.path.join('src', 'apps', project, 'translations', 'strings.yaml')])
+                         '-p', project,
+                         '-o', gendir,
+                         os.path.join('src', 'apps', project, 'translations', 'strings.yaml'),
+                         os.path.join('src', 'shared', 'translations', 'strings.yaml')])
     except Exception as e:
         print("generate_strings.py failed. Try with:\n\tpip3 install -r requirements.txt --user")
         print(e)
@@ -199,13 +210,12 @@ for project in os.listdir(os.path.join('src', 'apps')):
     for l10n_file in l10n_files:
         # Let's remove the non-translated strings if needed
         if l10n_file['locale'] != 'en':
-            print(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
             os.system(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
         os.system(f"{lrelease} -idbased {l10n_file['ts']}")
 
     print(f'Imported {len(l10n_files)} locales')
 
     if os.path.isdir(i18ndir):
-        git = os.popen(f'git submodule status f{i18ndir}')
+        git = os.popen(f'git submodule status {i18ndir}')
         git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
         print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')

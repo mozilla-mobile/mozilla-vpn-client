@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>${QT_INTERNAL_DOLLAR_VAR}{PRODUCT_NAME}</string>
+	<string>${QT_INTERNAL_DOLLAR_VAR}${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>

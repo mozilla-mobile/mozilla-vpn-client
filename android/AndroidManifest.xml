@@ -22,7 +22,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
     <application
         android:hardwareAccelerated="true"
         android:allowBackup="false"
-        android:name="org.mozilla.firefox.vpn.qt.VPNApplication"
+        android:name="org.mozilla.firefox.qt.common.CoreApplication"
         android:label="Mozilla VPN"
         android:extractNativeLibs="true"
         android:theme="@style/AppTheme"

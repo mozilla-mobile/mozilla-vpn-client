@@ -11,6 +11,7 @@
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
+        <file>popups/ServerUnavailablePopup.qml</file>
         <file>qmldir</file>
         <file>screens/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>screens/devices/ViewDevices.qml</file>
@@ -25,11 +26,6 @@
         <file>screens/getHelp/developerMenu/ViewFeatureList.qml</file>
         <file>screens/getHelp/developerMenu/ViewMessages.qml</file>
         <file>screens/getHelp/developerMenu/ViewThemeList.qml</file>
-        <file>screens/getHelp/giveFeedback/GiveFeedbackRadioDelegate.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedback.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackForm.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackReview.qml</file>
-        <file>screens/getHelp/giveFeedback/ViewGiveFeedbackThankYou.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionCheckmarkList.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoContent.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionInfoError.qml</file>
@@ -37,12 +33,14 @@
         <file>screens/home/controller/connectionInfo/ConnectionInfoScreen.qml</file>
         <file>screens/home/controller/connectionInfo/LogoLoader.qml</file>
         <file>screens/home/controller/ConnectionStability.qml</file>
+        <file>screens/home/controller/ConnectionTimer.qml</file>
         <file>screens/home/controller/ControllerImage.qml</file>
         <file>screens/home/controller/ControllerNav.qml</file>
         <file>screens/home/controller/ControllerView.qml</file>
         <file>screens/home/controller/ip/IPAddress.qml</file>
         <file>screens/home/controller/ip/IPInfoPanel.qml</file>
         <file>screens/home/controller/qmldir</file>
+        <file>screens/home/controller/VPNToggle.qml</file>
         <file>screens/home/qmldir</file>
         <file>screens/home/servers/RecentConnections.qml</file>
         <file>screens/home/servers/ServerCountry.qml</file>
@@ -76,8 +74,7 @@
         <file>screens/ScreenSubscriptionInProgressIAP.qml</file>
         <file>screens/ScreenSubscriptionInProgressWeb.qml</file>
         <file>screens/ScreenSubscriptionInUseError.qml</file>
-        <file>screens/ScreenSubscriptionNeededIAP.qml</file>
-        <file>screens/ScreenSubscriptionNeededWeb.qml</file>
+        <file>screens/ScreenSubscriptionNeeded.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
         <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenTipsAndTricks.qml</file>
@@ -101,8 +98,7 @@
         <file>screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
         <file>screens/tipsAndTricks/ViewTipsAndTricks.qml</file>
-        <file>screens/subscriptionNeeded/ViewSubscriptionNeededIAP.qml</file>
-        <file>screens/subscriptionNeeded/ViewSubscriptionNeededWeb.qml</file>
+        <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>

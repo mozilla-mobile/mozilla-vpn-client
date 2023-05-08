@@ -17,6 +17,7 @@ describe("Server list", function () {
   beforeEach(async () => {
     await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON);
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
     servers = await vpn.servers();
     currentCountryCode = await vpn.getMozillaProperty(
@@ -119,7 +120,7 @@ describe("Server list", function () {
     assert.strictEqual(vpn.lastNotification().title, "VPN Connected");
     assert.strictEqual(
       vpn.lastNotification().message,
-      `Connected to ${currentCity}, through ${currentCity}`
+      `Connected through ${currentCity} via ${currentCity}`
     );
   });
 
@@ -181,7 +182,7 @@ describe("Server list", function () {
     assert.strictEqual(vpn.lastNotification().title, "VPN Connected");
     assert.strictEqual(
       vpn.lastNotification().message,
-      `Connected to ${currentCity}`
+      `Connected through ${currentCity}`
     );
   });
 

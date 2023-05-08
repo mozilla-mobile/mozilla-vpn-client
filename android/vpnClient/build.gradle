@@ -14,11 +14,11 @@ buildscript {
         classpath SharedDependencies.com_android_tools_build_gradle
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.3.1"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.4.3"
     }
 }
 plugins {
-    id "com.jetbrains.python.envs" version "0.0.26"
+    id "com.jetbrains.python.envs" version "0.0.31"
     id "org.jetbrains.kotlin.plugin.serialization"
 }
 
@@ -30,7 +30,7 @@ plugins {
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = ["$rootDir/../../../glean/metrics.yaml"]
+ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/metrics_deprecated.yaml"]
 
 android {
     //namespace 'org.mozilla.firefox.vpn'
@@ -39,9 +39,6 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
-        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
-        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -72,7 +69,6 @@ dependencies {
 
     implementation project(path: ":common")
     implementation project(path: ":qtBindings")
-    implementation project(path: ':adjust')
 
 
     implementation SharedDependencies.androidx_core

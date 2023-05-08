@@ -35,8 +35,21 @@ Here are some useful links to start:
 * Localization happens on
   [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
 
+### Pre-commit formatting hook
+
 If you want to submit a pull-request, please, install the clang format
-pre-commit hook: `./scripts/git-pre-commit-format install`
+pre-commit hook that lints code.
+
+1. The standard conda environment includes the required clang-format libraries.
+If the conda environment is *not* being used, a clang-format library will need
+to manually installed. (For example, using Homebrew on macOS:
+`brew install clang-format`.)
+
+2. The linter will need to know where to find the `clang-format-diff.py` file, so
+`CLANG_FORMAT_DIFF` must be exported. On a standard conda installation:
+`export CLANG_FORMAT_DIFF=$(find ~/miniconda3/pkgs -name clang-format-diff.py)`
+
+3. Install the pre-commit hook: `./scripts/git-pre-commit-format install`
 
 ## Checking out the source code
 
@@ -343,83 +356,28 @@ You are now ready to build!
 (vpn) $ cmake --build build
 ```
 
-
 ### How to build from source code for iOS
 
-There are two ways to build the project on iOS, using the legacy Qt build system `qmake`
-and we have also added experimental support for `cmake`.
+To build the project on iOS, we use `cmake` to configure the Xcode project files, which we
+can then open and build via the Xcode IDE.
 
 > **Note**: Due to lack of low level networking support, it is not possible to turn on
 > the VPN from the iOS simulator in Xcode.
 
-#### Building with QMake
-
-1. On iOS, we compile the app using
-[Xcode](https://developer.apple.com/xcode/) version 12 or higher.
-
-2. We use `qmake` to generate the Xcode project and then we "patch" it to add
-extra components such as the wireguard, the browser bridge and so on.
-
-We patch the Xcode project using [xcodeproj](https://github.com/CocoaPods/Xcodeproj). To
-install it:
-```
-gem install xcodeproj # probably you want to run this command with `sudo`
-```
-
-3. You also need to install go >= v1.18. If you don't have it done already,
-download go from the [official website](https://golang.org/dl/).
-
-4. Copy `xcode.xconfig.template` to `xcode.xconfig`
-```bash
-cp xcode.xconfig.template xcode.xconfig
-```
-
-5. Modify the xcode.xconfig to something like:
-```
-APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
-
-GROUP_ID_IOS = group.org.mozilla.ios.Guardian
-APP_ID_IOS = org.mozilla.ios.FirefoxVPN
-NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
-```
-
-6. Make sure qmake is available by setting the environment variable QT_IOS_BIN:
-
-```
-export QT_IOS_BIN=/Users/[username]/Qt/6.2.4/ios/bin
-```
-
-Then generate the Xcode project using our script (and an optional adjust token):
-
-```bash
-./scripts/macos/apple_compile.sh ios [--adjust <adjust_token>] -q ~/Qt/6.2.4/macos/bin
-```
-
-7. Xcode should automatically open. You can then run/test/archive/ship the app.
-If you prefer to compile the app in command-line mode, use the following
-command:
-```bash
-xcodebuild build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -project "Mozilla VPN.xcodeproj"
-```
-
-#### Building with CMake (Experimental)
-
-We also support building from sources for iOS using CMake.
-
 1. On iOS, we compile the app using
 [Xcode](https://developer.apple.com/xcode/) version 12 or higher and [Qt](https://www.qt.io/download)
-version 6.3.2.
+version 6.2.4.
 
-2. Ensure rust targets for iOS development are installed.
+2. Ensure that Rust, and the targets for iOS development are installed. We recommend installing rust using [Rustup](https://rustup.rs/)
 ```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add x86_64-apple-ios aarch64-apple-ios
 ```
 
 3. We use `qt-cmake` from the Qt installation to configure the Xcode project.
 ```bash
 mkdir build-ios
-/Users/example/Qt/6.3.2/ios/bin/qt-cmake . -B build-ios -GXcode
+/Users/example/Qt/6.2.4/ios/bin/qt-cmake . -B build-ios -GXcode
 ```
 
 Some variables that might be useful when configuring the project:
@@ -432,12 +390,10 @@ Some variables that might be useful when configuring the project:
 
 4. Open the generated Xcode project with `open build-ios/Mozilla\ VPN.xcodeproj`.
 
-5. Select the `mozillavpn` target and `Any iOS Device (arm64)` as the build configuration
+5. Select the `mozillavpn` scheme and `Any iOS Device (arm64)` as the build configuration
 for iOS devices, or select any of the simulation targets when building for the simulator.
 
-6. Click on the Play button to start building and signing of the Mozilla VPN app. (If this step
-results in an error, ensure the app was built with Qt 6.3.2. If it was not, the build folder must
-be completely deleted and the app must be re-built.)
+6. Click on the Play button to start building and signing of the Mozilla VPN app.
 
 ### How to build from source code for Android
 
@@ -454,9 +410,11 @@ to point to the Android SDK and NDK installation directories. Required NDK versi
 5. Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
 directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
 
-6. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
+6. The Android build additionally requires cmake 3.10.2. You can install it using: `./sdkmanager --install "cmake;3.10.2.4988404"`.
 
-7. Build the apk
+7. Install the Rust Android targets `rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android`.
+
+8. Build the apk
 ```bash
 ./scripts/android/cmake.sh -d </path/to/Qt6/> -A <architecture> <debug|release>
 ```
@@ -464,10 +422,10 @@ Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
 
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by default it will use all.
 
-8. The apk will be located in
+9. The apk will be located in
 `.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
 
-9. Install with adb on device/emulator
+10. Install with adb on device/emulator
 ```bash
 adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 ```

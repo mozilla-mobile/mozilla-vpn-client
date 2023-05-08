@@ -1,0 +1,14 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "Android (x64) Dev Container",
+    "dockerFile": "../../taskcluster/docker/android-qt6-build/Dockerfile",
+    "build":{
+        "args": {
+            "NDK_VERSION":"android-ndk-r23b",
+            "QT_VERSION":"6.2.4",
+            "ANDROID_ARCH":"android_x86_64",
+            "JDK_VERSION": "11",
+            "CMAKE_VERSION":"3.22.1"
+        }
+    }
+}

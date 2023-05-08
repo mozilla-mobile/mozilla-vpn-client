@@ -339,6 +339,11 @@ jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
     exit(f"The JSONSchema {jsonSchema} does not exist")
 
+print("Reading the translation fallback file...")
+translations_fallback = {}
+with open( os.path.join(os.path.dirname(script_path), "src", "shared", "translations", "extras", "translations_fallback.json"), "r", encoding="utf-8") as file:
+    translations_fallback = json.load(file)
+
 with open(args.source, "r", encoding="utf-8") as file:
     manifest = json.load(file)
 
@@ -356,8 +361,10 @@ with open(args.source, "r", encoding="utf-8") as file:
             strings = retrieve_strings_guide(manifest, args.source)
         elif manifest["type"] == "message":
             strings = retrieve_strings_message(manifest, args.source)
+        elif manifest["type"] == "replacer":
+          pass
         else:
-            exit(f"Unupported manifest type `{manifest['type']}`")
+            exit(f"Unsupported manifest type `{manifest['type']}`")
 
         print("Create localization file...")
         os.mkdir(os.path.join(tmp_path, "i18n"))
@@ -385,7 +392,32 @@ with open(args.source, "r", encoding="utf-8") as file:
 
             if os.path.isfile(xliff_path):
                 locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
-                os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
+
+                # When 2.15 will be the min-required version, we can remove
+                # this block and generate TS files with `no-untranslated'
+                # option. But to be back-compatible, we need to compute the
+                # language fallback here instead of in the client.
+                if locale in translations_fallback:
+                    # The fallback translations are computed in reverse order.
+                    # First "en" where we have 100% of translations by default.
+                    xliff_path_en = os.path.join(i18n_path, "en", "addons", manifest["id"], "strings.xliff")
+                    locale_file_en = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                    os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
+
+                    # Then the fallback languages
+                    for fallback in translations_fallback[locale]:
+                        xliff_path_fallback = os.path.join(i18n_path, fallback, "addons", manifest["id"], "strings.xliff")
+                        locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                        os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
+
+                    # Finally, the current language
+                    os.system(f"{lconvert} -if xlf -i {xliff_path} -no-untranslated -o {locale_file}")
+
+                    # All is unified in reverse order.
+                    os.system(f"{lconvert} -i {locale_file_en} {' '.join(translations_fallback[locale])} {locale_file} -o {locale_file}")
+                else:
+                    os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
+
                 os.system(f"{lrelease} -idbased {locale_file}")
 
                 xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")

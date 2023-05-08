@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '0 5 * * *'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -49,6 +51,19 @@ jobs:
           with:
               name: Logviewer
               path: tools/logviewer
+
+  addonStats: 
+      name: Add Addon-Stats
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Clone repository
+          uses: actions/checkout@v3
+        - name: Uploading
+          uses: actions/upload-artifact@v3
+          with:
+              name: AddonStats
+              path: tools/addonstats
+
   docs:
     name: Render Docs
     runs-on: ubuntu-20.04
@@ -90,6 +105,7 @@ jobs:
         with:
             name: Inspector Build
             path: tools/inspector/dist
+
   addons:
     runs-on: ubuntu-20.04
     env:
@@ -136,7 +152,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm_chrome, inspector,addons,logviewer,docs]
+    needs: [wasm_chrome, inspector,addons,logviewer,addonstats,docs]
     name: Compile Github Page from Components
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -147,22 +163,31 @@ jobs:
           name: Wasm-Chrome
           # Destination path
           path: _site
+
       - name: Download Docs
         uses: actions/download-artifact@v3
         with:
           name: doxygen-docs
           # Destination path
           path: _site/docs
+
       - name: Download a Addons Artifact
         uses: actions/download-artifact@v3
         with:
           name: Addons
           path: _site/addons
+
       - name: Download the Logviewer Artifact
         uses: actions/download-artifact@v3
         with:
           name: Logviewer
           path: _site/logviewer
+
+      - name: Download the AddonStats Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: AddonStats
+          path: _site/addonstats
 
       - name: Download a Inspector Artifact
         uses: actions/download-artifact@v3

@@ -13,9 +13,9 @@
 #include "collator.h"
 #include "feature.h"
 #include "leakdetector.h"
-#include "location.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "recommendedlocationmodel.h"
 #include "servercountry.h"
 #include "serverdata.h"
 #include "serveri18n.h"
@@ -161,8 +161,8 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedNameRole: {
       const ServerCountry& country = m_countries.at(index.row());
-      return QVariant(
-          ServerI18N::translateCountryName(country.code(), country.name()));
+      return QVariant(ServerI18N::instance()->translateCountryName(
+          country.code(), country.name()));
     }
 
     case CodeRole:
@@ -189,14 +189,13 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
 // Select the city that we think is going to perform the best
 QStringList ServerCountryModel::pickBest() const {
-  QList<QVariant> list = recommendedLocations(1);
+  QList<const ServerCity*> list =
+      RecommendedLocationModel::recommendedLocations(1);
   if (list.isEmpty()) {
     return QStringList();
   }
 
-  QVariant qv = list.first();
-  Q_ASSERT(qv.canConvert<const ServerCity*>());
-  const ServerCity* city = qv.value<const ServerCity*>();
+  const ServerCity* city = list.first();
   return QStringList({city->country(), city->name()});
 }
 
@@ -260,54 +259,15 @@ void ServerCountryModel::setCooldownForAllServersInACity(
   }
 }
 
-QList<QVariant> ServerCountryModel::recommendedLocations(
-    unsigned int maxResults) const {
-  double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
-  if (latencyScale < 100.0) {
-    latencyScale = 100.0;
-  }
-
-  QVector<QVariant> cityResults;
-  QVector<double> rankResults;
-  cityResults.reserve(maxResults + 1);
-  rankResults.reserve(maxResults + 1);
-  for (const ServerCity& city : m_cities) {
-    double cityRanking = city.connectionScore() * 256.0;
-
-    // For tiebreaking, use the geographic distance and latency.
-    double distance = MozillaVPN::instance()->location()->distance(
-        city.latitude(), city.longitude());
-    cityRanking -= city.latency() / latencyScale;
-    cityRanking -= distance;
-
-    // Insert into the result list
-    qsizetype i;
-    for (i = 0; i < rankResults.count(); i++) {
-      if (rankResults[i] < cityRanking) {
-        break;
-      }
-    }
-    if (i < static_cast<qsizetype>(maxResults)) {
-      rankResults.insert(i, cityRanking);
-      cityResults.insert(i, QVariant::fromValue(&city));
-    }
-    if (rankResults.count() > static_cast<qsizetype>(maxResults)) {
-      rankResults.resize(maxResults);
-      cityResults.resize(maxResults);
-    }
-  }
-
-  return cityResults.toList();
-}
-
 namespace {
 
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
                          Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(
-             ServerI18N::translateCountryName(a.code(), a.name()),
-             ServerI18N::translateCountryName(b.code(), b.name())) < 0;
+             ServerI18N::instance()->translateCountryName(a.code(), a.name()),
+             ServerI18N::instance()->translateCountryName(b.code(), b.name())) <
+         0;
 }
 
 }  // anonymous namespace

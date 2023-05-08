@@ -20,6 +20,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/timingdistribution.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/uuid.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/boolean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/datetime.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/quantity.cpp
@@ -28,13 +29,14 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/ping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/timingdistribution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/uuid.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(qtglean PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 
@@ -42,6 +44,7 @@ target_include_directories(qtglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+set_target_properties(qtglean PROPERTIES FOLDER "Libs")
 target_link_libraries(qtglean PRIVATE Qt6::Core Qt6::Qml)
 
 # glean-core cannot be compiled to WASM
@@ -56,7 +59,19 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     if(IOS)
-        set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+        set(RUST_ARCH "")
+        if("arm64" IN_LIST CMAKE_OSX_ARCHITECTURES)
+            list(APPEND RUST_ARCH aarch64-apple-ios)
+        endif()
+
+        if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES)
+            list(APPEND RUST_ARCH x86_64-apple-ios)
+        endif()
+
+        # If no architecure is defined, just do all of them.
+        if (RUST_ARCH STREQUAL "")
+            set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+        endif()
     elseif(ANDROID)
         file(READ ${CMAKE_CURRENT_SOURCE_DIR}/uniffi.toml.in UNIFFI_TOML_CONTENT)
 
@@ -151,6 +166,28 @@ else()
     )
 endif()
 
+list(APPEND PINGS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
+list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings.yaml)
+list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
+list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics.yaml)
+
+get_filename_component(APPS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
+file(GLOB APPS_NAMES LIST_DIRECTORIES true RELATIVE ${APPS_DIR} ${APPS_DIR}/*)
+foreach(APP ${APPS_NAMES})
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+        list(APPEND PINGS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+        list(APPEND METRICS_DEP_LIST ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
+    endif()
+    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
+    endif()
+endforeach()
+
 ## Generate metrics and pings files
 add_custom_command(
     OUTPUT
@@ -169,9 +206,10 @@ add_custom_command(
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/macros.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust_pings.jinja2
         ${CMAKE_CURRENT_SOURCE_DIR}/glean_parser_ext/templates/rust.jinja2
-        ${CMAKE_CURRENT_SOURCE_DIR}/metrics.yaml
-        ${CMAKE_SOURCE_DIR}/glean/pings.yaml
-        ${CMAKE_SOURCE_DIR}/glean/metrics.yaml
+        ${PINGS_DEP_LIST}
+        ${PINGS_LIST}
+        ${METRICS_DEP_LIST}
+        ${METRICS_LIST}
     COMMAND ${GENERATE_GLEAN_CMD}
 )
 set_source_files_properties(

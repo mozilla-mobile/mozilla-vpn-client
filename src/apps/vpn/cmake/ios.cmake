@@ -4,6 +4,19 @@
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 
+if(IOS)
+    # This workaround will not be required anymore once Qt is updated
+    # See https://bugreports.qt.io/browse/QTBUG-93268
+    set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
+endif()
+
+## Install the Network Extension into the bundle.
+add_dependencies(mozillavpn networkextension)
+
+## Install the Glean iOS SDK into the bundle.
+include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
+add_dependencies(mozillavpn iosglean)
+
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
@@ -16,10 +29,22 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    MACOSX_BUNDLE_ICON_FILE "AppIcon"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/ios/app/main.entitlements"
     XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
+    XCODE_ATTRIBUTE_PRODUCT_NAME "${PROJECT_NAME}"
     XCODE_GENERATE_SCHEME TRUE
+    XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
+    # Required for this target to be added to the archive?
+    XCODE_ATTRIBUTE_INSTALL_PATH "$(LOCAL_APPS_DIR)"
+    XCODE_ATTRIBUTE_SKIP_INSTALL "NO"
+    # Set device target family to iPhone and iPad
+    XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
+    # Make sure the network extension is added as a plugin to the final bundle
+    XCODE_EMBED_APP_EXTENSIONS networkextension
+    XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY YES
+    XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY YES
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -59,16 +84,15 @@ target_sources(mozillavpn PRIVATE
 
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
-    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard)
-set_source_files_properties(
+    ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
+    ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+)
+
+set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
-    PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-
-## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn
-    DEVICES iphone ipad
-    CATALOG ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets)
+    ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+)
 
 set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
@@ -103,12 +127,3 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKitC/x25519.c
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-apple/Sources/WireGuardKit/PrivateKey.swift
 )
-
-## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS networkextension)
-
-## Install the Glean iOS SDK into the bundle.
-include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
-add_dependencies(mozillavpn iosglean)
-set_target_properties(mozillavpn PROPERTIES XCODE_EMBED_APP_EXTENSIONS iosglean)

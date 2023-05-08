@@ -11,8 +11,7 @@ if [ -f .env ]; then
 fi
 
 
-JOBS=8
-QTPATH=
+JOBS=24
 RELEASE=1
 ADJUST_SDK_TOKEN=
 export SPLITAPK=0
@@ -31,7 +30,7 @@ helpFunction() {
   exit 0
 }
 print N "This script compiles MozillaVPN for Android"
-echo $QT_HOST_PATH
+echo $QTPATH
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -70,11 +69,9 @@ while [[ $# -gt 0 ]]; do
     helpFunction
     ;;
   *)
-    if [[ "$QTPATH" ]]; then
-      helpFunction
+    if [[ "$$1" ]]; then
+      QTPATH="$1"
     fi
-
-    QTPATH="$1"
     shift
     ;;
   esac
@@ -125,7 +122,7 @@ print Y "Patch Adjust files..."
 ./scripts/android/patch_adjust.sh
 
 printn Y "Computing the version... "
-export SHORTVERSION=$(cat version.pri | grep VERSION | grep defined | cut -d= -f2 | tr -d \ ) # Export so gradle can pick it up
+export SHORTVERSION=$(scripts/utils/getversion.py) # Export so gradle can pick it up
 export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
 export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
@@ -138,29 +135,32 @@ else
   ADJUST="CONFIG-=adjust"
 fi
 
-
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/bin/qt-cmake \
     -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=TRUE \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
+    -GNinja \
     -S . -B .tmp/
 else
   printn Y "Use debug config \n"
   $QTPATH/bin/qt-cmake \
     -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=FALSE \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
     -DSENTRY_DSN=$SENTRY_DSN \
     -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
+    -GNinja \
     -S . -B .tmp/
 
 fi

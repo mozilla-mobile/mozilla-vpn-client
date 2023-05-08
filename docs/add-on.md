@@ -31,7 +31,7 @@ least a manifest.json file. The properties of this JSON file are:
 | state | Object describing the state of the addon | Collection of state objects | No |
 
 Based on the add-on type, extra properties can be in added. See the [tutorial](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/tutorials.md),
-[guide](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/guides.md), and [message](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/message.md) documentation.
+[guide](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/guides.md), [message](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/message.md), and [replacer](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/replacer.md) documentation.
 
 ## State Object
 

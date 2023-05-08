@@ -556,7 +556,7 @@ module.exports = {
 
   async resetAddons(addonPath) {
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
+        'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 
@@ -574,7 +574,7 @@ module.exports = {
 
   async fetchAddons(addonPath) {
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPNAddonManager', 'loadCompleted', 'true');
+        'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
 
     _lastAddonLoadingCompleted = false;
 
@@ -595,6 +595,15 @@ module.exports = {
         `set_version_override ${encodeURIComponent(versionOverride)}`);
     assert(
         json.type === 'set_version_override' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value;
+  },
+
+  async forceConnectionStabilityStatus(connectionStabilityStatus) {
+    const json = await this._writeCommand(`force_connection_health ${
+        encodeURIComponent(connectionStabilityStatus)}`);
+    assert(
+        json.type === 'force_connection_health' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
   },

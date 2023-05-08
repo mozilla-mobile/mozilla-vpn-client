@@ -1,77 +1,11 @@
-# These owners will be the default owners for each directory
-# in the repo.
-
-/addons/ @brizental @bakulf @MattLichtenstein
-addons/**/manifest.json @flodolo
-
-/3rdparty/adjust-android-sdk/ @bakulf @birdsarah
-/3rdparty/adjust-ios-sdk/ @bakulf @birdsarah
-/3rdparty/glean/ @brizental
-/3rdparty/openSSL/ @strseb
-/3rdparty/sentry/ @strseb
-/3rdparty/wireguard-apple/ @bakulf @birdsarah @mcleinman
-/3rdparty/wireguard-go/ @bakulf @oskirby
-/3rdparty/wireguard-tools/ @bakulf @oskirby
-
-/android/ @strseb
-/balrog/ @bakulf @birdsarah
-/ci_scripts/ @birdsarah @bakulf @oskirby @strseb
-/extension/ @bakulf @birdsarah
-/glean/ @brizental
-/ios/ @bakulf @birdsarah @mcleinman
-/lottie/ @bakulf @birdsarah
-/macos/ @bakulf @birdsarah
-/nebula/ @MattLichtenstein @lesleyjanenorton @flozia
-/scripts/ @bakulf @oskirby
-/signature/ @bakulf @birdsarah @brizental
-
-/src/ @birdsarah @bakulf
-/src/shared @birdsarah @bakulf
-/src/apps/vpn/addons/ @brizental @bakulf
-/src/apps/vpn/adjust/ @bakulf @birdsarah
-/src/apps/vpn/authenticationinapp/ @bakulf @birdsarah
-/src/apps/vpn/captiveportal/ @birdsarah @bakulf
-/src/apps/vpn/cmake/ @oskirby
-/src/apps/vpn/commands/ @bakulf @birdsarah
-/src/apps/vpn/composer/ @bakulf @brizental
-/src/apps/vpn/connectionbenchmark/ @bakulf @flozia
-/src/apps/vpn/crashreporter/ @strseb
-/src/apps/vpn/daemon/ @birdsarah @bakulf
-/src/apps/vpn/frontend/ @lesleyjanenorton @MattLichtenstein @flozia
-/src/apps/vpn/glean/ @brizental
-/src/apps/vpn/hacl-star/ @bakulf @birdsarah
-/src/apps/vpn/inspector/ @bakulf @oskirby @strseb
-/src/apps/vpn/mfbt/ @bakulf @birdsarah
-/src/apps/vpn/models/ @bakulf @birdsarah
-/src/apps/vpn/platforms/android/ @strseb
-/src/apps/vpn/platforms/dummy/ @bakulf @birdsarah
-/src/apps/vpn/platforms/linux/ @oskirby @bakulf
-/src/apps/vpn/platforms/ios/ @bakulf @birdsarah @mcleinman
-/src/apps/vpn/platforms/macos/ @bakulf @birdsarah
-/src/apps/vpn/platforms/windows/ @oskirby @bakulf
-/src/apps/vpn/qmake/ @bakulf @oskirby
-/src/apps/vpn/resources/ @birdsarah
-/src/apps/vpn/rfc/ @oskirby @bakulf
-/src/apps/vpn/server/ @birdsarah @bakulf
-src/apps/vpn/tasks/ @bakulf @birdsarah
-/src/apps/vpn/tutorial/ @bakulf @brizental
-/src/apps/vpn/ui/ @lesleyjanenorton @MattLichtenstein @flozia
-/src/apps/vpn/update/ @bakulf @birdsarah
-/src/apps/vpn/websocket/ @brizental
-
-/taskcluster/ @mozrokafor @strseb
-/tests/functional/ @bakulf @mozrokafor @birdsarah 
-/tests/nativemessaging/ @bakulf @birdsarah @mozrokafor
-/tests/qml/ @birdsarah @mozrokafor @bakulf
-/tests/unit/ @bakulf @birdsarah @mozrokafor
-/tools/inspector/ @strseb
-/tools/logviewer/ @bakulf @birdsarah
-/ools/serverlocalizer/ @bakulf @birdsarah
-/tools/wasm_chrome/ @strseb
-/translations/ @bakulf @birdsarah
+/addons/**/manifest.json @flodolo
+/src/shared/translations/strings.yaml @flodolo
+/src/shared/translations/extras @flodolo
 /src/apps/**/translations/strings.yaml @flodolo
 /src/apps/**/translations/extras @flodolo
 
-/qtglean/ @brizental
-/wasm/ @bakulf @strseb
-/windows/ @bakulf @oskirby
+# Taskcluster / Taskgraph related files. Releng will review for best practices
+# and security. Most changes should additionally be reviewed by VPN team.
+.cron.yml @mozilla-mobile/releng
+.taskcluster.yml @mozilla-mobile/releng
+taskcluster @mozilla-mobile/releng

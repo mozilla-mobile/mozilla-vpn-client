@@ -16,11 +16,7 @@ can be used to run tests locally or via the CI.
 # Linux-specific scripts
 
 - ./linux/script.sh - compile the client and upload it to the PPA
-
-# MacOS-specific scripts
-
-- ./macos/apple_compile.sh - compile the client for iOS. See the main README.md file.
-- ./macos/xcode_patcher.rb - tool to patch xcode project
+- ./linux/getdeps.py - extract dependencies from the Debian package control file.
 
 # CI tools
 
@@ -32,6 +28,7 @@ can be used to run tests locally or via the CI.
 - ./utils/commons.sh - common set of functions
 - ./utils/generate_glean.py - generate glean resources
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
+- ./utils/getversion.py - parse and extract the project version
 - ./utils/import_languages.py - process languages and import them
 - ./utils/inspector.py - send commands to the VPN client inspector
 - ./utils/qt6_compile.sh - compile qt6 for Linux and MacOS

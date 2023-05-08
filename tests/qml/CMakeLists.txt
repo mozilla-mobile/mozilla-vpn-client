@@ -8,6 +8,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/shared)
+include_directories(${MZ_SOURCE_DIR}/shared/addons)
+include_directories(${MZ_SOURCE_DIR}/shared/composer)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
@@ -40,10 +42,10 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/controller.h
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/externalophandler.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
+    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
     ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp
@@ -77,6 +79,54 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/shared/addons/addon.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addon.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonapi.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonapi.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonguide.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonguide.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonguide.h
+    ${MZ_SOURCE_DIR}/shared/addons/addoni18n.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addoni18n.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonmessage.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonmessage.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonproperty.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonproperty.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonpropertylist.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonpropertylist.h
+    ${MZ_SOURCE_DIR}/shared/addons/addonreplacer.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addonreplacer.h
+    ${MZ_SOURCE_DIR}/shared/addons/addontutorial.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/addontutorial.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcher.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcher.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchergroup.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherjavascript.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertime.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertime.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertimeend.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertimestart.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addondirectory.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addondirectory.h
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addonindex.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addonindex.h
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/manager/addonmanager.h
+    ${MZ_SOURCE_DIR}/shared/addons/state/addonstate.h
+    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/state/addonstatebase.h
+    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.cpp
+    ${MZ_SOURCE_DIR}/shared/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/shared/app.cpp
     ${MZ_SOURCE_DIR}/shared/app.h
     ${MZ_SOURCE_DIR}/shared/authenticationinapp/authenticationinapp.cpp
@@ -91,13 +141,31 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/authenticationlistener.h
     ${MZ_SOURCE_DIR}/shared/collator.cpp
     ${MZ_SOURCE_DIR}/shared/collator.h
+    ${MZ_SOURCE_DIR}/shared/composer/composer.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composer.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblock.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblock.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockbutton.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockbutton.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockorderedlist.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockorderedlist.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblocktext.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblocktext.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblocktitle.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblocktitle.h
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockunorderedlist.cpp
+    ${MZ_SOURCE_DIR}/shared/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
+    ${MZ_SOURCE_DIR}/shared/curve25519.cpp
+    ${MZ_SOURCE_DIR}/shared/curve25519.h
     ${MZ_SOURCE_DIR}/shared/env.cpp
     ${MZ_SOURCE_DIR}/shared/env.h
     ${MZ_SOURCE_DIR}/shared/errorhandler.cpp
     ${MZ_SOURCE_DIR}/shared/errorhandler.h
+    ${MZ_SOURCE_DIR}/shared/externalophandler.cpp
+    ${MZ_SOURCE_DIR}/shared/externalophandler.h
     ${MZ_SOURCE_DIR}/shared/feature.cpp
     ${MZ_SOURCE_DIR}/shared/feature.h
     ${MZ_SOURCE_DIR}/shared/filterproxymodel.cpp
@@ -108,6 +176,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/frontend/navigationbarbutton.h
     ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.cpp
     ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
+    ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
+    ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
     ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
@@ -121,10 +191,16 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
     ${MZ_SOURCE_DIR}/shared/ipaddress.h
+    ${MZ_SOURCE_DIR}/shared/itempicker.cpp
+    ${MZ_SOURCE_DIR}/shared/itempicker.h
     ${MZ_SOURCE_DIR}/shared/languagei18n.cpp
     ${MZ_SOURCE_DIR}/shared/languagei18n.h
+    ${MZ_SOURCE_DIR}/shared/leakdetector.cpp
+    ${MZ_SOURCE_DIR}/shared/leakdetector.h
     ${MZ_SOURCE_DIR}/shared/localizer.cpp
     ${MZ_SOURCE_DIR}/shared/localizer.h
     ${MZ_SOURCE_DIR}/shared/logger.cpp
@@ -142,15 +218,49 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/shared/qmlengineholder.h
+    ${MZ_SOURCE_DIR}/shared/qmlpath.cpp
+    ${MZ_SOURCE_DIR}/shared/qmlpath.h
+    ${MZ_SOURCE_DIR}/shared/resourceloader.cpp
+    ${MZ_SOURCE_DIR}/shared/resourceloader.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc1918.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4193.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4291.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc4291.h
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.cpp
+    ${MZ_SOURCE_DIR}/shared/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/shared/settingsholder.cpp
     ${MZ_SOURCE_DIR}/shared/settingsholder.h
+    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.cpp
+    ${MZ_SOURCE_DIR}/shared/simplenetworkmanager.h
+    ${MZ_SOURCE_DIR}/shared/signature.cpp
+    ${MZ_SOURCE_DIR}/shared/signature.h
     ${MZ_SOURCE_DIR}/shared/task.h
     ${MZ_SOURCE_DIR}/shared/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/shared/taskscheduler.h
+    ${MZ_SOURCE_DIR}/shared/tasks/addon/taskaddon.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/addon/taskaddon.h
+    ${MZ_SOURCE_DIR}/shared/tasks/addonindex/taskaddonindex.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/shared/tasks/authenticate/desktopauthenticationlistener.h
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/function/taskfunction.h
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.cpp
+    ${MZ_SOURCE_DIR}/shared/tasks/group/taskgroup.h
+    ${MZ_SOURCE_DIR}/shared/temporarydir.cpp
+    ${MZ_SOURCE_DIR}/shared/temporarydir.h
     ${MZ_SOURCE_DIR}/shared/theme.cpp
     ${MZ_SOURCE_DIR}/shared/theme.h
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorial.cpp
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorial.h
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstep.cpp
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstep.h
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstepbefore.cpp
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstepbefore.h
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstepnext.cpp
+    ${MZ_SOURCE_DIR}/shared/tutorial/tutorialstepnext.h
     ${MZ_SOURCE_DIR}/shared/urlopener.cpp
     ${MZ_SOURCE_DIR}/shared/urlopener.h
     ${MZ_SOURCE_DIR}/shared/utils.cpp
@@ -192,6 +302,15 @@ foreach(QML_SOURCE ${QML_TEST_SOURCES})
 endforeach()
 
 qt6_add_qml_module(qml_tests
-  URI Mozilla.VPN.qmlcomponents
+  URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    find_package(Qt6 REQUIRED COMPONENTS DBus)
+    target_link_libraries(qml_tests PRIVATE Qt6::DBus)
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
+    target_link_libraries(qml_tests PRIVATE PkgConfig::libsecret)
+endif()

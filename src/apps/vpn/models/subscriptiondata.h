@@ -11,30 +11,28 @@ class SubscriptionData final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SubscriptionData)
 
-  Q_PROPERTY(bool initialized READ initialized NOTIFY changed)
-
   // Subscription
-  Q_PROPERTY(TypeSubscription type MEMBER m_type CONSTANT)
-  Q_PROPERTY(TypeStatus status MEMBER m_status CONSTANT)
-  Q_PROPERTY(quint64 createdAt MEMBER m_createdAt CONSTANT)
-  Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn CONSTANT)
-  Q_PROPERTY(bool isCancelled MEMBER m_isCancelled CONSTANT)
+  Q_PROPERTY(TypeSubscription type MEMBER m_type NOTIFY changed)
+  Q_PROPERTY(TypeStatus status MEMBER m_status NOTIFY changed)
+  Q_PROPERTY(quint64 createdAt MEMBER m_createdAt NOTIFY changed)
+  Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn NOTIFY changed)
+  Q_PROPERTY(bool isCancelled MEMBER m_isCancelled NOTIFY changed)
   Q_PROPERTY(bool isPrivacyBundleSubscriber MEMBER m_isPrivacyBundleSubscriber
-                 CONSTANT)
+                 NOTIFY changed)
 
   // Plan
   Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
-                 m_planBillingInterval CONSTANT)
-  Q_PROPERTY(int planAmount MEMBER m_planAmount CONSTANT)
-  Q_PROPERTY(QString planCurrency MEMBER m_planCurrency CONSTANT)
-  Q_PROPERTY(bool planRequiresTax MEMBER m_planRequiresTax CONSTANT)
+                 m_planBillingInterval NOTIFY changed)
+  Q_PROPERTY(int planAmount MEMBER m_planAmount NOTIFY changed)
+  Q_PROPERTY(QString planCurrency MEMBER m_planCurrency NOTIFY changed)
+  Q_PROPERTY(bool planRequiresTax MEMBER m_planRequiresTax NOTIFY changed)
 
   // Payment
-  Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider CONSTANT)
-  Q_PROPERTY(QString creditCardBrand MEMBER m_creditCardBrand CONSTANT)
-  Q_PROPERTY(QString creditCardLast4 MEMBER m_creditCardLast4 CONSTANT)
-  Q_PROPERTY(int creditCardExpMonth MEMBER m_creditCardExpMonth CONSTANT)
-  Q_PROPERTY(int creditCardExpYear MEMBER m_creditCardExpYear CONSTANT)
+  Q_PROPERTY(QString paymentProvider MEMBER m_paymentProvider NOTIFY changed)
+  Q_PROPERTY(QString creditCardBrand MEMBER m_creditCardBrand NOTIFY changed)
+  Q_PROPERTY(QString creditCardLast4 MEMBER m_creditCardLast4 NOTIFY changed)
+  Q_PROPERTY(int creditCardExpMonth MEMBER m_creditCardExpMonth NOTIFY changed)
+  Q_PROPERTY(int creditCardExpYear MEMBER m_creditCardExpYear NOTIFY changed)
 
  public:
   SubscriptionData();
@@ -66,9 +64,7 @@ class SubscriptionData final : public QObject {
 
   [[nodiscard]] bool fromSettings();
 
-  bool initialized() const { return !m_rawJson.isEmpty(); }
-
-  void reset() { m_rawJson.clear(); }
+  void resetData();
 
   void writeSettings();
 
@@ -80,7 +76,6 @@ class SubscriptionData final : public QObject {
 
   bool parseSubscriptionDataIap(const QJsonObject& subscriptionData);
   bool parseSubscriptionDataWeb(const QJsonObject& subscriptionData);
-  void resetData();
 
  private:
   QByteArray m_rawJson;

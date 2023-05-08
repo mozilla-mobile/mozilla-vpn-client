@@ -1,0 +1,10 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "WASM Dev Container",
+    "dockerFile": "../../taskcluster/docker/wasm/Dockerfile",
+    "build":{
+        "args": {
+           
+        }
+    }
+}

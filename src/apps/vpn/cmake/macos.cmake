@@ -15,6 +15,7 @@ set_target_properties(mozillavpn PROPERTIES
     MACOSX_BUNDLE_INFO_STRING "Mozilla VPN"
     MACOSX_BUNDLE_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+    MACOSX_BUNDLE_ICON_FILE "AppIcon"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_SOURCE_DIR}/macos/app/app.entitlements
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}"
     XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
@@ -83,10 +84,16 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
+# Find the SDK root
+execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+    COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 add_go_library(balrog-api ../balrog/balrog-api.go
-    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
+    CGO_LDFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
+)
 target_link_libraries(mozillavpn PRIVATE balrog-api)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/balrog.cpp
@@ -108,10 +115,14 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
             COMMAND ${CMAKE_COMMAND} -E env
                         GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+                        CC=${CMAKE_C_COMPILER}
+                        CXX=${CMAKE_CXX_COMPILER}
                         GOOS=darwin
                         CGO_ENABLED=1
                         GO111MODULE=on
                         GOARCH=${GOARCH}
+                        CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+                        CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
                     ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
                         -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
         )

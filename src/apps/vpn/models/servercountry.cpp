@@ -78,8 +78,9 @@ namespace {
 bool sortCityCallback(const QString& a, const QString& b,
                       const QString& countryCode, Collator* collator) {
   Q_ASSERT(collator);
-  return collator->compare(ServerI18N::translateCityName(countryCode, a),
-                           ServerI18N::translateCityName(countryCode, b)) < 0;
+  return collator->compare(
+             ServerI18N::instance()->translateCityName(countryCode, a),
+             ServerI18N::instance()->translateCityName(countryCode, b)) < 0;
 }
 
 }  // anonymous namespace

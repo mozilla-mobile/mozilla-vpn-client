@@ -6,14 +6,14 @@
 
 #include <QDebug>
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
 CounterMetric::CounterMetric(int id) : m_id(id) {}
 
 void CounterMetric::add(int amount) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_counter_add(m_id, amount);
 #else
   Q_UNUSED(amount);
@@ -21,7 +21,7 @@ void CounterMetric::add(int amount) const {
 }
 
 int32_t CounterMetric::testGetNumRecordedErrors(ErrorType errorType) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_counter_test_get_num_recorded_errors(m_id, errorType);
 #else
   Q_UNUSED(errorType);
@@ -30,7 +30,7 @@ int32_t CounterMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 }
 
 int32_t CounterMetric::testGetValue(const QString& pingName) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_counter_test_get_value(m_id, pingName.toLocal8Bit());
 #else
   Q_UNUSED(pingName);

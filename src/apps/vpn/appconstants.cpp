@@ -34,18 +34,15 @@ QString AppConstants::apiBaseUrl() {
 QString AppConstants::apiUrl(ApiEndpoint endpoint) {
   static QMap<ApiEndpoint, const char*> endpoints{
       {ApiEndpoint::Account, "/api/v1/vpn/account"},
-      {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
       {ApiEndpoint::CreateSupportTicket, "/api/v1/vpn/createSupportTicket"},
       {ApiEndpoint::CreateSupportTicketGuest,
        "/api/v1/vpn/createGuestSupportTicket"},
       {ApiEndpoint::Device, "/api/v1/vpn/device"},
       {ApiEndpoint::DeviceWithPublicKeyArgument, "/api/v1/vpn/device/%1"},
       {ApiEndpoint::DNSDetectPortal, "/api/v1/vpn/dns/detectportal"},
-      {ApiEndpoint::Feedback, "/api/v1/vpn/feedback"},
       {ApiEndpoint::Heartbeat, "/__heartbeat__"},
       {ApiEndpoint::IPInfo, "/api/v1/vpn/ipinfo"},
       {ApiEndpoint::LoginVerify, "/api/v2/vpn/login/verify"},
-      {ApiEndpoint::Products, "/api/v3/vpn/products"},
 #ifdef MZ_ANDROID
       {ApiEndpoint::PurchasesAndroid, "/api/v1/vpn/purchases/android"},
 #endif

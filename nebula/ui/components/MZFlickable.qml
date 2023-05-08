@@ -15,7 +15,7 @@ Flickable {
     property bool contentExceedsHeight: height < contentHeight
     property bool hideScollBarOnStackTransition: false
     //This property should be true if the flickable appears behind the main navbar
-    interactive: !VPNTutorial.playing && contentHeight > height || contentY > 0
+    interactive: !MZTutorial.playing && contentHeight > height || contentY > 0
     clip: true
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
@@ -29,7 +29,7 @@ Flickable {
     }
 
     onContentYChanged: {
-        if(VPNTutorial.playing) {
+        if(MZTutorial.playing) {
             window.repositionTutorialTooltip()
         }
     }
@@ -118,7 +118,7 @@ Flickable {
         if (typeof(destinationY) === "undefined") return;
 
         //For some reaason during tutorials, mobile devices won't perform an animated scroll??
-        if(VPNTutorial.playing && window.fullscreenRequired()) {
+        if(MZTutorial.playing && window.fullscreenRequired()) {
             contentY = destinationY
         }
         else {

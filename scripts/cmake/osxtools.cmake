@@ -62,6 +62,12 @@ function(osx_bundle_assetcatalog TARGET)
     endforeach()
     list(APPEND XCASSETS_TARGET_ARGS --minimum-deployment-target ${CMAKE_OSX_DEPLOYMENT_TARGET})
 
+    ## Look for the MACOSX_BUNDLE_ICON_FILE property to get the app icon name.
+    get_property(XCASSETS_APP_ICON TARGET ${TARGET} PROPERTY MACOSX_BUNDLE_ICON_FILE)
+    if(XCASSETS_APP_ICON)
+        list(APPEND XCASSETS_TARGET_ARGS --app-icon ${XCASSETS_APP_ICON})
+    endif()
+
     ## Compile the asset catalog
     set(XCASSETS_GEN_PLIST ${CMAKE_CURRENT_BINARY_DIR}/xcassets_generated_info.plist)
     add_custom_command(
@@ -71,7 +77,6 @@ function(osx_bundle_assetcatalog TARGET)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/xcassets
         COMMAND actool --output-format human-readable-text --notices --warnings
                     ${XCASSETS_TARGET_ARGS}
-                    --app-icon AppIcon 
                     --output-partial-info-plist ${XCASSETS_GEN_PLIST}
                     --development-region en --enable-on-demand-resources NO
                     --compile ${CMAKE_CURRENT_BINARY_DIR}/xcassets ${XCASSETS_CATALOG}
@@ -87,17 +92,16 @@ function(osx_bundle_assetcatalog TARGET)
         COMMAND ${CMAKE_SOURCE_DIR}/scripts/macos/merge_plist.py ${XCASSETS_GEN_PLIST} -o $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/Info.plist
     )
 
-    target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car)
+    target_sources(${TARGET} PRIVATE ${XCASSETS_CATALOG})
+    set_property(TARGET ${TARGET} APPEND PROPERTY RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car)
+
+    target_sources(${TARGET} PRIVATE ${XCASSETS_GEN_PLIST})
     set_source_files_properties(
-        ${CMAKE_CURRENT_BINARY_DIR}/xcassets/Assets.car
         ${XCASSETS_GEN_PLIST}
         PROPERTIES
         GENERATED TRUE
         HEADER_FILE_ONLY TRUE
     )
-
-    target_sources(${TARGET} PRIVATE ${XCASSETS_GEN_PLIST})
-    set_source_files_properties(${XCASSETS_GEN_PLIST} PROPERTIES GENERATED TRUE)
 endfunction()
 
 ## A helper to code-sign an executable.

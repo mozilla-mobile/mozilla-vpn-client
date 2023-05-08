@@ -21,7 +21,6 @@ Rectangle {
     implicitHeight: expanded ? cardWrapper.wrapperHeight : accordionHeader.headerHeight
     radius: MZTheme.theme.cornerRadius
     width: parent.width
-    clip: true
 
     Behavior on implicitHeight {
         NumberAnimation {

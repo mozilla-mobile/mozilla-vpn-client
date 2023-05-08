@@ -14,6 +14,15 @@ else()
     error("Failed to find rustc host arch")
 endif()
 
+## For the Ninja generator, setup a job pool for Cargo targets, which share a
+## common lock on the package repository, and build aggressively in parallel
+## anyways.
+get_property(HAS_CARGO_POOL GLOBAL PROPERTY JOB_POOLS)
+list(FILTER HAS_CARGO_POOL INCLUDE REGEX "^cargo=")
+if(NOT HAS_CARGO_POOL)
+    set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
+endif()
+
 ### Helper function to build Rust static libraries.
 #
 # Accepts the following arguments:
@@ -60,6 +69,22 @@ function(build_rust_archives)
         ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
 
+    ## For iOS simulator targets, ensure that we unset the `SDKROOT` variable as
+    ## this will result in broken simulation builds in Xcode. For all other apple
+    ## platforms, attempt to set the SDKROOT via CMAKE_OSX_SYSROOT
+    if((RUST_BUILD_ARCH STREQUAL "aarch64-apple-ios-sim") OR (RUST_BUILD_ARCH STREQUAL "x86_64-apple-ios"))
+        list(PREPEND RUST_BUILD_CARGO_ENV "--unset=SDKROOT")
+    elseif(APPLE AND CMAKE_OSX_SYSROOT)
+        execute_process(OUTPUT_VARIABLE RUST_BUILD_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+        list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${RUST_BUILD_SDKROOT}")
+    endif()
+
+    ## For MacOS platforms, set the OS deployment version.
+    if(RUST_BUILD_ARCH MATCHES "-apple-darwin$")
+        list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
@@ -78,6 +103,7 @@ function(build_rust_archives)
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
+            JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -87,6 +113,7 @@ function(build_rust_archives)
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
+            JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}

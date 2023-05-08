@@ -169,7 +169,7 @@ Window {
     // Glean Connections
     Connections {
         target: VPN
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onInitializeGlean() {
             if (MZEnv.debugMode) {
@@ -180,7 +180,7 @@ Window {
                 //
                 // Glean.setDebugViewTag("MozillaVPN");
             }
-            var channel = VPN.stagingMode ? "staging" : "production";
+            var channel = MZEnv.stagingMode ? "staging" : "production";
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
@@ -213,7 +213,7 @@ Window {
 
     Connections {
         target: MZGleanDeprecated
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onRecordGleanEvent(sample) {
             console.debug("recording Glean event");
@@ -228,6 +228,8 @@ Window {
 
     Connections {
         target: MZSettings
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
+        
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", MZSettings.gleanEnabled);
             Glean.setUploadEnabled(MZSettings.gleanEnabled);
@@ -241,7 +243,7 @@ Window {
     MZSystemAlert {
     }
 
-    MZServerUnavailablePopup {
+    ServerUnavailablePopup {
         id: serverUnavailablePopup
     }
 

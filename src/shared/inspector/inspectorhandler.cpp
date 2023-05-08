@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "inspectorhotreloader.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -55,6 +56,7 @@ bool s_pickedItemsSet = false;
 InspectorItemPicker* s_itemPicker = nullptr;
 
 std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
+InspectorHotreloader* s_hotreloader = nullptr;
 }  // namespace
 
 struct InspectorSettingCommand {
@@ -140,6 +142,24 @@ static QList<InspectorCommand> s_commands{
                        return InspectorHandler::getViewTree();
                      }},
 
+    InspectorCommand{"live_reload", "Live reload file X", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& args) {
+                       if (s_hotreloader == nullptr) {
+                         s_hotreloader = new InspectorHotreloader(
+                             QmlEngineHolder::instance()->engine());
+                       }
+                       auto url = QUrl(args.at(1));
+                       s_hotreloader->annonceReplacedFile(url);
+                       return QJsonObject();
+                     }},
+    InspectorCommand{"reset_live_reload", "Reset all hot reloaded files", 0,
+                     [](InspectorHandler*, const QList<QByteArray>& args) {
+                       if (s_hotreloader == nullptr) {
+                         return QJsonObject();
+                       }
+                       s_hotreloader->resetAllFiles();
+                       return QJsonObject();
+                     }},
     InspectorCommand{"pick", "Wait for a click to select an element", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        if (!s_itemPicker) {

@@ -6,19 +6,17 @@
         <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/animations/vpnlogo-drop_animation.json</file>
         <file>resources/animations/vpnlogo-kinetic_animation.json</file>
-        <file>resources/app-rating.svg</file>
-        <file>resources/chevron-purple.svg</file>
+        <file>resources/bandwidth.svg</file>
         <file>resources/connection-error-unstable.svg</file>
+        <file>resources/connection-green.svg</file>
+        <file>resources/connection-info.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
         <file>resources/devices.svg</file>
+        <file>resources/devicesLimit.svg</file>
+        <file>resources/devicesRemove.svg</file>
         <file>resources/developer.svg</file>
-        <file>resources/encodedPassword.txt</file>
-        <file>resources/faces/average.svg</file>
-        <file>resources/faces/good.svg</file>
-        <file>resources/faces/poor.svg</file>
-        <file>resources/faces/veryGood.svg</file>
-        <file>resources/faces/veryPoor.svg</file>
+        <file>resources/download.svg</file>
          <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -322,12 +320,9 @@
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
         <file>resources/quick-access.svg</file>
-        <file>resources/settings-dark.svg</file>
         <file>resources/settings/aboutUs.svg</file>
-        <file>resources/settings/apps.svg</file>
         <file>resources/settings/apppermissions.svg</file>
         <file>resources/settings/dnssettings.svg</file>
-        <file>resources/settings/feedback.svg</file>
         <file>resources/settings/getHelp.svg</file>
         <file>resources/settings/language.svg</file>
         <file>resources/settings/notifications.svg</file>
@@ -339,9 +334,13 @@
         <file>resources/server-latency-moderate.svg</file>
         <file>resources/server-latency-weak.svg</file>
         <file>resources/server-latency-unavailable.svg</file>
-        <file>resources/sparkling-check.svg</file>
+        <file>resources/server-unavailable.svg</file>
+        <file>resources/shield-off.svg</file>
+        <file>resources/shield-on.svg</file>
+        <file>resources/switching.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
+        <file>resources/upload.svg</file>
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
         <file>resources/warning-crash.svg</file>

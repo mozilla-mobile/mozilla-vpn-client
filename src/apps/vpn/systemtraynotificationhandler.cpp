@@ -80,13 +80,12 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpActivate);
   });
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(
-        ExternalOpHandler::OpDeactivate);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpDeactivate);
   });
 
   m_separator = m_menu->addSeparator();
@@ -97,7 +96,7 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_menu->addSeparator();
 
   m_quitAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpQuit);
   });
 }
 

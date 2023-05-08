@@ -68,19 +68,6 @@ MZViewBase {
             }
         }
 
-        MZExternalLinkListItem {
-            objectName: "settingsGiveFeedback"
-
-            accessibleName: title
-            title: qsTrId("vpn.settings.giveFeedback")
-            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/giveFeedback/ViewGiveFeedback.qml")
-            iconSource: "qrc:/nebula/resources/chevron.svg"
-            iconMirror: MZLocalizer.isRightToLeft
-            backgroundColor: MZTheme.theme.iconButtonLightBackground
-            width: parent.width - MZTheme.theme.windowMargin
-            visible: VPN.userState === VPN.UserAuthenticated
-        }
-
         MZSettingsItem {
             objectName: "developer"
 

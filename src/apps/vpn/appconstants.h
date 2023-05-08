@@ -16,13 +16,11 @@ QString apiBaseUrl();
 
 enum ApiEndpoint {
   Account,
-  Adjust,
   CreateSupportTicket,
   CreateSupportTicketGuest,
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
-  Feedback,
   Heartbeat,
   IPInfo,
   LoginVerify,
@@ -73,6 +71,9 @@ constexpr const char* DEEP_LINK_SCHEME = "mozilla-vpn";
 
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
+
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "guardian-vpn";
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -156,6 +157,9 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+
+PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
+             "https://accounts.stage.mozaws.net/support")
 
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
@@ -245,8 +249,6 @@ constexpr const char* GOOGLE_PLAYSTORE_URL =
 #ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id1489407738?action=write-review";
 #endif
 
 // TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn

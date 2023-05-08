@@ -115,6 +115,7 @@ add_custom_target(libwg_builder
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND lipo -create -output libwg-unified.a libwg-dev.a libwg-sim.a
 )
+set_target_properties(libwg_builder PROPERTIES FOLDER "Libs")
 
 ## Link and depend on the wireguard library.
 add_dependencies(networkextension libwg_builder)

@@ -20,7 +20,7 @@ class ServerLatency final : public QObject {
 
   Q_PROPERTY(
       QDateTime lastUpdateTime READ lastUpdateTime NOTIFY progressChanged)
-  Q_PROPERTY(unsigned int avgLatency READ avgLatency NOTIFY progressChanged)
+  Q_PROPERTY(qint64 avgLatency READ avgLatency NOTIFY progressChanged)
   Q_PROPERTY(bool isActive READ isActive NOTIFY progressChanged)
   Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
 
@@ -42,8 +42,8 @@ class ServerLatency final : public QObject {
   bool isActive() const { return m_pingSender != nullptr; }
   double progress() const;
 
-  unsigned int avgLatency() const;
-  unsigned int getLatency(const QString& pubkey) const {
+  qint64 avgLatency() const;
+  qint64 getLatency(const QString& pubkey) const {
     return m_latency.value(pubkey);
   };
   void setLatency(const QString& pubkey, qint64 msec);
