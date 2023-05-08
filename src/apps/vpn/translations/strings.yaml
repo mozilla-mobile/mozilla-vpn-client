@@ -520,6 +520,13 @@ serverUnavailableModal:
   headerText: Server unavailable
   bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
+  headerText2: Couldn’t connect to this location
+  bodyText2: 
+    value: "We couldn’t connect to servers in %1. Please select a different location."
+    comment: Description text in the "server unavailable" modal where %1 is the name of the city that was attempted to connect to.
+  buttonLabel2: 
+    value: Select location
+    comment: Takes you to the server list view
 
 serverUnavailableNotification:
   bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
@@ -918,3 +925,8 @@ navBar:
   settingsTab:
     value: Settings
     comment: Label for the tab on the navigation bar that takes the user to the settings screen
+
+controllerView:
+  logoSubtitleLocationUnavailable:
+    value: "Location unavailable"
+    comment: References that a server city location is not available to be connected to
