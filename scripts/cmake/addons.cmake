@@ -54,7 +54,7 @@ function(add_addon_target NAME)
     foreach(MANIFEST_FILE ${ADDON_SOURCES})
         # Parse the manifest to get the addon ID.
         execute_process(OUTPUT_VARIABLE ADDON_ID OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND ${PYTHON_EXECUTABLE} -c "import json; print(json.load(open('${MANIFEST_FILE}'))['id'])")
+            COMMAND ${PYTHON_EXECUTABLE} -c "import json; print(json.load(open('${MANIFEST_FILE}', encoding='utf-8'))['id'])")
 
         if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
             ## Depfiles are great, but they only work for some generators.
