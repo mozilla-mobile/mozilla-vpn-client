@@ -3,7 +3,7 @@ attrs
 click
 diskcache
 flask
-glean_parser
+glean-parser==7.1.0
 Jinja2
 jsonschema
 MarkupSafe
