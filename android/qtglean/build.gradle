@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.4.3"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.6.0"
     }
 }
 
