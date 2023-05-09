@@ -301,13 +301,13 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
   I18nStrings* i18nStrings = I18nStrings::instance();
   Q_ASSERT(i18nStrings);
 
-  QString title = i18nStrings->t(I18nStrings::ServerUnavailableModalHeaderText);
+  QString title = pingRecieved ? i18nStrings->t(I18nStrings::ServerUnavailableModalHeaderText) : i18nStrings->t(I18nStrings::ServerUnavailableModalHeaderText2) ;
   QString message =
       pingRecieved
           ? i18nStrings->t(
                 I18nStrings::
                     ServerUnavailableNotificationBodyTextFireWallBlocked)
-          : i18nStrings->t(I18nStrings::ServerUnavailableNotificationBodyText);
+          : i18nStrings->t(I18nStrings::ServerUnavailableModalBodyText2).arg(MozillaVPN::instance()->controller()->currentServer().localizedExitCityName());
 
   notifyInternal(ServerUnavailable, title, message,
                  AppConstants::SERVER_UNAVAILABLE_ALERT_MSEC);

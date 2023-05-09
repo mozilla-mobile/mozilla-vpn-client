@@ -518,7 +518,6 @@ crashreporter:
 
 serverUnavailableModal:
   headerText: Server unavailable
-  bodyText: This server location is temporarily unavailable. Choose a new location.
   buttonLabel: Choose a new location
   headerText2: Couldn’t connect to this location
   bodyText2: 
@@ -529,7 +528,6 @@ serverUnavailableModal:
     comment: Takes you to the server list view
 
 serverUnavailableNotification:
-  bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
   bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
