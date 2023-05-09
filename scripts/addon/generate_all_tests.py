@@ -17,14 +17,17 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-qt_prefix_args = []
+test_addons_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "functional", "addons")
+cmake_setup_args = ['cmake', '-S', test_addons_path, '-B', os.path.join(test_addons_path, 'generated')]
+
 if args.qtpath is not None:
     qt_install_libs = subprocess.check_output([os.path.join(args.qtpath, 'qmake'), '-query', 'QT_INSTALL_LIBS'])
     qt_cmake_prefix = os.path.join(qt_install_libs.decode().strip(), 'cmake')
-    qt_prefix_args = [f'-DCMAKE_PREFIX_PATH="{qt_cmake_prefix}"']
+    cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH="{qt_cmake_prefix}"')
+
+print(f"DEBUG: {cmake_setup_args}")
 
 # Use CMake to build the test addons.
 # TODO: At some point we should stop generating in the source directory.
-test_addons_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "functional", "addons")
-subprocess.call(['cmake', '-S', test_addons_path, '-B', os.path.join(test_addons_path, 'generated')] + qt_prefix_args)
-subprocess.call(['cmake', '--build', os.path.join(test_addons_path, 'generated')])
+subprocess.run(cmake_setup_args, check=True)
+subprocess.run(['cmake', '--build', os.path.join(test_addons_path, 'generated')], check=True)
