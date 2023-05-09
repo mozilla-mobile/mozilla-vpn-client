@@ -54,6 +54,8 @@ conda env config vars set LD="lld-link"| Out-Null
 conda env config vars set CMAKE_CXX_COMPILER="clang-cl" | Out-Null
 conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
 conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
+conda env config vars set CMAKE_LINKER="lld-link" | Out-Null
+
 conda env config vars set CMAKE_GENERATOR="Ninja" | Out-Null
 
 # TODO: Check why Go-Root is broken on conda-forge. 
