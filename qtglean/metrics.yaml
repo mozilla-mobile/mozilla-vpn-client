@@ -54,3 +54,22 @@ settings:
     notification_emails:
       - mcleinman@mozilla.com
     expires: never
+
+session:
+  connection_health_stable_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+    description: |
+      Count of times that the connection health check succeeds.
+      Collected only on mobile apps.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4700
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6783#pullrequestreview-1407551157
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never

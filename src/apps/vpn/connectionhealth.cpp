@@ -145,6 +145,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     mozilla::glean::sample::connection_health_no_signal.record();
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
+  } else {
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+    // Count successful health checks only on mobile apps, as they
+    // only do health checks when foregrounded.
+    mozilla::glean::session::connection_health_stable_count.add();
+#endif
   }
 
   m_stability = stability;
