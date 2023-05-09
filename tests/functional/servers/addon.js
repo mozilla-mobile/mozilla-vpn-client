@@ -7,7 +7,6 @@ const fs = require('fs');
 const path = require('path');
 
 const TEST_ADDONS_PATH = './tests/functional/addons/generated';
-const PROD_ADDONS_PATH = './addons';
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
@@ -65,9 +64,6 @@ function createScenario(scenario, addonPath) {
 let server = null;
 module.exports = {
   async start(headerCheck = true) {
-    // Generate production addon scenarios
-    let scenarios = { ...createScenario("prod", PROD_ADDONS_PATH) };
-
     // Generate test addon scenarios
     const dirs = fs.readdirSync(TEST_ADDONS_PATH);
     for (const dir of dirs) {
