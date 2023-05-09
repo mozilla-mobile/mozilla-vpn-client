@@ -157,7 +157,8 @@ session:
     send_in_pings:
       - vpnsession
     description: |
-      Count of times that the connection health check is successful. Collected only on mobile apps.
+      Count of times that the connection health check succeeds.
+      Collected only on mobile apps.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4700
     data_reviews:
