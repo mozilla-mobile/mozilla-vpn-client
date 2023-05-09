@@ -101,7 +101,6 @@ tasks:
     linux-build-lunar:
         symbol: I(linux-lunar)
         definition: linux-dpkg-build
-        cache: false ## Disable caching while Ubuntu/Lunar is in beta.
         args:
             DOCKER_BASE_IMAGE: ubuntu:lunar
     linux-build-fedora-fc36:
