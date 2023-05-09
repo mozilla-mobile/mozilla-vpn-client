@@ -17,7 +17,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Use CMake to build the addons.
+# Use CMake to build the test addons.
 # TODO: At some point we should stop generating in the source directory.
 test_addons_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "functional", "addons")
 subprocess.call(['cmake', '-S', test_addons_path, '-B', os.path.join(test_addons_path, 'generated')])

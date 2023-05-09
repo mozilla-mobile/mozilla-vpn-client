@@ -11,9 +11,17 @@ project(testing_addons VERSION 1.0.0 LANGUAGES CXX
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 
-# Build the addons for testing.
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 
+# Build the production addons.
+add_addon_target(prod_addon
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/
+    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/apps/vpn/translations/i18n
+)
+set_target_properties(prod_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+# Build the addons for testing.
 add_custom_target(test_01_empty_manifest
     COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_CURRENT_SOURCE_DIR}/01_empty_manifest/
@@ -51,3 +59,15 @@ add_addon_target(test_06_translation_threshold
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/06_translation_threshold/
 )
 set_target_properties(test_06_translation_threshold PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_07_replacer
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/07_replacer/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/07_replacer/
+)
+set_target_properties(test_07_replacer PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_08_message_disabled
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/08_message_disabled/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/08_message_disabled/
+)
+set_target_properties(test_08_message_disabled PROPERTIES EXCLUDE_FROM_ALL FALSE)
