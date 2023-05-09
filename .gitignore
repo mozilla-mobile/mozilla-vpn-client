@@ -87,7 +87,7 @@ tests/nativemessaging/tests
 tests/qml/qml_tests
 tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
-tests/functional/addons/*/generated
+tests/functional/addons/generated
 build
 !taskcluster/ci/build
 !taskcluster/scripts/build

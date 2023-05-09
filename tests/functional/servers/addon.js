@@ -11,37 +11,25 @@ const TEST_ADDONS_PATH = './tests/functional/addons/generated';
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
 function createScenario(scenario, addonPath) {
-  const generatedPath = path.join(addonPath, 'generated');
-  if (!fs.existsSync(generatedPath)) {
-    const manifestPath = path.join(addonPath, 'manifest.json');
-    if (!fs.existsSync(manifestPath)) {
-      throw new Error(`No generated and not manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
-    }
-
-    const obj = {};
-
-    obj[`/${scenario}/manifest.json`] = {
-      status: 200,
-      bodyRaw: fs.readFileSync(manifestPath),
-    };
-    obj[`/${scenario}/manifest.json.sig`] = {
-      status: 404,
-      bodyRaw: '',
-    };
-
-    return obj;
-  }
-
-  const addonsPath = path.join(generatedPath, 'addons');
-  if (!fs.existsSync(addonsPath)) {
-    throw new Error(`${addonsPath} should exist!`);
+  const manifestPath = path.join(addonPath, 'manifest.json');
+  if (!fs.existsSync(manifestPath)) {
+    throw new Error(`No generated and not manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
   }
 
   const obj = {};
 
-  const files = fs.readdirSync(addonsPath);
+  obj[`/${scenario}/manifest.json`] = {
+    status: 200,
+    bodyRaw: fs.readFileSync(manifestPath),
+  };
+  obj[`/${scenario}/manifest.json.sig`] = {
+    status: 404,
+    bodyRaw: '',
+  };
+
+  const files = fs.readdirSync(addonPath);
   for (const file of files) {
-    const filePath = path.join(addonsPath, file);
+    const filePath = path.join(addonPath, file);
     const stat = fs.statSync(filePath);
     if (!stat.isFile()) {
       throw new Error(`Unexpected object: ${filePath}`);
@@ -64,6 +52,8 @@ function createScenario(scenario, addonPath) {
 let server = null;
 module.exports = {
   async start(headerCheck = true) {
+    let scenarios = {};
+
     // Generate test addon scenarios
     const dirs = fs.readdirSync(TEST_ADDONS_PATH);
     for (const dir of dirs) {
