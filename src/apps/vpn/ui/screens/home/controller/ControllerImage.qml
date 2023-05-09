@@ -152,6 +152,22 @@ Rectangle {
                 opacity: 1
             }
         },
+
+        State {
+            name: "stateServerUnavailable"
+            when: VPNController.state === VPNController.StateServerUnavailable
+
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.error.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-on.svg"
+                opacity: 1
+            }
+        },
+
         State {
             name: "unstableOn"
             when: (VPNController.state === VPNController.StateOn ||
