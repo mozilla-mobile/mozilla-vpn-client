@@ -70,6 +70,8 @@ $QT_IOS_PATH/bin/qt-cmake -S . -GXcode \
   -DQT_HOST_PATH="$QT_MACOS_PATH" \
   -DCMAKE_PREFIX_PATH="$QT_IOS_PATH/lib/cmake" \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
+  -DSENTRY_DSN=$SENTRY_DSN \
+  -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
   -DCMAKE_BUILD_TYPE=Release
 
 # Rename the default scheme to match the Xcode cloud configuration.
