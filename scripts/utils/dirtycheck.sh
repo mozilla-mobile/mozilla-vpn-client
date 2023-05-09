@@ -12,6 +12,6 @@ GITDIR=$(cd $(dirname $0) && git rev-parse --show-toplevel)
 git -C $GITDIR ls-files -m -o -x '.tmp/' -x 'build/' -x 'build-*/' >&2
 
 ## Do the same for submodules.
-for SUBMODULE in $(git submodule foreach --recursive --quiet 'echo $sm_path'); do
+for SUBMODULE in $(git -C $GITDIR submodule foreach --recursive -q 'echo $displaypath'); do
     git -C $GITDIR/$SUBMODULE ls-files -m -o | tr '\n' '\0' | xargs -0 -I filename echo "$SUBMODULE/filename" >&2
 done
