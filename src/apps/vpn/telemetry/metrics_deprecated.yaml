@@ -432,23 +432,6 @@ sample:
       - amarchesini@mozilla.com
     expires: never
 
-  connection_health_stable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-    description: |
-      The connection health check has no problems
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-4065
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6456#pullrequestreview-1360843302
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-    expires: never
-
   connection_info_opened:
     type: event
     lifetime: ping
