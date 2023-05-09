@@ -66,6 +66,14 @@ mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 $env:PATH 
+## Debugging: 
+## Why does it complain now? 
+gci env:
+
+## 
+
+
+
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
     python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
