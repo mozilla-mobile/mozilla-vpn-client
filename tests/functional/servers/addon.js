@@ -6,7 +6,9 @@ const Server = require('./server.js');
 const fs = require('fs');
 const path = require('path');
 
-const TEST_ADDONS_PATH = './tests/functional/addons/generated';
+const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
+                         process.env.MVPN_ADDONS_PATH : 
+                         './tests/functional/addons/generated';
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
