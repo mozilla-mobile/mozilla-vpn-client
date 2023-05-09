@@ -98,7 +98,6 @@ Item {
         }
 
         width: root.width - MZTheme.theme.windowMargin * 2
-        visible: false
         x: MZTheme.theme.windowMargin
 
         background: Rectangle {
