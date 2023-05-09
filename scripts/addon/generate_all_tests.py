@@ -23,7 +23,7 @@ cmake_setup_args = ['cmake', '-S', test_addons_path, '-B', os.path.join(test_add
 if args.qtpath is not None:
     qt_install_libs = subprocess.check_output([os.path.join(args.qtpath, 'qmake'), '-query', 'QT_INSTALL_LIBS'])
     qt_cmake_prefix = os.path.join(qt_install_libs.decode().strip(), 'cmake')
-    cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH="{qt_cmake_prefix}"')
+    cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH={qt_cmake_prefix}')
 
 print(f"DEBUG: {cmake_setup_args}")
 
