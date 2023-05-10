@@ -4,20 +4,41 @@
 import Foundation
 import NetworkExtension
 import os
+import os.log
+import AppExtGlean
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
-
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { logLevel, message in
             wg_log(logLevel.osLogLevel, message: message)
         }
     }()
+    
+    override init() {
+        super.init()
+        
+        Logger.configureGlobal(tagged: "NET", withFilePath: FileManager.logFileURL?.path)
+
+        // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
+        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        // We just can't use "glean_data". Otherwise we will crash with the main Glean storage.
+        let gleanDataPath = documentsDirectory.appendingPathComponent("glean_netext_data")
+        
+        Glean.shared.registerPings(GleanMetrics.Pings.self)
+        Glean.shared.initialize(
+            uploadEnabled: true, 
+            configuration: Configuration.init(
+                channel: "staging", 
+                dataPath: gleanDataPath.relativePath
+            ),
+            buildInfo: GleanMetrics.GleanBuild.info
+        )
+    }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
         let activationAttemptId = options?["activationAttemptId"] as? String
         let errorNotifier = ErrorNotifier(activationAttemptId: activationAttemptId)
-
-        Logger.configureGlobal(tagged: "NET", withFilePath: FileManager.logFileURL?.path)
 
         wg_log(.info, message: "Starting tunnel from the " + (activationAttemptId == nil ? "OS directly, rather than the app" : "app"))
 
