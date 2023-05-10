@@ -340,6 +340,7 @@ Prerequisites:
 ```bash
 $ conda env create -f env.yml
 $ conda activate VPN
+$ ./scripts/macos/conda_install_extras.sh  
 ```
  - Get a copy of a MacOS-SDK (every X-Code install ships this, or you can find it on the internet :) )
     - Set `SDKROOT` to the target SDK: `export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)`
@@ -429,46 +430,34 @@ Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by defaul
 ```bash
 adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 ```
+#### Building using Conda on Windows
 
-### How to build from source code for Windows
+We provide a Conda env for easy Setup. 
+Prerequisites: 
+- Have [miniconda installed](https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe).
+- Open Powershell and run Conda: conda init
+- You may need to enable [powershell scripts.](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.3). You can call ```Set-ExecutionPolicy -ExecutionPolicy Unrestricted ```
 
-1. For Windows, there are a few extra dependencies to install:
+> Note: for the setup you need to use powershell.
+```powershell 
+$ conda env create -f env.yml
+$ conda activate VPN
+# Setup the Conda env for clang-cl compilation
+$ ./scripts/windows/conda_setup_win_sdk.ps1 
+# Setup the Conda env to use a prebuild QT from Moz-CI
+$ ./scripts/windows/conda_setup_win_qt.ps1
+# Install Conda Packages only needed on Windows
+$ ./scripts/windows/conda_install_extras.ps1
+# Reactivate the ENV to apply the changes: 
+$ conda deactivate
+$ conda activate VPN
 
-- perl: http://strawberryperl.com/
-- nasm: https://www.nasm.us/
-- Visual Studio 2019: https://visualstudio.microsoft.com/vs/
-  - Select the `Desktop development with C++` and `Python development` workloads.
-- OpenSSL: https://www.openssl.org/source/
-  - On windows you can choose to bundle OpenSSL when installing python. Skip this step if you have done so.
-- Go (go version >= v1.18 required): https://golang.org/dl/
-
-We strongly recommend using CMake version 3.21 or later when building with Visual
-Studio. Earlier versions of CMake have bugs that can cause the build to hang.
-
-It is also recommended to use the `x64 Native Tools Command Prompt for VS 2019` for CLI builds on Windows.
-
-2. Create a build directory, and configure the project for building using `cmake`.
-```bash
-mkdir build && cmake -S . -B build
 ```
-
-3. Compile the source code.
-```bash
-cmake --build build --config Release
+You are now ready to build!
+```powershell
+mkdir build ; cmake -S . -B build -GNinja
 ```
-
-4.  **Optional**: To build the MSI installer package, we can specify the `msi` target
-when building:
-```bash
-cmake --build build --config Release --target msi
-```
-5.  **Optional**: To build and debug through the VS 2019 UI, follow these steps:
-    - Open VS2019
-    - From the top menu, select File -> Open -> CMake
-    - Choose the top-level `CMakeLists.txt` of the VPN project.
-    - Choose `x64-Debug` as the build config
-    - Choose `src/Mozilla VPN.exe` as the startup item.
-    - Click on the green play button to launch the client attached to a debugger.
+> Note: We only support using ninja on windows as generator.
 
 ### How to build from source code for WASM
 

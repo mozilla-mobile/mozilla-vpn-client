@@ -63,6 +63,14 @@ tasks:
             url: https://github.com/getsentry/sentry-cli/releases/download/2.10.0/sentry-cli-Windows-x86_64.exe
             sha256: 3d9e04ab5f1bea8709f8302a33e81b75aca0a93d1431dde56063549a335acfd0
             size: 10361344
+    win-conda:
+        description: Miniconda Installer
+        fetch: 
+            type: static-url
+            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe
+            sha256: d4517212c8ac44fd8b5ccc2d4d9f38c2dd924c77a81c2be92c3a72e70dd3e907
+            artifact-name: miniconda_installer.exe
+            size: 55780192
     macos-miniconda:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:

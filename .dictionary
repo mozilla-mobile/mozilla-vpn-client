@@ -117,6 +117,7 @@ gps
 iap
 idfv
 ie
+init
 ios
 javascript
 js
@@ -150,6 +151,7 @@ ons
 os
 perl
 polkit
+powershell
 ppa
 pre
 prebuilt
