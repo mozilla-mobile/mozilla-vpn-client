@@ -17,21 +17,28 @@ buildscript {
         } catch (Exception ignored) {
             // This is checked from <proj>/android/daemon/tunnel
             WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
-
         }
     }
 
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.4.3"
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id "com.jetbrains.python.envs" version "0.0.31"
 }
 
 apply plugin: "com.android.library"
 apply plugin: "org.jetbrains.kotlin.android"
+
+apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
+
+ext.gleanNamespace = "mozilla.telemetry.glean"
+ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/metrics.yaml"]
+ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/pings.yaml"]
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -39,6 +46,10 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
+
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
+        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + System.getenv("ADJUST_SDK_TOKEN") +  '"'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -103,4 +114,7 @@ dependencies {
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.20"
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
+    // We should try to keep this version in sync with the 3rdparty/glean submodule
+    implementation "org.mozilla.telemetry:glean:52.6.0"
 }
