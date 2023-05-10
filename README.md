@@ -435,11 +435,10 @@ adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.a
 We provide a Conda env for easy Setup. 
 Prerequisites: 
 - Have [miniconda installed](https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe).
-- Called conda init with powershell.
-- You need to enable [powershell scripts.](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.3)
-  - i.e to enable scripting in your current terminal: ```Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process ```
+- Open Powershell and run Conda: conda init
+- You may need to enable [powershell scripts.](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.3). You can call ```Set-ExecutionPolicy -ExecutionPolicy Unrestricted ```
 
-> Note: for the setup you need to user powershell.
+> Note: for the setup you need to use powershell.
 ```powershell 
 $ conda env create -f env.yml
 $ conda activate VPN
