@@ -12,3 +12,4 @@ if( $conda_env.active_prefix_name -eq "base"){
 }
 
 conda install -y m2w64-gcc=5.3.0
+conda install -y llvm=14.0.6 llvmdev=14.0.6 lld=14.0.6

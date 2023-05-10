@@ -44,7 +44,7 @@ conda env config vars set AR_x86_64_pc_windows_msvc="llvm-lib"| Out-Null
 conda env config vars set LD_x86_64_pc_windows_msvc="lld-link"| Out-Null
 # Make sure clang can find stuff
 conda env config vars set CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link $conda_folder\\xwin\\crt\\include $conda_folder\\xwin\\sdk\\include\\ucrt $conda_folder\\xwin\\sdk\\include\\um $conda_folder\\xwin\\sdk\\include\\shared"  | Out-Null
-conda env config vars set RUSTFLAGS="-Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\ucrt\\x86_64" | Out-Null
+conda env config vars set RUSTFLAGS="-C linker=lld-link -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\ucrt\\x86_64" | Out-Null
 
 # Overwrite default conf. 
 conda env config vars set CXX="clang-cl" | Out-Null
@@ -55,6 +55,7 @@ conda env config vars set CMAKE_CXX_COMPILER="clang-cl" | Out-Null
 conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
 conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
 conda env config vars set CMAKE_LINKER="lld-link" | Out-Null
+conda env config vars set CMAKE_MT="llvm-mt" | Out-Null
 
 conda env config vars set CMAKE_GENERATOR="Ninja" | Out-Null
 
