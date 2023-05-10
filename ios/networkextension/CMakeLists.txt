@@ -120,3 +120,17 @@ set_target_properties(libwg_builder PROPERTIES FOLDER "Libs")
 ## Link and depend on the wireguard library.
 add_dependencies(networkextension libwg_builder)
 target_link_libraries(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/libwg-unified.a)
+
+## Build the Glean Rust library
+set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+add_rust_library(appextglean_bindings
+    ARCH ${RUST_ARCH}
+    PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
+    CRATE_NAME appextglean
+)
+build_glean_ios_sdk(appextglean appextglean_bindings AppExtGlean ${CMAKE_CURRENT_BINARY_DIR}/generated)
+target_link_libraries(networkextension PRIVATE appextglean)
+target_sources(networkextension PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
+)
+

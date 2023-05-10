@@ -1,0 +1,12 @@
+[package]
+name = "appextglean"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "appextglean"
+path = "lib.rs"
+crate-type = ["staticlib"]
+
+[dependencies]
+glean-core = { path = "../../3rdparty/glean/glean-core" }

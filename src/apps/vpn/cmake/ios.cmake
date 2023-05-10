@@ -10,11 +10,9 @@ if(IOS)
     set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
 endif()
 
-## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
-
 ## Install the Glean iOS SDK into the bundle.
 include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
+build_glean_ios_sdk(iosglean qtglean IOSGlean ${CMAKE_CURRENT_BINARY_DIR}/generated)
 target_link_libraries(mozillavpn PRIVATE iosglean)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift

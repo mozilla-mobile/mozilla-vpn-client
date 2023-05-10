@@ -2,18 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# When building for iOS we want to include the Glean iOS SDK on the build as well.
-# Instead of using it out of the box, we want it to be linked to the qtglean_ffi target,
-# so we generate the SDK oursevels.
+function(build_glean_ios_sdk LIBRARY_NAME RUST_TARGET_NAME SWIFT_LIBRARY_NAME GENERATED_SOURCES_PATH)
 
 enable_language(Swift)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-add_library(iosglean STATIC)
-set_target_properties(iosglean PROPERTIES
-    OUTPUT_NAME "IOSGlean"
+add_library(${LIBRARY_NAME} STATIC)
+set_target_properties(${LIBRARY_NAME} PROPERTIES
+    OUTPUT_NAME ${SWIFT_LIBRARY_NAME}
     FOLDER "Libs"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
@@ -22,11 +20,11 @@ set_target_properties(iosglean PROPERTIES
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
 )
 
-target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
+target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(${LIBRARY_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
-target_sources(iosglean PRIVATE
+target_sources(${LIBRARY_NAME} PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Config/Configuration.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Debug/GleanDebugTools.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Dispatchers.swift
@@ -58,7 +56,7 @@ target_sources(iosglean PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Unreachable.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Utils.swift
 )
-target_sources(iosglean PUBLIC
+target_sources(${LIBRARY_NAME} PUBLIC
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h
 )
 
@@ -77,12 +75,12 @@ execute_process(
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND_ERROR_IS_FATAL ANY
 )
-target_sources(iosglean PRIVATE
+target_sources(${LIBRARY_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.modulemap
     ${CMAKE_CURRENT_BINARY_DIR}/glean/glean.swift
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/Metrics.swift
 )
-target_sources(iosglean PUBLIC
+target_sources(${LIBRARY_NAME} PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
@@ -116,14 +114,17 @@ add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
     COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
-        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
+        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g ${SWIFT_LIBRARY_NAME}
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
-    COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
+    COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${GENERATED_SOURCES_PATH}/VPNMetrics.swift
 )
 set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
+    ${GENERATED_SOURCES_PATH}/VPNMetrics.swift
     PROPERTIES GENERATED TRUE
 )
 
-target_link_libraries(iosglean PRIVATE qtglean)
+target_link_libraries(${LIBRARY_NAME} PRIVATE ${RUST_TARGET_NAME})
+
+endfunction(build_glean_ios_sdk)
+
