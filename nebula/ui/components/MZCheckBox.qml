@@ -48,6 +48,10 @@ CheckBox {
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
 
+    onStateChanged: {
+        console.log(state)
+    }
+
     states: [
         State {
             name: uiState.stateDefault
@@ -71,7 +75,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blueHovered : MZTheme.theme.fontColorDark
+                border.color: if(checBox.enabled) (checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blueHovered : MZTheme.theme.fontColorDark)
             }
 
         }
