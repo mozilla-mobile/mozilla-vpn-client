@@ -17,6 +17,8 @@ endif
 override_dh_auto_configure:
 	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTING=OFF
 
+override_dh_auto_test:
+
 override_dh_installdocs:
 
 override_dh_installinfo:
