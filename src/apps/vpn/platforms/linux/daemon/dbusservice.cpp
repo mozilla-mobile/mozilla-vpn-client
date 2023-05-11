@@ -124,6 +124,8 @@ bool DBusService::activate(const QString& jsonConfig) {
     return false;
   }
 
+  // (Re)load the split tunnelling configuration.
+  firewallClear();
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
