@@ -13,13 +13,27 @@ vpnsession:
   description: |
     Data for one VPN session, defined as a user turning on and eventually
     turning off the VPN in the app. This ping will record start/end datestamp,
-    session-based metrics, etc. It will be sent after the user turns off the
-    VPN, and a end datestamp is recorded.
+    session-based metrics, etc.
   include_client_id: true
   send_if_empty: false
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4095
   data_reviews:
-    - N/A, will be done for metrics within
+    - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6130#pullrequestreview-1312098471
+  notification_emails:
+    - vpn@mozilla.com, mcleinman@mozilla.com
+
+daemonsession:
+  description: |
+    Only on iOS and Android.
+    Data for VPN sessions, as recorded from the Android daemon and
+    iOS Network Extension. This ping will record start/end datestamp,
+    session-based metrics, etc.
+  include_client_id: true
+  send_if_empty: false
+  bugs:
+    - https://mozilla-hub.atlassian.net/browse/VPN-4579
+  data_reviews:
+    - ADD AFTER THIS IS DONE - DO NOT MERGE WITH THIS TEXT
   notification_emails:
     - vpn@mozilla.com, mcleinman@mozilla.com
