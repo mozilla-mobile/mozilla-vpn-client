@@ -76,12 +76,6 @@ tasks:
         args:
             ANDROID_ARCH: android_armv7
             QT_VERSION: 6.4.0
-    linux-build-bionic:
-        symbol: I(linux-bionic)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: ubuntu:bionic
-            QTPPA: ppa:okirby/qt6-backports
     linux-build-focal:
         symbol: I(linux-focal)
         definition: linux-dpkg-build
