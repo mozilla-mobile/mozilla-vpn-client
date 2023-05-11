@@ -34,6 +34,6 @@ daemonsession:
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4579
   data_reviews:
-    - ADD AFTER THIS IS DONE - DO NOT MERGE WITH THIS TEXT
+    - N/A, will be done for metrics within
   notification_emails:
     - vpn@mozilla.com, mcleinman@mozilla.com
