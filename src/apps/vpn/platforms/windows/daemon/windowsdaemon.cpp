@@ -50,22 +50,25 @@ void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
 }
 
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
-  bool splitTunnelEnabled = config.m_vpnDisabledApps.length() > 0;
-
   if (op == Down) {
-    if (splitTunnelEnabled) {
-      m_splitTunnelManager.stop();
-    }
+    m_splitTunnelManager.stop();
     return true;
   }
-  if (splitTunnelEnabled) {
+
+  if (op == Up) {
     logger.debug() << "Tunnel UP, Starting SplitTunneling";
     if (!WindowsSplitTunnel::isInstalled()) {
       logger.warning() << "Split Tunnel Driver not Installed yet, fixing this.";
       WindowsSplitTunnel::installDriver();
     }
+  }
+
+  if (config.m_vpnDisabledApps.length() > 0) {
     m_splitTunnelManager.start(m_inetAdapterIndex);
     m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+  }
+  else {
+    m_splitTunnelManager.stop();
   }
   return true;
 }
