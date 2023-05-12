@@ -59,7 +59,7 @@ EOF
   ${QT_HOST_BINS}/lupdate translations/generated/$project/dummy_ts.pro -ts translations.ts || die
 
   printn Y "$project - Generating strings for addons... "
-  cmake cmake -S $(pwd) -B build-addons/
+  cmake cmake -S $(pwd)/addons -B build-addons/
   cmake --build build-addons/
   mkdir -p addon_ts || die
   cp build-addons/*.ts addon_ts
@@ -100,7 +100,7 @@ EOF
       elif [ -f "addons/CMakeLists.txt" ]; then
         # Use the CMake project to generate addons.
         mkdir -p build-addons-$branch/
-        cmake -S $(pwd) -B build-addons-$branch/
+        cmake -S addons/ -B build-addons-$branch/
         cmake --build -B build-addons-$branch/
         ts_files="build-addons-$branch/*.ts"
       else
