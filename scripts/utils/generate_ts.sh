@@ -59,9 +59,10 @@ EOF
   ${QT_HOST_BINS}/lupdate translations/generated/$project/dummy_ts.pro -ts translations.ts || die
 
   printn Y "$project - Generating strings for addons... "
-  python3 scripts/addon/generate_all.py
+  cmake cmake -S $(pwd) -B build-addons/
+  cmake --build build-addons/
   mkdir -p addon_ts || die
-  cp addons/generated/addons/*.ts addon_ts
+  cp build-addons/*.ts addon_ts
   print G "done."
 
   for branch in $(git branch -r | grep origin/releases); do
@@ -90,20 +91,33 @@ EOF
     mv tmp.ts translations.ts || die
     rm branch.ts || die
 
-    if [ "$project" = "vpn" ] && [ -f "scripts/addon/generate_all.py" ]; then
+    if [ "$project" = "vpn" ]; then
       printn Y "Importing addon strings from $branch..."
-      python3 scripts/addon/generate_all.py
-      ts_files="addons/generated/addons/*.ts"
+      if [ -f "scripts/addon/generate_all.py" ]; then
+        # Use the old python scripts to generate addons.
+        python3 scripts/addon/generate_all.py
+        ts_files="addons/generated/addons/*.ts"
+      elif [ -f "addons/CMakeLists.txt" ]; then
+        # Use the CMake project to generate addons.
+        mkdir -p build-addons-$branch/
+        cmake -S $(pwd) -B build-addons-$branch/
+        cmake --build -B build-addons-$branch/
+        ts_files="build-addons-$branch/*.ts"
+      else
+        # No addons to process.
+        ts_files=
+      fi
+
       for f in $ts_files
       do
         ts_name=$(basename "$f")
         if [ -f "addon_ts/${ts_name}" ]; then
           printn Y "File ${ts_name} exists, updating with branch strings..."
-          ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
+          ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "$f" -o tmp.ts || die
           mv tmp.ts "addon_ts/${ts_name}"
         else
           printn Y "File ${ts_name} does not exist, copying over..."
-          cp "addons/generated/addons/${ts_name}" addon_ts/
+          cp "$f" addon_ts/
         fi
       done
       rm addons/generated/addons/*.ts || die
