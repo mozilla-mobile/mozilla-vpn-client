@@ -12,13 +12,10 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
-pip3 install -r requirements.txt
-
 mkdir build-addons
-cmake -S $(pwd)/addons -B build-addons -GNinja
-cmake --build build-addons
+cmake -S $(pwd)/addons -B $TASK_WORKDIR/addons -GNinja
+cmake --build $TASK_WORKDIR/addons
 
-cp -r build-addons/generated/ $TASK_WORKDIR/addons
-zip -r /builds/worker/artifacts/addons.zip $TASK_WORKDIR/addons 
-cp build-addons/generated/*.rcc $TASK_WORKDIR/artifacts
-cp build-addons/generated/manifest.json $TASK_WORKDIR/artifacts
+zip -r /builds/worker/artifacts/addons.zip $TASK_WORKDIR/addons -i '*.rcc' $TASK_WORKDIR/addons/manifest.json
+cp $TASK_WORKDIR/addons/*.rcc $TASK_WORKDIR/artifacts
+cp $TASK_WORKDIR/addons/manifest.json $TASK_WORKDIR/artifacts

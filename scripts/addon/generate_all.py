@@ -4,11 +4,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
-import hashlib
-import json
 import os
 import subprocess
-import sys
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
@@ -27,46 +24,20 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-lang_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "import_languages.py")
-build_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "build.py")
-index_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "index.py")
-i18n_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "src", "apps", "vpn", "translations", "i18n")
-addons_path = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
-    "addons",
-)
+if args.addonpath is None:
+    args.addonpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "addons")
 
-if args.addonpath:
-    addons_path = args.addonpath
+cmake_setup_args = ['cmake', '-S', args.addonpath, '-B', os.path.join(args.addonpath, 'generated')]
 
-lang_cmd = [sys.executable, lang_path]
-if args.qtpath:
-    lang_cmd.append("-q")
-    lang_cmd.append(args.qtpath)
-subprocess.call(lang_cmd)
+if args.qtpath is not None:
+    qt_install_libs = subprocess.check_output([os.path.join(args.qtpath, 'qmake'), '-query', 'QT_INSTALL_LIBS'])
+    qt_cmake_prefix = os.path.join(qt_install_libs.decode().strip(), 'cmake')
+    cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH={qt_cmake_prefix}')
 
-generated_path = os.path.join(addons_path, "generated")
-if not os.path.isdir(generated_path):
-    os.mkdir(generated_path)
-generated_path = os.path.join(generated_path, "addons")
-if not os.path.isdir(generated_path):
-    os.mkdir(generated_path)
+print(f"DEBUG: {cmake_setup_args}")
 
-generated_addons = []
-for file in os.listdir(addons_path):
-    addon_path = os.path.join(addons_path, file, "manifest.json")
-    if not os.path.exists(addon_path):
-       print(f"Ignoring path {file}.")
-       continue
-
-    build_cmd = [sys.executable, build_path, "--i18n", i18n_path, addon_path, generated_path]
-    if args.qtpath:
-        build_cmd.append("-q")
-        build_cmd.append(args.qtpath)
-    subprocess.call(build_cmd)
-
-    generated_addons.append(os.path.join(generated_path, file + ".rcc"))
-
-## Generate the index.
-index_cmd = [sys.executable, index_path, '-o', os.path.join(generated_path, 'manifest.json')]
-subprocess.call(index_cmd + generated_addons)
+# Use CMake to build the test addons.
+# TODO: At some point we should stop generating in the source directory.
+subprocess.run(cmake_setup_args, check=True)
+subprocess.run(['cmake', '--build', os.path.join(args.addonpath, 'generated')], check=True)
+subprocess.run(['cmake', '--install', os.path.join(args.addonpath), '--component', 'addons'])

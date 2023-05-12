@@ -14,9 +14,11 @@ find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 ## Create the addons target.
 include(${CMAKE_CURRENT_SOURCE_DIR}/../scripts/cmake/addons.cmake)
 add_addon_target(addons
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
     I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/translations/i18n
 )
 
-set_target_properties(addons PROPERTIES EXCLUDE_FROM_ALL FALSE)
+# If this is the top level project, build and install the addons by default.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set_target_properties(addons PROPERTIES EXCLUDE_FROM_ALL FALSE)
+endif()

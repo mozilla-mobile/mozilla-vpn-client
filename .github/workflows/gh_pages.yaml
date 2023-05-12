@@ -132,7 +132,10 @@ jobs:
         shell: bash
         run: |
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
-          python3 scripts/addon/generate_all.py
+
+          mkdir -p build-addons
+          cmake -S addons -B build-addons -GNinja
+          cmake --build build-addons
 
       - name: Sign manifest
         if: github.ref == 'refs/heads/main'
@@ -141,14 +144,17 @@ jobs:
           ADDON_PRIVATE_KEY: ${{ secrets.ADDON_PRIVATE_KEY }}
         run: |
           echo -n "$ADDON_PRIVATE_KEY" > addon_private_key.pem
-          openssl dgst -sha256 -sign addon_private_key.pem -out addons/generated/addons/manifest.json.sig addons/generated/addons/manifest.json
+          openssl dgst -sha256 -sign addon_private_key.pem -out build-addons/manifest.json.sig build-addons/manifest.json
           rm addon_private_key.pem
 
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
             name: Addons
-            path: addons/generated/addons
+            path: |
+              build-addons/*.rcc
+              build-addons/*.ts
+              build-addons/manifest.*
 
   ghPages:
     runs-on: ubuntu-20.04
