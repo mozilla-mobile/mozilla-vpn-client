@@ -66,8 +66,7 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   if (config.m_vpnDisabledApps.length() > 0) {
     m_splitTunnelManager.start(m_inetAdapterIndex);
     m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
-  }
-  else {
+  } else {
     m_splitTunnelManager.stop();
   }
   return true;
