@@ -134,7 +134,7 @@ jobs:
           export PATH=/opt/$QTVERSION/gcc_64/bin:$PATH
 
           mkdir -p build-addons
-          cmake -S addons -B build-addons -GNinja
+          cmake -S addons -B build-addons
           cmake --build build-addons
 
       - name: Sign manifest

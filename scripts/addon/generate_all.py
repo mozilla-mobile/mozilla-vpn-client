@@ -34,8 +34,6 @@ if args.qtpath is not None:
     qt_cmake_prefix = os.path.join(qt_install_libs.decode().strip(), 'cmake')
     cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH={qt_cmake_prefix}')
 
-print(f"DEBUG: {cmake_setup_args}")
-
 # Use CMake to build the test addons.
 # TODO: At some point we should stop generating in the source directory.
 subprocess.run(cmake_setup_args, check=True)
