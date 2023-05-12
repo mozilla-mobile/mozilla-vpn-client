@@ -153,7 +153,6 @@ jobs:
             name: Addons
             path: |
               build-addons/*.rcc
-              build-addons/*.ts
               build-addons/manifest.*
 
   ghPages:
