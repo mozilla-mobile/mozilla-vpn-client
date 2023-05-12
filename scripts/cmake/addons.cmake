@@ -36,7 +36,7 @@ function(add_addon_target NAME)
 
     # Scan for addon manifests if a source directory was provided.
     if(ADDON_SOURCE_DIR)
-        file(GLOB_RECURSE SCANNED_MANIFEST_FILES ${ADDON_SOURCE_DIR}/manifest.json)
+        file(GLOB_RECURSE SCANNED_MANIFEST_FILES CONFIGURE_DEPENDS ${ADDON_SOURCE_DIR}/manifest.json)
         foreach(FILENAME ${SCANNED_MANIFEST_FILES})
             if(${FILENAME} MATCHES "generated")
                 continue()
