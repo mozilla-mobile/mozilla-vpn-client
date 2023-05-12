@@ -160,7 +160,7 @@ cmake -S <source>/addons -B build-addons -GNinja
 cmake --build build-addons
 ```
 
-4. Expose the generated build directory through a webservice. eg: `python3 -m http.server --directory build-addons/`
+4. Expose the generated build directory through a webservice. For example: `python3 -m http.server --directory build-addons/`
 5. Open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
 6. Scroll down and disable the signature-addon feature from the dev-menu, list of features
 7. Be sure you are doing all of this using a staging environment
