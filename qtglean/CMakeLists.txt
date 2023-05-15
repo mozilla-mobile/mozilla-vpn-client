@@ -94,7 +94,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
         list(APPEND CARGO_ENV
             OPENSSL_LIB_DIR=${openssl_libs}
-            OPENSSL_INCLUDE_DIR=${ssl_module}/include
+            OPENSSL_INCLUDE_DIR=${ssl_module}/include/openssl
             AR=llvm-ar)
 
         # On Android we will build a dynamic lib,

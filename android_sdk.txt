@@ -1,0 +1,10 @@
+platforms;android-33
+platforms;android-31
+build-tools;29.0.2
+build-tools;30.0.3
+build-tools;31.0.0
+build-tools;33.0.0
+cmake;3.10.2.4988404
+emulator
+platform-tools
+ndk;23.2.8568313
