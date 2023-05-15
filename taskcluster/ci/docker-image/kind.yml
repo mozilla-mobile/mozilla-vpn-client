@@ -76,6 +76,10 @@ tasks:
         args:
             ANDROID_ARCH: android_armv7
             QT_VERSION: 6.4.0
+    linux-qt6-build:
+        parent: base
+        symbol: I(linux-qt6-build)
+        definition: linux-qt6-build
     linux-build-focal:
         symbol: I(linux-focal)
         definition: linux-dpkg-build
