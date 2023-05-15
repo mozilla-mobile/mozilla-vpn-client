@@ -28,7 +28,7 @@
     "express": "^4.18.1",
     "jsonschema": "^1.4.1",
     "mocha": "^10.2.0",
-    "selenium-webdriver": "^4.9.0",
+    "selenium-webdriver": "^4.9.2",
     "websocket": "^1.0.34",
     "command-line-args": "^5.2.1"
   }
