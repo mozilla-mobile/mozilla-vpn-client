@@ -43,10 +43,10 @@ tasks:
             sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
             size: 158837368
     win-rustup:
-        description: Rustup for Windows v1.59.0
+        description: Rustup for Windows v1.25.2
         fetch:
             type: static-url
-            url: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
+            url: https://static.rust-lang.org/rustup/archive/1.25.2/x86_64-pc-windows-msvc/rustup-init.exe
             sha256: f7ddacce04969a59f7080a64c466b936d7c2ae661b4fda44be8fe54aac0972ec
             size: 9996288
     win-go:
