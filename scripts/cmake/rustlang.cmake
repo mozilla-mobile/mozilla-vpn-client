@@ -98,8 +98,16 @@ function(build_rust_archives)
         # Toolchain.
         set(ANDROID_TOOLCHAIN_ROOT
             "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}")
+       
+        # Rust and Clang disagree about armv7, otherwise we can take the Rust build arch. 
+        if(${RUST_BUILD_ARCH} STREQUAL armv7-linux-androideabi )
+            set(ANDROID_ARCH_NAME armv7a-linux-androideabi)
+        else()
+            set(ANDROID_ARCH_NAME ${RUST_BUILD_ARCH})
+        endif()
+
         
-        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${RUST_BUILD_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
