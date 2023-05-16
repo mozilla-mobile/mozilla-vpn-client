@@ -15,7 +15,7 @@ const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
 function createScenario(scenario, addonPath) {
   const manifestPath = path.join(addonPath, 'manifest.json');
   if (!fs.existsSync(manifestPath)) {
-    throw new Error(`No generated and not manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
+    throw new Error(`No manifest file! ${manifestPath} should exist! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
   }
 
   const obj = {};
@@ -56,6 +56,10 @@ module.exports = {
   async start(headerCheck = true) {
     let scenarios = {};
 
+    if (!fs.existsSync(TEST_ADDONS_PATH)) {
+      throw new Error(`Addon path not found! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
+    }
+
     // Generate test addon scenarios
     const dirs = fs.readdirSync(TEST_ADDONS_PATH);
     for (const dir of dirs) {
@@ -69,6 +73,10 @@ module.exports = {
       }
 
       scenarios = { ...scenarios, ...createScenario(dir, addonPath) };
+    }
+
+    if (Object.keys(scenarios).length == 0) {
+      throw new Error(`No addons found! Have you executed \`./scripts/addon/generate_all_tests.py'?`);
     }
 
     const endpoints = {
