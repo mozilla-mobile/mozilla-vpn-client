@@ -14,7 +14,7 @@ UuidMetric::UuidMetric(int id) : m_id(id) {}
 
 void UuidMetric::set(const QString& uuid) const {
 #ifndef __wasm__
-  return glean_uuid_set(m_id, uuid.toLocal8Bit());
+  return glean_uuid_set(m_id, uuid.toUtf8());
 #endif
 }
 
@@ -34,7 +34,7 @@ int32_t UuidMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 QString UuidMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_uuid_test_get_value(m_id, pingName.toLocal8Bit());
+  return glean_uuid_test_get_value(m_id, pingName.toUtf8());
 #endif
   return "";
 }
