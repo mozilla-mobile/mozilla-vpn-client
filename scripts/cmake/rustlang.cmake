@@ -92,12 +92,14 @@ function(build_rust_archives)
             set(ANDROID_HOST_TAG darwin-x86_64)
         elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL Windows)
             set(ANDROID_HOST_TAG windows-x86_64)
+        else()
+            message("Unsupported OS?")
         endif()  
         # Toolchain.
         set(ANDROID_TOOLCHAIN_ROOT
             "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}")
         
-        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${RUST_BUILD_ARCH}24-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${RUST_BUILD_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
