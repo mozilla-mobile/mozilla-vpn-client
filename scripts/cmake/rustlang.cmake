@@ -85,6 +85,21 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
     endif()
 
+    if(ANDROID)
+        if(CMAKE_HOST_SYSTEM_NAME STREQUAL Linux)
+            set(ANDROID_HOST_TAG linux-x86_64)
+        elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
+            set(ANDROID_HOST_TAG darwin-x86_64)
+        elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL Windows)
+            set(ANDROID_HOST_TAG windows-x86_64)
+        endif()  
+        # Toolchain.
+        set(ANDROID_TOOLCHAIN_ROOT
+            "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}")
+        
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${RUST_BUILD_ARCH}24-clang)
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
