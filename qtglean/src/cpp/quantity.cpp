@@ -27,7 +27,7 @@ int32_t QuantityMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 int64_t QuantityMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_quantity_test_get_value(m_id, pingName.toLocal8Bit());
+  return glean_quantity_test_get_value(m_id, pingName.toUtf8());
 #endif
   return 0;
 }

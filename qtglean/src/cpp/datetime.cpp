@@ -27,7 +27,7 @@ int32_t DatetimeMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 QString DatetimeMetric::testGetValueAsString(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_datetime_test_get_value_as_string(m_id, pingName.toLocal8Bit());
+  return glean_datetime_test_get_value_as_string(m_id, pingName.toUtf8());
 #endif
   return "";
 }

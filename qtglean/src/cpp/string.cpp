@@ -14,7 +14,7 @@ StringMetric::StringMetric(int id) : m_id(id) {}
 
 void StringMetric::set(QString value) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_string_set(m_id, value.toLocal8Bit());
+  return glean_string_set(m_id, value.toUtf8());
 #endif
 }
 
@@ -27,7 +27,7 @@ int32_t StringMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 QString StringMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_string_test_get_value(m_id, pingName.toLocal8Bit());
+  return glean_string_test_get_value(m_id, pingName.toUtf8());
 #endif
   return "";
 }

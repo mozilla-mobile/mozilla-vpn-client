@@ -31,7 +31,7 @@ int32_t CounterMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 int32_t CounterMetric::testGetValue(const QString& pingName) const {
 #if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_counter_test_get_value(m_id, pingName.toLocal8Bit());
+  return glean_counter_test_get_value(m_id, pingName.toUtf8())
 #else
   Q_UNUSED(pingName);
   return 0;

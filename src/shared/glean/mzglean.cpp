@@ -92,7 +92,7 @@ void MZGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
-                           gleanDirectory.absolutePath().toLocal8Bit());
+                           gleanDirectory.absolutePath().toUtf8());
 #elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
@@ -102,7 +102,7 @@ void MZGlean::initialize() {
         Constants::inProduction() ? "production" : "staging");
 #elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
-                     gleanDirectory.absolutePath().toLocal8Bit(),
+                     gleanDirectory.absolutePath().toUtf8(),
                      Constants::inProduction() ? "production" : "staging");
 #endif
   }
