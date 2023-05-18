@@ -845,8 +845,9 @@ sample:
       state:
         description: |
           The name of the app state, e.g. "authenticating", "device-limit",
-          "main", "subscription-needed", etc. The list can be found in
-          `mozillavpn.h`.
+          "main", "subscription-needed", etc. The complete list is
+          `app.h`'s `State` enum along with the `CustomState` enum in the
+          app's header file (e.g. `mozillavpn.h`).
         type: string
 
   controller_step:
