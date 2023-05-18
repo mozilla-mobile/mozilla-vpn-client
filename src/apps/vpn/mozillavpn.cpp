@@ -976,12 +976,19 @@ void MozillaVPN::activate() {
       new TaskControllerAction(TaskControllerAction::eActivate));
 }
 
-void MozillaVPN::deactivate() {
+void MozillaVPN::deactivate(bool block) {
   logger.debug() << "VPN tunnel deactivation";
 
   TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eDeactivate));
+  Task* task = new TaskControllerAction(TaskControllerAction::eDeactivate);
+  if (block) {
+    connect(task, &Task::completed, this, [&]() { block = false; });
+  }
+  TaskScheduler::scheduleTask(task);
+
+  while (block) {
+    QCoreApplication::processEvents();
+  }
 }
 
 void MozillaVPN::silentSwitch() {
