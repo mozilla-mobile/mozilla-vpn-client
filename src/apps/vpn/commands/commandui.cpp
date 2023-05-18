@@ -370,7 +370,8 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
-        []() { MozillaVPN::instance()->deactivate(true); }, Qt::DirectConnection);
+        []() { MozillaVPN::instance()->deactivate(true); },
+        Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &App::quit, Qt::QueuedConnection);
