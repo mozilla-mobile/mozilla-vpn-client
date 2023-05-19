@@ -99,9 +99,6 @@ def add_beetmover_worker_config(config, tasks):
                 )
             )
 
-        if shipping_phase and not destination_paths:
-            raise Exception(f"Invalid shipping phase '{shipping_phase}'!")
-
         archive_url = (
             "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
         )
