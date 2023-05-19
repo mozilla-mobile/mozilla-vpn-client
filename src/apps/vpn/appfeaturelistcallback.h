@@ -131,6 +131,8 @@ bool FeatureCallback_unsecuredNetworkNotification() {
 #endif
 }
 
+// Free trials are currently not being used on any platforms
+// Leaving this code in case we want to re-enable them in the future
 bool FeatureCallback_freeTrial() {
 #if defined(MZ_IOS)
   return true;
