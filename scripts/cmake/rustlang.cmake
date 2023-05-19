@@ -23,6 +23,21 @@ if(NOT HAS_CARGO_POOL)
     set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
 endif()
 
+### Helper function to get the rust library filename with extension.
+#
+# Sets the variable "RUST_LIBRARY_FILENAME" with the value.
+function(get_rust_library_filename SHARED CRATE_NAME)
+    if(${SHARED})
+        set(RUST_LIBRARY_FILENAME
+            ${CMAKE_SHARED_LIBRARY_PREFIX}${CRATE_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+            PARENT_SCOPE)
+    else()
+        set(RUST_LIBRARY_FILENAME
+            ${CMAKE_STATIC_LIBRARY_PREFIX}${CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+            PARENT_SCOPE)
+    endif()
+endfunction()
+
 ### Helper function to build Rust static libraries.
 #
 # Accepts the following arguments:
@@ -31,6 +46,7 @@ endif()
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
 #   LIBRARY_FILE: Filename of the expected library to be built.
 #   CARGO_ENV: Environment variables to pass to cargo
+#   SHARED: Whether or not we are building a shared library. Defaults to "false".
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -44,17 +60,20 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV"
+        "CARGO_ENV;SHARED;"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
+    if(NOT DEFINED RUST_BUILD_SHARED)
+        message(FATAL_ERROR "Mandatory argument SHARED was not found")
+    endif()
     if(NOT RUST_BUILD_CRATE_NAME)
-        error("Mandatory argument CRATE_NAME was not found")
+        message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
     endif()
     if(NOT RUST_BUILD_ARCH)
-        error("Mandatory argument ARCH was not found")
+        message(FATAL_ERROR "Mandatory argument ARCH was not found")
     endif()
     if(NOT RUST_BUILD_BINARY_DIR)
         set(RUST_BUILD_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -65,9 +84,7 @@ function(build_rust_archives)
 
     ## Some files that we will be building.
     file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
-    set(RUST_BUILD_LIBRARY_FILE
-        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-    )
+    get_rust_library_filename(${RUST_BUILD_SHARED} ${RUST_BUILD_CRATE_NAME})
 
     ## For iOS simulator targets, ensure that we unset the `SDKROOT` variable as
     ## this will result in broken simulation builds in Xcode. For all other apple
@@ -114,10 +131,9 @@ function(build_rust_archives)
         if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
             cmake_policy(SET CMP0116 NEW)
         endif()
-
         ## Outputs for the release build
         add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -127,7 +143,7 @@ function(build_rust_archives)
 
         ## Outputs for the debug build
         add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
+            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -146,7 +162,7 @@ function(build_rust_archives)
         ## Outputs for the release build
         add_custom_command(
             OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_LIBRARY_FILE}
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
@@ -156,7 +172,7 @@ function(build_rust_archives)
         ## Outputs for the debug build
         add_custom_command(
             OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_LIBRARY_FILE}
+                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
@@ -175,17 +191,26 @@ endfunction()
 #   BINARY_DIR: Binary directory to output build artifacts to.
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
 #   CRATE_NAME: Name of the staticlib crate we want to build.
-#   CARGO_ENV: Environment variables to pass to cargo
+#   CARGO_ENV: Environment variables to pass to cargo.
 #   DEPENDS: Additional files on which the target depends.
+#   SHARED: Whether or not we are building a shared library. Defaults to "false".
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "ARCH;CARGO_ENV;DEPENDS"
+        "ARCH;CARGO_ENV;DEPENDS;SHARED"
         ${ARGN})
 
-    add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
+    if(NOT RUST_TARGET_SHARED)
+        set(RUST_TARGET_SHARED 0)
+    endif()
+
+    if(${RUST_TARGET_SHARED})
+        add_library(${TARGET_NAME} SHARED IMPORTED GLOBAL)
+    else()
+        add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
+    endif()
 
     if(NOT RUST_TARGET_CRATE_NAME)
         ## TODO: I would like to pull this from the package manifest.
@@ -214,9 +239,7 @@ function(add_rust_library TARGET_NAME)
         endif()
     endif()
 
-    set(RUST_TARGET_LIBRARY_FILE
-        ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-    )
+    get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
     ## Build the rust library file(s)
     foreach(ARCH ${RUST_TARGET_ARCH})
@@ -226,57 +249,59 @@ function(add_rust_library TARGET_NAME)
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${CARGO_ENV}
+            SHARED ${RUST_TARGET_SHARED}
         )
 
         if(RUST_TARGET_DEPENDS)
             add_custom_command(APPEND
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_TARGET_LIBRARY_FILE}
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
                 DEPENDS ${RUST_TARGET_DEPENDS}
             )
             add_custom_command(APPEND
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_TARGET_LIBRARY_FILE}
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
                 DEPENDS ${RUST_TARGET_DEPENDS}
             )
         endif()
 
         # Keep track of the expected library artifacts.
-        list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_TARGET_LIBRARY_FILE})
-        list(APPEND RUST_TARGET_DEBUG_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_TARGET_LIBRARY_FILE})
+        list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME})
+        list(APPEND RUST_TARGET_DEBUG_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME})
     endforeach()
-    
+
     if(APPLE)
         ## For apple platforms unify the built libraries
         add_custom_command(
-            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
+            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
             DEPENDS ${RUST_TARGET_RELEASE_LIBS}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
-            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
+            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
                         ${RUST_TARGET_RELEASE_LIBS}
         )
         add_custom_command(
-            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
+            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
             DEPENDS ${RUST_TARGET_DEBUG_LIBS}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
-            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
+            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
                         ${RUST_TARGET_DEBUG_LIBS}
         )
 
         add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_LIBRARY_FILE}
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
         )
         set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_LIBRARY_FILE}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_LIBRARY_FILE}
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
         )
     else()
         ## For all other platforms, only build the first architecture
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
         add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_LIBRARY_FILE}
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
         )
+
         set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_TARGET_LIBRARY_FILE}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_TARGET_LIBRARY_FILE}
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_LIBRARY_FILENAME}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_LIBRARY_FILENAME}
         )
     endif()
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
