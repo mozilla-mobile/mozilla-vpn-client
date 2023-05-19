@@ -46,13 +46,12 @@ FEATURE(customDNS,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
-FEATURE(freeTrial,             // Feature ID
-        "Free trial",          // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_false) // Disabled while we rethink free trials
-
+FEATURE(freeTrial,              // Feature ID
+        "Free trial",           // Feature name
+        FeatureCallback_true,   // Can be flipped on
+        FeatureCallback_true,   // Can be flipped off
+        QStringList(),          // feature dependencies
+        FeatureCallback_false)  // Disabled while we rethink free trials
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
