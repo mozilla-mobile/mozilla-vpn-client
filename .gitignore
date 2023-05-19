@@ -59,7 +59,7 @@ node_modules
 
 #Github Codespaces
 .venv
-=/ 
+=/
 
 asset_catalog_compiler.Info.plist
 
@@ -169,7 +169,6 @@ mozillavpnnp.vcxproj*
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 qtglean/prebuilt/
-qtglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/
