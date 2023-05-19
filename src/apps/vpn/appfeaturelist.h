@@ -51,7 +51,8 @@ FEATURE(freeTrial,             // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_freeTrial)
+        FeatureCallback_false) // Disabled while we rethink free trials
+
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
