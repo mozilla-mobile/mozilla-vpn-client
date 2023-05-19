@@ -34,7 +34,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2024-01-01
     extra_keys:
       connection_health_state:
@@ -61,7 +61,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_launchbillingflow_failed:
@@ -78,7 +78,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_unexpected_purchasestate:
@@ -95,7 +95,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_sku_without_month:
@@ -112,7 +112,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_query_purchases_failed:
@@ -129,7 +129,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_query_sku_details_failed:
@@ -146,7 +146,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_billing_not_available:
@@ -163,7 +163,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_purchases_updated_failed:
@@ -182,7 +182,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       reason:
@@ -206,7 +206,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_purchase_ack_failed:
@@ -223,7 +223,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   app_permissions_view_opened:
@@ -240,7 +240,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_aborted:
@@ -257,7 +257,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_completed:
@@ -274,7 +274,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_failure:
@@ -291,7 +291,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_failure_by_geo:
@@ -308,7 +308,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_started:
@@ -325,7 +325,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   backend_failure_viewed:
@@ -342,7 +342,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_link_clicked:
@@ -359,7 +359,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_upgrade_clicked:
@@ -376,7 +376,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_viewed:
@@ -393,7 +393,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_health_no_signal:
@@ -411,7 +411,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_health_unstable:
@@ -429,7 +429,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_info_opened:
@@ -446,7 +446,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   get_help_clicked_initialize:
@@ -463,7 +463,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   get_help_clicked_view_settings:
@@ -480,7 +480,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   manage_account_clicked:
@@ -497,7 +497,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   max_device_reached:
@@ -514,7 +514,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   notifications_view_opened:
@@ -531,7 +531,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   onboarding_cta_click:
@@ -559,7 +559,7 @@ sample:
         description: Element that was clicked to trigger auth
         type: string
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
 
   settings_view_opened:
     type: event
@@ -575,7 +575,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   subscription_blocked_viewed:
@@ -593,7 +593,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   sub_not_validated_viewed:
@@ -611,7 +611,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   billing_not_available_viewed:
@@ -629,7 +629,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   dns_settings_view_opened:
@@ -646,7 +646,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_subscription_started:
@@ -665,7 +665,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       sku:
@@ -687,7 +687,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_subscription_failed:
@@ -706,7 +706,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       error:
@@ -735,7 +735,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       sku:
@@ -760,7 +760,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -789,7 +789,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -822,7 +822,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   app_step:
@@ -839,7 +839,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -865,7 +865,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -888,7 +888,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   controller_state_off:
@@ -907,7 +907,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   update_step:
@@ -924,7 +924,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -947,7 +947,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       interval:
@@ -974,7 +974,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -998,7 +998,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   delete_account_requested:
@@ -1015,7 +1015,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_view_opened:
@@ -1032,7 +1032,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_modal_shown:
@@ -1049,7 +1049,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_modal_closed:
@@ -1066,7 +1066,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       action:
@@ -1088,7 +1088,7 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
     extra_keys:
       source:
@@ -1112,7 +1112,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       speed:
@@ -1135,7 +1135,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -1158,7 +1158,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   help_contact_support_opened:
@@ -1175,7 +1175,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   support_case_submitted:
@@ -1192,7 +1192,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   help_menu_view_logs_opened:
@@ -1209,7 +1209,7 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   settings_about_us_opened:
@@ -1226,5 +1226,5 @@ sample:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
