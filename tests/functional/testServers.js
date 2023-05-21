@@ -18,6 +18,7 @@ describe('Server list', function() {
     await vpn.waitForQueryAndClick(
         queries.screenHome.SERVER_LIST_BUTTON.visible());
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
     servers = await vpn.servers();
     currentCountryCode = await vpn.getMozillaProperty(
@@ -125,6 +126,7 @@ describe('Server list', function() {
         await vpn.waitForQueryAndClick(
             queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+        await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
         // One selected
         await vpn.waitForQuery(cityId.checked());
@@ -160,10 +162,12 @@ describe('Server list', function() {
     assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
     assert.strictEqual(
         vpn.lastNotification().message,
-        `Connected to ${currentCity}`);
+        `Connected through ${currentCity}`);
 
     await vpn.waitForQueryAndClick(
         queries.screenHome.SERVER_LIST_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
     let server;
     while (true) {

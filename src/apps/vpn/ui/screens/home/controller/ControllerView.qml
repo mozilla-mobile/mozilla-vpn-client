@@ -449,8 +449,7 @@ Item {
         id: connectionInfoToggleButton
         objectName: "connectionInfoToggleButton"
 
-        //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             left: parent.left
@@ -458,7 +457,7 @@ Item {
             top: parent.top
             topMargin: MZTheme.theme.windowMargin / 2
         }
-        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoOpenButton
+        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoStartSpeedTest
         Accessible.ignored: !visible
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && !ipInfoPanel.isOpen
@@ -484,7 +483,7 @@ Item {
             anchors.centerIn: connectionInfoToggleButton
             source: box.connectionInfoScreenVisible
                 ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/nebula/resources/bandwidth.svg"
+                : "qrc:/ui/resources/bandwidth.svg"
             sourceSize.height: iconSize
             sourceSize.width: iconSize
         }
@@ -578,7 +577,7 @@ Item {
             text: qsTrId("vpn.controller.active") + " • "
           }
 
-          MZSemiMonoLabel {
+          ConnectionTimer {
             id: connectionTime
             Accessible.ignored: true
           }
@@ -593,7 +592,7 @@ Item {
 
     }
 
-    MZToggle {
+    VPNToggle {
         id: toggle
         objectName: "controllerToggle"
 
@@ -637,8 +636,7 @@ Item {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
-        //% "Close"
-        property var connectionInfoCloseText: qsTrId("vpn.connectionInfo.close")
+        property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
             right: parent.right
@@ -648,7 +646,7 @@ Item {
         }
         accessibleName: ipInfoPanel.isOpen
             ? connectionInfoCloseText
-            : MZI18n.ConnectionInfoIpInfoButtonLabel
+            : MZI18n.ConnectionInfoConnectionInformation
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
@@ -669,7 +667,7 @@ Item {
             anchors.centerIn: ipInfoToggleButton
             source: ipInfoPanel.isOpen
                 ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/nebula/resources/connection-info.svg"
+                : "qrc:/ui/resources/connection-info.svg"
             sourceSize {
                 height: iconSize
                 width: iconSize

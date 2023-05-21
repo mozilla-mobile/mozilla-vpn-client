@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="foo.qml" datatype="plaintext" source-language="en" target-language="en-US">
+    <body>
+      <trans-unit id="foo.1" xml:space="preserve">
+        <source>Hello world 1</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="foo.2" xml:space="preserve">
+        <source>Hello world 2</source>
+      </trans-unit>
+      <trans-unit id="foo.3" xml:space="preserve">
+        <source>Hello world 3</source>
+      </trans-unit>
+      <trans-unit id="foo.4" xml:space="preserve">
+        <source>Hello world 4 - fallback</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -6,7 +6,6 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
@@ -16,7 +15,7 @@ MZClickableRow {
     objectName: "serverCountry-" + code
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
-    property real multiHopMenuHeight: VPNFeatureList.get("multiHop").isSupported ? MZTheme.theme.menuHeight : 0
+    property real multiHopMenuHeight: MZFeatureList.get("multiHop").isSupported ? MZTheme.theme.menuHeight : 0
     property real animationDuration: 200 + (citiesRepeater.count * 25)
     property string _countryCode: code
     property var currentCityIndex
@@ -161,7 +160,7 @@ MZClickableRow {
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
         anchors.left: parent.left
-        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 6
+        anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 4
         width: serverCountry.width - anchors.leftMargin
 
         Accessible.role: Accessible.List
@@ -186,7 +185,7 @@ MZClickableRow {
                 Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
                 Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
                 radioButtonLabelText: _localizedCityName
-                accessibleName: _localizedCityName
+                accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
                 implicitWidth: parent.width
 
                 onClicked: {
@@ -208,6 +207,7 @@ MZClickableRow {
                 }
 
                 ServerLatencyIndicator {
+                    id: latencyIndicator
                     anchors {
                         right: parent.right
                         rightMargin: MZTheme.theme.hSpacing

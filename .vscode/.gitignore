@@ -1,0 +1,6 @@
+# As in this folder is probably lot's of personal dev config
+# let's keep this opt-in: 
+*
+# Those can be shared:
+!extensions.json
+!.*

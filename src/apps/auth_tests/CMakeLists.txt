@@ -50,6 +50,7 @@ target_link_libraries(app_auth_tests PRIVATE
     glean
     qtglean
     shared-sources
+    translations_auth_tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -95,10 +96,5 @@ foreach(filename ${UTEST_SOURCES})
         set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
     endforeach()
 endforeach()
-
-# Unit test mock resources
-target_sources(app_auth_tests PRIVATE
-    auth.qrc
-)
 
 qt_finalize_target(app_auth_tests)

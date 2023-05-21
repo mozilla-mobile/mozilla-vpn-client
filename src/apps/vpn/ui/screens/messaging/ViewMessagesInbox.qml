@@ -7,10 +7,9 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN 1.0
+import Mozilla.Shared.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
-import Mozilla.VPN.qmlcomponents 1.0
 
 MZViewBase {
     id: vpnFlickable
@@ -93,7 +92,7 @@ MZViewBase {
             _searchBarPlaceholderText: MZI18n.InAppMessagingSearchBarPlaceholderText
             _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
 
-            _filterProxySource: VPNAddonManager
+            _filterProxySource: MZAddonManager
             _filterProxyCallback: obj => obj.addon.type === "message" && obj.addon.containsSearchString(getSearchBarText())
             _sortProxyCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
             _editCallback: () => { vpnFlickable.isEditing = false }
@@ -184,6 +183,7 @@ MZViewBase {
 
                 MZSwipeDelegate {
                     id: swipeDelegate
+                    objectName: "messageItem-" + addon.id
 
                     property real deleteLabelWidth: 0.0
 
@@ -341,7 +341,7 @@ MZViewBase {
 
     MZFilterProxyModel {
         id: messagesModel
-        source: VPNAddonManager
+        source: MZAddonManager
         filterCallback: obj => { return obj.addon.type === "message" }
         Component.onCompleted: {
             vpnFlickable.isEmptyState = Qt.binding(() => { return messagesModel.count === 0} )

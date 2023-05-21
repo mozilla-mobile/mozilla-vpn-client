@@ -99,7 +99,7 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::activate() {}
 
-void MozillaVPN::deactivate() {}
+void MozillaVPN::deactivate(bool block) {}
 
 void MozillaVPN::refreshDevices() {}
 
@@ -115,12 +115,10 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
 
-void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
-
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshData) {}
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 void MozillaVPN::abortAuthentication() {}
 
@@ -134,16 +132,15 @@ void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
 
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
-
 void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
 
-void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 
-bool MozillaVPN::handleCloseEvent() { return true; }
+// static
+QString MozillaVPN::appVersionForUpdate() { return "42"; }

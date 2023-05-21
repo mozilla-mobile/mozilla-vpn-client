@@ -78,6 +78,8 @@ class Localizer final : public QAbstractListModel {
                                  const QDateTime& messageDateTime,
                                  const QString& yesterday);
 
+  QStringList fallbackForLanguage(const QString& code);
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
@@ -100,14 +102,13 @@ class Localizer final : public QAbstractListModel {
   QString findLanguageCode(const QString& languageCode,
                            const QString& countryCode) const;
 
-  static QString retrieveCurrencySymbolFallback(const QString& currencyIso4217,
-                                                const QLocale& currentLocale);
-
   void settingsChanged();
 
   bool createTranslator(const QLocale& locale);
 
   void maybeLoadLanguageFallback(const QString& code);
+
+  void maybeLoadLanguageFallbackData();
 
  private:
   QList<QTranslator*> m_translators;

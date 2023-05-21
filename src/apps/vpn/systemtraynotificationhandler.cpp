@@ -80,13 +80,12 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel->setEnabled(false);
 
   m_lastLocationLabel = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpActivate);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpActivate);
   });
   m_lastLocationLabel->setEnabled(false);
 
   m_disconnectAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(
-        ExternalOpHandler::OpDeactivate);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpDeactivate);
   });
 
   m_separator = m_menu->addSeparator();
@@ -97,7 +96,7 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_menu->addSeparator();
 
   m_quitAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(ExternalOpHandler::OpQuit);
+    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpQuit);
   });
 }
 
@@ -106,7 +105,8 @@ void SystemTrayNotificationHandler::setStatusMenu() {
 
   // TODO: Check if method is called on these devices.
 #if defined(MZ_LINUX) || defined(MZ_WINDOWS)
-  m_systemTrayIcon->setToolTip(qtTrId("vpn.main.productName"));
+  m_systemTrayIcon->setToolTip(
+      I18nStrings::instance()->t(I18nStrings::ProductName));
   m_systemTrayIcon->setContextMenu(m_menu.get());
   m_systemTrayIcon->show();
 #endif

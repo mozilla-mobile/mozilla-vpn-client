@@ -30,7 +30,6 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
           &SettingsWatcher::maybeServerSwitch);
 
   CONNECT(captivePortalAlertChanged);
-  CONNECT(protectSelectedAppsChanged);
   CONNECT(vpnDisabledAppsChanged);
 
 #undef CONNECT
@@ -89,7 +88,7 @@ void SettingsWatcher::maybeServerSwitch() {
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               TaskControllerAction::eServerCoolDownNotNeeded));
+                               Controller::eServerCoolDownNotNeeded));
 }
 
 void SettingsWatcher::operationCompleted() { m_operationRunning = false; }

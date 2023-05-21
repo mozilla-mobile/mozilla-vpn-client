@@ -61,8 +61,7 @@ MZAlert {
                 name: MZErrorHandler.NoConnectionAlert
                 PropertyChanges {
                     target: alertBox
-                    //% "No internet connection"
-                    alertText: qsTrId("vpn.alert.noInternet")
+                    alertText: MZI18n.GlobalNoInternetConnection
                     alertActionText: qsTrId("vpn.alert.tryAgain")
                     visible: true
                 }

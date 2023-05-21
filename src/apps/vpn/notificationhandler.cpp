@@ -4,6 +4,8 @@
 
 #include "notificationhandler.h"
 
+#include "addons/addonmessage.h"
+#include "addons/manager/addonmanager.h"
 #include "app.h"
 #include "appconstants.h"
 #include "controller.h"
@@ -43,6 +45,7 @@ NotificationHandler* s_instance = nullptr;
 // static
 NotificationHandler* NotificationHandler::create(QObject* parent) {
   NotificationHandler* handler = createInternal(parent);
+
   handler->initialize();
   return handler;
 }
@@ -78,6 +81,9 @@ NotificationHandler::NotificationHandler(QObject* parent) : QObject(parent) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  connect(AddonManager::instance(), &AddonManager::addonCreated, this,
+          &NotificationHandler::addonCreated);
 }
 
 NotificationHandler::~NotificationHandler() {
@@ -103,7 +109,7 @@ void NotificationHandler::showNotification() {
   // We want to show notifications about the location in use by the controller,
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
-  QString localizedCityName =
+  QString localizedExitCityName =
       vpn->controller()->currentServer().localizedExitCityName();
   QString localizedCountryName =
       vpn->controller()->currentServer().localizedExitCountryName();
@@ -126,7 +132,7 @@ void NotificationHandler::showNotification() {
             vpn->controller()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
-            (localizedPreviousExitCityName == localizedCityName)) {
+            (localizedPreviousExitCityName == localizedExitCityName)) {
           // Don't show notifications unless the exit server changed, see:
           // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
           return;
@@ -139,8 +145,9 @@ void NotificationHandler::showNotification() {
                 I18nStrings::NotificationsVPNSwitchedServersTitle),
             I18nStrings::instance()
                 ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
-                .arg(localizedPreviousExitCityName, localizedCityName),
+                .arg(localizedPreviousExitCityName, localizedExitCityName),
             NOTIFICATION_TIME_MSEC);
+
         return;
       }
 
@@ -167,7 +174,7 @@ void NotificationHandler::showNotification() {
               I18nStrings::instance()->t(
                   I18nStrings::NotificationsVPNConnectedTitle),
               I18nStrings::instance()
-                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessage)
+                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessages)
                   .arg(localizedExitCityName, localizedEntryCityName),
               NOTIFICATION_TIME_MSEC);
         } else {
@@ -175,8 +182,8 @@ void NotificationHandler::showNotification() {
                          I18nStrings::instance()->t(
                              I18nStrings::NotificationsVPNConnectedTitle),
                          I18nStrings::instance()
-                             ->t(I18nStrings::NotificationsVPNConnectedMessage)
-                             .arg(localizedCityName),
+                             ->t(I18nStrings::NotificationsVPNConnectedMessages)
+                             .arg(localizedExitCityName),
                          NOTIFICATION_TIME_MSEC);
         }
       }
@@ -190,13 +197,32 @@ void NotificationHandler::showNotification() {
           return;
         }
         // "VPN Disconnected"
-        notifyInternal(None,
-                       I18nStrings::instance()->t(
-                           I18nStrings::NotificationsVPNDisconnectedTitle),
-                       I18nStrings::instance()
-                           ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
-                           .arg(localizedCityName),
-                       NOTIFICATION_TIME_MSEC);
+        ServerData* serverData = vpn->serverData();
+        if (serverData->multihop()) {
+          QString localizedEntryCityName =
+              vpn->controller()->currentServer().localizedEntryCityName();
+
+          QString localizedExitCityName =
+              vpn->controller()->currentServer().localizedExitCityName();
+
+          notifyInternal(
+              None,
+              I18nStrings::instance()->t(
+                  I18nStrings::NotificationsVPNDisconnectedTitle),
+              I18nStrings::instance()
+                  ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
+                  .arg(localizedExitCityName, localizedEntryCityName),
+              NOTIFICATION_TIME_MSEC);
+        } else {
+          notifyInternal(
+              None,
+              I18nStrings::instance()->t(
+                  I18nStrings::NotificationsVPNDisconnectedTitle),
+              I18nStrings::instance()
+                  ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
+                  .arg(localizedExitCityName),
+              NOTIFICATION_TIME_MSEC);
+        }
       }
       return;
 
@@ -333,10 +359,37 @@ void NotificationHandler::messageClickHandle() {
   }
 
   if (!ExternalOpHandler::instance()->request(
-          ExternalOpHandler::OpNotificationClicked)) {
+          MozillaVPN::OpNotificationClicked)) {
     return;
   }
 
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;
+}
+
+void NotificationHandler::addonCreated(Addon* addon) {
+  if (addon->type() != "message") {
+    return;
+  }
+
+  if (addon->enabled()) {
+    maybeAddonNotification(addon);
+  }
+
+  connect(addon, &Addon::conditionChanged, this, [this, addon](bool enabled) {
+    if (enabled) {
+      maybeAddonNotification(addon);
+    }
+  });
+}
+
+void NotificationHandler::maybeAddonNotification(Addon* addon) {
+  Q_ASSERT(addon->type() == "message");
+
+  AddonMessage* addonMessage = qobject_cast<AddonMessage*>(addon);
+  if (addonMessage->isReceived()) {
+    newInAppMessageNotification(addon->property("title").toString(),
+                                addon->property("subtitle").toString());
+    addonMessage->updateMessageStatus(AddonMessage::MessageStatus::Notified);
+  }
 }

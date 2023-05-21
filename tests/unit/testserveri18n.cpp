@@ -13,21 +13,25 @@ void TestServerI18n::basic() {
   Localizer l;
 
   // Non existing countries/cities
-  QCOMPARE(ServerI18N::translateCountryName("FOO", "FOO"), "FOO");
-  QCOMPARE(ServerI18N::translateCityName("FOO", "FOO"), "FOO");
-  QCOMPARE(ServerI18N::translateCityName("au", "FOO"), "FOO");
+  QCOMPARE(ServerI18N::instance()->translateCountryName("FOO", "FOO"), "FOO");
+  QCOMPARE(ServerI18N::instance()->translateCityName("FOO", "FOO"), "FOO");
+  QCOMPARE(ServerI18N::instance()->translateCityName("au", "FOO"), "FOO");
 
   // Existing language
   settingsHolder.setLanguageCode("sk");
-  QCOMPARE(ServerI18N::translateCountryName("au", "FOO"), "au_SK");
-  QCOMPARE(ServerI18N::translateCityName("au", "Melbourne"), "Melbourne_SK");
-  QCOMPARE(ServerI18N::translateCityName("au", "Sydney"), "Sydney_SK");
+  QCOMPARE(ServerI18N::instance()->translateCountryName("au", "FOO"), "au_SK");
+  QCOMPARE(ServerI18N::instance()->translateCityName("au", "Melbourne"),
+           "Melbourne_SK");
+  QCOMPARE(ServerI18N::instance()->translateCityName("au", "Sydney"),
+           "Sydney_SK");
 
   // Non-existing language with fallback to en
   settingsHolder.setLanguageCode("fr");
-  QCOMPARE(ServerI18N::translateCountryName("au", "FOO"), "au_EN");
-  QCOMPARE(ServerI18N::translateCityName("au", "Melbourne"), "Melbourne");
-  QCOMPARE(ServerI18N::translateCityName("au", "Sydney"), "Sydney_EN");
+  QCOMPARE(ServerI18N::instance()->translateCountryName("au", "FOO"), "au_EN");
+  QCOMPARE(ServerI18N::instance()->translateCityName("au", "Melbourne"),
+           "Melbourne");
+  QCOMPARE(ServerI18N::instance()->translateCityName("au", "Sydney"),
+           "Sydney_EN");
 }
 
 static TestServerI18n s_testServerI18n;

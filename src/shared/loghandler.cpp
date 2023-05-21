@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QMessageLogContext>
 #include <QProcessEnvironment>
+#include <QScopeGuard>
 #include <QStandardPaths>
 #include <QString>
 #include <QTextStream>
@@ -204,9 +205,9 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 }
 
 // static
-void LogHandler::enableStderr() {
+void LogHandler::setStderr(bool enabled) {
   QMutexLocker<QMutex> lock(&s_mutex);
-  maybeCreate(lock)->m_stderrEnabled = true;
+  maybeCreate(lock)->m_stderrEnabled = enabled;
 }
 
 LogHandler::LogHandler(const QMutexLocker<QMutex>& proofOfLock) {
@@ -240,10 +241,13 @@ void LogHandler::addLog(const Log& log,
 
   emit logEntryAdded(buffer);
 
-#if defined(MZ_ANDROID) && defined(MZ_DEBUG)
-  const char* str = buffer.constData();
-  if (str) {
-    __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME, str);
+#if defined(MZ_ANDROID)
+  if (!Constants::inProduction()) {
+    const char* str = buffer.constData();
+    if (str) {
+      __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME,
+                          str);
+    }
   }
 #endif
 }
@@ -304,6 +308,40 @@ void LogHandler::setLocation(const QString& path) {
   }
 }
 
+// static
+void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
+                                 const QString& filename) {
+  QFile oldLogFile(filename);
+
+  // Nothing to do if the log file is already undersize.
+  if (!oldLogFile.exists()) {
+    return;
+  }
+  if (oldLogFile.size() < LOG_MAX_FILE_SIZE) {
+    return;
+  }
+
+  // Rename the old log file while we truncate and ensure it gets cleaned up.
+  auto guard = qScopeGuard([&] { oldLogFile.remove(); });
+  if (!oldLogFile.rename(filename + ".bak")) {
+    return;
+  }
+
+  // Discard all but the tail of the log and align to the next new line.
+  if (!oldLogFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return;
+  }
+  oldLogFile.seek(oldLogFile.size() - (LOG_MAX_FILE_SIZE / 2));
+  oldLogFile.readLine();
+
+  // Re-create the original log file and copy the truncated contents.
+  QFile newLogFile(filename);
+  if (newLogFile.open(QIODevice::WriteOnly | QIODevice::Truncate |
+                      QIODevice::Text)) {
+    newLogFile.write(oldLogFile.readAll());
+  }
+}
+
 void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
   Q_ASSERT(!m_logFile);
@@ -322,11 +360,9 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   }
 
   QString logFileName = appDataLocation.filePath(AppConstants::LOG_FILE_NAME);
-  m_logFile = new QFile(logFileName);
-  if (m_logFile->size() > LOG_MAX_FILE_SIZE) {
-    m_logFile->remove();
-  }
+  truncateLogFile(proofOfLock, logFileName);
 
+  m_logFile = new QFile(logFileName);
   if (!m_logFile->open(QIODevice::WriteOnly | QIODevice::Append |
                        QIODevice::Text)) {
     delete m_logFile;
@@ -450,8 +486,11 @@ bool LogHandler::writeLogsToLocation(
   QString filename;
   QDate now = QDate::currentDate();
 
-  QTextStream(&filename) << "mozillavpn-" << now.year() << "-" << now.month()
-                         << "-" << now.day() << ".txt";
+  QFileInfo logFileInfo(AppConstants::LOG_FILE_NAME);
+
+  QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year() << "-"
+                         << now.month() << "-" << now.day() << "."
+                         << logFileInfo.completeSuffix();
 
   QDir logDir(QStandardPaths::writableLocation(location));
   QString logFile = logDir.filePath(filename);
@@ -461,9 +500,9 @@ bool LogHandler::writeLogsToLocation(
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
-      QTextStream(&filename)
-          << "mozillavpn-" << now.year() << "-" << now.month() << "-"
-          << now.day() << "_" << i << ".txt";
+      QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year()
+                             << "-" << now.month() << "-" << now.day() << "_"
+                             << i << "." << logFileInfo.completeSuffix();
       logFile = logDir.filePath(filename);
       if (!QFileInfo::exists(logFile)) {
         logger.debug() << "Filename found!" << i;

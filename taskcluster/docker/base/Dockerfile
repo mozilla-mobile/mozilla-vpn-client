@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Add worker user
 RUN mkdir /builds && \
@@ -53,6 +53,12 @@ ENV SHELL=/bin/bash \
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.cache
+
+# The build will be run as worker, which has no access
+# thus we should prep the folders
+RUN mkdir -p /builds/worker/.cache/go-build &&\
+    chown -R worker:worker /builds/worker/.cache/ &&\
+    chmod -R 777 /builds/worker/
 
 # run-task expects to run as root
 USER root

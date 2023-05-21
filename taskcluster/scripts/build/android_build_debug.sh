@@ -5,8 +5,11 @@
 set -e
 
 # This script is used in the Android Debug (universal) build task
-git submodule update --init --depth 1
-git submodule update --remote i18n
+git submodule update --init --recursive
+
+for i in src/apps/*/translations/i18n; do
+  git submodule update --remote $i
+done
 
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:
@@ -35,3 +38,7 @@ if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
 fi
 
 ccache -s
+
+# Check for unintended writes to the source directory.
+echo "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh

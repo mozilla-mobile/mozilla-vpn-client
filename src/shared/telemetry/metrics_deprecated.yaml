@@ -1,0 +1,588 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file defines the metrics that are recorded by the Glean SDK.
+# APIs to use these pings are automatically generated at build time using
+# the `glean_parser` PyPI package.
+
+# For the Metrics YAML Registry Format, see the official documentation:
+# https://mozilla.github.io/glean/book/reference/yaml/metrics.html
+
+# All the samples are stored in a single category (`sample`) to simplify the
+# C++-JS integration which is currently based on QT signals. The samples are
+# "normalized" as const strings via a script (`scripts/utils/generate_glean.py
+# vpn`), and used in the C++ code to communicate with the JS code.
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+sample:
+  addon_cta_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User clicked primary CTA in an addon
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
+    data_sensitivity:
+      - interaction
+    extra_keys:
+      addon_id:
+        description: Addon identifier
+        type: string
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  addon_message_state_changed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The addon message' state changed
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      message_id:
+        description: |
+          Addon identifier
+        type: string
+      message_state:
+        description: |
+          Received, Notified, Read, or Dismissed
+        type: string
+
+  addon_state_changed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      An addon's state changed
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      addon_id:
+        description: |
+          Addon identifier
+        type: string
+      state:
+        description: |
+          Installed, Enabled, or Disabled
+        type: string
+
+  authentication_acnt_del_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has advanced in the authentication flow for the account deletion.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the authentication state, e.g. "sign-in", "sign-out",
+          "totp", etc. The list of states can be found in
+          `authenticationinapp.h`.
+        type: string
+
+  authentication_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user is shown an error while authenticating in the app.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+    extra_keys:
+      reason:
+        description: |
+          The error shown: Timeout | IncorrectPassword | InvalidEmail |
+          InvalidOrExpiredVerificiationCode | InvalidTOTP | InvalidUnblockCode
+        type: string
+
+  authentication_inapp_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The authentication in app has failed for a non-handled FxA error.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      errno:
+        description: The FxA error number
+        type: string
+      validation:
+        description: Extra validation string for errno 107
+        type: string
+      verificationmethod:
+        description: Verification method to be used for errno 125
+        type: string
+      error:
+        description: Error string
+        type: string
+      message:
+        description: Extra error message
+        type: string
+
+  authentication_inapp_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has advanced in the authentication flow.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the authentication state, e.g. "sign-in", "sign-out",
+          "totp", etc. The list of states can be found in
+          `authenticationinapp.h`.
+        type: string
+
+  authentication_sub_manage_step:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has advanced in the authentication flow for the
+      subscription management.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      state:
+        description: |
+          The name of the authentication state, e.g. "sign-in", "sign-out",
+          "totp", etc. The list of states can be found in
+          `authenticationinapp.h`.
+        type: string
+
+  bottom_navigation_bar_click:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has tapped a bottom navigation bar button.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3630
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+    expires: never
+    extra_keys:
+      bar_button:
+        description: |
+          The name of the bar button tapped:
+          ScreenMessaging | ScreenHome | ScreenSettings | Unknown
+        type: string
+
+  delete_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “delete account” button from the
+      account deletion view.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+
+  guide_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened a guide from the tips and tricks page
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the guide that was opened
+        type: string
+
+  guide_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has closed a guide from the tips and tricks page
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the guide that was closed
+        type: string
+      duration_ms:
+        description: |
+          The amount of time that the user spent in the guide (in seconds)
+        type: quantity
+        unit: milliseconds
+
+  error_alert_shown:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A generic error alet is shown.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3320
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      task:
+        description: The name of the task that has generated this error.
+        type: string
+      filename:
+        description: |
+          The filename that has triggered the error
+        type: string
+      linenumber:
+        description: |
+          The line number where the error has been triggered
+        type: quantity
+
+  non_default_language_used:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has chosen a default language.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-3742
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - amarchesini@mozilla.com
+    expires: never
+    extra_keys:
+      language_code:
+        description: The language code chosen.
+        type: string
+
+  push_message_received:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A device has been removed from the user's account.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+    extra_keys:
+      type:
+        description: |
+          The message type.
+        type: string
+
+  tutorial_aborted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has aborted a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was aborted
+        type: string
+
+  tutorial_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has completed a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was completed
+        type: string
+
+  tutorial_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      id:
+        description: |
+          The id of the tutorial that was started
+        type: string
+
+  tutorial_step_viewed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed a step in a tutorial
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-2292
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+    expires: never
+    extra_keys:
+      tutorial_id:
+        description: |
+          The id of the tutorial in progress
+        type: string
+      step_id:
+        description: |
+          The id of the step that was viewed
+        type: string
+
+  websocket_close_attempted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Close attempt has started.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+
+  websocket_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Pong timed out. Probably the connection was silently broken.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+    extra_keys:
+      reason:
+        description: |
+          The reason why the websocket was closed.
+          https://doc.qt.io/qt-6/qwebsocketprotocol.html#CloseCode-enum
+        type: quantity
+
+  websocket_connected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Connection was succesfull.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+
+  websocket_connection_attempted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Connection attempt has started.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+
+  websocket_errored:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      There was an error with the connection.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31
+    extra_keys:
+      type:
+        description: |
+          The type of the error. One of these:
+          https://doc.qt.io/qt-6/qabstractsocket.html#SocketError-enum
+        type: quantity
+
+  websocket_pong_timed_out:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Pong timed out. Probably the connection was silently broken.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+    expires: 2023-12-31

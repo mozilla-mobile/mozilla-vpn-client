@@ -27,7 +27,7 @@ target_link_libraries(dummyvpn PRIVATE
     glean
     lottie
     nebula
-    translations
+    translations_vpn
     qtglean
 )
 
@@ -49,7 +49,7 @@ target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 qt6_add_qml_module(dummyvpn
-  URI Mozilla.VPN.qmlcomponents
+  URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
 

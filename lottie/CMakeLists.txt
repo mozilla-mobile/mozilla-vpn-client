@@ -20,7 +20,7 @@ endif()
 
 add_library(lottie STATIC)
 
-if(NOT MSVC)
+if(NOT MSVC AND NOT IOS)
   target_compile_options(lottie PRIVATE -Wall -Werror -Wno-conversion)
 endif()
 

@@ -129,11 +129,14 @@ void ConnectionHealth::startIdle() {
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
-  if (m_stability == stability) {
+  // Check the stability overwritten flag to see if we are attempting to force
+  // overwrite the stability through the inspector command.
+  if (m_stabilityOverwritten) {
+    logger.debug() << "Connection health stability is overwritten through the "
+                      "Inspector commandline. Forced stability value: "
+                   << stability;
     return;
   }
-
-  logger.debug() << "Stability changed:" << stability;
 
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
@@ -145,7 +148,19 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     mozilla::glean::sample::connection_health_no_signal.record();
     emit GleanDeprecated::instance()->recordGleanEvent(
         GleanSample::connectionHealthNoSignal);
+  } else {
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+    // Count successful health checks only on mobile apps, as they
+    // only do health checks when foregrounded.
+    mozilla::glean::session::connection_health_stable_count.add();
+#endif
   }
+
+  if (m_stability == stability) {
+    return;
+  }
+
+  logger.debug() << "Stability changed:" << stability;
 
   m_stability = stability;
   emit stabilityChanged();

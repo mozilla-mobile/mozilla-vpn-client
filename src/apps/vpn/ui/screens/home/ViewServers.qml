@@ -111,7 +111,7 @@ Item {
                             }
                             else if (multiHopEntryServer[0] === "") {
                                 // Choose a random entry server when switching to multihop
-                                var best = VPNServerCountryModel.recommendedLocations(2);
+                                var best = VPNRecommendedLocationModel.recommendedLocations(2);
                                 if ((best[0].country != multiHopExitServer[0]) || (best[0].name != multiHopExitServer[1])) {
                                     multiHopEntryServer = [best[0].country, best[0].name, best[0].localizedName];
                                 } else {
@@ -123,12 +123,12 @@ Item {
 
         ViewMultiHop {
             id: multiHopStackView
-            visible: VPNFeatureList.get("multiHop").isSupported
+            visible: MZFeatureList.get("multiHop").isSupported
         }
     }
 
     Component.onCompleted: {
-        if (!VPNFeatureList.get("multiHop").isSupported) {
+        if (!MZFeatureList.get("multiHop").isSupported) {
             return;
         }
 

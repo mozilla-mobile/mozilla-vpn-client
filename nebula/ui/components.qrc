@@ -23,7 +23,6 @@
         <file>components/MZCallout.qml</file>
         <file>components/MZCancelButton.qml</file>
         <file>components/MZCard.qml</file>
-        <file>components/MZCheckBoxAlert.qml</file>
         <file>components/MZCheckBox.qml</file>
         <file>components/MZCheckBoxRow.qml</file>
         <file>components/MZChevron.qml</file>
@@ -60,8 +59,6 @@
         <file>components/MZPopup.qml</file>
         <file>components/MZRadioButtonLabel.qml</file>
         <file>components/MZRadioDelegate.qml</file>
-        <file>components/MZSemiMonoLabel.qml</file>
-        <file>components/MZServerUnavailablePopup.qml</file>
         <file>components/MZSettingsItem.qml</file>
         <file>components/MZSettingsToggle.qml</file>
         <file>components/MZSignOut.qml</file>
@@ -74,13 +71,14 @@
         <file>components/MZTextBlock.qml</file>
         <file>components/MZTimer.qml</file>
         <file>components/MZToggleCard.qml</file>
-        <file>components/MZToggle.qml</file>
         <file>components/MZToolTip.qml</file>
         <file>components/MZTutorialCard.qml</file>
         <file>components/MZUIStates.qml</file>
         <file>components/MZVerticalSpacer.qml</file>
         <file>components/navigator/navigatorLoader.qml</file>
         <file>components/navigator/navigatorLoaderInternal.qml</file>
+        <file>components/navigationBar/MZBottomNavigationBar.qml</file>
+        <file>components/navigationBar/MZBottomNavigationBarButton.qml</file>
         <file>components/inAppAuth/qmldir</file>
         <file>components/inAppAuth/MZInAppAuthenticationBase.qml</file>
         <file>components/inAppAuth/MZInAppAuthenticationErrorPopup.qml</file>

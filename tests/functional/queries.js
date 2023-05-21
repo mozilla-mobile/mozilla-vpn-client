@@ -80,7 +80,6 @@ const screenHome = {
   TUTORIAL_POPUP_SECONDARY_BUTTON:
       new QmlQueryComposer('//tutorialPopupSecondaryButton'),
   TUTORIAL_UI: new QmlQueryComposer('//tutorialUiRoot'),
-  SUBSCRIPTION_NEEDED: new QmlQueryComposer('//vpnSubscriptionNeededView'),
 
   serverListView: {
     generateCountryId: (serverCode) => {
@@ -100,8 +99,13 @@ const screenHome = {
     SEARCH_BAR: new QmlQueryComposer('//countrySearchBar'),
     SEARCH_BAR_TEXT_FIELD: new QmlQueryComposer('//searchBarTextField'),
     SEARCH_BAR_ERROR: new QmlQueryComposer('//searchBarError'),
+    SINGLEHOP_SELECTOR_TAB: new QmlQueryComposer(
+        '//segmentedNavToggle/segmentedToggleBtnLayout/tabSingleHop'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
+    ALL_SERVERS_TAB: new QmlQueryComposer('//tabAllServers'),
+    VPN_MULTHOP_CHEVRON: new QmlQueryComposer('//vpnCollapsibleCardChevron'),
+    VPN_COLLAPSIBLE_CARD: new QmlQueryComposer('//vpnCollapsibleCard'),
   }
 };
 
@@ -199,16 +203,11 @@ const screenAuthenticationInApp = {
 
 const screenGetHelp = {
   BACK_BUTTON: new QmlQueryComposer('//getHelpBack'),
-  FEEDBACK: new QmlQueryComposer('//settingsGiveFeedback'),
   HELP_CENTER: new QmlQueryComposer('//helpCenter'),
   LINKS: new QmlQueryComposer('//getHelpLinks'),
   LOGS: new QmlQueryComposer('//viewLogs'),
   STACKVIEW: new QmlQueryComposer('//getHelpStackView'),
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
-
-  giveFeedbackView: {
-    SCREEN: new QmlQueryComposer('//giveFeedbackView'),
-  },
 
   contactSupportView: {
     SCREEN: new QmlQueryComposer('//contactUs'),
@@ -331,8 +330,8 @@ const screenSettings = {
       },
 
       SCREEN: new QmlQueryComposer('//settingsLanguagesView-flickable'),
-      SYSTEM_LANGUAGE_TOGGLE:
-          new QmlQueryComposer('//settingsSystemLanguageToggle'),
+      SYSTEM_LANGUAGE_RADIO_BUTTON:
+          new QmlQueryComposer('//systemLanguageRadioButton'),
     },
 
     notificationView: {
@@ -399,6 +398,12 @@ const screenBackendFailure = {
 
 const screenMessaging = {
   SCREEN: new QmlQueryComposer('//messageInboxView'),
+  messageItem: function(id) {
+    return new QmlQueryComposer(`//messageItem-${id}`);
+  },
+  messageView: function(id) {
+    return new QmlQueryComposer(`//messageView-${id}`);
+  },
 };
 
 const screenDeleteAccount = {
@@ -422,6 +427,12 @@ const screenDeleteAccount = {
       '//accountDeletionLayout/accountDeletionCheckbox-check4'),
   CHECKBOX4_CB: new QmlQueryComposer(
       '//accountDeletionLayout/accountDeletionCheckbox-check4/checkbox'),
+};
+
+const screenSubscriptionNeeded = {
+  SUBSCRIPTION_NEEDED_VIEW: new QmlQueryComposer('//vpnSubscriptionNeededView'),
+  SUBSCRIPTION_NEEDED_BUTTON:
+      new QmlQueryComposer('//vpnSubscriptionNeededButton'),
 };
 
 const navBar = {
@@ -448,6 +459,7 @@ module.exports = {
   screenTipsAndTricks,
   screenMessaging,
   screenDeleteAccount,
+  screenSubscriptionNeeded,
   global,
   navBar,
 }

@@ -33,9 +33,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
-#include "models/featuremodel.h"
-#include "models/feedbackcategorymodel.h"
 #include "models/recentconnections.h"
+#include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
 #include "models/subscriptiondata.h"
 #include "models/supportcategorymodel.h"
@@ -53,7 +52,6 @@
 #include "telemetry.h"
 #include "telemetry/gleansample.h"
 #include "temporarydir.h"
-#include "tutorial/tutorial.h"
 #include "update/updater.h"
 
 #ifdef MZ_DEBUG
@@ -72,6 +70,7 @@
 #endif
 
 #ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #endif
 
@@ -90,7 +89,6 @@
 #endif
 
 #ifdef MZ_WASM
-#  include "platforms/wasm/wasmnetworkrequest.h"
 #  include "platforms/wasm/wasmwindowcontroller.h"
 #endif
 
@@ -174,7 +172,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances()) {
+    if (!EventListener::checkOtherInstances(
+            I18nStrings::instance()->t(I18nStrings::ProductName))) {
       return 0;
     }
 
@@ -221,7 +220,7 @@ int CommandUI::run(QStringList& tokens) {
 #  if QT_VERSION >= 0x060600
 #    error We have forgotten to remove this Huawei hack!
 #  endif
-    if (AndroidUtils::GetManufacturer() == "Huawei") {
+    if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
@@ -296,8 +295,6 @@ int CommandUI::run(QStringList& tokens) {
 
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN",
                                  MozillaVPN::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNFeatureList",
-                                 FeatureModel::instance());
     qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         MozillaVPN::instance()->captivePortalDetection());
@@ -308,12 +305,12 @@ int CommandUI::run(QStringList& tokens) {
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
                                  MozillaVPN::instance()->deviceModel());
 
-    qmlRegisterSingletonInstance(
-        "Mozilla.VPN", 1, 0, "VPNFeedbackCategoryModel",
-        MozillaVPN::instance()->feedbackCategoryModel());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
                                  "VPNRecentConnectionsModel",
                                  RecentConnections::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
+                                 "VPNRecommendedLocationModel",
+                                 RecommendedLocationModel::instance());
     qmlRegisterSingletonInstance(
         "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
         MozillaVPN::instance()->supportCategoryModel());
@@ -351,11 +348,6 @@ int CommandUI::run(QStringList& tokens) {
                                    ProductsHandler::instance());
     }
 
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNTutorial",
-                                 Tutorial::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAddonManager",
-                                 AddonManager::instance());
-
     // TODO: MZI18n should be moved to QmlEngineHolder but it requires extra
     // work for the generation of i18nstrings.h/cpp for the unit-test app.
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
@@ -378,7 +370,8 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
-        []() { MozillaVPN::instance()->deactivate(); }, Qt::DirectConnection);
+        []() { MozillaVPN::instance()->deactivate(true); },
+        Qt::DirectConnection);
 
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &App::quit, Qt::QueuedConnection);
@@ -434,11 +427,6 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
-
-    NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
-                                      WasmNetworkRequest::getResource,
-                                      WasmNetworkRequest::postResource,
-                                      WasmNetworkRequest::postResourceIODevice);
 #endif
 
 #ifdef MVPN_WEBEXTENSION

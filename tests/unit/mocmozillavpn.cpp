@@ -45,7 +45,11 @@ ServerData* MozillaVPN::serverData() const {
 }
 
 ServerCountryModel* MozillaVPN::serverCountryModel() const {
-  return new ServerCountryModel();
+  static ServerCountryModel* scm = nullptr;
+  if (!scm) {
+    scm = new ServerCountryModel();
+  }
+  return scm;
 }
 
 ServerLatency* MozillaVPN::serverLatency() const {
@@ -106,7 +110,7 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::activate() {}
 
-void MozillaVPN::deactivate() {}
+void MozillaVPN::deactivate(bool block) {}
 
 void MozillaVPN::refreshDevices() {}
 
@@ -122,12 +126,10 @@ void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}
 
-void MozillaVPN::submitFeedback(const QString&, const qint8, const QString&) {}
-
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {}
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 
@@ -138,8 +140,6 @@ void MozillaVPN::maybeRegenerateDeviceKey() {}
 void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
-
-void MozillaVPN::exitForUnrecoverableError(const QString& reason) {}
 
 void MozillaVPN::requestDeleteAccount() {}
 
@@ -152,8 +152,9 @@ void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
 void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
-void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 
-bool MozillaVPN::handleCloseEvent() { return true; }
+// static
+QString MozillaVPN::appVersionForUpdate() { return "42"; }

@@ -107,7 +107,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(MZ_WASM) || defined(MZ_ANDROID)
+    defined(MZ_DUMMY) || defined(MZ_WASM)
   return true;
 #else
   return false;
@@ -123,6 +123,8 @@ bool FeatureCallback_unsecuredNetworkNotification() {
 #endif
 }
 
+// Free trials are currently not being used on any platforms
+// Leaving this code in case we want to re-enable them in the future
 bool FeatureCallback_freeTrial() {
 #if defined(MZ_IOS)
   return true;

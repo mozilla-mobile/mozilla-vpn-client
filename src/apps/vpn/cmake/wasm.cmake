@@ -7,8 +7,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/dummy/dummycontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macosmenubar.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmnetworkrequest.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmnetworkrequest.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmnetworkwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmnetworkwatcher.h
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/wasm/wasmwindowcontroller.cpp

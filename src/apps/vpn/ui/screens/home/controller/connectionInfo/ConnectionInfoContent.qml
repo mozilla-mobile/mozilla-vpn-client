@@ -63,7 +63,7 @@ MZFlickable {
                     MZLottieAnimation {
                         id: speedometerAnimation
                         loop: false
-                        source: ":/nebula/resources/animations/speedometer_animation.json"
+                        source: ":/ui/resources/animations/speedometer_animation.json"
                     }
                 }
 
@@ -145,7 +145,7 @@ MZFlickable {
                     ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelPing
                         subtitle: VPNConnectionBenchmark.pingLatency + " " + MZI18n.ConnectionInfoUnitPing
-                        iconPath: "qrc:/nebula/resources/connection-green.svg"
+                        iconPath: "qrc:/ui/resources/connection-green.svg"
                     }
 
                     Rectangle {
@@ -159,14 +159,14 @@ MZFlickable {
                         //% "Download"
                         title: qsTrId("vpn.connectionInfo.download")
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.downloadBps)
-                        iconPath: "qrc:/nebula/resources/download.svg"
+                        iconPath: "qrc:/ui/resources/download.svg"
                     }
 
                     Rectangle {
                         color: MZTheme.colors.white
                         height: 1
                         opacity: 0.2
-                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
+                        visible: MZFeatureList.get("benchmarkUpload").isSupported
 
                         Layout.fillWidth: true
                     }
@@ -174,8 +174,8 @@ MZFlickable {
                     ConnectionInfoItem {
                         title: MZI18n.ConnectionInfoLabelUpload
                         subtitle: root.getConnectionLabel(VPNConnectionBenchmark.uploadBps)
-                        iconPath: "qrc:/nebula/resources/upload.svg"
-                        visible: VPNFeatureList.get("benchmarkUpload").isSupported
+                        iconPath: "qrc:/ui/resources/upload.svg"
+                        visible: MZFeatureList.get("benchmarkUpload").isSupported
                     }
                 }
             }

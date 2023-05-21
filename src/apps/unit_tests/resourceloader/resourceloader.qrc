@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="replace/encodedPassword.txt">encodedPassword.txt</file>
+        <file alias="resources/encodedPassword.txt">../../../shared/resources/encodedPassword.txt</file>
+        <file alias="replace/languages.json">languages.json</file>
+        <file alias="replace/LICENSE.md">LICENSE.md</file>
+    </qresource>
+</RCC>

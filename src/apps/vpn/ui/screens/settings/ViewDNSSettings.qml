@@ -37,6 +37,16 @@ MZViewBase {
         root.dnsSelectionChanged = true;
     }
 
+    function saveChange(dnsProviderFlags, userDNS = undefined) {
+        if (MZSettings.dnsProviderFlags !== dnsProviderFlags) {
+            MZSettings.dnsProviderFlags = dnsProviderFlags;
+        }
+
+        if (userDNS !== undefined && MZSettings.userDNS != userDNS) {
+            MZSettings.userDNS = userDNS;
+        }
+    }
+
     function maybeSaveChange() {
         if (!root.dnsSelectionChanged && ipInput.text === MZSettings.userDNS) {
             return;
@@ -45,17 +55,18 @@ MZViewBase {
         root.dnsSelectionChanged = false;
 
         if (!root.customDNS) {
-            MZSettings.dnsProviderFlags = MZSettings.Gateway;
+            saveChange(MZSettings.Gateway);
             return;
         }
 
         if (ipInput.text !== "" && VPN.validateUserDNS(ipInput.text)) {
-            MZSettings.userDNS = ipInput.text
-            MZSettings.dnsProviderFlags = MZSettings.Custom;
+            saveChange(MZSettings.Custom, ipInput.text);
             return;
         }
 
-        MZSettings.dnsProviderFlags = MZSettings.Gateway;
+        if (MZSettings.userDNS === "" || !VPN.validateUserDNS(MZSettings.userDNS)) {
+            saveChange(MZSettings.Gateway);
+        }
     }
 
     function reset() {
@@ -210,6 +221,12 @@ MZViewBase {
                     onTextChanged: {
                         ipInput.valueInvalid = ipInput.text !== "" && !VPN.validateUserDNS(ipInput.text);
                         ipInput.error = MZI18n.SettingsDnsSettingsCustomDNSError
+                    }
+
+                    onActiveFocusChanged: {
+                       if (!activeFocus && !ipInput.focusReasonA11y) {
+                           maybeSaveChange();
+                       }
                     }
                 }
 

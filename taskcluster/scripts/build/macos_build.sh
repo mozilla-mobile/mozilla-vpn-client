@@ -48,6 +48,7 @@ print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml
 conda activate VPN
+./scripts/macos/conda_install_extras.sh  
 conda info
 
 # Conda Cannot know installed MacOS SDK'S
@@ -63,8 +64,10 @@ export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
-git submodule update --init --depth 1 || die "Failed to init submodules"
-git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+git submodule update --init --recursive || die "Failed to init submodules"
+for i in src/apps/*/translations/i18n; do
+  git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
+done
 print G "done."
 
 # Install dependendy got get-secret.py
@@ -90,7 +93,6 @@ then
     npm install -g @sentry/cli
 fi
 
-
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
 
@@ -98,8 +100,8 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
@@ -134,5 +136,9 @@ cp -r ./macos/pkg/Distribution tmp || die
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
+
+# Check for unintended writes to the source directory.
+print G "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh
 
 print G "Done!"

@@ -1,0 +1,41 @@
+[
+ {
+  "wikiDataID": "Q10134",
+  "languageCode": "tlh",
+  "languages": {
+   "tlh": " "
+  },
+  "currencies": {
+   "EUR": "€"
+  }
+ },
+ {
+  "wikiDataID": "Q1860",
+  "languageCode": "en",
+  "languages": {
+   "tlh": "Klingon"
+  }
+ },
+ {
+  "wikiDataID": "Q652",
+  "languageCode": "it",
+  "languages": {
+   "tlh": "lingua klingon"
+  }
+ },
+ {
+  "wikiDataID": "Q150",
+  "languageCode": "fr",
+  "languages": {
+   "tlh": "klingon"
+  }
+ },
+ {
+  "wikiDataID": "Q7979",
+  "languageCode": "en_GB",
+  "languages": {},
+  "currencies": {
+   "BBB": "WOW"
+  }
+ }
+]

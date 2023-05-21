@@ -1,0 +1,54 @@
+{
+  "api_version": "0.1",
+  "id": "message_paid_research_old",
+  "name": "Participate in paid research to help make VPN better",
+  "type": "message",
+  "translatable": false,
+  "conditions": {
+    "max_client_version": "2.14.99",
+    "locales": ["en"],
+    "javascript": "currencyCheck.js"
+  },
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "id": "message_paid_research",
+    "title": "Participate in paid research to help make VPN better",
+    "subtitle": "This study will take place in April and May 2023, and you will receive up to $100 USD (or the equivalent in your local currency) as our thanks for your time and feedback.",
+    "badge": "survey",
+    "blocks": [
+      { "id": "c_1",
+        "type": "text",
+        "content": "We’re exploring ways to enhance the Mozilla VPN experience and want to hear your thoughts. This research can be completed right from your home computer."
+      },
+      { "id": "c_3",
+        "type": "text",
+        "content": "If you’re interested, please take a short survey. We’ll review your responses and follow up with you if you’re selected."
+      },
+      { "id": "c_list",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "If you are invited to the study, you will be asked to log into our research platform and complete 4 short activities over the course of 2 days, such as reviewing a new prototype and participating in discussions about new ideas."
+          },
+          {
+            "id": "l_2",
+            "content": "We estimate that all of this will take no more than 30-45 min of your time in total, and you will be compensated $100."
+          }
+       ]
+      },
+      { "id": "c_z",
+        "type": "text",
+        "content": "Thanks for helping us improve Mozilla VPN!"
+      },
+      { "id": "button",
+        "type": "button",
+        "style": "primary",
+        "content": "Take the survey",
+        "javascript": "OpenSurveyURL.js"
+      }
+    ]
+  }
+}

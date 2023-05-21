@@ -258,33 +258,6 @@ exports.endpoints = {
       body: SubscriptionDetails,
     },
 
-    '/api/v3/vpn/products': {
-      status: 200,
-      requiredHeaders: ['Authorization'],
-      body: {
-        products: [
-          {
-            platform: 'dummy',
-            id: 'monthly',
-            featured_product: false,
-            type: 'monthly'
-          },
-          {
-            platform: 'dummy',
-            id: 'half-monthly',
-            featured_product: false,
-            type: 'half-yearly'
-          },
-          {
-            platform: 'dummy',
-            id: 'yearly',
-            featured_product: true,
-            type: 'yearly'
-          },
-        ]
-      }
-    },
-
     '/api/v1/vpn/ipinfo': {
       status: 200,
       requiredHeaders: ['Authorization', 'Host'],

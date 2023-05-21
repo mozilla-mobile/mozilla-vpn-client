@@ -7,7 +7,7 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
+set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android" "iOS")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
 
@@ -35,6 +35,9 @@ if( ${_SUPPORTED} GREATER -1 )
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_DSN="${SENTRY_DSN}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
+    # Let's the app know we need to provide the upload client
+    target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
+
     # Sentry support is given
     target_sources(shared-sources INTERFACE
         shared/sentry/sentryadapter.cpp
@@ -48,17 +51,27 @@ if( ${_SUPPORTED} GREATER -1 )
         include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
         target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
-        # Let's the app know we need to provide the upload client
-        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
         # Compile Static for apple and link to libsentry.a
         target_link_libraries(shared-sources INTERFACE libsentry.a)
         target_link_libraries(shared-sources INTERFACE breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
+        SET(SENTRY_ARGS
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+            -DSENTRY_BACKEND=breakpad
+            -DSENTRY_BUILD_SHARED_LIBS=false
+            -DSENTRY_TRANSPORT=none
+            -DSENTRY_BUILD_TESTS=off
+            -DSENTRY_BUILD_EXAMPLES=off
+        )
         if(CMAKE_OSX_ARCHITECTURES)
             STRING(REPLACE ";" "$<SEMICOLON>" OSX_ARCH_LISTSAFE "${CMAKE_OSX_ARCHITECTURES}")
             LIST(APPEND SENTRY_ARGS -DCMAKE_OSX_ARCHITECTURES:STRING=${OSX_ARCH_LISTSAFE})
+        endif()
+        if(IOS)
+            LIST(APPEND SENTRY_ARGS -DCMAKE_SYSTEM_NAME=iOS -DIPHONEOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET})
         endif()
     endif()
     if(WIN32)
@@ -68,14 +81,10 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
-        # Windows will use the winhttp transport btw
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DSENTRY_TRANSPORT=none -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     if(ANDROID)
-        # Let's the app know we need to provide the upload client
-        target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
-
         target_link_libraries(shared-sources INTERFACE libsentry.a)
         target_link_libraries(shared-sources INTERFACE libunwindstack.a)
         # We can only use inproc as crash backend.
@@ -91,9 +100,9 @@ if( ${_SUPPORTED} GREATER -1 )
 
     include(ExternalProject)
     ExternalProject_Add(sentry
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}../3rdparty/sentry
-        GIT_REPOSITORY https://github.com/getsentry/sentry-native/
-        GIT_TAG 0.5.0
+        SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
+        GIT_SUBMODULES 3rdparty/sentry
+        GIT_SUBMODULES_RECURSE true
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 

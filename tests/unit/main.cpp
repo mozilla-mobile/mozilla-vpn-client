@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+
 #include "appconstants.h"
 #include "glean/mzglean.h"
 #include "helper.h"
@@ -10,13 +12,6 @@
 #include "loghandler.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
-
-class TestApp final : public App {
- public:
-  TestApp() : App(nullptr) {}
-
-  bool handleCloseEvent() override { return true; }
-};
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
@@ -38,8 +33,13 @@ TestHelper::TestHelper() { testList.append(this); }
 
 // static
 App* App::instance() {
-  static TestApp app;
-  return &app;
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
 }
 
 // static
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
       TestHelper::networkRequestPost, TestHelper::networkRequestPostIODevice);
 
   I18nStrings::initialize();
-  LogHandler::enableStderr();
+  LogHandler::setStderr(true);
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.

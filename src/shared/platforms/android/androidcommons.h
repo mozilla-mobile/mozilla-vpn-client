@@ -17,12 +17,16 @@ class AndroidCommons final : public QObject {
 
   static int getSDKVersion();
 
+  static QString GetManufacturer();
+
   static bool verifySignature(const QByteArray& publicKey,
                               const QByteArray& content,
                               const QByteArray& signature);
 
   // Creates a "share" intent to Open/Send Plaintext
   static bool shareText(const QString& plainText);
+
+  static void launchPlayStore();
 
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 

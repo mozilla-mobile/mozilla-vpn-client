@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "urls": {
+      "type": "array",
+      "description": "List of URLs to replace",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A single URL to be replaced",
+        "properties": {
+          "request": {
+            "type": "string",
+            "description": "The requested URL"
+          },
+          "response": {
+            "type": "string",
+            "description": "The file to be used to replace the requested URL"
+          },
+          "type": {
+            "type": "string",
+            "description": "The URL type. It can be 'file' or 'directory'. By default: 'file'"
+          }
+        }
+      }
+    }
+  },
+  "required": [ "replacer" ]
+}

@@ -13,10 +13,7 @@ import compat 0.1
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
-
-    // Legacy string, defined here but used in ViewAboutUs.qml
-    //% "A fast, secure and easy to use VPN. Built by the makers of Firefox."
-    property string logoSubtitle: qsTrId("vpn.main.productDescription")
+    property string logoSubtitle: MZI18n.ProductDescription
 
     MZRadialGradient {
         height: Screen.height
@@ -44,7 +41,6 @@ Item {
     }
 
     MZFlickable {
-        property bool firstRun: true
         id: onboardingPanel
 
         flickContentHeight: Math.max(window.safeContentHeight / 2 + col.implicitHeight, parent.height)
@@ -56,7 +52,7 @@ Item {
 
             ListElement {
                 animationSpeed: 1.5
-                animationSrc: ":/nebula/resources/animations/vpnlogo-drop_animation.json"
+                animationSrc: ":/ui/resources/animations/vpnlogo-drop_animation.json"
                 loopAnimation: false
                 titleStringId: "MobileOnboardingPanelOneTitle"
                 subtitleStringId: "MobileOnboardingPanelOneSubtitle"
@@ -64,7 +60,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/nebula/resources/animations/globe_animation.json"
+                animationSrc: ":/ui/resources/animations/globe_animation.json"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelTwoTitle"
                 subtitleStringId: "OnboardingPanelTwoSubtitle"
@@ -72,7 +68,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/nebula/resources/animations/vpnactive_animation.json"
+                animationSrc: ":/ui/resources/animations/vpnactive_animation.json"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelThreeTitle"
                 subtitleStringId: "OnboardingPanelThreeSubtitle"
@@ -80,7 +76,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/nebula/resources/animations/lock_animation.json"
+                animationSrc: ":/ui/resources/animations/lock_animation.json"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelFourTitle"
                 subtitleStringId: "OnboardingPanelFourSubtitle"
@@ -146,7 +142,7 @@ Item {
                                     property: "opacity"
                                     from: 1
                                     to: panelAnimation.imageOpacityValue
-                                    duration: onboardingPanel.firstRun ? 1 : 100
+                                    duration: 100
                                 }
                                 PauseAnimation {
                                     duration: 0
@@ -163,7 +159,7 @@ Item {
                                         property: "imageScaleValue"
                                         from: panelAnimation.imageScaleValue
                                         to: 1
-                                        duration: onboardingPanel.firstRun ? 1 : 100
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
                                     PropertyAnimation {
@@ -171,14 +167,9 @@ Item {
                                         property: "opacity"
                                         from: panelAnimation.imageOpacityValue
                                         to: 1
-                                        duration: onboardingPanel.firstRun ? 1 : 100
+                                        duration: 100
                                         easing.type: Easing.OutQuad
                                     }
-                                }
-                                PropertyAction {
-                                    target: onboardingPanel
-                                    property: "firstRun"
-                                    value: false
                                 }
                             }
 
@@ -237,7 +228,7 @@ Item {
         MZHeaderLink {
             id: headerLink
             objectName: "getHelpLink"
-            labelText: qsTrId("vpn.main.getHelp2")
+            labelText: MZI18n.GetHelpLinkTitle
             isLightTheme: false
             onClicked: {
                 MZGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
@@ -314,7 +305,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     width: undefined
-                    visible: VPNFeatureList.get("freeTrial").isSupported
+                    visible: MZFeatureList.get("freeTrial").isSupported
                 }
                 PageIndicator {
                     id: progressIndicator

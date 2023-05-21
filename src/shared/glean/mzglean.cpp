@@ -11,13 +11,14 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
 #  include "qtglean.h"
 #endif
-#if defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+#if defined(MZ_ANDROID)
+#  include "../apps/vpn/platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidcommons.h"
 #endif
-#if defined(MZ_IOS) && not(defined(BUILD_QMAKE))
+#if defined(MZ_IOS)
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
@@ -26,6 +27,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
+#if defined(MZ_ANDROID)
+#  include <QJsonDocument>
+#  include <QJsonObject>
+#endif
 
 namespace {
 Logger logger("Glean");
@@ -40,16 +45,27 @@ QString rootAppFolder() {
 }
 }  // namespace
 
-MZGlean::MZGlean(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(MZGlean); }
+MZGlean::MZGlean(QObject* parent) : QObject(parent) {
+  MZ_COUNT_CTOR(MZGlean);
+
+#if defined(MZ_ANDROID)
+  connect(AndroidVPNActivity::instance(),
+          &AndroidVPNActivity::eventRequestGleanUploadEnabledState, this,
+          [&]() {
+            broadcastUploadEnabledChange(
+                SettingsHolder::instance()->gleanEnabled());
+          });
+#endif
+}
 
 MZGlean::~MZGlean() { MZ_COUNT_DTOR(MZGlean); }
 
 // static
 void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
-  glean_register_log_handler(messageHandler);
-#else
+#if defined(MZ_WASM)
   Q_UNUSED(messageHandler);
+#else
+  glean_register_log_handler(messageHandler);
 #endif
 }
 
@@ -92,17 +108,17 @@ void MZGlean::initialize() {
 
 #if defined(UNIT_TEST)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
-                           gleanDirectory.absolutePath().toLocal8Bit());
-#elif defined(MZ_IOS) && not(defined(BUILD_QMAKE))
+                           gleanDirectory.absolutePath().toUtf8());
+#elif defined(MZ_IOS)
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
-#elif defined(MZ_ANDROID) && not(defined(BUILD_QMAKE))
+#elif defined(MZ_ANDROID)
     AndroidCommons::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
-#elif not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#elif not(defined(MZ_WASM))
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
-                     gleanDirectory.absolutePath().toLocal8Bit(),
+                     gleanDirectory.absolutePath().toUtf8(),
                      Constants::inProduction() ? "production" : "staging");
 #endif
   }
@@ -112,14 +128,30 @@ void MZGlean::initialize() {
 void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
   logger.debug() << "Changing MZGlean upload status to" << isTelemetryEnabled;
 
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
   glean_set_upload_enabled(isTelemetryEnabled);
+#endif
+
+  broadcastUploadEnabledChange(isTelemetryEnabled);
+}
+
+// static
+void MZGlean::broadcastUploadEnabledChange(bool isTelemetryEnabled) {
+#if defined(MZ_ANDROID)
+  logger.debug() << "Broadcasting MZGlean upload status to Android Daemon.";
+
+  QJsonObject args;
+  args["uploadEnabled"] = isTelemetryEnabled;
+  QJsonDocument doc(args);
+  AndroidVPNActivity::instance()->sendToService(
+      ServiceAction::ACTION_SET_GLEAN_UPLOAD_ENABLED,
+      doc.toJson(QJsonDocument::Compact));
 #endif
 }
 
 // static
 void MZGlean::shutdown() {
-#if not(defined(MZ_WASM) || defined(BUILD_QMAKE))
+#if not(defined(MZ_WASM))
   glean_shutdown();
 #endif
 }

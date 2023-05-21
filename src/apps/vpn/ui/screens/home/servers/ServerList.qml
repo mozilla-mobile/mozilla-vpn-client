@@ -18,7 +18,7 @@ FocusScope {
     property real listOffset: (MZTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property bool showRecommendedConnections: (showRecentConnections
-        && VPNFeatureList.get("recommendedServers").isSupported)
+        && MZFeatureList.get("recommendedServers").isSupported)
     property var currentServer
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
@@ -98,6 +98,8 @@ FocusScope {
 
             Column {
                 id: serverListRecommended
+                objectName: "serverListRecommended"
+
                 spacing: MZTheme.theme.listSpacing * 1.5
                 width: parent.width
 
@@ -201,18 +203,19 @@ FocusScope {
 
                 Repeater {
                     id: recommendedRepeater
-                    model: VPNServerCountryModel.recommendedLocations(5)
+                    model: VPNRecommendedLocationModel
 
                     delegate: MZClickableRow {
                         property bool isAvailable: modelData.connectionScore >= 0
                         id: recommendedServer
 
-                        accessibleName: modelData.localizedName
+                        accessibleName: latencyIndicator.accessibleName.arg(modelData.localizedName)
+
                         onClicked: {
                             if (!isAvailable) {
                                 return;
                             }
-                            focusScope.setSelectedServer(modelData.country, modelData.name, modelData.localizedName);
+                            focusScope.setSelectedServer(city.country, city.name, city.localizedName);
                             MZSettings.recommendedServerSelected = true
                         }
 
@@ -228,29 +231,18 @@ FocusScope {
                                 fontColor: MZTheme.theme.fontColorDark
                                 narrowStyle: false
                                 serversList: [{
-                                    countryCode: modelData.country,
-                                    cityName: modelData.name,
-                                    localizedCityName: modelData.localizedName
+                                    countryCode: city.country,
+                                    cityName: city.name,
+                                    localizedCityName: city.localizedName
                                 }]
                             }
 
                             ServerLatencyIndicator {
+                                id: latencyIndicator
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                score: modelData.connectionScore
+                                score: city.connectionScore
                             }
                         }
-                    }
-                }
-
-                Timer {
-                    id: recommendedLocationsRefreshTimer
-                    interval: 2000
-                    running: VPNServerLatency.isActive
-                    onTriggered: {
-                        if (VPNServerLatency.isActive) {
-                            recommendedLocationsRefreshTimer.start();
-                        }
-                        recommendedRepeater.model = VPNServerCountryModel.recommendedLocations(5);
                     }
                 }
             }

@@ -8,6 +8,7 @@
 #include <QString>
 #include <QtGlobal>
 
+#include "appconstants.h"
 #include "settingsholder.h"
 #include "version.h"
 
@@ -15,6 +16,17 @@ namespace {
 bool s_inProduction = true;
 QString s_versionOverride = "";
 }  // namespace
+
+QString Constants::apiUrl(ApiEndpoint endpoint) {
+  static QMap<ApiEndpoint, const char*> endpoints{
+      {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
+      {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"}};
+
+  Q_ASSERT(endpoints.contains(endpoint));
+
+  QString apiBaseUrl = AppConstants::apiBaseUrl();
+  return apiBaseUrl.append(endpoints[endpoint]);
+}
 
 bool Constants::inProduction() { return s_inProduction; }
 

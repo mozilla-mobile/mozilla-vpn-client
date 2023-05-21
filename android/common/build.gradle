@@ -14,6 +14,9 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
         Config.targetSdkVersion
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
+        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + System.getenv("ADJUST_SDK_TOKEN") +  '"'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -34,9 +37,16 @@ android {
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation project(path: ':qtBindings')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+
+    implementation project(path: ':qtglean')
+    implementation project(path: ':qtBindings')
+    implementation project(path: ':adjust')
+
+    implementation "androidx.work:work-multiprocess:2.6.0"
 }

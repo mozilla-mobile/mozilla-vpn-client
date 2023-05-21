@@ -20,8 +20,11 @@ task-defaults:
     run-on-tasks-for: [action]
     notify:
         recipients:
-            - type: slack-channel
-              channel-id: C01DCUKG95E  # mozilla-vpn-release
+            by-level:
+                "3":
+                    - type: slack-channel
+                      channel-id: C01DCUKG95E  # mozilla-vpn-release
+                default: []
 
 tasks:
     promote-addons:

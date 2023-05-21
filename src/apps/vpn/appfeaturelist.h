@@ -11,19 +11,12 @@ FEATURE(accountDeletion,        // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_accountDeletion)
 
-FEATURE(addon,                 // Feature ID
-        "Addon support",       // Feature name
+FEATURE(alwaysPort53,          // Feature ID
+        "Always use port 53",  // Feature name
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
-FEATURE(addonSignature,             // Feature ID
-        "Addons Signature",         // Feature name
-        FeatureCallback_inStaging,  // Can be flipped on
-        FeatureCallback_inStaging,  // Can be flipped off
-        QStringList{"addon"},       // feature dependencies
-        FeatureCallback_true)
+        FeatureCallback_false)
 
 FEATURE(benchmarkUpload,       // Feature ID
         "Benchmark Upload",    // Feature name
@@ -53,12 +46,12 @@ FEATURE(customDNS,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
-FEATURE(freeTrial,             // Feature ID
-        "Free trial",          // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_freeTrial)
+FEATURE(freeTrial,              // Feature ID
+        "Free trial",           // Feature name
+        FeatureCallback_true,   // Can be flipped on
+        FeatureCallback_true,   // Can be flipped off
+        QStringList(),          // feature dependencies
+        FeatureCallback_false)  // Disabled while we rethink free trials
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
@@ -87,7 +80,7 @@ FEATURE(recommendedServers,     // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_true,   // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(serverUnavailableNotification,      // Feature ID
         "Server unavailable notification",  // Feature name
@@ -101,7 +94,7 @@ FEATURE(serverConnectionScore,      // Feature ID
         FeatureCallback_true,       // Can be flipped on
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(splitTunnel,            // Feature ID
         "Split-tunnel",         // Feature name

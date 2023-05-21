@@ -6,7 +6,7 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.VPN.qmlcomponents 1.0
+import Mozilla.Shared.qmlcomponents 1.0
 import components 0.1
 import components.forms 0.1
 
@@ -17,6 +17,7 @@ ColumnLayout {
     property alias _filterProxySource: model.source
     property alias _searchBarPlaceholderText: searchBar._placeholderText
     property bool _searchBarHasError: false
+    readonly property bool isEmpty: searchBar.length === 0
 
     spacing: MZTheme.theme.windowMargin / 2
 

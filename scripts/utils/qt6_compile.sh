@@ -61,6 +61,7 @@ LINUX="
   -platform linux-clang \
   -egl \
   -opengl es2 \
+  -no-icu \
   -no-linuxfb \
   -bundled-xcb-xinput \
   -xcb \

@@ -9,29 +9,7 @@ import Mozilla.Shared 1.0
 
 // MZRadioButtonLabel
 Label {
-    anchors.left: radioButton.right
-    anchors.leftMargin: MZTheme.theme.hSpacing - 2
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSize
     color: MZTheme.theme.fontColorDark
-
-    states: State {
-        when: radioControl.checked
-
-        PropertyChanges {
-            target: radioButtonLabel
-            color: MZTheme.theme.blue
-        }
-
-    }
-
-    transitions: Transition {
-        ColorAnimation {
-            target: radioButtonLabel
-            properties: "color"
-            duration: 100
-        }
-
-    }
-
 }

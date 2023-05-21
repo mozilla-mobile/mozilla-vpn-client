@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscontroller.h"
-#include "Mozilla_VPN-Swift.h"
+#include "Mozilla-Swift.h"
 #include "controller.h"
 #include "feature.h"
 #include "ipaddress.h"
@@ -93,10 +93,11 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
         }
       }
-      callback:^(BOOL a_connected) {
+      callback:^(BOOL a_connected, NSDate* date) {
+        QDateTime qtDate(QDateTime::fromNSDate(date));
         logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
-          emit connected(m_serverPublicKey);
+          emit connected(m_serverPublicKey, qtDate);
           return;
         }
 

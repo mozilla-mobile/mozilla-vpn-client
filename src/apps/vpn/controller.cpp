@@ -6,11 +6,13 @@
 
 #include "app.h"
 #include "appconstants.h"
+#include "apppermission.h"
 #include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -30,6 +32,8 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+#include "telemetry/gleansample.h"
+#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -173,6 +177,9 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  connect(this, &Controller::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -316,19 +323,21 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported() &&
-      settingsHolder->protectSelectedApps()) {
+  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
+    logger.info() << "Activating single hop";
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
     exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
 
     // If requested, force the use of port 53/DNS.
-    if (dnsPort == ForceDNSPort) {
+    if (dnsPort == ForceDNSPort ||
+        Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+      logger.info() << "Forcing port 53";
       exitHop.m_server.forcePort(53);
     }
     // For single-hop, they are the same
@@ -337,6 +346,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
+    logger.info() << "Activating multi-hop (through platform controller)";
     HopConnection hop;
 
     hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -366,6 +376,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
+    logger.info() << "Activating multi-hop (not through platform controller)";
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
@@ -413,15 +424,16 @@ void Controller::activateNext() {
   setState(StateConfirming);
 }
 
-bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
-  logger.debug() << "Silently switch servers";
+bool Controller::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
   if (m_state != StateOn) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
   }
 
-  if (serverCoolDownNeeded) {
+  if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     QList<Server> servers = m_serverData.exitServers();
     Q_ASSERT(!servers.isEmpty());
@@ -438,7 +450,7 @@ bool Controller::silentSwitchServers(bool serverCoolDownNeeded) {
   }
 
   m_nextServerData = m_serverData;
-  m_nextServerSelectionPolicy = serverCoolDownNeeded
+  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
                                     ? RandomizeServerSelection
                                     : DoNotRandomizeServerSelection;
 
@@ -520,6 +532,12 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
+  mozilla::glean::session::session_start.set();
+  mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
+  mozilla::glean::session::apps_excluded.set(
+      AppPermission::instance()->disabledAppCount());
+
   if (m_nextStep != None) {
     deactivate();
     return;
@@ -547,6 +565,7 @@ void Controller::handshakeTimeout() {
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
+  logger.info() << "Connection attempt " << m_connectionRetry;
   if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
@@ -565,6 +584,16 @@ void Controller::handshakeTimeout() {
 
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
+  mozilla::glean::session::session_end.set();
+
+  // This generateAndSet must be called after submission of ping.
+  // When doing VPN-4443 ensure it comes after the submission.
+
+  // We rotating the UUID here as a safety measure. It is rotated
+  // again before the next session start, and we expect to see the
+  // UUID created here in only one ping: The session ping with a
+  // "flush" reason, which should contain this UUID and no other metrics.
+  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
 
   clearConnectedTime();
   clearRetryCounter();
@@ -831,6 +860,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Filtering out multicast addresses";
   excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
   excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
+  logger.debug() << "Filtering out explicitely-set network address ranges";
+  for (const QString& ipv4String :
+       SettingsHolder::instance()->excludedIpv4Addresses()) {
+    excludeIPv4s.append(IPAddress(ipv4String));
+  }
+  for (const QString& ipv6String :
+       SettingsHolder::instance()->excludedIpv6Addresses()) {
+    excludeIPv6s.append(IPAddress(ipv6String));
+  }
 
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();

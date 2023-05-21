@@ -59,7 +59,7 @@ Item {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         color: MZTheme.colors.purple70
-                        opacity: btn.activeFocus ? 1 : 0
+                        opacity: btn.checked ? 1 : 0
                         Behavior on opacity {
                             PropertyAnimation {
                                 duration: 100
@@ -73,7 +73,17 @@ Item {
                     elide: Qt.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: btn.checked || btn.activeFocus ? MZTheme.colors.purple70 : btn.hovered ? MZTheme.colors.grey50 : MZTheme.colors.grey40
+                    color: btn.checked ? MZTheme.colors.purple70 : btn.hovered || btn.activeFocus ? MZTheme.colors.grey50 : MZTheme.colors.grey40
+
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        border.width: MZTheme.theme.focusBorderWidth
+                        border.color: MZTheme.theme.fontColor
+                        color: MZTheme.theme.transparent
+                        visible: MZTutorial.playing && btn.activeFocus
+                        radius: 4
+                    }
 
                     Behavior on color {
                         PropertyAnimation {

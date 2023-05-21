@@ -47,6 +47,8 @@ class AppPermission final : public QAbstractListModel {
 
   static AppPermission* instance();
 
+  // Returns count of disabled apps
+  Q_INVOKABLE int disabledAppCount();
   // Enables/Disabled the Given App ID for the vpn
   Q_INVOKABLE void flip(const QString& appID);
   // Is called from QML if the List is opened

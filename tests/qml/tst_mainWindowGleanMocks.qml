@@ -106,7 +106,7 @@ Item {
 
             MZEnv.stagingMode = true
             TestHelper.triggerInitializeGlean()
-            compare(spyConfig.channel, "production")
+            compare(spyConfig.channel, "staging")
         }
 
         function test_onInitializeGleanByDebugMode() {

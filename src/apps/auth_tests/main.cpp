@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QCoreApplication>
+#include <QDateTime>
+#include <QRandomGenerator>
 #include <QtTest/QtTest>
 
 #include "app.h"
@@ -39,26 +41,35 @@ int main(int argc, char* argv[]) {
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
-  LogHandler::enableStderr();
+  LogHandler::setStderr(true);
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
+
+  QString nonce = QString::number(QDateTime::currentSecsSinceEpoch());
+
+  for (uint16_t i = 0; i < 10; ++i) {
+    nonce.append(static_cast<QChar>(
+        'a' + static_cast<char>(QRandomGenerator::global()->generate() % 10)));
+  }
+
+  qDebug() << "Nonce:" << nonce;
 
   int failures = 0;
   TestEmailValidation tev;
   failures += QTest::qExec(&tev);
 
-  TestPasswordValidation tpv;
+  TestPasswordValidation tpv(nonce);
   failures += QTest::qExec(&tpv);
 
-  TestSignUpAndIn tsuTotp("vpn.auth.test.", true /* totp creation */);
+  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.", true /* totp creation */);
   failures += QTest::qExec(&tsuTotp);
 
-  TestSignUpAndIn tsu("vpn.auth.test.");
+  TestSignUpAndIn tsu(nonce, "vpn.auth.test.");
   failures += QTest::qExec(&tsu);
 
-  TestSignUpAndIn tsuBlocked("block.vpn.auth.test.");
+  TestSignUpAndIn tsuBlocked(nonce, "block.vpn.auth.test.");
   failures += QTest::qExec(&tsuBlocked);
 
-  TestSignUpAndIn tsuSync("sync.vpn.auth.test.");
+  TestSignUpAndIn tsuSync(nonce, "sync.vpn.auth.test.");
   failures += QTest::qExec(&tsuSync);
 
   return failures;

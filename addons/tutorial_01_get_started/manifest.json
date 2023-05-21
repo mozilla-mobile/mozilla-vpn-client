@@ -3,6 +3,9 @@
   "id": "tutorial_01_get_started",
   "name": "Tutorial: get started",
   "type": "tutorial",
+  "conditions": {
+    "javascript": "condition.js"
+  },
   "tutorial": {
     "id": "01_get_started",
     "highlighted": true,
@@ -35,7 +38,7 @@
       {
         "id": "countryAU",
         "element": "serverCountryList/serverCountry-au",
-        "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]{visible=true}",
+        "query": "//serverCountryList/{hasAvailableCities=true}[0]{visible=true}",
         "tooltip": "Select a different country",
         "before": [{
           "op": "property_set",
@@ -47,19 +50,19 @@
         "next": {
           "op": "signal",
           "qml_emitter": "serverCountryList/serverCountry-au",
-          "query_emitter": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]{visible=true}",
+          "query_emitter": "//serverCountryList/{hasAvailableCities=true}[0]{visible=true}",
           "signal": "cityListVisibleChanged"
         }
       },
       {
         "id": "cityAU",
         "element": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
-        "query": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
+        "query": "//serverCountryList/{hasAvailableCities=true}[0]//serverCityList/{isAvailable=true}[0]{visible=true}",
         "tooltip": "Select a different server location",
         "next": {
           "op": "signal",
           "qml_emitter": "serverCountryList/serverCountry-au/serverCityList/serverCity-Melbourne/radioIndicator",
-          "query_emitter": "//serverCountryList/{className=VPNServerCountry}{hasAvailableCities=true}[0]//serverCityList/{className=VPNRadioDelegate}{isAvailable=true}[0]{visible=true}",
+          "query_emitter": "//serverCountryList/{hasAvailableCities=true}[0]//serverCityList/{isAvailable=true}[0]{visible=true}",
           "signal": "visibleChanged"
         }
       },

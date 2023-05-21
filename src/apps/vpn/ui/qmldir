@@ -1,2 +1,4 @@
 Main 0.1 main.qml
-VPNBottomNavigationBar 0.1 navigationBar/VPNBottomNavigationBar.qml
+ServerUnavailablePopup 0.1 popups/ServerUnavailablePopup.qml
+VPNNavigatorLoader 0.1 navigator/navigatorLoader.qml
+VPNBottomNavigationBar 0.1 navigator/navigationBar/VPNBottomNavigationBar.qml

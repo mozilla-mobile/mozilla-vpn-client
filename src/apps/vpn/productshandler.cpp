@@ -13,10 +13,12 @@
 
 #include "constants.h"
 #include "feature.h"
-#include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "purchasehandler.h"
+#include "tasks/products/taskproducts.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger("ProductsHandler");
@@ -41,6 +43,19 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(ProductsHandler);
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  // On iAP make sure the Products are loaded in time.
+  // If we Move into any State adjecent to iAP - load the
+  // products if we don't have that already.
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
+    auto state = MozillaVPN::instance()->state();
+    if ((state == App::StateSubscriptionNeeded ||
+         state == App::StateSubscriptionInProgress ||
+         state == App::StateAuthenticating) &&
+        !this->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+    }
+  });
 }
 
 ProductsHandler::~ProductsHandler() {
@@ -224,7 +239,7 @@ QVariant ProductsHandler::data(const QModelIndex& index, int role) const {
     case ProductTrialDaysRole:
       if (Feature::get(Feature::Feature_freeTrial)->isSupported()) {
         if ((m_products.at(index.row()).m_type == ProductYearly) &&
-            InspectorHandler::mockFreeTrial()) {
+            MozillaVPN::mockFreeTrial()) {
           return QVariant(7);
         }
         return QVariant(m_products.at(index.row()).m_trialDays);

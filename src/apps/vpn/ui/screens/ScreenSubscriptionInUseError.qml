@@ -24,7 +24,7 @@ MZStackView {
            errorMessage: MZI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
 
            // Sign out
-           primaryButtonText: qsTrId("vpn.main.signOut2"),
+           primaryButtonText: MZI18n.GlobalSignOut,
            primaryButtonObjectName: "errorSignOutButton",
            primaryButtonOnClick: () => {
                VPNController.logout();

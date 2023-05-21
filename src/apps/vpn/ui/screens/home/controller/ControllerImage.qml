@@ -31,7 +31,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
         },
@@ -50,7 +50,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
 
@@ -71,7 +71,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -108,7 +108,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
 
@@ -128,7 +128,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
         },
@@ -148,7 +148,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
         },
@@ -169,7 +169,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-on.svg"
+                source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
         },
@@ -190,7 +190,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/nebula/resources/shield-off.svg"
+                source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
         }
@@ -356,7 +356,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "qrc:/nebula/resources/switching.svg"
+            source: "qrc:/ui/resources/switching.svg"
             opacity: 0
              PropertyAnimation {
                  id: spin

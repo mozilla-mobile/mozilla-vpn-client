@@ -8,21 +8,38 @@
 #include "localizer.h"
 #include "settingsholder.h"
 
-void TestLanguageI18n::basic() {
-  QVERIFY(LanguageI18N::languageExists("tlh"));
-  QVERIFY(!LanguageI18N::languageExists("FOO"));
+void TestLanguageI18n::translations() {
+  QVERIFY(LanguageI18N::instance()->languageExists("tlh"));
+  QVERIFY(!LanguageI18N::instance()->languageExists("FOO"));
 
   // Non existing language
-  QVERIFY(LanguageI18N::translateLanguage("FOO", "FOO").isEmpty());
+  QVERIFY(LanguageI18N::instance()->translateLanguage("FOO", "FOO").isEmpty());
 
   // Self-translation
-  QCOMPARE(LanguageI18N::translateLanguage("tlh", "tlh"), " ");
+  QCOMPARE(LanguageI18N::instance()->translateLanguage("tlh", "tlh"),
+           " ");
 
   // Other language
-  QCOMPARE(LanguageI18N::translateLanguage("fr", "tlh"), "klingon");
+  QCOMPARE(LanguageI18N::instance()->translateLanguage("fr", "tlh"), "klingon");
 
   // Non existing translation
-  QVERIFY(LanguageI18N::translateLanguage("fi", "tlh").isEmpty());
+  QVERIFY(LanguageI18N::instance()->translateLanguage("fi", "tlh").isEmpty());
+}
+
+void TestLanguageI18n::currencies() {
+  // Non existing language
+  QVERIFY(LanguageI18N::instance()
+              ->currencySymbolForLanguage("FOO", "FOO")
+              .isEmpty());
+
+  // Not existing currency
+  QVERIFY(LanguageI18N::instance()
+              ->currencySymbolForLanguage("tlh", "FOO")
+              .isEmpty());
+
+  // OK
+  QCOMPARE(LanguageI18N::instance()->currencySymbolForLanguage("tlh", "EUR"),
+           "€");
 }
 
 static TestLanguageI18n s_testLanguageI18n;

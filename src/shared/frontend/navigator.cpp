@@ -9,6 +9,7 @@
 
 #include "app.h"
 #include "errorhandler.h"
+#include "externalophandler.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "gleandeprecated.h"
@@ -45,7 +46,7 @@ struct ScreenData {
   // The URL of the component.
   QString m_qmlComponentUrl;
 
-  // The list of acceptable VPN states. Empty means any state is OK.
+  // The list of acceptable App states. Empty means any state is OK.
   QVector<int> m_requiredState;
 
   // This function ptr is used to obtain the priority for this screen. If it
@@ -318,7 +319,8 @@ void Navigator::removeItem(QObject* item) {
 bool Navigator::eventHandled() {
   logger.debug() << "Close event handled";
 
-  if (App::instance()->handleCloseEvent()) {
+  if (!ExternalOpHandler::instance()->request(
+          ExternalOpHandler::OpCloseEvent)) {
     // Something is blocking the close event handler
     return true;
   }
@@ -403,4 +405,8 @@ void Navigator::registerScreen(int screenId, LoadPolicy loadPolicy,
                                bool (*quitBlocked)()) {
   s_screens.append(ScreenData(screenId, loadPolicy, qmlComponentUrl,
                               requiresAppState, priorityGetter, quitBlocked));
+}
+
+void Navigator::reloadCurrentScreen() {
+  requestScreen(m_currentScreen, ForceReloadAll);
 }

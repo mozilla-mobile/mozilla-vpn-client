@@ -16,14 +16,11 @@ QString apiBaseUrl();
 
 enum ApiEndpoint {
   Account,
-  Adjust,
   CreateSupportTicket,
   CreateSupportTicketGuest,
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
-  FeatureList,
-  Feedback,
   Heartbeat,
   IPInfo,
   LoginVerify,
@@ -69,8 +66,14 @@ constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
 // `mozillavpn_it.qm
 constexpr const char* LOCALIZER_FILENAME_PREFIX = "mozillavpn";
 
+// Deep-Link Scheme for MacOS Authentication
+constexpr const char* DEEP_LINK_SCHEME = "mozilla-vpn";
+
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
+
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "guardian-vpn";
 
 // Number of msecs for the captive-portal block alert.
 constexpr uint32_t CAPTIVE_PORTAL_ALERT_MSEC = 4000;
@@ -141,7 +144,7 @@ constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
 constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
-constexpr const char* LOGO_URL = ":/nebula/resources/logo-dock.png";
+constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 
 constexpr const char* APPLE_SUBSCRIPTIONS_URL =
     "https://apps.apple.com/account/subscriptions";
@@ -154,6 +157,9 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+
+PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
+             "https://accounts.stage.mozaws.net/support")
 
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
@@ -196,7 +202,7 @@ PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 #undef PRODBETAEXPR
 
-#if defined(MVPN_ADJUST)
+#if defined(MZ_ADJUST)
 // These are the two auto-generated token from the Adjust dashboard for the
 // "Subscription Completed" event. We have two since in the Adjust dashboard we
 // have defined two apps for iOS and Android with a event token each.
@@ -243,8 +249,6 @@ constexpr const char* GOOGLE_PLAYSTORE_URL =
 #ifdef MZ_IOS
 constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
-constexpr const char* APPLE_STORE_REVIEW_URL =
-    "https://apps.apple.com/app/id1489407738?action=write-review";
 #endif
 
 // TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn

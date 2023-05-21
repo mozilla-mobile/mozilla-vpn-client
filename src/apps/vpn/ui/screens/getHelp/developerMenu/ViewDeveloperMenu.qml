@@ -227,7 +227,7 @@ MZViewBase {
 
             text: "Reinstate messages"
             onClicked: {
-                VPNAddonManager.reinstateMessages()
+                MZAddonManager.reinstateMessages()
             }
         }
 

@@ -81,8 +81,7 @@ Window {
     maximumWidth: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
-    //% "Mozilla VPN"
-    title: qsTrId("vpn.main.productName")
+    title: MZI18n.ProductName
     color: MZTheme.theme.bgColor
     onClosing: close => {
         console.log("Closing request handling");
@@ -150,7 +149,7 @@ Window {
     Connections {
         target: MZLog
         function onViewLogsNeeded() {
-            if (VPNFeatureList.get("shareLogs").isSupported)  {
+            if (MZFeatureList.get("shareLogs").isSupported)  {
                 if(MZLog.viewLogs()){
                     return;
                 }
@@ -170,7 +169,7 @@ Window {
     // Glean Connections
     Connections {
         target: VPN
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onInitializeGlean() {
             if (MZEnv.debugMode) {
@@ -181,7 +180,7 @@ Window {
                 //
                 // Glean.setDebugViewTag("MozillaVPN");
             }
-            var channel = VPN.stagingMode ? "staging" : "production";
+            var channel = MZEnv.stagingMode ? "staging" : "production";
 
             console.debug("Initializing glean with channel set to:", channel);
             Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
@@ -214,7 +213,7 @@ Window {
 
     Connections {
         target: MZGleanDeprecated
-        enabled: Qt.platform.os !== "android"
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onRecordGleanEvent(sample) {
             console.debug("recording Glean event");
@@ -229,6 +228,8 @@ Window {
 
     Connections {
         target: MZSettings
+        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
+        
         function onGleanEnabledChanged() {
             console.debug("Glean - onGleanEnabledChanged", MZSettings.gleanEnabled);
             Glean.setUploadEnabled(MZSettings.gleanEnabled);
@@ -242,7 +243,7 @@ Window {
     MZSystemAlert {
     }
 
-    MZServerUnavailablePopup {
+    ServerUnavailablePopup {
         id: serverUnavailablePopup
     }
 
@@ -254,8 +255,49 @@ Window {
         }
     }
 
-    VPNBottomNavigationBar {
+    MZBottomNavigationBar {
         id: navbar
+
+        property var showNavigationBar: [
+            VPN.ScreenSettings,
+            VPN.ScreenHome,
+            VPN.ScreenMessaging,
+            VPN.ScreenGetHelp,
+            VPN.ScreenTipsAndTricks
+        ]
+
+        visible: showNavigationBar.includes(MZNavigator.screen) &&
+                 VPN.userState === VPN.UserAuthenticated &&
+                 VPN.state === VPN.StateMain && opacity !== 0
+
+        function setNavBarOpacity() {
+            if (MZNavigator.screen === VPN.ScreenHome) {
+                navbar.opacity = VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateInitial ? 1 : 0
+            } else {
+                navbar.opacity = 1;
+            }
+        }
+
+        Connections {
+            target: VPNConnectionBenchmark
+            function onStateChanged() {
+                navbar.setNavBarOpacity();
+            }
+        }
+
+        Connections {
+          target: MZNavigator
+
+          function onCurrentComponentChanged() {
+              navbar.setNavBarOpacity();
+           }
+        }
+
+        Behavior on opacity {
+            PropertyAnimation {
+                duration: 500
+            }
+        }
     }
 
     Connections {

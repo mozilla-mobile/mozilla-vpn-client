@@ -23,10 +23,10 @@ MZStackView {
            // Please try again or contact our support team for help.
            errorMessage: MZI18n.RestorePurchaseGenericPurchaseErrorRestorePurchaseGenericPurchaseErrorText,
 
-           // Try again (Error SubscriptionGenericError only happens on iOS, so ok to point to ScreenSubscriptionNeededIAP)
+           // Try again (Error SubscriptionGenericError only happens on iOS, so ok to point to ScreenSubscriptionNeeded)
            primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
            primaryButtonObjectName: "errorTryAgainButton",
-           primaryButtonOnClick: () => { MZNavigator.requestScreen(VPN.ScreenSubscriptionNeededIAP) },
+           primaryButtonOnClick: () => { MZNavigator.requestScreen(VPN.ScreenSubscriptionNeeded) },
            secondaryButtonIsSignOff: false,
            getHelpLinkVisible: true
        });

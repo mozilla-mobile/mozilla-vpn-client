@@ -38,6 +38,9 @@ qtglean/Cargo.lock
 # Translation pipeline
 addon_ts/
 
+# Cmake Presets
+# https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
+CMakeUserPresets.json
 # CMake build artifacts
 cmake_install.cmake
 CMakeCache.txt
@@ -56,6 +59,7 @@ node_modules
 
 #Github Codespaces
 .venv
+=/ 
 
 asset_catalog_compiler.Info.plist
 
@@ -105,7 +109,6 @@ ios/gobridge/wireguard-go-version.h
 # Editors
 *.swp
 .idea/
-.vscode/
 vscode-cpptools/*
 *.xcodeproj/
 MozillaVPN.vcxproj*
@@ -141,6 +144,9 @@ windows/split-tunnel/*.sys
 windows/split-tunnel/*.dll
 windows/split-tunnel/.status
 
+# Mac OS X
+.DS_Store
+
 # Rust
 .cargo_home/
 .rustc_info.json
@@ -162,8 +168,8 @@ mozillavpnnp.vcxproj*
 /glean/glean_autogen/
 /glean/telemetry/*
 !/glean/telemetry/.keepme
-vpnglean/prebuilt/
-vpnglean/uniffi.toml
+qtglean/prebuilt/
+qtglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/

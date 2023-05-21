@@ -11,6 +11,16 @@
 
 namespace Constants {
 
+enum ApiEndpoint {
+  Adjust,
+  FeatureList,
+};
+
+/**
+ * @brief expose the API URL with the requested path
+ */
+QString apiUrl(ApiEndpoint endpoint);
+
 // Returns true if we are in a production environment.
 bool inProduction();
 void setStaging();

@@ -13,6 +13,7 @@
 #include "app.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
+#include "externalophandler.h"
 #include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;
@@ -22,7 +23,6 @@ class ConnectionBenchmark;
 class ConnectionHealth;
 class Controller;
 class DeviceModel;
-class FeedbackCategoryModel;
 class IpAddressLookup;
 class Keys;
 class Location;
@@ -72,8 +72,7 @@ class MozillaVPN final : public App {
     ScreenSubscriptionInProgressIAP,
     ScreenSubscriptionInProgressWeb,
     ScreenSubscriptionInUseError,
-    ScreenSubscriptionNeededIAP,
-    ScreenSubscriptionNeededWeb,
+    ScreenSubscriptionNeeded,
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
     ScreenTipsAndTricks,
@@ -82,6 +81,15 @@ class MozillaVPN final : public App {
     ScreenViewLogs,
   };
   Q_ENUM(CustomScreen);
+
+  enum CustomExternalOperations {
+    OpAbout = ExternalOpHandler::OpCustom + 1,
+    OpActivate,
+    OpDeactivate,
+    OpNotificationClicked,
+    OpQuit,
+  };
+  Q_ENUM(CustomExternalOperations);
 
  private:
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
@@ -107,20 +115,17 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE void activate();
-  Q_INVOKABLE void deactivate();
+  Q_INVOKABLE void deactivate(bool block = false);
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
-  Q_INVOKABLE void submitFeedback(const QString& feedbackText,
-                                  const qint8 rating, const QString& category);
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
-  Q_INVOKABLE void exitForUnrecoverableError(const QString& reason);
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE void updateViewShown();
@@ -136,7 +141,6 @@ class MozillaVPN final : public App {
   Controller* controller() const;
   ServerData* serverData() const;
   DeviceModel* deviceModel() const;
-  FeedbackCategoryModel* feedbackCategoryModel() const;
   IpAddressLookup* ipAddressLookup() const;
   SupportCategoryModel* supportCategoryModel() const;
   Keys* keys() const;
@@ -192,7 +196,7 @@ class MozillaVPN final : public App {
 
   void heartbeatCompleted(bool success);
 
-  void addCurrentDeviceAndRefreshData(bool refreshProducts);
+  void addCurrentDeviceAndRefreshData();
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
@@ -202,7 +206,8 @@ class MozillaVPN final : public App {
 
   void requestAbout();
 
-  bool handleCloseEvent() override;
+  static QString appVersionForUpdate();
+  static bool mockFreeTrial();
 
  private:
   void maybeStateMain();
@@ -239,13 +244,23 @@ class MozillaVPN final : public App {
 
   void errorHandled();
 
-  void scheduleRefreshDataTasks(bool refreshProducts);
+  void scheduleRefreshDataTasks();
 
   static void registerUrlOpenerLabels();
 
   static void registerErrorHandlers();
 
   static void registerNavigatorScreens();
+
+  static void registerInspectorCommands();
+
+  static void registerNavigationBarButtons();
+
+  static void registerAddonApis();
+
+  static void registerExternalOperations();
+
+  static void registerPushMessageTypes();
 
  signals:
   void deviceRemoving(const QString& publicKey);
@@ -262,6 +277,7 @@ class MozillaVPN final : public App {
   void initializeGlean();
   void sendGleanPings();
   void setGleanSourceTags(const QStringList& tags);
+  void logSubscriptionCompleted();
 
   void aboutToQuit();
 

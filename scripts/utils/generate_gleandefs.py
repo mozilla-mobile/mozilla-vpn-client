@@ -11,7 +11,7 @@ import argparse
 # Parse args to figure out what to generate.
 parser = argparse.ArgumentParser(
     description='Generate Glean telemetry definitions from YAML sources')
-parser.add_argument('input', metavar='INPUT', type=str, action='store',
+parser.add_argument('input', metavar='INPUT', nargs="+", type=str, action='store',
     help='Glean metrics file to parse')
 parser.add_argument('-o', '--output', metavar='FILE', type=str, action='store',
     help='Write output to FILE')
@@ -34,8 +34,10 @@ def camelize(string):
     return output
 
 # Parse the metrics file.
-with open(args.input, 'r', encoding='utf-8') as fin:
-    metrics = yaml.safe_load(fin)
+metrics_list = []
+for file in args.input:
+    with open(file, 'r', encoding='utf-8') as fin:
+        metrics_list.append(yaml.safe_load(fin))
 
 # Prepare the output file
 if args.output:
@@ -54,15 +56,16 @@ if args.format == 'cpp':
 namespace GleanSample {
 
 """)
-    for key in metrics['sample']:
-        sampleName = camelize(key)
-        fout.write(f"constexpr const char* {sampleName} = \"{sampleName}\";\n")
+    for metrics in metrics_list:
+        if 'sample' in metrics:
+            for key in metrics['sample']:
+                sampleName = camelize(key)
+                fout.write(f"constexpr const char* {sampleName} = \"{sampleName}\";\n")
 
     fout.write("""
 } // GleanSample
 """)
     fout.close()
-
 
 else:
     print(f'Unknown output format: {args.format}', file=sys.stderr)

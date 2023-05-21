@@ -104,7 +104,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
 
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.Shared", 1, 0, "MZTheme",
-      [this](QQmlEngine*, QJSEngine* engine) -> QObject* {
+      [](QQmlEngine*, QJSEngine* engine) -> QObject* {
         Theme::instance()->initialize(engine);
         QObject* obj = Theme::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);

@@ -39,18 +39,27 @@ Item {
     // and is reset before the tutorial is opened in onTooltipNeeded()
     property var targetElement: parent
 
+    //Temporarily holds the next tooltips text (fixes bug on android where text was changing before the tooltip moved)
+    property var tempTooltipText
+
     anchors.fill: parent
     visible: tutorialTooltip.visible || tutorialPopup.opened
 
-    onTargetElementChanged: tooltipRepositionTimer.start()
+    onTargetElementChanged: {
+        if(targetElement && MZTutorial.playing) {
+            tutorialTooltip.close()
+            pauseTimer.start()
+        }
+    }
 
-    //Bandaid fix to position *ALL* tutorial tooltips in the correct position
+    //Adds a delay between tooltip popups in tutorials
     Timer {
-        id: tooltipRepositionTimer
-        interval: 1
+        id: pauseTimer
+        interval: 300
         onTriggered: {
             tutorialTooltip.repositionTooltip()
             notch.repositionNotch()
+            tutorialTooltip.tooltipText = root.tempTooltipText;
         }
     }
 
@@ -62,7 +71,7 @@ Item {
         id: tutorialTooltip
 
         closePolicy: Popup.NoAutoClose
-        onClipChanged: VPNTutorial.stop();
+        onClipChanged: MZTutorial.stop();
         verticalPadding: MZTheme.theme.windowMargin
         horizontalPadding: MZTheme.theme.windowMargin
 
@@ -75,17 +84,20 @@ Item {
                if (targetElementDistanceFromTop + targetElement.height + tutorialTooltip.implicitHeight > windowHeight) {
                    tooltipPositionedAboveTargetElement = true;
                    y = targetElementDistanceFromTop - targetElement.height - notchHeight * 2.5;
+                   tutorialTooltip.open()
+                   tutorialTooltip.visible = true
                    return
                }
 
                tooltipPositionedAboveTargetElement = false;
                y = targetElementDistanceFromTop + targetElement.height + notchHeight;
+               tutorialTooltip.open()
+               tutorialTooltip.visible = true
                return
            }
         }
 
         width: root.width - MZTheme.theme.windowMargin * 2
-        visible: VPNTutorial.tooltipShown
         x: MZTheme.theme.windowMargin
 
         background: Rectangle {
@@ -180,7 +192,7 @@ Item {
                 Layout.preferredWidth: MZTheme.theme.rowHeight
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Component.onCompleted: VPNTutorial.allowItem(leaveTutorialBtn.objectName)
+                Component.onCompleted: MZTutorial.allowItem(leaveTutorialBtn.objectName)
                 buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
                 onClicked: openLeaveTutorialPopup()
 
@@ -215,7 +227,7 @@ Item {
         imageSize: Qt.size(116, 80)
 
         Component.onCompleted: {
-            [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => VPNTutorial.allowItem(objName));
+            [primaryButton.objectName, secondaryButton.objectName, "vpnPopupCloseButton"].forEach(objName => MZTutorial.allowItem(objName));
         }
 
         title: ""
@@ -247,11 +259,11 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": VPNTutorial.currentTutorial.id});
-            Glean.sample.tutorialAborted.record({ id: VPNTutorial.currentTutorial.id });
+            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": MZTutorial.currentTutorial.id});
+            Glean.sample.tutorialAborted.record({ id: MZTutorial.currentTutorial.id });
             tutorialPopup._onClosed = () => {
-                if (op !== null) VPNTutorial.interruptAccepted(op);
-                else VPNTutorial.stop();
+                if (op !== null) MZTutorial.interruptAccepted(op);
+                else MZTutorial.stop();
             }
             tutorialPopup.close();
         }
@@ -281,22 +293,25 @@ Item {
     }
 
     Connections {
-        target: VPNTutorial
+        target: MZTutorial
 
         function onInterruptRequest(op) {
           openLeaveTutorialPopup(op)
         }
 
         function onPlayingChanged() {
-            if (!VPNTutorial.playing && tutorialPopup.opened && tutorialPopup.dismissOnStop) {
-                tutorialPopup.close();
+            if (!MZTutorial.playing) {
+                tutorialTooltip.close()
+                tutorialTooltip.visible = false
+                if (tutorialPopup.opened && tutorialPopup.dismissOnStop) {
+                    tutorialPopup.close();
+                }
             }
         }
 
         function onTooltipNeeded(text, targetEl) {
             root.targetElement = targetEl;
-            tutorialTooltip.tooltipText = text;
-            tutorialTooltip.open();
+            root.tempTooltipText= text;
         }
 
         function onTutorialCompleted(tutorial) {
@@ -325,9 +340,9 @@ Item {
             tutorialPopup.title = MZI18n.TutorialPopupTutorialWarningTitle;
             tutorialPopup.description = MZI18n.TutorialPopupTutorialWarningDescription
             tutorialPopup._onClosed = () => {
-                VPNTutorial.stop()
+                MZTutorial.stop()
                 if(shouldPlayTutorial) {
-                    VPNTutorial.play(tutorial)
+                    MZTutorial.play(tutorial)
                     MZNavigator.requestScreen(VPN.ScreenHome)
                 }
             }
@@ -345,7 +360,7 @@ Item {
                 return
 
             if (!targetElement.activeFocus && (!targetElement.parent || !targetElement.parent.activeFocus) && !leaveTutorialBtn.activeFocus && !tutorialPopup.opened) {
-                tutorialTooltip.forceActiveFocus();
+                leaveTutorialBtn.forceActiveFocus();
             }
         }
     }
