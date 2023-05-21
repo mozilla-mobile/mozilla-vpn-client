@@ -19,4 +19,4 @@ main:
   data_reviews:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
   notification_emails:
-    - vpn-telemetry@mozilla.com
+    - amarchesini@mozilla.com
