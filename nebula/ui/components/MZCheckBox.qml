@@ -48,10 +48,6 @@ CheckBox {
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
 
-    onStateChanged: {
-        console.log(state)
-    }
-
     states: [
         State {
             name: uiState.stateDefault
