@@ -71,7 +71,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: if(checBox.enabled) (checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blueHovered : MZTheme.theme.fontColorDark)
+                border.color: if(checkBox.enabled) checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blueHovered : MZTheme.theme.fontColorDark
             }
 
         }
