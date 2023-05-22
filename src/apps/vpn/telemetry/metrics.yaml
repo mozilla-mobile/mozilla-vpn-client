@@ -21,6 +21,7 @@ performance:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     time_unit: microsecond
 
@@ -38,6 +39,7 @@ settings:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   using_system_language:
@@ -53,6 +55,7 @@ settings:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
 session:
@@ -70,6 +73,7 @@ session:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   session_end:
@@ -86,6 +90,7 @@ session:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   session_id:
@@ -106,6 +111,7 @@ session:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   dns_type:
@@ -132,6 +138,7 @@ session:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   apps_excluded:
@@ -149,6 +156,7 @@ session:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_health_stable_count:
@@ -167,4 +175,5 @@ session:
       - technical
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
