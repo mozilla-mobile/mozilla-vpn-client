@@ -22,8 +22,8 @@ ADD topsrcdir/scripts/android/conda_setup_sdk.sh /root/scripts/android/conda_set
 
 
 RUN cd /root/ &&\
-    bash -l -C "conda activate vpn && ./scripts/android/conda_setup_sdk.sh" &&\
-    bash -l -C "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
+    bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh" &&\
+    bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
     
 
 # Sentry tools
