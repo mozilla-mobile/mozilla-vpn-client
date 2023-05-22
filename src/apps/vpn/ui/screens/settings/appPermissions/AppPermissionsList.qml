@@ -74,6 +74,7 @@ ColumnLayout {
 
                 objectName: `app-${index}`
                 spacing: MZTheme.theme.windowMargin
+                opacity: enabled ? 1.0 : 0.5
                 Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
                 function handleClick() {

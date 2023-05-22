@@ -87,7 +87,7 @@ MZViewBase {
             active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
             visible: active
             Layout.alignment: Qt.AlignHCenter
-            sourceComponent: InformationCard {
+            sourceComponent: MZInformationCard {
                 objectName: "DNSSettingsViewInformationCard"
                 height: textBlocks.height + MZTheme.theme.windowMargin * 2
                 width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
