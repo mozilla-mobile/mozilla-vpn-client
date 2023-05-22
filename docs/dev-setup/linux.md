@@ -46,15 +46,12 @@ Install
 
 # Run
 
-After the installation, you can run the app simply running:
-```bash
-mozillavpn
-```
+After the installation, you can run the app with
 
-Alternatively, you can use two terminals to run the daemon manually and
-separately e.g.
+    mozillavpn
 
-```bash
-sudo mozillavpn linuxdaemon
-mozillavpn
-```
+
+Alternatively, you can use two terminals to run the daemon manually and separately
+
+    sudo mozillavpn linuxdaemon
+    mozillavpn
