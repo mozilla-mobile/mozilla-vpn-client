@@ -37,9 +37,6 @@ RUN apt-get update -qq \
                           rpm \
     && apt-get clean
 
-RUN pip install --upgrade pip
-RUN pip install taskcluster
-
 RUN locale-gen "$LANG"
 
 # %include-run-task
