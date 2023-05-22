@@ -21,9 +21,10 @@ ADD topsrcdir/scripts/android/conda_setup_sdk.sh /root/scripts/android/conda_set
 
 
 
-RUN conda activate vpn && \
+RUN source /builds/worker/.bashrc && \
+    conda activate vpn && \
     cd /root/ && \
-    ./scripts/android/conda_setup_sdk.sh && \ 
+    ./scripts/android/conda_setup_sdk.sh && \
     ./scripts/android/conda_setup_qt.sh
 
 # Sentry tools
