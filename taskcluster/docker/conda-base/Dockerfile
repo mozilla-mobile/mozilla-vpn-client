@@ -78,5 +78,10 @@ RUN wget "${MINICONDA_URL}" -O miniconda.sh -q &&  \
 
 # %include env.yml
 ADD topsrcdir/env.yml /root/env.yml
+# %include requirements.txt
+ADD topsrcdir/requirements.txt /root/requirements.txt
+# %include taskcluster/requirements.txt
+ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster/requirements.txt
+
 
 RUN /opt/conda/bin/conda env create -f /root/env.yml -n vpn
