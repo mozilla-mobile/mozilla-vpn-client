@@ -26,15 +26,44 @@ MZViewBase {
     _menuTitle: MZI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
 
+        Loader {
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.bottomMargin: 24
+            Layout.fillWidth: true
+
+            active: Qt.platform.os === "linux" && VPNController.state !== VPNController.StateOff
+            visible: active
+
+            sourceComponent: MZInformationCard {
+                width: parent.width
+                implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
+                _infoContent: MZTextBlock {
+                    id: textBlock
+                    Layout.fillWidth: true
+
+                    //% "VPN must be off to edit App Permissions"
+                    text: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+                    verticalAlignment: Text.AlignVCenter
+                    Accessible.role: Accessible.StaticText
+                    Accessible.name: text
+                }
+            }
+        }
+
         AppPermissionsList {
             id: enabledList
+
             Layout.fillWidth: true
             Layout.fillHeight: false
             Layout.leftMargin: MZTheme.theme.vSpacing
             Layout.rightMargin: MZTheme.theme.vSpacing
+
             searchBarPlaceholder: searchApps
+            enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
         }
     }
+
     Component.onCompleted: {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
