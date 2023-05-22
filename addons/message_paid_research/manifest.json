@@ -5,7 +5,7 @@
   "type": "message",
   "translatable": false,
   "conditions": {
-    "min_client_version": "2.15.0",
+    "min_client_version": "100.15.0",
     "translation_threshold": 0,
     "locales": ["en"],
     "javascript": "currencyCheck.js"
