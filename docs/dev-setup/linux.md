@@ -4,7 +4,7 @@
 
 `conda activate vpn`
 
-See ./index.md for conda environment instructions.
+See [here](./index.md#conda) for conda environment instructions.
 
 # Get Qt
 
