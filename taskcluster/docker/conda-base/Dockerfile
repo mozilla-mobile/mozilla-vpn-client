@@ -85,5 +85,5 @@ ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster/requirements.txt
 # %include taskcluster/scripts/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/taskcluster/scripts/requirements.txt
 
-
+ENV PATH="/opt/conda/bin/:$PATH"
 RUN /opt/conda/bin/conda env create -f /root/env.yml -n vpn
