@@ -23,6 +23,8 @@ tasks:
 #                                  taskcluster binary's to run shell tasks and etc fun stuff.
     base:
         symbol: I(base)
+    conda-base:
+        symbol: I(conda-base)
     build:
         parent: base
         symbol: I(build)
