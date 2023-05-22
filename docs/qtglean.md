@@ -110,7 +110,8 @@ example:
     data_sensitivity:
       - technical
     notification_emails:
-      - brizental@mozilla.com, vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 ```
 

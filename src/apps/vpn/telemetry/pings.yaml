@@ -21,7 +21,8 @@ vpnsession:
   data_reviews:
     - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6130#pullrequestreview-1312098471
   notification_emails:
-    - vpn-telemetry@mozilla.com, mcleinman@mozilla.com
+    - vpn-telemetry@mozilla.com
+    - mcleinman@mozilla.com
 
 daemonsession:
   description: |
@@ -36,4 +37,5 @@ daemonsession:
   data_reviews:
     - N/A, will be done for metrics within
   notification_emails:
-    - vpn-telemetry@mozilla.com, mcleinman@mozilla.com
+    - vpn-telemetry@mozilla.com
+    - mcleinman@mozilla.com
