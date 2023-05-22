@@ -79,4 +79,4 @@ RUN wget "${MINICONDA_URL}" -O miniconda.sh -q &&  \
 # %include env.yml
 ADD topsrcdir/env.yml /root/env.yml
 
-RUN /opt/conda/bin/conda create env -f /root/env.yml -n vpn
+RUN /opt/conda/bin/conda env create -f /root/env.yml -n vpn
