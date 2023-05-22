@@ -1,5 +1,5 @@
 # Building on MacOS
 
 ## Pre-requisites
-* XCode - https://developer.apple.com/xcode/
+* Xcode - https://developer.apple.com/xcode/
 * Qt

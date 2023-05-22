@@ -1,4 +1,4 @@
-# Pre-reqs
+# Pre-requisites
 
 # Activate conda
 
