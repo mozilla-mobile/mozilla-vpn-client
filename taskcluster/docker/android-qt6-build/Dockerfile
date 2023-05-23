@@ -25,10 +25,5 @@ RUN cd /root/ &&\
     bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh" &&\
     bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
     
-
 # Sentry tools
 RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=${SENTRY_CLI_VERSION} bash
-
-
-VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
