@@ -59,7 +59,9 @@ class ServerProbe final : public QObject {
 
   Q_INVOKABLE void refresh();
 
-  int baseCityScore(const ServerCity* city, const QString& originCountry) const;
+//  int baseCityScore(const ServerCity* city, const QString& originCountry) const;
+    
+  bool areThereAvailableServers(const ServerCity* city) const;
 
  signals:
   void progressChanged();

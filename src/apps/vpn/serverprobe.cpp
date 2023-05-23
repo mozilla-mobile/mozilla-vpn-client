@@ -30,7 +30,7 @@ constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 constexpr const uint32_t SERVER_LATENCY_PROGRESS_DELAY_MSEC = 500;
 
 // Minimum number of redundant servers we expect at a location.
-constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
+//constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
 
 namespace {
 Logger logger("ServerProbe");
@@ -314,10 +314,9 @@ void ServerProbe::setCooldown(const QString& publicKey, qint64 timeout) {
   }
 }
 
-int ServerProbe::baseCityScore(const ServerCity* city,
-                                 const QString& originCountry) const {
+// Determine if there are available servers in the same city as the original location
+bool ServerProbe::areThereAvailableServers(const ServerCity* city) const {
   qint64 now = QDateTime::currentSecsSinceEpoch();
-  int score = Poor;
   int activeServerCount = 0;
   for (const QString& pubkey : city->servers()) {
     if (getCooldown(pubkey) <= now) {
@@ -325,24 +324,6 @@ int ServerProbe::baseCityScore(const ServerCity* city,
     }
   }
 
-  // Ensure there is at least one reachable server.
-  if (activeServerCount == 0) {
-    return Unavailable;
-  }
-
-  // Increase the score if the location has sufficient redundancy.
-  if (activeServerCount >= SCORE_SERVER_REDUNDANCY_THRESHOLD) {
-    score++;
-  }
-
-  // Increase the score for connections made within the same country.
-  if ((!originCountry.isEmpty()) &&
-      (originCountry.compare(city->country(), Qt::CaseInsensitive) == 0)) {
-    score++;
-  }
-
-  if (score > Excellent) {
-    score = Excellent;
-  }
-  return score;
+  // If there are no available servers, return false
+  return activeServerCount == 0 ? false : true;
 }
