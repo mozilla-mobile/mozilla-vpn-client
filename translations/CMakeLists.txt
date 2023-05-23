@@ -31,6 +31,7 @@ find_program(QT_LRELEASE_EXECUTABLE
 ## Let's retrieve the list of projects. Foreach one, let's create a library.
 get_filename_component(PROJECTS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
 file(GLOB PROJECTS_NAMES LIST_DIRECTORIES true RELATIVE ${PROJECTS_DIR} ${PROJECTS_DIR}/*)
+list(FILTER PROJECTS_NAMES EXCLUDE REGEX "^\\..+")
 foreach(PROJECT ${PROJECTS_NAMES})
     message("Creating library translations_${PROJECT}")
     add_library(translations_${PROJECT} STATIC)
