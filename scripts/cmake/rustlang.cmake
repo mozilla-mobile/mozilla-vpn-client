@@ -241,6 +241,18 @@ function(add_rust_library TARGET_NAME)
 
     get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
+    ## Don't trust Xcode to provide us with a usable linker.
+    if(APPLE AND XCODE)
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
+        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_BUILD_TOOL} -C linker=/usr/bin/cc \$@\n")
+        file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
+            OWNER_READ OWNER_WRITE OWNER_EXECUTE
+            GROUP_READ GROUP_WRITE GROUP_EXECUTE
+            WORLD_READ WORLD_EXECUTE
+        )
+        list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
+    endif()
+
     ## Build the rust library file(s)
     foreach(ARCH ${RUST_TARGET_ARCH})
         build_rust_archives(
