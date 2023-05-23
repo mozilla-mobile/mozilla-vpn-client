@@ -31,7 +31,7 @@ rm commandline_tools.zip
 
 export ANDROID_HOME=$CONDA_PREFIX/android_home
 
-sdkmanager --install $(cat android_sdk.txt) --sdk_root=$ANDROID_HOME
+echo y | sdkmanager --install $(cat android_sdk.txt) --sdk_root=$ANDROID_HOME
 
 
 conda env config vars set ANDROID_SDK_ROOT=$CONDA_PREFIX/android_home
