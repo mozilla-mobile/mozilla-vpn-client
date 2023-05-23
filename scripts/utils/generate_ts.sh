@@ -24,7 +24,7 @@ print G "done."
 for project in src/apps/*; do
   project=$(basename $project)
 
-  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] && continue
+  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] || [ "$project" = ".DS_Store" ] && continue
 
   mkdir -p translations/generated/$project || die
 
