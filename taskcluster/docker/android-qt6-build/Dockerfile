@@ -31,3 +31,6 @@ RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=${SENTRY_CLI_VERSIO
 
 VOLUME /builds/worker/.cache
 VOLUME /builds/worker/checkouts
+
+RUN rm -rf /builds/worker/.cache/** && \ 
+    rm -rf /builds/worker/checkouts/**
