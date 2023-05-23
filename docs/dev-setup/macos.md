@@ -51,7 +51,7 @@ https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozil
 
 Unzip the folder and remember the location for the configure step.
 
-# Build and install
+# Build
 
 Make the build directory
 
@@ -59,7 +59,7 @@ Make the build directory
 
 Configure
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt install path>/macos/lib/cmake/
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/
 
 Compile
 
