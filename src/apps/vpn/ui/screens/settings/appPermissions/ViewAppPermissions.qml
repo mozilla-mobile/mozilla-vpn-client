@@ -42,8 +42,8 @@ MZViewBase {
                     id: textBlock
                     Layout.fillWidth: true
 
-                    //% "VPN must be off to edit App Permissions"
-                    text: qsTrId("vpn.settings.protectSelectedApps.vpnMustBeOff")
+
+                    text: MZI18n.SplittunnelInfoCardDescription
                     verticalAlignment: Text.AlignVCenter
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
