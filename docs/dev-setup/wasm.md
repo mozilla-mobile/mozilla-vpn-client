@@ -1,8 +1,8 @@
 # Pre-requisites
 
-WASM instructions for linux are below. Building for wasm is a little tricky, you may be able to get by using the taskcluster artefacts that run on each PR. Each PR runs a build-wasm/opt job. From github actions view, you can "View task in Taskcluster", then under Artifacts, click on `public/build/index.html`.
+WASM instructions for Linux are below. Building for wasm is a little tricky, you may be able to get by using the taskcluster artifacts that run on each PR. Each PR runs a build-wasm/opt job. From GitHub actions view, you can "View task in Taskcluster", then under Artifacts, click on `public/build/index.html`.
 
-If that doesn't work for you, first follow all pre-requisites listed in [linux.md](./linux.md#pre-requisites).
+If that doesn't work for you, first follow all pre-requisites listed in [Linux.md](./linux.md#pre-requisites).
 
 ## Other dependencies
 
