@@ -42,6 +42,13 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
    */
   void fetchAndAnnounce(const QUrl& path);
 
+  /**
+   * @brief Closes and re-opens the QML window
+   * forcing a refresh of all components.
+   *
+   */
+  void reloadWindow();
+
  private:
   QQmlEngine* m_target = nullptr;
   QMap<QString, QUrl> m_announced_files;
