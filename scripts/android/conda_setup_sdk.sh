@@ -15,6 +15,8 @@ else
     exit 1
 fi
 
+cp android_sdk.txt $CONDA_PREFIX/
+
 cd $CONDA_PREFIX
 # Download Commandline tools, smylink them to the conda path.
 wget -O commandline_tools.zip $COMMANDLINE_TOOLS_URL
