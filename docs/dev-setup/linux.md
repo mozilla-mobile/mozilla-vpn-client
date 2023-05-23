@@ -1,12 +1,12 @@
 # Pre-requisites
 
-# Activate conda
+## Activate conda
 
 `conda activate vpn`
 
 See [here](./index.md#conda) for conda environment instructions.
 
-# Get Qt
+## Get Qt
 
 Download the online installer from the official QT website: https://www.qt.io/download-qt-installer
 
@@ -17,7 +17,7 @@ While you will need to register with an email address, it will be free.
 During the install, there will be many components available.
 Install all of Qt version 6.2.4 and you'll have everything you need.
 
-# Other dependencies
+## Other dependencies
 
 On Ubuntu, apt install the following dependencies
 
