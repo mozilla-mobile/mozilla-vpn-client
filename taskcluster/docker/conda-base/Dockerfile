@@ -32,6 +32,7 @@ ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/taskcluster/scripts/requirements.txt
 
 ENV PATH="/opt/conda/bin/:$PATH"
+ENV CONDA_HOME=/opt/conda/
 RUN su worker && \
     /opt/conda/bin/conda env create -f /root/env.yml -n vpn && \ 
     conda init bash

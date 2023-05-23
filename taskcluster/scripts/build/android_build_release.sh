@@ -11,6 +11,7 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
+source ${CONDA_HOME}/bin/activate
 conda activate vpn
 
 # Get Secrets for building
