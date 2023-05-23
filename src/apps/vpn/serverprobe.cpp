@@ -68,17 +68,16 @@ void ServerProbe::initialize() {
 
 void ServerProbe::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
-    clear();
-    return;
-  }
+//  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+//    clear();
+//    return;
+//  }
 
-  if (vpn->controller()->state() != Controller::StateOff) {
-    // Don't attempt to refresh latency when the VPN is active, or
-    // we could get misleading results.
-    m_wantRefresh = true;
+  auto state = vpn->controller()->state();
+  if (state != Controller::StateOff && state != Controller::StateConnecting) { //TODO Double check the states we should account for.
     return;
   }
+  
   if (m_pingSender != nullptr) {
     // Don't start a latency refresh if one is already in progress.
     return;

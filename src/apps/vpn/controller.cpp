@@ -27,6 +27,7 @@
 #include "rfc/rfc4291.h"
 #include "serveri18n.h"
 #include "serverlatency.h"
+#include "serverprobe.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
@@ -232,8 +233,10 @@ bool Controller::activate(const ServerData& serverData,
   // Server location becomes unavailable while connecting.
   if (m_state == StateServerUnavailable)
   {
-      logger.debug() << "StateServerUnavailable: Server location becomes unavailable while connecting";
-      // Call the ServerProbe class logic here
+    logger.debug() << "StateServerUnavailable: Server location becomes unavailable while connecting";
+    // Call the ServerProbe class logic here
+    MozillaVPN::instance()->serverProbe()->start();
+    
   }
     
   if (m_state == StateOff) {

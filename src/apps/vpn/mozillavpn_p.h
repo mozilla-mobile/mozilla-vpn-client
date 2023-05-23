@@ -23,6 +23,7 @@
 #include "profileflow.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
+#include "serverprobe.h"
 #include "statusicon.h"
 #include "telemetry.h"
 #include "websocket/websockethandler.h"
@@ -42,6 +43,7 @@ struct MozillaVPNPrivate {
   ServerCountryModel m_serverCountryModel;
   ServerData m_serverData;
   ServerLatency m_serverLatency;
+  ServerProbe m_serverProbe;
   StatusIcon m_statusIcon;
   SubscriptionData m_subscriptionData;
   SupportCategoryModel m_supportCategoryModel;

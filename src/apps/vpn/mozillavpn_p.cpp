@@ -57,6 +57,10 @@ ServerLatency* MozillaVPN::serverLatency() const {
   return &m_private->m_serverLatency;
 }
 
+ServerProbe* MozillaVPN::serverProbe() const {
+  return &m_private->m_serverProbe;
+}
+
 StatusIcon* MozillaVPN::statusIcon() const { return &m_private->m_statusIcon; }
 
 SubscriptionData* MozillaVPN::subscriptionData() const {

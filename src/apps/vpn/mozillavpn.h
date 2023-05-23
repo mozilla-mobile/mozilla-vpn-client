@@ -32,6 +32,7 @@ class ReleaseMonitor;
 class ServerCountryModel;
 class ServerData;
 class ServerLatency;
+class ServerProbe;
 class StatusIcon;
 class SubscriptionData;
 class SupportCategoryModel;
@@ -150,6 +151,7 @@ class MozillaVPN final : public App {
   ReleaseMonitor* releaseMonitor() const;
   ServerCountryModel* serverCountryModel() const;
   ServerLatency* serverLatency() const;
+  ServerProbe* serverProbe() const;
   StatusIcon* statusIcon() const;
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
