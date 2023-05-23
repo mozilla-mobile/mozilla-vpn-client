@@ -27,3 +27,7 @@ RUN cd /root/ &&\
     
 # Sentry tools
 RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=${SENTRY_CLI_VERSION} bash
+
+
+VOLUME /builds/worker/.cache
+VOLUME /builds/worker/checkouts
