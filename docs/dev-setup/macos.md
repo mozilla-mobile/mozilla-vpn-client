@@ -100,7 +100,7 @@ time](./index.md#build-configure-flags).
 You need to tell Xcode where to find the versions of rust and go that we have installed in our
 conda environment.
 
-First find and go to the XCode `/usr/bin` directory. The `xcrun` step you ran earlier will give you a hint
+First find and go to the Xcode `/usr/bin` directory. The `xcrun` step you ran earlier will give you a hint
 where to look. It is usually, `/Applications/Xcode.app/Contents/Developer/usr/bin/`.
 
     cd /Applications/Xcode.app/Contents/Developer/usr/bin/

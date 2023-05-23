@@ -31,7 +31,7 @@ Unzip the folder and remember the location for the configure step.
 
 ## Configure Xcode build environment
 
-Complete the steps in [macos.md#configure-xcode-build-environment](./macos.md#configure-xcode-build-environment).
+Complete the steps in [macOS.md#configure-xcode-build-environment](./macos.md#configure-xcode-build-environment).
 
 ## Build
 
@@ -40,7 +40,7 @@ Make the build directory
     mkdir build-ios
 
 Configure, using the cmake in the downloaded Qt folder, and setting QT_HOST_PATH to point
-to macos.
+to macOS.
 
     <Qt unzipped path>/6.2.4/ios/bin/qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH=<Qt unzipped path>/6.2.4/macos
 
