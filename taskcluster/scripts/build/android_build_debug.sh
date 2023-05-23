@@ -11,6 +11,8 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
+conda activate vpn
+
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:
 #

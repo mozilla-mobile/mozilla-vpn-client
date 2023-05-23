@@ -24,6 +24,7 @@ tasks:
     base:
         symbol: I(base)
     conda-base:
+        parent: base
         symbol: I(conda-base)
     build:
         parent: base

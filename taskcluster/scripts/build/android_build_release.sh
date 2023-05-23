@@ -11,6 +11,8 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
+conda activate vpn
+
 # Get Secrets for building
 echo "Fetching Tokens!"
 ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
