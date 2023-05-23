@@ -168,6 +168,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverlatency.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverprobe.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/serverprobe.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/settingswatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/statusicon.cpp
