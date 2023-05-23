@@ -235,6 +235,11 @@ void NotificationHandler::showNotification() {
       m_connected = true;
       m_switching = true;
       return;
+       
+    case Controller::StateServerUnavailable:
+      m_connected = false;
+      m_switching = false; //TODO should this be true? -Gela
+      return;
 
     default:
       return;

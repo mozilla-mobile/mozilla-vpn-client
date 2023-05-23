@@ -112,6 +112,8 @@ const QString StatusIcon::iconString() {
       [[fallthrough]];
     case Controller::StateConfirming:
       [[fallthrough]];
+    case Controller::StateServerUnavailable:
+      [[fallthrough]];
     case Controller::StateDisconnecting:
       if (!m_animatedIconTimer.isActive()) {
         activateAnimation();

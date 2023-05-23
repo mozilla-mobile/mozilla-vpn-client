@@ -49,6 +49,7 @@ class Controller final : public QObject, public LogSerializer {
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
+    StateServerUnavailable,
   };
   Q_ENUM(State)
 

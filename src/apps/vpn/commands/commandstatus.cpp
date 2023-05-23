@@ -161,6 +161,10 @@ int CommandStatus::run(QStringList& tokens) {
       case Controller::StateSwitching:
         stream << "switching";
         break;
+    
+      case Controller::StateServerUnavailable:
+        stream << "server location unavailable";
+        break;
     }
 
     stream << Qt::endl;

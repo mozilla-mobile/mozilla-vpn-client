@@ -131,7 +131,8 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   if (state == Controller::StateOn || state == Controller::StateConnecting ||
       state == Controller::StateCheckSubscription ||
       state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching) {
+      state == Controller::StateSilentSwitching ||
+      state == Controller::StateServerUnavailable) {
     logger.debug() << "VPN on. Ignoring unsecured network";
     return;
   }

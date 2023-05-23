@@ -229,6 +229,13 @@ bool Controller::activate(const ServerData& serverData,
   emit currentServerChanged();
 #endif
 
+  // Server location becomes unavailable while connecting.
+  if (m_state == StateServerUnavailable)
+  {
+      logger.debug() << "StateServerUnavailable: Server location becomes unavailable while connecting";
+      // Call the ServerProbe class logic here
+  }
+    
   if (m_state == StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
@@ -470,13 +477,15 @@ bool Controller::deactivate() {
 
   if (m_state != StateOn && m_state != StateSwitching &&
       m_state != StateSilentSwitching && m_state != StateConfirming &&
-      m_state != StateConnecting && m_state != StateCheckSubscription) {
+      m_state != StateConnecting && m_state != StateCheckSubscription &&
+      m_state != StateServerUnavailable) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateConnecting || m_state == StateCheckSubscription) {
+      m_state == StateConnecting || m_state == StateCheckSubscription ||
+      m_state == StateServerUnavailable) {
     setState(StateDisconnecting);
   }
 
@@ -606,7 +615,8 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None &&
-      (m_state == StateSwitching || m_state == StateSilentSwitching)) {
+      (m_state == StateSwitching || m_state == StateSilentSwitching ||
+       m_state == StateServerUnavailable)) {
     activate(m_nextServerData, m_nextServerSelectionPolicy);
     return;
   }
@@ -631,7 +641,7 @@ void Controller::quit() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription) {
+      m_state == StateCheckSubscription || m_state == StateServerUnavailable) {
     deactivate();
     return;
   }
@@ -649,7 +659,8 @@ void Controller::backendFailure() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming) {
+      m_state == StateCheckSubscription || m_state == StateConfirming ||
+      m_state == StateServerUnavailable) {
     deactivate();
     return;
   }
@@ -662,7 +673,8 @@ void Controller::serverUnavailable() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming || m_state == StateCheckSubscription) {
+      m_state == StateConfirming || m_state == StateCheckSubscription ||
+      m_state == StateServerUnavailable) {
     deactivate();
     return;
   }
