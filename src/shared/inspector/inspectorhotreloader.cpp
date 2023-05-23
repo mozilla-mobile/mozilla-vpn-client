@@ -138,7 +138,7 @@ void InspectorHotreloader::reloadWindow() {
   }
   logger.error() << "Closing and full reloading window";
 
-  int x, y = 0;
+  int x = 0, y = 0;
   // We may have multiple closed windows still in here.
   // So best to go over them all.
   QList<QObject*> rootObjects = engine->rootObjects();
