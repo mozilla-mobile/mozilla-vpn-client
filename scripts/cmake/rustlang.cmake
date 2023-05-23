@@ -86,19 +86,8 @@ function(build_rust_archives)
     endif()
 
     if(ANDROID)
-        if(CMAKE_HOST_SYSTEM_NAME STREQUAL Linux)
-            set(ANDROID_HOST_TAG linux-x86_64)
-        elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL Darwin)
-            set(ANDROID_HOST_TAG darwin-x86_64)
-        elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL Windows)
-            set(ANDROID_HOST_TAG windows-x86_64)
-        else()
-            message("Unsupported OS?")
-        endif()  
-        # Toolchain.
-        set(ANDROID_TOOLCHAIN_ROOT
-            "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}")
-       
+        get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
+        
         # Rust and Clang disagree about armv7, otherwise we can take the Rust build arch. 
         if(${RUST_BUILD_ARCH} STREQUAL armv7-linux-androideabi)
             set(ANDROID_ARCH_NAME armv7a-linux-androideabi)
@@ -107,7 +96,7 @@ function(build_rust_archives)
         endif()
 
         
-        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT}/bin/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT_BIN}/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
