@@ -31,6 +31,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
+          for i in src/apps/*/translations/i18n; do
+            git submodule update --remote $i
+          done
+
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3
@@ -61,6 +65,14 @@ jobs:
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \
               build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+
+      - name: Compile test addons
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons
+          cmake --build build/addons
 
       - uses: actions/upload-artifact@v3
         with:
@@ -107,7 +119,7 @@ jobs:
       - name: Install test dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
@@ -128,10 +140,6 @@ jobs:
             chmod +x ${{github.workspace}}/grcov-build/bin/grcov
             ${{github.workspace}}/grcov-build/bin/grcov --version
 
-      - name: Build addons
-        shell: bash
-        run: ./scripts/addon/generate_all_tests.py
-
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
         uses: nick-invision/retry@v2
@@ -147,6 +155,7 @@ jobs:
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/dummyvpn
+          MVPN_ADDONS_PATH: ./build/addons
 
       - name: Generating grcov reports
         id: generateGrcov

@@ -136,6 +136,7 @@ add_subdirectory(qtglean)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(translations)
+add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
