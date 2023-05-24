@@ -140,6 +140,7 @@ bash ./configure \
   -skip qtquickeffectmaker \
   -skip qtquicktimeline \
   -skip qtwebengine  \
+  -skip qtwebview \
   -skip qtlocation \
   -skip qtmultimedia  \
   -skip qtserialport  \
