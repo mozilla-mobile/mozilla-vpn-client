@@ -96,7 +96,7 @@ function(build_rust_archives)
         endif()
 
         
-        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT_BIN}/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS=-Clinker=${ANDROID_TOOLCHAIN_ROOT_BIN}/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
