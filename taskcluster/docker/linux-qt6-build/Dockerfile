@@ -17,11 +17,14 @@ ENV CURL='curl --location --retry 5' \
 ## Ensure that we generate the default locale
 RUN echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8" | debconf-set-selections
 
+## Enable bullseye-backports
+RUN echo "deb http://deb.debian.org/debian/ bullseye-backports main" > /etc/apt/sources.list.d/bullseye-backports.list
+RUN echo "deb-src http://deb.debian.org/debian/ bullseye-backports main" >> /etc/apt/sources.list.d/bullseye-backports.list
+
 RUN apt-get update -q
 RUN apt-get -y install tzdata
 RUN apt-get -y install build-essential \
                        clang \
-                       cmake \
                        curl \
                        debhelper \
                        devscripts \
@@ -61,6 +64,9 @@ RUN apt-get -y install libfontconfig1-dev \
                        libxcb-xkb-dev \
                        libxkbcommon-dev \
                        libxkbcommon-x11-dev
+
+## Install CMake from bullseye-backports
+RUN apt-get -y install -t bullseye-backports cmake
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
