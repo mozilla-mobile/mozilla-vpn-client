@@ -11,7 +11,7 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
-conda activate vpn
+
 
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:
@@ -20,7 +20,10 @@ conda activate vpn
 # aqt-name "arm64_v8a"   -> qmake-name: "arm64-v8a"
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
-./scripts/android/cmake.sh -d $QTPATH -A $1
+
+# We need to call bash with a login shell, so that conda is intitialized
+bash -l -c "conda activate vpn && ./scripts/android/cmake.sh -d $QTPATH -A $1" 
+
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
