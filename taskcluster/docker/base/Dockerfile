@@ -38,6 +38,7 @@ RUN apt-get update -qq \
                           zip \
                           cargo \
                           rpm \
+                          libglib2.0-0 \
     && apt-get clean
 
 RUN pip install --upgrade pip
