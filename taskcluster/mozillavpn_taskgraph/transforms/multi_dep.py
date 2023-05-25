@@ -12,13 +12,15 @@ from taskgraph.util.treeherder import inherit_treeherder_from_dep, join_symbol
 
 
 transforms = TransformSequence()
+upstream_artifacts = TransformSequence()
+treeherder = TransformSequence()
 
 
 @transforms.add
 def build_name_and_attributes(config, tasks):
     for task in tasks:
         task["dependencies"] = {
-            dep_key: dep.label for dep_key, dep in _get_all_deps(task).items()
+            dep_key: dep.label for dep_key, dep in _get_all_deps(config, task).items()
         }
         primary_dep = task["primary-dependency"]
         copy_of_attributes = primary_dep.attributes.copy()
@@ -34,51 +36,44 @@ def _get_dependent_job_name_without_its_kind(dependent_job):
     return dependent_job.label[len(dependent_job.kind) + 1 :]
 
 
-def _get_all_deps(task):
+def _get_all_deps(config, task):
     if task.get("dependent-tasks"):
         return task["dependent-tasks"]
 
-    return {task["primary-dependency"].kind: task["primary-dependency"]}
+    if task.get("primary-dependency"):
+        return {task["primary-dependency"].kind: task["primary-dependency"]}
+
+    return {
+        dep.kind: dep
+        for label, dep in config.kind_dependencies_tasks.items()
+        if label in task["dependencies"].values()
+    }
+
+
+def _get_primary_dep(config, task):
+    if "primary-dependency" in task:
+        return task["primary-dependency"]
+
+    if "primary-kind-dependency" in task["attributes"]:
+        for label, dep in config.kind_dependencies_tasks.items():
+            if (
+                label
+                == task["dependencies"][task["attributes"]["primary-kind-dependency"]]
+            ):
+                return dep
+
+    raise Exception(f"Could not find primary dependency for {task['name']}!")
 
 
 @transforms.add
-def resolve_keys(config, tasks):
-    for task in tasks:
-        resolve_keyed_by(
-            task,
-            "treeherder.job-symbol",
-            item_name=task["name"],
-            **{
-                "build-type": task["attributes"]["build-type"],
-                "level": config.params["level"],
-            },
-        )
-        yield task
-
-
-@transforms.add
-def resolve_keys(config, tasks):
-    for task in tasks:
-        resolve_keyed_by(
-            task,
-            "treeherder.platform",
-            item_name=task["name"],
-            **{
-                "build-type": task["attributes"]["build-type"],
-                "level": config.params["level"],
-            },
-        )
-        yield task
-
-
-@transforms.add
+@upstream_artifacts.add
 def build_upstream_artifacts(config, tasks):
     for task in tasks:
         worker_definition = {
             "upstream-artifacts": [],
         }
 
-        for dep in _get_all_deps(task).values():
+        for dep in _get_all_deps(config, task).values():
             paths = sorted(
                 artifact["name"]
                 for artifact in dep.attributes.get("release-artifacts", [])
@@ -98,9 +93,31 @@ def build_upstream_artifacts(config, tasks):
 
 
 @transforms.add
+@treeherder.add
+def resolve_treeherder_keys(config, tasks):
+    keys = (
+        "treeherder.job-symbol",
+        "treeherder.platform",
+    )
+    for task in tasks:
+        for key in keys:
+            resolve_keyed_by(
+                task,
+                key,
+                item_name=task["name"],
+                **{
+                    "build-type": task["attributes"]["build-type"],
+                    "level": config.params["level"],
+                },
+            )
+        yield task
+
+
+@transforms.add
+@treeherder.add
 def build_treeherder_definition(config, tasks):
     for task in tasks:
-        dep = task.pop("primary-dependency")
+        dep = _get_primary_dep(config, task)
 
         task.setdefault("treeherder", {}).update(inherit_treeherder_from_dep(task, dep))
         job_group = dep.task["extra"]["treeherder"].get("groupSymbol", "?")
@@ -112,11 +129,12 @@ def build_treeherder_definition(config, tasks):
 
 
 @transforms.add
-def remove_dependent_tasks(config, tasks):
+def remove_multi_dep_keys(config, tasks):
     for task in tasks:
-        try:
+        if "dependent-tasks" in task:
             del task["dependent-tasks"]
-        except KeyError:
-            pass
+
+        if "primary-dependency" in task:
+            del task["primary-dependency"]
 
         yield task

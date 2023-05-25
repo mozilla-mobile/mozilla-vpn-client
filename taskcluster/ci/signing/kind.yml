@@ -2,60 +2,60 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-loader: mozillavpn_taskgraph.loader.multi_dep:loader
+loader: taskgraph.loader.transform:loader
 
 transforms:
-    - mozillavpn_taskgraph.transforms.multi_dep:transforms
-    - mozillavpn_taskgraph.transforms.signing:transforms
-    - mozillavpn_taskgraph.transforms.release_index:transforms
-    - taskgraph.transforms.task:transforms
+    - taskgraph.transforms.from_deps
+    - mozillavpn_taskgraph.transforms.multi_dep:upstream_artifacts
+    - mozillavpn_taskgraph.transforms.multi_dep:treeherder
+    - mozillavpn_taskgraph.transforms.signing
+    - mozillavpn_taskgraph.transforms.release_index
+    - taskgraph.transforms.task
 
 kind-dependencies:
     - build
 
-primary-dependency: build
-
-group-by: build-type
-
-only-for-build-types:
-    - android-x64/release
-    - android-x86/release
-    - android-arm64/release
-    - android-armv7/release
-    # - linux/opt
-    - macos/opt
-    - windows/opt
-    - addons/opt
-
-job-template:
-    description: sign mozillavpn
-    run-on-tasks-for: []
-    add-index-routes:
-        by-build-type:
-            windows/opt: null  # for Windows we want the 'repackage-signing' task
-            default: build
-    signing-format:
-        by-build-type:
-            android.*: autograph_apk
-            linux.*: autograph_debsign
-            macos.*: macapp
-            windows/opt: autograph_authenticode
-            addons/opt: autograph_rsa
-
-    treeherder:
-        job-symbol:
+tasks:
+    build-signing:
+        description: sign mozillavpn
+        run-on-tasks-for: []
+        from-deps:
+            with-attributes:
+                build-type:
+                    - android-x64/release
+                    - android-x86/release
+                    - android-arm64/release
+                    - android-armv7/release
+                    # - linux/opt
+                    - macos/opt
+                    - windows/opt
+                    - addons/opt
+            copy-attributes: true
+        add-index-routes:
             by-build-type:
-                windows/opt: Bs-internals
-                default: Bs
-        kind: build
-        tier: 1
-        platform:
+                windows/opt: null  # for Windows we want the 'repackage-signing' task
+                default: build
+        signing-format:
             by-build-type:
-                android-x64/release: android/x86_64
-                android-x86/release: android/x86
-                android-arm64/release: android/arm64-v8a
-                android-armv7/release: android/armv7
-                linux/opt: linux/opt
-                macos/opt: macos/opt
-                windows/opt: windows/x86_64
-                addons/opt: addons/opt
+                android.*: autograph_apk
+                linux.*: autograph_debsign
+                macos.*: macapp
+                windows/opt: autograph_authenticode
+                addons/opt: autograph_rsa
+        treeherder:
+            job-symbol:
+                by-build-type:
+                    windows/opt: Bs-internals
+                    default: Bs
+            kind: build
+            tier: 1
+            platform:
+                by-build-type:
+                    android-x64/release: android/x86_64
+                    android-x86/release: android/x86
+                    android-arm64/release: android/arm64-v8a
+                    android-armv7/release: android/armv7
+                    linux/opt: linux/opt
+                    macos/opt: macos/opt
+                    windows/opt: windows/x86_64
+                    addons/opt: addons/opt
