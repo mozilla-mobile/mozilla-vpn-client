@@ -39,6 +39,7 @@ RUN apt-get update -qq \
                           cargo \
                           rpm \
                           libglib2.0-0 \
+                          ccache \
     && apt-get clean
 
 RUN pip install --upgrade pip
