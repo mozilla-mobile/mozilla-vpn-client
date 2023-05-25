@@ -128,7 +128,6 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsWindows::deleteInterface() {
-  WindowsFirewall::instance()->disableKillSwitch();
   m_tunnel.stop();
   return true;
 }

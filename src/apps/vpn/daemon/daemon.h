@@ -43,6 +43,11 @@ class Daemon : public QObject {
 
  signals:
   void connected(const QString& pubkey);
+  /**
+   * Can be fired if a call to activate() was unsucessfull
+   * and connected systems should rollback
+  */
+  void activationFailure();
   void disconnected();
   void backendFailure();
 

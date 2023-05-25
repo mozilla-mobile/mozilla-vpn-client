@@ -35,6 +35,9 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
 
   connect(m_wgutils, &WireguardUtilsWindows::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
+  connect(this, &WindowsDaemon::activationFailure, [](){
+      WindowsFirewall::instance()->disableKillSwitch();
+  });
 }
 
 WindowsDaemon::~WindowsDaemon() {
