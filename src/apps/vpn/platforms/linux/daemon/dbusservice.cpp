@@ -47,10 +47,17 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
-  bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
-              SLOT(userCreated(uint, QDBusObjectPath)));
-  bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
-              SLOT(userRemoved(uint, QDBusObjectPath)));
+  if (!bus.isConnected()) {
+    logger.error() << "System bus is not connected?";
+  }
+  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
+              SLOT(userCreated(uint, QDBusObjectPath)))) {
+    logger.error() << "Failed to connect to UserNew signal";
+  }
+  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
+              SLOT(userRemoved(uint, QDBusObjectPath)))) {
+    logger.error() << "Failed to connect to UserRemoved signal";
+  }
 
   QDBusMessage listUsersCall = QDBusMessage::createMethodCall(
       DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "ListUsers");
@@ -270,3 +277,16 @@ bool DBusService::firewallClear() {
   m_excludedApps.clear();
   return true;
 }
+
+// Workaround for QTBUG-108822 by manually registering QDBusObjectPath with the
+// D-Bus meta-type system, otherwise we are unable to connect to some signals.
+#if QT_VERSION < 0x060403
+class QtbugRegistrationProxy {
+ public:
+  QtbugRegistrationProxy() {
+    qDBusRegisterMetaType<QDBusObjectPath>();
+  }
+};
+
+static QtbugRegistrationProxy s_qtbugRegistrationProxy;
+#endif
