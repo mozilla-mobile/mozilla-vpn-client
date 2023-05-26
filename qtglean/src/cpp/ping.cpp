@@ -9,8 +9,8 @@
 
 Ping::Ping(int aId) : m_id(aId) {}
 
-void Ping::submit() const {
+void Ping::submit(const QString& reason = "") const {
 #ifndef __wasm__
-  glean_submit_ping_by_id(m_id);
+  glean_submit_ping_by_id(m_id, reason.toUtf8());
 #endif
 }
