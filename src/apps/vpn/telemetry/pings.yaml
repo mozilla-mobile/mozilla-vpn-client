@@ -31,7 +31,7 @@ daemonsession:
     iOS Network Extension. This ping will record start/end datestamp,
     session-based metrics, etc.
   include_client_id: true
-  send_if_empty: false
+  send_if_empty: true
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4579
   data_reviews:
@@ -39,3 +39,13 @@ daemonsession:
   notification_emails:
     - vpn-telemetry@mozilla.com
     - mcleinman@mozilla.com
+  reasons:
+    daemon_flush: >
+      Sent right before a session start metric is recorded. This should have
+      only a UUID that appears in no other pings.
+    daemon_start: >
+      Sent right after a session start metric is recorded.
+    daemon_timer: >
+      (Android only) Sent every three hours during an active VPN session.
+    daemon_end: >
+      Sent after as session ending metric is recorded.
