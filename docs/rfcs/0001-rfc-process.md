@@ -1,6 +1,8 @@
 - Status: Proposed
-- Date: 2023-05-23
-- RFC PR: TODO
+- Date: 2023-05-29
+- Author: [@lesleyjanenorton](https://github.com/lesleyjanenorton)
+- RFC PR: [#6981](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6982)
+- Implementation GitHub issue: Not applicable. Merging [#6981](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6982) implements the proposal.
 
 
 ## Summary
@@ -31,24 +33,29 @@ RFCs will be submitted and reviewed as pull requests in this repository. If appr
 
 The high-level process to create an RFC is as follows:
 
-* Create an RFC document (like this one). (TODO: templates, maybe)
-* Open a pull request for the RFC document.
-* Ask for feedback on the pull request.
+* Create an RFC document (like this one, in Markdown).
+* Open a pull request for the RFC document and prefix the title of the PR with `[RFC]`.
+* File an issue requesting feedback on the pull request.
 
 During the lifetime of an RFC:
 
 * Discussions happen asynchronously on the pull request; anyone may engage.
-* Build consensus (TODO: agreement?) and integrate feedback.
+* Integrate feedback, build consensus, get stakeholder approval. All comments, not just those of the stakeholder, should be addressed and resolved.
 
 After the discussion phase has concluded:
 
-* If consensus(TODO: agreement?) is reached, the RFC is considered "accepted" and merged into the repository for documentation purposes.
-* If consensus(TODO: agreement?) is not reached, the RFC is considered "rejected" and the pull request is closed. Rejected RFC proposals may be revived should the requirements change in the future.
+* If consensus is reached, the RFC is considered "accepted".
+* If consensus is not reached, the RFC is considered "rejected".
+* The status of the RFC is updated accordingly and is merged into the repository for documentation purposes.
+
+Note:
+* _Consensus_ in the bullets above should be understood as the general support of the team and stakeholder buy-in.
+* Rejected RFC proposals may be revived should the requirements change in the future.
 
 Authors may implement and submit the feature as a pull request once the RFC is accepted.
 
 ## Drawbacks
-- (?)
+- I can't think of any
 
 ## Questions
 - About nomenclature: Are we ok calling these 'RFCs'? Firefox Monitor and Firefox Relay refer to these as ADRs but 'RFC' strikes me as more to the point.
