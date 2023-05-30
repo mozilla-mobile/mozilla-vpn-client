@@ -2,34 +2,37 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-loader: mozillavpn_taskgraph.loader.multi_dep:loader
+loader: taskgraph.loader.transform:loader
 
 transforms:
-    - mozillavpn_taskgraph.transforms.multi_dep:transforms
+    - taskgraph.transforms.from_deps
+    - mozillavpn_taskgraph.transforms.multi_dep:upstream_artifacts
+    - mozillavpn_taskgraph.transforms.multi_dep:treeherder
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
     - signing
 
-primary-dependency: signing
-
-group-by: build-type
-
-only-for-build-types:
-    - android-x64/release
-    - android-x86/release
-    - android-arm64/release
-    - android-armv7/release
-
-job-template:
-    description: Publish MozillaVPN for Android
-    worker-type: push-apk
-    treeherder:
-        job-symbol: gp
-        kind: build
-    worker:
-        product: mozillavpn
-        channel: internal
-        commit: false
-        certificate-alias: mozillavpn
-    run-on-tasks-for: [github-release]
+tasks:
+    push-apk:
+        description: Publish MozillaVPN for Android
+        worker-type: push-apk
+        from-deps:
+            with-attributes:
+                build-type:
+                    - android-x64/release
+                    - android-x86/release
+                    - android-arm64/release
+                    - android-armv7/release
+            group-by:
+                attribute: build-type
+            copy-attributes: true
+        treeherder:
+            job-symbol: gp
+            kind: build
+        worker:
+            product: mozillavpn
+            channel: internal
+            commit: false
+            certificate-alias: mozillavpn
+        run-on-tasks-for: [github-release]
