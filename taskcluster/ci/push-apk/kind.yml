@@ -6,9 +6,9 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - taskgraph.transforms.from_deps
-    - mozillavpn_taskgraph.transforms.multi_dep:upstream_artifacts
-    - mozillavpn_taskgraph.transforms.multi_dep:treeherder
-    - taskgraph.transforms.task:transforms
+    - mozillavpn_taskgraph.transforms.scriptworker:upstream_artifacts
+    - mozillavpn_taskgraph.transforms.treeherder
+    - taskgraph.transforms.task
 
 kind-dependencies:
     - signing
