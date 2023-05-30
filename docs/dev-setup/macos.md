@@ -119,7 +119,9 @@ This step needs to be repeated each time Xcode updates.
 
 # Building
 
-At the configure step add `-GXcode`.
+Use the same configure command above and add `-GXcode`:
+
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/ -GXcode
 
 This will generate an Xcode project file at `build-mac/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
