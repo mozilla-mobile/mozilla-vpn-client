@@ -14,7 +14,7 @@ task-defaults:
           chain-of-trust: true
     run:
           using: run-task
-          use-caches: false
+          use-caches: true
           cwd: '{checkout}'
 
 android-qt-next/debug:

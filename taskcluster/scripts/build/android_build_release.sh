@@ -13,10 +13,14 @@ done
 
 # Get Secrets for building
 echo "Fetching Tokens!"
-#./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
-#./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-#./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-#./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+
+# Note: We cannot run `conda run -n vpn <commadn>` or conda activate vpn
+# as our current shell is not setup to do that.
+# So we need to call bash with a login shell and conda activate the env :/ 
+bash -l -c "conda activate vpn && ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token"
+bash -l -c "conda activate vpn && ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn"
+bash -l -c "conda activate vpn && ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint"
+bash -l -c "conda activate vpn && ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key"
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
@@ -29,16 +33,12 @@ mkdir -p /builds/worker/artifacts/
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
-# We need to call bash with a login shell, so that conda is intitialized
-bash -l -c "conda activate vpn && ./scripts/android/cmake.sh -d $QTPATH -A $1" 
+bash -l -c "conda activate vpn && ./scripts/android/cmake.sh -d $QTPATH -A $1  -a $(cat adjust_token) --sentrydsn $(cat sentry_dsn) --sentryendpoint $(cat sentry_envelope_endpoint)" 
 
-./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token) --sentrydsn $(cat sentry_dsn) --sentryendpoint $(cat sentry_envelope_endpoint)
-
-
-# sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+bash -l -c "conda activate vpn && sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)"
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
-# sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
+bash -l -c "conda activate vpn && sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs"
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
