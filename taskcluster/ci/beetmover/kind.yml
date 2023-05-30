@@ -6,6 +6,7 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - mozillavpn_taskgraph.transforms.requires_level:transforms
+    - mozillavpn_taskgraph.transforms.beetmover_mac_upstream:transforms
     - mozillavpn_taskgraph.transforms.release_artifacts:transforms
     - mozillavpn_taskgraph.transforms.beetmover:transforms
     - taskgraph.transforms.task:transforms
@@ -13,11 +14,12 @@ transforms:
 kind-dependencies:
     - build
     - signing
+    - mac-notarization
     - repackage-signing
 
 tasks:
     macos:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -26,7 +28,10 @@ tasks:
         release-artifacts: [MozillaVPN.pkg]
         dependencies:
             signing: signing-macos/opt
+            mac-notarization: mac-notarization/opt
         if-dependencies: [signing]
+        soft-dependencies:
+            mac-notarization: mac-notarization/opt
         attributes:
             build-type: macos/opt
         treeherder:

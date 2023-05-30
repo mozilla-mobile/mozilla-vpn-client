@@ -186,6 +186,16 @@ def add_beetmover_worker_config(config, tasks):
             "artifact-map": artifact_map,
             "build-number": int(build_id),
         }
+
+        if build_os == "mac":
+            # Switch between signing and notarization upstream task
+            if bucket == "dep" and "mac-notarization" in task["dependencies"]:
+                # dep bucket upstream dependency is signing
+                del task["dependencies"]["mac-notarization"]
+            elif bucket == "release" and "signing" in task["dependencies"]:
+                # release bucket upstream dependency is notarization
+                del task["dependencies"]["signing"]
+
         task_def = {
             "name": task["name"],
             "description": task_description,
