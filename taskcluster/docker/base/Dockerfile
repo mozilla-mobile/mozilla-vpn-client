@@ -37,6 +37,7 @@ RUN apt-get update -qq \
                           wget \
                           zip \
                           cargo \
+                          curl \
                           rpm \
                           libglib2.0-0 \
                           ccache \
