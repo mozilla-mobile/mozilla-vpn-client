@@ -85,6 +85,22 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
     endif()
 
+    if(ANDROID)
+        get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
+        
+        # Rust and Clang disagree about armv7, otherwise we can take the Rust build arch. 
+        if(${RUST_BUILD_ARCH} STREQUAL armv7-linux-androideabi)
+            set(ANDROID_ARCH_NAME armv7a-linux-androideabi)
+        else()
+            set(ANDROID_ARCH_NAME ${RUST_BUILD_ARCH})
+        endif()
+
+        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS=-Clinker=${ANDROID_TOOLCHAIN_ROOT_BIN}/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${ANDROID_TOOLCHAIN_ROOT_BIN}/${ANDROID_ARCH_NAME}${ANDROID_NATIVE_API_LEVEL}-clang)
+        list(APPEND RUST_BUILD_CARGO_ENV AR=${ANDROID_TOOLCHAIN_ROOT_BIN}/llvm-ar)
+        list(APPEND RUST_BUILD_CARGO_ENV LD=${ANDROID_TOOLCHAIN_ROOT_BIN}/lld)
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
