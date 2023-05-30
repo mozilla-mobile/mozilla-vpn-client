@@ -43,13 +43,20 @@ class VPNService : android.net.VpnService() {
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             // send ping
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonTimer
-            )
+            if (isSuperDooperMetricsActive) {
+                Pings.daemonsession.submit(
+                    Pings.daemonsessionReasonCodes.daemonTimer
+                )
+            }
             // reset timer
             this.start()
         }
     }
+
+    private val isSuperDooperMetricsActive: Boolean
+        get() {
+            return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
+        }
 
     private var currentTunnelHandle = -1
         set(value: Int) {
@@ -247,9 +254,11 @@ class VPNService : android.net.VpnService() {
             throw Error("turn on was called without vpn-permission!")
         }
 
-        Pings.daemonsession.submit(
-            Pings.daemonsessionReasonCodes.daemonFlush
-        )
+        if (isSuperDooperMetricsActive) {
+            Pings.daemonsession.submit(
+                Pings.daemonsessionReasonCodes.daemonFlush
+            )
+        }
 
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
@@ -301,9 +310,11 @@ class VPNService : android.net.VpnService() {
             )
         }
 
-        Pings.daemonsession.submit(
-            Pings.daemonsessionReasonCodes.daemonStart
-        )
+        if (isSuperDooperMetricsActive) {
+            Pings.daemonsession.submit(
+                Pings.daemonsessionReasonCodes.daemonStart
+            )
+        }
         mMetricsTimer.start()
     }
 
@@ -363,9 +374,11 @@ class VPNService : android.net.VpnService() {
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
-        Pings.daemonsession.submit(
-            Pings.daemonsessionReasonCodes.daemonEnd
-        )
+        if (isSuperDooperMetricsActive) {
+            Pings.daemonsession.submit(
+                Pings.daemonsessionReasonCodes.daemonEnd
+            )
+        }
         mMetricsTimer.cancel()
     }
 
