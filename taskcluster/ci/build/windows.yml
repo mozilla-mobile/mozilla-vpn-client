@@ -41,10 +41,10 @@ task-defaults:
         command: taskcluster/scripts/build/windows.ps1
 
 
-windows/opt:
+windows/msvc:
     description: "Windows Build"
     treeherder:
-        symbol: B
+        symbol: B(msvc)
     worker:
         artifacts:
             - type: file
@@ -56,10 +56,10 @@ windows/opt:
                 - secrets:get:project/mozillavpn/tokens
             default: []
 
-windows/clang-cl:
+windows/opt:
     description: "Windows Build"
     treeherder:
-        symbol: B(clang-cl)
+        symbol: B
     scopes:
         by-level:
             "3":
