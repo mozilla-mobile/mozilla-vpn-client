@@ -28,7 +28,6 @@ RFCs will be submitted and reviewed as pull requests in this repository. If appr
  - Closer to the code, easier to find
  - In keeping with how other teams do it (TODO link evidence)
 
-
 ## Guide-level explanation
 
 The high-level process to create an RFC is as follows:
