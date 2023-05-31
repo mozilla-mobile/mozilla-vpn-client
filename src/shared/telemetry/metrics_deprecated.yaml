@@ -36,6 +36,7 @@ sample:
         type: string
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   addon_message_state_changed:
@@ -53,6 +54,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       message_id:
@@ -79,6 +81,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       addon_id:
@@ -105,6 +108,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -129,6 +133,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       reason:
@@ -152,6 +157,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       errno:
@@ -185,6 +191,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -210,6 +217,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -234,6 +242,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       bar_button:
@@ -258,6 +267,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   guide_opened:
@@ -275,6 +285,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       id:
@@ -297,6 +308,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       id:
@@ -324,6 +336,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       task:
@@ -353,6 +366,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       language_code:
@@ -374,6 +388,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
     extra_keys:
       type:
@@ -396,6 +411,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       id:
@@ -418,6 +434,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       id:
@@ -440,6 +457,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       id:
@@ -462,6 +480,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       tutorial_id:
@@ -488,6 +507,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
 
   websocket_closed:
@@ -505,6 +525,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
     extra_keys:
       reason:
@@ -528,6 +549,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
 
   websocket_connection_attempted:
@@ -545,6 +567,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
 
   websocket_errored:
@@ -562,6 +585,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
     extra_keys:
       type:
@@ -585,4 +609,5 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31

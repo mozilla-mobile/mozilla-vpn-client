@@ -110,9 +110,11 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::activate() {}
 
-void MozillaVPN::deactivate() {}
+void MozillaVPN::deactivate(bool block) {}
 
 void MozillaVPN::refreshDevices() {}
+
+void MozillaVPN::silentSwitch() {}
 
 void MozillaVPN::update() {}
 

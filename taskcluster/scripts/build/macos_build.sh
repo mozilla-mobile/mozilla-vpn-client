@@ -48,6 +48,7 @@ print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml
 conda activate VPN
+./scripts/macos/conda_install_extras.sh  
 conda info
 
 # Conda Cannot know installed MacOS SDK'S
@@ -135,5 +136,9 @@ cp -r ./macos/pkg/Distribution tmp || die
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
+
+# Check for unintended writes to the source directory.
+print G "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh
 
 print G "Done!"

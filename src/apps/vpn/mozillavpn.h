@@ -115,7 +115,7 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE void activate();
-  Q_INVOKABLE void deactivate();
+  Q_INVOKABLE void deactivate(bool block = false);
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();

@@ -1,3 +1,3 @@
 multidict >= 5.0.0 
 yarl>=1.6.0
-taskcluster==49.1.2
+taskcluster==51.0.0

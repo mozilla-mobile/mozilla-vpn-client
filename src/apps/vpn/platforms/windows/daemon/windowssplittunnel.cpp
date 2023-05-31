@@ -87,8 +87,16 @@ void WindowsSplitTunnel::initDriver() {
   }
   if (state >= STATE_INITIALIZED) {
     logger.debug() << "Driver already initialized: " << state;
-    return;
+    reset();
+
+    auto newState = getState();
+    logger.debug() << "New state after reset:" << newState;
+    if (newState >= STATE_INITIALIZED) {
+      logger.debug() << "Reset unsuccesfull";
+      return;
+    }
   }
+
   DWORD bytesReturned;
   auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr, 0,
                             &bytesReturned, nullptr);

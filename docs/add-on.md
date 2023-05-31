@@ -150,16 +150,20 @@ An example of javascript conditional object is the following:
 
 If you want to implement new add-ons, you need to follow these steps:
 
-1. create a manifest in a separate folder in the `addons` directory of the mozilla VPN repository.
-2. read and follow the documentation for the add-on type you want to implement.
-3. use the `./scripts/addons/generate_all.py` script to build all the addons and expose the `addons/generated/addons` folder through a webservice.
+1. Create a manifest in a separate folder in the `addons` directory of the mozilla VPN repository.
+2. Read and follow the documentation for the add-on type you want to implement.
+3. Build the CMake project in the `addons` directory.
 
-      ```
-      ./scripts/addon/generate_all.py && (cd addons/generated/addons && python3 -m http.server)
-      ```
-4. open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
-5. scroll down and disable the signature-addon feature from the dev-menu, list of features
-6. be sure you are doing all of this using a staging environment
+```
+mkdir -p build-addons/
+cmake -S <source>/addons -B build-addons -GNinja
+cmake --build build-addons
+```
+
+4. Expose the generated build directory through a webservice. For example: `python3 -m http.server --directory build-addons/`
+5. Open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
+6. Scroll down and disable the signature-addon feature from the dev-menu, list of features
+7. Be sure you are doing all of this using a staging environment
 
 If all has done correctly, you can see the app fetching the manifest.json (and
 not! the manifest.json.sig) resource from the webservice.

@@ -5,6 +5,7 @@
 trust-domain: mozillavpn
 treeherder:
     group-names:
+        'B': 'Build Tasks'
         'I': 'Docker images'
         'lint': 'Linting tasks'
         'Fetch': 'Fetching Tasks'

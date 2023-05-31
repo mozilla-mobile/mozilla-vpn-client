@@ -27,7 +27,7 @@ int32_t BooleanMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 bool BooleanMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_boolean_test_get_value(m_id, pingName.toLocal8Bit());
+  return glean_boolean_test_get_value(m_id, pingName.toUtf8());
 #endif
   return false;
 }

@@ -16,15 +16,17 @@ import com.wireguard.config.InetNetwork
 import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
+import mozilla.telemetry.glean.BuildInfo
+import mozilla.telemetry.glean.Glean
+import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
+import java.io.File
 import java.util.*
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"
     private var mBinder: VPNServiceBinder = VPNServiceBinder(this)
-    val mNotificationHandler by lazy {
-        NotificationUtil(this)
-    }
+    val mNotificationHandler by lazy { NotificationUtil(this) }
     private var mConfig: JSONObject? = null
     private var mConnectionTime: Long = 0
     private var mAlreadyInitialised = false
@@ -39,10 +41,12 @@ class VPNService : android.net.VpnService() {
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
                     VPNServiceBinder.EVENTS.connected,
-                    JSONObject().apply {
-                        put("time", mConnectionTime)
-                        put("city", mCityname)
-                    }.toString()
+                    JSONObject()
+                        .apply {
+                            put("time", mConnectionTime)
+                            put("city", mCityname)
+                        }
+                        .toString(),
                 )
                 return
             }
@@ -53,6 +57,7 @@ class VPNService : android.net.VpnService() {
 
     fun init() {
         if (mAlreadyInitialised) {
+            Log.i(tag, "VPN Service already initialized, ignoring.")
             return
         }
         Log.init(this)
@@ -65,6 +70,17 @@ class VPNService : android.net.VpnService() {
         currentTunnelHandle = wgGetLatestHandle()
         Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
+
+        // It's usually a bad practice to initialize Glean with the wrong
+        // value for uploadEnabled... However, since this is a very controlled
+        // situation -- it should only happen when logging in to a brand new
+        // installation of the app -- we should be fine
+        //
+        // If the `glean_enabled` preference is not set, when a new event listener
+        // is bound to this service, it will request that the main app broadcast
+        // the user provided preference for this. So it should not be long until
+        // the correct value is set here. See VPNServiceBinder > onTransact > ACTIONS.registerEventListener.
+        initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -84,8 +100,8 @@ class VPNService : android.net.VpnService() {
     }
 
     /**
-     * EntryPoint for the Service, gets Called when AndroidController.cpp
-     * calles bindService. Returns the [VPNServiceBinder] so QT can send Requests to it.
+     * EntryPoint for the Service, gets Called when AndroidController.cpp calles bindService.
+     * Returns the [VPNServiceBinder] so QT can send Requests to it.
      */
     override fun onBind(intent: Intent?): IBinder? {
         Log.v(tag, "Got Bind request")
@@ -94,9 +110,8 @@ class VPNService : android.net.VpnService() {
     }
 
     /**
-     * Might be the entryPoint if the Service gets Started via an
-     * Service Intent: Might be from Always-On-Vpn from Settings
-     * or from Booting the device and having "connect on boot" enabled.
+     * Might be the entryPoint if the Service gets Started via an Service Intent: Might be from
+     * Always-On-Vpn from Settings or from Booting the device and having "connect on boot" enabled.
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(tag, "Service Started by Intent")
@@ -123,10 +138,7 @@ class VPNService : android.net.VpnService() {
             val lastConfString = prefs.getString("lastConf", "")
             if (lastConfString.isNullOrEmpty()) {
                 // We have nothing to connect to -> Exit
-                Log.e(
-                    tag,
-                    "VPN service was triggered without defining a Server or having a tunnel"
-                )
+                Log.e(tag, "VPN service was triggered without defining a Server or having a tunnel")
                 return super.onStartCommand(intent, flags, startId)
             }
             this.mConfig = JSONObject(lastConfString)
@@ -156,9 +168,8 @@ class VPNService : android.net.VpnService() {
         }
 
     /**
-     * Checks if there is a config loaded
-     * or some available in the Storage to fetch.
-     * if this is false calling {reconnect()} will abort.
+     * Checks if there is a config loaded or some available in the Storage to fetch. if this is
+     * false calling {reconnect()} will abort.
      * @returns whether a config is found.
      */
     var canActivate: Boolean = false
@@ -188,11 +199,12 @@ class VPNService : android.net.VpnService() {
                 putOpt("deviceIpv4", mConfig?.getJSONObject("device")?.getString("ipv4Address"))
             }
         }
-      /*
-      * Checks if the VPN Permission is given.
-      * If the permission is given, returns true
-      * Requests permission and returns false if not.
-      */
+
+    /*
+     * Checks if the VPN Permission is given.
+     * If the permission is given, returns true
+     * Requests permission and returns false if not.
+     */
     fun checkPermissions(): Intent? {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission
@@ -225,7 +237,8 @@ class VPNService : android.net.VpnService() {
                 Log.e(tag, "Activation Error: did not get a TUN handle")
                 return
             }
-            // We should have everything to establish a new connection, turn down the old tunnel now.
+            // We should have everything to establish a new connection, turn down the old tunnel
+            // now.
             if (currentTunnelHandle != -1) {
                 Log.i(tag, "Currently have a connection, close old handle")
                 wgTurnOff(currentTunnelHandle)
@@ -241,9 +254,7 @@ class VPNService : android.net.VpnService() {
         // Store the config in case the service gets
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
-        prefs.edit()
-            .putString("lastConf", json.toString())
-            .apply()
+        prefs.edit().putString("lastConf", json.toString()).apply()
 
         // Go foreground
         CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }
@@ -253,7 +264,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("serverFallback").getString("ipv4AddrIn"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
-                json.getJSONObject("server").getString("ipv4AddrIn")
+                json.getJSONObject("server").getString("ipv4AddrIn"),
             )
         } else {
             var fallbackIpv4 = ""
@@ -264,7 +275,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("server").getString("ipv4AddrIn"),
                 json.getJSONObject("server").getString("ipv4Gateway"),
                 json.getString("dns"),
-                fallbackIpv4
+                fallbackIpv4,
             )
         }
     }
@@ -274,30 +285,28 @@ class VPNService : android.net.VpnService() {
         // reset the timer in the app.
         val currentConnectionTime = mConnectionTime
 
-        val config = if (this.mConfig != null) {
-            this.mConfig
-        } else {
-            val prefs = Prefs.get(this)
-            val lastConfString = prefs.getString("lastConf", "")
-            if (lastConfString.isNullOrEmpty()) {
-                // We have nothing to connect to -> Exit
-                Log.e(
-                    tag,
-                    "VPN service was triggered without defining a Server or having a tunnel"
-                )
-                throw Error("no config to use")
+        val config =
+            if (this.mConfig != null) {
+                this.mConfig
+            } else {
+                val prefs = Prefs.get(this)
+                val lastConfString = prefs.getString("lastConf", "")
+                if (lastConfString.isNullOrEmpty()) {
+                    // We have nothing to connect to -> Exit
+                    Log.e(
+                        tag,
+                        "VPN service was triggered without defining a Server or having a tunnel",
+                    )
+                    throw Error("no config to use")
+                }
+                JSONObject(lastConfString)
             }
-            JSONObject(lastConfString)
-        }
 
         Log.v(tag, "Try to reconnect tunnel with same conf")
         try {
             this.turnOn(config, forceFallBack)
         } catch (e: Exception) {
-            Log.e(
-                tag,
-                "VPN service - Reconnect failed"
-            )
+            Log.e(tag, "VPN service - Reconnect failed")
             // TODO: If we end up here, we might have screwed up the connection.
             // we should put out a notification that the user go into the app and does a manual
             // connection.
@@ -310,9 +319,7 @@ class VPNService : android.net.VpnService() {
         }
     }
     fun clearConfig() {
-        Prefs.get(this).edit().apply() {
-            putString("lastConf", "")
-        }.apply()
+        Prefs.get(this).edit().apply() { putString("lastConf", "") }.apply()
         mConfig = null
     }
 
@@ -331,14 +338,15 @@ class VPNService : android.net.VpnService() {
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
     }
 
-    /**
-     * Configures an Android VPN Service Tunnel
-     * with a given Wireguard Config
-     */
+    /** Configures an Android VPN Service Tunnel with a given Wireguard Config */
     private fun setupBuilder(config: Config, builder: Builder) {
         // Setup Split tunnel
-        for (excludedApplication in config.`interface`.excludedApplications)
-            builder.addDisallowedApplication(excludedApplication)
+        for (
+            excludedApplication in
+            config.`interface`.excludedApplications
+            ) builder.addDisallowedApplication(
+                excludedApplication,
+            )
 
         // Device IP
         for (addr in config.`interface`.addresses) builder.addAddress(addr.address, addr.mask)
@@ -360,10 +368,7 @@ class VPNService : android.net.VpnService() {
         builder.setBlocking(true)
     }
 
-    /**
-     * Gets config value for {key} from the Current
-     * running Wireguard tunnel
-     */
+    /** Gets config value for {key} from the Current running Wireguard tunnel */
     private fun getConfigValue(key: String): String? {
         if (!isUp) {
             return null
@@ -382,20 +387,23 @@ class VPNService : android.net.VpnService() {
     }
 
     /**
-     * Create a Wireguard [Config]  from a [json] string -
-     * The [json] will be created in AndroidController.cpp
+     * Create a Wireguard [Config] from a [json] string - The [json] will be created in
+     * AndroidController.cpp
      */
     private fun buildWireugardConfig(obj: JSONObject, useFallbackServer: Boolean = false): Config {
         val confBuilder = Config.Builder()
-        val jServer: JSONObject = if (useFallbackServer) {
-            obj.getJSONObject("serverFallback")
-        } else {
-            obj.getJSONObject("server")
-        }
+        val jServer: JSONObject =
+            if (useFallbackServer) {
+                obj.getJSONObject("serverFallback")
+            } else {
+                obj.getJSONObject("server")
+            }
 
         val peerBuilder = Peer.Builder()
         val ep =
-            InetEndpoint.parse(jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"))
+            InetEndpoint.parse(
+                jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"),
+            )
         peerBuilder.setEndpoint(ep)
         peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
 
@@ -433,29 +441,77 @@ class VPNService : android.net.VpnService() {
         return confBuilder.build()
     }
 
+    fun setGleanUploadEnabled(uploadEnabled: Boolean) {
+        Log.i(tag, "Setting glean upload enabled state: $uploadEnabled")
+
+        Prefs.get(this).edit().apply {
+            putBoolean("glean_enabled", uploadEnabled)
+            apply()
+        }
+
+        Glean.setUploadEnabled(uploadEnabled)
+    }
+
+    private fun initializeGlean(uploadEnabled: Boolean) {
+        val customDataPath = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR).path
+        val channel =
+            if (this.packageName.endsWith(".debug")) {
+                "staging"
+            } else {
+                "production"
+            }
+
+        Glean.initialize(
+            applicationContext = this.applicationContext,
+            uploadEnabled = uploadEnabled,
+            // GleanBuildInfo can only be generated for application,
+            // We are in a library so we have to build it ourselves.
+            buildInfo =
+            BuildInfo(
+                BuildConfig.VERSIONCODE,
+                BuildConfig.SHORTVERSION,
+                Calendar.getInstance(),
+            ),
+            configuration =
+            Configuration(
+                channel = channel,
+                // When initializing Glean from outside the main process,
+                // we need to provide it with a dataPath manually.
+                dataPath = customDataPath,
+            ),
+        )
+
+        Log.i(tag, "Initialized Glean. Upload enabled state: $uploadEnabled")
+    }
+
     companion object {
+        // This value cannot be "glean_data",
+        // because that is the data path for the Glean data on the main application.
+        // See:
+        // https://mozilla.github.io/glean/book/reference/general/initializing.html#configuration
+        internal const val GLEAN_DATA_DIR: String = "glean_daemon_data"
+
         @JvmStatic
         fun startService(c: Context) {
             c.applicationContext.startService(
                 Intent(c.applicationContext, VPNService::class.java).apply {
                     putExtra("startOnly", true)
-                }
+                },
             )
         }
 
-        @JvmStatic
-        private external fun wgGetConfig(handle: Int): String?
-        @JvmStatic
-        private external fun wgGetSocketV4(handle: Int): Int
-        @JvmStatic
-        private external fun wgGetSocketV6(handle: Int): Int
-        @JvmStatic
-        private external fun wgTurnOff(handle: Int)
-        @JvmStatic
-        private external fun wgTurnOn(ifName: String, tunFd: Int, settings: String): Int
-        @JvmStatic
-        private external fun wgVersion(): String?
-        @JvmStatic
-        private external fun wgGetLatestHandle(): Int
+        @JvmStatic private external fun wgGetConfig(handle: Int): String?
+
+        @JvmStatic private external fun wgGetSocketV4(handle: Int): Int
+
+        @JvmStatic private external fun wgGetSocketV6(handle: Int): Int
+
+        @JvmStatic private external fun wgTurnOff(handle: Int)
+
+        @JvmStatic private external fun wgTurnOn(ifName: String, tunFd: Int, settings: String): Int
+
+        @JvmStatic private external fun wgVersion(): String?
+
+        @JvmStatic private external fun wgGetLatestHandle(): Int
     }
 }

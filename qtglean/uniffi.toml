@@ -1,0 +1,7 @@
+# We need to override glean_core's uniffi config (3rdparty/glean/glean-core/uniffi.toml)
+# for kotlin only in order to provide uniffi with the correct cdylib_name. The glean_core
+# symbols are on the qtglean shared lib for us, that is what we need to give to uniffi.
+
+[bindings.kotlin]
+package_name = "mozilla.telemetry.glean.internal"
+cdylib_name = "qtglean"

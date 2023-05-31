@@ -54,7 +54,7 @@ DistributionData TimingDistributionMetric::testGetValue(
     const QString& pingName) const {
 #ifndef __wasm__
   auto value = QJsonDocument::fromJson(
-      glean_timing_distribution_test_get_value(m_id, pingName.toLocal8Bit()));
+      glean_timing_distribution_test_get_value(m_id, pingName.toUtf8()));
 
   DistributionData result;
   if (!value.isEmpty()) {

@@ -34,6 +34,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
+
 )
 
 if(NOT MSVC AND NOT IOS)
@@ -58,6 +59,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}
     )
 
+    # Build only the staticlib by default
+    set(RUSTFLAGS "-Ctarget-feature=+crt-static")
+    set(SHARED 0)
+
     if(IOS)
         set(RUST_ARCH "")
         if("arm64" IN_LIST CMAKE_OSX_ARCHITECTURES)
@@ -73,24 +78,17 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
         endif()
     elseif(ANDROID)
-        file(READ ${CMAKE_CURRENT_SOURCE_DIR}/uniffi.toml.in UNIFFI_TOML_CONTENT)
-
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
             set(RUST_ARCH "aarch64-linux-android")
-            string(REPLACE "@ARCHITECTURE@" "arm64-v8a" UNIFFI_TOML_CONTENT ${UNIFFI_TOML_CONTENT})
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
             set(RUST_ARCH "armv7-linux-androideabi")
-            string(REPLACE "@ARCHITECTURE@" "armeabi-v7a" UNIFFI_TOML_CONTENT ${UNIFFI_TOML_CONTENT})
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
             set(RUST_ARCH "i686-linux-android")
-            string(REPLACE "@ARCHITECTURE@" "x86" UNIFFI_TOML_CONTENT ${UNIFFI_TOML_CONTENT})
         elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(RUST_ARCH "x86_64-linux-android")
-            string(REPLACE "@ARCHITECTURE@" "x86_64" UNIFFI_TOML_CONTENT ${UNIFFI_TOML_CONTENT})
+        else()
+            message(FATAL_ERROR "Attempting to for unsupported architecture '${CMAKE_SYSTEM_PROCESSOR}'")
         endif()
-
-        # Prepare the uniffi config file for consumption by gradle.
-        file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/uniffi.toml ${UNIFFI_TOML_CONTENT})
 
         get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
         get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
@@ -98,6 +96,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             OPENSSL_LIB_DIR=${openssl_libs}
             OPENSSL_INCLUDE_DIR=${ssl_module}/include
             AR=llvm-ar)
+
+        # On Android we will build a dynamic lib,
+        # so that it can be linked to both the main app and the daemon.
+        set(RUSTFLAGS "-Ctarget-feature=-crt-static")
+        set(SHARED 1)
     endif()
 
     ## Don't trust Xcode to provide us with a usable linker.
@@ -114,6 +117,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
 
     ## Build the qtglean Rust library
+    list(APPEND CARGO_ENV RUSTFLAGS=${RUSTFLAGS})
     add_rust_library(qtglean_bindings
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
@@ -122,20 +126,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         DEPENDS
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
+        SHARED ${SHARED}
     )
-    target_link_libraries(qtglean PRIVATE qtglean_bindings)
 
-    set(HEADER_FILE qtglean.h)
-else()
-    message("Cannot build qtglean Rust library build for WASM. Skipping.")
-    # Since the metric recording code is sprinkled throughout the code,
-    # it's easier to just generate the APIs and have them be noop.
-    add_custom_target(qtglean_telemetry
-        DEPENDS
-            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
-            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
-    )
-    add_dependencies(mozillavpn qtglean_telemetry)
+    target_link_libraries(qtglean PRIVATE qtglean_bindings)
 endif()
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)

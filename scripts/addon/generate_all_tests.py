@@ -6,7 +6,6 @@
 import argparse
 import os
 import subprocess
-import sys
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
@@ -18,25 +17,15 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-generateall_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "generate_all.py")
-
-# Generate production addons files
-build_cmd = [sys.executable, generateall_path]
-if args.qtpath:
-    build_cmd.append("-q")
-    build_cmd.append(args.qtpath)
-subprocess.call(build_cmd)
-
-# Generate test addons files
 test_addons_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "tests", "functional", "addons")
-for file in os.listdir(test_addons_path):
-    manifest_path = os.path.join(test_addons_path, file, "manifest.json")
-    if os.path.exists(manifest_path):
-       print(f"Ignoring path {file} because the manifest already exists.")
-       continue
+cmake_setup_args = ['cmake', '-S', test_addons_path, '-B', os.path.join(test_addons_path, 'generated')]
 
-    build_cmd = [sys.executable, generateall_path, "-p", os.path.join(test_addons_path, file)]
-    if args.qtpath:
-        build_cmd.append("-q")
-        build_cmd.append(args.qtpath)
-    subprocess.call(build_cmd)
+if args.qtpath is not None:
+    qt_install_libs = subprocess.check_output([os.path.join(args.qtpath, 'qmake'), '-query', 'QT_INSTALL_LIBS'])
+    qt_cmake_prefix = os.path.join(qt_install_libs.decode().strip(), 'cmake')
+    cmake_setup_args.append(f'-DCMAKE_PREFIX_PATH={qt_cmake_prefix}')
+
+# Use CMake to build the test addons.
+# TODO: At some point we should stop generating in the source directory.
+subprocess.run(cmake_setup_args, check=True)
+subprocess.run(['cmake', '--build', os.path.join(test_addons_path, 'generated')], check=True)

@@ -41,11 +41,6 @@ get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
 
 target_include_directories(shared-sources INTERFACE ${ssl_module}/include)
 
-get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
-set_property(TARGET shared-sources PROPERTY QT_ANDROID_EXTRA_LIBS
-    ${openssl_libs}/libcrypto_1_1.so
-    ${openssl_libs}/libssl_1_1.so)
-
 target_link_directories(shared-sources INTERFACE ${openssl_libs})
 target_link_libraries(shared-sources INTERFACE libcrypto.so)
 target_link_libraries(shared-sources INTERFACE libssl.so)

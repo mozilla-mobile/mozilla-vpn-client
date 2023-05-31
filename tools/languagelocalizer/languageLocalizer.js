@@ -332,7 +332,7 @@ const LanguageLocalizer = {
     const currencies = {};
     if (languageData.IETFcode) {
       const currencyData = await this.retrieveJson(
-          `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-numbers-modern/main/${
+          `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-numbers-full/main/${
               languageData.IETFcode}/currencies.json`);
       Object.keys(currencyData.main[languageData.IETFcode].numbers.currencies)
           .map(c => ({
@@ -362,7 +362,7 @@ const LanguageLocalizer = {
 
       const cldrLanguages =
           (await this.retrieveJson(
-               `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-modern/main/${
+               `https://raw.githubusercontent.com/unicode-org/cldr-json/main/cldr-json/cldr-localenames-full/main/${
                    languageData.IETFcode}/languages.json`))
               .main[languageData.IETFcode]
               .localeDisplayNames.languages;

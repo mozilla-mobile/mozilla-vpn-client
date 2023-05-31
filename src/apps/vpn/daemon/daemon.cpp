@@ -83,9 +83,13 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
 
-      m_connections[config.m_hopindex] = ConnectionState(config);
-      m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
-      return true;
+      bool status = run(Switch, config);
+      logger.debug() << "Connection status:" << status;
+      if (status) {
+        m_connections[config.m_hopindex] = ConnectionState(config);
+        m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+      }
+      return status;
     }
 
     logger.warning() << "Already connected. Server switching not supported.";
