@@ -60,6 +60,8 @@ class ServerLatency final : public QObject {
   Q_INVOKABLE void refresh();
 
   int baseCityScore(const ServerCity* city, const QString& originCountry) const;
+  bool isServerLocationAvailable(const ServerCity* city);
+  
 
  signals:
   void progressChanged();
@@ -93,6 +95,7 @@ class ServerLatency final : public QObject {
   QTimer m_refreshTimer;
   QTimer m_progressDelayTimer;
   bool m_wantRefresh = false;
+  bool m_isServerLocationAvailable = true;
 
  private slots:
   void stateChanged();
