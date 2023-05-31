@@ -130,16 +130,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     target_link_libraries(qtglean PRIVATE qtglean_bindings)
-else()
-    message("Cannot build qtglean Rust library build for WASM. Skipping.")
-    # Since the metric recording code is sprinkled throughout the code,
-    # it's easier to just generate the APIs and have them be noop.
-    add_custom_target(qtglean_telemetry
-        DEPENDS
-            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.h
-            ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
-    )
-    add_dependencies(mozillavpn qtglean_telemetry)
 endif()
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)
