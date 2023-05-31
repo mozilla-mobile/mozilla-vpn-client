@@ -35,7 +35,7 @@ module.exports = {
       : path.join(__dirname, '..', '..', 'build', 'build');
 
     if (!fs.existsSync(build_directory)) {
-      throw new Error(`Provided build directory doesn't exist.`)
+      throw new Error(`Provided build ${path.format(build_directory)} directory doesn't exist.`)
     }
 
     app.use(express.static(build_directory));
