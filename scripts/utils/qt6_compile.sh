@@ -8,11 +8,18 @@
 
 POSITIONAL=()
 JOBS=8
+BUILDDIR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder> [-j|--jobs <jobs>] [anything else will be use as argument for the QT configure script]"
+  print N "\t$0 <QT_source_folder> <destination_folder> [options]"
   print N ""
+  print N "Build options:"
+  print N "  -j, --jobs NUM   Parallelize build across NUM processes. (default: 8)"
+  print N "  -b, --build DIR  Build in DIR. (default: <QT_source_folder>/build)"
+  print N "  -h, --help       Display this message and exit."
+  print N ""
+  print N "Any other arguments will be passed to the Qt configure script."
   exit 0
 }
 
@@ -25,6 +32,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -j | --jobs)
     JOBS="$2"
+    shift
+    shift
+    ;;
+  -b | --build)
+    BUILDDIR="$2"
     shift
     shift
     ;;
@@ -45,17 +57,15 @@ if [[ $# -lt 2 ]]; then
 fi
 
 [ -d "$1" ] || die "Unable to find the QT source folder."
-
-cd "$1" || die "Unable to enter into the QT source folder"
-
+SRCDIR=$(realpath $1)
 shift
 
-PREFIX=$1
+PREFIX=$(realpath $1)
 shift
 
-printn Y "Cleaning the folder... "
-make distclean -j $JOBS &>/dev/null;
-print G "done."
+if [[ -z "$BUILDDIR" ]]; then
+  BUILDDIR=$SRCDIR/build
+fi
 
 LINUX="
   -platform linux-clang \
@@ -99,7 +109,8 @@ mkdir qttools/src/linguist/linguist
 echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
 
 print Y "Wait..."
-bash ./configure \
+mkdir -p $BUILDDIR
+(cd $BUILDDIR && bash $SRCDIR/configure \
   $* \
   --prefix=$PREFIX \
   -opensource \
@@ -174,12 +185,12 @@ bash ./configure \
   -qt-zlib \
   -qt-pcre \
   -qt-freetype \
-  $PLATFORM || die "Configuration error."
+  $PLATFORM) || die "Configuration error."
 
 print Y "Compiling..."
-cmake --build . --parallel $JOBS || die "Make failed"
+cmake --build $BUILDDIR --parallel $JOBS || die "Make failed"
 
 print Y "Installing..."
-cmake --install . || die "Make install failed"
+cmake --install $BUILDDIR || die "Make install failed"
 
 print G "All done!"
