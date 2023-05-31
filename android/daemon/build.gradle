@@ -115,6 +115,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.21"
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
-    // We should try to keep this version in sync with the 3rdparty/glean submodule
-    implementation "org.mozilla.telemetry:glean:52.6.0"
+    implementation project(path: ':qtglean')
 }
