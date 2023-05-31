@@ -33,14 +33,15 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/linuxpingsender.h
 )
 
-# Qt' will require this to be set on the "app" target.
-# The whole setup is done by adding "shared-sources" as dependency.
-# therefore we can query the SSL property.
-# In case of adding a new APP - Please copy this over :)
-get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
+get_property(OPENSSL_LIBS_DIR GLOBAL PROPERTY OPENSSL_LIBS)
+get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
+
+# This property flags the build system to copy these
+# shared libraries into the expected Android shared library folder.
+#
+# Qt requires this to be set on the "app" target.
 set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
-    ${openssl_libs}/libcrypto_1_1.so
-    ${openssl_libs}/libssl_1_1.so
-    ${openssl_libs}/libcrypto.so
-    ${openssl_libs}/libssl.so
+    ${OPENSSL_LIBS_DIR}/libcrypto.so
+    ${OPENSSL_LIBS_DIR}/libssl.so
+    ${QTGLEAN_LIB_LOCATION}
     APPEND)

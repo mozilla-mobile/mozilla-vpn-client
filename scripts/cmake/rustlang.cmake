@@ -104,8 +104,8 @@ function(build_rust_archives)
 
     if(ANDROID)
         get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
-        
-        # Rust and Clang disagree about armv7, otherwise we can take the Rust build arch. 
+
+        # Rust and Clang disagree about armv7, otherwise we can take the Rust build arch.
         if(${RUST_BUILD_ARCH} STREQUAL armv7-linux-androideabi)
             set(ANDROID_ARCH_NAME armv7a-linux-androideabi)
         else()
@@ -305,6 +305,11 @@ function(add_rust_library TARGET_NAME)
         )
     endif()
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
+    if (ANDROID AND RUST_TARGET_SHARED)
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            IMPORTED_NO_SONAME TRUE
+        )
+    endif()
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})

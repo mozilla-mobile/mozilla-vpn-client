@@ -130,24 +130,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     target_link_libraries(qtglean PRIVATE qtglean_bindings)
-
-    if (ANDROID)
-        get_property(QTGLEAN_BINDINGS_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
-        get_filename_component(QTGLEAN_BINDINGS_FILENAME ${QTGLEAN_BINDINGS_LOCATION} NAME)
-
-        # Move the qtglean shared library into the Android libs/ folder
-        add_custom_command(
-            TARGET qtglean
-            COMMAND ${CMAKE_COMMAND} -E copy
-                ${QTGLEAN_BINDINGS_LOCATION}
-                ${CMAKE_BINARY_DIR}/src/android-build/libs/${ANDROID_ABI}/${QTGLEAN_BINDINGS_FILENAME}
-            DEPENDS ${QTGLEAN_BINDINGS_LOCATION}
-        )
-
-        set_target_properties(qtglean_bindings PROPERTIES
-            IMPORTED_NO_SONAME TRUE
-        )
-    endif()
 else()
     message("Cannot build qtglean Rust library build for WASM. Skipping.")
     # Since the metric recording code is sprinkled throughout the code,
