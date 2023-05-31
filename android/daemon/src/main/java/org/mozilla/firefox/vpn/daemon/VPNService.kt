@@ -42,13 +42,11 @@ class VPNService : android.net.VpnService() {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
-            // send ping
             if (isSuperDooperMetricsActive) {
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer
                 )
             }
-            // reset timer
             this.start()
         }
     }
