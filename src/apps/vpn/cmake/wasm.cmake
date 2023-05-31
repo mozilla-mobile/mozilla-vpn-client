@@ -21,4 +21,17 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
 )
 
+set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/build)
+add_custom_command(
+     TARGET mozillavpn
+     POST_BUILD
+     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/wasm ${WASM_FINAL_DIR}
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.js ${WASM_FINAL_DIR}/mozillavpn.js
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.wasm ${WASM_FINAL_DIR}/mozillavpn.wasm
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/qtloader.js ${WASM_FINAL_DIR}/qtloader.js
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/fxa_endpoints.js ${WASM_FINAL_DIR}/fxa_endpoints.js
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js ${WASM_FINAL_DIR}/guardian_endpoints.js
+     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/tools/logviewer ${WASM_FINAL_DIR}/logviewer
+)
+
 add_compile_definitions("MZ_DUMMY")

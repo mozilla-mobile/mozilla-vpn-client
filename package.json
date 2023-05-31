@@ -15,6 +15,7 @@
     "wasm:devcontainer:up": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json",
     "wasm:devcontainer:fresh": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json --remove-existing-container",
     "wasm:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build",
+    "wasm:dev": "node tests/functional/wasm.js",
     "qml-reload": "node ./tools/qml_hot_reload/hot.js"
   },
   "devDependencies": {
@@ -29,7 +30,6 @@
     "jsonschema": "^1.4.1",
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.9.2",
-    "websocket": "^1.0.34",
-    "command-line-args": "^5.2.1"
+    "websocket": "^1.0.34"
   }
 }

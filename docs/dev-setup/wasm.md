@@ -20,12 +20,30 @@ Read the following pages to know more about wasm and Qt:
 
 Make the build directory
 
-    mkdir build
+```bash
+mkdir build
+```
 
 Configure using qt-cmake which is in your installer directory
 
-    <path to installed Qt>/6.2.4/wasm_32/bin/qt-cmake -S . -B build
+```bash
+<path to installed Qt>/6.2.4/wasm_32/bin/qt-cmake -S . -B build
+```
 
 Compile
 
-    cmake --build build -j$(nproc)
+```bash
+cmake --build build -j$(nproc)
+```
+
+# Run
+
+Run the WASM build for development with
+
+```bash
+npm run wasm:dev
+```
+
+> **Note**: This assumes the final WASM build folder to be `/build`.
+> If the build folder is different from that, set the `WASM_BUILD_DIRECTORY`
+> to the chosen build folder.

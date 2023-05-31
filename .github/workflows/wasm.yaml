@@ -52,12 +52,6 @@ jobs:
           mkdir build
           /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j4
-          cp $(pwd)/build/src/mozillavpn.wasm wasm
-          cp $(pwd)/build/src/mozillavpn.js wasm
-          cp $(pwd)/build/src/qtloader.js wasm
-          cp $(pwd)/tests/functional/servers/fxa_endpoints.js wasm
-          cp $(pwd)/tests/functional/servers/guardian_endpoints.js wasm
-          cp -r $(pwd)/tools/logviewer wasm
 
       - name: Generate tasklist
         id: testGen
@@ -79,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: WebAssembly Build Qt6
-            path: wasm
+            path: build/build
 
   functionaltests:
     name: Functional tests
@@ -121,7 +115,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: WebAssembly Build Qt6
-          # Destination path
+          # Destination path, WASM_BUILD_DIRECTORY
           path: wasm
 
       - name: Build addons
@@ -137,4 +131,4 @@ jobs:
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
-            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}
+            xvfb-run -a WASM_BUILD_DIRECTORY="$(pwd)/wasm" npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}
