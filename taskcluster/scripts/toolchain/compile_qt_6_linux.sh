@@ -5,6 +5,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 set -e
+cd $HOME
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
@@ -51,9 +52,8 @@ fi
 
 echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt_dist
-set -e
 
-./vcs/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist
+$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist -b $(pwd)/qt_build
 
 echo "Patch Qt configuration"
 cat << EOF > $(pwd)/qt_dist/bin/qt.conf
@@ -68,14 +68,13 @@ EOF
 
 echo "Bundling extra libs"
 for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
-    ldd $qttool | grep '=>' | awk '{print $3}' >> qtlibdeps.txt
+    ldd $qttool | grep '=>' | awk '{print $3}' >> $(pwd)/qt_build/qtlibdeps.txt
 done
-for qtlibdep in $(sort -u qtlibdeps.txt); do
+for qtlibdep in $(sort -u $(pwd)/qt_build/qtlibdeps.txt); do
     cp -v $qtlibdep $(pwd)/qt_dist/lib/
     patchelf --set-rpath '$ORIGIN/../lib' $(pwd)/qt_dist/lib/$(basename $qtlibdep) 
 done
 
 echo "Build Qt- Creating dist artifact"
-ls
 echo $UPLOAD_DIR
 tar -cJf $UPLOAD_DIR/qt6_linux.tar.xz qt_dist/
