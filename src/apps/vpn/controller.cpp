@@ -244,6 +244,7 @@ bool Controller::activate(const ServerData& serverData,
     const ServerCity& serverCity = model->findCity(serverData.exitCountryCode(), serverData.exitCityName());
     if (vpn->serverLatency()->isServerLocationAvailable(&serverCity))
     {
+      // TODO: should connection health change at all? 
       logger.debug() << "Server location is not available";
       emit stateChanged();
     }
