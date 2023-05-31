@@ -374,6 +374,7 @@ bool ServerLatency::isServerLocationAvailable(const ServerCity* city) {
     // If there are no active servers in the selected city, the server location is unavailable.
     if (activeServerCount == 0) {
       m_isServerLocationAvailable = false;
+      return m_isServerLocationAvailable;
     }
     
     for (const auto& serverPubKey : availableServersInTheCity)
