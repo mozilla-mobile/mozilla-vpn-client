@@ -34,9 +34,7 @@ module.exports = {
       ? path.parse(process.env["WASM_BUILD_DIRECTORY"])
       : path.join(__dirname, '..', '..', 'build', 'build');
 
-    if (!fs.existsSync(build_directory)) {
-      throw new Error(`Provided build ${path.format(build_directory)} directory doesn't exist.`)
-    }
+    console.log(`Provided build directory: ${path.format(build_directory)}.`)
 
     app.use(express.static(build_directory));
 
