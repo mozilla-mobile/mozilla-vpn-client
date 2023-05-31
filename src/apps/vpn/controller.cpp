@@ -237,7 +237,13 @@ bool Controller::activate(const ServerData& serverData,
       m_portalDetected = false;
       return true;
     }
-
+    
+    // Before trying to connect, make sure the server location the user has selected is available.
+    MozillaVPN* vpn = MozillaVPN::instance();
+    ServerCountryModel* model = vpn->serverCountryModel();
+    const ServerCity& serverCity = model->findCity(serverData.exitCountryCode(), serverData.exitCityName());
+    vpn->serverLatency()->isServerLocationAvailable(&serverCity);
+    
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
     setState(StateCheckSubscription);
