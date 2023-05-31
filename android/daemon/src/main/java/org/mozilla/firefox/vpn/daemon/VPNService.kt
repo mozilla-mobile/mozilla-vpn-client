@@ -34,7 +34,7 @@ class VPNService : android.net.VpnService() {
     private var mAlreadyInitialised = false
     val mConnectionHealth = ConnectionHealth(this)
     private var mCityname = ""
-    private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, expressed in milliseconds
+    private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
         mBackgroundPingTimerMSec,
         mBackgroundPingTimerMSec / 4
