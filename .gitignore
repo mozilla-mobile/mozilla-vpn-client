@@ -33,7 +33,6 @@ linux/netfilter/vendor/
 __pycache__
 lottie.mjs
 qml_lint_result.txt
-qtglean/Cargo.lock
 
 # Translation pipeline
 addon_ts/
@@ -59,7 +58,7 @@ node_modules
 
 #Github Codespaces
 .venv
-=/ 
+=/
 
 asset_catalog_compiler.Info.plist
 
@@ -87,7 +86,7 @@ tests/nativemessaging/tests
 tests/qml/qml_tests
 tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
-tests/functional/addons/*/generated
+tests/functional/addons/generated
 build
 !taskcluster/ci/build
 !taskcluster/scripts/build
@@ -169,7 +168,6 @@ mozillavpnnp.vcxproj*
 /glean/telemetry/*
 !/glean/telemetry/.keepme
 qtglean/prebuilt/
-qtglean/uniffi.toml
 
 # For users compiling QT per the README
 /qt/

@@ -155,6 +155,9 @@ splittunnel:
     comment:
       - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
   infoLinkText: Learn more
+  infoCardDescription: 
+    value: VPN must be off to edit App exclusions
+    comment: Displays inside the information card at the top of the app exclusions screen when the VPN is on
 
 multiHopFeature:
   singleHopToggleCTA: Single-hop

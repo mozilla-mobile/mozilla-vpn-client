@@ -114,6 +114,8 @@ void MozillaVPN::deactivate(bool block) {}
 
 void MozillaVPN::refreshDevices() {}
 
+void MozillaVPN::silentSwitch() {}
+
 void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}

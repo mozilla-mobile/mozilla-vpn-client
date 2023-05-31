@@ -41,7 +41,7 @@ can be used to run tests locally or via the CI.
 # Addons
 
 - ./addon/build.py - generate a single addon
-- ./addon/generate_all.py generate all the addons
+- ./addon/generate_all_tests.py - generate addons for testing
 
 # Others
 

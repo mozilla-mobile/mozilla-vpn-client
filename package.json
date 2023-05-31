@@ -18,8 +18,8 @@
     "qml-reload": "node ./tools/qml_hot_reload/hot.js"
   },
   "devDependencies": {
-    "@devcontainers/cli": "^0.41.0",
-    "appium-adb": "^9.11.3",
+    "@devcontainers/cli": "^0.42.0",
+    "appium-adb": "^9.11.4",
     "body-parser": "^1.20.2",
     "chokidar": "^3.5.3",
     "command-line-args": "^5.2.1",
