@@ -61,7 +61,6 @@ class ServerLatency final : public QObject {
 
   int baseCityScore(const ServerCity* city, const QString& originCountry) const;
   bool isServerLocationAvailable(const ServerCity* city);
-  
 
  signals:
   void progressChanged();

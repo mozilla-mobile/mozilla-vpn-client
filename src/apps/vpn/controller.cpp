@@ -237,18 +237,19 @@ bool Controller::activate(const ServerData& serverData,
       m_portalDetected = false;
       return true;
     }
-    
-    // Before trying to connect, make sure the server location the user has selected is available.
+
+    // Before trying to connect, make sure the server location the user has
+    // selected is available.
     MozillaVPN* vpn = MozillaVPN::instance();
     ServerCountryModel* model = vpn->serverCountryModel();
-    const ServerCity& serverCity = model->findCity(serverData.exitCountryCode(), serverData.exitCityName());
-    if (vpn->serverLatency()->isServerLocationAvailable(&serverCity))
-    {
-      // TODO: should connection health change at all? 
+    const ServerCity& serverCity = model->findCity(serverData.exitCountryCode(),
+                                                   serverData.exitCityName());
+    if (vpn->serverLatency()->isServerLocationAvailable(&serverCity)) {
+      // TODO: should connection health change at all?
       logger.debug() << "Server location is not available";
       emit stateChanged();
     }
-    
+
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
     setState(StateCheckSubscription);
@@ -831,7 +832,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }

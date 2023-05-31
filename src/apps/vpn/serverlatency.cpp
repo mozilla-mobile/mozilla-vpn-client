@@ -352,16 +352,16 @@ bool ServerLatency::isServerLocationAvailable(const ServerCity* city) {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  //Only check server availability when the VPN is connecting
+  // Only check server availability when the VPN is connecting
   if (vpn->controller()->state() == Controller::StateConnecting) {
     connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
             SLOT(recvPing(quint16)), Qt::QueuedConnection);
     connect(m_pingSender, SIGNAL(criticalPingError()), this,
             SLOT(criticalPingError()));
-    
+
     m_pingSender = PingSenderFactory::create(QHostAddress(), this);
-    
-    //Populate a list of all the servers available in the city selected by user
+
+    // Populate a list of all the servers available in the city selected by user
     int activeServerCount = 0;
     QVector<QString> availableServersInTheCity;
     for (const QString& pubkey : city->servers()) {
@@ -371,22 +371,22 @@ bool ServerLatency::isServerLocationAvailable(const ServerCity* city) {
         availableServersInTheCity.append(pubkey);
       }
     }
-    // If there are no active servers in the selected city, the server location is unavailable.
+    // If there are no active servers in the selected city, the server location
+    // is unavailable.
     if (activeServerCount == 0) {
       m_isServerLocationAvailable = false;
       return m_isServerLocationAvailable;
     }
-    
-    for (const auto& serverPubKey : availableServersInTheCity)
-    {
+
+    for (const auto& serverPubKey : availableServersInTheCity) {
       while (!m_pingReplyList.isEmpty()) {
         const ServerPingRecord& record = m_pingReplyList.first();
         if ((record.timestamp + SERVER_LATENCY_TIMEOUT_MSEC) > now) {
           break;
         }
         logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout"
-        << record.retries;
-        
+                       << record.retries;
+
         // Send a retry.
         if (record.retries < SERVER_LATENCY_MAX_RETRIES) {
           ServerPingRecord retry = record;
@@ -394,13 +394,13 @@ bool ServerLatency::isServerLocationAvailable(const ServerCity* city) {
           retry.sequence = m_sequence++;
           retry.timestamp = now;
           m_pingReplyList.append(retry);
-          
+
           const Server& server = scm->server(serverPubKey);
           m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), 1);
         }
         m_pingReplyList.removeFirst();
       }
-      
+
       // Generate new pings until we reach our max number of parallel pings.
       while (m_pingReplyList.count() < SERVER_LATENCY_MAX_PARALLEL) {
         if (m_pingSendQueue.isEmpty()) {
@@ -411,15 +411,16 @@ bool ServerLatency::isServerLocationAvailable(const ServerCity* city) {
         record.timestamp = now;
         record.retries = 0;
         m_pingReplyList.append(record);
-        
+
         const Server& server = scm->server(record.publicKey);
-        m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
+        m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()),
+                               record.sequence);
       }
-      
-      if (m_pingReplyList.isEmpty()){
+
+      if (m_pingReplyList.isEmpty()) {
         m_isServerLocationAvailable = false;
       }
     }
   }
-    return m_isServerLocationAvailable;
+  return m_isServerLocationAvailable;
 }
