@@ -100,5 +100,6 @@
         <file>components/MZBadge.qml</file>
         <file>components/MZComposerView.qml</file>
         <file>components/MZPasteButton.qml</file>
+        <file>components/MZInformationCard.qml</file>
     </qresource>
 </RCC>

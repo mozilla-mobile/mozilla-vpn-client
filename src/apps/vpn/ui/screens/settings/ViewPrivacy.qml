@@ -25,7 +25,7 @@ MZViewBase {
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5
 
-        InformationCard {
+        MZInformationCard {
             objectName: "privacySettingsViewInformationCard"
             Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
             Layout.minimumHeight: textBlocks.height + MZTheme.theme.windowMargin * 2
