@@ -57,10 +57,10 @@ if [[ $# -lt 2 ]]; then
 fi
 
 [ -d "$1" ] || die "Unable to find the QT source folder."
-SRCDIR=$(realpath $1)
+SRCDIR=$(cd $1 && pwd)
 shift
 
-PREFIX=$(realpath $1)
+PREFIX=$1
 shift
 
 if [[ -z "$BUILDDIR" ]]; then
@@ -107,6 +107,10 @@ fi
 rm -rf qttools/src/linguist/linguist
 mkdir qttools/src/linguist/linguist
 echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
+
+# Create the installation prefix, and convert to an absolute path.
+mkdir -p $PREFIX
+PREFIX=(cd $PREFIX && pwd)
 
 print Y "Wait..."
 mkdir -p $BUILDDIR
