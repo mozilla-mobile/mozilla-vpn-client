@@ -31,7 +31,7 @@ NetworkConnectivityMonitor::NetworkConnectivityMonitor(QObject* parent)
 
   connect(
       MozillaVPN::instance()->connectionHealth(),
-      &ConnectionHealth::stabilityChanged, this, []() {
+      &ConnectionHealth::stabilityChanged, this, [this]() {
         logger.debug() << "VPN connection stability has changed";
         if (MozillaVPN::instance()->controller()->state() ==
                 Controller::StateOn &&
@@ -43,6 +43,7 @@ NetworkConnectivityMonitor::NetworkConnectivityMonitor(QObject* parent)
           if (transportType == "None" || transportType == "Unknown") {
             logger.debug() << "Internet probe failed after controller became "
                               "active. Device has no network connectivity.";
+            emit deviceNetworkConnectivityFailed();
           }
         }
       });

@@ -19,11 +19,20 @@ class NetworkConnectivityMonitor final : public QObject {
 
  public:
   static NetworkConnectivityMonitor* instance();
+  bool deviceNetworkConnectivity() const { return m_deviceNetworkConnectivity; }
 
   ~NetworkConnectivityMonitor();
 
+ signals:
+  void deviceNetworkConnectivityFailed();
+
  private:
   explicit NetworkConnectivityMonitor(QObject* parent);
+  Q_PROPERTY(bool deviceNetworkConnectivity READ deviceNetworkConnectivity
+                 NOTIFY deviceNetworkConnectivityFailed)
+
+ private:
+  bool m_deviceNetworkConnectivity = true;
 };
 
 #endif  // NETWORKCONNECTIVITYMONITOR_H
