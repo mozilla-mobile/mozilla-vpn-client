@@ -1,0 +1,54 @@
+name: i18n Updater
+# This Workflow will periodically go in: 
+# 1. update the i18n repo.
+# 2. file a pr. 
+# 3. approve the pr. 
+# 4. Mark is as auto merge, which means, if CI does pass, this will be merged automatically. 
+
+
+on:
+  # Triggers the workflow on pull request events but only for the main branch
+  # For now let's only have it manually, until we know this works! 
+  # schedule:
+  #  - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  main:
+    name: Update Main Branch Languages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Checkout mozilla-vpn-client-l10n Git
+        run: |
+          git submodule update --init --remote src/apps/vpn/translations/i18n/
+      - uses: peter-evans/create-pull-request@v5
+        id: cpr
+        with:
+          # This may not be github, cuz gh actions cannot self approve
+          author: GitHub <noreply@github.com>
+          committer: GitHub <noreply@github.com>
+          commit-message: "[Bot] Update i18n"
+          branch: i18n_automation
+          delete-branch: true
+          title: "[Bot] Update i18n"
+      - name: Approve l10n_branch.
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.WIKI_TOKEN }}
+      # Finally, this sets the PR to allow auto-merging for patch and minor
+      # updates if all checks pass
+      - name: Enable auto-merge the i18n PR
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.WIKI_TOKEN }}
+ 
