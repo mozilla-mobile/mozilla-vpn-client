@@ -21,6 +21,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "networkwatcher.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -236,6 +237,13 @@ bool Controller::activate(const ServerData& serverData,
 
       m_portalDetected = false;
       return true;
+    }
+    
+    // Before progressing any further, ensure that the device is connected to the Internet.
+    if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() == "None")
+    {
+      logger.debug() << "Internet probe failed during controller activation. Device has no network connectivity.";
+//      emit deviceNetworkConnectivityFailed();
     }
 
     // Before attempting to enable VPN connection we should check that the
@@ -745,6 +753,10 @@ void Controller::maybeEnableDisconnectInConfirming() {
 bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
 }
+
+//void Controller::deviceNetworkConnectivityFailed() {
+//  m_deviceConnectivity = false;
+//}
 
 void Controller::setState(State state) {
   if (m_state == state) {

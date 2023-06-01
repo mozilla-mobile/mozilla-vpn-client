@@ -51,6 +51,7 @@ class ConnectionHealth final : public QObject {
   Q_PROPERTY(uint latency READ latency NOTIFY pingReceived)
   Q_PROPERTY(double loss READ loss NOTIFY pingReceived)
   Q_PROPERTY(bool unsettled READ isUnsettled NOTIFY unsettledChanged)
+//  Q_PROPERTY(QString deviceNetworkConnectivityFailed READ deviceNetworkConnectivityFailed);
 
  public:
   ConnectionHealth();
@@ -82,6 +83,7 @@ class ConnectionHealth final : public QObject {
   void stabilityChanged();
   void unsettledChanged();
   void pingReceived();
+//  void deviceNetworkConnectivityFailed();
 
  private:
   void stop();

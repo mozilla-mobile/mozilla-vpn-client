@@ -67,6 +67,7 @@ class Controller final : public QObject, public LogSerializer {
                  NOTIFY enableDisconnectInConfirmingChanged);
   Q_PROPERTY(bool silentServerSwitchingSupported READ
                  silentServerSwitchingSupported CONSTANT);
+//  Q_PROPERTY(QString deviceNetworkConnectivityFailed READ deviceNetworkConnectivityFailed);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
@@ -119,6 +120,7 @@ class Controller final : public QObject, public LogSerializer {
 
   const ServerData& currentServer() const { return m_serverData; }
   bool silentServerSwitchingSupported() const;
+  void deviceNetworkConnectivityFailed();
 
 #ifdef MZ_DUMMY
   QString currentServerString() const;
@@ -169,6 +171,7 @@ class Controller final : public QObject, public LogSerializer {
   void enableDisconnectInConfirmingChanged();
   void activationBlockedForCaptivePortal();
   void handshakeFailed(const QString& serverHostname);
+//  void deviceNetworkConnectivityFailed();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();
@@ -214,6 +217,7 @@ class Controller final : public QObject, public LogSerializer {
   QTimer m_connectingTimer;
   QTimer m_handshakeTimer;
   bool m_enableDisconnectInConfirming = false;
+  bool m_deviceConnectivity = true;
 
   enum NextStep {
     None,
