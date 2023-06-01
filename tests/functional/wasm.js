@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const express = require('express')
+const express = require('express');
+const fs = require('fs');
 const path = require('node:path');
 const ports = require('./servers/ports.js');
 
@@ -28,7 +29,16 @@ function createServer(app) {
 module.exports = {
   async start() {
     const app = express();
-    app.use(express.static(path.join(__dirname, '..', '..', 'wasm')));
+
+    const build_directory = process.env["WASM_BUILD_DIRECTORY"]
+      ? process.env["WASM_BUILD_DIRECTORY"]
+      : path.join(__dirname, '..', '..', 'build', 'wasm_build');
+
+    if (!fs.existsSync(build_directory)) {
+      throw new Error(`Provided build directory: ${path.format(build_directory)}  doesn't exist.`)
+    }
+
+    app.use(express.static(build_directory));
 
     await createServer(app);
   },
@@ -49,3 +59,8 @@ module.exports = {
   }
 
 };
+
+if (typeof require !== 'undefined' && require.main === module) {
+  module.exports.start();
+  console.log(`Starting Mozilla VPN on ${module.exports.url}.`)
+}
