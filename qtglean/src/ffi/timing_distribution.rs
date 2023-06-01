@@ -44,7 +44,7 @@ pub extern "C" fn glean_timing_distribution_test_get_value(
         TIMING_DISTRIBUTION_MAP,
         id,
         metric,
-        metric.test_get_value(helpers::ping_name_from_ffi(ping_name))
+        metric.test_get_value(helpers::option_from_ffi(ping_name))
     );
 
     let value_as_json = match value {
