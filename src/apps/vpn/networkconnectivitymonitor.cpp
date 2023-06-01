@@ -41,8 +41,8 @@ NetworkConnectivityMonitor::NetworkConnectivityMonitor(QObject* parent)
           auto transportType =
               MozillaVPN::instance()->networkWatcher()->getCurrentTransport();
           if (transportType == "None" || transportType == "Unknown") {
-            logger.debug() << "Internet probe failed during controller "
-                              "activation. Device has no network connectivity.";
+            logger.debug() << "Internet probe failed after controller became "
+                              "active. Device has no network connectivity.";
           }
         }
       });
