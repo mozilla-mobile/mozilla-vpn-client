@@ -3,7 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import "./fluent_components.mjs";
+import { getGithubPaginatedData } from "./helpers.mjs";
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+
 const octokit = new Octokit({});
 
 const static_branch_info = fetch("./branch_runs.json").then((r) => r.json());
@@ -55,22 +57,24 @@ class BranchSelector extends HTMLElement {
         return stored.data;
       }
     }
+
     // We can't use the stored ones >:c - Too old
-    const response = await octokit.request(
+    const unfiltered_branches = await getGithubPaginatedData(
+      octokit,
       "GET /repos/{owner}/{repo}/branches",
       {
         owner: "mozilla-mobile",
         repo: "mozilla-vpn-client",
-        per_page: 100,
       },
     );
+
     let branch_info = [];
     try {
       branch_info = await static_branch_info; // Make Sure this is ready
     } catch (error) {
       console.error(error);
     }
-    const unfiltered_branches = response.data;
+
     // Filter the branches we just got from github:
     // if we know the head-sha of the breanch does not have
     // a taskcluster run (because too told), drop it.
@@ -90,8 +94,6 @@ class BranchSelector extends HTMLElement {
       return branch_metadata.task_status == "ok";
     });
 
-    console.log(`RateLimit -> ${response.headers["x-ratelimit-remaining"]}`);
-
     localStorage.setItem(
       "branches",
       JSON.stringify({
@@ -99,6 +101,7 @@ class BranchSelector extends HTMLElement {
         data,
       }),
     );
+
     return data;
   }
 
@@ -129,11 +132,10 @@ class BranchSelector extends HTMLElement {
     const selector = this.#dom.querySelector("#selector");
     selector.innerHTML = `
             <fluent-option value="">Select a VPN-Branch</fluent-option>
-            ${
-      this.#data.map((e) => {
-        return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
-      }).join("")
-    }
+            ${this.#data.map((e) => {
+      return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
+    }).join("")
+      }
         `;
 
     if (!this.#firedOnload) {
