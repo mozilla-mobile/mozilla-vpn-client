@@ -48,6 +48,10 @@ def add_beetmover_worker_config(config, tasks):
         build_type_os = {
             "macos/opt": "mac",
             "windows/opt": "windows",
+            "android/x86": "android",
+            "android/x64": "android",
+            "android/armv7": "android",
+            "android/arm64-v8a": "android",
         }
         build_os = build_type_os.get(build_type)
         shipping_phase = config.params.get("shipping_phase", "")
