@@ -78,12 +78,26 @@
             border: none;
         }
 
+        .input-group {
+            display: flex;
+        }
+
+        .input-group label {
+            color: white;
+            display: inline-block;
+            margin-right: 10px;
+            line-height: 32px;
+        }
+
     </style>
 </head>
 
 <body>
     <nav>
-        <branch-selector></branch-selector>
+        <div class="input-group">
+            <label>Select a branch:</label>
+            <branch-selector></branch-selector>
+        </div>
         <span href="#" class="menu-button">
             More ⬇
             <ul class="menu">

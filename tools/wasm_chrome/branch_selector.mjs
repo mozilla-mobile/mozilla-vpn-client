@@ -9,6 +9,7 @@ import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
 const octokit = new Octokit({});
 
 const static_branch_info = fetch("./branch_runs.json").then((r) => r.json());
+const DEFAULT_SELECTED_BRANCH = "main";
 
 /**
  * <branch-selector></branch-selector>
@@ -106,6 +107,10 @@ class BranchSelector extends HTMLElement {
   }
 
   render() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedBranch = urlParams.get("branch") || DEFAULT_SELECTED_BRANCH;
+
+
     if (this.#dom.innerHTML != "") {
       this.update();
     }
@@ -115,7 +120,8 @@ class BranchSelector extends HTMLElement {
           --max-height: 300px;
       }
     </style>
-    <fluent-combobox id="selector" autocomplete="both" placeholder="Select a branch"></fluent-combobox>`;
+    <fluent-combobox id="selector" autocomplete="both" value="${selectedBranch}"></fluent-combobox>`;
+
     const selector = this.#dom.querySelector("#selector");
     selector.addEventListener("change", (e) => {
       // Forward the event to the parent element;
@@ -131,7 +137,6 @@ class BranchSelector extends HTMLElement {
   update() {
     const selector = this.#dom.querySelector("#selector");
     selector.innerHTML = `
-            <fluent-option value="">Select a VPN-Branch</fluent-option>
             ${this.#data.map((e) => {
       return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
     }).join("")
