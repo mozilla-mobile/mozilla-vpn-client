@@ -3,10 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import "./fluent_components.mjs";
+import { getGithubPaginatedData } from "./helpers.mjs";
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+
 const octokit = new Octokit({});
 
 const static_branch_info = fetch("./branch_runs.json").then((r) => r.json());
+const DEFAULT_SELECTED_BRANCH = "main";
 
 /**
  * <branch-selector></branch-selector>
@@ -55,22 +58,24 @@ class BranchSelector extends HTMLElement {
         return stored.data;
       }
     }
+
     // We can't use the stored ones >:c - Too old
-    const response = await octokit.request(
+    const unfiltered_branches = await getGithubPaginatedData(
+      octokit,
       "GET /repos/{owner}/{repo}/branches",
       {
         owner: "mozilla-mobile",
         repo: "mozilla-vpn-client",
-        per_page: 100,
       },
     );
+
     let branch_info = [];
     try {
       branch_info = await static_branch_info; // Make Sure this is ready
     } catch (error) {
       console.error(error);
     }
-    const unfiltered_branches = response.data;
+
     // Filter the branches we just got from github:
     // if we know the head-sha of the breanch does not have
     // a taskcluster run (because too told), drop it.
@@ -90,8 +95,6 @@ class BranchSelector extends HTMLElement {
       return branch_metadata.task_status == "ok";
     });
 
-    console.log(`RateLimit -> ${response.headers["x-ratelimit-remaining"]}`);
-
     localStorage.setItem(
       "branches",
       JSON.stringify({
@@ -99,10 +102,15 @@ class BranchSelector extends HTMLElement {
         data,
       }),
     );
+
     return data;
   }
 
   render() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedBranch = urlParams.get("branch") || DEFAULT_SELECTED_BRANCH;
+
+
     if (this.#dom.innerHTML != "") {
       this.update();
     }
@@ -112,7 +120,8 @@ class BranchSelector extends HTMLElement {
           --max-height: 300px;
       }
     </style>
-    <fluent-combobox id="selector" autocomplete="both" placeholder="Select a branch"></fluent-combobox>`;
+    <fluent-combobox id="selector" autocomplete="both" value="${selectedBranch}"></fluent-combobox>`;
+
     const selector = this.#dom.querySelector("#selector");
     selector.addEventListener("change", (e) => {
       // Forward the event to the parent element;
@@ -128,12 +137,10 @@ class BranchSelector extends HTMLElement {
   update() {
     const selector = this.#dom.querySelector("#selector");
     selector.innerHTML = `
-            <fluent-option value="">Select a VPN-Branch</fluent-option>
-            ${
-      this.#data.map((e) => {
-        return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
-      }).join("")
-    }
+            ${this.#data.map((e) => {
+      return `<fluent-option value="${e.commit.sha}">${e.name}</fluent-option>`;
+    }).join("")
+      }
         `;
 
     if (!this.#firedOnload) {
