@@ -24,10 +24,6 @@ class NetworkConnectivityMonitor final : public QObject {
 
  private:
   explicit NetworkConnectivityMonitor(QObject* parent);
-
- private:
-  ConnectionHealth::ConnectionStability m_lastKnownStabilityState =
-      ConnectionHealth::ConnectionStability::Stable;
 };
 
 #endif  // NETWORKCONNECTIVITYMONITOR_H
