@@ -7,10 +7,8 @@ name: i18n Updater
 
 
 on:
-  # Triggers the workflow on pull request events but only for the main branch
-  # For now let's only have it manually, until we know this works! 
-  # schedule:
-  #  - cron: '0 5 * * *'
+  schedule:
+    - cron: '0 6 * * *' # Every Day 6:00 UTC
   workflow_dispatch:
 
 permissions:
