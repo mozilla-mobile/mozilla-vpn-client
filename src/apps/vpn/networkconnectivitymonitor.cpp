@@ -40,10 +40,7 @@ NetworkConnectivityMonitor::NetworkConnectivityMonitor(QObject* parent)
           logger.debug() << "User has entered NoSignal while the VPN is on.";
           auto transportType =
               MozillaVPN::instance()->networkWatcher()->getCurrentTransport();
-          if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() ==
-                  "None" ||
-              MozillaVPN::instance()->networkWatcher()->getCurrentTransport() ==
-                  "Unknown") {
+          if (transportType == "None" || transportType == "Unknown") {
             logger.debug() << "Internet probe failed during controller "
                               "activation. Device has no network connectivity.";
           }
