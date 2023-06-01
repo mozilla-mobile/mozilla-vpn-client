@@ -32,7 +32,7 @@ module.exports = {
 
     const build_directory = process.env["WASM_BUILD_DIRECTORY"]
       ? process.env["WASM_BUILD_DIRECTORY"]
-      : path.join(__dirname, '..', '..', 'build', 'build');
+      : path.join(__dirname, '..', '..', 'build', 'wasm_build');
 
     if (!fs.existsSync(build_directory)) {
       throw new Error(`Provided build directory: ${path.format(build_directory)}  doesn't exist.`)

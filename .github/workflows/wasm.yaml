@@ -53,8 +53,6 @@ jobs:
           /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j4
 
-
-
       - name: Generate tasklist
         id: testGen
         shell: bash
@@ -75,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: WebAssembly Build Qt6
-            path: build/build
+            path: build/wasm_build
 
   functionaltests:
     name: Functional tests

@@ -44,6 +44,6 @@ Run the WASM build for development with
 npm run wasm:dev
 ```
 
-> **Note**: This assumes the final WASM build folder to be `/build`.
+> **Note**: This assumes the final WASM build folder to be `/build/wasm_build`.
 > If the build folder is different from that, set the `WASM_BUILD_DIRECTORY`
 > to the chosen build folder.

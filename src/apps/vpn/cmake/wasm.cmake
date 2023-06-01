@@ -21,7 +21,7 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
 )
 
-set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/build)
+set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/wasm_build)
 add_custom_command(
      TARGET mozillavpn
      POST_BUILD
