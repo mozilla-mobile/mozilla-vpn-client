@@ -6,7 +6,6 @@
 
 #include <QCoreApplication>
 
-#include "appconstants.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -47,7 +46,6 @@ NetworkConnectivityMonitor::NetworkConnectivityMonitor(QObject* parent)
                   "Unknown") {
             logger.debug() << "Internet probe failed during controller "
                               "activation. Device has no network connectivity.";
-            //      emit deviceNetworkConnectivityFailed();
           }
         }
       });

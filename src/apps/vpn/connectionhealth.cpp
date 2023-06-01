@@ -15,7 +15,6 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "networkwatcher.h"
 #include "telemetry/gleansample.h"
 
 namespace {
@@ -210,11 +209,6 @@ void ConnectionHealth::updateDnsPingLatency(quint64 latency) {
 }
 
 void ConnectionHealth::healthCheckup() {
-  if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() == "None")
-  {
-    logger.debug() << "Internet probe failed during controller activation. Device has no network connectivity.";
-//      emit deviceNetworkConnectivityFailed();
-  }
   // If the no-signal timer has elapsed, then we probably lost the connection.
   if (!m_noSignalTimer.isActive()) {
     setStability(NoSignal);

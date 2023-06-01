@@ -243,7 +243,6 @@ bool Controller::activate(const ServerData& serverData,
     if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() == "None")
     {
       logger.debug() << "Internet probe failed during controller activation. Device has no network connectivity.";
-//      emit deviceNetworkConnectivityFailed();
     }
 
     // Before attempting to enable VPN connection we should check that the
@@ -753,10 +752,6 @@ void Controller::maybeEnableDisconnectInConfirming() {
 bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
 }
-
-//void Controller::deviceNetworkConnectivityFailed() {
-//  m_deviceConnectivity = false;
-//}
 
 void Controller::setState(State state) {
   if (m_state == state) {
