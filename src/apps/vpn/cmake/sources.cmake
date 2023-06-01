@@ -135,6 +135,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn_p.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/mozillavpn_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkconnectivitymonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkconnectivitymonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/networkwatcherimpl.h

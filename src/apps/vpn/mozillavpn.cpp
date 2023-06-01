@@ -32,6 +32,7 @@
 #include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn_p.h"
+#include "networkconnectivitymonitor.h"
 #include "networkmanager.h"
 #include "networkwatcher.h"
 #include "productshandler.h"
@@ -289,6 +290,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(settingsHolder);
 
   SubscriptionMonitor::instance();
+  NetworkConnectivityMonitor::instance();
 
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
