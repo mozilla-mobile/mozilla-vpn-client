@@ -61,6 +61,9 @@ class Controller final : public QObject, public LogSerializer {
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+  Q_PROPERTY(bool deviceNetworkConnectivity READ deviceNetworkConnectivity
+                 NOTIFY deviceNetworkConnectivityFailed)
+
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
@@ -110,6 +113,8 @@ class Controller final : public QObject, public LogSerializer {
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
   }
+
+  bool deviceNetworkConnectivity() const { return m_deviceNetworkConnectivity; }
 
   void backendFailure();
   void serverUnavailable();
@@ -169,6 +174,7 @@ class Controller final : public QObject, public LogSerializer {
   void enableDisconnectInConfirmingChanged();
   void activationBlockedForCaptivePortal();
   void handshakeFailed(const QString& serverHostname);
+  void deviceNetworkConnectivityFailed();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();
@@ -256,6 +262,7 @@ class Controller final : public QObject, public LogSerializer {
       m_getStatusCallbacks;
 
   bool m_connectedBeforeTransaction = false;
+  bool m_deviceNetworkConnectivity = true;
 };
 
 #endif  // CONTROLLER_H

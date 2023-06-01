@@ -238,11 +238,15 @@ bool Controller::activate(const ServerData& serverData,
       m_portalDetected = false;
       return true;
     }
-    
-    // Before progressing any further, ensure that the device is connected to the Internet.
-    if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() == "None")
-    {
-      logger.debug() << "Internet probe failed during controller activation. Device has no network connectivity.";
+
+    // Before progressing any further, ensure that the device is connected to
+    // the Internet.
+    if (MozillaVPN::instance()->networkWatcher()->getCurrentTransport() ==
+        "None") {
+      logger.debug() << "Internet probe failed during controller activation. "
+                        "Device has no network connectivity.";
+      m_deviceNetworkConnectivity = false;
+      emit deviceNetworkConnectivityFailed();
     }
 
     // Before attempting to enable VPN connection we should check that the
@@ -827,7 +831,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
