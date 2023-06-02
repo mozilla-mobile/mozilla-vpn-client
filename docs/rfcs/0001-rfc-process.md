@@ -1,4 +1,4 @@
-- Status: Proposed
+- Status: Accepted
 - Date: 2023-05-29
 - Author: [@lesleyjanenorton](https://github.com/lesleyjanenorton)
 - RFC PR: [#6981](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6982)
