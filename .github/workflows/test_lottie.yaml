@@ -24,7 +24,7 @@ jobs:
       - name: Install Linux packages
         run: |
           sudo apt update
-          sudo apt install git libgl-dev libegl-dev libpolkit-gobject-1-dev clang-10 liboath-dev python3 -y
+          sudo apt install git libgl-dev libegl-dev clang-10 liboath-dev python3 -y
           python3 -m pip install aqtinstall
           aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
 
