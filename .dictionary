@@ -124,7 +124,7 @@ javascript
 js
 json
 libcap
-libpolkit
+libsecret
 licensable
 licensor
 linter
@@ -154,7 +154,6 @@ ons
 os
 perl
 podman
-polkit
 powershell
 ppa
 pre
