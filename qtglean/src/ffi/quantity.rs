@@ -21,7 +21,7 @@ pub extern "C" fn glean_quantity_test_get_value(
         QUANTITY_MAP,
         id,
         metric,
-        metric.test_get_value(helpers::ping_name_from_ffi(ping_name)).unwrap_or(0)
+        metric.test_get_value(helpers::option_from_ffi(ping_name)).unwrap_or(0)
     )
 }
 

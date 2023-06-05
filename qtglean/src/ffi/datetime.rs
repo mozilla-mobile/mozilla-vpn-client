@@ -23,7 +23,7 @@ pub extern "C" fn glean_datetime_test_get_value_as_string(
         DATETIME_MAP,
         id,
         metric,
-        metric.test_get_value_as_string(helpers::ping_name_from_ffi(ping_name)).unwrap_or("".to_string())
+        metric.test_get_value_as_string(helpers::option_from_ffi(ping_name)).unwrap_or("".to_string())
     );
 
     CString::new(return_string)
