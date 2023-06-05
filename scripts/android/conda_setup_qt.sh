@@ -37,7 +37,7 @@ conda env config vars set QTPATH=$QT_DIR/$QT_VERSION/$ANDROID_ARCH
 
 echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
 
-echo "finished setup $QT_VERSION QT to Compile for $ANDROID_ARCH"
+echo "finished setup $QT_VERSION QT to compile for $ANDROID_ARCH"
 echo "please re-enable the VPN env to apply changes."
 
 
