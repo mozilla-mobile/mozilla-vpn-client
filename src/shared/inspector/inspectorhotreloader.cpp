@@ -7,12 +7,15 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QQmlApplicationEngine>
 #include <QStandardPaths>
+#include <QWindow>
 
 #include "frontend/navigator.h"
 #include "frontend/navigatorreloader.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "qmlengineholder.h"
 #include "tasks/function/taskfunction.h"
 
 namespace {
@@ -122,4 +125,40 @@ void InspectorHotreloader::resetAllFiles() {
   m_target->clearComponentCache();
   m_announced_files.clear();
   Navigator::instance()->reloadCurrentScreen();
+}
+
+void InspectorHotreloader::reloadWindow() {
+  auto engineHolder = QmlEngineHolder::instance();
+  QQmlApplicationEngine* engine =
+      static_cast<QQmlApplicationEngine*>(engineHolder->engine());
+  // Here is the main QML file.
+  if (!engineHolder->hasWindow()) {
+    logger.error() << "No Window to reload";
+    return;
+  }
+  logger.error() << "Closing and full reloading window";
+
+  int x = 0, y = 0;
+  // We may have multiple closed windows still in here.
+  // So best to go over them all.
+  QList<QObject*> rootObjects = engine->rootObjects();
+  for (auto* rootObject : rootObjects) {
+    QWindow* maybeWindow = qobject_cast<QWindow*>(rootObject);
+    if (maybeWindow) {
+      if (maybeWindow->isVisible()) {
+        x = maybeWindow->x();
+        y = maybeWindow->y();
+      }
+      maybeWindow->close();
+    }
+  }
+  const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
+  engine->load(url);
+  auto newWindow = qobject_cast<QWindow*>(engine->rootObjects().last());
+  if (newWindow) {
+    if (x != 0 && y != 0) {
+      newWindow->setX(x);
+      newWindow->setY(y);
+    }
+  }
 }

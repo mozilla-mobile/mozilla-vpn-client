@@ -45,6 +45,9 @@
 
   websocket.on("open", function () {
     console.log(`Connected to Client!`);
+    console.log(
+        `Controls: \n r \t \t - Force Reload the whole window \n control+c \t - exit`);
+
     const watcher = chokidar.watch(".", {
       ignored: /(^|[\/\\])\../,
       persistent: true,
@@ -82,6 +85,23 @@
     console.log("Unregistering all reloads...");
     websocket.send(`reset_live_reload`);
     process.exit();
+  });
+
+  var stdin = process.stdin;
+  stdin.setRawMode(true);
+  stdin.resume();
+  stdin.setEncoding('utf8');
+
+  stdin.on('data', function(key) {
+    // ctrl-c ( end of text )
+    if (key === '\u0003') {
+      websocket.send(`reset_live_reload`);
+      process.exit();
+    }
+    if (key === 'r') {
+      websocket.send(`reload_window`);
+      console.log('Requesting App Reload')
+    }
   });
 
   if (options.remote) {
