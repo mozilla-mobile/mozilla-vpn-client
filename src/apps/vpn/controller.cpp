@@ -238,6 +238,7 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
+    //TEST
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
     setState(StateCheckSubscription);
