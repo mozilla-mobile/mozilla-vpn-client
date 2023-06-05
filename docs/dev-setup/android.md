@@ -4,8 +4,8 @@
 See [here](./index.md#conda) for general conda environment instructions.
 
 We are going to update the Conda-Env to build for android, as 
-this can break building for other plattforms, it's advised to do those steps 
-in a seperate enviroment. 
+this can break building for other platforms, it's advised to do those steps 
+in a separate environment. 
 
 ```bash 
 $ conda env create -f env.yml -n vpn-android
@@ -13,7 +13,7 @@ $ conda activate vpn-android
 ```
 
 ### Optional: Choosing your Android Arch: 
-By default this enviroment will be setup to build android-arm64-v8a - 
+By default this environment will be setup to build android-arm64-v8a - 
 For real devices or Emulators on M1/M2 macs. 
 If you need any other architecture you need to set `ANDROID_ARCH` to the desired arch before continuing.
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`.
@@ -23,7 +23,7 @@ $ conda deactivate
 $ conda activate vpn-android
 ```
 ### Optional: Choosing your QT Version: 
-By default this enviroment will be setup to use the QT-Version noted in env.yml
+By default this environment will be setup to use the QT-Version noted in env.yml
 If you need any other architecture you need to set `QT_VERSION` before continuing.
 ```
 $ conda env config vars set QT_VERSION=1.2.3
@@ -49,7 +49,7 @@ $ conda activate vpn-android
 $ ./scripts/android/cmake.sh -d 
 ```
 
-> For relase builds: Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
+> For release builds: Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
 
 
 # Run
