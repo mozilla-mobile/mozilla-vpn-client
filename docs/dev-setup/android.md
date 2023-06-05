@@ -36,7 +36,7 @@ Now install the Android-SDK dependencies and QT via:
 ```bash 
 # Setup the Android SDK and NDK for the current Conda env.
 $ ./scripts/android/conda_setup_sdk.sh
-# Setup the Conda env to fetch and Use QT
+# Setup the Conda env to fetch and use QT
 $ ./scripts/android/conda_setup_qt.sh
 $ conda deactivate
 $ conda activate vpn-android
@@ -56,12 +56,12 @@ $ ./scripts/android/cmake.sh -d
 
 The new apk will be located in
 
-    `.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
+    .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 Make sure to Choose the apk-architecture of your env, all others apk's will not work. 
 
 Install with adb on device/emulator
 
-    adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
+    adb install .tmp/src/android-build/build/outputs/apk/debug/<ANDROID_BUILD_ARCHITECTURE>.apk
 
 # Signing (optional)
 
