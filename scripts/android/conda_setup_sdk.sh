@@ -44,5 +44,8 @@ if [[ $installed_things =~ ndk/([0-9]+\.[0-9]+\.[0-9]+) ]]; then
   conda env config vars set ANDROID_NDK_ROOT=$CONDA_PREFIX/android_home/ndk/$ndk_path
 fi
 
+# Export ADB to env.
+ln -s $CONDA_PREFIX/android_home/platform-tools/adb $CONDA_PREFIX/bin/adb
+
 sdkmanager --list_installed --sdk_root=$ANDROID_HOME
 echo "Android SDK installed in env $CONDA_PREFIX, please restart conda env to have changes applied"
