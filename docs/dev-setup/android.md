@@ -59,7 +59,8 @@ The new apk will be located in
     .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
 Make sure to Choose the apk-architecture of your env, all others apk's will not work. 
 
-Install with adb on device/emulator
+Install with adb on device/[emulator](https://developer.android.com/studio/run/emulator#avd)
+
 
     adb install .tmp/src/android-build/build/outputs/apk/debug/<ANDROID_BUILD_ARCHITECTURE>.apk
 
