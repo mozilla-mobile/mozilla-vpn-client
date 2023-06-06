@@ -8,7 +8,7 @@ task-defaults:
             symbol: BD
             kind: build
             tier: 1
-            platform: macos/x86_64
+            platform: macos/universal
     requires-level: 1
     worker-type: b-macos
     fetches:
