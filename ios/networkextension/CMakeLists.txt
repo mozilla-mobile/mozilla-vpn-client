@@ -65,6 +65,7 @@ target_sources(networkextension PRIVATE
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnel.swift
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosglue.mm
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosconstants.swift
 )
 
 ## Build wireguard-go-version.h

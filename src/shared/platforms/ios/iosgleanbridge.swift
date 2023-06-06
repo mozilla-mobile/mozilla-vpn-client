@@ -12,5 +12,13 @@ public class IOSGleanBridgeImpl : NSObject {
       configuration: Configuration.init(channel: appChannel),
       buildInfo: GleanMetrics.GleanBuild.info
       )
+
+    // This logs an error like so:
+    // "[User Defaults] Couldn't read values in CFPrefsPlistSource<0x2821ced00>..."
+    // This is just a warning and can be ignored.
+    let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
+    defaults!.set(isTelemetryEnabled, forKey: Constants.UserDefaultKeys.telemetryEnabled)
+    defaults!.set(appChannel, forKey: Constants.UserDefaultKeys.appChannel)
+    defaults!.synchronize()
   }
 }
