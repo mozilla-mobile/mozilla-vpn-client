@@ -16,6 +16,17 @@ vpnsession:
     session-based metrics, etc.
   include_client_id: true
   send_if_empty: false
+  reasons: 
+    flush: |
+      "Safety measure for when the vpn session does not end in an expected way"
+    start: |
+      "When the vpn session starts"
+    end: |
+      "When the vpn session ends"
+    timeout: |
+      "When the vpn session ends due to a connection timeout"
+    timer: |
+      - Every 3 hours while the VPN is on
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4095
   data_reviews:

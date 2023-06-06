@@ -126,6 +126,19 @@ MZViewBase {
             }
         }
 
+        MZCheckBoxRow {
+            id: checkBoxRowVPNSessionPingTimeout
+
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText: "VPNSession ping timeout debug mode"
+            subLabelText: "Shortens the VPNSession ping timeout from 3 hours to 2 minutes"
+            isChecked: MZSettings.vpnSessionPingTimeoutDebug
+            showDivider: false
+            onClicked: {
+                MZSettings.vpnSessionPingTimeoutDebug = !MZSettings.vpnSessionPingTimeoutDebug
+            }
+        }
+
         Rectangle {
             id: divider
             Layout.preferredHeight: 1

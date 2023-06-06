@@ -157,6 +157,8 @@ class Controller final : public QObject, public LogSerializer {
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
   void handshakeTimeout();
+  void vpnSessionPingTimeout();
+
 
  signals:
   void stateChanged();
@@ -213,6 +215,7 @@ class Controller final : public QObject, public LogSerializer {
 
   QTimer m_connectingTimer;
   QTimer m_handshakeTimer;
+  QTimer m_vpnSessionPingTimer;
   bool m_enableDisconnectInConfirming = false;
 
   enum NextStep {
