@@ -110,9 +110,11 @@ void MozillaVPN::requestAbout() {}
 
 void MozillaVPN::activate() {}
 
-void MozillaVPN::deactivate() {}
+void MozillaVPN::deactivate(bool block) {}
 
 void MozillaVPN::refreshDevices() {}
+
+void MozillaVPN::silentSwitch() {}
 
 void MozillaVPN::update() {}
 
@@ -129,7 +131,7 @@ void MozillaVPN::triggerHeartbeat() {}
 void MozillaVPN::createSupportTicket(const QString&, const QString&,
                                      const QString&, const QString&) {}
 
-void MozillaVPN::addCurrentDeviceAndRefreshData(bool refreshProducts) {}
+void MozillaVPN::addCurrentDeviceAndRefreshData() {}
 
 bool MozillaVPN::validateUserDNS(const QString&) const { return false; }
 
@@ -152,7 +154,7 @@ void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
 void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
-void MozillaVPN::scheduleRefreshDataTasks(bool refreshProducts) {}
+void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 

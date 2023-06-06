@@ -49,7 +49,7 @@ if os.path.isfile(args.output):
     topkeys = extractkeys(args.output)
 else:
     # If the output file doesn't exist, create an empty plist file.
-    subprocess.call([plutil, '-create', args.format, args.output], check=True)
+    subprocess.call([plutil, '-create', args.format, args.output])
 
 # Launch PlistBuddy to manipulate the output file.
 proc = subprocess.Popen([plbuddy, args.output], encoding='utf-8',

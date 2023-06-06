@@ -3,14 +3,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "glean/ping.h"
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
 Ping::Ping(int aId) : m_id(aId) {}
 
-void Ping::submit() const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  glean_submit_ping_by_id(m_id);
+void Ping::submit(const QString& reason) const {
+#ifndef __wasm__
+  glean_submit_ping_by_id(m_id, reason.toUtf8());
 #endif
 }

@@ -12,6 +12,7 @@
  */
 import { parse } from "https://deno.land/std/flags/mod.ts";
 import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+import { getGithubPaginatedData } from "./helpers.mjs";
 
 interface Commit {
   sha: string;
@@ -80,27 +81,39 @@ const TASKCLUSTER_TASK_NAME = "build-wasm/opt";
 if (T == "") {
   console.error("No Github Key - Exit");
   console.error("Run with -GH_KEY <your key>");
-  Deno.exit(-1);
+
 }
 
 const octokit = new Octokit({
   auth: T,
 });
-console.log(await octokit.request("GET /rate_limit", {}));
+
+const rate_limit_response = await octokit.request("GET /rate_limit", {});
+if (rate_limit_response.status != 200) {
+  console.error(rate_limit_response);
+  Deno.exit(-1);
+} else {
+  console.log(`Rate limit status: ${JSON.stringify(rate_limit_response.data.rate, null, 2)}`);
+}
 
 // Get Branch data
-const branch_response = await octokit.request(
+let branches: Branch[] = await getGithubPaginatedData(
+  octokit,
   "GET /repos/{owner}/{repo}/branches",
   {
     owner: "mozilla-mobile",
     repo: "mozilla-vpn-client",
-    per_page: 100,
-  },
+  }
 );
 
-const out: { [index: string]: any } = {};
+const out: Record<string, {
+  name: string;
+  sha: string;
+  task_status: TaskStatus;
+  task_id: string;
+}> = {};
 
-const jobs = branch_response.data.map(async (branch: Branch) => {
+const jobs = branches.map(async (branch: Branch) => {
   const sha = branch.commit.sha;
   const name = branch.name;
 

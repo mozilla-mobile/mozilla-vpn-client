@@ -32,6 +32,7 @@ MZFlickable {
 
     ColumnLayout {
         id: col
+        objectName: "vpnSubscriptionNeededView"
 
         anchors.top: headerLink.bottom
         anchors.left: parent.left
@@ -80,6 +81,9 @@ MZFlickable {
             Accessible.name: text.replace(/<[^>]*>/g, "")
         }
 
+        ButtonGroup {
+            id: subscriptionOptions
+        }
         Loader {
             Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin
@@ -92,24 +96,67 @@ MZFlickable {
             sourceComponent: ColumnLayout {
                 spacing: 16
 
-                ButtonGroup {
-                    id: subscriptionOptions
-                }
-
                 Repeater {
-                    id: productList
+                    id: productListRepeater
                     model: VPNProducts
-                    delegate: MZSubscriptionOption {}
+                    delegate: MZSubscriptionOption {
+                        ButtonGroup.group: subscriptionOptions
+                    }
+                }
+                Image {
+                    id: spinner
+                    visible: productListRepeater.count === 0
+                    sourceSize.height: 40
+                    fillMode: Image.PreserveAspectFit
+                    Layout.leftMargin: MZTheme.theme.windowMargin
+                    Layout.rightMargin: MZTheme.theme.windowMargin
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+
+                    source: "qrc:/nebula/resources/spinner.svg"
+
+                    ParallelAnimation {
+                        id: startSpinning
+
+                        running: true
+
+                        PropertyAnimation {
+                            target: spinner
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 300
+                        }
+
+                        PropertyAnimation {
+                            target: spinner
+                            property: "scale"
+                            from: 0.7
+                            to: 1
+                            duration: 300
+                        }
+
+                        PropertyAnimation {
+                            target: spinner
+                            property: "rotation"
+                            from: 0
+                            to: 360
+                            duration: 8000
+                            loops: Animation.Infinite
+                        }
+
+                    }
                 }
             }
         }
 
-
         MZButton {
             id: subscribeNow
-            objectName: "vpnSubscriptionNeededView"
+            objectName: "vpnSubscriptionNeededButton"
 
             text: MZI18n.PurchaseSubscribeNow
+
+            visible: isMobile ? subscriptionOptions.buttons.length != 0 : true
 
             Layout.topMargin: MZTheme.theme.vSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin * 2
@@ -118,7 +165,6 @@ MZFlickable {
 
             onClicked: isMobile ? VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId) : VPNPurchase.subscribe("web")
         }
-
 
         RowLayout {
             Layout.fillWidth: true

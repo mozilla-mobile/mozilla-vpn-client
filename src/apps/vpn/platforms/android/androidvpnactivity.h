@@ -44,6 +44,8 @@ enum ServiceAction {
   ACTION_REACTIVATE = 16,
   // Clear the VPN storage
   ACTION_CLEAR_STORAGE = 17,
+  // Broadcast a change in telemetry preferences
+  ACTION_SET_GLEAN_UPLOAD_ENABLED = 18,
 
 };
 typedef enum ServiceAction ServiceAction;
@@ -61,6 +63,12 @@ enum ServiceEvents {
   // An Error happened during activation
   // Contains the error message
   EVENT_ACTIVATION_ERROR = 5,
+  // An event dispatched when the Daemon doesn't have
+  // any stored value for the user telemetry preferences.
+  //
+  // When this event is received, the app should broadcast
+  // the telemetry preferences to the daemon ASAP.
+  EVENT_REQUEST_GLEAN_UPLOAD_ENABLED = 7,
 };
 typedef enum ServiceEvents ServiceEvents;
 
@@ -82,6 +90,7 @@ class AndroidVPNActivity : public QObject {
   void eventDisconnected(const QString& data);
   void eventStatisticUpdate(const QString& data);
   void eventActivationError(const QString& data);
+  void eventRequestGleanUploadEnabledState();
 
  private:
   AndroidVPNActivity();

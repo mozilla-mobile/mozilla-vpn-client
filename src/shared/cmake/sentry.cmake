@@ -7,7 +7,7 @@
 
 
 # Defines which OS builds can include sentry. Check src/cmake Lists for all values of MZ_PLATFORM_NAME
-set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android")
+set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android" "iOS")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
 
@@ -56,10 +56,22 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=off -DSENTRY_BUILD_EXAMPLES=off)
+        SET(SENTRY_ARGS
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+            -DSENTRY_BACKEND=breakpad
+            -DSENTRY_BUILD_SHARED_LIBS=false
+            -DSENTRY_TRANSPORT=none
+            -DSENTRY_BUILD_TESTS=off
+            -DSENTRY_BUILD_EXAMPLES=off
+        )
         if(CMAKE_OSX_ARCHITECTURES)
             STRING(REPLACE ";" "$<SEMICOLON>" OSX_ARCH_LISTSAFE "${CMAKE_OSX_ARCHITECTURES}")
             LIST(APPEND SENTRY_ARGS -DCMAKE_OSX_ARCHITECTURES:STRING=${OSX_ARCH_LISTSAFE})
+        endif()
+        if(IOS)
+            LIST(APPEND SENTRY_ARGS -DCMAKE_SYSTEM_NAME=iOS -DIPHONEOS_DEPLOYMENT_TARGET=${IPHONEOS_DEPLOYMENT_TARGET})
         endif()
     endif()
     if(WIN32)

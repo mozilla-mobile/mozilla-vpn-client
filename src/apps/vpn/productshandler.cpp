@@ -17,6 +17,8 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "purchasehandler.h"
+#include "tasks/products/taskproducts.h"
+#include "taskscheduler.h"
 
 namespace {
 Logger logger("ProductsHandler");
@@ -41,6 +43,19 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(ProductsHandler);
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+  // On iAP make sure the Products are loaded in time.
+  // If we Move into any State adjecent to iAP - load the
+  // products if we don't have that already.
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this, [this]() {
+    auto state = MozillaVPN::instance()->state();
+    if ((state == App::StateSubscriptionNeeded ||
+         state == App::StateSubscriptionInProgress ||
+         state == App::StateAuthenticating) &&
+        !this->hasProductsRegistered()) {
+      TaskScheduler::scheduleTask(new TaskProducts());
+    }
+  });
 }
 
 ProductsHandler::~ProductsHandler() {

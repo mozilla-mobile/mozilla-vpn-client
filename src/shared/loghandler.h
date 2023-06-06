@@ -82,7 +82,7 @@ class LogHandler final : public QObject {
 
   static void setLocation(const QString& path);
 
-  static void enableStderr();
+  static void setStderr(bool enabled = true);
 
   void serializeLogs(QTextStream* out,
                      std::function<void()>&& finalizeCallback);
@@ -108,6 +108,9 @@ class LogHandler final : public QObject {
   void closeLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
   static void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
+
+  static void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
+                              const QString& filename);
 
   bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 

@@ -18,12 +18,10 @@ the MIT Public License (*MIT*), a copy of which is [available
 here](https://opensource.org/licenses/MIT) and a copy is provided below.
 
 The Linux release of this project also relies on several files from the
-[WireGuard Tools](https://git.zx2c4.com/wireguard-tools) repository, as well as
-the FreeDesktop project's [polkit
-library](https://gitlab.freedesktop.org/polkit/polkit/), all of which are
-provided under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A
-copy of the LGPL-2.0 is [available
-here](https://opensource.org/licenses/LGPL-2.0) and a copy is provided below.
+[WireGuard Tools](https://git.zx2c4.com/wireguard-tools) repository under the
+terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A copy of the LGPL-2.0
+is [available here](https://opensource.org/licenses/LGPL-2.0) and a copy is
+provided below.
 
 The Windows release of this project also includes several files from the
 [WireGuard Windows](https://git.zx2c4.com/wireguard-windows) repository under

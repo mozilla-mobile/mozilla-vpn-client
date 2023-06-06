@@ -15,7 +15,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "polkithelper.h"
 
 namespace {
 Logger logger("DBusService");
@@ -100,12 +99,6 @@ QString DBusService::version() {
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
 
-  if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.activate")) {
-    logger.error() << "Polkit rejected";
-    return false;
-  }
-
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {
     logger.error() << "Invalid input";
@@ -120,6 +113,12 @@ bool DBusService::activate(const QString& jsonConfig) {
     return false;
   }
 
+  if (!Daemon::activate(config)) {
+    return false;
+  }
+
+  // (Re)load the split tunnelling configuration.
+  firewallClear();
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
@@ -127,7 +126,7 @@ bool DBusService::activate(const QString& jsonConfig) {
     }
   }
 
-  return Daemon::activate(config);
+  return true;
 }
 
 bool DBusService::deactivate(bool emitSignals) {

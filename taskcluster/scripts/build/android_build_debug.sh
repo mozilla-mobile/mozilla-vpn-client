@@ -38,3 +38,7 @@ if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
 fi
 
 ccache -s
+
+# Check for unintended writes to the source directory.
+echo "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh

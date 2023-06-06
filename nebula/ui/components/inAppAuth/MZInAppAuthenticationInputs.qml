@@ -56,7 +56,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 _placeholderText: _inputPlaceholderText
                 Keys.onReturnPressed: col.submitInfo(textInput)
-                onDisplayTextChanged: if (hasError) hasError = false
+                onTextChanged: if (hasError) hasError = false
             }
 
             MZPasswordInput {

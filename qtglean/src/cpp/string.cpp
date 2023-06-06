@@ -6,28 +6,28 @@
 
 #include <QDebug>
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
 StringMetric::StringMetric(int id) : m_id(id) {}
 
 void StringMetric::set(QString value) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_string_set(m_id, value.toLocal8Bit());
+#ifndef __wasm__
+  return glean_string_set(m_id, value.toUtf8());
 #endif
 }
 
 int32_t StringMetric::testGetNumRecordedErrors(ErrorType errorType) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_string_test_get_num_recorded_errors(m_id, errorType);
 #endif
   return 0;
 }
 
 QString StringMetric::testGetValue(const QString& pingName) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  return glean_string_test_get_value(m_id, pingName.toLocal8Bit());
+#ifndef __wasm__
+  return glean_string_test_get_value(m_id, pingName.toUtf8());
 #endif
   return "";
 }

@@ -60,8 +60,8 @@ void RecommendedLocationModel::refreshModel() {
   }
 
   m_recommendedCities.swap(cities);
-  emit dataChanged(createIndex(0, 0),
-                   createIndex(m_recommendedCities.length() - 1, 0));
+  int numLocations = static_cast<int>(m_recommendedCities.length());
+  emit dataChanged(createIndex(0, 0), createIndex(numLocations - 1, 0));
 }
 
 // static

@@ -12,9 +12,9 @@ buildscript {
     }
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.4.3"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.7.0"
     }
 }
 plugins {
@@ -73,7 +73,8 @@ dependencies {
 
     implementation SharedDependencies.androidx_core
     implementation "com.android.installreferrer:installreferrer:2.2"
-    implementation "com.android.billingclient:billing-ktx:4.0.0"
+    implementation "com.android.billingclient:billing-ktx:6.0.0"
     implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
+
 }

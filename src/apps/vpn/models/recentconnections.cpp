@@ -205,7 +205,7 @@ QVariant RecentConnectionModel::data(const QModelIndex& index, int role) const {
 }
 
 int RecentConnectionModel::rowCount(const QModelIndex&) const {
-  int size = m_list.length();
+  int size = static_cast<int>(m_list.length());
   return size > 1 ? size - 1 : 0;
 }
 

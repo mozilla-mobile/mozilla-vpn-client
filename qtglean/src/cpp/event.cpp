@@ -4,7 +4,7 @@
 
 #include "glean/event.h"
 
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
@@ -17,7 +17,7 @@ EventMetric::EventMetric(int id, EventMetricExtraParser* parser)
     : m_id(id), m_parser(parser) {}
 
 void EventMetric::record() const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   glean_event_record_no_extra(m_id);
 #endif
 }
@@ -58,7 +58,7 @@ void EventMetric::record(const QJsonObject& extras) {
   ffiExtras.values.resize(count);
   ffiExtras.keys.resize(count);
   if (!ffiExtras.keys.empty()) {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
     glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
                        static_cast<int32_t>(ffiExtras.keys.size()));
 #endif
@@ -78,7 +78,7 @@ void EventMetric::record(const EventMetricExtra& extras) {
   FfiExtra ffiExtras = m_parser->fromStruct(extras, keepStringsAlive, m_id);
 
   if (!ffiExtras.keys.empty()) {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
     glean_event_record(m_id, ffiExtras.keys.data(), ffiExtras.values.data(),
                        static_cast<int32_t>(ffiExtras.keys.size()));
 #endif
@@ -90,7 +90,7 @@ void EventMetric::record(const EventMetricExtra& extras) {
 }
 
 int32_t EventMetric::testGetNumRecordedErrors(ErrorType errorType) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
+#ifndef __wasm__
   return glean_event_test_get_num_recorded_errors(m_id, errorType);
 #else
   Q_UNUSED(errorType);
@@ -99,8 +99,8 @@ int32_t EventMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 }
 
 QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
-#if not(defined(__wasm__) || defined(BUILD_QMAKE))
-  auto value = glean_event_test_get_value(m_id, pingName.toLocal8Bit());
+#ifndef __wasm__
+  auto value = glean_event_test_get_value(m_id, pingName.toUtf8());
   auto recordedEvents = QJsonDocument::fromJson(value).array();
   QList<QJsonObject> result;
   if (!recordedEvents.isEmpty()) {

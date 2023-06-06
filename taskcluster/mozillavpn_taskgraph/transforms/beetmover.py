@@ -17,7 +17,12 @@ def add_addons_release_artifacts(config, tasks):
             task["attributes"]["build-type"] == "addons/opt"
             and task["name"] == "addons-bundle"
         ):
-            addons = set(os.listdir("addons"))
+            addons = set(
+                name
+                for name in os.listdir("addons")
+                if os.path.isdir(os.path.join("addons", name))
+                and os.path.isfile(os.path.join("addons", name, "manifest.json"))
+            )
             for addon in addons:
                 task["attributes"]["release-artifacts"].append(
                     {
@@ -43,6 +48,10 @@ def add_beetmover_worker_config(config, tasks):
         build_type_os = {
             "macos/opt": "mac",
             "windows/opt": "windows",
+            "android/x86": "android",
+            "android/x64": "android",
+            "android/armv7": "android",
+            "android/arm64-v8a": "android",
         }
         build_os = build_type_os.get(build_type)
         shipping_phase = config.params.get("shipping_phase", "")
@@ -99,9 +108,6 @@ def add_beetmover_worker_config(config, tasks):
                 )
             )
 
-        if shipping_phase and not destination_paths:
-            raise Exception(f"Invalid shipping phase '{shipping_phase}'!")
-
         archive_url = (
             "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
         )
@@ -144,9 +150,13 @@ def add_beetmover_worker_config(config, tasks):
             "shipping-phase": shipping_phase,
         }
 
-        dest = f"{archive_url}{destination_paths[0]}" if destination_paths else archive_url
+        dest = (
+            f"{archive_url}{destination_paths[0]}" if destination_paths else archive_url
+        )
         if build_type == "addons/opt":
-            task_description = f"This {worker_type} task will upload the {task['name']} to {dest}/"
+            task_description = (
+                f"This {worker_type} task will upload the {task['name']} to {dest}/"
+            )
         elif shipping_phase == "ship-client":
             task_description = f"This {worker_type} task will copy build {build_id} from candidates to releases"
         else:
@@ -162,7 +172,9 @@ def add_beetmover_worker_config(config, tasks):
             raise Exception(f"Invalid shipping_phase `{shipping_phase}`")
 
         extra = {
-            "release_destinations": [f"{archive_url}{dest}/" for dest in destination_paths]
+            "release_destinations": [
+                f"{archive_url}{dest}/" for dest in destination_paths
+            ]
         }
         worker = {
             "upstream-artifacts": upstream_artifacts,

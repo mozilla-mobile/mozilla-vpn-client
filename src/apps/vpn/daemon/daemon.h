@@ -20,6 +20,7 @@ class Daemon : public QObject {
   enum Op {
     Up,
     Down,
+    Switch,
   };
 
   explicit Daemon(QObject* parent);

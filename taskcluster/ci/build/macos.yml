@@ -8,7 +8,7 @@ task-defaults:
             symbol: BD
             kind: build
             tier: 1
-            platform: macos/x86_64
+            platform: macos/universal
     requires-level: 1
     worker-type: b-macos
     fetches:
@@ -35,18 +35,6 @@ macos/pr:
         symbol: BD
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
-
-macos/universal:
-    description: "Mac Build"
-    fetches:
-        fetch:
-            - macos-golang
-            - macos-sentry-cli
-    treeherder:
-        symbol: BD
-        platform: macos/universal
-    run:
-        command: ./taskcluster/scripts/build/macos_universal_build.sh -d
 
 macos/opt:
     description: "Mac Build"

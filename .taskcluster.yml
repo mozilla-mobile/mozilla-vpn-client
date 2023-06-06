@@ -156,11 +156,11 @@ tasks:
                 routes:
                     $flattenDeep:
                         - checks
-                        - $if: 'level == "3"'
+                        - $if: '!isPullRequest'
                           then:
                             - tc-treeherder.v2.${project}.${head_sha}
-                            # TODO Bug 1601928: Make this scope fork-friendly once ${project} is better defined. This will enable
-                            # staging release promotion on forks.
+                            # ${project} uniquely identifies the repo within this trust domain, and each project only has scopes
+                            # to its own index namespace to avoid collisions
                             - $if: 'tasks_for == "github-push"'
                               then:
                                 - index.mozillavpn.v2.${project}.branch.${short_head_branch}.latest.taskgraph.decision

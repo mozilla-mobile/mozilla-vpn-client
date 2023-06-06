@@ -44,6 +44,8 @@ void PurchaseWebHandler::startSubscription(const QString&) {
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, vpn,
           &MozillaVPN::completeAuthentication);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, vpn,
+          &MozillaVPN::logSubscriptionCompleted);
 
   TaskScheduler::scheduleTask(taskAuthenticate);
 }

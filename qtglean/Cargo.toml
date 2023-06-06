@@ -6,7 +6,7 @@ edition = "2021"
 [lib]
 name = "qtglean"
 path = "src/lib.rs"
-crate-type = ["staticlib"]
+crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 ffi-support = "0.4.4"

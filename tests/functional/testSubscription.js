@@ -7,6 +7,7 @@ const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const fxaEndpoints = require('./servers/fxa_endpoints.js')
 const {validators} = require('./servers/guardian_endpoints.js');
+const http = require('http')
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -104,9 +105,91 @@ describe('Subscription manager', function() {
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
          await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-         // Step 3: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(
-             queries.screenHome.SUBSCRIPTION_NEEDED.visible());
+         // Step 2: Verify that user gets the "Subscribe to Mozilla VPN" screen.
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+         // Reset guardian endpoint for the next test
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
+       });
+
+    it('Returns user to Main Screen after user successfully completes Web Subscription flow',
+       async () => {
+         // This test verifies the case where a user without an active
+         // subscription logs in and is taken to the "Subscribtion Needed"
+         // screen. Once they click on the "Subscribe Now" button, they will be
+         // taken to the browser to finish subscription and then will be then
+         // redirected back to the controller home screen.
+
+         if (!this.ctx.wasm) {
+           await vpn.authenticateInApp(true, true);
+
+           // Mark the user subscription as inactive
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataInactive;
+
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           await vpn.clickOnQuery(
+               queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+           // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+           await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                      .SUBSCRIPTION_NEEDED_VIEW.visible());
+
+
+           // Click on the Subscribe Now button.
+           await vpn.waitForQueryAndClick(
+               queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+                   .visible());
+
+           await vpn.waitForCondition(async () => {
+             const url = await vpn.getLastUrl();
+             return url.includes('/api/v2/vpn/login');
+           });
+
+           // Mark the user subscription as active
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataActive;
+
+           // We don't really want to go through the
+           // authentication flow because we
+           // are mocking everything. So this next chunk of code manually
+           // makes a call to the DesktopAuthenticationListener to mock
+           // a successful authentication in browser.
+           const url = await vpn.getLastUrl();
+           const authListenerPort = (new URL(url)).searchParams.get('port');
+           const options = {
+             // We hardcode 127.0.0.1 to match listening on
+             // QHostAddress:LocalHost
+             // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+             hostname: '127.0.0.1',
+             port: parseInt(authListenerPort, 10),
+             path: '/?code=the_code',
+             method: 'GET',
+           };
+
+           await new Promise(resolve => {
+             const req = http.request(options, res => {});
+             req.on('close', resolve);
+             req.on('error', error => {
+               throw new Error(
+                   `Unable to connect to ${urlObj.hostname} to complete the
+                  auth. ${error.name}, ${error.message}, ${error.stack}`);
+             });
+             req.end();
+           });
+
+           // Wait for VPN client screen to move from spinning wheel to next
+           // screen
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           assert.equal(
+               await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE, 'text'),
+               'VPN is off');
+         }
        });
 
     it('Continues to try connecting if call to check subscription status fails',
@@ -135,6 +218,46 @@ describe('Subscription manager', function() {
                       queries.screenHome.CONTROLLER_TITLE, 'text') ==
                'VPN is on';
          });
+         // Reset guardian endpoint for the next test
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
+             200;
+       });
+
+    it('Go to "Subscribe to Mozilla VPN" screen once user toggles off VPN after subscription expires and they enter No Signal',
+       async () => {
+         // This test verifies the case where a user is logged in
+         // and the VPN is on when their subscription expires.
+         // They enter No Signal, and once they toggle the VPN off
+         // they get the "Subscribe to Mozilla VPN" screen.
+
+         await vpn.authenticateInApp(true, true);
+
+         // toggle on VPN here
+         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+         await vpn.waitForCondition(async () => {
+           return await vpn.getQueryProperty(
+                      queries.screenHome.CONTROLLER_TITLE, 'text') ==
+               'VPN is on';
+         });
+
+         // Override the Guardian endpoint to mock an expired
+         // subscription.
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataInactive;
+
+         // Because the subscription has expired, client enter the No Signal
+         // state
+         await vpn.forceConnectionStabilityStatus('nosignal');
+
+         // Once the VPN is toggled off, we are redirected to the "Subscribe to
+         // Mozilla VPN" screen.
+         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
        });
   });
 });
@@ -855,8 +978,8 @@ describe('Subscription view', function() {
             queries.screenSettings.subscriptionView.PLAN.visible());
         assert.equal(
             await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.PLAN.visible(),
-                'text'), data.plan.expected);
+                queries.screenSettings.subscriptionView.PLAN.visible(), 'text'),
+            data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
@@ -865,7 +988,8 @@ describe('Subscription view', function() {
         assert.equal(
             await vpn.getQueryProperty(
                 queries.screenSettings.subscriptionView.ACTIVATED.visible(),
-                'text'), data.subscription.expected.activated);
+                'text'),
+            data.subscription.expected.activated);
       }
 
       await vpn.waitForQuery(
@@ -873,11 +997,13 @@ describe('Subscription view', function() {
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED.visible(),
-              'text'), data.subscription.expected.cancelled);
+              'text'),
+          data.subscription.expected.cancelled);
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
-              'text'), data.subscription.expected.label);
+              'text'),
+          data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == 'web') {
         if (data.payment.expected.card) {
@@ -886,7 +1012,8 @@ describe('Subscription view', function() {
           assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.BRAND.visible(),
-                  'text'), data.payment.expected.card);
+                  'text'),
+              data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
           await vpn.waitForQuery(
@@ -894,7 +1021,8 @@ describe('Subscription view', function() {
           assert.equal(
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.EXPIRES.visible(),
-                  'text'), data.payment.expected.expires);
+                  'text'),
+              data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
           await vpn.waitForQuery(
@@ -903,7 +1031,8 @@ describe('Subscription view', function() {
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD
                       .visible(),
-                  'text'), data.payment.expected.brand);
+                  'text'),
+              data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
           await vpn.waitForQuery(queries.screenSettings.subscriptionView
@@ -912,7 +1041,8 @@ describe('Subscription view', function() {
               await vpn.getQueryProperty(
                   queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
                       .visible(),
-                  'text'), data.payment.expected.payment);
+                  'text'),
+              data.payment.expected.payment);
         }
       }
 

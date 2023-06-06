@@ -14,6 +14,9 @@
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
 #endif
+#ifdef MZ_WINDOWS
+#  include "platforms/windows/windowsutils.h"
+#endif
 
 #include <QApplication>
 #include <QClipboard>
@@ -46,13 +49,7 @@ void Utils::crashTest() {
 
 #ifdef MZ_WINDOWS
   // Windows does not have "signals"
-  //   qFatal("Ready to crash!") does not work as expected.
-  // QT raises a debugmessage (in debugmode) - which we would handle
-  // in release-mode however this end's with QT just doing a clean shutdown
-  // so breakpad does not kick in.
-  int i = 1;
-  QString* ohno = (QString*)i--;
-  ohno->at(1);
+  WindowsUtils::forceCrash();
 #else
   // On Linux/osx this generates a Sigabort, which is handled
   qFatal("Ready to crash!");

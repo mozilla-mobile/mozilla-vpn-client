@@ -406,3 +406,7 @@ void Navigator::registerScreen(int screenId, LoadPolicy loadPolicy,
   s_screens.append(ScreenData(screenId, loadPolicy, qmlComponentUrl,
                               requiresAppState, priorityGetter, quitBlocked));
 }
+
+void Navigator::reloadCurrentScreen() {
+  requestScreen(m_currentScreen, ForceReloadAll);
+}

@@ -33,11 +33,13 @@ linux/netfilter/vendor/
 __pycache__
 lottie.mjs
 qml_lint_result.txt
-qtglean/Cargo.lock
 
 # Translation pipeline
 addon_ts/
 
+# Cmake Presets
+# https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
+CMakeUserPresets.json
 # CMake build artifacts
 cmake_install.cmake
 CMakeCache.txt
@@ -56,7 +58,7 @@ node_modules
 
 #Github Codespaces
 .venv
-=/ 
+=/
 
 asset_catalog_compiler.Info.plist
 
@@ -84,7 +86,7 @@ tests/nativemessaging/tests
 tests/qml/qml_tests
 tests/qml/qml_tests_autogen/
 tests/qml/target_wrapper.sh
-tests/functional/addons/*/generated
+tests/functional/addons/generated
 build
 !taskcluster/ci/build
 !taskcluster/scripts/build
@@ -141,6 +143,9 @@ windows/split-tunnel/*.sys
 windows/split-tunnel/*.dll
 windows/split-tunnel/.status
 
+# Mac OS X
+.DS_Store
+
 # Rust
 .cargo_home/
 .rustc_info.json
@@ -162,8 +167,7 @@ mozillavpnnp.vcxproj*
 /glean/glean_autogen/
 /glean/telemetry/*
 !/glean/telemetry/.keepme
-vpnglean/prebuilt/
-vpnglean/uniffi.toml
+qtglean/prebuilt/
 
 # For users compiling QT per the README
 /qt/

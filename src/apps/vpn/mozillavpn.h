@@ -115,7 +115,7 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void telemetryPolicyCompleted();
   Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE void activate();
-  Q_INVOKABLE void deactivate();
+  Q_INVOKABLE void deactivate(bool block = false);
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
   Q_INVOKABLE void backendServiceRestore();
@@ -196,7 +196,7 @@ class MozillaVPN final : public App {
 
   void heartbeatCompleted(bool success);
 
-  void addCurrentDeviceAndRefreshData(bool refreshProducts);
+  void addCurrentDeviceAndRefreshData();
 
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
@@ -244,7 +244,7 @@ class MozillaVPN final : public App {
 
   void errorHandled();
 
-  void scheduleRefreshDataTasks(bool refreshProducts);
+  void scheduleRefreshDataTasks();
 
   static void registerUrlOpenerLabels();
 
@@ -277,6 +277,7 @@ class MozillaVPN final : public App {
   void initializeGlean();
   void sendGleanPings();
   void setGleanSourceTags(const QStringList& tags);
+  void logSubscriptionCompleted();
 
   void aboutToQuit();
 

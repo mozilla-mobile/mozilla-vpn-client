@@ -6,9 +6,8 @@ find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit PkgConfig::libsecret)
+target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
@@ -56,8 +55,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/linuxdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/pidtracker.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/polkithelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/linux/daemon/wireguardutilslinux.h
 )
@@ -106,10 +103,6 @@ install(FILES ../linux/extra/icons/64x64/mozillavpn.png
 
 install(FILES ../linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
-
-pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
-install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.policy
-    DESTINATION ${POLKIT_POLICY_DIR})
 
 install(FILES apps/vpn/platforms/linux/daemon/org.mozilla.vpn.conf
     DESTINATION /usr/share/dbus-1/system.d)

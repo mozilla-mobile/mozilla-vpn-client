@@ -35,6 +35,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2024-01-01
     extra_keys:
       connection_health_state:
@@ -62,6 +63,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_launchbillingflow_failed:
@@ -79,6 +81,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_unexpected_purchasestate:
@@ -96,6 +99,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_sku_without_month:
@@ -113,6 +117,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_query_purchases_failed:
@@ -130,6 +135,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_query_sku_details_failed:
@@ -147,6 +153,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_billing_not_available:
@@ -164,6 +171,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_purchases_updated_failed:
@@ -183,6 +191,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       reason:
@@ -207,6 +216,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_g_purchase_ack_failed:
@@ -224,6 +234,7 @@ sample:
       - technical
     notification_emails:
       - sstreich@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   app_permissions_view_opened:
@@ -241,6 +252,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_aborted:
@@ -258,6 +270,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_completed:
@@ -275,6 +288,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_failure:
@@ -292,6 +306,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_failure_by_geo:
@@ -309,6 +324,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   authentication_started:
@@ -326,6 +342,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   backend_failure_viewed:
@@ -343,6 +360,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_link_clicked:
@@ -360,6 +378,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_upgrade_clicked:
@@ -377,6 +396,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   bundle_upsell_viewed:
@@ -394,6 +414,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_health_no_signal:
@@ -412,6 +433,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_health_unstable:
@@ -430,23 +452,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
-    expires: never
-
-  connection_health_stable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-    description: |
-      The connection health check has no problems
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-4065
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6456#pullrequestreview-1360843302
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   connection_info_opened:
@@ -464,6 +470,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   get_help_clicked_initialize:
@@ -481,6 +488,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   get_help_clicked_view_settings:
@@ -498,6 +506,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   manage_account_clicked:
@@ -515,6 +524,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   max_device_reached:
@@ -532,6 +542,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   notifications_view_opened:
@@ -549,6 +560,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   onboarding_cta_click:
@@ -577,6 +589,7 @@ sample:
         type: string
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
 
   settings_view_opened:
     type: event
@@ -593,6 +606,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   subscription_blocked_viewed:
@@ -611,6 +625,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   sub_not_validated_viewed:
@@ -629,6 +644,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   billing_not_available_viewed:
@@ -647,6 +663,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   dns_settings_view_opened:
@@ -664,6 +681,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_subscription_started:
@@ -683,6 +701,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       sku:
@@ -705,6 +724,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   iap_subscription_failed:
@@ -724,6 +744,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       error:
@@ -753,6 +774,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       sku:
@@ -778,6 +800,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -807,6 +830,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -840,6 +864,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   app_step:
@@ -857,13 +882,15 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
         description: |
           The name of the app state, e.g. "authenticating", "device-limit",
-          "main", "subscription-needed", etc. The list can be found in
-          `mozillavpn.h`.
+          "main", "subscription-needed", etc. The complete list is
+          `app.h`'s `State` enum along with the `CustomState` enum in the
+          app's header file (e.g. `mozillavpn.h`).
         type: string
 
   controller_step:
@@ -882,6 +909,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -905,6 +933,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   controller_state_off:
@@ -924,6 +953,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   update_step:
@@ -941,6 +971,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -964,6 +995,7 @@ sample:
       - technical
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       interval:
@@ -991,6 +1023,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       state:
@@ -1015,6 +1048,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   delete_account_requested:
@@ -1032,6 +1066,7 @@ sample:
       - interaction
     notification_emails:
       - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_view_opened:
@@ -1049,6 +1084,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_modal_shown:
@@ -1066,6 +1102,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   tips_and_tricks_modal_closed:
@@ -1083,6 +1120,7 @@ sample:
       - interaction
     notification_emails:
       - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       action:
@@ -1105,6 +1143,7 @@ sample:
       - technical
     notification_emails:
       - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: 2023-12-31
     extra_keys:
       source:
@@ -1129,6 +1168,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       speed:
@@ -1152,6 +1192,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
       server:
@@ -1175,6 +1216,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   help_contact_support_opened:
@@ -1192,6 +1234,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   support_case_submitted:
@@ -1209,6 +1252,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   help_menu_view_logs_opened:
@@ -1226,6 +1270,7 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never
 
   settings_about_us_opened:
@@ -1243,4 +1288,5 @@ sample:
       - interaction
     notification_emails:
       - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
     expires: never

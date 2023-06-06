@@ -47,4 +47,6 @@ dependencies {
     implementation project(path: ':qtglean')
     implementation project(path: ':qtBindings')
     implementation project(path: ':adjust')
+
+    implementation "androidx.work:work-multiprocess:2.8.1"
 }

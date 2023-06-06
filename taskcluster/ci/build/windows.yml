@@ -19,6 +19,7 @@ task-defaults:
             - win-go
             - win-perl
             - win-sentry-cli
+            - win-conda
         build:
             - artifact: mozillavpn-sources.tar.gz
         toolchain:
@@ -31,9 +32,6 @@ task-defaults:
             - type: file
               name: public/build/MozillaVPN.msi
               path: artifacts/MozillaVPN.msi
-            - type: file
-              name: public/build/Mozilla VPN.pdb
-              path: artifacts/Mozilla VPN.pdb
     release-artifacts:
         - unsigned.zip
     run:
@@ -42,6 +40,21 @@ task-defaults:
         exec-with: powershell
         command: taskcluster/scripts/build/windows.ps1
 
+
+windows/msvc:
+    description: "Windows Build"
+    treeherder:
+        symbol: B(msvc)
+    worker:
+        artifacts:
+            - type: file
+              name: public/build/Mozilla VPN.pdb
+              path: artifacts/Mozilla VPN.pdb
+    scopes:
+        by-level:
+            "3":
+                - secrets:get:project/mozillavpn/tokens
+            default: []
 
 windows/opt:
     description: "Windows Build"
@@ -52,4 +65,8 @@ windows/opt:
             "3":
                 - secrets:get:project/mozillavpn/tokens
             default: []
-
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows_clang_cl.ps1

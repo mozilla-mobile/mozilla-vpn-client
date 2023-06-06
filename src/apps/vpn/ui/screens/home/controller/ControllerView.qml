@@ -483,7 +483,7 @@ Item {
             anchors.centerIn: connectionInfoToggleButton
             source: box.connectionInfoScreenVisible
                 ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/nebula/resources/bandwidth.svg"
+                : "qrc:/ui/resources/bandwidth.svg"
             sourceSize.height: iconSize
             sourceSize.width: iconSize
         }

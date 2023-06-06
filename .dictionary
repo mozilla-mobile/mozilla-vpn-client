@@ -1,4 +1,5 @@
-personal_ws-1.1 en 188 utf-8
+personal_ws-1.1 en 211 utf-8
+ADRs
 APIs
 Adblock
 AdjustSdk
@@ -10,7 +11,6 @@ CMU
 CMake
 Changelog
 Conda
-colima
 DNS
 DevOps
 FFI
@@ -25,6 +25,7 @@ HowTo
 INRIA
 IPv
 Indri
+LDAP
 LGPL
 LLC
 LTS
@@ -32,6 +33,7 @@ Lerche
 Linters
 LottieAnimation
 MERCHANTABILITY
+Mozillians
 MPL
 MSI
 Menubar
@@ -40,15 +42,16 @@ MozillaVPN
 NDK
 NONINFRINGEMENT
 OpenSSL
-QMake
 QML
 QMLs
+QMake
 Qt's
 QtLottie
 RCC
 README
-Replacer
 RSA
+Replacer
+Rustup
 SDKs
 SHA
 Serde
@@ -91,6 +94,7 @@ cancelled
 cldr
 cmake
 codebase
+colima
 conda
 config
 cpp
@@ -116,11 +120,13 @@ gps
 iap
 idfv
 ie
+init
 ios
 javascript
 js
 json
-libpolkit
+libcap
+libsecret
 licensable
 licensor
 linter
@@ -130,6 +136,7 @@ loopback
 lottie
 lottietest
 macOS
+macosdaemon
 makefiles
 md
 miniconda
@@ -148,12 +155,12 @@ onboarding
 ons
 os
 perl
-polkit
+podman
+powershell
 ppa
 pre
 prebuilt
 py
-podman
 qmake
 qml
 qmldir
@@ -167,6 +174,7 @@ repo
 resolvconf
 rlottie
 runtime
+rustup
 sdk
 serverData
 settingHolder
@@ -197,8 +205,9 @@ wgutils
 wifi
 wireguard
 xcode
-xcodes
 xcodeproj
+xcodes
 xconfig
+xcrun
 yaml
 yyyy

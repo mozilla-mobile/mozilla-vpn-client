@@ -221,14 +221,15 @@ void Telemetry::initialize() {
                 GleanSample::iapRestoreSubStarted);
           });
 
-  connect(purchaseHandler, &PurchaseHandler::subscriptionCompleted, this, []() {
-    mozilla::glean::sample::iap_subscription_completed.record(
-        mozilla::glean::sample::IapSubscriptionCompletedExtra{
-            ._sku = PurchaseHandler::instance()->currentSKU()});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::iapSubscriptionCompleted,
-        {{"sku", PurchaseHandler::instance()->currentSKU()}});
-  });
+  connect(MozillaVPN::instance(), &MozillaVPN::logSubscriptionCompleted, this,
+          []() {
+            mozilla::glean::sample::iap_subscription_completed.record(
+                mozilla::glean::sample::IapSubscriptionCompletedExtra{
+                    ._sku = PurchaseHandler::instance()->currentSKU()});
+            emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
+                GleanSample::iapSubscriptionCompleted,
+                {{"sku", PurchaseHandler::instance()->currentSKU()}});
+          });
 
   connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this, []() {
     mozilla::glean::sample::iap_subscription_failed.record(

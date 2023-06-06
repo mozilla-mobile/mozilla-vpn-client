@@ -48,6 +48,7 @@ print Y "Installing provided conda env..."
 # TODO: Check why --force is needed if we install into TASK_HOME?
 conda env create --force -f env.yml
 conda activate VPN
+./scripts/macos/conda_install_extras.sh  
 conda info
 
 # Conda Cannot know installed MacOS SDK'S
@@ -92,7 +93,6 @@ then
     npm install -g @sentry/cli
 fi
 
-
 print Y "Configuring the build..."
 mkdir ${MOZ_FETCHES_DIR}/build
 
@@ -100,8 +100,8 @@ cmake -S . -B ${MOZ_FETCHES_DIR}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DSENTRY_DSN=$SENTRY_DSN \
         -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo
-
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 
 print Y "Building the client..."
 cmake --build ${MOZ_FETCHES_DIR}/build
@@ -136,5 +136,9 @@ cp -r ./macos/pkg/Distribution tmp || die
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
+
+# Check for unintended writes to the source directory.
+print G "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh
 
 print G "Done!"

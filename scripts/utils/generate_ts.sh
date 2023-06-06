@@ -24,7 +24,7 @@ print G "done."
 for project in src/apps/*; do
   project=$(basename $project)
 
-  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] && continue
+  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] || [ "$project" = ".DS_Store" ] && continue
 
   mkdir -p translations/generated/$project || die
 
@@ -58,16 +58,16 @@ EOF
   print Y "$project - Generating the main translation file... "
   ${QT_HOST_BINS}/lupdate translations/generated/$project/dummy_ts.pro -ts translations.ts || die
 
-  printn Y "$project - Generating strings for addons... "
-  python3 scripts/addon/generate_all.py
+  print Y "$project - Generating strings for addons... "
+  cmake cmake -S $(pwd)/addons -B build-addons/
+  cmake --build build-addons/
   mkdir -p addon_ts || die
-  cp addons/generated/addons/*.ts addon_ts
-  print G "done."
+  cp build-addons/*.ts addon_ts
 
   for branch in $(git branch -r | grep origin/releases); do
     git checkout $branch &>/dev/null || die
 
-    printn Y "Importing main strings from $branch..."
+    print Y "Importing main strings from $branch..."
     if [ -f translations/strings.yaml ]; then
       if [ $project = "vpn" ]; then
         python3 cache/generate_strings.py -o translations/generated/$project -p $project translations/strings.yaml || die
@@ -90,23 +90,36 @@ EOF
     mv tmp.ts translations.ts || die
     rm branch.ts || die
 
-    if [ "$project" = "vpn" ] && [ -f "scripts/addon/generate_all.py" ]; then
-      printn Y "Importing addon strings from $branch..."
-      python3 scripts/addon/generate_all.py
-      ts_files="addons/generated/addons/*.ts"
+    if [ "$project" = "vpn" ]; then
+      print Y "Importing addon strings from $branch..."
+      if [ -f "scripts/addon/generate_all.py" ]; then
+        # Use the old python scripts to generate addons.
+        python3 scripts/addon/generate_all.py
+        ts_files="addons/generated/addons/*.ts"
+      elif [ -f "addons/CMakeLists.txt" ]; then
+        # Use the CMake project to generate addons.
+        mkdir -p build-addons-$branch/
+        cmake -S addons/ -B build-addons-$branch/
+        cmake --build build-addons-$branch/
+        ts_files="build-addons-$branch/*.ts"
+      else
+        # No addons to process.
+        ts_files=
+      fi
+
       for f in $ts_files
       do
         ts_name=$(basename "$f")
         if [ -f "addon_ts/${ts_name}" ]; then
-          printn Y "File ${ts_name} exists, updating with branch strings..."
-          ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "addons/generated/addons/${ts_name}" -o tmp.ts || die
+          print Y "File ${ts_name} exists, updating with branch strings..."
+          ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "$f" -o tmp.ts || die
           mv tmp.ts "addon_ts/${ts_name}"
         else
-          printn Y "File ${ts_name} does not exist, copying over..."
-          cp "addons/generated/addons/${ts_name}" addon_ts/
+          print Y "File ${ts_name} does not exist, copying over..."
+          cp "$f" addon_ts/
         fi
+        rm $f || die
       done
-      rm addons/generated/addons/*.ts || die
     fi
   done
 

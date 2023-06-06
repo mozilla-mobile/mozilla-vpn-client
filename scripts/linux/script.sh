@@ -93,12 +93,7 @@ if [ -z "$RELEASE" ]; then
 fi
 
 printn Y "Computing the version... "
-# To explain this ugly pile of regex:
-#  1. The grep statement matches a cmake project(...) directive.
-#  2. awk breaks it into tokens separated by whitespace.
-#  3. print whatever token we find after "VERSION"
-SHORTVERSION=$(grep -zoE 'project\s*\([^\(\)]*\)' CMakeLists.txt |
-               awk '{ for (x=1;x<NF;x++) if ($x=="VERSION") print $(x+1) }')
+SHORTVERSION=$(scripts/utils/getversion.py)
 
 # Adjust the package version if a gitref was provided:
 #  - Pull requests are suffixed with "~pr<Pull Request Number>"

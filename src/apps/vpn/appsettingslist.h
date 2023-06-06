@@ -238,17 +238,6 @@ SETTING_STRING(privateKeyJournal,        // getter
                true                      // sensitive (do not log)
 )
 
-SETTING_BOOL(protectSelectedApps,        // getter
-             setProtectSelectedApps,     // setter
-             removeProtectSelectedApps,  // remover
-             hasProtectSelectedApps,     // has
-             "protectSelectedApps",      // key
-             false,                      // default value
-             true,                       // user setting
-             false,                      // remove when reset
-             false                       // sensitive (do not log)
-)
-
 SETTING_STRING(publicKey,        // getter
                setPublicKey,     // setter
                removePublicKey,  // remover

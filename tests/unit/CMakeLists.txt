@@ -43,6 +43,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
     ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.h
+    ${MZ_SOURCE_DIR}/apps/vpn/connectionhealth.cpp
+    ${MZ_SOURCE_DIR}/apps/vpn/connectionhealth.h
     ${MZ_SOURCE_DIR}/apps/vpn/command.cpp
     ${MZ_SOURCE_DIR}/apps/vpn/command.h
     ${MZ_SOURCE_DIR}/apps/vpn/commandlineparser.cpp
@@ -333,6 +335,8 @@ target_sources(unit_tests PRIVATE
     helper.h
     testaddon.cpp
     testaddon.h
+    testconnectionhealth.cpp
+    testconnectionhealth.h
     testcommandlineparser.cpp
     testcommandlineparser.h
     testdnshelper.cpp
