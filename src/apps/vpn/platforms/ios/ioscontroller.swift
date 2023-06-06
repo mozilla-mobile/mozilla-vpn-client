@@ -23,7 +23,6 @@ var vpnBundleID = "";
 }
 
 public class IOSControllerImpl : NSObject {
-
     private var tunnel: NETunnelProviderManager? = nil
     private var stateChangeCallback: ((Bool, Date?) -> Void?)? = nil
     private var privateKey : PrivateKey? = nil
@@ -241,9 +240,10 @@ public class IOSControllerImpl : NSObject {
                 do {
                     if (reason == 1 /* ReasonSwitching */) {
                         let settings = config.asWgQuickConfig()
-                        let settingsData = settings.data(using: .utf8)!
+                        let message = TunnelMessage.configurationSwitch(settings)
+                        Logger.global?.log(message: "Sending new message \(message)")
                         try (self.tunnel!.connection as? NETunnelProviderSession)?
-                                .sendProviderMessage(settingsData) {_ in return}
+                            .sendProviderMessage(message.encode()) {_ in return}
                     } else {
                         try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
                     }
@@ -297,7 +297,9 @@ public class IOSControllerImpl : NSObject {
         }
 
         do {
-            try session.sendProviderMessage(Data([UInt8(0)])) { [callback] data in
+            let message = TunnelMessage.getRuntimeConfiguration;
+            Logger.global?.log(message: "Sending new message \(message)");
+            try session.sendProviderMessage(message.encode()) { [callback] data in
                 guard let data = data,
                       let configString = String(data: data, encoding: .utf8)
                 else {

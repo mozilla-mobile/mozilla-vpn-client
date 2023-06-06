@@ -116,45 +116,50 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)? = nil) {
         guard let completionHandler = completionHandler else { return }
-
-        if messageData.count == 1 && messageData[0] == 0 {
-            adapter.getRuntimeConfiguration { settings in
-                var data: Data?
-                if let settings = settings {
-                    data = settings.data(using: .utf8)!
+        
+        do {
+            let message = try TunnelMessage(messageData)
+            NSLog("Received new message: \(message)")
+            
+            switch message {
+            case .getRuntimeConfiguration:
+                adapter.getRuntimeConfiguration { settings in
+                    var data: Data?
+                    if let settings = settings {
+                        data = settings.data(using: .utf8)!
+                    }
+                    completionHandler(data)
                 }
-                completionHandler(data)
-            }
-        } else if messageData.count >= 1 {
-            // Updates the tunnel configuration and responds with the active configuration
-            wg_log(.info, message: "Switching tunnel configuration")
-            guard let configString = String(data: messageData, encoding: .utf8)
-            else {
-                completionHandler(nil)
-                return
-            }
+            case .configurationSwitch(let configString):
+                // Updates the tunnel configuration and responds with the active configuration
+                wg_log(.info, message: "Switching tunnel configuration")
 
-            do {
-              let tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: configString)
-              adapter.update(tunnelConfiguration: tunnelConfiguration) { error in
-                if let error = error {
-                  wg_log(.error, message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
-                  completionHandler(nil)
-                  return
-                }
+                do {
+                  let tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: configString)
+                  adapter.update(tunnelConfiguration: tunnelConfiguration) { error in
+                    if let error = error {
+                      wg_log(.error, message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
+                      completionHandler(nil)
+                      return
+                    }
 
-                self.adapter.getRuntimeConfiguration { settings in
-                  var data: Data?
-                  if let settings = settings {
-                      data = settings.data(using: .utf8)!
+                    self.adapter.getRuntimeConfiguration { settings in
+                      var data: Data?
+                      if let settings = settings {
+                          data = settings.data(using: .utf8)!
+                      }
+                      completionHandler(data)
+                    }
                   }
-                  completionHandler(data)
+                } catch {
+                  completionHandler(nil)
                 }
-              }
-            } catch {
-              completionHandler(nil)
+            case .telemetryEnabledChanged(let uploadEnabled):
+                Glean.shared.setUploadEnabled(uploadEnabled)
+                completionHandler(nil)
             }
-        } else {
+        } catch {
+            wg_log(.error, message: "Unexpected error while parsing message: \(error).")
             completionHandler(nil)
         }
     }
