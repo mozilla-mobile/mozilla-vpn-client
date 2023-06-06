@@ -128,6 +128,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosconstants.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmessage.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmanager.swift
 )
 
 target_sources(mozillavpn PRIVATE
