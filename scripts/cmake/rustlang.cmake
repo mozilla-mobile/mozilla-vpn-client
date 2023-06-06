@@ -102,6 +102,11 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
     endif()
 
+    ## For build Apple shared binaries, the install path needs to be relative to the runpath.
+    if (RUST_BUILD_SHARED AND APPLE)
+        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_LIBRARY_FILENAME}")
+    endif()
+
     if(ANDROID)
         get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
 
