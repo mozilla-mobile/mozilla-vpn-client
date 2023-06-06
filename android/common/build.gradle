@@ -48,5 +48,5 @@ dependencies {
     implementation project(path: ':qtBindings')
     implementation project(path: ':adjust')
 
-    implementation "androidx.work:work-multiprocess:2.6.0"
+    implementation "androidx.work:work-multiprocess:2.8.1"
 }

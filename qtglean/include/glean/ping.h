@@ -14,7 +14,7 @@ class Ping final : public QObject {
  public:
   explicit Ping(int aId);
 
-  Q_INVOKABLE void submit() const;
+  Q_INVOKABLE void submit(const QString& reason = QString()) const;
 
  private:
   const int m_id;

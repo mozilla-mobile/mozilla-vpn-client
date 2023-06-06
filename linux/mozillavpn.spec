@@ -19,7 +19,6 @@ BuildRequires: cargo
 BuildRequires: golang >= 1.18
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
-BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
@@ -68,4 +67,3 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/32x32/apps/mozillavpn.png
 %{_datadir}/icons/hicolor/48x48/apps/mozillavpn.png
 %{_datadir}/icons/hicolor/64x64/apps/mozillavpn.png
-%{_datadir}/polkit-1/actions/org.mozilla.vpn.policy

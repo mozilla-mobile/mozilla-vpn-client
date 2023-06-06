@@ -21,7 +21,7 @@ pub extern "C" fn glean_boolean_test_get_value(
         BOOLEAN_MAP,
         id,
         metric,
-        metric.test_get_value(helpers::ping_name_from_ffi(ping_name)).unwrap_or(true)
+        metric.test_get_value(helpers::option_from_ffi(ping_name)).unwrap_or(true)
     )
 }
 

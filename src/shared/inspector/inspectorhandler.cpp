@@ -152,6 +152,15 @@ static QList<InspectorCommand> s_commands{
                        s_hotreloader->annonceReplacedFile(url);
                        return QJsonObject();
                      }},
+    InspectorCommand{"reload_window", "Reload the whole window", 0,
+                     [](InspectorHandler*, const QList<QByteArray>& args) {
+                       if (s_hotreloader == nullptr) {
+                         s_hotreloader = new InspectorHotreloader(
+                             QmlEngineHolder::instance()->engine());
+                       }
+                       s_hotreloader->reloadWindow();
+                       return QJsonObject();
+                     }},
     InspectorCommand{"reset_live_reload", "Reset all hot reloaded files", 0,
                      [](InspectorHandler*, const QList<QByteArray>& args) {
                        if (s_hotreloader == nullptr) {

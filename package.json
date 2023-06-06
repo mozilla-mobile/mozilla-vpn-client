@@ -15,21 +15,21 @@
     "wasm:devcontainer:up": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json",
     "wasm:devcontainer:fresh": "devcontainer up --id-label=\"arch=wasm\" --workspace-folder . --override-config ./.devcontainer/wasm/.devcontainer.json --remove-existing-container",
     "wasm:devcontainer:build": "devcontainer build --image-name=\"cuddlebuild:wasm\" --workspace-folder .devcontainer/wasm.build",
+    "wasm:dev": "node tests/functional/wasm.js",
     "qml-reload": "node ./tools/qml_hot_reload/hot.js"
   },
   "devDependencies": {
-    "@devcontainers/cli": "^0.42.0",
+    "@devcontainers/cli": "^0.43.0",
     "appium-adb": "^9.11.4",
     "body-parser": "^1.20.2",
     "chokidar": "^3.5.3",
     "command-line-args": "^5.2.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.4",
     "express": "^4.18.1",
     "jsonschema": "^1.4.1",
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.9.2",
-    "websocket": "^1.0.34",
-    "command-line-args": "^5.2.1"
+    "websocket": "^1.0.34"
   }
 }

@@ -33,7 +33,7 @@ pub extern "C" fn glean_uuid_test_get_value(
         UUID_MAP,
         id,
         metric,
-        metric.test_get_value(helpers::ping_name_from_ffi(ping_name)).unwrap_or("".to_string())
+        metric.test_get_value(helpers::option_from_ffi(ping_name)).unwrap_or("".to_string())
     );
 
     CString::new(return_string)

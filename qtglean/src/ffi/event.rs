@@ -51,7 +51,7 @@ pub extern "C" fn glean_event_test_get_num_recorded_errors(id: u32, error_type: 
 
 #[no_mangle]
 pub extern "C" fn glean_event_test_get_value(id: u32, ping_name: FfiStr) -> *mut c_char {
-    let value_as_json = if let Some(value) = metric_maps::event_test_get_value(id, helpers::ping_name_from_ffi(ping_name)) {
+    let value_as_json = if let Some(value) = metric_maps::event_test_get_value(id, helpers::option_from_ffi(ping_name)) {
         serde_json::to_string(&value).expect("Unable to serialize recorded value")
     } else {
         "".into()

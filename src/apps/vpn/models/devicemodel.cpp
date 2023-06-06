@@ -295,7 +295,6 @@ void DeviceModel::serializeLogs(
 
   QString buffer;
   QTextStream out(&buffer);
-  out << "Name -> " << Device::currentDeviceName() << Qt::endl;
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
   out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
