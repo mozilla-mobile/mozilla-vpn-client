@@ -77,6 +77,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         if (RUST_ARCH STREQUAL "")
             set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
         endif()
+
+        # On iOS we will build a dynamic lib,
+        # so that it can be linked to both the main app and the network extension.
+        set(RUSTFLAGS "-Ctarget-feature=-crt-static")
+        set(SHARED 1)
     elseif(ANDROID)
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
             set(RUST_ARCH "aarch64-linux-android")

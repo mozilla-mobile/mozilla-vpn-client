@@ -120,3 +120,13 @@ set_target_properties(libwg_builder PROPERTIES FOLDER "Libs")
 ## Link and depend on the wireguard library.
 add_dependencies(networkextension libwg_builder)
 target_link_libraries(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/libwg-unified.a)
+
+## Add Glean to the extension
+target_link_libraries(networkextension PRIVATE iosglean)
+set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
+    PROPERTIES GENERATED TRUE
+)
+target_sources(networkextension PRIVATE
+    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
+)
