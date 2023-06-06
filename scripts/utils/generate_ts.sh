@@ -101,7 +101,7 @@ EOF
         # Use the CMake project to generate addons.
         mkdir -p build-addons-$branch/
         cmake -S addons/ -B build-addons-$branch/
-        cmake --build -B build-addons-$branch/
+        cmake --build build-addons-$branch/
         ts_files="build-addons-$branch/*.ts"
       else
         # No addons to process.
