@@ -119,8 +119,8 @@ EOF
           printn Y "File ${ts_name} does not exist, copying over..."
           cp "$f" addon_ts/
         fi
+        rm $f || die
       done
-      rm addons/generated/addons/*.ts || die
     fi
   done
 
