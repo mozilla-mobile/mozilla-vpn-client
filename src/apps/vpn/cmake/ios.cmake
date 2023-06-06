@@ -88,6 +88,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosconstants.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosglue.mm
@@ -95,6 +96,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmanager.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnelmessage.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
 )

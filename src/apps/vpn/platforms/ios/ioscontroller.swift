@@ -47,42 +47,23 @@ public class IOSControllerImpl : NSObject {
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.vpnStatusDidChange(notification:)), name: Notification.Name.NEVPNStatusDidChange, object: nil)
 
-        NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
-            if let error = error {
-                Logger.global?.log(message: "Loading from preference failed: \(error)")
+        TunnelManager.initialize(bundleID) { error, tunnel in
+            if (error != nil || tunnel == nil) {
                 closure(ConnectionState.Error, nil)
                 return
             }
 
-            if self == nil {
-                Logger.global?.log(message: "We are shutting down.")
-                return
-            }
-
-            let nsManagers = managers ?? []
-            Logger.global?.log(message: "We have received \(nsManagers.count) managers.")
-
-            let tunnel = nsManagers.first(where: IOSControllerImpl.isOurManager(_:))
-            if tunnel == nil {
-                Logger.global?.log(message: "Creating the tunnel")
-                self!.tunnel = NETunnelProviderManager()
-                closure(ConnectionState.Disconnected, nil)
-                return
-            }
-
-            Logger.global?.log(message: "Tunnel already exists")
-
-            self!.tunnel = tunnel
-            if tunnel?.connection.status == .connected {
-                closure(ConnectionState.Connected, tunnel?.connection.connectedDate)
+            let tunnelConnectionInfo = (tunnel!.connection as? NETunnelProviderSession)
+            if tunnelConnectionInfo?.status == .connected {
+                closure(ConnectionState.Connected, tunnelConnectionInfo?.connectedDate)
             } else {
                 closure(ConnectionState.Disconnected, nil)
             }
-        }
+        } 
     }
 
     @objc private func vpnStatusDidChange(notification: Notification) {
-        guard let session = (notification.object as? NETunnelProviderSession), tunnel?.connection == session else { return }
+        guard let session = (notification.object as? NETunnelProviderSession), TunnelManager.session == session else { return }
 
         switch session.status {
         case .connected:
@@ -112,20 +93,18 @@ public class IOSControllerImpl : NSObject {
             return
         }
 
-       // This timer is used to workaround a Schrödinger's cat bug: if we check
-       // the connection status immediately when connected, we alter the iOS16
-       // connectivity state and we break the VPN tunnel (intermittently). With
-       // a timer this does not happen.
+        // This timer is used to workaround a Schrödinger's cat bug: if we check
+        // the connection status immediately when connected, we alter the iOS16
+        // connectivity state and we break the VPN tunnel (intermittently). With
+        // a timer this does not happen.
         _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {_ in
             self.monitorConnection()
         }
     }
 
     private func monitorConnection() -> Void {
-        // Let's call `stateChangeCallback` if connected and if
-        // last_handshake_time_sec is not 0.
-        self.checkStatus { _, _, configString in
-            if self.tunnel?.connection.status != .connected { return; }
+        TunnelManager.checkStatus { _, _, configString in
+            if TunnelManager.session?.status != .connected { return; }
 
             let lines = configString.splitToArray(separator: "\n")
             if let line = lines.first(where: { $0.starts(with: "last_handshake_time_sec") }) {
@@ -142,35 +121,11 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    private static func isOurManager(_ manager: NETunnelProviderManager) -> Bool {
-        guard
-            let proto = manager.protocolConfiguration,
-            let tunnelProto = proto as? NETunnelProviderProtocol
-        else {
-            Logger.global?.log(message: "Ignoring manager because the proto is invalid.")
-            return false
-        }
-
-        if (tunnelProto.providerBundleIdentifier == nil) {
-            Logger.global?.log(message: "Ignoring manager because the bundle identifier is null.")
-            return false
-        }
-
-        if (tunnelProto.providerBundleIdentifier != vpnBundleID) {
-            Logger.global?.log(message: "Ignoring manager because the bundle identifier doesn't match.")
-            return false;
-        }
-
-        Logger.global?.log(message: "Found the manager with the correct bundle identifier: \(tunnelProto.providerBundleIdentifier!)")
-        return true
-    }
-
     @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
         Logger.global?.log(message: "Connecting")
-        assert(tunnel != nil)
-
+        
         // Let's remove the previous config if it exists.
-        (tunnel!.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
+        TunnelManager.protocolConfiguration?.destroyConfigurationReference()
 
         let keyData = PublicKey(base64Key: serverPublicKey)!
         let dnsServerIP = IPv4Address(dnsServer)
@@ -194,14 +149,14 @@ public class IOSControllerImpl : NSObject {
         var interface = InterfaceConfiguration(privateKey: privateKey!)
 
         if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
-           let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
+        let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
             interface.addresses = [ipv4Address, ipv6Address]
         }
         interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
 
         let config = TunnelConfiguration(name: vpnName, interface: interface, peers: peerConfigurations)
 
-        self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", failureCallback: failureCallback)
+        return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", failureCallback: failureCallback)
     }
 
     func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, failureCallback: @escaping () -> Void) {
@@ -215,42 +170,43 @@ public class IOSControllerImpl : NSObject {
             proto!.includeAllNetworks = true
             proto!.excludeLocalNetworks = true
         }
+        
+        _ = TunnelManager.withTunnel { tunnel in
+            tunnel.protocolConfiguration = proto
+            tunnel.localizedDescription = vpnName
+            tunnel.isEnabled = true
 
-        tunnel!.protocolConfiguration = proto
-        tunnel!.localizedDescription = vpnName
-        tunnel!.isEnabled = true
-
-        tunnel!.saveToPreferences { [unowned self] saveError in
-            if let error = saveError {
-                Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
-                failureCallback()
-                return
-            }
-
-            Logger.global?.log(message: "Saving the tunnel succeeded")
-
-            self.tunnel!.loadFromPreferences { error in
-                if let error = error {
-                    Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
+            return tunnel.saveToPreferences { saveError in
+                if let error = saveError {
+                    Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
                     return
                 }
 
-                Logger.global?.log(message: "Loading the tunnel succeeded")
+                Logger.global?.log(message: "Saving the tunnel succeeded")
 
-                do {
-                    if (reason == 1 /* ReasonSwitching */) {
-                        let settings = config.asWgQuickConfig()
-                        let settingsData = settings.data(using: .utf8)!
-                        try (self.tunnel!.connection as? NETunnelProviderSession)?
-                                .sendProviderMessage(settingsData) {_ in return}
-                    } else {
-                        try (self.tunnel!.connection as? NETunnelProviderSession)?.startTunnel()
+                tunnel.loadFromPreferences { error in
+                    if let error = error {
+                        Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
+                        failureCallback()
+                        return
                     }
-                } catch let error {
-                    Logger.global?.log(message: "Something went wrong: \(error)")
-                    failureCallback()
-                    return
+
+                    Logger.global?.log(message: "Loading the tunnel succeeded")
+
+                    do {
+                        if (reason == 1 /* ReasonSwitching */) {
+                            TunnelMessage
+                                .configurationSwitch(config.asWgQuickConfig())
+                                .send()
+                        } else {
+                            try TunnelManager.session?.startTunnel()
+                        }
+                    } catch let error {
+                        Logger.global?.log(message: "Something went wrong: \(error)")
+                        failureCallback()
+                        return
+                    }
                 }
             }
         }
@@ -258,59 +214,11 @@ public class IOSControllerImpl : NSObject {
 
     @objc func disconnect() {
         Logger.global?.log(message: "Disconnecting")
-        assert(tunnel != nil)
-        (tunnel!.connection as? NETunnelProviderSession)?.stopTunnel()
+        TunnelManager.session?.stopTunnel()
     }
 
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
         Logger.global?.log(message: "Check status")
-        assert(tunnel != nil)
-
-        let proto = tunnel!.protocolConfiguration as? NETunnelProviderProtocol
-        if proto == nil {
-            callback("", "", "")
-            return
-        }
-
-        let tunnelConfiguration = proto?.asTunnelConfiguration()
-        if tunnelConfiguration == nil {
-            callback("", "", "")
-            return
-        }
-
-        let serverIpv4Gateway = tunnelConfiguration?.interface.dns[0].address
-        if serverIpv4Gateway == nil {
-            callback("", "", "")
-            return
-        }
-
-        let deviceIpv4Address = tunnelConfiguration?.interface.addresses[0].address
-        if deviceIpv4Address == nil {
-            callback("", "", "")
-            return
-        }
-
-        guard let session = tunnel?.connection as? NETunnelProviderSession
-        else {
-            callback("", "", "")
-            return
-        }
-
-        do {
-            try session.sendProviderMessage(Data([UInt8(0)])) { [callback] data in
-                guard let data = data,
-                      let configString = String(data: data, encoding: .utf8)
-                else {
-                    Logger.global?.log(message: "Failed to convert data to string")
-                    callback("", "", "")
-                    return
-                }
-
-                callback("\(serverIpv4Gateway!)", "\(deviceIpv4Address!)", configString)
-            }
-        } catch {
-            Logger.global?.log(message: "Failed to retrieve data from session")
-            callback("", "", "")
-        }
+        TunnelManager.checkStatus(callback)
     }
 }
