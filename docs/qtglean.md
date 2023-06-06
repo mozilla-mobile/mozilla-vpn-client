@@ -234,6 +234,7 @@ class BooleanMetric final {
   int m_id;
 };
 ```
+
 It contains close to no logic at all. The only thing it keeps track of is the metric id,
 provided once the metric instance is initialized on the glean_parser_ext generated files
 and it calls on the FFI function exposed by Rust.
@@ -262,6 +263,25 @@ Since that is linked to the Mozilla VPN project the Glean platform specific code
 With the Glean platform specific code and the Mozilla VPN linked to the same glean-core library,
 any call to a Glean API from any language will record to the same Glean instance. Done.
 
+## Note: Mobile Daemons
+
+The daemons are responsible for managing the VPN tunnel and configuration. All platforms have
+a main application / daemon architecture. In mobile however, the main application does not keep running
+while backgrounded. This caveat is a big issue for telemetry.
+
+A normal usage pattern on mobile is to open the application, turn on the VPN, background it and not
+interact with it for a long time. All of this time of usage is not capture by the main application
+Glean instance. Read more about this issue on [Overview and implications of scheduled task behavior on mobile devices](sarahs-doc)
+and ["Mozilla VPN Telemetry Refactor](beas-doc).
+
+To deal with that, the mobile daemons (Android Daemon and iOS Network Extension, to be more precise)
+have a completely separate instance of Glean that permits telemetry collection while the application
+is backgrounded. This choice of architecture, means there is not need to deal with the complexities of passing
+telemetry between processes -- the daemons are each run in a separate process from the main application.
+
+<!-- A single [`installation_id`](installation-id) metric is shared between the two processes for analyzer
+to be able to join the data on the backend. TODO: Let's uncomment this one this metric is implemented. -->
+
 [the-glean-book]: https://mozilla.github.io/glean/book/index.html
 [readme-glean]: https://github.com/mozilla-mobile/mozilla-vpn-client#working-on-tickets-with-new-glean-instrumentation
 [glean-js]: https://mozilla.github.io/glean/book/language-bindings/javascript/index.html
@@ -271,3 +291,5 @@ any call to a Glean API from any language will record to the same Glean instance
 [t-c-g-ffi]: https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/ffi
 [glean-bool-set]: https://mozilla.github.io/glean/book/reference/metrics/boolean.html
 [uniffi]: https://mozilla.github.io/uniffi-rs/
+[sarahs-doc]: https://docs.google.com/document/d/1A2O_eACk0P3jDy0g2rRN5UTBOUj-iN-re6tVsRpxtDA/edit?usp=sharing
+[beas-doc]: https://docs.google.com/document/d/1jyNZ_g_cUpZZsEr2hYwnwZgkxlvqTmoFUJKp_LAOPts/edit?usp=sharing
