@@ -15,6 +15,7 @@
 #include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "errorhandler.h"
+#include "feature.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -215,6 +216,9 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
           ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
           .arg(localizedCityName);
   args["messages"] = messages;
+
+  args["isSuperDooperFeatureActive"] =
+      Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
