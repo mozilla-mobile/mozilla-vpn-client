@@ -18,10 +18,21 @@ ADD topsrcdir/android_sdk.txt /root/android_sdk.txt
 ADD topsrcdir/scripts/android/conda_setup_qt.sh /root/scripts/android/conda_setup_qt.sh
 # %include scripts/android/conda_setup_sdk.sh
 ADD topsrcdir/scripts/android/conda_setup_sdk.sh /root/scripts/android/conda_setup_sdk.sh
+# %include scripts/android/conda_trim.sh
+ADD topsrcdir/scripts/android/conda_trim.sh /root/scripts/android/conda_trim.sh
 
+# %include env.yml
+ADD topsrcdir/env.yml /root/env.yml
+# %include requirements.txt
+ADD topsrcdir/requirements.txt /root/requirements.txt
+# %include taskcluster/requirements.txt
+ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster/requirements.txt
+# %include taskcluster/scripts/requirements.txt
+ADD topsrcdir/taskcluster/scripts/requirements.txt /root/taskcluster/scripts/requirements.txt
 
 
 RUN cd /root/ &&\
+    /opt/conda/bin/conda env create -f /root/env.yml -n vpn &&\
     bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh" &&\
     bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh" &&\
     bash -l -c "conda activate vpn && ./scripts/android/conda_trim.sh"

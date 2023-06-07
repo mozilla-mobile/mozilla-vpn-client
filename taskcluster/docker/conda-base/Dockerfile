@@ -22,17 +22,7 @@ RUN wget "${MINICONDA_URL}" -O miniconda.sh -q &&  \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete &&  \
     /opt/conda/bin/conda clean -afy
 
-# %include env.yml
-ADD topsrcdir/env.yml /root/env.yml
-# %include requirements.txt
-ADD topsrcdir/requirements.txt /root/requirements.txt
-# %include taskcluster/requirements.txt
-ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster/requirements.txt
-# %include taskcluster/scripts/requirements.txt
-ADD topsrcdir/taskcluster/scripts/requirements.txt /root/taskcluster/scripts/requirements.txt
-
 ENV PATH="/opt/conda/bin/:$PATH"
 ENV CONDA_HOME=/opt/conda/
-RUN su worker && \
-    /opt/conda/bin/conda env create -f /root/env.yml -n vpn && \ 
+RUN su worker && \ 
     conda init bash
