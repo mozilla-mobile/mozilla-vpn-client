@@ -5,6 +5,7 @@
 #include "dbusservice.h"
 
 #include <sys/capability.h>
+#include <unistd.h>
 
 #include <QCoreApplication>
 #include <QDBusConnection>
