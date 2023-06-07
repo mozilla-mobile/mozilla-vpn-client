@@ -288,8 +288,8 @@ bool DBusService::firewallClear() {
 /* Checks to see if the caller has sufficient authorization */
 bool DBusService::checkCallerAuthz() {
   if (!calledFromDBus()) {
-    // That's unexpected, I don't think we should trust this.
-    return false;
+    // If this is not a D-Bus call, it came from the daemon itself.
+    return true;
   }
 
   // Get the PID of the D-Bus message sender.
