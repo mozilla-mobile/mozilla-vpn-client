@@ -9,12 +9,15 @@
 #include <QDBusInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
 #include "dbus_adaptor.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+
+#include <sys/capability.h>
 
 namespace {
 Logger logger("DBusService");
@@ -98,6 +101,10 @@ QString DBusService::version() {
 
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
+  if (!checkCapNetAdmin()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
 
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {
@@ -262,4 +269,37 @@ bool DBusService::firewallClear() {
   m_wgutils->resetAllCgroups();
   m_excludedApps.clear();
   return true;
+}
+
+/* Checks to see if this call is being made with CAP_NET_ADMIN */
+bool DBusService::checkCapNetAdmin() {
+  if (!calledFromDBus()) {
+    // That's unexpected, I don't think we should trust this.
+    return false;
+  }
+
+  // Get the PID of the D-Bus message sender.
+  QDBusConnectionInterface *iface = QDBusConnection::systemBus().interface();
+  QDBusReply<uint> reply = iface->servicePid(message().service());
+  if (!reply.isValid() || (reply.value() == 0)) {
+    // Could not lookup the sender's PID. Rejected!
+    logger.warning() << "Failed to resolve sender PID";
+    return false;
+  }
+
+  // Get the capabilties of the sender process.
+  cap_t caps = cap_get_pid(reply.value());
+  if (caps == nullptr) {
+    logger.warning() << "Failed to retrieve process capabilities";
+    return false;
+  }
+  auto guard = qScopeGuard([&] { cap_free(caps); });
+
+  // Check if the calling process has CAP_NET_ADMIN.
+  cap_flag_value_t flag;
+  if (cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &flag) != 0) {
+    logger.warning() << "Failed to retrieve process cap_net_admin flags";
+    return false;
+  }
+  return (flag == CAP_SET);
 }
