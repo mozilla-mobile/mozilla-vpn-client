@@ -17,3 +17,5 @@ conda remove rust-std-aarch64-apple-darwin rust-std-x86_64-apple-darwin rust-std
 sdkmanager --uninstall --sdk_root=$ANDROID_HOME emulator
 ## No Need for other Compilers, as we use NDK. - easy 500mb save. 
 conda remove --offline -y clang clang-tools clangxx compiler-rt
+
+conda clean -a -y 
