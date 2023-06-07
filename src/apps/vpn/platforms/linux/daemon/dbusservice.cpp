@@ -4,6 +4,8 @@
 
 #include "dbusservice.h"
 
+#include <sys/capability.h>
+
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -16,8 +18,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-
-#include <sys/capability.h>
 
 namespace {
 Logger logger("DBusService");
@@ -292,7 +292,7 @@ bool DBusService::checkCallerAuthz() {
   }
 
   // Get the PID of the D-Bus message sender.
-  QDBusConnectionInterface *iface = QDBusConnection::systemBus().interface();
+  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
   QDBusReply<uint> reply = iface->servicePid(message().service());
   uint senderpid = reply.value();
   if (!reply.isValid() || (senderpid == 0)) {
@@ -327,10 +327,10 @@ bool DBusService::checkCallerAuthz() {
 // static
 QString DBusService::getPidExePath(uint pid) {
   char exepath[256];
-  char pathbuf[PATH_MAX+1];
+  char pathbuf[PATH_MAX + 1];
   snprintf(exepath, sizeof(exepath), "/proc/%u/exe", pid);
   ssize_t len = readlink(exepath, pathbuf, PATH_MAX);
-  if ((len <= 0)  ||  (len >= PATH_MAX)) {
+  if ((len <= 0) || (len >= PATH_MAX)) {
     // Either the call to readlink failed, or the result was truncated.
     return QString();
   }

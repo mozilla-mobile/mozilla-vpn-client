@@ -5,14 +5,14 @@
 #ifndef DBUSSERVICE_H
 #define DBUSSERVICE_H
 
+#include <QDBusContext>
+
 #include "apptracker.h"
 #include "daemon/daemon.h"
 #include "dnsutilslinux.h"
 #include "iputilslinux.h"
 #include "pidtracker.h"
 #include "wireguardutilslinux.h"
-
-#include <QDBusContext>
 
 class DbusAdaptor;
 
