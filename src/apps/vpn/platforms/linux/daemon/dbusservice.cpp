@@ -334,8 +334,7 @@ QString DBusService::getPidExePath(uint pid) {
     // Either the call to readlink failed, or the result was truncated.
     return QString();
   }
-  
+
   pathbuf[len] = '\0';
-  logger.debug() << "Mapped PID" << pid << "to" << pathbuf;
   return QString::fromLocal8Bit(pathbuf, len);
 }
