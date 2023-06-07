@@ -103,7 +103,8 @@ QString DBusService::version() {
 
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
-  if (!checkCapNetAdmin()) {
+
+  if (!checkCallerAuthz()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -140,6 +141,11 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
+  if (!checkCallerAuthz()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   firewallClear();
   return Daemon::deactivate(emitSignals);
 }
@@ -150,6 +156,11 @@ QString DBusService::status() {
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
+  if (!checkCallerAuthz()) {
+    logger.error() << "Insufficient caller permissions";
+    return QString();
+  }
+
   return Daemon::logs();
 }
 
@@ -273,8 +284,8 @@ bool DBusService::firewallClear() {
   return true;
 }
 
-/* Checks to see if this call is being made with CAP_NET_ADMIN */
-bool DBusService::checkCapNetAdmin() {
+/* Checks to see if the caller has sufficient authorization */
+bool DBusService::checkCallerAuthz() {
   if (!calledFromDBus()) {
     // That's unexpected, I don't think we should trust this.
     return false;
