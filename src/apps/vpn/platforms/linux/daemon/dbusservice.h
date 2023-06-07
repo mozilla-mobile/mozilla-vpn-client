@@ -54,6 +54,7 @@ class DBusService final : public Daemon, protected QDBusContext {
  private:
   bool removeInterfaceIfExists();
   bool checkCapNetAdmin();
+  static QString getPidExePath(uint pid);
 
  private slots:
   void appLaunched(const QString& cgroup, const QString& appId, int rootpid);
@@ -71,6 +72,8 @@ class DBusService final : public Daemon, protected QDBusContext {
 
   AppTracker* m_appTracker = nullptr;
   QList<QString> m_excludedApps;
+
+  QString m_daemonExePath;
 };
 
 #endif  // DBUSSERVICE_H

@@ -34,6 +34,8 @@ constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
 
+  m_daemonExePath = getPidExePath(getpid());
+
   m_wgutils = new WireguardUtilsLinux(this);
 
   if (!removeInterfaceIfExists()) {
@@ -281,14 +283,21 @@ bool DBusService::checkCapNetAdmin() {
   // Get the PID of the D-Bus message sender.
   QDBusConnectionInterface *iface = QDBusConnection::systemBus().interface();
   QDBusReply<uint> reply = iface->servicePid(message().service());
-  if (!reply.isValid() || (reply.value() == 0)) {
+  uint senderpid = reply.value();
+  if (!reply.isValid() || (senderpid == 0)) {
     // Could not lookup the sender's PID. Rejected!
     logger.warning() << "Failed to resolve sender PID";
     return false;
   }
 
+  // Allow the call if it was made by the same binary.
+  if (!m_daemonExePath.isEmpty() &&
+      (getPidExePath(senderpid) == m_daemonExePath)) {
+    return true;
+  }
+
   // Get the capabilties of the sender process.
-  cap_t caps = cap_get_pid(reply.value());
+  cap_t caps = cap_get_pid(senderpid);
   if (caps == nullptr) {
     logger.warning() << "Failed to retrieve process capabilities";
     return false;
@@ -302,4 +311,20 @@ bool DBusService::checkCapNetAdmin() {
     return false;
   }
   return (flag == CAP_SET);
+}
+
+// static
+QString DBusService::getPidExePath(uint pid) {
+  char exepath[256];
+  char pathbuf[PATH_MAX+1];
+  snprintf(exepath, sizeof(exepath), "/proc/%u/exe", pid);
+  ssize_t len = readlink(exepath, pathbuf, PATH_MAX);
+  if ((len <= 0)  ||  (len >= PATH_MAX)) {
+    // Either the call to readlink failed, or the result was truncated.
+    return QString();
+  }
+  
+  pathbuf[len] = '\0';
+  logger.debug() << "Mapped PID" << pid << "to" << pathbuf;
+  return QString::fromLocal8Bit(pathbuf, len);
 }
