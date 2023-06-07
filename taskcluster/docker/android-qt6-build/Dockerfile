@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_IMAGE_PARENT=ubuntu:20.04
-FROM --platform=linux/amd64 $DOCKER_IMAGE_PARENT 
+FROM $DOCKER_IMAGE_PARENT
 
 MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 
