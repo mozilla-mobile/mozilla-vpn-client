@@ -276,8 +276,8 @@ and ["Mozilla VPN Telemetry Refactor](beas-doc).
 
 To deal with that, the mobile daemons (Android Daemon and iOS Network Extension, to be more precise)
 have a completely separate instance of Glean that permits telemetry collection while the application
-is backgrounded. This choice of architecture, means there is not need to deal with the complexities of passing
-telemetry between processes -- the daemons are each run in a separate process from the main application.
+is backgrounded. This choice of architecture means there is no need to deal with the complexities of passing
+telemetry between processes -- the daemons each run in a separate process from the main application.
 
 <!-- A single [`installation_id`](installation-id) metric is shared between the two processes for analyzer
 to be able to join the data on the backend. TODO: Let's uncomment this one this metric is implemented. -->
