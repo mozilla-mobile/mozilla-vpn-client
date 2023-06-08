@@ -11,7 +11,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-add_library(iosglean STATIC)
+add_library(iosglean SHARED)
 
 if(NOT MSVC AND NOT IOS)
   target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
@@ -22,6 +22,8 @@ target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
 set_target_properties(iosglean PROPERTIES
+    FRAMEWORK TRUE
+    MACOSX_FRAMEWORK_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.iosglean"
     OUTPUT_NAME "IOSGlean"
     FOLDER "Libs"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
@@ -130,12 +132,8 @@ set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     PROPERTIES GENERATED TRUE
 )
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.mm
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
-)
 
-target_link_libraries(iosglean PRIVATE qtglean)
-target_link_libraries(mozillavpn PRIVATE iosglean)
+add_custom_target(iosglean_telemetry DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift)
+add_dependencies(iosglean iosglean_telemetry)
+
+target_link_libraries(iosglean PRIVATE qtglean_bindings)

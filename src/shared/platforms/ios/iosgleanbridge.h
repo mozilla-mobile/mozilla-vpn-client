@@ -15,6 +15,8 @@ class IOSGleanBridge {
  public:
   IOSGleanBridge(bool isTelemetryEnabled, const QString& appChannel);
   ~IOSGleanBridge();
+
+  static void syncTelemetryEnabled(bool isTelemetryEnabled);
 };
 
 #endif  // IOSGLEANBRIDGE_H
