@@ -40,6 +40,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         )
     }
 
+    deinit {
+        // Wait for all ping submission to be finished before shutdown.
+        // Note: This doesn't wait for pings to be uploaded, 
+        // just for Glean to persist the ping for later sending.
+        Glean.shared.shutdown();
+    }
+
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
         let activationAttemptId = options?["activationAttemptId"] as? String
         let errorNotifier = ErrorNotifier(activationAttemptId: activationAttemptId)
