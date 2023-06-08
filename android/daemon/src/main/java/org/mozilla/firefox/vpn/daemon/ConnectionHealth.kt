@@ -10,8 +10,8 @@ import android.os.Build
 import android.os.CountDownTimer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.mozilla.firefox.vpn.qt.GleanMetrics.Sample
-import org.mozilla.firefox.vpn.qt.GleanMetrics.Session
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 
 class ConnectionHealth(service: VPNService) {
     private val TAG = "DaemonConnectionHealth"
