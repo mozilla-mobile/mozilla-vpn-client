@@ -20,7 +20,7 @@ conda-android:
             - android_sdk.txt
             - requirements.txt
         toolchain-alias: conda-android-arm64
-        toolchain-artifact: public/build/conda-android-arm64.zip
+        toolchain-artifact: public/build/conda-android.tar.gz
     treeherder:
         symbol: TL(conda-android-arm64)
     worker-type: b-linux

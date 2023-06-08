@@ -18,5 +18,5 @@ bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
 bash -l -c "conda activate vpn && ./scripts/android/conda_trim.sh"
     
 mkdir -p ../../public/build
-/opt/conda/bin/conda pack -n vpn -o $UPLOAD_DIR/conda_android.tar.gz
+/opt/conda/bin/conda pack -n vpn -o $UPLOAD_DIR/conda-android.tar.gz
 
