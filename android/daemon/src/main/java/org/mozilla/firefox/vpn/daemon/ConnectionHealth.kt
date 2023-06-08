@@ -166,8 +166,8 @@ class ConnectionHealth(service: VPNService) {
     private val TaskCheckConnection = Runnable {
         kotlin.run {
             // capture stuff, as this the members will be set by another thread
-            val gateway = mGateway; // This lives inside the tunnel
-            val endpoint = mEndPoint; // This is the wg-endpoint (not in the tunnel)
+            val gateway = mGateway // This lives inside the tunnel
+            val endpoint = mEndPoint // This is the wg-endpoint (not in the tunnel)
             val dns = mDNS
             val fallbackEndpoint = mAltEndpoint
 
@@ -186,7 +186,7 @@ class ConnectionHealth(service: VPNService) {
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
-                Session.connectionHealthStableCount.add();
+                Session.connectionHealthStableCount.add()
 
                 // Internet should be fine :)
                 mResetUsed = false
@@ -207,7 +207,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(endpoint).isReachable(PING_TIMEOUT)
             } != null
             if (anyNetworkCanConnect && canReachDNS && !mResetUsed) {
-                Sample.connectionHealthUnstable.record();
+                Sample.connectionHealthUnstable.record()
 
                 // The server seems to be online but the connection broke,
                 // Let's just try to force a reconnect ... but only once.
@@ -225,7 +225,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
-                Sample.connectionHealthUnstable.record();
+                Sample.connectionHealthUnstable.record()
 
                 Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
@@ -241,7 +241,7 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
 
-            Sample.connectionHealthNoSignal.record();
+            Sample.connectionHealthNoSignal.record()
             mPanicStateReached = true
             taskDone()
         }
