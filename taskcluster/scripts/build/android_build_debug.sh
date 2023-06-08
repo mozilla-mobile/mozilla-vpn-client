@@ -22,8 +22,9 @@ done
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
 # We need to call bash with a login shell, so that conda is intitialized
-bash -l -c "conda activate vpn && ./scripts/android/cmake.sh -d $QTPATH -A $1" 
+source $TASK_WORKDIR/fetches/vpn/bin/activate
 
+./scripts/android/cmake.sh -d $QTPATH -A $1
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

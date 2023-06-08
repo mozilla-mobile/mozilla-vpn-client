@@ -26,3 +26,6 @@ ENV PATH="/opt/conda/bin/:$PATH"
 ENV CONDA_HOME=/opt/conda/
 RUN su worker && \ 
     conda init bash
+
+VOLUME /builds/worker/.cache
+VOLUME /builds/worker/checkouts

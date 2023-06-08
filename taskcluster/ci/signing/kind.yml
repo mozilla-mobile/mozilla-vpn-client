@@ -18,10 +18,10 @@ primary-dependency: build
 group-by: build-type
 
 only-for-build-types:
-    - android-x64/release
-    - android-x86/release
-    - android-arm64/release
-    - android-armv7/release
+    # - android-x64/release
+    # - android-x86/release
+    # - android-arm64/release
+    # - android-armv7/release
     # - linux/opt
     - macos/opt
     - windows/opt

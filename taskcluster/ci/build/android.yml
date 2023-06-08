@@ -22,8 +22,11 @@ android-qt-next/debug:
         treeherder:
             platform: android/arm64-v8a
             symbol: NEXT
+        fetches:
+            toolchain: 
+                - conda-android-arm64
         worker:
-            docker-image: {in-tree: android-qt-next}
+            docker-image: {in-tree: conda-base}
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
@@ -93,67 +96,67 @@ android-qt-next/debug:
 
 # Release Builds
 
-android-arm64/release:
-        description: "Android Release (arm64-v8a)"
-        requires-level: 3
-        scopes:
-            - 'secrets:get:project/mozillavpn/tokens'
-        treeherder:
-            symbol: B
-            platform: android/arm64-v8a
-        worker:
-            docker-image: {in-tree: android-build-arm64}
-        run:
-            command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-arm64-v8a-release.apk
+# android-arm64/release:
+#         description: "Android Release (arm64-v8a)"
+#         requires-level: 3
+#         scopes:
+#             - 'secrets:get:project/mozillavpn/tokens'
+#         treeherder:
+#             symbol: B
+#             platform: android/arm64-v8a
+#         worker:
+#             docker-image: {in-tree: android-build-arm64}
+#         run:
+#             command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
+#         release-artifacts:
+#             # APK Artifacts expects file to be in /builds/worker/artifacts/
+#             - mozillavpn-arm64-v8a-release.apk
 
-android-armv7/release:
-        description: "Android Release (android-armv7)"
-        requires-level: 3
-        scopes:
-            - 'secrets:get:project/mozillavpn/tokens'
-        treeherder:
-            symbol: B
-            platform: android/armv7
-        worker:
-            docker-image: {in-tree: android-build-armv7}
-        run:
-            command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-armeabi-v7a-release.apk
+# android-armv7/release:
+#         description: "Android Release (android-armv7)"
+#         requires-level: 3
+#         scopes:
+#             - 'secrets:get:project/mozillavpn/tokens'
+#         treeherder:
+#             symbol: B
+#             platform: android/armv7
+#         worker:
+#             docker-image: {in-tree: android-build-armv7}
+#         run:
+#             command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
+#         release-artifacts:
+#             # APK Artifacts expects file to be in /builds/worker/artifacts/
+#             - mozillavpn-armeabi-v7a-release.apk
 
 
-android-x86/release:
-        description: "Android Release (android-x86)"
-        requires-level: 3
-        scopes:
-            - 'secrets:get:project/mozillavpn/tokens'
-        treeherder:
-            symbol: B
-            platform: android/x86
-        worker:
-            docker-image: {in-tree: android-build-x86}
-        run:
-            command: ./taskcluster/scripts/build/android_build_release.sh x86
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-x86-release.apk
+# android-x86/release:
+#         description: "Android Release (android-x86)"
+#         requires-level: 3
+#         scopes:
+#             - 'secrets:get:project/mozillavpn/tokens'
+#         treeherder:
+#             symbol: B
+#             platform: android/x86
+#         worker:
+#             docker-image: {in-tree: android-build-x86}
+#         run:
+#             command: ./taskcluster/scripts/build/android_build_release.sh x86
+#         release-artifacts:
+#             # APK Artifacts expects file to be in /builds/worker/artifacts/
+#             - mozillavpn-x86-release.apk
 
-android-x64/release:
-        description: "Android Release (x86_64)"
-        requires-level: 3
-        scopes:
-            - 'secrets:get:project/mozillavpn/tokens'
-        treeherder:
-            symbol: B
-            platform: android/x86_64
-        worker:
-            docker-image: {in-tree: android-build-x64}
-        run:
-            command: ./taskcluster/scripts/build/android_build_release.sh x86_64
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-x86_64-release.apk
+# android-x64/release:
+#         description: "Android Release (x86_64)"
+#         requires-level: 3
+#         scopes:
+#             - 'secrets:get:project/mozillavpn/tokens'
+#         treeherder:
+#             symbol: B
+#             platform: android/x86_64
+#         worker:
+#             docker-image: {in-tree: android-build-x64}
+#         run:
+#             command: ./taskcluster/scripts/build/android_build_release.sh x86_64
+#         release-artifacts:
+#             # APK Artifacts expects file to be in /builds/worker/artifacts/
+#             - mozillavpn-x86_64-release.apk
