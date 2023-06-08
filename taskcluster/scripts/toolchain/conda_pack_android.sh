@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-/opt/conda/bin/conda install conda-pack
+/opt/conda/bin/conda install conda-pack -y
 
 /opt/conda/bin/conda env create -f env.yml -n vpn
 bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh"
