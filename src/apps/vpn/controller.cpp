@@ -57,7 +57,7 @@ constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
 constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 10800;
-constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 10;
+constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
 
 #ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
