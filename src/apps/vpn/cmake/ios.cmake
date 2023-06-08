@@ -25,9 +25,7 @@ add_dependencies(mozillavpn networkextension)
 
 # Note: Just directly using the qtglean_bindings target here didn't seem to work.
 # Instead we are just going to add the dylib directly as a framework.
-#
-# TODO: I think this is always getting the release binary.
-get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY IMPORTED_LOCATION)
+get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
