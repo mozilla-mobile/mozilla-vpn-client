@@ -37,8 +37,11 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
 ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/metrics.yaml"]
-ext.gleanYamlFiles = ["$rootDir/../../../src/apps/vpn/telemetry/pings.yaml"]
+ext.gleanYamlFiles = [
+    "$rootDir/../../../src/apps/vpn/telemetry/metrics.yaml",
+    "$rootDir/../../../src/apps/vpn/telemetry/metrics_deprecated.yaml",
+    "$rootDir/../../../src/apps/vpn/telemetry/pings.yaml"
+]
 
 android {
     compileSdkVersion Config.compileSdkVersion

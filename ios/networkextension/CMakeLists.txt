@@ -26,6 +26,7 @@ set_target_properties(networkextension PROPERTIES
     XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPNNetworkExtension.entitlements
+    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/../../Frameworks"
 )
 
 find_library(FW_ASSETS_LIBRARY AssetsLibrary)
@@ -64,6 +65,9 @@ target_sources(networkextension PRIVATE
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnel.swift
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosglue.mm
     ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iosconstants.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnelmessage.swift
+    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/ios/iostunnelmanager.swift
 )
 
 ## Build wireguard-go-version.h
@@ -120,3 +124,13 @@ set_target_properties(libwg_builder PROPERTIES FOLDER "Libs")
 ## Link and depend on the wireguard library.
 add_dependencies(networkextension libwg_builder)
 target_link_libraries(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/libwg-unified.a)
+
+## Add Glean to the extension
+target_link_libraries(networkextension PRIVATE iosglean)
+set_source_files_properties(
+    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
+    PROPERTIES GENERATED TRUE
+)
+target_sources(networkextension PRIVATE
+    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
+)
