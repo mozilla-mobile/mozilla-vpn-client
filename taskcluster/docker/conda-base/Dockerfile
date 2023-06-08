@@ -20,7 +20,8 @@ RUN wget "${MINICONDA_URL}" -O miniconda.sh -q &&  \
     echo "conda activate base" >> ~/.bashrc && \
     find /opt/conda/ -follow -type f -name '*.a' -delete && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete &&  \
-    /opt/conda/bin/conda clean -afy
+    /opt/conda/bin/conda clean -afy &&\
+    chmod -R 777 /opt/conda/
 
 ENV PATH="/opt/conda/bin/:$PATH"
 ENV CONDA_HOME=/opt/conda/

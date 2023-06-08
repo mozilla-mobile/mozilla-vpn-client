@@ -6,7 +6,7 @@
 
 /opt/conda/bin/conda install conda-pack
 
-/opt/conda/bin/conda env create -f /root/env.yml -n vpn
+/opt/conda/bin/conda env create -f env.yml -n vpn
 bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh"
 bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
 bash -l -c "conda activate vpn && ./scripts/android/conda_trim.sh"
