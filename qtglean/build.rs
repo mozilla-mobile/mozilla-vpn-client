@@ -10,6 +10,13 @@ use cbindgen;
 const HEADER_FILE_NAME: &str = "qtglean.h";
 
 fn main() -> Result<(), String> {
+    let linker_flags = env::var("RUSTC_LINK_ARG")
+        .or::<String>(Ok(String::from("")))
+        .unwrap();
+    if !linker_flags.is_empty() {
+        println!("cargo:rustc-link-arg={linker_flags}");
+    }
+
     // Generate C++ header using cbindgen.
     let source_dir = env::var("CARGO_MANIFEST_DIR")
         .or::<String>(Ok(String::from(".")))

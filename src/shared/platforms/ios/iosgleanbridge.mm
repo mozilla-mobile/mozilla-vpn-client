@@ -31,3 +31,8 @@ IOSGleanBridge::~IOSGleanBridge() {
     impl = nullptr;
   }
 }
+
+// static
+void IOSGleanBridge::syncTelemetryEnabled(bool isTelemetryEnabled) {
+  [impl syncTelemetryEnabledWithTelemetryEnabled:isTelemetryEnabled];
+}

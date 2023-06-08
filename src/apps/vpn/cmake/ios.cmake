@@ -4,18 +4,28 @@
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 
-if(IOS)
-    # This workaround will not be required anymore once Qt is updated
-    # See https://bugreports.qt.io/browse/QTBUG-93268
-    set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
-endif()
+# This workaround will not be required anymore once Qt is updated
+# See https://bugreports.qt.io/browse/QTBUG-93268
+set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
+
+## Install the Glean iOS SDK into the bundle.
+include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
+
+target_link_libraries(mozillavpn PRIVATE iosglean)
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
+    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.swift
+    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.mm
+    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
+)
+
 
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 
-## Install the Glean iOS SDK into the bundle.
-include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
-add_dependencies(mozillavpn iosglean)
+# Note: Just directly using the qtglean_bindings target here didn't seem to work.
+# Instead we are just going to add the dylib directly as a framework.
+get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
@@ -43,8 +53,13 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
     # Make sure the network extension is added as a plugin to the final bundle
     XCODE_EMBED_APP_EXTENSIONS networkextension
-    XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY YES
-    XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY YES
+    XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
+    XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
+    # Make sure Glean is added as a framework to the final bundle
+    XCODE_EMBED_FRAMEWORKS "${QTGLEAN_LIB_LOCATION};iosglean"
+    XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
+    XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
+    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
@@ -108,7 +123,10 @@ target_compile_options(mozillavpn PRIVATE
 )
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosconstants.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmessage.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmanager.swift
 )
 
 target_sources(mozillavpn PRIVATE
