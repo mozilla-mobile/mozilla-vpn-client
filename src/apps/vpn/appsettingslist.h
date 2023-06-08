@@ -493,11 +493,11 @@ SETTING_BOOL(vpnSessionPingTimeoutDebug,        // getter
              setVpnSessionPingTimeoutDebug,     // setter
              removeVpnSessionPingTimeoutDebug,  // remover
              hasVpnSessionPingTimeoutDebug,     // has
-             "vpnSessionPingTimeoutDebug",     // key
-             false,                         // default value
-             false,                         // user setting
-             false,                          // remove when reset
-             false                          // sensitive (do not log)
+             "vpnSessionPingTimeoutDebug",      // key
+             false,                             // default value
+             false,                             // user setting
+             false,                             // remove when reset
+             false                              // sensitive (do not log)
 )
 
 #if defined(MZ_IOS)

@@ -101,7 +101,8 @@ Controller::Controller() {
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
 
-  connect(&m_vpnSessionPingTimer, &QTimer::timeout, this, &Controller::vpnSessionPingTimeout);
+  connect(&m_vpnSessionPingTimer, &QTimer::timeout, this,
+          &Controller::vpnSessionPingTimeout);
 
   LogHandler::instance()->registerLogSerializer(this);
 }
@@ -550,7 +551,11 @@ void Controller::connected(const QString& pubkey,
 
   if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
     mozilla::glean_pings::Vpnsession.submit("start");
-    m_vpnSessionPingTimer.start((SettingsHolder::instance()->vpnSessionPingTimeoutDebug() ? VPNSESSION_PING_TIMER_DEBUG_SEC : VPNSESSION_PING_TIMER_SEC) * 1000);
+    m_vpnSessionPingTimer.start(
+        (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
+             ? VPNSESSION_PING_TIMER_DEBUG_SEC
+             : VPNSESSION_PING_TIMER_SEC) *
+        1000);
   }
 
   if (m_nextStep != None) {
@@ -598,9 +603,9 @@ void Controller::handshakeTimeout() {
 }
 
 void Controller::vpnSessionPingTimeout() {
-    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-        mozilla::glean_pings::Vpnsession.submit("timer");
-    }
+  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+    mozilla::glean_pings::Vpnsession.submit("timer");
+  }
 }
 
 void Controller::disconnected() {

@@ -159,7 +159,6 @@ class Controller final : public QObject, public LogSerializer {
   void handshakeTimeout();
   void vpnSessionPingTimeout();
 
-
  signals:
   void stateChanged();
   void timeChanged();
