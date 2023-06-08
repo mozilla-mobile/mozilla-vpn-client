@@ -48,6 +48,10 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,
+        // Default level is "Trace"
+        log_level: None,
+        // Default is 15 pings every 60 seconds
+        rate_limit: None
     };
 
     let client_info = ClientInfoMetrics {
@@ -92,6 +96,10 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,
+        // Default level is "Trace"
+        log_level: None,
+        // Default is 15 pings every 60 seconds
+        rate_limit: None
     };
 
     let client_info = ClientInfoMetrics {
