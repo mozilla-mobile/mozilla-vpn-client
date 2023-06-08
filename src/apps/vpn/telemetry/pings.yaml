@@ -18,15 +18,13 @@ vpnsession:
   send_if_empty: false
   reasons: 
     flush: |
-      "Safety measure for when the vpn session does not end in an expected way"
+      Safety measure for when the vpn session does not end in an expected way, sent right before the start ping
     start: |
-      "When the vpn session starts"
+      When the vpn session starts
     end: |
-      "When the vpn session ends"
-    timeout: |
-      "When the vpn session ends due to a connection timeout"
+      When the vpn session ends
     timer: |
-      - Every 3 hours while the VPN is on
+      Every 3 hours while the VPN is on
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4095
   data_reviews:
