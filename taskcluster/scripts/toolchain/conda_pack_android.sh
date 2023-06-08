@@ -4,6 +4,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
+echo pwd 
+ls 
+cd vcs
+ls 
+
 /opt/conda/bin/conda install conda-pack -y
 
 /opt/conda/bin/conda env create -f env.yml -n vpn
@@ -12,5 +18,5 @@ bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
 bash -l -c "conda activate vpn && ./scripts/android/conda_trim.sh"
     
 mkdir -p ../../public/build
-/opt/conda/bin/conda pack -n vpn -o ../../public/build/conda_android.tar.gz
+/opt/conda/bin/conda pack -n vpn -o $UPLOAD_DIR/conda_android.tar.gz
 
