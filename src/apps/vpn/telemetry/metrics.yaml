@@ -164,6 +164,7 @@ session:
     lifetime: ping
     send_in_pings:
       - vpnsession
+      - daemonsession
     description: |
       Count of times that the connection health check succeeds.
       Collected only on mobile apps.
