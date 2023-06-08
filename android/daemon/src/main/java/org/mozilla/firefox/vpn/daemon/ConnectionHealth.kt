@@ -10,6 +10,8 @@ import android.os.Build
 import android.os.CountDownTimer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import org.mozilla.firefox.vpn.qt.GleanMetrics.Sample
+import org.mozilla.firefox.vpn.qt.GleanMetrics.Session
 
 class ConnectionHealth(service: VPNService) {
     private val TAG = "DaemonConnectionHealth"
@@ -184,6 +186,8 @@ class ConnectionHealth(service: VPNService) {
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
+                Session.connectionHealthStableCount.add();
+
                 // Internet should be fine :)
                 mResetUsed = false
                 taskDone()
@@ -203,6 +207,8 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(endpoint).isReachable(PING_TIMEOUT)
             } != null
             if (anyNetworkCanConnect && canReachDNS && !mResetUsed) {
+                Sample.connectionHealthUnstable.record();
+
                 // The server seems to be online but the connection broke,
                 // Let's just try to force a reconnect ... but only once.
                 mService.mainLooper.run {
@@ -219,6 +225,8 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
+                Sample.connectionHealthUnstable.record();
+
                 Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
                 mService.mainLooper.run {
@@ -232,6 +240,8 @@ class ConnectionHealth(service: VPNService) {
             // If we land here: The server and the fallback are unreachable
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
+
+            Sample.connectionHealthNoSignal.record();
             mPanicStateReached = true
             taskDone()
         }
