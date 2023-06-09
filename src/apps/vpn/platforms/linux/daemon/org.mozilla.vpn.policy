@@ -9,8 +9,9 @@
     <message>Activate the Mozilla VPN</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>auth_admin_keep</allow_active>
     </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.mozilla.vpn.firewallApp org.mozilla.vpn.firewallPid org.mozilla.vpn.firewallClear</annotate>
   </action>
 
   <action id="org.mozilla.vpn.deactivate">
@@ -18,8 +19,39 @@
     <message>Deactivate the Mozilla VPN</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>auth_admin_keep</allow_active>
     </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.mozilla.vpn.firewallApp org.mozilla.vpn.firewallPid org.mozilla.vpn.firewallClear</annotate>
+  </action>
+
+  <action id="org.mozilla.vpn.firewallApp">
+    <description>Add/remove an app from the VPN exclude list</description>
+    <message>Add/remove an app from the VPN exclude list</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.mozilla.vpn.firewallPid org.mozilla.vpn.firewallClear</annotate>
+  </action>
+
+  <action id="org.mozilla.vpn.firewallPid">
+    <description>Add/remove a PID from the VPN exclude list</description>
+    <message>Add/remove a PID from the VPN exclude list</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.mozilla.vpn.firewallApp org.mozilla.vpn.firewallClear</annotate>
+  </action>
+
+  <action id="org.mozilla.vpn.firewallClear">
+    <description>Clear the VPN exclude list</description>
+    <message>Clear the VPN exclude list</message>
+    <defaults>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.imply">org.mozilla.vpn.firewallApp org.mozilla.vpn.firewallPid</annotate>
   </action>
 </policyconfig>
 
