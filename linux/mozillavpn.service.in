@@ -8,5 +8,8 @@ Type=dbus
 BusName=org.mozilla.vpn.dbus
 ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn linuxdaemon
 
+# net admin capability to set up vpn device and routing + setuid to connect to bus and monitor cgroups
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_SETUID
+
 [Install]
 WantedBy=multi-user.target
