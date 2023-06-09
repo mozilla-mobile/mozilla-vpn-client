@@ -56,7 +56,7 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 10800;
+constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 10800; //3 hours
 constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
 
 #ifndef MZ_IOS
