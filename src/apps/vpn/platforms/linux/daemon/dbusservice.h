@@ -5,6 +5,8 @@
 #ifndef DBUSSERVICE_H
 #define DBUSSERVICE_H
 
+#include <QDBusContext>
+
 #include "apptracker.h"
 #include "daemon/daemon.h"
 #include "dnsutilslinux.h"
@@ -14,7 +16,7 @@
 
 class DbusAdaptor;
 
-class DBusService final : public Daemon {
+class DBusService final : public Daemon, protected QDBusContext {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DBusService)
   Q_CLASSINFO("D-Bus Interface", "org.mozilla.vpn.dbus")
@@ -51,6 +53,7 @@ class DBusService final : public Daemon {
 
  private:
   bool removeInterfaceIfExists();
+  unsigned requesterPid();
 
  private slots:
   void appLaunched(const QString& cgroup, const QString& appId, int rootpid);

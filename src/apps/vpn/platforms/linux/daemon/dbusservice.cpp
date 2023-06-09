@@ -4,6 +4,8 @@
 
 #include "dbusservice.h"
 
+#include <unistd.h>
+
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -100,8 +102,8 @@ QString DBusService::version() {
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
 
-  if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.activate")) {
+  if (!PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.activate",
+                                                    requesterPid())) {
     logger.error() << "Polkit rejected";
     return false;
   }
@@ -136,11 +138,22 @@ bool DBusService::activate(const QString& jsonConfig) {
   return true;
 }
 
+unsigned DBusService::requesterPid() {
+  if (calledFromDBus()) {
+    const QString& remoteName = message().service();
+    QDBusConnectionInterface* interface = connection().interface();
+    return interface->servicePid(remoteName);
+  } else {
+    // Self-initiated, e.g. calling deactivate() on exit
+    return getpid();
+  }
+}
+
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
 
   if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.deactivate")) {
+          "org.mozilla.vpn.deactivate", requesterPid())) {
     logger.error() << "Polkit rejected";
     return false;
   }
@@ -228,7 +241,7 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
   logger.debug() << "Setting" << appName << "to firewall state" << state;
 
   if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.firewallApp")) {
+          "org.mozilla.vpn.firewallApp", requesterPid())) {
     logger.error() << "Polkit rejected";
     return false;
   }
@@ -264,7 +277,7 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
   }
 
   if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.firewallPid")) {
+          "org.mozilla.vpn.firewallPid", requesterPid())) {
     logger.error() << "Polkit rejected";
     return false;
   }
@@ -286,7 +299,7 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
 bool DBusService::firewallClear() {
   logger.debug() << "Clearing excluded app list";
   if (!PolkitHelper::instance()->checkAuthorization(
-          "org.mozilla.vpn.firewallClear")) {
+          "org.mozilla.vpn.firewallClear", requesterPid())) {
     logger.error() << "Polkit rejected";
     return false;
   }

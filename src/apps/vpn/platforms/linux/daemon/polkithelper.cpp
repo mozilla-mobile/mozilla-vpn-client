@@ -43,7 +43,8 @@ PolkitHelper* PolkitHelper::instance() {
   return &s_instance;
 }
 
-bool PolkitHelper::checkAuthorization(const QString& actionId) {
+bool PolkitHelper::checkAuthorization(const QString& actionId,
+                                      const uint32_t requesterPid) {
   logger.debug() << "Check Authorization for" << actionId;
 
   Helper h;
@@ -55,7 +56,7 @@ bool PolkitHelper::checkAuthorization(const QString& actionId) {
     return false;
   }
 
-  h.m_subject = polkit_unix_process_new_for_owner(getpid(), 0, -1);
+  h.m_subject = polkit_unix_process_new_for_owner(requesterPid, 0, -1);
 
   h.m_result = polkit_authority_check_authorization_sync(
       authority, h.m_subject, actionId.toLatin1().data(), nullptr,
