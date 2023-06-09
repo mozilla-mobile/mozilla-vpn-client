@@ -20,11 +20,11 @@ vpnsession:
     flush: |
       Safety measure for when the vpn session does not end in an expected way, sent right before the start ping
     start: |
-      When the vpn session starts
+      A session starts when the VPN gets into a connected state
     end: |
-      When the vpn session ends
+      A session ends when the VPN gets into a disconnected state (Manual interaction, force quit the app)
     timer: |
-      Every 3 hours while the VPN is on
+      Every 3 hours while the VPN is in a connected state
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4095
   data_reviews:
