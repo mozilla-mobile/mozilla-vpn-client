@@ -138,6 +138,13 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
+
+  if (!PolkitHelper::instance()->checkAuthorization(
+          "org.mozilla.vpn.deactivate")) {
+    logger.error() << "Polkit rejected";
+    return false;
+  }
+
   firewallClear();
   return Daemon::deactivate(emitSignals);
 }
@@ -220,6 +227,12 @@ QString DBusService::runningApps() {
 bool DBusService::firewallApp(const QString& appName, const QString& state) {
   logger.debug() << "Setting" << appName << "to firewall state" << state;
 
+  if (!PolkitHelper::instance()->checkAuthorization(
+          "org.mozilla.vpn.firewallApp")) {
+    logger.error() << "Polkit rejected";
+    return false;
+  }
+
   // Update the split tunnelling state for any running apps.
   for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
     const AppData* data = *i;
@@ -250,6 +263,12 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
     return false;
   }
 
+  if (!PolkitHelper::instance()->checkAuthorization(
+          "org.mozilla.vpn.firewallPid")) {
+    logger.error() << "Polkit rejected";
+    return false;
+  }
+
   group->state = state;
   group->moveToCgroup(getAppStateCgroup(group->state));
 
@@ -266,6 +285,12 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
 /* Clear the firewall and return all applications to the active state */
 bool DBusService::firewallClear() {
   logger.debug() << "Clearing excluded app list";
+  if (!PolkitHelper::instance()->checkAuthorization(
+          "org.mozilla.vpn.firewallClear")) {
+    logger.error() << "Polkit rejected";
+    return false;
+  }
+
   m_wgutils->resetAllCgroups();
   m_excludedApps.clear();
   return true;
