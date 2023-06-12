@@ -101,7 +101,7 @@ Item {
         height: 2
         color: MZTheme.colors.purple70
         anchors.bottom: bar.bottom
-        x: (currentTab.x && currentTab.ListView.view) ? currentTab.x - currentTab.ListView.view.originX : 0
+        x: (currentTab && currentTab.x && currentTab.ListView.view) ? currentTab.x - currentTab.ListView.view.originX : 0
         visible: stack.children.length > 1
         Behavior on x {
             PropertyAnimation {
