@@ -24,11 +24,10 @@ done
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
 conda-unpack
+# Please dont ask ( ^ :
+unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER
 env
-
-bash -l -c "source $TASK_WORKDIR/fetches/bin/activate && ./scripts/android/cmake.sh -d"
-
-
+./scripts/android/cmake.sh -d
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
