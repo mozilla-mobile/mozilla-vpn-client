@@ -7,7 +7,7 @@ task-defaults:
     worker:
         env:
             QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "arm64v8a"
+            ANDROID_ARCH: "android_arm64_v8a"
         max-run-time: 14400
 
 conda-android:
