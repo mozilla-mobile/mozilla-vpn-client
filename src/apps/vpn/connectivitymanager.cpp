@@ -6,6 +6,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
+#include "networkwatcher.h"
 
 namespace {
 Logger logger("Connectivity Manager");
@@ -13,7 +15,6 @@ Logger logger("Connectivity Manager");
 
 ConnectivityManager::ConnectivityManager() {
   MZ_COUNT_CTOR(ConnectivityManager);
-
 }
 
 ConnectivityManager::~ConnectivityManager() {
@@ -23,5 +24,3 @@ ConnectivityManager::~ConnectivityManager() {
 void ConnectivityManager::initialize() {
   logger.debug() << "Initializing the connectivity manager";
 }
-
-

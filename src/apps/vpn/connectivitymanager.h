@@ -15,13 +15,17 @@ class ConnectivityManager final : public QObject {
 
  public:
   enum ConnectionState {
-    // StateInitializing,
-    // ...
+    ConnectionInitializing,
+    InternetProbeFailed,
+    InternetProbeSuccessful,
+    ServerProbeFailed,
+    ServerProbeSuccessful,
+    FirewallProbeFailed,
+    FirewallProbeSuccessful,
+    CaptivePortalFailed,
+    CaptivePortalSuccessful
   };
   Q_ENUM(ConnectionState)
-
- private:
-    //  Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
   ConnectivityManager();
@@ -29,19 +33,8 @@ class ConnectivityManager final : public QObject {
 
   void initialize();
 
- public slots:
-
- private slots:
-
-
- signals:
-
  private:
-  // methods
-
- private:
-  // members
-  //  State m_state = StateInitializing;
+  ConnectionState m_connectionState = ConnectionInitializing;
 };
 
 #endif  // CONNECTIVITYMANAGER_H
