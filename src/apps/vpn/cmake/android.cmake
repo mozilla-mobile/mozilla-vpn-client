@@ -43,5 +43,7 @@ get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CM
 set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${OPENSSL_LIBS_DIR}/libcrypto.so
     ${OPENSSL_LIBS_DIR}/libssl.so
+    ${OPENSSL_LIBS_DIR}/libcrypto_1_1.so
+    ${OPENSSL_LIBS_DIR}/libssl_1_1.so
     ${QTGLEAN_LIB_LOCATION}
     APPEND)
