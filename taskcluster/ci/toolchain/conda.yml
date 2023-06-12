@@ -43,7 +43,7 @@ conda-android-armeabi-v7a:
     worker:
         env:
             QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_armeabi-v7a"
+            ANDROID_ARCH: "android_armv7"
 
 conda-android-x86:
     run:
