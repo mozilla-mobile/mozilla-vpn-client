@@ -31,11 +31,30 @@ python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 # QT Android Tools
 python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all 
 
-# 
-conda env config vars set QT_HOST_PATH=$QT_DIR/$QT_VERSION/$HOST_FOLDER_NAME
-conda env config vars set QTPATH=$QT_DIR/$QT_VERSION/$ANDROID_ARCH
-
 echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
+
+
+## Generate activation/deactivation scripts, so stuff stays portable.
+
+# Set vars on activation of the env
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d/
+mkdir -p $CONDA_PREFIX/etc/conda/deactivate.d/
+cat <<EOF > $CONDA_PREFIX/etc/conda/activate.d/vpn_android_qt.sh
+#!/bin/bash
+export QT_HOST_PATH=\$CONDA_PREFIX/Qt/$QT_VERSION/$HOST_FOLDER_NAME
+export QTPATH=\$CONDA_PREFIX/Qt/$QT_VERSION/$ANDROID_ARCH
+EOF
+chmod +x $CONDA_PREFIX/etc/conda/activate.d/vpn_android_qt.sh
+## Remove Vars on deactivation
+cat <<EOF > $CONDA_PREFIX/etc/conda/deactivate.d/vpn_android_qt.sh
+#!/bin/bash
+unset QT_HOST_PATH
+unset QTPATH
+EOF
+chmod +x $CONDA_PREFIX/etc/conda/deactivate.d/vpn_android_qt.sh
+
+
+
 
 echo "finished setup $QT_VERSION QT to compile for $ANDROID_ARCH"
 echo "please re-enable the VPN env to apply changes."

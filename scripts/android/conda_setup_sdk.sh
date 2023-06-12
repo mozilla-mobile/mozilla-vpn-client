@@ -18,6 +18,7 @@ fi
 cp android_sdk.txt $CONDA_PREFIX/
 
 cd $CONDA_PREFIX
+mkdir -p bin # Might not exist in an empty env.
 # Download Commandline tools, smylink them to the conda path.
 wget -O commandline_tools.zip $COMMANDLINE_TOOLS_URL
 unzip commandline_tools.zip
@@ -34,14 +35,9 @@ export ANDROID_HOME=$CONDA_PREFIX/android_home
 echo y | sdkmanager --install $(cat android_sdk.txt) --sdk_root=$ANDROID_HOME
 
 
-conda env config vars set ANDROID_SDK_ROOT=$CONDA_PREFIX/android_home
-conda env config vars set ANDROID_HOME=$CONDA_PREFIX/android_home
-
 installed_things=$(sdkmanager --list_installed --sdk_root=$ANDROID_HOME | grep "ndk")
 if [[ $installed_things =~ ndk/([0-9]+\.[0-9]+\.[0-9]+) ]]; then
   ndk_path=${BASH_REMATCH[1]}
-  conda env config vars set ANDROID_NDK_HOME=$CONDA_PREFIX/android_home/ndk/$ndk_path
-  conda env config vars set ANDROID_NDK_ROOT=$CONDA_PREFIX/android_home/ndk/$ndk_path
 fi
 
 # Export ADB to env.
@@ -49,3 +45,26 @@ ln -s $CONDA_PREFIX/android_home/platform-tools/adb $CONDA_PREFIX/bin/adb
 
 sdkmanager --list_installed --sdk_root=$ANDROID_HOME
 echo "Android SDK installed in env $CONDA_PREFIX, please restart conda env to have changes applied"
+
+## Generate activation/deactivation scripts, so stuff stays portable.
+
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d/
+mkdir -p $CONDA_PREFIX/etc/conda/deactivate.d/
+cat <<EOF > $CONDA_PREFIX/etc/conda/activate.d/vpn_android_sdk.sh
+#!/bin/bash
+export ANDROID_SDK_ROOT=\$CONDA_PREFIX/android_home
+export ANDROID_HOME=\$CONDA_PREFIX/android_home
+export ANDROID_NDK_HOME=\$CONDA_PREFIX/android_home/ndk/$ndk_path
+export ANDROID_NDK_ROOT=\$CONDA_PREFIX/android_home/ndk/$ndk_path
+EOF
+chmod +x $CONDA_PREFIX/etc/conda/activate.d/vpn_android_sdk.sh
+
+
+cat <<EOF > $CONDA_PREFIX/etc/conda/deactivate.d/vpn_android_sdk.sh
+#!/bin/bash
+unset ANDROID_SDK_ROOT
+unset ANDROID_HOME
+unset ANDROID_NDK_HOME
+unset ANDROID_NDK_ROOT
+EOF
+chmod +x $CONDA_PREFIX/etc/conda/deactivate.d/vpn_android_sdk.sh
