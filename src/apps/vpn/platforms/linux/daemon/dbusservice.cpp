@@ -15,6 +15,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "polkithelper.h"
 
 namespace {
 Logger logger("DBusService");
@@ -98,6 +99,12 @@ QString DBusService::version() {
 
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
+
+  if (!PolkitHelper::instance()->checkAuthorization(
+          "org.mozilla.vpn.activate")) {
+    logger.error() << "Polkit rejected";
+    return false;
+  }
 
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {

@@ -26,10 +26,12 @@ License: MPL-2.0
  here.](https://opensource.org/licenses/MIT) and a copy is provided below.
  .
  The Linux release of this project also relies on several files from the
- [WireGuard Tools] (https://github.com/WireGuard/wireguard-tools/) repository
- under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*), a copy of
- the LGPL-2.0 is [available here](https://opensource.org/licenses/LGPL-2.0),
- and a copy is provided below.
+ [WireGuard Tools] (https://github.com/WireGuard/wireguard-tools/) repository,
+ as well as the FreeDesktop project's [polkit
+ library](https://gitlab.freedesktop.org/polkit/polkit/), all of which are
+ provided under the terms of the Lesser GNU Public License 2.0 (*LGPL-2.0*). A
+ copy of the LGPL-2.0 is [available
+ here.](https://opensource.org/licenses/LGPL-2.0) and a copy is provided below.
  .
  Finally, this project uses EC25519 and CHACHA-POLY implementations from HACL\*,
  available under the terms of the MIT Public License (*MIT*) and copyright (c)

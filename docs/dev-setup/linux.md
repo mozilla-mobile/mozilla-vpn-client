@@ -22,6 +22,7 @@ Install all of Qt version 6.2.4 and you'll have everything you need.
 On Ubuntu, apt install the following dependencies
 
 * libsecret-1 (>=0.18)
+* libpolkit-gobject-1-0 (>=0.105)
 * libcap2-bin (>=1:2.32)
 * wireguard (>=1.0.20200319)
 * wireguard-tools (>=1.0.20200319)
