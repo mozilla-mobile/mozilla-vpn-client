@@ -24,24 +24,7 @@ done
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
 conda-unpack
-
-export ANDROID_SDK_ROOT=$CONDA_PREFIX/android_home
-export ANDROID_HOME=$CONDA_PREFIX/android_home
-
-installed_things=$(sdkmanager --list_installed --sdk_root=$ANDROID_HOME | grep "ndk")
-if [[ $installed_things =~ ndk/([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-  ndk_path=${BASH_REMATCH[1]}
-  export ANDROID_NDK_HOME=$CONDA_PREFIX/android_home/ndk/$ndk_path
-  export ANDROID_NDK_ROOT=$CONDA_PREFIX/android_home/ndk/$ndk_path
-fi
-
-
-echo "-------" 
-conda env list   
-bash -l -c "conda env list"
-
-echo "-------" 
-
+env
 
 bash -l -c "source $TASK_WORKDIR/fetches/bin/activate && ./scripts/android/cmake.sh -d"
 
