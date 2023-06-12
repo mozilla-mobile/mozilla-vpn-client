@@ -1,39 +1,21 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.15",
-  "name": "Update to Mozilla VPN 2.15",
+  "id": "message_update_v2.16",
+  "name": "Update to Mozilla VPN 2.16",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.14.9"
+    "max_client_version": "2.15.9"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
     "date": 1671066000,
-    "id": "message_update_v2.15",
-    "title": "Update to Mozilla VPN 2.15",
-    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version to get the newest features and bug fixes:",
+    "id": "message_update_v2.16",
+    "title": "Update Mozilla VPN",
+    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience. This update includes minor bug fixes, UI adjustments and other performance improvements.",
     "badge": "new_update",
     "blocks": [
-      {
-        "id": "c_1",
-        "type": "ulist",
-        "content": [
-          {
-            "id": "l_1",
-            "content": "We will now recommend a few of the highest-performing server locations when you’re on the Select location screen."
-          },
-          {
-            "id": "l_2",
-            "content": "We’ve updated the App exclusions screen to make it easier to choose which apps to leave out of VPN protection."
-          },
-          {
-            "id": "l_3",
-            "content": "We’ve also made bug fixes, UI adjustments and other performance improvements to make Mozilla VPN even better."
-          }
-        ]
-      },
       {
         "id": "c_2",
         "type": "text",
@@ -68,7 +50,7 @@
       {
         "id": "extra_1",
         "type": "text",
-        "content": "Download Mozilla VPN 2.15"
+        "content": "Download Mozilla VPN 2.16"
       },
       {
         "id": "extra_2",

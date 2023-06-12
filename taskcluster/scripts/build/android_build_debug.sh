@@ -11,6 +11,8 @@ for i in src/apps/*/translations/i18n; do
   git submodule update --remote $i
 done
 
+
+
 # $1 should be the qmake arch.
 # Note this is different from what aqt expects as arch:
 #
@@ -18,7 +20,17 @@ done
 # aqt-name "arm64_v8a"   -> qmake-name: "arm64-v8a"
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
-./scripts/android/cmake.sh -d $QTPATH -A $1
+
+# We need to call bash with a login shell, so that conda is intitialized
+source $TASK_WORKDIR/fetches/bin/activate
+conda-unpack
+# conda-pack add's a /activate.d/rust.sh 
+# this one set's this variable to a garbage value. 
+# This causes rust to fail, as it's searching an arcane linker. 
+# on a "normal" env this is unset - so let's do that too.
+unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER
+env
+./scripts/android/cmake.sh -d
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

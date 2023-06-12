@@ -88,10 +88,7 @@ else
   print G "debug"
 fi
 
-
-if [ -d "$QTPATH/android/bin/" ]; then
-  QTPATH=$QTPATH/android
-elif ! [ -d "$QTPATH/bin/" ]; then
+if ! [ -d "$QTPATH/bin" ]; then
   die "QTAndroid SDK was not found in the provided QT path"
 fi
 

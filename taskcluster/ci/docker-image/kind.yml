@@ -23,6 +23,9 @@ tasks:
 #                                  taskcluster binary's to run shell tasks and etc fun stuff.
     base:
         symbol: I(base)
+    conda-base:
+        parent: base
+        symbol: I(conda-base)
     build:
         parent: base
         symbol: I(build)
@@ -34,48 +37,6 @@ tasks:
         symbol: I(wasm)
         args:
             QT_VERSION: 6.2.4
-    android-build-arm64:
-        parent: base
-        symbol: I(android-arm64-v8a)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_arm64_v8a
-            QT_VERSION: 6.2.4
-    android-build-armv7:
-        parent: base
-        symbol: I(android_armv7)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_armv7
-            QT_VERSION: 6.2.4
-    android-build-x86:
-        parent: base
-        symbol: I(android_x86)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_x86
-            QT_VERSION: 6.2.4
-    android-build-x64:
-        parent: base
-        symbol: I(android_x86_64)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_x86_64
-            QT_VERSION: 6.2.4
-    android-qt-next:
-        parent: base
-        symbol: I(android_arm64_v8a_next)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_arm64_v8a
-            QT_VERSION: 6.4.0
-    android-qt-next-armv7:
-        parent: base
-        symbol: I(android_armv7_next)
-        definition: android-qt6-build
-        args:
-            ANDROID_ARCH: android_armv7
-            QT_VERSION: 6.4.0
     linux-qt6-build:
         parent: base
         symbol: I(linux-qt6-build)

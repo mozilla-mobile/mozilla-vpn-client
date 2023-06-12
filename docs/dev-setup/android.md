@@ -1,67 +1,68 @@
 # Pre-requisites
 
-## Activate conda
+## Setting up a new Conda Env
+See [here](./index.md#conda) for general conda environment instructions.
 
-`conda activate vpn`
+We are going to update the Conda-Env to build for android, as 
+this can break building for other platforms, it's advised to do those steps 
+in a separate environment. 
 
-See [here](./index.md#conda) for conda environment instructions.
+```bash 
+$ conda env create -f env.yml -n vpn-android
+$ conda activate vpn-android
+```
 
-## Get Qt
+### Optional: Choosing your Android Arch: 
+By default this environment will be setup to build android-arm64-v8a - 
+For real devices or Emulators on M1/M2 macs. 
+If you need any other architecture you need to set `ANDROID_ARCH` to the desired arch before continuing.
+Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`.
+```
+$ conda env config vars set ANDROID_ARCH=x86
+$ conda deactivate
+$ conda activate vpn-android
+```
+### Optional: Choosing your QT Version: 
+By default this environment will be setup to use the QT-Version noted in env.yml
+If you need any other architecture you need to set `QT_VERSION` before continuing.
+```
+$ conda env config vars set QT_VERSION=1.2.3
+$ conda deactivate
+$ conda activate vpn-android
+```
 
-Download the online installer from the official QT website: https://www.qt.io/download-qt-installer
+### Setup Android-SDK/NDK and QT. 
+Now install the Android-SDK dependencies and QT via:
+```bash 
+# Setup the Android SDK and NDK for the current Conda env.
+$ ./scripts/android/conda_setup_sdk.sh
+# Setup the Conda env to fetch and use QT
+$ ./scripts/android/conda_setup_qt.sh
+$ conda deactivate
+$ conda activate vpn-android
+```
 
-Our usage is covered by the QT open source license.
-
-While you will need to register with an email address, it will be free.
-
-During the install, there will be many components available.
-Install all of Qt version 6.2.4 and you'll have everything you need.
-
-Finally, follow the Qt [Android getting started](https://doc.qt.io/qt-6/android-getting-started.html) page.
-Deep breath, this is quite a lot of steps.
-
-## Other dependencies
-
-Until conda has an android target, you'll need to install rust with rustup so you can add an android target.
-
-Follow directions at https://www.rust-lang.org/tools/install
-
-Then run
-
-    rustup target add x86_64-linux-android i686-linux-android armv7-linux-androideabi aarch64-linux-android
-
-The android build additionally requires cmake 3.10.2. You can install it using: `./sdkmanager --install "cmake;3.10.2.4988404"`.
-Note that `sdkmanager` should have been installed when you followed the Qt Android getting started.
-
-# Build and install
-
-## Configure
-
-Set the `QT_HOST_PATH` environment variable to point to the location of the `androiddeployqt` tool  -- minus the `/bin` suffix i.e. if `$(which androiddeployqt)` is `$HOME/Qt/6.2.4/gcc_64/bin/androiddeployqt`, `QT_HOST_PATH` is `$HOME/Qt/6.2.4/gcc_64/`.
-
-Set the `ANDROID_SDK_ROOT` and `ANDROID_NDK_ROOT` environment variables,
-to point to the Android SDK and NDK installation directories. Required NDK versions: 23.1.7779620 and 21.0.6113669.
-
-Add the Android NDK llvm prebuilt tools to your `PATH`. These are located under the Android NDK installation
-directory on `${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/*/bin`.
 
 ## Build
+```
+$ conda activate vpn-android
+$ ./scripts/android/cmake.sh -d 
+```
 
-./scripts/android/cmake.sh -d </path/to/Qt/> -A <architecture> <debug|release>
+> For release builds: Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
 
-If needed, add the Adjust SDK token with `-a | --adjust <adjust_token>`.
-
-Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`, by default it will use all.
 
 # Run
 
 The new apk will be located in
 
-    `.tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk`
+    .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
+Make sure to Choose the apk-architecture of your env, all others apk's will not work. 
 
-Install with adb on device/emulator
+Install with adb on device/[emulator](https://developer.android.com/studio/run/emulator#avd)
 
-    adb install .tmp/src/android-build/build/outputs/apk/debug/android-build-debug.apk
+
+    adb install .tmp/src/android-build/build/outputs/apk/debug/<ANDROID_BUILD_ARCHITECTURE>.apk
 
 # Signing (optional)
 
@@ -70,5 +71,6 @@ If you need to work with subscriptions or other play store functionality in the 
 Make sure have an environment variable `AUTOGRAPH_TOKEN` set (ask a fellow dev).
 
 Then run
-
-    ./scripts/android/sign.sh
+```
+    ./scripts/android/sign.sh .tmp/src/android-build/build/outputs/apk/release
+```
