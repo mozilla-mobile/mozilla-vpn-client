@@ -91,6 +91,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/controllerimpl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/connectivitymanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/connectivitymanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnshelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnshelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
