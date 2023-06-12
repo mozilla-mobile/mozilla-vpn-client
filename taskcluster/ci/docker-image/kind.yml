@@ -37,44 +37,6 @@ tasks:
         symbol: I(wasm)
         args:
             QT_VERSION: 6.2.4
-    # android-build-arm64:
-    #     parent: conda-base
-    #     symbol: I(android-arm64-v8a)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_arm64_v8a
-    # android-build-armv7:
-    #     parent: conda-base
-    #     symbol: I(android_armv7)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_armv7
-    # android-build-x86:
-    #     parent: conda-base
-    #     symbol: I(android_x86)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_x86
-    # android-build-x64:
-    #     parent: conda-base
-    #     symbol: I(android_x86_64)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_x86_64
-    # android-qt-next:
-    #     parent: conda-base
-    #     symbol: I(android_arm64_v8a_next)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_arm64_v8a
-    #         QT_VERSION: 6.4.0
-    # android-qt-next-armv7:
-    #     parent: conda-base
-    #     symbol: I(android_armv7_next)
-    #     definition: android-qt6-build
-    #     args:
-    #         ANDROID_ARCH: android_armv7
-    #         QT_VERSION: 6.4.0
     linux-qt6-build:
         parent: base
         symbol: I(linux-qt6-build)

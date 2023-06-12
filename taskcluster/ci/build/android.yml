@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
+    description: "Android Next QT Build (arm64-v8a)"
     treeherder:
             symbol: BD
             kind: build
@@ -12,151 +13,144 @@ task-defaults:
     worker:
           max-run-time: 3600
           chain-of-trust: true
+          docker-image: {in-tree: conda-base}
     run:
           using: run-task
           use-caches: true
           cwd: '{checkout}'
 
 android-qt-next/debug:
-        description: "Android Next QT Build (arm64-v8a)"
         treeherder:
             platform: android/arm64-v8a
             symbol: NEXT
         fetches:
             toolchain: 
                 - conda-android-arm64
-        worker:
-            docker-image: {in-tree: conda-base}
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
 
-# android-qt-next-armv7/debug:
-#         description: "Android Next QT Build (armv7)"
-#         treeherder:
-#             platform: android/armv7
-#             symbol: NEXT
-#         worker:
-#             docker-image: {in-tree: android-qt-next-armv7}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-armeabi-v7a-debug.apk
+# Debug Builds:
+android-arm64/debug:
+        description: "Android Debug (arm64-v8a)"
+        treeherder:
+            platform: android/arm64-v8a
+        fetches:
+            toolchain: 
+                - conda-android-arm64
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-arm64-v8a-debug.apk
 
-# # Debug Builds:
-# android-arm64/debug:
-#         description: "Android Debug (arm64-v8a)"
-#         treeherder:
-#             platform: android/arm64-v8a
-#         worker:
-#             docker-image: {in-tree: android-build-arm64}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-arm64-v8a-debug.apk
+android-armv7/debug:
+        description: "Android Debug (armv7)"
+        treeherder:
+            platform: android/armv7
+        fetches:
+            toolchain: 
+                    - conda-android-armeabi-v7a
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-armv7-debug.apk
 
-# android-armv7/debug:
-#         description: "Android Debug (armv7)"
-#         treeherder:
-#             platform: android/armv7
-#         worker:
-#             docker-image: {in-tree: android-build-armv7}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-armv7-debug.apk
+android-x86/debug:
+        description: "Android Debug (x86)"
+        treeherder:
+            platform: android/x86
+        fetches:
+            toolchain: 
+                    - conda-android-x86
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh x86
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-x86-debug.apk
+android-x64/debug:
+        description: "Android Debug (x86_64)"
+        treeherder:
+            platform: android/x86_64
+        fetches:
+            toolchain: 
+                    - conda-android-x86_64
+        run:
+            command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-x86_64-debug.apk
 
-# android-x86/debug:
-#         description: "Android Debug (x86)"
-#         treeherder:
-#             platform: android/x86
-#         worker:
-#             docker-image: {in-tree: android-build-x86}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh x86
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-x86-debug.apk
-# android-x64/debug:
-#         description: "Android Debug (x86_64)"
-#         treeherder:
-#             platform: android/x86_64
-#         worker:
-#             docker-image: {in-tree: android-build-x64}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-x86_64-debug.apk
+## Release Builds
 
-# Release Builds
+android-arm64/release:
+        description: "Android Release (arm64-v8a)"
+        requires-level: 3
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        fetches:
+            toolchain: 
+                    - conda-android-arm64
+        treeherder:
+            symbol: B
+            platform: android/arm64-v8a
+        run:
+            command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-arm64-v8a-release.apk
 
-# android-arm64/release:
-#         description: "Android Release (arm64-v8a)"
-#         requires-level: 3
-#         scopes:
-#             - 'secrets:get:project/mozillavpn/tokens'
-#         treeherder:
-#             symbol: B
-#             platform: android/arm64-v8a
-#         worker:
-#             docker-image: {in-tree: android-build-arm64}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_release.sh arm64-v8a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-arm64-v8a-release.apk
-
-# android-armv7/release:
-#         description: "Android Release (android-armv7)"
-#         requires-level: 3
-#         scopes:
-#             - 'secrets:get:project/mozillavpn/tokens'
-#         treeherder:
-#             symbol: B
-#             platform: android/armv7
-#         worker:
-#             docker-image: {in-tree: android-build-armv7}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-armeabi-v7a-release.apk
+android-armv7/release:
+        description: "Android Release (android-armv7)"
+        requires-level: 3
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        fetches:
+            toolchain: 
+                    - conda-android-armeabi-v7a
+        treeherder:
+            symbol: B
+            platform: android/armv7
+        run:
+            command: ./taskcluster/scripts/build/android_build_release.sh armeabi-v7a
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-armeabi-v7a-release.apk
 
 
-# android-x86/release:
-#         description: "Android Release (android-x86)"
-#         requires-level: 3
-#         scopes:
-#             - 'secrets:get:project/mozillavpn/tokens'
-#         treeherder:
-#             symbol: B
-#             platform: android/x86
-#         worker:
-#             docker-image: {in-tree: android-build-x86}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_release.sh x86
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-x86-release.apk
+android-x86/release:
+        description: "Android Release (android-x86)"
+        requires-level: 3
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        fetches:
+            toolchain: 
+                    - conda-android-x86
+        treeherder:
+            symbol: B
+            platform: android/x86
+        run:
+            command: ./taskcluster/scripts/build/android_build_release.sh x86
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-x86-release.apk
 
-# android-x64/release:
-#         description: "Android Release (x86_64)"
-#         requires-level: 3
-#         scopes:
-#             - 'secrets:get:project/mozillavpn/tokens'
-#         treeherder:
-#             symbol: B
-#             platform: android/x86_64
-#         worker:
-#             docker-image: {in-tree: android-build-x64}
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_release.sh x86_64
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-x86_64-release.apk
+android-x64/release:
+        description: "Android Release (x86_64)"
+        requires-level: 3
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        fetches:
+            toolchain: 
+                    - conda-android-x86_64
+        treeherder:
+            symbol: B
+            platform: android/x86_64
+        run:
+            command: ./taskcluster/scripts/build/android_build_release.sh x86_64
+        release-artifacts:
+            # APK Artifacts expects file to be in /builds/worker/artifacts/
+            - mozillavpn-x86_64-release.apk

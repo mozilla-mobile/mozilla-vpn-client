@@ -9,8 +9,9 @@ task-defaults:
             QT_VERSION: "6.2.4"
             ANDROID_ARCH: "android_arm64_v8a"
         max-run-time: 14400
+        docker-image: {in-tree: conda-base}
+    worker-type: b-linux
 
-conda-android:
     run:
         script: conda_pack_android.sh
         resources:
@@ -21,8 +22,47 @@ conda-android:
             - requirements.txt
         toolchain-alias: conda-android-arm64
         toolchain-artifact: public/build/conda-android.tar.gz
+
+conda-android-arm64:
+    run:
+        toolchain-alias: conda-android-arm64
     treeherder:
         symbol: TL(conda-android-arm64)
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: conda-base}
+        env:
+            QT_VERSION: "6.2.4"
+            ANDROID_ARCH: "android_arm64_v8a"
+
+conda-android-armeabi-v7a:
+    run:
+        toolchain-alias: conda-android-armeabi-v7a
+    treeherder:
+        symbol: TL(conda-android-armeabi-v7a)
+    worker-type: b-linux
+    worker:
+        env:
+            QT_VERSION: "6.2.4"
+            ANDROID_ARCH: "android_armeabi-v7a"
+
+conda-android-x86:
+    run:
+        toolchain-alias: conda-android-x86
+    treeherder:
+        symbol: TL(conda-android-x86)
+    worker-type: b-linux
+    worker:
+        env:
+            QT_VERSION: "6.2.4"
+            ANDROID_ARCH: "android_x86"
+
+conda-android-x86_64:
+    run:
+        toolchain-alias: conda-android-x86_64
+    treeherder:
+        symbol: TL(conda-android-x86_64)
+    worker-type: b-linux
+    worker:
+        env:
+            QT_VERSION: "6.2.4"
+            ANDROID_ARCH: "android_x86_64"
