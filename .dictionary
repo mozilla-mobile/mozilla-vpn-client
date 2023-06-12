@@ -1,6 +1,7 @@
 personal_ws-1.1 en 212 utf-8
 ADRs
 APIs
+apk's
 Adblock
 AdjustSdk
 Affero
@@ -210,4 +211,5 @@ xcodes
 xconfig
 xcrun
 yaml
+yml
 yyyy
