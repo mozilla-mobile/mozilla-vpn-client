@@ -20,6 +20,10 @@ CheckBox {
     onClicked: toolTip.hide()
     onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(vpnSettingsToggle)
 
+    // Workaround for https://bugreports.qt.io/browse/QTBUG-101026
+    // Prevents 'TypeError: Property 'styleFont' of object MZUIStates_QMLTYPE_14(0x600002d582a0) is not a function' 
+    font.pixelSize: undefined
+
     height: MZTheme.theme.vSpacing
     width: 45
     states: [
