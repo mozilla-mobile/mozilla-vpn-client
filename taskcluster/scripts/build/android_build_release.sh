@@ -46,6 +46,7 @@ mkdir -p /builds/worker/artifacts/
 
 ./scripts/android/cmake.sh -d $QTPATH -A $1  -a $(cat adjust_token) --sentrydsn $(cat sentry_dsn) --sentryendpoint $(cat sentry_envelope_endpoint)
 
+npm install -g @sentry/cli
 sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
