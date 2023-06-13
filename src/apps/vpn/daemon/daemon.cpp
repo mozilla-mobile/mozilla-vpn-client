@@ -65,7 +65,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
   //    method calls switchServer().
   //
   // At the end, if the activation succeds, the `connected` signal is emitted.
+  // If the activation abort's for any reason `the `activationFailure` signal is
+  // emitted.
   logger.debug() << "Activating interface";
+  auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
   if (m_connections.contains(config.m_hopindex)) {
     if (supportServerSwitching(config)) {
@@ -88,8 +91,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
       if (status) {
         m_connections[config.m_hopindex] = ConnectionState(config);
         m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+        emit_failure_guard.dismiss();
+        return true;
       }
-      return status;
+      return false;
     }
 
     logger.warning() << "Already connected. Server switching not supported.";
@@ -98,7 +103,11 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
 
     Q_ASSERT(!m_connections.contains(config.m_hopindex));
-    return activate(config);
+    if (activate(config)) {
+      emit_failure_guard.dismiss();
+      return true;
+    }
+    return false;
   }
 
   prepareActivation(config);
@@ -155,9 +164,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
   if (status) {
     m_connections[config.m_hopindex] = ConnectionState(config);
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+    emit_failure_guard.dismiss();
+    return true;
   }
-
-  return status;
+  return false;
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
