@@ -11,16 +11,7 @@ set(SENTRY_SUPPORTED_OS  "Windows" "Darwin" "Android" "iOS")
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 include(ExternalProject)
 
-
-
 LIST(FIND SENTRY_SUPPORTED_OS ${CMAKE_SYSTEM_NAME} _SUPPORTED)
-
-if(NOT SENTRY_DSN OR NOT SENTRY_ENVELOPE_ENDPOINT)
-message( "Disabling Sentry, as params are not given")
-set( _SUPPORTED -1)
-endif()
-
-
 
 ## Remove support for android 32bit.
 ## It's  currently broken. see: VPN-3332
@@ -32,8 +23,6 @@ endif()
 
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
-    target_compile_definitions(shared-sources INTERFACE SENTRY_ENVELOPE_ENDPOINT="${SENTRY_ENVELOPE_ENDPOINT}")
-    target_compile_definitions(shared-sources INTERFACE SENTRY_DSN="${SENTRY_DSN}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
     # Let's the app know we need to provide the upload client
     target_compile_definitions(shared-sources INTERFACE SENTRY_NONE_TRANSPORT)
@@ -44,6 +33,8 @@ if( ${_SUPPORTED} GREATER -1 )
         shared/sentry/sentryadapter.h
         shared/tasks/sentry/tasksentry.cpp
         shared/tasks/sentry/tasksentry.h
+        shared/tasks/sentryconfig/tasksentryconfig.cpp
+        shared/tasks/sentryconfig/tasksentryconfig.h
     )
 
     # Configure Linking and Compile

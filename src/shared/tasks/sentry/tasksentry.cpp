@@ -76,12 +76,21 @@ void TaskSentry::run() {
 
 void TaskSentry::sendRequest() {
   NetworkRequest* request = new NetworkRequest(this, 200);
+  auto settings = SettingsHolder::instance();
+  auto endpoint = settings->sentryEndpoint();
+  auto dsn = settings->sentryDSN();
+  if (endpoint.isNull() || dsn.isNull()) {
+    // We could have not even been initializing sentry without that?!
+    Q_ASSERT(false);
+    emit completed();
+    return;
+  }
+  
 
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");
-  request->requestInternal().setRawHeader("dsn",
-                                          Constants::SENTRY_DSN_ENDPOINT);
-  request->post(QUrl(Constants::SENTRY_ENVELOPE_INGESTION), m_envelope);
+  request->requestInternal().setRawHeader("dsn", dsn.toLocal8Bit());
+  request->post(QUrl(endpoint), m_envelope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

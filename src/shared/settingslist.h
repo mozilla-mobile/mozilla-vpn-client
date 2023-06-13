@@ -224,5 +224,27 @@ SETTING_STRING(token,        // getter
                true          // sensitive (do not log)
 )
 
+SETTING_STRING(sentryDSN,        // getter
+               setSentryDSN,     // setter
+               removeSentryDSN,  // remover
+               hasSentryDSN,     // has
+               "sentry/dsn",     // key
+               "",               // default value
+               false,            // user setting
+               false,            // remove when reset
+               true              // sensitive (do not log)
+)
+
+SETTING_STRING(sentryEndpoint,        // getter
+               setSentryEndpoint,     // setter
+               removeSentryEndpoint,  // remover
+               hasSentryEndpoint,     // has
+               "sentry/endpoint",     // key
+               "",                    // default value
+               false,                 // user setting
+               false,                 // remove when reset
+               true                   // sensitive (do not log)
+)
+
 // The app must implement its settings list file.
 #include "appsettingslist.h"

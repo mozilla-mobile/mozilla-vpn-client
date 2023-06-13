@@ -19,6 +19,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
+#include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"
 
 namespace {
@@ -37,16 +38,24 @@ SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
 SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
+  if (m_initialized) {
+    return;
+  }
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
-      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
+  auto settings = SettingsHolder::instance();
+  if (!settings->hasSentryEndpoint() || !settings->hasSentryDSN()) {
+    // If we have no info on where to put crash info, let's
+    // query that and retry later.
     logger.error() << "Sentry failed to init, no sentry config present";
+    auto t = new TaskSentryConfig();
+    TaskScheduler::scheduleTask(t);
     return;
   }
-
   auto log = LogHandler::instance();
+
+  auto dsn = settings->sentryDSN();
 
   QDir dataDir(
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
@@ -58,7 +67,7 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
+  sentry_options_set_dsn(options, dsn.toLocal8Bit().constData());
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(
