@@ -60,7 +60,7 @@ if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
   # missing debug info, for symbolification
   sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
 else
-   sentry-cli difutil check .tmp/src/android-build/build/intermediates/merged_native_libs
+  echo "Skipping sentry stuff"
 fi
 
 
