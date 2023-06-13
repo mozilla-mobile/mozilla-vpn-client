@@ -15,17 +15,35 @@ class ConnectivityManager final : public QObject {
 
  public:
   enum ConnectionState {
-    ConnectionInitializing,
-    InternetProbeFailed,
-    InternetProbeSuccessful,
-    ServerProbeFailed,
-    ServerProbeSuccessful,
-    FirewallProbeFailed,
-    FirewallProbeSuccessful,
-    CaptivePortalFailed,
-    CaptivePortalSuccessful
+    ConnectionStateOff,  // Corresponds to controller states: StateInitializing,
+                         // StateOff
+    ConnectionStateInternetProbe,      // Corresponds to controller states:
+                                       // StateConnecting
+    ConnectionStateServerProbe,        // Corresponds to controller states:
+                                       // StateConnecting
+    ConnectionStateCaptivePortal,      // Corresponds to controller states:
+                                       // StateConnecting
+    ConnectionStateCheckSubscription,  // Corresponds to controller states:
+                                       // StateCheckSubscription
+    ConnectionStateOn,  // Corresponds to controller state: StateOn
+
+    // Mirrored from Controller states
+    ConnectionStateSilentSwitching,  // Corresponds to StateSilentSwitching
+    ConnectionStateSwitching,        // Corresponds to StateSwitching
+    ConnectionStateConfirming,       // Corresponds to controller states:
+                                     // StateConfirming
+    ConnectionStateDisconnecting     // Corresponds to controller state:
+                                     // StateDisconnecting
   };
   Q_ENUM(ConnectionState)
+
+  enum ConnectionErrorState {
+    ConnectionErrorStateInternetProbeFailed,
+    ConnectionErrorStateServerProbeFailed,
+    ConnectionErrorStateFirewallProbeFailed,
+    ConnectionErrorStateCaptivePortalFailed
+  };
+  Q_ENUM(ConnectionErrorState)
 
  public:
   ConnectivityManager();
@@ -34,7 +52,7 @@ class ConnectivityManager final : public QObject {
   void initialize();
 
  private:
-  ConnectionState m_connectionState = ConnectionInitializing;
+  ConnectionState m_connectionState = ConnectionStateOff;
 };
 
 #endif  // CONNECTIVITYMANAGER_H
