@@ -53,10 +53,15 @@ mkdir -p /builds/worker/artifacts/
 ./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token) --sentrydsn $(cat sentry_dsn) --sentryendpoint $(cat sentry_envelope_endpoint)
 
 npm install -g @sentry/cli
-sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
-# This will ask sentry to scan all files in there and upload
-# missing debug info, for symbolification
-sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
+
+if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
+  sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+  # This will ask sentry to scan all files in there and upload
+  # missing debug info, for symbolification
+  sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources .tmp/src/android-build/build/intermediates/merged_native_libs
+else
+   sentry-cli difutil check .tmp/src/android-build/build/intermediates/merged_native_libs
+fi
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
