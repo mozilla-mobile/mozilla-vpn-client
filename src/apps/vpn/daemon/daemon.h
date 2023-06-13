@@ -46,7 +46,7 @@ class Daemon : public QObject {
   /**
    * Can be fired if a call to activate() was unsucessfull
    * and connected systems should rollback
-  */
+   */
   void activationFailure();
   void disconnected();
   void backendFailure();
