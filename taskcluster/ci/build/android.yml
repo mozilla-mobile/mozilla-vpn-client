@@ -67,7 +67,8 @@ android-arm64/release:
         requires-level: 1
         scopes:
             by-level:
-                "3": - secrets:get:project/mozillavpn/tokens
+                "3": 
+                    - secrets:get:project/mozillavpn/tokens
                 default: []
         fetches:
             toolchain: 
