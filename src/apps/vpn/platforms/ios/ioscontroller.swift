@@ -167,6 +167,11 @@ public class IOSControllerImpl : NSObject {
                 Logger.global?.log(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
                 proto!.excludeLocalNetworks = true
+
+                if #available(iOS 16.4, *) {
+                    // By default, APNs is excluded from the VPN tunnel on 16.4 and later. We want to include it.
+                    proto!.excludeAPNs = false
+                }
             }
 
             tunnel.protocolConfiguration = proto
