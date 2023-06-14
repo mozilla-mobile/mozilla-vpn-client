@@ -30,7 +30,7 @@
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
-constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60; //3 hours
+constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60;  // 3 hours
 constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
 
 namespace {
@@ -263,33 +263,31 @@ void Telemetry::initialize() {
          {"sku", PurchaseHandler::instance()->currentSKU()}});
   });
 
-   connect(controller, &Controller::stateChanged, this, [this, controller]() {
-      if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-        if(controller->state() == Controller::StateOn) {
+  connect(controller, &Controller::stateChanged, this, [this, controller]() {
+    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+      if (controller->state() == Controller::StateOn) {
+        mozilla::glean_pings::Vpnsession.submit("flush");
 
-            mozilla::glean_pings::Vpnsession.submit("flush");
+        QString sessionId =
+            mozilla::glean::session::session_id.generateAndSet();
+        mozilla::glean::session::session_start.set();
+        mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
+        mozilla::glean::session::apps_excluded.set(
+            AppPermission::instance()->disabledAppCount());
 
-            QString sessionId = mozilla::glean::session::session_id.generateAndSet();
-            mozilla::glean::session::session_start.set();
-            mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
-            mozilla::glean::session::apps_excluded.set(
-                AppPermission::instance()->disabledAppCount());
+        mozilla::glean_pings::Vpnsession.submit("start");
+        m_vpnSessionPingTimer.start(
+            (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
+                 ? VPNSESSION_PING_TIMER_DEBUG_SEC
+                 : VPNSESSION_PING_TIMER_SEC) *
+            1000);
+      } else if (controller->state() == Controller::StateOff) {
+        mozilla::glean::session::session_end.set();
 
-
-            mozilla::glean_pings::Vpnsession.submit("start");
-            m_vpnSessionPingTimer.start(
-                (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
-                     ? VPNSESSION_PING_TIMER_DEBUG_SEC
-                     : VPNSESSION_PING_TIMER_SEC) *
-                1000);
-        }
-        else if(controller->state() == Controller::StateOff) {
-            mozilla::glean::session::session_end.set();
-
-            mozilla::glean_pings::Vpnsession.submit("end");
-            m_vpnSessionPingTimer.stop();
-        }
+        mozilla::glean_pings::Vpnsession.submit("end");
+        m_vpnSessionPingTimer.stop();
       }
+    }
   });
 }
 
