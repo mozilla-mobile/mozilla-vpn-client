@@ -26,6 +26,7 @@ android-qt-next/debug:
         fetches:
             toolchain: 
                 - conda-android-arm64
+        requires-level: 3
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
@@ -46,31 +47,6 @@ android-arm64/debug:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
 
-android-armv7/debug:
-        description: "Android Debug (armv7)"
-        treeherder:
-            platform: android/armv7
-        fetches:
-            toolchain: 
-                    - conda-android-armeabi-v7a
-        run:
-            command: ./taskcluster/scripts/build/android_build_debug.sh armeabi-v7a
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-armv7-debug.apk
-
-android-x86/debug:
-        description: "Android Debug (x86)"
-        treeherder:
-            platform: android/x86
-        fetches:
-            toolchain: 
-                    - conda-android-x86
-        run:
-            command: ./taskcluster/scripts/build/android_build_debug.sh x86
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-x86-debug.apk
 android-x64/debug:
         description: "Android Debug (x86_64)"
         treeherder:
@@ -88,9 +64,12 @@ android-x64/debug:
 
 android-arm64/release:
         description: "Android Release (arm64-v8a)"
-        requires-level: 3
+        requires-level: 1
         scopes:
-            - 'secrets:get:project/mozillavpn/tokens'
+            by-level:
+                "3": 
+                    - secrets:get:project/mozillavpn/tokens
+                default: []
         fetches:
             toolchain: 
                     - conda-android-arm64
