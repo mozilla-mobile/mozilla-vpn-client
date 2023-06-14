@@ -4,9 +4,11 @@
 
 #include "sentryadapter.h"
 
+#include <QtQml/private/qqmlengine_p.h>
 #include <sentry.h>
 
 #include <QDir>
+#include <QQuickItem>
 #include <QStandardPaths>
 
 #include "constants.h"
@@ -14,6 +16,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "taskscheduler.h"
@@ -115,22 +118,8 @@ void SentryAdapter::onLoglineAdded(const QByteArray& line) {
 sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
                                       sentry_value_t event, void* closure) {
   logger.info() << "Sentry ON CRASH";
-  // Do contextual clean-up before the crash is sent to sentry's backend
-  // infrastructure
-  bool shouldSend = true;
-  // Todo: We can use this callback to make sure
-  // we only send data with user consent.
-  // Tracked in: VPN-3158
-  // We could:
-  //  -> Maybe start a new Process for the Crash-Report UI ask for consent
-  //  (VPN-2823)
-  //  -> Check if a setting "upload crashes" is present.
-  // If we should not send it, we can discard the crash data here :)
-  if (shouldSend) {
-    return event;
-  }
-  sentry_value_decref(event);
-  return sentry_value_new_null();
+  captureQMLStacktrace("Client Crashed, Current QML Stack:");
+  return event;
 }
 
 // static
@@ -167,4 +156,35 @@ void SentryAdapter::allowCrashReporting() {
 void SentryAdapter::declineCrashReporting() {
   m_userConsent = UserConsentResult::Forbidden;
   emit userConsentChanged();
+}
+
+void SentryAdapter::captureQMLStacktrace(const char* description) {
+  auto engine = QmlEngineHolder::instance()->engine();
+  auto privateEngine = QQmlEnginePrivate::get(engine);
+  QV4::ExecutionEngine* qv4Engine = privateEngine->v4engine();
+  QVector<QV4::StackFrame> stackTrace = qv4Engine->stackTrace(15);
+  sentry_value_t crumb = sentry_value_new_breadcrumb("info", description);
+  sentry_value_set_by_key(crumb, "category",
+                          sentry_value_new_string("stacktrace"));
+  sentry_value_set_by_key(crumb, "level",
+                          sentry_value_new_string("stacktrace"));
+  sentry_value_t data = sentry_value_new_object();
+  for (int i = 0; i < stackTrace.count(); i++) {
+    const QV4::StackFrame& frame = stackTrace.at(i);
+    sentry_value_t sentry_frame = sentry_value_new_object();
+
+    sentry_value_set_by_key(
+        sentry_frame, "function",
+        sentry_value_new_string(frame.function.toLocal8Bit().constData()));
+    sentry_value_set_by_key(
+        sentry_frame, "source",
+        sentry_value_new_string(frame.source.toLocal8Bit().constData()));
+    sentry_value_set_by_key(sentry_frame, "line",
+                            sentry_value_new_int32(frame.line));
+    sentry_value_set_by_key(sentry_frame, "column",
+                            sentry_value_new_int32(frame.column));
+    sentry_value_set_by_key(data, std::to_string(i).c_str(), sentry_frame);
+  }
+  sentry_value_set_by_key(crumb, "data", data);
+  sentry_add_breadcrumb(crumb);
 }
