@@ -54,6 +54,7 @@ class DBusService final : public Daemon, protected QDBusContext {
  private:
   bool removeInterfaceIfExists();
   bool checkCallerAuthz();
+  void dropRootPermissions();
   static QString getPidExePath(uint pid);
 
  private slots:
