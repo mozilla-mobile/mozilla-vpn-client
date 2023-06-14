@@ -285,26 +285,29 @@ void Telemetry::initialize() {
     }
   });
 
-  connect(controller, &Controller::controllerDisconnected, this, [this, controller]() {
-    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-      if (controller->state() == Controller::StateOff) {
-        mozilla::glean::session::session_end.set();
+  connect(
+      controller, &Controller::controllerDisconnected, this,
+      [this, controller]() {
+        if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+          if (controller->state() == Controller::StateOff) {
+            mozilla::glean::session::session_end.set();
 
-        // This generateAndSet must be called after submission of ping.
-        // When doing VPN-4443 ensure it comes after the submission.
+            // This generateAndSet must be called after submission of ping.
+            // When doing VPN-4443 ensure it comes after the submission.
 
-        // We rotating the UUID here as a safety measure. It is rotated
-        // again before the next session start, and we expect to see the
-        // UUID created here in only one ping: The session ping with a
-        // "flush" reason, which should contain this UUID and no other metrics.
-        QString sessionId =
-            mozilla::glean::session::session_id.generateAndSet();
+            // We rotating the UUID here as a safety measure. It is rotated
+            // again before the next session start, and we expect to see the
+            // UUID created here in only one ping: The session ping with a
+            // "flush" reason, which should contain this UUID and no other
+            // metrics.
+            QString sessionId =
+                mozilla::glean::session::session_id.generateAndSet();
 
-        mozilla::glean_pings::Vpnsession.submit("end");
-        m_vpnSessionPingTimer.stop();
-      }
-    }
-  });
+            mozilla::glean_pings::Vpnsession.submit("end");
+            m_vpnSessionPingTimer.stop();
+          }
+        }
+      });
 }
 
 void Telemetry::connectionStabilityEvent() {
