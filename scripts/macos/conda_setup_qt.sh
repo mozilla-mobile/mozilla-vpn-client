@@ -24,15 +24,16 @@ python -m aqt install-qt --outputdir $QT_DIR $HOST ios ${QT_VERSION} -m all
 echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
 
 ## Generate activation/deactivation scripts, so stuff stays portable.
-
-# Set vars on activation of the env
 mkdir -p $CONDA_PREFIX/etc/conda/activate.d/
 mkdir -p $CONDA_PREFIX/etc/conda/deactivate.d/
+
+# Set vars on activation of the env
 cat <<EOF > $CONDA_PREFIX/etc/conda/activate.d/vpn_ios_qt.sh
 #!/bin/bash
 export QT_HOST_PATH=\$CONDA_PREFIX/Qt/$QT_VERSION/$HOST_FOLDER_NAME
 EOF
 chmod +x $CONDA_PREFIX/etc/conda/activate.d/vpn_ios_qt.sh
+
 ## Remove Vars on deactivation
 cat <<EOF > $CONDA_PREFIX/etc/conda/deactivate.d/vpn_ios_qt.sh
 #!/bin/bash
@@ -40,13 +41,13 @@ unset QT_HOST_PATH
 EOF
 chmod +x $CONDA_PREFIX/etc/conda/deactivate.d/vpn_ios_qt.sh
 
-## Add a Helper script to call the right qt-cmake
 
+## Add a Helper script to call the right qt-cmake
 cat <<EOF > $CONDA_PREFIX/bin/qt-cmake
 #!/bin/bash
 $CONDA_PREFIX/Qt/$QT_VERSION/ios/bin/qt-cmake -DQT_HOST_PATH=$QT_HOST_PATH -GXcode "\$@"
 EOF
-chmod +x $CONDA_PREFIX/etc/conda/deactivate.d/vpn_ios_qt.sh
+chmod +x $CONDA_PREFIX/bin/qt-cmake
 
 
 
