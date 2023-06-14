@@ -147,6 +147,12 @@ void MZGlean::broadcastUploadEnabledChange(bool isTelemetryEnabled) {
       ServiceAction::ACTION_SET_GLEAN_UPLOAD_ENABLED,
       doc.toJson(QJsonDocument::Compact));
 #endif
+
+#if defined(MZ_IOS)
+  logger.debug()
+      << "Broadcasting MZGlean upload status to iOS NetworkExtension.";
+  IOSGleanBridge::syncTelemetryEnabled(isTelemetryEnabled);
+#endif
 }
 
 // static
