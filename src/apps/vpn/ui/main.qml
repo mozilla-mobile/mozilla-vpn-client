@@ -216,12 +216,12 @@ Window {
         enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
 
         function onRecordGleanEvent(sample) {
-            console.debug("recording Glean event");
+            console.debug("recording Glean event: " + sample);
             Sample[sample].record();
         }
 
         function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
-            console.debug("recording Glean event with extra keys");
+            console.debug("recording Glean event with extra keys:" + sample + " " + JSON.stringify(extraKeys));
             Sample[sample].record(extraKeys);
         }
     }
