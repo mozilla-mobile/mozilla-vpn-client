@@ -13,7 +13,6 @@
 #include "feature.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
-#include "glean/generated/pings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,9 +55,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
-constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 10800; //3 hours
-constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
-
 #ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
@@ -100,9 +96,6 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
-
-  connect(&m_vpnSessionPingTimer, &QTimer::timeout, this,
-          &Controller::vpnSessionPingTimeout);
 
   LogHandler::instance()->registerLogSerializer(this);
 }
@@ -539,25 +532,6 @@ void Controller::connected(const QString& pubkey,
     resetConnectedTime();
   }
 
-  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-    mozilla::glean_pings::Vpnsession.submit("flush");
-  }
-
-  QString sessionId = mozilla::glean::session::session_id.generateAndSet();
-  mozilla::glean::session::session_start.set();
-  mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
-  mozilla::glean::session::apps_excluded.set(
-      AppPermission::instance()->disabledAppCount());
-
-  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-    mozilla::glean_pings::Vpnsession.submit("start");
-    m_vpnSessionPingTimer.start(
-        (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
-             ? VPNSESSION_PING_TIMER_DEBUG_SEC
-             : VPNSESSION_PING_TIMER_SEC) *
-        1000);
-  }
-
   if (m_nextStep != None) {
     deactivate();
     return;
@@ -602,20 +576,8 @@ void Controller::handshakeTimeout() {
   serverUnavailable();
 }
 
-void Controller::vpnSessionPingTimeout() {
-  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-    mozilla::glean_pings::Vpnsession.submit("timer");
-  }
-}
-
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
-  mozilla::glean::session::session_end.set();
-
-  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-    mozilla::glean_pings::Vpnsession.submit("end");
-    m_vpnSessionPingTimer.stop();
-  }
 
   // This generateAndSet must be called after submission of ping.
   // When doing VPN-4443 ensure it comes after the submission.

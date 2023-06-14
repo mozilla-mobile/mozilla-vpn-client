@@ -20,6 +20,7 @@ class Telemetry final : public QObject {
 
  private:
   void connectionStabilityEvent();
+  void vpnSessionPingTimeout();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   void periodicStateRecorder();
 #endif
@@ -37,6 +38,7 @@ class Telemetry final : public QObject {
 
  private:
   QTimer m_connectionStabilityTimer;
+  QTimer m_vpnSessionPingTimer;
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   QTimer m_gleanControllerUpTimer;
 #endif
