@@ -595,6 +595,7 @@ void Controller::disconnected() {
   }
 
   setState(StateOff);
+  emit controllerDisconnected();
 }
 
 void Controller::timerTimeout() {

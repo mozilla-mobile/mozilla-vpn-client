@@ -281,7 +281,13 @@ void Telemetry::initialize() {
                  ? VPNSESSION_PING_TIMER_DEBUG_SEC
                  : VPNSESSION_PING_TIMER_SEC) *
             1000);
-      } else if (controller->state() == Controller::StateOff) {
+      }
+    }
+  });
+
+  connect(controller, &Controller::controllerDisconnected, this, [this, controller]() {
+    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+      if (controller->state() == Controller::StateOff) {
         mozilla::glean::session::session_end.set();
 
         // This generateAndSet must be called after submission of ping.
