@@ -85,8 +85,6 @@ void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
 
-void Controller::vpnSessionPingTimeout() {}
-
 #ifdef MZ_DUMMY
 QString Controller::currentServerString() const { return QString("42"); }
 #endif
