@@ -16,6 +16,15 @@ vpnsession:
     session-based metrics, etc.
   include_client_id: true
   send_if_empty: false
+  reasons: 
+    flush: |
+      Safety measure for when the vpn session does not end in an expected way, sent right before the start ping
+    start: |
+      A session starts when the VPN gets into a connected state
+    end: |
+      A session ends when the VPN gets into a disconnected state (Manual interaction, force quit the app)
+    timer: |
+      Every 3 hours while the VPN is in a connected state
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-4095
   data_reviews:
