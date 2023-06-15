@@ -29,7 +29,7 @@ public class IOSGleanBridgeImpl : NSObject {
       
       do {
             Logger.global?.log(message: "Sending telemetry state change message.");
-          try TunnelManager.session!.sendProviderMessage(
+          try TunnelManager.session?.sendProviderMessage(
               TunnelMessage.telemetryEnabledChanged(isTelemetryEnabled).encode()
           ) { _ in
               Logger.global?.log(message: "Telemetry state change message sent.")
