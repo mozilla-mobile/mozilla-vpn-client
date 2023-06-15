@@ -123,6 +123,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
     )
 endif()
 
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 NEW)
+endif()
+
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
