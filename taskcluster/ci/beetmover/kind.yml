@@ -6,6 +6,7 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - mozillavpn_taskgraph.transforms.requires_level:transforms
+    - mozillavpn_taskgraph.transforms.beetmover_mac_upstream:transforms
     - mozillavpn_taskgraph.transforms.release_artifacts:transforms
     - mozillavpn_taskgraph.transforms.beetmover:transforms
     - taskgraph.transforms.task:transforms
@@ -13,11 +14,12 @@ transforms:
 kind-dependencies:
     - build
     - signing
+    - mac-notarization
     - repackage-signing
 
 tasks:
     android-arm64:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -35,7 +37,7 @@ tasks:
             tier: 1
             platform: android/arm64-v8a
     android-armv7:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -53,7 +55,7 @@ tasks:
             tier: 1
             platform: android/armv7
     android-x86:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -71,7 +73,7 @@ tasks:
             tier: 1
             platform: android/x86
     android-x64:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -89,7 +91,7 @@ tasks:
             tier: 1
             platform: android/x64
     macos:
-        requires-level: 3 
+        requires-level: 3
         worker-type: beetmover
         worker:
             chain-of-trust: true
@@ -98,6 +100,7 @@ tasks:
         release-artifacts: [MozillaVPN.pkg]
         dependencies:
             signing: signing-macos/opt
+            mac-notarization: mac-notarization-macos/opt
         if-dependencies: [signing]
         attributes:
             build-type: macos/opt
