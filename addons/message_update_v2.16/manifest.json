@@ -48,14 +48,14 @@
         "javascript": "getHelp.js"
       },
       {
-        "id": "extra_1",
+        "id": "extra_1_216",
         "type": "text",
         "content": "Download Mozilla VPN 2.16"
       },
       {
-        "id": "extra_2",
+        "id": "extra_2_216",
         "type": "text",
-        "content": "We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes:"
+        "content": "We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes."
       }
     ]
   }
