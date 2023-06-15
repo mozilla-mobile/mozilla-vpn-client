@@ -72,7 +72,8 @@ set_source_files_properties(
 )
 
 # Statically link to the SQLite driver, if it exists.
-if(TARGET Qt6::QSQLiteDriverPlugin)
+if(QT_FEATURE_static AND TARGET Qt6::QSQLiteDriverPlugin)
+    message("Statically linking to SQLite plugin")
     target_link_libraries(glean PUBLIC Qt6::QSQLiteDriverPlugin)
     qt_import_plugins(glean INCLUDE Qt6::QSQLiteDriverPlugin)
 endif()
