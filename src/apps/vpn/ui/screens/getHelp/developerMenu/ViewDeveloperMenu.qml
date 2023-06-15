@@ -126,6 +126,20 @@ MZViewBase {
             }
         }
 
+        MZCheckBoxRow {
+            id: checkBoxRowVPNSessionPingTimeout
+
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            enabled: VPNController.state === VPNController.StateOff
+            labelText: "VPNSession ping timeout debug mode"
+            subLabelText: "Shortens the VPNSession timer ping cadence from 3 hours to 2 minutes. Requires the VPN to be off"
+            isChecked: MZSettings.vpnSessionPingTimeoutDebug
+            showDivider: false
+            onClicked: {
+                MZSettings.vpnSessionPingTimeoutDebug = !MZSettings.vpnSessionPingTimeoutDebug
+            }
+        }
+
         Rectangle {
             id: divider
             Layout.preferredHeight: 1

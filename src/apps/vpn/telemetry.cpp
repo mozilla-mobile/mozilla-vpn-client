@@ -5,9 +5,13 @@
 #include "telemetry.h"
 
 #include "appconstants.h"
+#include "apppermission.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "dnshelper.h"
+#include "feature.h"
 #include "glean/generated/metrics.h"
+#include "glean/generated/pings.h"
 #include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -26,6 +30,9 @@
 
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
+constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60;  // 3 hours
+constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
+
 namespace {
 Logger logger("Telemetry");
 }  // namespace
@@ -36,6 +43,9 @@ Telemetry::Telemetry() {
   m_connectionStabilityTimer.setSingleShot(true);
   connect(&m_connectionStabilityTimer, &QTimer::timeout, this,
           &Telemetry::connectionStabilityEvent);
+
+  connect(&m_vpnSessionPingTimer, &QTimer::timeout, this,
+          &Telemetry::vpnSessionPingTimeout);
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
@@ -252,6 +262,47 @@ void Telemetry::initialize() {
         {{"error", "canceled"},
          {"sku", PurchaseHandler::instance()->currentSKU()}});
   });
+
+  connect(controller, &Controller::stateChanged, this, [this, controller]() {
+    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+      if (controller->state() == Controller::StateOn) {
+        mozilla::glean_pings::Vpnsession.submit("flush");
+
+        mozilla::glean::session::session_id.generateAndSet();
+        mozilla::glean::session::session_start.set();
+        mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
+        mozilla::glean::session::apps_excluded.set(
+            AppPermission::instance()->disabledAppCount());
+
+        mozilla::glean_pings::Vpnsession.submit("start");
+        m_vpnSessionPingTimer.start(
+            (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
+                 ? VPNSESSION_PING_TIMER_DEBUG_SEC
+                 : VPNSESSION_PING_TIMER_SEC) *
+            1000);
+      }
+    }
+  });
+
+  connect(
+      controller, &Controller::controllerDisconnected, this,
+      [this, controller]() {
+        if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+          if (controller->state() == Controller::StateOff) {
+            mozilla::glean::session::session_end.set();
+
+            mozilla::glean_pings::Vpnsession.submit("end");
+            m_vpnSessionPingTimer.stop();
+
+            // We are rotating the UUID here as a safety measure. It is rotated
+            // again before the next session start, and we expect to see the
+            // UUID created here in only one ping: The session ping with a
+            // "flush" reason, which should contain this UUID and no other
+            // metrics.
+            mozilla::glean::session::session_id.generateAndSet();
+          }
+        }
+      });
 }
 
 void Telemetry::connectionStabilityEvent() {
@@ -280,6 +331,12 @@ void Telemetry::connectionStabilityEvent() {
        {"loss", QString::number(vpn->connectionHealth()->loss())},
        {"stddev", QString::number(vpn->connectionHealth()->stddev())},
        {"transport", vpn->networkWatcher()->getCurrentTransport()}});
+}
+
+void Telemetry::vpnSessionPingTimeout() {
+  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+    mozilla::glean_pings::Vpnsession.submit("timer");
+  }
 }
 
 void Telemetry::startTimeToFirstScreenTimer() {
