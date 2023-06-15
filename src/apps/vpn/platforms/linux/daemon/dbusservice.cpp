@@ -235,6 +235,11 @@ QString DBusService::runningApps() {
 
 /* Update the firewall for running applications matching the application ID. */
 bool DBusService::firewallApp(const QString& appName, const QString& state) {
+  if (!checkCallerAuthz()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   logger.debug() << "Setting" << appName << "to firewall state" << state;
 
   // Update the split tunnelling state for any running apps.
@@ -261,6 +266,11 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
 
 /* Update the firewall for the application matching the desired PID. */
 bool DBusService::firewallPid(int rootpid, const QString& state) {
+  if (!checkCallerAuthz()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
 #if 0
   ProcessGroup* group = m_pidtracker->group(rootpid);
   if (!group) {
@@ -282,6 +292,11 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
 
 /* Clear the firewall and return all applications to the active state */
 bool DBusService::firewallClear() {
+  if (!checkCallerAuthz()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   logger.debug() << "Clearing excluded app list";
   m_wgutils->resetAllCgroups();
   m_excludedApps.clear();
