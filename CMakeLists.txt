@@ -64,7 +64,7 @@ if(APPLE)
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
     else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
     endif()
 endif()
 
@@ -121,6 +121,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
         NetworkAuth
         Sql
     )
+endif()
+
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 NEW)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")
