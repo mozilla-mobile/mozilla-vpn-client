@@ -64,7 +64,7 @@ if(APPLE)
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
     else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
     endif()
 endif()
 
