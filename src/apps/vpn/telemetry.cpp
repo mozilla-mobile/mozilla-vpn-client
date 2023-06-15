@@ -268,8 +268,7 @@ void Telemetry::initialize() {
       if (controller->state() == Controller::StateOn) {
         mozilla::glean_pings::Vpnsession.submit("flush");
 
-        QString sessionId =
-            mozilla::glean::session::session_id.generateAndSet();
+        mozilla::glean::session::session_id.generateAndSet();
         mozilla::glean::session::session_start.set();
         mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
         mozilla::glean::session::apps_excluded.set(
@@ -292,19 +291,15 @@ void Telemetry::initialize() {
           if (controller->state() == Controller::StateOff) {
             mozilla::glean::session::session_end.set();
 
-            // This generateAndSet must be called after submission of ping.
-            // When doing VPN-4443 ensure it comes after the submission.
+            mozilla::glean_pings::Vpnsession.submit("end");
+            m_vpnSessionPingTimer.stop();
 
-            // We rotating the UUID here as a safety measure. It is rotated
+            // We are rotating the UUID here as a safety measure. It is rotated
             // again before the next session start, and we expect to see the
             // UUID created here in only one ping: The session ping with a
             // "flush" reason, which should contain this UUID and no other
             // metrics.
-            QString sessionId =
-                mozilla::glean::session::session_id.generateAndSet();
-
-            mozilla::glean_pings::Vpnsession.submit("end");
-            m_vpnSessionPingTimer.stop();
+            mozilla::glean::session::session_id.generateAndSet();
           }
         }
       });
