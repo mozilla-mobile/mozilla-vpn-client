@@ -7,6 +7,5 @@
 import Qt5Compat.GraphicalEffects
 import QtGraphicalEffects 1.0
 import Qt.labs.qmlmodels 1.0
-import QtQuick.LocalStorage 2.0
 
 Item {}
