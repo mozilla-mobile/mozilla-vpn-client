@@ -1,5 +1,5 @@
 (function (api) {
-  // Extra_1 and extra_2 are used only to have a localized string.
+  // "Extra" fields are used only to get a localized string.
   api.addon.composer.remove('extra_1_216_v2');
 
   if (('updateTime' in api.settings)) {
