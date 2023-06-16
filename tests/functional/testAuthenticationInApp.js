@@ -575,6 +575,30 @@ describe('User authentication', function() {
       await vpn.waitForQuery(queries.screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
 
+      // Sign in button is diabled when view loads
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+              .disabled());
+
+      // Sign in button is enabled when the password input has a text.length
+      // of at least 1 character
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+              .visible(),
+          'text', '1');
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+              .enabled());
+
+      // Sign in button is disabled again if when the input is empty
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+              .visible(),
+          'text', '');
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+              .disabled());
+
       await vpn.copyToClipboard('pa$$vv0rd');
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_PASTE_BUTTON

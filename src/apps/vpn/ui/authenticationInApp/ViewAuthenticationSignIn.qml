@@ -59,7 +59,7 @@ MZInAppAuthenticationBase {
         objectName: "authSignIn"
         id: authInputs
 
-        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignIn && !activeInput().hasError
+        _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignIn && !activeInput().hasError && activeInput().text.length > 0
         _buttonOnClicked: (inputText) => {
              MZAuthInApp.setPassword(inputText);
              MZAuthInApp.signIn();
