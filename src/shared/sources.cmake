@@ -122,8 +122,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/frontend/navigatorreloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/mzglean.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c

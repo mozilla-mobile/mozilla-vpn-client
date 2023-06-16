@@ -12,12 +12,10 @@
 #include "authenticationinappsession.h"
 #include "glean/generated/metrics.h"
 #include "glean/metrictypes.h"
-#include "gleandeprecated.h"
 #include "incrementaldecoder.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "resourceloader.h"
-#include "telemetry/gleansample.h"
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
 
@@ -56,13 +54,10 @@ void AuthenticationInApp::setState(State state,
   emit stateChanged();
 
   Q_ASSERT(session);
-  const char* gleanSample = nullptr;
   QString stateAsString = QVariant::fromValue(state).toString();
   switch (session->type()) {
     case AuthenticationInAppSession::TypeDefault:
       logger.debug() << "TypeDefault";
-      gleanSample = GleanSample::authenticationInappStep;
-
       mozilla::glean::sample::authentication_inapp_step.record(
           mozilla::glean::sample::AuthenticationInappStepExtra{
               ._state = stateAsString});
@@ -70,8 +65,6 @@ void AuthenticationInApp::setState(State state,
       break;
     case AuthenticationInAppSession::TypeAccountDeletion:
       logger.debug() << "TypeAccountDeletion";
-      gleanSample = GleanSample::authenticationAcntDelStep;
-
       mozilla::glean::sample::authentication_acnt_del_step.record(
           mozilla::glean::sample::AuthenticationAcntDelStepExtra{
               ._state = stateAsString});
@@ -79,8 +72,6 @@ void AuthenticationInApp::setState(State state,
       break;
     case AuthenticationInAppSession::TypeSubscriptionManagement:
       logger.debug() << "TypeSubscriptionManagement";
-      gleanSample = GleanSample::authenticationSubManageStep;
-
       mozilla::glean::sample::authentication_sub_manage_step.record(
           mozilla::glean::sample::AuthenticationSubManageStepExtra{
               ._state = stateAsString});
@@ -90,11 +81,6 @@ void AuthenticationInApp::setState(State state,
       logger.error()
           << "Glean samples and Auth-in-app session types are out of sync";
   }
-
-  Q_ASSERT(gleanSample);
-
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      gleanSample, {{"state", stateAsString}});
 }
 
 void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {

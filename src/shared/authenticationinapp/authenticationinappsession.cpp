@@ -15,13 +15,11 @@
 #include "constants.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "hawkauth.h"
 #include "hkdf.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("AuthenticationInAppSession");
@@ -652,8 +650,6 @@ void AuthenticationInAppSession::deleteAccount() {
           });
 
   mozilla::glean::sample::delete_account_clicked.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::deleteAccountClicked);
 }
 
 void AuthenticationInAppSession::finalizeSignInOrUp() {
@@ -843,10 +839,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
           mozilla::glean::sample::AuthenticationInappErrorExtra{
               ._errno = "107",
               ._validation = QJsonDocument(objValidation).toJson()});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::authenticationInappError,
-          {{"errno", "107"},
-           {"validation", QJsonDocument(objValidation).toJson()}});
 
       logger.error() << "Unsupported validation parameter";
       break;
@@ -876,9 +868,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       mozilla::glean::sample::authentication_inapp_error.record(
           mozilla::glean::sample::AuthenticationInappErrorExtra{
               ._errno = "125", ._verificationmethod = verificationMethod});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::authenticationInappError,
-          {{"errno", "125"}, {"verificationmethod", verificationMethod}});
 
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
@@ -1050,11 +1039,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
               ._errno = QString::number(errorCode),
               ._error = obj["error"].toString(),
               ._message = obj["message"].toString()});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::authenticationInappError,
-          {{"errno", QString::number(errorCode)},
-           {"error", obj["error"].toString()},
-           {"message", obj["message"].toString()}});
       logger.error() << "Unsupported error code:" << errorCode;
       break;
   }

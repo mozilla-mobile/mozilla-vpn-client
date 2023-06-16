@@ -33,7 +33,6 @@ MZViewBase {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
-                        MZGleanDeprecated.recordGleanEvent("manageAccountClicked")
                         Glean.sample.manageAccountClicked.record();
                         MZUrlOpener.openUrlLabel("account");
                     }
@@ -125,7 +124,6 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    MZGleanDeprecated.recordGleanEvent("getHelpClickedViewSettings");
                     Glean.sample.getHelpClickedViewSettings.record();
                     MZNavigator.requestScreen(VPN.ScreenGetHelp);
                 }
@@ -138,7 +136,6 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    MZGleanDeprecated.recordGleanEvent("settingsAboutUsOpened");
                     Glean.sample.settingsAboutUsOpened.record();
                     stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
                 }
@@ -195,7 +192,6 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
-        MZGleanDeprecated.recordGleanEvent("settingsViewOpened");
         Glean.sample.settingsViewOpened.record();
     }
 }

@@ -148,11 +148,6 @@ and production pings through the `client_info.app_channel` metric present in all
 
 [app-channel]: https://mozilla.github.io/glean/book/reference/general/initializing.html?highlight=app%20channel#gleaninitializeconfiguration
 
-### A note on Glean embedding
-
-Qt only accepts `major.minor` versions for importing. So if, for example,
-you're embedding glean v0.21.2 then it will still, for Qt's purpose, be v0.21.
-
 ### Working on tickets with new Glean instrumentation
 
 If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.

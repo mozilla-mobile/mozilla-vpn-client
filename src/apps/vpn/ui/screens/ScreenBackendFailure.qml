@@ -38,7 +38,6 @@ MZStackView {
             }
         );
 
-        MZGleanDeprecated.recordGleanEvent("backendFailureViewed");
         Glean.sample.backendFailureViewed.record();
     }
 }

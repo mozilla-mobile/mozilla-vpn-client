@@ -148,7 +148,6 @@ ColumnLayout {
                     colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ? MZTheme.theme.blueButton : MZTheme.theme.redButton
 
                     onClicked: {
-                        MZGleanDeprecated.recordGleanEventWithExtraKeys("addonCtaClicked", { "addon_id": addon.id });
                         Glean.sample.addonCtaClicked.record({
                             addon_id: addon.id
                         });

@@ -259,7 +259,6 @@ Item {
         }
 
         tutorialPopup.secondaryButtonOnClicked = () => {
-            MZGleanDeprecated.recordGleanEventWithExtraKeys("tutorialAborted", {"id": MZTutorial.currentTutorial.id});
             Glean.sample.tutorialAborted.record({ id: MZTutorial.currentTutorial.id });
             tutorialPopup._onClosed = () => {
                 if (op !== null) MZTutorial.interruptAccepted(op);

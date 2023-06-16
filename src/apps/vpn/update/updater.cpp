@@ -6,11 +6,9 @@
 
 #include "constants.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "telemetry/gleansample.h"
 #include "versionapi.h"
 #include "webupdater.h"
 
@@ -48,10 +46,6 @@ Updater::Updater(QObject* parent) : QObject(parent) {
         mozilla::glean::sample::UpdateStepExtra{
             ._state =
                 QVariant::fromValue(RecommendedUpdateAvailable).toString()});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::updateStep,
-        {{"state",
-          QVariant::fromValue(RecommendedUpdateAvailable).toString()}});
   });
 
   connect(this, &Updater::updateRequired, [this] {
@@ -60,9 +54,6 @@ Updater::Updater(QObject* parent) : QObject(parent) {
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
             ._state = QVariant::fromValue(RequiredUpdateAvailable).toString()});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::updateStep,
-        {{"state", QVariant::fromValue(RequiredUpdateAvailable).toString()}});
   });
   logger.debug() << "Updater created";
 }
@@ -85,7 +76,4 @@ void Updater::updateViewShown() {
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(UpdateViewShown).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::updateStep,
-      {{"state", QVariant::fromValue(UpdateViewShown).toString()}});
 }

@@ -176,10 +176,6 @@ Item {
     Component.onCompleted: MZNavigator.addView(VPN.ScreenSettings, root)
 
     Component.onDestruction: {
-        MZGleanDeprecated.recordGleanEventWithExtraKeys("guideClosed",{
-                                          "id": guide.id,
-                                          "duration_ms": new Date().getTime() - timeOfOpen
-        });
         Glean.sample.guideClosed.record({
             "id": guide.id,
             "duration_ms": new Date().getTime() - timeOfOpen

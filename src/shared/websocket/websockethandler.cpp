@@ -11,13 +11,11 @@
 #include "appconstants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "pushmessage.h"
 #include "settingsholder.h"
-#include "telemetry/gleansample.h"
 #include "urlopener.h"
 
 namespace {
@@ -161,8 +159,6 @@ void WebSocketHandler::open() {
                  << webSocketServerUrl();
 
   mozilla::glean::sample::websocket_connection_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketConnectionAttempted);
 
   QNetworkRequest request;
   request.setRawHeader("Authorization",
@@ -180,8 +176,6 @@ void WebSocketHandler::onConnected() {
   m_aboutToClose = false;
 
   mozilla::glean::sample::websocket_connected.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketConnected);
 
   m_backoffStrategy.reset();
 #ifdef UNIT_TEST
@@ -217,8 +211,6 @@ void WebSocketHandler::close() {
   m_webSocket.close();
 
   mozilla::glean::sample::websocket_close_attempted.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketCloseAttempted);
 }
 
 /**
@@ -236,8 +228,6 @@ void WebSocketHandler::onClose() {
   mozilla::glean::sample::websocket_closed.record(
       mozilla::glean::sample::WebsocketClosedExtra{
           ._reason = m_webSocket.closeCode()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::websocketClosed, {{"reason", m_webSocket.closeCode()}});
 
   m_pingTimer.stop();
 
@@ -305,8 +295,6 @@ void WebSocketHandler::onPingTimeout() {
   logger.debug() << "Timed out waiting for ping response";
 
   mozilla::glean::sample::websocket_pong_timed_out.record();
-  emit GleanDeprecated::instance()->recordGleanEvent(
-      GleanSample::websocketPongTimedOut);
 
   close();
 }
@@ -323,9 +311,6 @@ void WebSocketHandler::onError(QAbstractSocket::SocketError error) {
   mozilla::glean::sample::websocket_errored.record(
       mozilla::glean::sample::WebsocketErroredExtra{
           ._type = QVariant::fromValue(error).toInt()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::websocketErrored,
-      {{"type", QVariant::fromValue(error).toInt()}});
 
   close();
 }
@@ -343,9 +328,6 @@ void WebSocketHandler::onMessageReceived(const QString& message) {
   mozilla::glean::sample::push_message_received.record(
       mozilla::glean::sample::PushMessageReceivedExtra{
           ._type = QVariant::fromValue(parsedMessage.type()).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::pushMessageReceived,
-      {{"type", QVariant::fromValue(parsedMessage.type()).toString()}});
 
   parsedMessage.executeAction();
 }

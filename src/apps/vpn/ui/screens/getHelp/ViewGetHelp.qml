@@ -30,7 +30,6 @@ MZViewBase {
             backgroundColor: MZTheme.theme.clickableRowBlue
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
-                MZGleanDeprecated.recordGleanEvent("helpMenuHelpCenterOpened");
                 Glean.sample.helpMenuHelpCenterOpened.record();
                 MZUrlOpener.openUrlLabel("sumo")
             }
@@ -46,7 +45,6 @@ MZViewBase {
             backgroundColor: MZTheme.theme.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
-                MZGleanDeprecated.recordGleanEvent("helpContactSupportOpened");
                 Glean.sample.helpContactSupportOpened.record();
                 getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
             }
@@ -62,7 +60,6 @@ MZViewBase {
             backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
-                MZGleanDeprecated.recordGleanEvent("helpMenuViewLogsOpened");
                 Glean.sample.helpMenuViewLogsOpened.record();
                 MZLog.requestViewLogs()
             }
