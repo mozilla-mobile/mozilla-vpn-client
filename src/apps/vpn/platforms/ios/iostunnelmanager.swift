@@ -36,11 +36,16 @@ class TunnelManager {
         precondition(!bundleId.isEmpty)
         vpnBundleId = bundleId;
         
-        TunnelManager.instance.setTunnel {
+        Logger.configureGlobal(tagged: "MANAGER", withFilePath: "")
+        Logger.global?.log(message: "Attempting to initialize VPN tunnel")
+        
+        TunnelManager.instance.setTunnel { 
             switch TunnelManager.instance.tunnel {
             case .failure(let error):
+                Logger.global?.log(message: "Error initializing tunnel: \(error).")
                 return completionHandler(error, nil)
             case .success(let tunnel):
+                Logger.global?.log(message: "Tunnel initialized succesfully")
                 return completionHandler(nil, tunnel)
             case .none:
                 fatalError("IMPOSSIBLE: Attempted to set the VPN tunnel, but didn't get an error nor a tunnel.")
@@ -69,11 +74,13 @@ class TunnelManager {
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             if self == nil {
                 Logger.global?.log(message: "We are shutting down.")
+                completionHandler();
                 return
             }
 
             if let error = error {
                 Logger.global?.log(message: "Loading from preference failed: \(error)")
+                completionHandler();
                 return
             }
 
@@ -84,12 +91,12 @@ class TunnelManager {
             if tunnel == nil {
                 Logger.global?.log(message: "Creating the tunnel")
                 self!.tunnel = .success(NETunnelProviderManager())
+                completionHandler();
                 return
             }
 
             Logger.global?.log(message: "Tunnel already exists")
             self!.tunnel = .success(tunnel!)
-
             completionHandler();
         }
     }
