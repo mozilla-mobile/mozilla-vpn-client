@@ -17,13 +17,11 @@
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "models/featuremodel.h"
 #include "models/licensemodel.h"
 #include "settingsholder.h"
-#include "telemetry/gleansample.h"
 #include "theme.h"
 #include "tutorial/tutorial.h"
 #include "urlopener.h"
@@ -62,8 +60,6 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                Env::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZFeatureList",
                                FeatureModel::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZGleanDeprecated",
-                               GleanDeprecated::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",
                                LicenseModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLocalizer",

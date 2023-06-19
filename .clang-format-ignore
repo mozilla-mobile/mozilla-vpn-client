@@ -4,9 +4,6 @@
 ./src/shared/hacl-star/*
 ./src/apps/vpn/platforms/windows/golang-msvc-types.h
 ./extension/app/json.hpp
-./glean/org/mozilla/Glean/glean.js
-./glean/org/mozilla/Glean/glean.lib.js
-./glean/telemetry/*
 ./translations/generated/*
 ./build/*
 ./build-*/*

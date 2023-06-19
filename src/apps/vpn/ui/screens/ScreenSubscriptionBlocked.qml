@@ -35,7 +35,6 @@ MZStackView {
             getHelpLinkVisible: false
             }
         );
-        MZGleanDeprecated.recordGleanEvent("subscriptionBlockedViewed");
         Glean.sample.subscriptionBlockedViewed.record();
     }
 }

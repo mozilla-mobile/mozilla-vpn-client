@@ -20,13 +20,6 @@ class TestHelper final : public QObject {
 
  public:
   static TestHelper* instance();
-  Q_INVOKABLE void triggerAboutToQuit() const;
-  Q_INVOKABLE void triggerInitializeGlean() const;
-  Q_INVOKABLE void triggerRecordGleanEvent(const QString& event) const;
-  Q_INVOKABLE void triggerRecordGleanEventWithExtraKeys(
-      const QString& event, const QVariantMap& keys) const;
-  Q_INVOKABLE void triggerSendGleanPings() const;
-  Q_INVOKABLE void triggerSetGleanSourceTags(const QStringList& tags) const;
   Q_PROPERTY(bool mainWindowLoadedCalled READ mainWindowLoadedCalled)
 
   bool mainWindowLoadedCalled() const;

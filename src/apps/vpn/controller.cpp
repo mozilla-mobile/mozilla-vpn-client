@@ -32,7 +32,6 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
-#include "telemetry/gleansample.h"
 #include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)

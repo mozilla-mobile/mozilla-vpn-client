@@ -7,8 +7,6 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import components 0.1
-import telemetry 0.30
-
 
 Item {
     id: root
