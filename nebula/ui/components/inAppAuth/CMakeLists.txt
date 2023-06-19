@@ -16,13 +16,9 @@ qt_add_qml_module(inAppAuth
     URI components.inAppAuth 
     RESOURCE_PREFIX /nebula
     QML_FILES
-        VPNInAppAuthenticationBase.qml
-        VPNInAppAuthenticationErrorPopup.qml
-        VPNInAppAuthenticationInputs.qml
-        VPNInAppAuthenticationPasswordCondition.qml
-        VPNInAppAuthenticationLegalDisclaimer.qml
-    IMPORTS
-        QtQuick/2
-        QtQuick.Layouts/2
-        components/auto
+        MZInAppAuthenticationBase.qml
+        MZInAppAuthenticationErrorPopup.qml
+        MZInAppAuthenticationInputs.qml
+        MZInAppAuthenticationPasswordCondition.qml
+        MZInAppAuthenticationLegalDisclaimer.qml
 )

@@ -25,7 +25,7 @@ if(NOT MSVC AND NOT IOS)
 endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)
-target_link_libraries(lottie PUBLIC Qt6::Core Qt6::Qml)
+target_link_libraries(lottie PUBLIC lottieplugin Qt6::Core Qt6::Qml)
 target_include_directories(lottie PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 target_sources(lottie PRIVATE

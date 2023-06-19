@@ -14,11 +14,11 @@ qt_add_qml_module(compat
     URI compat 
     RESOURCE_PREFIX /nebula
     QML_FILES
-        qt6/VPNColorOverlay.qml
-        qt6/VPNLinearGradient.qml
-        qt6/VPNRadialGradient.qml
-        qt6/VPNRectangularGlow.qml
-        qt6/VPNAnimatedRingsShader.qml
-        qt6/VPNOpacityMask.qml
-        qt6/VPNDropShadow.qml
+        qt6/MZColorOverlay.qml
+        qt6/MZLinearGradient.qml
+        qt6/MZRadialGradient.qml
+        qt6/MZRectangularGlow.qml
+        qt6/MZAnimatedRingsShader.qml
+        qt6/MZOpacityMask.qml
+        qt6/MZDropShadow.qml
 )

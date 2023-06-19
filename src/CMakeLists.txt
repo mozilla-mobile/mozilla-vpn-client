@@ -47,7 +47,6 @@ target_link_libraries(mozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
     lottie
-    lottieplugin
     nebula
     translations_vpn
     qtglean

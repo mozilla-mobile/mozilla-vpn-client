@@ -20,7 +20,6 @@ qt_add_qml_module(resources
         avatar-delete-account.svg
         back-dark.svg
         back.svg
-        bandwidth.svg
         buttonLoader.svg
         checkmark.svg
         checkmark-green.svg
@@ -30,316 +29,30 @@ qt_add_qml_module(resources
         close-darker.svg
         close-dark.svg
         close-white.svg
-        connection-info.svg
-        connection.svg
-        connection-green.svg
-        download.svg
         delete.svg
         delete-white.svg
         delete-gray.svg
-        devicesLimit.svg
-        devicesRemove.svg
-        devices.svg
         down.svg
         dropdown-closed.svg
         externalLink.svg
         eye-hidden.svg
         eye-visible.svg
-        animations/globe_animation.json
-        animations/lock_animation.json
-        animations/speedometer_animation.json
-        animations/vpnactive_animation.json
-        animations/vpnlogo-drop_animation.json
-        animations/vpnlogo-kinetic_animation.json
-        flags/AC.png
-        flags/AD.png
-        flags/AE.png
-        flags/AF.png
-        flags/AG.png
-        flags/AI.png
-        flags/AL.png
-        flags/AM.png
-        flags/AO.png
-        flags/AQ.png
-        flags/AR.png
-        flags/AS.png
-        flags/AT.png
-        flags/AU.png
-        flags/AW.png
-        flags/AX.png
-        flags/AZ.png
-        flags/BA.png
-        flags/BB.png
-        flags/BD.png
-        flags/BE.png
-        flags/BF.png
-        flags/BG.png
-        flags/BH.png
-        flags/BI.png
-        flags/BJ.png
-        flags/BL.png
-        flags/BM.png
-        flags/BN.png
-        flags/BO.png
-        flags/BQ.png
-        flags/BR.png
-        flags/BS.png
-        flags/BT.png
-        flags/BV.png
-        flags/BW.png
-        flags/BY.png
-        flags/BZ.png
-        flags/CA.png
-        flags/CC.png
-        flags/CD.png
-        flags/CF.png
-        flags/CG.png
-        flags/CH.png
-        flags/CI.png
-        flags/CK.png
-        flags/CL.png
-        flags/CM.png
-        flags/CN.png
-        flags/CO.png
-        flags/CP.png
-        flags/CR.png
-        flags/CU.png
-        flags/CV.png
-        flags/CW.png
-        flags/CX.png
-        flags/CY.png
-        flags/CZ.png
-        flags/DE.png
-        flags/DG.png
-        flags/DJ.png
-        flags/DK.png
-        flags/DM.png
-        flags/DO.png
-        flags/DZ.png
-        flags/EA.png
-        flags/EC.png
-        flags/EE.png
-        flags/EG.png
-        flags/EH.png
-        flags/ER.png
-        flags/ES.png
-        flags/ET.png
-        flags/EU.png
-        flags/FI.png
-        flags/FJ.png
-        flags/FK.png
-        flags/FM.png
-        flags/FO.png
-        flags/FR.png
-        flags/GA.png
-        flags/GB.png
-        flags/GD.png
-        flags/GE.png
-        flags/GF.png
-        flags/GG.png
-        flags/GH.png
-        flags/GI.png
-        flags/GL.png
-        flags/GM.png
-        flags/GN.png
-        flags/GP.png
-        flags/GQ.png
-        flags/GR.png
-        flags/GS.png
-        flags/GT.png
-        flags/GU.png
-        flags/GW.png
-        flags/GY.png
-        flags/HK.png
-        flags/HM.png
-        flags/HN.png
-        flags/HR.png
-        flags/HT.png
-        flags/HU.png
-        flags/IC.png
-        flags/ID.png
-        flags/IE.png
-        flags/IL.png
-        flags/IM.png
-        flags/IN.png
-        flags/IO.png
-        flags/IQ.png
-        flags/IR.png
-        flags/IS.png
-        flags/IT.png
-        flags/JE.png
-        flags/JM.png
-        flags/JO.png
-        flags/JP.png
-        flags/KE.png
-        flags/KG.png
-        flags/KH.png
-        flags/KI.png
-        flags/KM.png
-        flags/KN.png
-        flags/KP.png
-        flags/KR.png
-        flags/KW.png
-        flags/KY.png
-        flags/KZ.png
-        flags/LA.png
-        flags/LB.png
-        flags/LC.png
-        flags/LI.png
-        flags/LK.png
-        flags/LR.png
-        flags/LS.png
-        flags/LT.png
-        flags/LU.png
-        flags/LV.png
-        flags/LY.png
-        flags/MA.png
-        flags/MC.png
-        flags/MD.png
-        flags/ME.png
-        flags/MF.png
-        flags/MG.png
-        flags/MH.png
-        flags/MK.png
-        flags/ML.png
-        flags/MM.png
-        flags/MN.png
-        flags/MO.png
-        flags/MP.png
-        flags/MQ.png
-        flags/MR.png
-        flags/MS.png
-        flags/MT.png
-        flags/MU.png
-        flags/MV.png
-        flags/MW.png
-        flags/MX.png
-        flags/MY.png
-        flags/MZ.png
-        flags/NA.png
-        flags/NC.png
-        flags/NE.png
-        flags/NF.png
-        flags/NG.png
-        flags/NI.png
-        flags/NL.png
-        flags/NO.png
-        flags/NP.png
-        flags/NR.png
-        flags/NU.png
-        flags/NZ.png
-        flags/OM.png
-        flags/PA.png
-        flags/PE.png
-        flags/PF.png
-        flags/PG.png
-        flags/PH.png
-        flags/PK.png
-        flags/PL.png
-        flags/PM.png
-        flags/PN.png
-        flags/PR.png
-        flags/PS.png
-        flags/PT.png
-        flags/PW.png
-        flags/PY.png
-        flags/QA.png
-        flags/RE.png
-        flags/RO.png
-        flags/RS.png
-        flags/RU.png
-        flags/RW.png
-        flags/SA.png
-        flags/SB.png
-        flags/SC.png
-        flags/SD.png
-        flags/SE.png
-        flags/SG.png
-        flags/SH.png
-        flags/SI.png
-        flags/SJ.png
-        flags/SK.png
-        flags/SL.png
-        flags/SM.png
-        flags/SN.png
-        flags/SO.png
-        flags/SR.png
-        flags/SS.png
-        flags/ST.png
-        flags/SV.png
-        flags/SX.png
-        flags/SY.png
-        flags/SZ.png
-        flags/TA.png
-        flags/TC.png
-        flags/TD.png
-        flags/TF.png
-        flags/TG.png
-        flags/TH.png
-        flags/TJ.png
-        flags/TK.png
-        flags/TL.png
-        flags/TM.png
-        flags/TN.png
-        flags/TO.png
-        flags/TR.png
-        flags/TT.png
-        flags/TV.png
-        flags/TW.png
-        flags/TZ.png
-        flags/UA.png
-        flags/UG.png
-        flags/UM.png
-        flags/UN.png
-        flags/US.png
-        flags/UY.png
-        flags/UZ.png
-        flags/VA.png
-        flags/VC.png
-        flags/VE.png
-        flags/VG.png
-        flags/VI.png
-        flags/VN.png
-        flags/VU.png
-        flags/WF.png
-        flags/WS.png
-        flags/XK.png
-        flags/YE.png
-        flags/YT.png
-        flags/ZA.png
-        flags/ZM.png
-        flags/ZW.png
         fonts/InterUI.otf
         fonts/InterSemiBold.otf
         fonts/Metropolis.otf
         fonts/Metropolis-SemiBold.otf
-        gift-dark.svg
-        globe.svg
-        Icon1024.png
-        location-dark.svg
-        logo-dock.png
-        magic-dark.svg
         open-in-new.svg
         plus.svg
         refresh.svg
         search.svg
-        server-unavailable.svg
         settings.svg
         settings-white.svg
-        server-latency-strong.svg
-        server-latency-unavailable.svg
-        server-latency-weak.svg
         shaders/baked/animatedRings.frag.qsb
         shaders/src/animatedRings.frag
-        shield-off.svg
-        shield-on.svg
-        sparkles.svg
         spinner.svg
-        switching.svg
         update-lock.svg
         updateStatusUpdateAvailable.svg
         updateStatusUpToDate.svg
-        upload.svg
         verification-code.svg
         warning-dark-orange.svg
         warning-orange.svg
@@ -358,4 +71,6 @@ qt_add_qml_module(resources
         navbar/messages-notification.svg
         copy.svg
         paste.svg
+        info.svg
+
     )
