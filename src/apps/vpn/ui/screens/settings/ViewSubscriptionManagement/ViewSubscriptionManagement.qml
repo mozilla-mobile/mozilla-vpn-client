@@ -38,7 +38,6 @@ MZViewBase {
 
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
-                MZGleanDeprecated.recordGleanEvent("manageAccountClicked");
                 Glean.sample.manageAccountClicked.record();
                 MZUrlOpener.openUrlLabel("account");
             }
@@ -113,7 +112,6 @@ MZViewBase {
                 visible: MZFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    MZGleanDeprecated.recordGleanEvent("deleteAccountRequested");
                     MZNavigator.requestScreen(VPN.ScreenDeleteAccount)
                 }
 
@@ -138,7 +136,6 @@ MZViewBase {
                 MZUrlOpener.openUrlLabel("account");
         }
 
-        MZGleanDeprecated.recordGleanEvent("manageSubscriptionClicked");
         Glean.sample.manageSubscriptionClicked.record();
     }
 

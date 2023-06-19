@@ -28,14 +28,12 @@
 #include "env.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "state/addonsessionstate.h"
-#include "telemetry/gleansample.h"
 #include "versionutils.h"
 
 namespace {
@@ -479,9 +477,6 @@ void Addon::updateAddonStatus(Status newStatus) {
           ._addonId = m_id,
           ._state = newStatusSetting,
       });
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::addonStateChanged,
-      {{"addon_id", m_id}, {"state", newStatusSetting}});
 }
 
 void Addon::retranslate() {

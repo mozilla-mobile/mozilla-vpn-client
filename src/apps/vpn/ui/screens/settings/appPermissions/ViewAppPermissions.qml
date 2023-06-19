@@ -67,7 +67,6 @@ MZViewBase {
     Component.onCompleted: {
         console.log("Component ready");
         VPNAppPermissions.requestApplist();
-        MZGleanDeprecated.recordGleanEvent("appPermissionsViewOpened");
         Glean.sample.appPermissionsViewOpened.record();
     }
 

@@ -4,7 +4,6 @@
 
 #include "commandui.h"
 
-#include <glean.h>
 #include <lottie.h>
 #include <nebula.h>
 
@@ -24,7 +23,6 @@
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
-#include "gleandeprecated.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -50,7 +48,6 @@
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "telemetry.h"
-#include "telemetry/gleansample.h"
 #include "temporarydir.h"
 #include "update/updater.h"
 
@@ -232,10 +229,32 @@ int CommandUI::run(QStringList& tokens) {
     QQmlContext* ctx = engine->rootContext();
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
-    // Glean.js
-    Glean::Initialize(engine);
     // Glean.rs
     MZGlean::initialize();
+    // Clear leftover Glean.js stored data.
+    // TODO: This code can be removed starting one year after it is released.
+    auto offlineStorageDirectory =
+        QDir(QmlEngineHolder::instance()->engine()->offlineStoragePath() +
+             "/Databases");
+    logger.debug()
+        << "HELLO"
+        << QmlEngineHolder::instance()->engine()->offlineStoragePath() +
+               "/Databases";
+    if (offlineStorageDirectory.exists()) {
+      QStringList files = offlineStorageDirectory.entryList();
+      for (const QString& file : files) {
+        logger.debug() << "HELLO"
+                       << offlineStorageDirectory.absoluteFilePath(file);
+        // Note: This is kinda dumb, it doesn't really know that this is
+        // Glean.js' storage. Since Glean.js was the only thing using sqlite in
+        // the app at the time of implementation this is fine. If we ever add
+        // other SQLite using things, then we need to change this.
+        if (file.endsWith(".sqlite")) {
+          logger.debug() << "HELLO" << file;
+          QFile::remove(offlineStorageDirectory.absoluteFilePath(file));
+        }
+      }
+    }
 
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
@@ -253,11 +272,6 @@ int CommandUI::run(QStringList& tokens) {
               ._state =
                   QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
                       .toString()});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::updateStep,
-          {{"state",
-            QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
-                .toString()}});
     }
 
 #ifndef Q_OS_WIN

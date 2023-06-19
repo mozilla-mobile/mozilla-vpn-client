@@ -11,12 +11,10 @@
 #include "controller.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("ConnectionBenchmark");
@@ -59,9 +57,6 @@ void ConnectionBenchmark::setConnectionSpeed() {
     m_speed = SpeedSlow;
   }
 
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::speedTestCompleted,
-      {{"speed", QVariant::fromValue(m_speed).toString()}});
   mozilla::glean::sample::speed_test_completed.record(
       mozilla::glean::sample::SpeedTestCompletedExtra{
           ._speed = QVariant::fromValue(m_speed).toString()});
@@ -74,8 +69,6 @@ void ConnectionBenchmark::setState(State state) {
   // Wrapped in if statement so only log this once when have both upload and
   // download errors
   if (state == StateError && m_state != StateError) {
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::speedTestCompleted, {{"speed", "Error"}});
     mozilla::glean::sample::speed_test_completed.record(
         mozilla::glean::sample::SpeedTestCompletedExtra{._speed = "Error"});
   }

@@ -34,7 +34,6 @@ MZStackView {
             getHelpLinkVisible: true
             }
         );
-        MZGleanDeprecated.recordGleanEvent("billingNotAvailableViewed");
         Glean.sample.billingNotAvailableViewed.record();
     }
 }

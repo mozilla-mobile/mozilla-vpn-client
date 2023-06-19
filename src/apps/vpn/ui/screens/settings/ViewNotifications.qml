@@ -101,7 +101,6 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
-        MZGleanDeprecated.recordGleanEvent("notificationsViewOpened");
         Glean.sample.notificationsViewOpened.record();
     }
 }

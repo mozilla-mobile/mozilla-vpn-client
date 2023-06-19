@@ -11,10 +11,8 @@
 #include "app.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Tutorial* s_instance = nullptr;
@@ -75,8 +73,6 @@ void Tutorial::play(Addon* tutorial) {
   mozilla::glean::sample::tutorial_started.record(
       mozilla::glean::sample::TutorialStartedExtra{
           ._id = m_currentTutorial->id()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialStarted, {{"id", m_currentTutorial->id()}});
 
   m_currentTutorial->play(m_allowedItems);
 }
@@ -104,9 +100,6 @@ void Tutorial::requireTooltipNeeded(AddonTutorial* tutorial,
   mozilla::glean::sample::tutorial_step_viewed.record(
       mozilla::glean::sample::TutorialStepViewedExtra{
           ._stepId = stepId, ._tutorialId = m_currentTutorial->id()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialStepViewed,
-      {{"tutorial_id", m_currentTutorial->id()}, {"step_id", stepId}});
 }
 
 void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial) {
@@ -116,8 +109,6 @@ void Tutorial::requireTutorialCompleted(AddonTutorial* tutorial) {
 
   mozilla::glean::sample::tutorial_completed.record(
       mozilla::glean::sample::TutorialCompletedExtra{._id = tutorial->id()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::tutorialCompleted, {{"id", tutorial->id()}});
 }
 
 void Tutorial::requireTooltipShown(AddonTutorial* tutorial, bool shown) {
