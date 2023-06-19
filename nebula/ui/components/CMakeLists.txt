@@ -15,7 +15,6 @@ target_link_libraries(components PRIVATE
     Qt6::Widgets
     formsplugin
     inAppAuthplugin
-    lottieplugin
 )
 
 qt_add_qml_module(components
