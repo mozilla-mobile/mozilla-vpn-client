@@ -73,4 +73,4 @@ qt_add_qml_module(resources
         paste.svg
         info.svg
 
-    )
+)

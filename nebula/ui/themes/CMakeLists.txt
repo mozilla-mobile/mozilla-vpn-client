@@ -14,6 +14,3 @@ qt_add_qml_module(themes
         main/theme.js
         main/colors.js
 )
-
-#set_source_files_properties(ui/themes/main/themes.js PROPERTIES QT_RESOURCE_ALIAS main/theme.js)
-#set_source_files_properties(ui/themes/main/colors.js PROPERTIES QT_RESOURCE_ALIAS main/colors.js)

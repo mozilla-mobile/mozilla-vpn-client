@@ -67,5 +67,5 @@ qt6_add_qml_module(mozillavpn
   URI Mozilla.Shared.qmlcomponents
   VERSION 1.0
 )
-#qt_import_qml_plugins(mozillavpn)
+
 qt_finalize_target(mozillavpn)
