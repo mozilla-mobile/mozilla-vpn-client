@@ -10,9 +10,6 @@ import Mozilla.Shared 1.0
 import compat 0.1
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
-
 Rectangle {
     property alias _infoContent: infoContent.data
     id: card

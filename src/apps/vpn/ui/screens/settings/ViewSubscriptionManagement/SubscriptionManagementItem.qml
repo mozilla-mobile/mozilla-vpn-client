@@ -196,7 +196,6 @@ ColumnLayout {
 
         Component.onCompleted: {
             if (visible) {
-                MZGleanDeprecated.recordGleanEvent("bundle_upsell_viewed");
                 Glean.sample.bundleUpsellViewed.record();
             }
         }
@@ -226,7 +225,6 @@ ColumnLayout {
                 Layout.leftMargin: -4
 
                 onClicked: {
-                    MZGleanDeprecated.recordGleanEvent("bundle_upsell_link_clicked");
                     Glean.sample.bundleUpsellLinkClicked.record();
                     MZUrlOpener.openUrlLabel("relayPremium");
                 }
@@ -237,7 +235,6 @@ ColumnLayout {
             objectName: _objectName + "-relayUpsell-upgradeButton"
 
             onClicked: {
-                MZGleanDeprecated.recordGleanEvent("bundle_upsell_upgrade_clicked");
                 Glean.sample.bundleUpsellUpgradeClicked.record();
                 MZUrlOpener.openUrlLabel("upgradeToBundle");
             }

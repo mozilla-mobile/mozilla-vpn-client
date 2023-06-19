@@ -15,11 +15,9 @@
 #include "appconstants.h"
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
-#include "telemetry/gleansample.h"
 
 // Terrible hacking for Windows
 #if defined(MZ_WINDOWS)
@@ -86,9 +84,6 @@ void Balrog::start(Task* task) {
     mozilla::glean::sample::update_step.record(
         mozilla::glean::sample::UpdateStepExtra{
             ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::updateStep,
-        {{"state", QVariant::fromValue(UpdateProcessStarted).toString()}});
   }
 
   QString url =
@@ -387,9 +382,6 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::updateStep,
-      {{"state", QVariant::fromValue(BalrogValidationCompleted).toString()}});
 
   return saveFileAndInstall(url, data);
 }
@@ -432,9 +424,6 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   mozilla::glean::sample::update_step.record(
       mozilla::glean::sample::UpdateStepExtra{
           ._state = QVariant::fromValue(BalrogFileSaved).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::updateStep,
-      {{"state", QVariant::fromValue(BalrogFileSaved).toString()}});
 
   return install(tmpFile);
 }
@@ -513,9 +502,6 @@ bool Balrog::install(const QString& filePath) {
       mozilla::glean::sample::UpdateStepExtra{
           ._state =
               QVariant::fromValue(InstallationProcessExecuted).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::updateStep,
-      {{"state", QVariant::fromValue(InstallationProcessExecuted).toString()}});
 
   return true;
 }

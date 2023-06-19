@@ -7,10 +7,8 @@
 #include <QApplication>
 
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "telemetry/gleansample.h"
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;
@@ -217,8 +215,6 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   }
 
   mozilla::glean::sample::error_alert_shown.record(extras);
-  GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::errorAlertShown, extraKeys);
 
   emit errorHandled();
 }

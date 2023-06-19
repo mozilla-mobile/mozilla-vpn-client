@@ -9,10 +9,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
-
-
 MZViewBase {
     _menuTitle: "Feature list"
     _viewContentData: ColumnLayout {

@@ -231,7 +231,6 @@ Item {
             labelText: MZI18n.GetHelpLinkTitle
             isLightTheme: false
             onClicked: {
-                MZGleanDeprecated.recordGleanEvent("getHelpClickedInitialize")
                 Glean.sample.getHelpClickedInitialize.record();
                 MZNavigator.requestScreen(VPN.ScreenGetHelp);
             }
@@ -400,11 +399,6 @@ Item {
         }
 
         function recordGleanEvtAndStartAuth(ctaObjectName) {
-            MZGleanDeprecated.recordGleanEventWithExtraKeys("onboardingCtaClick",{
-                                              "panel_id": currentPanelValues._panelId,
-                                              "panel_idx": swipeView.currentIndex.toString(),
-                                              "panel_cta": ctaObjectName
-            });
             Glean.sample.onboardingCtaClick.record({
                 "panel_id": currentPanelValues._panelId,
                 "panel_idx": swipeView.currentIndex.toString(),
