@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@devcontainers/cli": "^0.43.0",
-    "appium-adb": "^9.11.4",
+    "appium-adb": "^9.12.1",
     "body-parser": "^1.20.2",
     "chokidar": "^3.5.3",
     "command-line-args": "^5.2.1",
