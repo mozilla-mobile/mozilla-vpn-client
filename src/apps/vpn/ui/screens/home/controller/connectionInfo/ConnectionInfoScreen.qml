@@ -8,7 +8,6 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-import telemetry 0.30
 
 Rectangle {
     property bool isOpen: false

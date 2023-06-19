@@ -12,12 +12,10 @@
 #include "externalophandler.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
 #include "qmlengineholder.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Navigator* s_instance = nullptr;
@@ -181,9 +179,6 @@ void Navigator::requestScreenFromBottomBar(
   mozilla::glean::sample::bottom_navigation_bar_click.record(
       mozilla::glean::sample::BottomNavigationBarClickExtra{
           ._barButton = QVariant::fromValue(requestedScreen).toString()});
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::bottomNavigationBarClick,
-      {{"bar_button", QVariant::fromValue(requestedScreen).toString()}});
 
   requestScreen(requestedScreen, loadingFlags);
 }

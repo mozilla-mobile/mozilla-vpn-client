@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/glean">
-        <file>org/mozilla/Glean/glean.js</file>
-        <file>org/mozilla/Glean/glean.lib.js</file>
-        <file>org/mozilla/Glean/qmldir</file>
-    </qresource>
-</RCC>

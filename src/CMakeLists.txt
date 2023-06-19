@@ -46,7 +46,6 @@ include(apps/vpn/cmake/sources.cmake)
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
-    glean
     lottie
     nebula
     translations_vpn

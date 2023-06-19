@@ -34,7 +34,6 @@ MZStackView {
             getHelpLinkVisible: true,
             }
         );
-        MZGleanDeprecated.recordGleanEvent("subNotValidatedViewed");
         Glean.record.subNotValidatedViewed.record();
     }
 }
