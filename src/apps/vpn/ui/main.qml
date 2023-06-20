@@ -166,15 +166,6 @@ Window {
         }
     }
 
-    Connections {
-        target: VPN
-        function onAboutNeeded() {
-            // Ideally we'd deep link into the About Us screen, but we currently lack the ability
-            // to deep link. Once VPN-5034 is complete, we should make this go to About Us.
-            MZNavigator.requestScreenFromBottomBar(VPN.ScreenSettings, MZNavigator.screen === VPN.ScreenSettings ? MZNavigator.ForceReload : MZNavigator.NoFlags);
-        }
-    }
-
     // Glean Connections
     Connections {
         target: VPN
