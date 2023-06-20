@@ -16,7 +16,6 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/gleandeprecated.h"
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
@@ -61,7 +60,6 @@
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
-#include "telemetry/gleansample.h"
 #include "tutorialvpn.h"
 #include "update/updater.h"
 #include "urlopener.h"
@@ -1380,12 +1378,8 @@ void MozillaVPN::errorHandled() {
   if (state() == App::StateAuthenticating) {
     if (alert == ErrorHandler::GeoIpRestrictionAlert) {
       mozilla::glean::sample::authentication_failure_by_geo.record();
-      emit GleanDeprecated::instance()->recordGleanEvent(
-          GleanSample::authenticationFailureByGeo);
     } else {
       mozilla::glean::sample::authentication_failure.record();
-      emit GleanDeprecated::instance()->recordGleanEvent(
-          GleanSample::authenticationFailure);
     }
 
     reset(true);

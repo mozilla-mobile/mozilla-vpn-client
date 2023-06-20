@@ -12,10 +12,6 @@ import components 0.1
 import components.forms 0.1
 import compat 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
-
-
 MZViewBase {
     id: root
     objectName: "privacySettingsView"

@@ -30,7 +30,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE glean qtglean lottie nebula translations_vpn)
+target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations_vpn)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -178,8 +178,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/shared/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.cpp
-    ${MZ_SOURCE_DIR}/shared/glean/gleandeprecated.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.h
     ${MZ_SOURCE_DIR}/shared/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/shared/hacl-star/Hacl_Chacha20.c

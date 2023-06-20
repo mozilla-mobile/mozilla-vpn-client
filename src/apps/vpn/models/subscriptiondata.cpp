@@ -13,13 +13,11 @@
 
 #include "appconstants.h"
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/location.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("SubscriptionData");
@@ -138,8 +136,6 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     mozilla::glean::sample::unhandled_sub_plan_interval.record(
         mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
             ._interval = planInterval});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::unhandledSubPlanInterval, {{"interval", planInterval}});
     return false;
   }
 
@@ -169,9 +165,6 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
       mozilla::glean::sample::unhandled_sub_plan_interval.record(
           mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
               ._interval = planInterval, ._intervalCount = planIntervalCount});
-      emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-          GleanSample::unhandledSubPlanInterval,
-          {{"interval", planInterval}, {"interval_count", planIntervalCount}});
       return false;
   }
 

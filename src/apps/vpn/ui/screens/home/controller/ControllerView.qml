@@ -9,7 +9,6 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
-import telemetry 0.30
 
 Item {
     id: box
@@ -466,10 +465,8 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                MZGleanDeprecated.recordGleanEvent("connectionInfoOpened");
                 Glean.sample.connectionInfoOpened.record();
             } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning) {
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("speedTestCompleted", { "speed": "Cancelled" });
                 Glean.sample.speedTestCompleted.record({ speed: "Cancelled" });
             }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;

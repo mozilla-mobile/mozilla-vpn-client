@@ -47,7 +47,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(app_auth_tests PRIVATE
-    glean
     qtglean
     shared-sources
     translations_auth_tests
