@@ -7,15 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef NETWORK_EXTENSION
-#  include "logger.h"
-#else
-#  import <Foundation/Foundation.h>
-#  import <os/log.h>
-#endif
-
-#define MAX_LOG_FILE_SIZE 204800
-
 // Key base64/hex functions
 // ------------------------
 
@@ -33,8 +24,6 @@ EXPORT void key_to_hex(char hex[WG_KEY_LEN_HEX], const uint8_t key[WG_KEY_LEN]);
 EXPORT bool key_from_hex(uint8_t key[WG_KEY_LEN], const char* hex);
 
 EXPORT bool key_eq(const uint8_t key1[WG_KEY_LEN], const uint8_t key2[WG_KEY_LEN]);
-
-EXPORT void write_msg_to_log(const char* tag, const char* msg);
 }
 
 EXPORT void key_to_base64(char base64[WG_KEY_LEN_BASE64], const uint8_t key[WG_KEY_LEN]) {
@@ -126,10 +115,10 @@ EXPORT bool key_from_base64(uint8_t key[WG_KEY_LEN], const char* base64) {
 inline char toHex(uint8_t value) { return "0123456789abcdef"[value & 0xF]; }
 
 inline int fromHex(uint8_t c) {
-  return ((c >= '0') && (c <= '9'))
-             ? int(c - '0')
-             : ((c >= 'A') && (c <= 'F')) ? int(c - 'A' + 10)
-                                          : ((c >= 'a') && (c <= 'f')) ? int(c - 'a' + 10) : -1;
+  return ((c >= '0') && (c <= '9'))   ? int(c - '0')
+         : ((c >= 'A') && (c <= 'F')) ? int(c - 'A' + 10)
+         : ((c >= 'a') && (c <= 'f')) ? int(c - 'a' + 10)
+                                      : -1;
 }
 
 EXPORT void key_to_hex(char hex[WG_KEY_LEN_HEX], const uint8_t key[WG_KEY_LEN]) {
@@ -176,74 +165,4 @@ EXPORT bool key_eq(const uint8_t key1[WG_KEY_LEN], const uint8_t key2[WG_KEY_LEN
     }
   }
   return true;
-}
-
-// Logging functions
-// -----------------
-
-#ifndef NETWORK_EXTENSION
-namespace {
-Logger logger("IOSSGlue");
-}
-#endif
-
-EXPORT void write_msg_to_log(const char* tag, const char* msg) {
-#ifndef NETWORK_EXTENSION
-  logger.debug() << "Swift log - tag:" << tag << "msg: " << msg;
-#else
-  os_log_with_type(OS_LOG_DEFAULT, OS_LOG_TYPE_DEBUG, "tag: %s - msg: %s", tag, msg);
-
-  @autoreleasepool {
-    NSString* groupId = [NSString stringWithUTF8String:GROUP_ID];
-    NSURL* groupPath =
-        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:groupId];
-
-    NSURL* pathUrl = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
-    NSString* path = [pathUrl path];
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-      [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
-    } else {
-      NSError* error = nil;
-
-      NSDictionary* fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path
-                                                                                      error:&error];
-
-      if (error) {
-        return;
-      }
-
-      NSNumber* fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-      long long fileSize = [fileSizeNumber longLongValue];
-
-      if (fileSize > MAX_LOG_FILE_SIZE) {
-        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
-        [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
-      }
-    }
-
-    NSError* error = nil;
-    NSFileHandle* fh = [NSFileHandle fileHandleForWritingToURL:pathUrl error:&error];
-    if (!fh) {
-      return;
-    }
-
-    NSString* dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
-                                                          dateStyle:NSDateFormatterShortStyle
-                                                          timeStyle:NSDateFormatterFullStyle];
-
-    NSString* str = [NSString stringWithFormat:@" - %s\n", msg];
-    NSData* data =
-        [[dateString stringByAppendingString:str] dataUsingEncoding:NSUTF8StringEncoding];
-
-    @try {
-      [fh seekToEndOfFile];
-      [fh writeData:data];
-    } @catch (NSException* exception) {
-    }
-
-    [fh closeFile];
-  }
-
-#endif
 }

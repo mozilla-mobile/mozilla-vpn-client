@@ -4,49 +4,108 @@
 
 import Foundation
 import os.log
+import OSLog
 
-public class Logger {
-    static var global: Logger?
-
-    var tag: String
-
-    init(tagged tag: String) {
-        self.tag = tag
-    }
-
-    deinit {}
-
-    func log(message: String) {
-        write_msg_to_log(tag, message.trimmingCharacters(in: .newlines))
-    }
-
-    func writeLog(to targetFile: String) -> Bool {
-        return true;
-    }
-
-    static func configureGlobal(tagged tag: String, withFilePath filePath: String?) {
-        if Logger.global != nil {
-            return
+public class IOSLoggerImpl : NSObject {
+    private let log: OSLog
+    
+    private static let logger = IOSLoggerImpl(tag: "IOSLoggerImpl")
+    private static var appexLogFileURL: URL? {
+        get {
+            guard let containerURL = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: Constants.appGroupIdentifier
+            ) else {
+                return nil
+            }
+            
+            return containerURL.appendingPathComponent(Constants.networkExtensionLogFileName, isDirectory: false)
         }
+    }
 
-        Logger.global = Logger(tagged: tag)
+    @objc init(tag: String) {
+        self.log = OSLog(
+            subsystem: Bundle.main.bundleIdentifier!,
+            category: tag
+        )
+    }
 
-        var appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown version"
+    @objc func debug(message: String) {
+        log(message, type: .debug)
+    }
 
-        if let appBuild = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
-            appVersion += " (\(appBuild))"
+    @objc func info(message: String) {
+        log(message, type: .info)
+    }
+
+    @objc func error(message: String) {
+        log(message, type: .error)
+    }
+
+    func log(_ message: String, type: OSLogType) {
+        os_log("%{public}@", log: self.log, type: type, message)
+        
+        if (Bundle.main.bundlePath.hasSuffix(".appex")) {
+            let currentDate = Date()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
+            let formattedDateString = dateFormatter.string(from: currentDate)
+
+            if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
+                let _ = IOSLoggerImpl.withAppexLogFile { logFileHandle in
+                    logFileHandle.seekToEndOfFile()
+                    logFileHandle.write(data)
+                }
+            }
         }
-
-        Logger.global?.log(message: "App version: \(appVersion)")
+    }
+    
+    @objc static func getAppexLogs(callback: @escaping (String) -> Void) {
+        withAppexLogFile { logFileHandle in
+            if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
+                callback(contents);
+            }
+        }
+    }
+    
+    @objc static func clearAppexLogs() {
+        withAppexLogFile { logFileHandle in
+            logFileHandle.truncateFile(atOffset: 0)
+        }
+    }
+    
+    private static func withAppexLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
+        if (IOSLoggerImpl.appexLogFileURL == nil) {
+            logger.error(message: "IMPOSSIBLE: No known app extension log file.")
+        }
+        
+        do {
+            if !FileManager.default.fileExists(atPath: IOSLoggerImpl.appexLogFileURL!.path) {
+                // Create an empty file
+                if let data = "".data(using: .utf8) {
+                    try data.write(to: IOSLoggerImpl.appexLogFileURL!)
+                } else {
+                    logger.error(message: "Unable to create log file at \(IOSLoggerImpl.appexLogFileURL!)")
+                }
+            }
+            
+            let fileHandle = try FileHandle(forUpdating: IOSLoggerImpl.appexLogFileURL!)
+            try f(fileHandle)
+            fileHandle.closeFile()
+        } catch {
+            logger.error(message: "Unable to access log file at \(IOSLoggerImpl.appexLogFileURL!): \(error)")
+        }
     }
 }
 
-func wg_log(_ type: OSLogType, staticMessage msg: StaticString) {
-    os_log(msg, log: OSLog.default, type: type)
-    Logger.global?.log(message: "\(msg)")
+// The following functions are used by Wireguard internally for logging.
+
+let WIREGUARD_LOGGER = IOSLoggerImpl(tag: "Wireguard")
+
+func wg_log(_ type: OSLogType, staticMessage: StaticString) {
+    WIREGUARD_LOGGER.log("\(staticMessage)", type: type)
 }
 
-func wg_log(_ type: OSLogType, message msg: String) {
-    os_log("%{public}s", log: OSLog.default, type: type, msg)
-    Logger.global?.log(message: msg)
+func wg_log(_ type: OSLogType, message: String) {
+    WIREGUARD_LOGGER.log(message, type: type)
 }
+
