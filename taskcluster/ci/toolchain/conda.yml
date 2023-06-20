@@ -6,15 +6,14 @@ task-defaults:
     description: "Conda Pack an enviroment"
     worker:
         max-run-time: 14400
-    worker-type: b-windows
+    worker-type: b-win2012
     run:
         resources:
             - requirements.txt
             - env.yml
 
 
-tasks: 
-    windows-conda-pack: 
+windows-conda-pack: 
         fetches:
             fetch:
                 - win-conda
