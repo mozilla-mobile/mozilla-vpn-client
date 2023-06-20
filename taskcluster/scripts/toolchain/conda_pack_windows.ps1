@@ -36,4 +36,6 @@ conda deactivate
 conda activate VPN
 
 conda install conda-pack
-conda-pack --name VPN -o $UPLOAD_DIR/conda-windows.tar.gz
+
+New-Item -ItemType Directory $TASK_WORKDIR\public\build
+conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
