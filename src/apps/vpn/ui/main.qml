@@ -12,9 +12,6 @@ import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
 
-import org.mozilla.Glean 0.30
-import telemetry 0.30
-
 Window {
     id: window
 
@@ -163,76 +160,6 @@ Window {
         target: VPN
         function onAccountDeleted() {
             VPNController.logout();
-        }
-    }
-
-    // Glean Connections
-    Connections {
-        target: VPN
-        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
-
-        function onInitializeGlean() {
-            if (MZEnv.debugMode) {
-                console.debug("Initializing glean with debug mode");
-                Glean.setLogPings(true);
-                // Uncomment for debugging purposes.
-                // See: https://mozilla.github.io/glean/book/reference/debug/debugViewTag.html#debug-view-tag
-                //
-                // Glean.setDebugViewTag("MozillaVPN");
-            }
-            var channel = MZEnv.stagingMode ? "staging" : "production";
-
-            console.debug("Initializing glean with channel set to:", channel);
-            Glean.initialize("mozillavpn", MZSettings.gleanEnabled, {
-                appBuild: "MozillaVPN/" + MZEnv.versionString,
-                appDisplayVersion: MZEnv.versionString,
-                channel: channel,
-                osVersion: MZEnv.osVersion,
-                architecture: [MZEnv.architecture, MZEnv.graphicsApi].join(" ").trim(),
-            });
-        }
-
-        function onSetGleanSourceTags(tags) {
-            console.debug("Setting source tags to:", tags);
-            Glean.setSourceTags(tags);
-        }
-
-        function onSendGleanPings() {
-            console.debug("sending Glean pings");
-            Pings.main.submit();
-        }
-
-        function onAboutToQuit() {
-            console.debug("about to quit, shutdown Glean");
-            // Submit the main ping in case there are outstading metrics in storage before shutdown.
-            Pings.main.submit();
-            // Use glean's built-in shutdown method - https://mozilla.github.io/glean/book/reference/general/shutdown.html
-            Glean.shutdown();
-        }
-    }
-
-    Connections {
-        target: MZGleanDeprecated
-        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
-
-        function onRecordGleanEvent(sample) {
-            console.debug("recording Glean event");
-            Sample[sample].record();
-        }
-
-        function onRecordGleanEventWithExtraKeys(sample, extraKeys) {
-            console.debug("recording Glean event with extra keys");
-            Sample[sample].record(extraKeys);
-        }
-    }
-
-    Connections {
-        target: MZSettings
-        enabled: Qt.platform.os !== "android" || Qt.platform.os !== "ios"
-        
-        function onGleanEnabledChanged() {
-            console.debug("Glean - onGleanEnabledChanged", MZSettings.gleanEnabled);
-            Glean.setUploadEnabled(MZSettings.gleanEnabled);
         }
     }
 

@@ -9,13 +9,11 @@
 #include <QTimer>
 
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "settingsholder.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("AddonMessage");
@@ -119,9 +117,6 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
           ._messageId = id(),
           ._messageState = newStatusSetting,
       });
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::addonMessageStateChanged,
-      {{"message_id", id()}, {"message_state", newStatusSetting}});
 }
 
 void AddonMessage::dismiss() {

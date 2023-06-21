@@ -15,14 +15,12 @@
 
 #include "appconstants.h"
 #include "glean/generated/metrics.h"
-#include "glean/gleandeprecated.h"
 #include "glean/mzglean.h"
 #include "languagei18n.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
-#include "telemetry/gleansample.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
@@ -324,8 +322,6 @@ void Localizer::settingsChanged() {
     mozilla::glean::sample::non_default_language_used.record(
         mozilla::glean::sample::NonDefaultLanguageUsedExtra{._languageCode =
                                                                 code});
-    emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-        GleanSample::nonDefaultLanguageUsed, {{"language_code", code}});
   }
   mozilla::glean::settings::using_system_language.set(code.isEmpty());
 

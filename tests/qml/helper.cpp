@@ -4,8 +4,6 @@
 
 #include "helper.h"
 
-#include "glean.h"
-#include "gleandeprecated.h"
 #include "nebula.h"
 #include "qmlengineholder.h"
 
@@ -27,34 +25,8 @@ void TestHelper::setMainWindowLoadedCalled(bool val) {
   m_mainWindowLoadedCalled = val;
 }
 
-void TestHelper::triggerInitializeGlean() const {
-  emit MozillaVPN::instance()->initializeGlean();
-}
-
-void TestHelper::triggerRecordGleanEvent(const QString& event) const {
-  emit GleanDeprecated::instance()->recordGleanEvent(event);
-}
-
-void TestHelper::triggerRecordGleanEventWithExtraKeys(
-    const QString& event, const QVariantMap& keys) const {
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(event, keys);
-}
-
-void TestHelper::triggerSendGleanPings() const {
-  emit MozillaVPN::instance()->sendGleanPings();
-}
-
-void TestHelper::triggerSetGleanSourceTags(const QStringList& tags) const {
-  emit MozillaVPN::instance()->setGleanSourceTags(tags);
-}
-
-void TestHelper::triggerAboutToQuit() const {
-  emit MozillaVPN::instance()->aboutToQuit();
-}
-
 void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   Nebula::Initialize(engine);
-  Glean::Initialize(engine);
   engine->addImportPath("qrc:///");
 
   if (!QmlEngineHolder::exists()) {
@@ -74,14 +46,6 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<MozillaVPN>(
       "Mozilla.VPN", 1, 0, "VPN", [this](QQmlEngine*, QJSEngine*) -> QObject* {
         QObject* obj = m_mozillavpn;
-        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-        return obj;
-      });
-
-  qmlRegisterSingletonType<MozillaVPN>(
-      "Mozilla.Shared", 1, 0, "MZGleanDeprecated",
-      [](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = GleanDeprecated::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

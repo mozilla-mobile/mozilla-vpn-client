@@ -8,14 +8,12 @@
 #include <QJsonObject>
 
 #include "glean/generated/metrics.h"
-#include "gleandeprecated.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
-#include "telemetry/gleansample.h"
 
 namespace {
 Logger logger("ProfileFlow");
@@ -39,9 +37,6 @@ void ProfileFlow::setState(State state) {
       mozilla::glean::sample::ProfileFlowStateChangedExtra{
           ._state = QVariant::fromValue(state).toString(),
       });
-  emit GleanDeprecated::instance()->recordGleanEventWithExtraKeys(
-      GleanSample::profileFlowStateChanged,
-      {{"state", QVariant::fromValue(state).toString()}});
 }
 
 // Only used for testing and debugging the re-authentication flow

@@ -22,11 +22,6 @@
         "content": "Be sure to update the app to make it even easier to protect your devices and your activity online!"
       },
       {
-        "id": "c_2b",
-        "type": "text",
-        "content": "Be sure to get the latest version to make it even easier to protect your devices and your activity online!"
-      },
-      {
         "id": "c_3",
         "type": "button",
         "style": "primary",
@@ -48,14 +43,9 @@
         "javascript": "getHelp.js"
       },
       {
-        "id": "extra_1",
+        "id": "extra_1_216_v2",
         "type": "text",
-        "content": "Download Mozilla VPN 2.16"
-      },
-      {
-        "id": "extra_2",
-        "type": "text",
-        "content": "We’ve released an updated version of Mozilla VPN! Download it today to get the newest features and bug fixes:"
+        "content": "Download the new Mozilla VPN"
       }
     ]
   }

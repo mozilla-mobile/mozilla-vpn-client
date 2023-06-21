@@ -247,21 +247,18 @@ ColumnLayout {
         function onErrorOccurred(e, retryAfter) {
             switch(e) {
             case MZAuthInApp.ErrorIncorrectPassword:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "IncorrectPassword" });
                 Glean.sample.authenticationError.record({ reason: "IncorrectPassword" });
 
                 base._inputErrorMessage =  MZI18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorInvalidEmailAddress:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidEmail" });
                 Glean.sample.authenticationError.record({ reason: "InvalidEmail" });
 
                 base._inputErrorMessage =  MZI18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidOrExpiredVerificationCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidOrExpiredVerificationCode" });
 
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
@@ -269,7 +266,6 @@ ColumnLayout {
                 break;
 
             case MZAuthInApp.ErrorInvalidTotpCode:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidTotpCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidTotpCode" });
 
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
@@ -277,14 +273,12 @@ ColumnLayout {
                 break;
 
             case MZAuthInApp.ErrorInvalidUnblockCode:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "InvalidUnblockCode" });
                 Glean.sample.authenticationError.record({ reason: "InvalidUnblockCode" });
 
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorConnectionTimeout:
-                MZGleanDeprecated.recordGleanEventWithExtraKeys("authenticationError", { "reason": "Timeout" });
                 Glean.sample.authenticationError.record({ reason: "Timeout" });
 
                 // In case of a timeout we want to exit here 
