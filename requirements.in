@@ -1,0 +1,15 @@
+appdirs
+attrs
+click
+diskcache
+flask
+glean_parser
+Jinja2
+jsonschema
+MarkupSafe
+oathtool
+pathspec
+pyrsistent
+PyYAML
+yamllint
+aqtinstall==3.1.6
