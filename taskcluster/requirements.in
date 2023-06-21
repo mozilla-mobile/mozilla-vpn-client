@@ -2,3 +2,4 @@
 # https://taskcluster-taskgraph.readthedocs.io/en/latest/howto/bootstrap-taskgraph.html
 
 taskcluster-taskgraph >= 5.1.1
+mozilla-taskgraph ~= 0.1.1
