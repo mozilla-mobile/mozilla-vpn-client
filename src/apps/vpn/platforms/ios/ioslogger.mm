@@ -32,9 +32,7 @@ IOSLogger::~IOSLogger() {
 }
 
 // static
-void IOSLogger::debug(const QString& message) {
-    [impl debugWithMessage:message.toNSString()];
-}
+void IOSLogger::debug(const QString& message) { [impl debugWithMessage:message.toNSString()]; }
 
 // static
 void IOSLogger::info(const QString& message) { [impl infoWithMessage:message.toNSString()]; }

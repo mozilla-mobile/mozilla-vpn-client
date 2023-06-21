@@ -9,6 +9,12 @@ import OSLog
 public class IOSLoggerImpl : NSObject {
     private let log: OSLog
     
+    private lazy var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
+        return dateFormatter
+    }()
+    
     private static let logger = IOSLoggerImpl(tag: "IOSLoggerImpl")
     private static var appexLogFileURL: URL? {
         get {
@@ -46,8 +52,6 @@ public class IOSLoggerImpl : NSObject {
         
         if (Bundle.main.bundlePath.hasSuffix(".appex")) {
             let currentDate = Date()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
             let formattedDateString = dateFormatter.string(from: currentDate)
 
             if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
@@ -74,38 +78,41 @@ public class IOSLoggerImpl : NSObject {
     }
     
     private static func withAppexLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
-        if (IOSLoggerImpl.appexLogFileURL == nil) {
+        guard let appexLogFileURL = IOSLoggerImpl.appexLogFileURL else {
             logger.error(message: "IMPOSSIBLE: No known app extension log file.")
+            return
         }
+
         
         do {
-            if !FileManager.default.fileExists(atPath: IOSLoggerImpl.appexLogFileURL!.path) {
+            if !FileManager.default.fileExists(atPath: appexLogFileURL.path) {
                 // Create an empty file
                 if let data = "".data(using: .utf8) {
-                    try data.write(to: IOSLoggerImpl.appexLogFileURL!)
+                    try data.write(to: appexLogFileURL)
                 } else {
-                    logger.error(message: "Unable to create log file at \(IOSLoggerImpl.appexLogFileURL!)")
+                    logger.error(message: "Unable to create log file at \(appexLogFileURL)")
+                    return
                 }
             }
             
-            let fileHandle = try FileHandle(forUpdating: IOSLoggerImpl.appexLogFileURL!)
+            let fileHandle = try FileHandle(forUpdating: appexLogFileURL)
             try f(fileHandle)
             fileHandle.closeFile()
         } catch {
-            logger.error(message: "Unable to access log file at \(IOSLoggerImpl.appexLogFileURL!): \(error)")
+            logger.error(message: "Unable to access log file at \(appexLogFileURL): \(error)")
         }
     }
 }
 
 // The following functions are used by Wireguard internally for logging.
 
-let WIREGUARD_LOGGER = IOSLoggerImpl(tag: "Wireguard")
+let wireguardLogger = IOSLoggerImpl(tag: "Wireguard")
 
 func wg_log(_ type: OSLogType, staticMessage: StaticString) {
-    WIREGUARD_LOGGER.log("\(staticMessage)", type: type)
+    wireguardLogger.log("\(staticMessage)", type: type)
 }
 
 func wg_log(_ type: OSLogType, message: String) {
-    WIREGUARD_LOGGER.log(message, type: type)
+    wireguardLogger.log(message, type: type)
 }
 
