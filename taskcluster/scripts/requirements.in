@@ -1,0 +1,5 @@
+# These requirements are used in build scripts
+
+multidict>=5.0.0 
+yarl>=1.6.0
+taskcluster==53.1.0
