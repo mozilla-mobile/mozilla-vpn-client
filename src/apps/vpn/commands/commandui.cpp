@@ -236,21 +236,14 @@ int CommandUI::run(QStringList& tokens) {
     auto offlineStorageDirectory =
         QDir(QmlEngineHolder::instance()->engine()->offlineStoragePath() +
              "/Databases");
-    logger.debug()
-        << "HELLO"
-        << QmlEngineHolder::instance()->engine()->offlineStoragePath() +
-               "/Databases";
     if (offlineStorageDirectory.exists()) {
       QStringList files = offlineStorageDirectory.entryList();
       for (const QString& file : files) {
-        logger.debug() << "HELLO"
-                       << offlineStorageDirectory.absoluteFilePath(file);
         // Note: This is kinda dumb, it doesn't really know that this is
         // Glean.js' storage. Since Glean.js was the only thing using sqlite in
         // the app at the time of implementation this is fine. If we ever add
         // other SQLite using things, then we need to change this.
         if (file.endsWith(".sqlite")) {
-          logger.debug() << "HELLO" << file;
           QFile::remove(offlineStorageDirectory.absoluteFilePath(file));
         }
       }
