@@ -37,30 +37,11 @@ tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
-## Install MiniConda 
-Start-Process "$FETCHES_PATH/miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$CONDA_DIR")
-# We don't have the ability to do conda init - as that need's admin rights.
-# So let's just do that ourselves :3
-$Env:CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
-$Env:_CE_M = ""
-$Env:_CE_CONDA = ""
-$Env:_CONDA_ROOT = "$CONDA_DIR"
-$Env:_CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
-$CondaModuleArgs = @{ChangePs1 = $False}
-Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaModuleArgs
+## Install Mini-conda 
+. $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
+conda-unpack
 
-$env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 
-## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN
-
-conda info --envs
-
-conda activate VPN
-. "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
-. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
-conda deactivate
-conda activate VPN  # We should now be able to compile!
 
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
@@ -70,7 +51,6 @@ $env:PATH
 ## Why does it complain now? 
 gci env:
 
-## 
 
 
 
