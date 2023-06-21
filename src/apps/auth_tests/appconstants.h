@@ -13,7 +13,7 @@ namespace AppConstants {
  * @brief expose the API base URL for guardian
  */
 inline QString apiBaseUrl() {
-  return "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
+  return "stage.guardian.nonprod.cloudops.mozgcp.net";
 }
 
 // This is used by SettingsHolder to configure the QSetting file.
