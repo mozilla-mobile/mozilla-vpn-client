@@ -15,7 +15,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
-#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 namespace {
@@ -139,13 +138,6 @@ void Navigator::initialize() {
 
   connect(Feature::get(Feature::Feature_inAppAuthentication),
           &Feature::supportedChanged, this, &Navigator::computeComponent);
-
-  connect(MozillaVPN::instance(), &MozillaVPN::aboutNeeded, this, [this]() {
-    Navigator::requestScreenFromBottomBar(
-        MozillaVPN::ScreenSettings,
-        (currentScreen() == MozillaVPN::ScreenSettings ? Navigator::ForceReload
-                                                       : Navigator::NoFlags));
-  });
 
   computeComponent();
 }
