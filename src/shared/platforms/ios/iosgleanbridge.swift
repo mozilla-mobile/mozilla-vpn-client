@@ -27,18 +27,20 @@ public class IOSGleanBridgeImpl : NSObject {
           defaults.set(isTelemetryEnabled, forKey: Constants.UserDefaultKeys.telemetryEnabled)
       }
       
-      do {
-            Logger.global?.log(message: "Sending telemetry state change message.");
-          try TunnelManager.session!.sendProviderMessage(
+      if let session = TunnelManager.session {
+        do {
+            Logger.global?.log(message: "Attempting to send telemetry state change message.");
+          try session.sendProviderMessage(
               TunnelMessage.telemetryEnabledChanged(isTelemetryEnabled).encode()
           ) { _ in
               Logger.global?.log(message: "Telemetry state change message sent.")
           }
-      } catch {
-          Logger.global?.log(message: "Error sending telemetry state change message: \(error)");
+        } catch {
+            Logger.global?.log(message: "Error sending telemetry state change message: \(error)");
+        }
       }
   }
-    
+
     private func withDefaults(_ f: (_ defaults: UserDefaults) -> Void) {
         // This logs an error like so:
         // "[User Defaults] Couldn't read values in CFPrefsPlistSource<0x2821ced00>..."
