@@ -120,7 +120,7 @@ void IOSController::activate(const InterfaceConfig& config,
     return;
   }
 
-  m_serverPublicKey = hop.m_serverPublicKey;
+  m_serverPublicKey = config.m_serverPublicKey;
 
   NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
       [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:config.m_allowedIPAddressRanges.length()];

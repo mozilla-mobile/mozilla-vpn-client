@@ -23,8 +23,8 @@ class LocalSocketController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const InterfaceConfig& hop, const Device* device,
-                const Keys* keys, Controller::Reason Reason) override;
+  void activate(const InterfaceConfig& config,
+                Controller::Reason Reason) override;
 
   void deactivate(Controller::Reason reason) override;
 

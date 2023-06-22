@@ -48,7 +48,7 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
 
-    struct InterfaceConfig config;
+    InterfaceConfig config;
     DeviceModel* dm = vpn.deviceModel();
     Q_ASSERT(dm);
     if (!dm->hasCurrentDevice(vpn.keys())) {
