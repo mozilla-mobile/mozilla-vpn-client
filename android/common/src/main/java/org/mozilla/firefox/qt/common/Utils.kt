@@ -132,6 +132,7 @@ object Utils {
         sendIntent.setType("*/*")
 
         val chooseIntent = Intent.createChooser(sendIntent, "Share Logs")
+        chooseIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         ctx.startActivity(chooseIntent)
         return true
     }
