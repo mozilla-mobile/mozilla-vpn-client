@@ -15,7 +15,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
-#include "wgquickprocess.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
 
@@ -87,8 +86,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 
   QMap<QString, QString> extraConfig;
   extraConfig["Table"] = "off";
-  QString configString =
-      WgQuickProcess::createConfigString(config, extraConfig);
+  QString configString = config.toWgConf(extraConfig);
   if (configString.isEmpty()) {
     logger.error() << "Failed to create a config file";
     return false;

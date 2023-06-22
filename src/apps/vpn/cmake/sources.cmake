@@ -212,8 +212,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/versionapi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/update/webupdater.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/wgquickprocess.h
 )
 
 # VPN Client UI resources

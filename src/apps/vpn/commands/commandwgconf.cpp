@@ -18,7 +18,6 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "wgquickprocess.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)
     : Command(parent, "wgconf", "Generate a wireguard configuration file.") {
@@ -82,7 +81,7 @@ int CommandWgConf::run(QStringList& tokens) {
         Controller::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
-    stream << WgQuickProcess::createConfigString(config) << Qt::endl;
+    stream << config.toWgConf() << Qt::endl;
     return 0;
   });
 }

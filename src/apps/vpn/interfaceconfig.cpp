@@ -50,3 +50,68 @@ QJsonObject InterfaceConfig::toJson() const {
 
   return json;
 }
+
+QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
+#define VALIDATE(x) \
+  if (x.contains("\n")) return "";
+
+  VALIDATE(m_privateKey);
+  VALIDATE(m_deviceIpv4Address);
+  VALIDATE(m_deviceIpv6Address);
+  VALIDATE(m_serverIpv4Gateway);
+  VALIDATE(m_serverIpv6Gateway);
+  VALIDATE(m_serverPublicKey);
+  VALIDATE(m_serverIpv4AddrIn);
+  VALIDATE(m_serverIpv6AddrIn);
+#undef VALIDATE
+
+  QString content;
+  QTextStream out(&content);
+  out << "[Interface]\n";
+  out << "PrivateKey = " << m_privateKey << "\n";
+
+  QStringList addresses;
+  if (!m_deviceIpv4Address.isNull()) {
+    addresses.append(m_deviceIpv4Address);
+  }
+  if (!m_deviceIpv6Address.isNull()) {
+    addresses.append(m_deviceIpv6Address);
+  }
+  if (addresses.isEmpty()) {
+    return "";
+  }
+  out << "Address = " << addresses.join(", ") << "\n";
+
+  if (!m_dnsServer.isNull()) {
+    QStringList dnsServers(m_dnsServer);
+    // If the DNS is not the Gateway, it's a user defined DNS
+    // thus, not add any other :)
+    if (m_dnsServer == m_serverIpv4Gateway) {
+      dnsServers.append(m_serverIpv6Gateway);
+    }
+    out << "DNS = " << dnsServers.join(", ") << "\n";
+  }
+
+  // If any extra config was provided, append it now.
+  for (const QString& key : extra.keys()) {
+    out << key << " = " << extra[key] << "\n";
+  }
+
+  out << "\n[Peer]\n";
+  out << "PublicKey = " << m_serverPublicKey << "\n";
+  out << "Endpoint = " << m_serverIpv4AddrIn.toUtf8() << ":"
+      << m_serverPort << "\n";
+
+  /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
+   * to be happy if there are 2 endpoints.
+  out << "Endpoint = [" << config.m_serverIpv6AddrIn << "]:"
+      << config.m_serverPort << "\n";
+  */
+  QStringList ranges;
+  for (const IPAddress& ip : m_allowedIPAddressRanges) {
+    ranges.append(ip.toString());
+  }
+  out << "AllowedIPs = " << ranges.join(", ") << "\n";
+
+  return content;
+}

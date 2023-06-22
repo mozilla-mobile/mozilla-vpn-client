@@ -32,6 +32,8 @@ class InterfaceConfig {
   QStringList m_vpnDisabledApps;
 
   QJsonObject toJson() const;
+  QString toWgConf(
+      const QMap<QString, QString>& extra = QMap<QString, QString>()) const;
 };
 
 #endif  // INTERFACECONFIG_H
