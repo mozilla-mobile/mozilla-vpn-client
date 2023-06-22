@@ -138,7 +138,7 @@ CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
-    "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
+    "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
