@@ -19,6 +19,9 @@ void SentryAdapter::report(const QString& errorType, const QString& message,
 
 void SentryAdapter::onBeforeShutdown() {}
 
+
+void SentryAdapter::captureQMLStacktrace(const char* description){Q_UNUSED(description); }
+
 void SentryAdapter::onLoglineAdded(const QByteArray& line) { Q_UNUSED(line); }
 
 sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
