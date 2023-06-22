@@ -10,7 +10,12 @@
 
 #include "ipaddress.h"
 
-struct InterfaceConfig {
+class QJsonObject;
+
+class InterfaceConfig {
+ public:
+  InterfaceConfig() {}
+
   int m_hopindex = 0;
   QString m_privateKey;
   QString m_deviceIpv4Address;
@@ -25,6 +30,8 @@ struct InterfaceConfig {
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_excludedAddresses;
   QStringList m_vpnDisabledApps;
+
+  QJsonObject toJson() const;
 };
 
 #endif  // INTERFACECONFIG_H

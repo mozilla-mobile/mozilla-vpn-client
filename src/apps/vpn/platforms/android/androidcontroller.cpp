@@ -106,48 +106,51 @@ AndroidController::~AndroidController() { MZ_COUNT_DTOR(AndroidController); }
 void AndroidController::initialize(const Device* device, const Keys* keys) {
   logger.debug() << "Initializing";
 
-  Q_UNUSED(device);
   Q_UNUSED(keys);
+
+  m_deviceName = device->name();
+  m_devicePublicKey = device->publicKey();
+  m_deviceCreationTime = device->createdAt().toMSecsSinceEpoch();
 
   AndroidVPNActivity::connectService();
 }
 
-void AndroidController::activate(const HopConnection& hop, const Device* device,
-                                 const Keys* keys, Controller::Reason reason) {
-  Q_ASSERT(hop.m_hopindex == 0);
+void AndroidController::activate(const InterfaceConfig& config,
+                                 Controller::Reason reason) {
+  Q_ASSERT(config.m_hopindex == 0);
   logger.debug() << "Activation";
 
   m_device = *device;
-  m_serverPublicKey = hop.m_server.publicKey();
+  m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialise arguments for the VPNService
   QJsonObject jDevice;
-  jDevice["publicKey"] = device->publicKey();
-  jDevice["name"] = device->name();
-  jDevice["createdAt"] = device->createdAt().toMSecsSinceEpoch();
-  jDevice["ipv4Address"] = device->ipv4Address();
-  jDevice["ipv6Address"] = device->ipv6Address();
+  jDevice["publicKey"] = m_devicePublicKey;
+  jDevice["name"] = m_deviceName;
+  jDevice["createdAt"] = m_deviceCreationTime;
+  jDevice["ipv4Address"] = config.m_deviceIpv4Address;
+  jDevice["ipv6Address"] = config.m_deviceIpv6Address;
 
   QJsonObject jKeys;
-  jKeys["privateKey"] = keys->privateKey();
+  jKeys["privateKey"] = config.m_privateKey;
 
   QJsonObject jServer;
-  logger.info() << "Server" << logger.sensitive(hop.m_server.hostname());
-  jServer["ipv4AddrIn"] = hop.m_server.ipv4AddrIn();
-  jServer["ipv4Gateway"] = hop.m_server.ipv4Gateway();
-  jServer["ipv6AddrIn"] = hop.m_server.ipv6AddrIn();
-  jServer["ipv6Gateway"] = hop.m_server.ipv6Gateway();
+  logger.info() << "Server" << logger.sensitive(config.m_serverPublicKey);
+  jServer["ipv4AddrIn"] = config.m_serverIpv4AddrIn;
+  jServer["ipv4Gateway"] = config.m_serverIpv4Gateway;
+  jServer["ipv6AddrIn"] = config.m_serverIpv6AddrIn;
+  jServer["ipv6Gateway"] = config.m_serverIpv6Gateway;
 
-  jServer["publicKey"] = hop.m_server.publicKey();
-  jServer["port"] = (double)hop.m_server.choosePort();
+  jServer["publicKey"] = config.m_serverPublicKey;
+  jServer["port"] = (double)config.m_serverPort;
 
   QList<IPAddress> allowedIPs;
   QList<IPAddress> excludedIPs;
   QJsonArray fullAllowedIPs;
-  foreach (auto item, hop.m_allowedIPAddressRanges) {
+  foreach (auto item, config.m_allowedIPAddressRanges) {
     allowedIPs.append(IPAddress(item.toString()));
   }
-  foreach (auto addr, hop.m_excludedAddresses) {
+  foreach (auto addr, config.m_excludedAddresses) {
     excludedIPs.append(IPAddress(addr));
   }
   foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
@@ -155,7 +158,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   }
 
   QJsonArray excludedApps;
-  foreach (auto appID, hop.m_vpnDisabledApps) {
+  foreach (auto appID, config.m_vpnDisabledApps) {
     excludedApps.append(QJsonValue(appID));
   }
 
@@ -166,7 +169,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
       vpn->controller()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
-    if (item.publicKey() != hop.m_server.publicKey()) {
+    if (item.publicKey() != config.m_serverPublicKey) {
       fallbackServer = &item;
       break;
     }
@@ -189,7 +192,7 @@ void AndroidController::activate(const HopConnection& hop, const Device* device,
   args["reason"] = (int)reason;
   args["allowedIPs"] = fullAllowedIPs;
   args["excludedApps"] = excludedApps;
-  args["dns"] = hop.m_dnsServer.toString();
+  args["dns"] = config.m_dnsServer;
   if (fallbackServer) {
     args["serverFallback"] = jFallbackServer;
   }

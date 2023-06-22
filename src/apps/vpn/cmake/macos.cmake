@@ -45,7 +45,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/daemonlocalserverconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/dnsutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/iputils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/daemon/wireguardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/localsocketcontroller.cpp

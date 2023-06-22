@@ -16,6 +16,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
+#include "models/keys.h"
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
@@ -307,69 +308,85 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     return;
   }
 
-  m_serverData.setExitServerPublicKey(exitServer.publicKey());
+  MozillaVPN* vpn = MozillaVPN::instance();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
 
   // Prepare the exit server's connection data.
-  HopConnection exitHop;
-  exitHop.m_server = exitServer;
-  exitHop.m_hopindex = 0;
-  exitHop.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
-  exitHop.m_excludedAddresses = getExcludedAddresses();
-  exitHop.m_dnsServer =
-      QHostAddress(DNSHelper::getDNS(exitServer.ipv4Gateway()));
-  logger.debug() << "DNS Set" << exitHop.m_dnsServer.toString();
+  InterfaceConfig exitConfig;
+  exitConfig.m_privateKey = vpn->keys()->privateKey();
+  exitConfig.m_deviceIpv4Address = device->ipv4Address();
+  exitConfig.m_deviceIpv6Address = device->ipv6Address();
+  exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
+  exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
+  exitConfig.m_serverPublicKey = exitServer.publicKey();
+  exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
+  exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+  exitConfig.m_serverPort = exitServer.choosePort();
+  exitConfig.m_hopindex = 0;
+  exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+  exitConfig.m_excludedAddresses = getExcludedAddresses();
+  exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+  logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   // Splittunnel-feature could have been disabled due to a driver conflict.
   if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
-    exitHop.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+    exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+  }
+  if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+    dnsPort = ForceDNSPort;
   }
 
   // For single-hop connections, exclude the entry server
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
-    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv4AddrIn());
-    exitHop.m_excludedAddresses.append(exitHop.m_server.ipv6AddrIn());
+    exitConfig.m_excludedAddresses.append(exitConfig.m_serverIpv4AddrIn);
+    exitConfig.m_excludedAddresses.append(exitConfig.m_serverIpv6AddrIn);
 
     // If requested, force the use of port 53/DNS.
-    if (dnsPort == ForceDNSPort ||
-        Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+    if (dnsPort == ForceDNSPort) {
       logger.info() << "Forcing port 53";
-      exitHop.m_server.forcePort(53);
+      exitConfig.m_serverPort = 53;
     }
-    // For single-hop, they are the same
-    m_serverData.setEntryServerPublicKey(exitServer.publicKey());
   }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     logger.info() << "Activating multi-hop (through platform controller)";
-    HopConnection hop;
-
-    hop.m_server = serverSelectionPolicy == DoNotRandomizeServerSelection &&
+    Server entryServer = serverSelectionPolicy == DoNotRandomizeServerSelection &&
                            !m_serverData.entryServerPublicKey().isEmpty()
                        ? MozillaVPN::instance()->serverCountryModel()->server(
                              m_serverData.entryServerPublicKey())
                        : Server::weightChooser(m_serverData.entryServers());
 
-    m_serverData.setEntryServerPublicKey(hop.m_server.publicKey());
-    if (!hop.m_server.initialized()) {
+    if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
       return;
     }
+  
+    InterfaceConfig entryConfig;
+    entryConfig.m_privateKey = vpn->keys()->privateKey();
+    entryConfig.m_deviceIpv4Address = device->ipv4Address();
+    entryConfig.m_deviceIpv6Address = device->ipv6Address();
+    entryConfig.m_serverPublicKey = entryServer.publicKey();
+    entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+    entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+    entryConfig.m_serverPort = entryServer.choosePort();
+    entryConfig.m_hopindex = 1;
+    entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
+    entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
+    entryConfig.m_excludedAddresses.append(entryConfig.m_serverIpv4AddrIn);
+    entryConfig.m_excludedAddresses.append(entryConfig.m_serverIpv6AddrIn);
+
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
-      hop.m_server.forcePort(53);
+      logger.info() << "Forcing port 53";
+      entryConfig.m_serverPort = 53;
     }
 
-    hop.m_hopindex = 1;
-    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
-    hop.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
-    hop.m_excludedAddresses.append(hop.m_server.ipv4AddrIn());
-    hop.m_excludedAddresses.append(hop.m_server.ipv6AddrIn());
-    m_activationQueue.append(hop);
+    m_activationQueue.append(entryConfig);
   }
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
@@ -382,23 +399,28 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
                   m_serverData.entryServerPublicKey())
             : Server::weightChooser(m_serverData.entryServers());
 
-    m_serverData.setEntryServerPublicKey(entryServer.publicKey());
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
       return;
     }
+
     // NOTE: For platforms without multihop support, we cannot emulate multihop
     // and use port 53 at the same time. If the user has selected both options
     // then let's choose multihop.
-    exitHop.m_server.fromMultihop(exitHop.m_server, entryServer);
-    exitHop.m_excludedAddresses.append(entryServer.ipv4AddrIn());
-    exitHop.m_excludedAddresses.append(entryServer.ipv6AddrIn());
+    exitConfig.m_serverPort = exitServer.multihopPort();
+    exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+    exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+    exitConfig.m_excludedAddresses.append(entryServer.ipv4AddrIn());
+    exitConfig.m_excludedAddresses.append(entryServer.ipv6AddrIn());
   }
 
-  m_activationQueue.append(exitHop);
+  m_activationQueue.append(exitConfig);
+  m_serverData.setEntryServerPublicKey(m_activationQueue.first().m_serverPublicKey);
+  m_serverData.setExitServerPublicKey(m_activationQueue.last().m_serverPublicKey);
+
   m_ping_received = false;
-  m_ping_canary.start(m_activationQueue.first().m_server.ipv4AddrIn(),
+  m_ping_canary.start(m_activationQueue.first().m_serverIpv4AddrIn,
                       "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
   activateNext();
@@ -412,11 +434,11 @@ void Controller::activateNext() {
     vpn->reset(false);
     return;
   }
-  const HopConnection& hop = m_activationQueue.first();
+  const InterfaceConfig& config = m_activationQueue.first();
 
-  logger.debug() << "Activating peer" << logger.keys(hop.m_server.publicKey());
+  logger.debug() << "Activating peer" << logger.keys(config.m_serverPublicKey);
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-  m_impl->activate(hop, device, vpn->keys(), stateToReason(m_state));
+  m_impl->activate(config, stateToReason(m_state));
 
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
@@ -499,7 +521,7 @@ void Controller::connected(const QString& pubkey,
     }
     // Continue anyways if the VPN service was activated externally.
     logger.info() << "Unexpected handshake: external VPN activation.";
-  } else if (m_activationQueue.first().m_server.publicKey() != pubkey) {
+  } else if (m_activationQueue.first().m_serverPublicKey != pubkey) {
     logger.warning() << "Unexpected handshake: public key mismatch.";
     return;
   } else {
@@ -543,11 +565,11 @@ void Controller::handshakeTimeout() {
   Q_ASSERT(!m_activationQueue.isEmpty());
 
   // Block the offending server and try again.
-  HopConnection& hop = m_activationQueue.first();
+  InterfaceConfig& hop = m_activationQueue.first();
   vpn->serverLatency()->setCooldown(
-      hop.m_server.publicKey(), AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+      hop.m_serverPublicKey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
-  emit handshakeFailed(hop.m_server.publicKey());
+  emit handshakeFailed(hop.m_serverPublicKey);
 
   if (m_nextStep != None) {
     deactivate();

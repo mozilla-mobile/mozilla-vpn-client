@@ -8,7 +8,7 @@
 #include <QObject>
 
 #include "daemon/daemon.h"
-#include "daemon/interfaceconfig.h"
+#include "interfaceconfig.h"
 
 class WgQuickProcess final {
   Q_DISABLE_COPY_MOVE(WgQuickProcess)

@@ -98,6 +98,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/extrastrings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/imageproviderfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/interfaceconfig.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/keyregenerator.cpp

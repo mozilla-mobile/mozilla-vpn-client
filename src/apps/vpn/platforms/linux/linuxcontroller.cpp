@@ -68,16 +68,12 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
 }
 
-void LinuxController::activate(const HopConnection& hop, const Device* device,
-                               const Keys* keys, Controller::Reason reason) {
+void LinuxController::activate(const InterfaceConfig& config,
+                               Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  connect(
-      m_dbus->activate(hop.m_server, device, keys, hop.m_hopindex,
-                       hop.m_allowedIPAddressRanges, hop.m_excludedAddresses,
-                       hop.m_vpnDisabledApps, hop.m_dnsServer),
-      &QDBusPendingCallWatcher::finished, this,
-      &LinuxController::operationCompleted);
+  connect(m_dbus->activate(config), &QDBusPendingCallWatcher::finished, this,
+          &LinuxController::operationCompleted);
 
   logger.debug() << "LinuxController activated";
 }

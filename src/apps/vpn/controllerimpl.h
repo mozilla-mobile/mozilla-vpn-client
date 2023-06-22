@@ -39,8 +39,8 @@ class ControllerImpl : public QObject {
   // this method is called, the VPN client is in "connecting" state.  This
   // state terminates when the "connected" (or the "disconnected") signal is
   // received.
-  virtual void activate(const HopConnection& hop, const Device* device,
-                        const Keys* keys, Controller::Reason Reason) = 0;
+  virtual void activate(const InterfaceConfig& config,
+                        Controller::Reason Reason) = 0;
 
   // This method terminates the VPN tunnel. The VPN client is in
   // "disconnecting" state until the "disconnected" signal is received.

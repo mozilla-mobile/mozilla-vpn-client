@@ -19,8 +19,8 @@ class AndroidController final : public ControllerImpl {
   // from ControllerImpl
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const HopConnection& hop, const Device* device,
-                const Keys* keys, Controller::Reason Reason) override;
+  void activate(const InterfaceConfig& config,
+                Controller::Reason Reason) override;
 
   void deactivate(Controller::Reason reason) override;
 
@@ -32,6 +32,9 @@ class AndroidController final : public ControllerImpl {
 
  private:
   bool m_init = false;
+  QString m_deviceName;
+  QString m_devicePublicKey;
+  qint64 m_deviceCreationTime;
   QString m_serverPublicKey;
   Device m_device;
   std::function<void(const QString&)> m_logCallback;

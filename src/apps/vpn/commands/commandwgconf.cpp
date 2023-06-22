@@ -9,8 +9,8 @@
 
 #include "commandlineparser.h"
 #include "controller.h"
-#include "daemon/interfaceconfig.h"
 #include "dnshelper.h"
+#include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"

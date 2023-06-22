@@ -18,7 +18,7 @@
 #include <QObject>
 #include <QString>
 
-#include "daemon/interfaceconfig.h"
+#include "interfaceconfig.h"
 
 class IpAdressRange;
 struct FWP_VALUE0_;
