@@ -8,6 +8,13 @@ https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozil
 
 Unzip the folder and remember the location for the configure step.
 
+## Get Visual Studio 2017 or Later
+
+Please ensure that Visual Studio 2017 or later, or Build Tools for Visual Studio were installed with the Visual C++ option.
+You may need to restart your machine after installing Visual Studio for changes to take effect.
+
+[Download Visual Studio Here](https://visualstudio.microsoft.com/downloads/)
+
 ## Conda
 
 Have [miniconda installed](https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe).
