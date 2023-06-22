@@ -30,7 +30,7 @@ from voluptuous import Any, Optional, Required
         ],
         # behavior for mac iscript
         Optional("mac-behavior"): Any(
-            "mac_notarize_vpn",
+            "mac_sign_and_pkg_vpn",
         ),
         Optional("entitlementsUrl"): str,
         Optional("loginItemsEntitlementsUrl"): str,

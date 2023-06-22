@@ -103,7 +103,7 @@ def set_mac_behavior(config, tasks):
             yield task
             continue
 
-        task["worker"]["mac-behavior"] = "mac_notarize_vpn"
+        task["worker"]["mac-behavior"] = "mac_sign_and_pkg_vpn"
         task["worker"]["entitlementsUrl"] = script_url(
             config.params, "taskcluster/scripts/signing/entitlements.xml"
         )
