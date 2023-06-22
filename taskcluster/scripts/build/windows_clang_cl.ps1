@@ -5,7 +5,7 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
+$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
 New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
 $CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
@@ -52,7 +52,7 @@ $env:PATH
 gci env:
 
 
-
+$CONDA_PREFIX = $env:CONDA_PREFIX 
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
@@ -62,10 +62,17 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR `
+        -GNinja -DCMAKE_BUILD_TYPE=Release`
+        -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" `
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe"
+        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 } else {
     # Do the generic build
-   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
+        -DCMAKE_BUILD_TYPE=Release `
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
+        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 }
 cmake --build $BUILD_DIR
 
