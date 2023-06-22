@@ -433,7 +433,7 @@ bool LogHandler::viewLogs() {
     return true;
   }
 
-  qWarning()
+  logger.warning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
   return false;
 }

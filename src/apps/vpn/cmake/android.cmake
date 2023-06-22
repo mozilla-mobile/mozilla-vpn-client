@@ -46,6 +46,7 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     # some lib's we are linking to. 
     # So as long as qt is behaving bad, let's force the deployment.
     # Feel free to add libs that are breaking on your build locally. 
+    ${Qt6_DIR}/../../libQt6Test_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6WebSockets_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Widgets_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Xml_${ANDROID_ABI}.so
