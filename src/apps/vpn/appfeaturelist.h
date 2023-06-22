@@ -117,6 +117,13 @@ FEATURE(subscriptionManagement,     // Feature ID
         QStringList(),              // feature dependencies
         FeatureCallback_true)
 
+FEATURE(superDooperMetrics,      // Feature ID
+        "Super Dooper Metrics",  // Feature name
+        FeatureCallback_true,    // Can be flipped on
+        FeatureCallback_true,    // Can be flipped off
+        QStringList(),           // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(unsecuredNetworkNotification,      // Feature ID
         "Unsecured network notification",  // Feature name
         FeatureCallback_true,              // Can be flipped on
