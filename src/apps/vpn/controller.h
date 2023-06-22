@@ -169,7 +169,6 @@ class Controller final : public QObject, public LogSerializer {
   void enableDisconnectInConfirmingChanged();
   void activationBlockedForCaptivePortal();
   void handshakeFailed(const QString& serverHostname);
-  void controllerDisconnected();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();
