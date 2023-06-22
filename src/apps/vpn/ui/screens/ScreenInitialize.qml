@@ -5,6 +5,8 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.14
 
+
+import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
@@ -13,7 +15,7 @@ MZStackView {
     objectName: "initialStackView"
     anchors.fill: parent
 
-    Component.onCompleted: function() {
+    Component.onCompleted: {
         stackview.push("qrc:/ui/screens/initialize/ViewInitialize.qml")
         MZNavigator.addStackView(VPN.ScreenInitialize, stackview)
     }
