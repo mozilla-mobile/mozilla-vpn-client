@@ -24,7 +24,7 @@ Then run:
 * `conda env create -f env.yml`
 * `conda activate vpn`
 
-For windows, see [windows docs]([./windows.md#conda])
+For windows, see [windows docs](./windows.md#conda)
 
 ## Building for each platform
 
