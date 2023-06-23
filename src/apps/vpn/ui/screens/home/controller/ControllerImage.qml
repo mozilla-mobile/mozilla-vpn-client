@@ -18,7 +18,8 @@ Rectangle {
     states: [
         State {
             name: "stateConnecting"
-            when: VPNController.state === VPNController.StateConnecting
+            when: (VPNController.state === VPNController.StateConnecting ||
+                   VPNController.state === VPNController.StateCheckSubscription)
 
             PropertyChanges {
                 target: logo
