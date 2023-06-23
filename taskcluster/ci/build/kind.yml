@@ -8,7 +8,7 @@ transforms:
     - mozillavpn_taskgraph.transforms.release_index:transforms
     - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.build:transforms
-    - mozillavpn_taskgraph.transforms.release_artifacts:transforms
+    - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
