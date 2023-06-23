@@ -489,6 +489,17 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    false                   // sensitive (do not log)
 )
 
+SETTING_BOOL(vpnSessionPingTimeoutDebug,        // getter
+             setVpnSessionPingTimeoutDebug,     // setter
+             removeVpnSessionPingTimeoutDebug,  // remover
+             hasVpnSessionPingTimeoutDebug,     // has
+             "vpnSessionPingTimeoutDebug",      // key
+             false,                             // default value
+             false,                             // user setting
+             false,                             // remove when reset
+             false                              // sensitive (do not log)
+)
+
 #if defined(MZ_IOS)
 SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    setSubscriptionTransactions,     // setter
