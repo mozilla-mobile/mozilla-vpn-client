@@ -24,7 +24,8 @@ MZDropShadow {
                    state === VPNController.StateConfirming ||
                    state === VPNController.StateOn ||
                    state === VPNController.StateSilentSwitching ||
-                   state === VPNController.StateSwitching)
+                   state === VPNController.StateSwitching ||
+                   state == VPNController.StateCheckSubscription)
             PropertyChanges {
                 target: dropShadow
                 opacity: .3
