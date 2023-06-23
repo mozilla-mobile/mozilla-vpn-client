@@ -15,7 +15,7 @@ MZViewBase {
     _menuTitle: MZI18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
-        Layout.fillWidth: true
+        Layout.preferredWidth: parent.width
 
         spacing: MZTheme.theme.windowMargin
 

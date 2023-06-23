@@ -43,7 +43,10 @@ MZInAppAuthenticationBase {
         _inputPlaceholderText: MZI18n.InAppAuthPasswordInputPlaceholder
     }
 
-    _disclaimers: MZInAppAuthenticationLegalDisclaimer {}
+    _disclaimers: Column {
+        Layout.alignment: Qt.AlignHCenter
+        MZInAppAuthenticationLegalDisclaimer {}
+    }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter

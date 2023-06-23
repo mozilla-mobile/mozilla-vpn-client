@@ -26,6 +26,8 @@ Item {
 
         text: MZI18n.PostAuthenticationSubtitle
         anchors.top: headline.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.topMargin: 12
         anchors.horizontalCenter: parent.horizontalCenter
     }
