@@ -53,6 +53,8 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
+  bool addExclusionRoute(const QHostAddress& address);
+  bool delExclusionRoute(const QHostAddress& address);
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {

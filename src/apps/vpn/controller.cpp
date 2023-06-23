@@ -341,8 +341,6 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
-    exitConfig.m_excludedAddresses.append(exitConfig.m_serverIpv4AddrIn);
-    exitConfig.m_excludedAddresses.append(exitConfig.m_serverIpv6AddrIn);
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -377,8 +375,6 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     entryConfig.m_hopindex = 1;
     entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
     entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
-    entryConfig.m_excludedAddresses.append(entryConfig.m_serverIpv4AddrIn);
-    entryConfig.m_excludedAddresses.append(entryConfig.m_serverIpv6AddrIn);
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -411,8 +407,6 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     exitConfig.m_serverPort = exitServer.multihopPort();
     exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-    exitConfig.m_excludedAddresses.append(entryServer.ipv4AddrIn());
-    exitConfig.m_excludedAddresses.append(entryServer.ipv6AddrIn());
   }
 
   m_activationQueue.append(exitConfig);
