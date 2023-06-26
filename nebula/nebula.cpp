@@ -4,15 +4,6 @@
 
 #include "nebula.h"
 
-constexpr auto QRC_ROOT = "qrc:///nebula/";
+constexpr auto QRC_ROOT = ":/nebula";
 
-void Nebula::Initialize(QQmlEngine* engine) {
-  Q_INIT_RESOURCE(components);
-  Q_INIT_RESOURCE(themes);
-  Q_INIT_RESOURCE(nebula_resources);
-  Q_INIT_RESOURCE(compatQt6);
-  Q_INIT_RESOURCE(resourcesQt6);
-  Q_INIT_RESOURCE(utils);
-
-  engine->addImportPath(QRC_ROOT);
-}
+void Nebula::Initialize(QQmlEngine* engine) { engine->addImportPath(QRC_ROOT); }

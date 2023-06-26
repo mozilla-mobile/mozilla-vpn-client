@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/ui">
-        <file>resources/shaders/baked/animatedRings.frag.qsb</file>
-    </qresource>
-</RCC>
