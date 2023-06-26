@@ -2,25 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-qt_add_library(components STATIC)
-
-
-add_subdirectory(forms)
-add_subdirectory(inAppAuth)
-
-set_target_properties(components PROPERTIES FOLDER "Libs")
-target_link_libraries(components PRIVATE 
-    Qt6::Quick
-    Qt6::Gui
-    Qt6::Widgets
-    formsplugin
-    inAppAuthplugin
-)
-
 qt_add_qml_module(components
     VERSION 0.1
     URI components
-    RESOURCE_PREFIX  nebula
+    RESOURCE_PREFIX nebula
     QML_FILES
          MZAlert.qml
          MZAnimatedRings.qml
@@ -104,4 +89,14 @@ qt_add_qml_module(components
          navigationBar/MZBottomNavigationBarButton.qml
          navigator/MZNavigatorLoader.qml
          navigator/navigatorLoaderInternal.qml
+)
+
+add_subdirectory(forms)
+add_subdirectory(inAppAuth)
+
+
+set_target_properties(components PROPERTIES FOLDER "Libs")
+target_link_libraries(components PRIVATE 
+    forms
+    inAppAuth
 )

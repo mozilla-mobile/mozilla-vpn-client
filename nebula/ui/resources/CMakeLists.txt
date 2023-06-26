@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-qt_add_library(resources STATIC)
-
-target_link_libraries(resources PRIVATE Qt6::Quick)
-
 qt_add_qml_module(resources
     VERSION 0.1
     URI resources 

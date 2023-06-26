@@ -14,12 +14,18 @@ add_subdirectory(ui/utils)
 set_target_properties(nebula PROPERTIES FOLDER "Libs")
 target_link_libraries(nebula PRIVATE 
     Qt6::Quick
+    components
     componentsplugin
+    compat
     compatplugin
+    themes
     themesplugin
+    resources
     resourcesplugin
+    utils
     utilsplugin
 )
+
 target_include_directories(nebula PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_sources(nebula PRIVATE
