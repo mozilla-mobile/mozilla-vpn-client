@@ -85,7 +85,6 @@ void TaskSentry::sendRequest() {
     emit completed();
     return;
   }
-  
 
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");
