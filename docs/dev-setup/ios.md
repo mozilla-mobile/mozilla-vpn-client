@@ -42,13 +42,9 @@ Complete the steps in [macOS.md#configure-xcode-build-environment](./macos.md#co
 
 ## Build
 
-Make the build directory
-
-    mkdir build-ios
-
 Configure, using the qt-cmake
 
-   qt-cmake -S . -B build-ios 
+    qt-cmake -S . -B build-ios
 
 
 This will generate an Xcode project file at `build-ios/Mozilla VPN.xcodeproj` which can be opened

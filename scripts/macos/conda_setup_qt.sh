@@ -21,7 +21,7 @@ python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 # QT Android Tools
 python -m aqt install-qt --outputdir $QT_DIR $HOST ios ${QT_VERSION} -m all 
 
-echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
+echo "$QT_DIR/$QT_VERSION/ios/bin/qt-cmake"
 
 ## Generate activation/deactivation scripts, so stuff stays portable.
 mkdir -p $CONDA_PREFIX/etc/conda/activate.d/
