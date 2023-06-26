@@ -5,6 +5,7 @@
 qt_add_qml_module(forms
     VERSION 0.1
     URI components.forms 
+    STATIC
     RESOURCE_PREFIX /nebula
     QML_FILES
         MZContextualAlerts.qml

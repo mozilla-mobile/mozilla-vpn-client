@@ -5,6 +5,7 @@
 qt_add_qml_module(resources
     VERSION 0.1
     URI resources 
+    STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
         arrow-back-white.svg

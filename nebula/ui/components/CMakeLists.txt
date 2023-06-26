@@ -5,6 +5,7 @@
 qt_add_qml_module(components
     VERSION 0.1
     URI components
+    STATIC
     RESOURCE_PREFIX nebula
     QML_FILES
          MZAlert.qml

@@ -5,6 +5,7 @@
 qt_add_qml_module(themes
     VERSION 0.1
     URI themes 
+    STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
         main/theme.js

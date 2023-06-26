@@ -5,6 +5,7 @@
 qt_add_qml_module(inAppAuth
     VERSION 0.1
     URI components.inAppAuth 
+    STATIC
     RESOURCE_PREFIX /nebula
     QML_FILES
         MZInAppAuthenticationBase.qml

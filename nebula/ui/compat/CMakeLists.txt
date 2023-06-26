@@ -5,6 +5,7 @@
 qt_add_qml_module(compat
     VERSION 0.1
     URI compat 
+    STATIC
     RESOURCE_PREFIX /nebula
     QML_FILES
         qt6/MZColorOverlay.qml

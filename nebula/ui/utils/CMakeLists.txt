@@ -4,7 +4,8 @@
 
 qt_add_qml_module(utils
     VERSION 0.1
-    URI utils 
+    URI utils
+    STATIC 
     RESOURCE_PREFIX /nebula
     QML_FILES
         MZUiUtils.qml
