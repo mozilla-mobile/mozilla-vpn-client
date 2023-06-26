@@ -37,7 +37,7 @@ RUN apt-get update -qq \
                           wget \
                           zip \
                           cargo \
-                          curl \
+                          curl libssl-dev libcurl4-openssl-dev \
                           rpm \
                           libglib2.0-0 \
                           ccache \
