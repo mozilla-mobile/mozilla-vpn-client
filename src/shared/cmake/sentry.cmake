@@ -53,7 +53,6 @@ if( ${_SUPPORTED} GREATER -1 )
             -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
             -DSENTRY_BACKEND=breakpad
             -DSENTRY_BUILD_SHARED_LIBS=false
-            -DSENTRY_TRANSPORT=none
             -DSENTRY_BUILD_TESTS=off
             -DSENTRY_BUILD_EXAMPLES=off
         )
@@ -72,7 +71,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
-        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DSENTRY_TRANSPORT=none -DCMAKE_BUILD_TYPE=Release)
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=false -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
     endif()
 
     if(ANDROID)
@@ -87,14 +86,31 @@ if( ${_SUPPORTED} GREATER -1 )
                         -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
                         -DSENTRY_BACKEND=inproc
             )
+    
+    elseif(LINUX)
+        target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
+        # Compile Static for apple and link to libsentry.a
+        target_link_libraries(shared-sources INTERFACE libsentry.a)
+        target_link_libraries(shared-sources INTERFACE breakpad_client.a)
+        # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
+        # this is super easy to link against and we do not need another binary shipped with the client.
+        SET(SENTRY_ARGS
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DSENTRY_BACKEND=breakpad
+            -DSENTRY_BUILD_SHARED_LIBS=false
+            -DSENTRY_BUILD_TESTS=off
+            -DSENTRY_BUILD_EXAMPLES=off
+        )
     endif()
+    
 
     include(ExternalProject)
     ExternalProject_Add(sentry
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
         GIT_SUBMODULES 3rdparty/sentry
         GIT_SUBMODULES_RECURSE true
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
+        CMAKE_ARGS -DSENTRY_TRANSPORT=none -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 
     target_include_directories(shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)
