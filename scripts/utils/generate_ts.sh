@@ -58,7 +58,7 @@ mkdir -p addon_ts || die
 cp addons/generated/addons/*.ts addon_ts
 print G "done."
 
-for branch in $(git branch -r | grep origin/releases); do
+for branch in $(git branch -r | grep origin/releases/2.15.*); do
   git checkout $branch &>/dev/null || die
 
   printn Y "Importing main strings from $branch..."
