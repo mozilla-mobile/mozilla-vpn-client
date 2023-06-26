@@ -40,22 +40,6 @@ task-defaults:
         exec-with: powershell
         command: taskcluster/scripts/build/windows.ps1
 
-
-windows/msvc:
-    description: "Windows Build"
-    treeherder:
-        symbol: B(msvc)
-    worker:
-        artifacts:
-            - type: file
-              name: public/build/Mozilla VPN.pdb
-              path: artifacts/Mozilla VPN.pdb
-    scopes:
-        by-level:
-            "3":
-                - secrets:get:project/mozillavpn/tokens
-            default: []
-
 windows/opt:
     description: "Windows Build"
     treeherder:
