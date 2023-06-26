@@ -19,9 +19,10 @@ import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
 import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.Prefs
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import java.io.File
 import java.util.*
 
@@ -37,14 +38,14 @@ class VPNService : android.net.VpnService() {
     private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
         mBackgroundPingTimerMSec,
-        mBackgroundPingTimerMSec / 4
+        mBackgroundPingTimerMSec / 4,
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (isSuperDooperMetricsActive) {
                 Pings.daemonsession.submit(
-                    Pings.daemonsessionReasonCodes.daemonTimer
+                    Pings.daemonsessionReasonCodes.daemonTimer,
                 )
             }
             this.start()
@@ -254,7 +255,7 @@ class VPNService : android.net.VpnService() {
 
         if (isSuperDooperMetricsActive) {
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush
+                Pings.daemonsessionReasonCodes.daemonFlush,
             )
         }
 
@@ -310,7 +311,7 @@ class VPNService : android.net.VpnService() {
 
         if (isSuperDooperMetricsActive) {
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonStart
+                Pings.daemonsessionReasonCodes.daemonStart,
             )
         }
         mMetricsTimer.start()
@@ -374,7 +375,7 @@ class VPNService : android.net.VpnService() {
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
         if (isSuperDooperMetricsActive) {
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonEnd
+                Pings.daemonsessionReasonCodes.daemonEnd,
             )
         }
         mMetricsTimer.cancel()

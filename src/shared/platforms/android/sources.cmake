@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(shared-sources INTERFACE
-     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/wasm/wasmcryptosettings.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/android/androidcommons.h
 )
