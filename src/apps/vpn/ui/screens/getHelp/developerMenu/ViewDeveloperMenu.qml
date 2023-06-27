@@ -61,10 +61,15 @@ MZViewBase {
             }
 
             onTextChanged: text => {
-                               if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
-                                   MZSettings.stagingServerAddress = serverAddressInput.text;
-                               }
-                           }
+                if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
+                    MZSettings.stagingServerAddress = serverAddressInput.text;
+                }
+
+                // If a server address is not specified, don't use a staging server
+                if (!MZSettings.stagingServerAddress) {
+                    MZSettings.stagingServer = false;
+                }
+            }
 
             Component.onCompleted: {
                 serverAddressInput.text = MZSettings.stagingServerAddress;
