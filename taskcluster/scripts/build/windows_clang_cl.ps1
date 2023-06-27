@@ -7,8 +7,6 @@ $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
-New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
-$CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
 # Prep Env:
 # Switch to the work dir, enable qt, enable msvc, enable rust
 Set-Location -Path $TASK_WORKDIR
@@ -40,13 +38,16 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 ## Install Mini-conda 
 . $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
 conda-unpack
-$CODNDA_ENV_PREFIX = $env:CONDA_PREFIX
-$ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CODNDA_ENV_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
-foreach ($script in  $ACTIVATION_SCRIPTS.GetEnumerator())  {
-    Write-Output "Activating: $CODNDA_ENV_PREFIX\etc\conda\activate.d\$script"
-    . "$CODNDA_ENV_PREFIX\etc\conda\activate.d\$script"
+
+# Run the activation scripts. 
+#
+$CONDA_PREFIX = $env:CONDA_PREFIX 
+
+$ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CONDA_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
+foreach ($script in  $ACTIVATION_SCRIPTS)  {
+    Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
+    . "$CONDA_PREFIX\etc\conda\activate.d\$script"
 }
-. $SOURCE_DIR/scripts/utils/call_bat.ps1
 
 
 mkdir $TASK_WORKDIR/cmake_build
@@ -58,7 +59,6 @@ $env:PATH
 gci env:
 
 
-$CONDA_PREFIX = $env:CONDA_PREFIX 
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
