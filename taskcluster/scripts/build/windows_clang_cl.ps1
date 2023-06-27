@@ -40,7 +40,13 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 ## Install Mini-conda 
 . $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
 conda-unpack
-
+$CODNDA_ENV_PREFIX = $env:CONDA_PREFIX
+$ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CODNDA_ENV_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
+foreach ($script in  $ACTIVATION_SCRIPTS.GetEnumerator())  {
+    Write-Output "Activating: $CODNDA_ENV_PREFIX\etc\conda\activate.d\$script"
+    . "$CODNDA_ENV_PREFIX\etc\conda\activate.d\$script"
+}
+. $SOURCE_DIR/scripts/utils/call_bat.ps1
 
 
 mkdir $TASK_WORKDIR/cmake_build
