@@ -6,33 +6,36 @@
 
 
 ## Summary
-Introduce a new `ConnectivityManager` component which sits between the frontend and controller to handle all connectivity related logic and keep the controller code lean and minimal.
+Introduce a new `ConnectionManager` component which sits between the frontend and the controller to handle all connectivity related logic and keep the controller code lean and minimal.
 
 ## Motivation
-The current controller code is complicated, lengthy and bug-prone. Over time we have continued to directly add more logic and checks for various scenarios to the controller code. 
+The current controller code is complicated, lengthy, and bug-prone. Over time we have continued to directly add more logic and checks for various scenarios to the controller code, resulting in a Frankenstein monster that is hard to scale and keep under control.
 
-Because our current approach is not scalable, we’ve been facing numerous issues in the connectivity space, especially when it comes down to identifying exactly what is causing the issue. This means the behavior of our client is extremely inconsistent both in different platforms but also within the same environment. For example if a user loses network connectivity while the VPN is activated, sometimes they enter no signal, and other times they encounter the “server location unavailable” modal. This inconsistency is a result of racing checks and error reporting. The goal of this refactor is to combine all of these scenarios under one component and to get rid of the Connection Health entirely to resolve this issue.
+Because our current approach is not scalable, we’ve been facing numerous issues in the connectivity space, especially when it comes down to identifying exactly what is causing the issue. This means the behavior of our client is extremely inconsistent both on different platforms but also within the same environment. For example, if a user loses network connectivity while the VPN is activated, sometimes they enter no signal, and other times they encounter the “server location unavailable” modal. This inconsistency is a result of racing checks and error reporting. The goal of this refactor is to combine all of these scenarios under one component and to get rid of the `ConnectionHealth` entirely to resolve this issue.
 
 
 ## Proposed Solution
-Move all connectivity related code out of the controller and into its own separate component which is referred to as the Connectivity Manager in this document. The controller object will continue to remain but its purpose will be drastically simplified to a few basic functionalities including `activate()` and `deactivate()`. The connectivity manager will primarily act as a liaison between the controller and the UI. 
+Move all connectivity code out of the controller and into its separate component which is referred to as the `ConnectionManager` in this document. The controller object will continue to remain but its purpose will be drastically simplified to a few basic functionalities including `activate()` and `deactivate()`. We will no longer have any states associated with the Controller and all states will live in the `ConnectionManager`. The `ConnectionManager` will primarily act as a liaison between the controller and the UI. 
 
 ```mermaid
 graph TD
-    Controller --> ConnectivityManager
-    ConnectivityManager --> Frontend
-    Frontend --> Controller
+    Controller --> |activate()| ConnectionManager
+    ConnectionManager --> Frontend
+    Frontend --> ConnectionManager
+    ConnectionManager -->|deactivate()| Controller
 ```
 
-The existing Connection Health object in VPN performs checks that act in the same space as the connectivity manager. For example in connection health we periodically send pings and collect some data upon receiving (or not receiving) a response which allows us to draw conclusions regarding network connectivity and server availability. Because there is so much overlap in the nature of both classes, the creation and implementation of the Connectivity Manager component allows us to entirely get rid of connection health and move any remaining logic to connectivity manager. We should be able entirely eliminate the `ConnectionHealth` class and its corresponding states (Stable, Unstable, NoSignal). The remainder of logic which sends and receives pings and measures latency and standard deviation can be all moved to the `ConnectivityManager`.
+The existing Connection Health object in VPN performs checks that act in the same space as the `ConnectionManager`. For example, in connection health, we periodically send pings and collect some data upon receiving (or not receiving) a response which allows us to draw conclusions regarding network connectivity and server availability. Because there is so much overlap within both classes, the creation and implementation of the Connection Manager component allows us to entirely get rid of connection health and move any remaining logic to `ConnectionManager`. We should be able to entirely eliminate the `ConnectionHealth` class as well as the states `NoSignal` and `Stable` given that they will be handled within the new Connection Manager logic. For example, currently, we may enter the No Signal state due to several reasons such as losing network connectivity, expired subscription, or server location becoming unavailable, this means that No Signal is simply a side effect of something else going wrong, and because we now have explicit messaging and checks for those, No Signal does not serve us and can be removed.
 
-Beyond the connectivity checks, the Controller also manages how much time has elapsed since the VPN was toggled on. Having this logic in controller bloats the code without any gains, so I would like to move that code out of `Controller` and instead introduce a simple `Timer` object that encapsulates the related logic.
+One exception to the rule is `ConnectionHealth::ConnectionStability::Unstable`. The connection health object periodically sends pings and measures the received responses to assess whether or not the network connectivity is stable. To continue notifying users about their unstable network, we will continue to use this state within `ConnectionManager`. 
 
-Because this is all part of a unified connectivity experience, we do not want to release bits and pieces of this until everything is implemented, test and ready to go, naturally this means that all implementation will live behind a feature flag until we are ready to test and release.
+Beyond the connectivity checks, the Controller also manages how much time has elapsed since the VPN was toggled on. Having this logic in the controller bloats the code without any gains, so I would like to move that code out of `Controller` and instead introduce a simple `Timer` object that encapsulates the related logic. The timer starts when the VPN enters State On since doing the initial checks may take a few seconds that we don't need to account for.
+
+Because this is all part of a unified connectivity experience, we do not want to release bits and pieces of this until everything is implemented, tested, and ready to go, this means that all implementation will live behind a feature flag until we are ready to test and release.
 
 
 ## Implementation Plan
-Introduce a new `ConnectivityManager` component that is activated when the client is launched and connects to `networkWatcher` in case anything changes. This new component will manage the following work:
+Introduce a new `ConnectionManager` component that is activated when the client is launched and connects to `networkWatcher` in case anything changes. This new component will manage the following work:
 - Internet probe
 - Firewall
 - Captive portal check
@@ -42,7 +45,9 @@ Introduce a new `ConnectivityManager` component that is activated when the clien
 We will also add a new `Timer` component to keep track of how much time has elapsed since the VPN was activated. 
 
 
-The `ConnectivityManager` has various connection states to keep track of which connection related task the VPN is performing at any given point. This means that the `ConnectivityManager` will communicate with the `Controller` so that the controller knows which state to enter at every stage. Here is the proposed set of `ConnectivityManager` states and how they map to the `Controller` states:
+The `ConnectionManager` has various connection states to keep track of which connection related task the VPN is performing at any given point. This means that the `ConnectionManager` will communicate with the `Controller` so that the controller knows which state to enter at every stage. During one of the iterations of this proposal, someone asked if we can have signals instead of states in the `ConnectionManager`. The short answer is no. While emitting a signal to notify the UI about what we should be showing the user does the same thing, we still need to keep track of the current state internally so we know what to do next in case anything goes wrong at any other point.
+
+Here is the proposed set of `ConnectionManager` states and how they map to the `Controller` states. Please note that some of these states may go away once we are further along the implementation (e.g. we may not need `ConnectionStateSilentSwitching` anymore):
 
 ```c++
   enum ConnectionState {
@@ -70,43 +75,26 @@ The `ConnectivityManager` has various connection states to keep track of which c
   };
 ```
 
-If at any point any of the checks in `ConnectivityManager::ConnectionStates` fails then we will emit a signal to the frontend explaining what exactly the issue is. For example if we are in `ConnectivityManager::ConnectionStateInternetProbe` and the internet probe fails, we will notify the frontend via `emit connectionStateInternetProbeFailed()` signal. This allows the UI to notify the user that the VPN activation failed due to their network connectivity issue and can possibly offer troubleshooting advice such as checking that their wifi/cellular is enabled. It is worth noting that in any given circumstance, we will not deactivate the VPN on our end regardless of the failure. 
+If at any point any of the checks in `ConnectionManager::ConnectionStates` fails then we will emit a signal to the frontend explaining what exactly the issue is. For example, if we are in `ConnectionManager::ConnectionStateInternetProbe` and the internet probe fails, we will notify the frontend via `emit connectionStateInternetProbeFailed()` signal. This allows the UI to notify the user that the VPN activation failed due to their network connectivity issue and may offer troubleshooting advice such as checking that their wifi/cellular is enabled. It is worth noting that in any given circumstance, we will not deactivate the VPN on our end regardless of the failure. 
 
-This is a big undertaking that will take multiple sprints to complete. This document does not quiet cover the extent of work required for creating new unit and functional tests as well as updating the existng ones that will be affected. I propose we break down the work like below:
+This change also means that prior to the activation of the VPN, there are multiple checks and probes that need to succeed; this will take some time (hopefully no more than a couple of seconds), and as long as we communicate to the user via front end prompts about what is happening, this is acceptable.
 
-1. Create a new `ConnectivityManager` object with relevant states. Initially this will have a 1:1 map to the controller so we can debug and ensure the component works as intended. As we add the logic to probe for various scenarios and move further along the implementation work, we can remove them from the `Controller`.
-2. Add probe internet to `ConnectivityManager`
-3. Add firewall probe to `ConnectivityManager`
-4. Add captive portal probe to `ConnectivityManager`
-5. Add check subscription to `ConnectivityManager`
-6. Add server probing to `ConnectivityManager`
+This is a big undertaking that will take multiple sprints to complete. This document does not cover the extent of work required for creating new unit and functional tests as well as updating the existing ones that will be affected. I propose we break down the work like below:
+
+1. Create a new `ConnectionManager` object with relevant states. Initially, this will have a 1:1 map to the controller so we can debug and ensure the component works as intended. As we add the logic to probe for various scenarios and move further along the implementation work, we can remove them from the `Controller`.
+2. Add probe internet to `ConnectionManager`
+3. Add firewall probe to `ConnectionManager`
+4. Add captive portal probe to `ConnectionManager`
+5. Add check subscription to `ConnectionManager`
+6. Add server probing to `ConnectionManager`
 7. Get rid of the `ConnectionHealth` object
-8. Audit and cleanup `Controller::stateChanged`. We need to audit all areas where code is listening to `Controller::stateChanged` and see if it should be monitoring the `ConnectivityManager` instead, if that is the case, make the necessary changes. [Here](https://searchfox.org/mozilla-vpn-client/search?q=Controller%3A%3AstateChanged&path=&case=false&regexp=false) is a current list of every instance we should audit.
+8. Audit and cleanup `Controller::stateChanged`. We need to audit all areas where code is listening to `Controller::stateChanged` and see if it should be monitoring the `ConnectionManager` instead, if that is the case, make the necessary changes. [Here](https://searchfox.org/mozilla-vpn-client/search?q=Controller%3A%3AstateChanged&path=&case=false&regexp=false) is a current list of every instance we should audit.
 9. Move timestamp code to its own class/object
 
 
 ### Audit and cleanup `Controller::stateChanged`
-Below is a list of all areas where we monitor when the controller state changes. For each usage, I have added a comment proposing if it should be changed to watch `ConnectivityManager::stateChanged` instead. My rule of thumb is that if the code is that if it is UI/Frontend related, it should monitor the `ConnectivityManager`. If it is error handling related, it should continue to monitor the `Controller`. 
-
-- `Commandactivate::run()`: Connectivity Manager
-- `Commanddeactivate::run()`: Connectivity Manager
-- `CommandStatus::run()`: Connectivity Manager
-- `CommandUI::run()` -> line #390 creates and shows notification, should be watching the connectivity manager. Line #401 changes the MacOS menu, should be watching connectivity manager. 
-- `ConnectionBenchmark::initialize()`: because it is doing error handling, it should continue monitoring the controller states.
-- `IpAddressLookup::initialize()`: Not sure about this.
-- `KeyRegenerator::KeyRegenerator()`: Controller I THINK.
-- `MozillaVPN::MozillaVPN()`: #167 Not sure.  #170 notifies the UI that a refresh is needed so it should be monitoring connectivity manager. #179 this most likely will be changed since we are also refactoring connection health stuff. #183 deals with captive portal stuff and should be monitoring the Connectivity Manager instead.
-- `IOSNetworkWatcher::initialize()`: I think this will continue to monitor the controller
-- `ServerConnection::ServerConnection()`: Controller
-- `ServerLatency::initialize()`: since for now the server latency code is staying in the controller, this will continue to monitor the controller states.
-- `SettingsWatcher::SettingsWatcher()`: Controller
-- `SubscriptionMonitor::SubscriptionMonitor()`: connectivity manager since it is the component that handles subscription moving forward.
-- `SystemTrayNotificationHandler::initialize()`: updates the context menu, should be watching connectivity manager
-- `TaskControllerAction::run()`: Queues connections, so it should continue watching the controller.
-- `Telemetry::initialize()`: It relies on the current state of the vpn to stop and start timer, and should be watching the connectivity manager. 
+Controller states are going away, so any code that was previously listening for `Controller::stateChanged` should now monitor the `ConnectionManager`.
 
 
 ## Questions
-- Please review the list of `Controller::stateChanged` audits and let me know if you have a different opinion.
-- Do we need a `ConnectionState::Unstable` in `ConnectivityManager` which we would enter if missing a bunch pf ping replies?
-- Thoughts on the component name `ConnectivityManager`? Speak now or forever hold your peace.
+- None at the moment
