@@ -30,7 +30,7 @@ class WindowsTunnelService final : public QObject {
 
  private:
   void timeout();
-  static QString exitCodeToFailure(unsigned int code);
+  static QString exitCodeToFailure(const void* status);
 
  private:
   QTimer m_timer;
