@@ -19,10 +19,10 @@ Move all connectivity code out of the controller and into its separate component
 
 ```mermaid
 graph TD
-    Controller -->|activate()| ConnectionManager
+    Controller -->|activate| ConnectionManager
     ConnectionManager --> Frontend
     Frontend --> ConnectionManager
-    ConnectionManager -->|deactivate()| Controller
+    ConnectionManager -->|deactivate| Controller
 ```
 
 The existing Connection Health object in VPN performs checks that act in the same space as the `ConnectionManager`. For example, in connection health, we periodically send pings and collect some data upon receiving (or not receiving) a response which allows us to draw conclusions regarding network connectivity and server availability. Because there is so much overlap within both classes, the creation and implementation of the Connection Manager component allows us to entirely get rid of connection health and move any remaining logic to `ConnectionManager`. We should be able to entirely eliminate the `ConnectionHealth` class as well as the states `NoSignal` and `Stable` given that they will be handled within the new Connection Manager logic. For example, currently, we may enter the No Signal state due to several reasons such as losing network connectivity, expired subscription, or server location becoming unavailable, this means that No Signal is simply a side effect of something else going wrong, and because we now have explicit messaging and checks for those, No Signal does not serve us and can be removed.
