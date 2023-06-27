@@ -13,7 +13,7 @@ namespace AppConstants {
  * @brief expose the API base URL for guardian
  */
 inline QString apiBaseUrl() {
-  return "https://stage-vpn.guardian.nonprod.cloudops.mozgcp.net";
+  return "https://stage.guardian.nonprod.cloudops.mozgcp.net";
 }
 
 // This is used by SettingsHolder to configure the QSetting file.
@@ -33,6 +33,9 @@ constexpr const char* LOG_FILE_NAME = "auth-test.txt";
 
 // The app product name in guardian
 constexpr const char* AUTH_PROD_NAME = "vpn";
+
+// The IAP plan on FxA
+constexpr const char* IAP_PLANS = "auth-test";
 
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file
