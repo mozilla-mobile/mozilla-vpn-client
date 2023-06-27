@@ -3,18 +3,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Enables the Rust Toolchain from the Fetches/win-rust task
-$RUST_VERSION = "1.59.0"
-
 
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $FETCHES_PATH =resolve-path "$REPO_ROOT_PATH/../../fetches"
-$BUILD_DIR_PATH =resolve-path "$REPO_ROOT_PATH/../../build"
-$env:CARGO_HOME="$BUILD_DIR_PATH\cargo\"
 
-. "$FETCHES_PATH\rustup-init.exe" -y
-
+# Unpack the Conda pkg
+cph unpack "$FETCHES_PATH/rust.conda"
+$env:CARGO_HOME="$FETCHES_PATH\rust\Library"
 $env:Path="$env:Path;$env:CARGO_HOME/bin"
-
 
 Write-Output "Enabled Rust toolchain"
 rustc --version

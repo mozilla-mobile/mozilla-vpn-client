@@ -12,3 +12,4 @@ pathspec
 pyrsistent
 PyYAML
 yamllint
+conda-package-handling
