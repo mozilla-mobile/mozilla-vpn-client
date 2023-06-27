@@ -19,7 +19,7 @@ Move all connectivity code out of the controller and into its separate component
 
 ```mermaid
 graph TD
-    Controller --> |activate()| ConnectionManager
+    Controller -->|activate()| ConnectionManager
     ConnectionManager --> Frontend
     Frontend --> ConnectionManager
     ConnectionManager -->|deactivate()| Controller
