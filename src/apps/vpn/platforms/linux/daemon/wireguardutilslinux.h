@@ -29,8 +29,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool updateRoutePrefix(const IPAddress& prefix, int hopindex) override;
   bool deleteRoutePrefix(const IPAddress& prefix, int hopindex) override;
 
-  bool addExclusionRoute(const QHostAddress& address) override;
-  bool deleteExclusionRoute(const QHostAddress& address) override;
+  bool addExclusionRoute(const IPAddress& prefix) override;
+  bool deleteExclusionRoute(const IPAddress& prefix) override;
 
   void excludeCgroup(const QString& cgroup);
   void resetCgroup(const QString& cgroup);
@@ -41,9 +41,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
   bool addPeerPrefix(struct wg_peer* peer, const IPAddress& prefix);
   bool rtmSendRule(int action, int flags, int addrfamily);
-  bool rtmSendRoute(int action, int flags, const IPAddress& prefix,
-                    int hopindex);
-  bool rtmSendExclude(int action, int flags, const QHostAddress& address);
+  bool rtmSendRoute(int action, int flags, int type, const IPAddress& prefix);
+  bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
