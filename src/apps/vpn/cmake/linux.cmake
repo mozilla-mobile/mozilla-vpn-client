@@ -122,7 +122,3 @@ configure_file(../linux/mozillavpn.service.in
     ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
     DESTINATION ${SYSTEMD_UNIT_DIR})
-
-
-target_link_libraries(mozillavpn PRIVATE INTERFACE libsentry.a)
-target_link_libraries(mozillavpn PRIVATE INTERFACE breakpad_client.a)
