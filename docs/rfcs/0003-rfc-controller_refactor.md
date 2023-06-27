@@ -19,10 +19,9 @@ Move all connectivity code out of the controller and into its separate component
 
 ```mermaid
 graph TD
-    Controller -->|activate| ConnectionManager
     ConnectionManager --> Frontend
     Frontend --> ConnectionManager
-    ConnectionManager -->|deactivate| Controller
+    ConnectionManager -->|activate, deactivate| Controller
 ```
 
 The existing Connection Health object in VPN performs checks that act in the same space as the `ConnectionManager`. For example, in connection health, we periodically send pings and collect some data upon receiving (or not receiving) a response which allows us to draw conclusions regarding network connectivity and server availability. Because there is so much overlap within both classes, the creation and implementation of the Connection Manager component allows us to entirely get rid of connection health and move any remaining logic to `ConnectionManager`. We should be able to entirely eliminate the `ConnectionHealth` class as well as the states `NoSignal` and `Stable` given that they will be handled within the new Connection Manager logic. For example, currently, we may enter the No Signal state due to several reasons such as losing network connectivity, expired subscription, or server location becoming unavailable, this means that No Signal is simply a side effect of something else going wrong, and because we now have explicit messaging and checks for those, No Signal does not serve us and can be removed.
@@ -82,11 +81,11 @@ This change also means that prior to the activation of the VPN, there are multip
 This is a big undertaking that will take multiple sprints to complete. This document does not cover the extent of work required for creating new unit and functional tests as well as updating the existing ones that will be affected. I propose we break down the work like below:
 
 1. Create a new `ConnectionManager` object with relevant states. Initially, this will have a 1:1 map to the controller so we can debug and ensure the component works as intended. As we add the logic to probe for various scenarios and move further along the implementation work, we can remove them from the `Controller`.
-2. Add probe internet to `ConnectionManager`
-3. Add firewall probe to `ConnectionManager`
-4. Add captive portal probe to `ConnectionManager`
-5. Add check subscription to `ConnectionManager`
-6. Add server probing to `ConnectionManager`
+2. Add probe internet to `ConnectionManager`: This will allow us to check if there is an active internet connection.
+3. Add firewall probe to `ConnectionManager`: To make sure there are no firewall issues blocking access to the internet.
+4. Add captive portal probe to `ConnectionManager`: This will ensure that the user is not stuck behind a captive portal, which can interfere with internet access.
+5. Add check subscription to `ConnectionManager`: This will allow us to verify that the user has an active subscription before proceeding.
+6. Add server probing to `ConnectionManager`: To ensure that the servers within the user's selected location are available and running.
 7. Get rid of the `ConnectionHealth` object
 8. Audit and cleanup `Controller::stateChanged`. We need to audit all areas where code is listening to `Controller::stateChanged` and see if it should be monitoring the `ConnectionManager` instead, if that is the case, make the necessary changes. [Here](https://searchfox.org/mozilla-vpn-client/search?q=Controller%3A%3AstateChanged&path=&case=false&regexp=false) is a current list of every instance we should audit.
 9. Move timestamp code to its own class/object
