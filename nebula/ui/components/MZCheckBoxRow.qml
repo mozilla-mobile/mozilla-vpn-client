@@ -61,7 +61,6 @@ RowLayout {
             id: subLabel
 
             Layout.fillWidth: true
-            Layout.preferredWidth: parent.width
             text: subLabelText
             visible: !!subLabelText.length
             wrapMode: Text.WordWrap

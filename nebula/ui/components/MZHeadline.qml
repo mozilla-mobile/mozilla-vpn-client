@@ -12,7 +12,6 @@ Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.WordWrap
-    width: MZTheme.theme.maxTextWidth
     color: MZTheme.theme.fontColorDark
     font.family: MZTheme.theme.fontFamily
     font.pixelSize: 22
