@@ -55,6 +55,7 @@ function(build_go_archive OUTPUT_NAME MODULE_FILE)
                     CGO_LDFLAGS="${GOBUILD_CGO_LDFLAGS}"
                     GOOS=${GOBUILD_GOOS}
                     GOARCH=${GOBUILD_GOARCH}
+                    GOROOT=$ENV{GOROOT}
                 ${GOLANG_BUILD_TOOL} build ${GOBUILD_ARGS} -o ${ABS_OUTPUT_NAME}
     )
 endfunction(build_go_archive)

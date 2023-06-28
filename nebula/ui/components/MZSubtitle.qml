@@ -12,7 +12,6 @@ Text {
     font.pixelSize: MZTheme.theme.fontSize
     font.family: MZTheme.theme.fontInterFamily
     wrapMode: Text.Wrap
-    width: MZTheme.theme.maxTextWidth
     color: MZTheme.theme.fontColor
     lineHeightMode: Text.FixedHeight
     lineHeight: MZTheme.theme.labelLineHeight

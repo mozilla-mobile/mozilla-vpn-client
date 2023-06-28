@@ -20,7 +20,7 @@ MZViewBase {
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
-        Layout.fillWidth: true
+        Layout.preferredWidth: parent.width
         objectName: "aboutUsList"
 
         ColumnLayout {

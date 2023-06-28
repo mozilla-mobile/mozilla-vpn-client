@@ -185,9 +185,8 @@ bool WindowsTunnelService::start(const QString& configData) {
     return false;
   }
 
-  logger.debug() << "The tunnel service exited with status code:"
-                 << status.dwWin32ExitCode << "-"
-                 << exitCodeToFailure(status.dwWin32ExitCode);
+  logger.debug() << "The tunnel service exited with status:"
+                 << status.dwWin32ExitCode << "-" << exitCodeToFailure(&status);
 
   emit backendFailure();
   return false;
@@ -298,9 +297,14 @@ static bool waitForServiceStatus(SC_HANDLE service, DWORD expectedStatus) {
 }
 
 // static
-QString WindowsTunnelService::exitCodeToFailure(unsigned int exitCode) {
+QString WindowsTunnelService::exitCodeToFailure(const void* status) {
+  const SERVICE_STATUS* st = static_cast<const SERVICE_STATUS*>(status);
+  if (st->dwWin32ExitCode != ERROR_SERVICE_SPECIFIC_ERROR) {
+    return WindowsUtils::getErrorMessage(st->dwWin32ExitCode);
+  }
+
   // The order of this error code is taken from wireguard.
-  switch (exitCode) {
+  switch (st->dwServiceSpecificExitCode) {
     case 0:
       return "No error";
     case 1:
@@ -336,6 +340,6 @@ QString WindowsTunnelService::exitCodeToFailure(unsigned int exitCode) {
     case 15:
       return "Windows internal error.";
     default:
-      return "Unknown error";
+      return QString("Unknown error (%1)").arg(st->dwServiceSpecificExitCode);
   }
 }

@@ -5,7 +5,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
-    - mozillavpn_taskgraph.transforms.release_artifacts:transforms
+    - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 

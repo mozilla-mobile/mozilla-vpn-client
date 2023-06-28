@@ -10,6 +10,7 @@
 class WindowsUtils final {
  public:
   static QString getErrorMessage();
+  static QString getErrorMessage(quint32 code);
   static void windowsLog(const QString& msg);
 
   // Returns the major version of Windows

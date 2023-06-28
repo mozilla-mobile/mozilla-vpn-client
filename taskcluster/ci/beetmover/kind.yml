@@ -7,7 +7,7 @@ loader: taskgraph.loader.transform:loader
 transforms:
     - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.beetmover_mac_upstream:transforms
-    - mozillavpn_taskgraph.transforms.release_artifacts:transforms
+    - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
     - mozillavpn_taskgraph.transforms.beetmover:transforms
     - taskgraph.transforms.task:transforms
 

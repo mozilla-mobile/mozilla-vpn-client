@@ -21,19 +21,11 @@ ColumnLayout {
             when: type === "text"
 
             PropertyChanges {
-                target: rowLabel
-                visible: true
-            }
-            PropertyChanges {
                 target: rowText
                 visible: true
             }
             PropertyChanges {
                 target: rowPill
-                visible: false
-            }
-            PropertyChanges {
-                target: paymentMethod
                 visible: false
             }
             PropertyChanges {
@@ -45,19 +37,11 @@ ColumnLayout {
             when: type === "text-upgrade"
 
             PropertyChanges {
-                target: rowLabel
-                visible: true
-            }
-            PropertyChanges {
                 target: rowText
                 visible: true
             }
             PropertyChanges {
                 target: rowPill
-                visible: false
-            }
-            PropertyChanges {
-                target: paymentMethod
                 visible: false
             }
             PropertyChanges {
@@ -69,20 +53,12 @@ ColumnLayout {
             when: type === "pill"
 
             PropertyChanges {
-                target: rowLabel
-                visible: true
-            }
-            PropertyChanges {
                 target: rowText
                 visible: false
             }
             PropertyChanges {
                 target: rowPill
                 visible: true
-            }
-            PropertyChanges {
-                target: paymentMethod
-                visible: false
             }
             PropertyChanges {
                 target: relayUpsell
@@ -93,20 +69,12 @@ ColumnLayout {
             when: type === "payment"
 
             PropertyChanges {
-                target: rowLabel
-                visible: false
-            }
-            PropertyChanges {
                 target: rowText
                 visible: true
             }
             PropertyChanges {
                 target: rowPill
                 visible: false
-            }
-            PropertyChanges {
-                target: paymentMethod
-                visible: true
             }
             PropertyChanges {
                 target: relayUpsell
@@ -131,6 +99,7 @@ ColumnLayout {
 
             horizontalAlignment: Text.AlignLeft
             font.pixelSize: MZTheme.theme.fontSizeSmall
+            visible: !paymentMethod.visible
             text: labelText
             wrapMode: Text.WordWrap
 
@@ -140,7 +109,9 @@ ColumnLayout {
         MZPaymentMethod {
             id: paymentMethod
             objectName: _objectName + "-paymentMethod"
+            Layout.alignment: Qt.AlignLeft
             paymentMethod: labelText
+            visible: type === "payment"
         }
 
         MZInterLabel {

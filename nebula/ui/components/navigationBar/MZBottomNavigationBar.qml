@@ -32,7 +32,7 @@ Rectangle {
         verticalOffset: 2
         opacity: 0.6
         spread: 0
-        radius: parent.radius
+        radius: 6
         color: MZTheme.colors.grey60
         cached: true
     }

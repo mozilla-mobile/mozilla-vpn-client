@@ -11,21 +11,28 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 
 ## Activate conda
 
-    conda activate vpn
+```bash 
+$ conda env create -f env.yml -n vpn
+$ conda activate vpn
+```
 
 See [here](./index.md#conda) for conda environment instructions.
 
 Install extra conda packages
 
-    ./scripts/macos/conda_install_extras.sh
+```bash 
+$ conda activate vpn
+$ ./scripts/macos/conda_install_extras.sh
+```
+
 
 ## Get Qt
 
-Get a static build of Qt made built in our CI.
+```bash 
+$ conda activate vpn
+$ ./scripts/macos/conda_setup_qt.sh
+```
 
-https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip
-
-Unzip the folder and remember the location for the configure step.
 
 # Build with Xcode
 
@@ -35,14 +42,9 @@ Complete the steps in [macOS.md#configure-xcode-build-environment](./macos.md#co
 
 ## Build
 
-Make the build directory
+Configure, using the qt-cmake
 
-    mkdir build-ios
-
-Configure, using the cmake in the downloaded Qt folder, and setting QT_HOST_PATH to point
-to macOS.
-
-    <Qt unzipped path>/6.2.4/ios/bin/qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH=<Qt unzipped path>/6.2.4/macos
+    qt-cmake -S . -B build-ios
 
 
 This will generate an Xcode project file at `build-ios/Mozilla VPN.xcodeproj` which can be opened
