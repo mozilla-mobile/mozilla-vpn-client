@@ -47,6 +47,7 @@ endfunction()
 #   LIBRARY_FILE: Filename of the expected library to be built.
 #   CARGO_ENV: Environment variables to pass to cargo
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
+#   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -60,7 +61,7 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV;SHARED;"
+        "CARGO_ENV;SHARED;FW_NAME"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
@@ -104,7 +105,7 @@ function(build_rust_archives)
 
     ## For build Apple shared binaries, the install path needs to be relative to the runpath.
     if (RUST_BUILD_SHARED AND APPLE)
-        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_LIBRARY_FILENAME}")
+        list(APPEND CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
     endif()
 
     if(ANDROID)
@@ -199,16 +200,29 @@ endfunction()
 #   CARGO_ENV: Environment variables to pass to cargo.
 #   DEPENDS: Additional files on which the target depends.
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
+#   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "ARCH;CARGO_ENV;DEPENDS;SHARED"
+        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME"
         ${ARGN})
 
     if(NOT RUST_TARGET_SHARED)
         set(RUST_TARGET_SHARED 0)
+    endif()
+
+    if(${RUST_TARGET_SHARED} AND IOS AND NOT RUST_TARGET_FW_NAME)
+        message(FATAL_ERROR "A framework name must be provided when building a shared Rust library for iOS.")
+    endif()
+
+    if(IOS AND RUST_TARGET_FW_NAME)
+        set(FW_INFO_PLIST_FILE_PATH ${CMAKE_SOURCE_DIR}/scripts/cmake/Info.plist.${RUST_TARGET_FW_NAME})
+
+        if(NOT EXISTS ${FW_INFO_PLIST_FILE_PATH})
+            message(FATAL_ERROR "An Info.plist.${RUST_TARGET_FW_NAME} file must exist to support creation of ${FW_NAME} framework.")
+        endif()
     endif()
 
     if(${RUST_TARGET_SHARED})
@@ -267,6 +281,7 @@ function(add_rust_library TARGET_NAME)
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${CARGO_ENV}
             SHARED ${RUST_TARGET_SHARED}
+            FW_NAME ${RUST_TARGET_FW_NAME}
         )
 
         if(RUST_TARGET_DEPENDS)
@@ -286,29 +301,68 @@ function(add_rust_library TARGET_NAME)
     endforeach()
 
     if(APPLE)
-        ## For apple platforms unify the built libraries
-        add_custom_command(
-            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-            DEPENDS ${RUST_TARGET_RELEASE_LIBS}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
-            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-                        ${RUST_TARGET_RELEASE_LIBS}
-        )
-        add_custom_command(
-            OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
-            DEPENDS ${RUST_TARGET_DEBUG_LIBS}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
-            COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
-                        ${RUST_TARGET_DEBUG_LIBS}
-        )
+        if (${RUST_TARGET_SHARED} AND IOS)
+            add_custom_command(
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework
+                DEPENDS ${RUST_TARGET_RELEASE_LIBS}
+                COMMAND ${CMAKE_COMMAND} -E make_directory 
+                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework\"
+                COMMAND lipo 
+                    -create
+                    ${RUST_TARGET_RELEASE_LIBS}
+                    -output
+                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}\"
+                COMMAND cp -v
+                    \"${FW_INFO_PLIST_FILE_PATH}\"
+                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework/Info.plist\"
+            )
 
-        add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
-        )
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
-        )
+            add_custom_command(
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework
+                DEPENDS ${RUST_TARGET_DEBUG_LIBS}
+                COMMAND ${CMAKE_COMMAND} -E make_directory 
+                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework\"
+                COMMAND lipo 
+                    -create
+                    ${RUST_TARGET_DEBUG_LIBS}
+                    -output
+                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}\"
+                COMMAND cp -v
+                    \"${FW_INFO_PLIST_FILE_PATH}\"
+                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework/Info.plist\"
+            )
+
+            add_custom_target(${TARGET_NAME}_builder
+                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FW_NAME}.framework
+            )
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${FW_NAME}.framework/${FW_NAME}
+                IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${FW_NAME}.framework/${FW_NAME}
+            )
+        else()
+            add_custom_command(
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                DEPENDS ${RUST_TARGET_RELEASE_LIBS}
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
+                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                            ${RUST_TARGET_RELEASE_LIBS}
+            )
+            add_custom_command(
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                DEPENDS ${RUST_TARGET_DEBUG_LIBS}
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
+                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                            ${RUST_TARGET_DEBUG_LIBS}
+            )
+
+            add_custom_target(${TARGET_NAME}_builder
+                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
+            )
+            set_target_properties(${TARGET_NAME} PROPERTIES
+                IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+            )
+        endif()
     else()
         ## For all other platforms, only build the first architecture
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
