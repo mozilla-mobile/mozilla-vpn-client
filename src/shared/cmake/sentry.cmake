@@ -94,14 +94,13 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE libbreakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS
-            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-            -DSENTRY_BACKEND=breakpad
-            -DSENTRY_BUILD_SHARED_LIBS=off
-            -DSENTRY_BUILD_TESTS=off
-            -DSENTRY_BUILD_EXAMPLES=off
-        )
+        SET(SENTRY_ARGS -DSENTRY_BUILD_SHARED_LIBS=off
+                        -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+                        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+                        -DSENTRY_BACKEND=breakpad
+                        -SENTRY_LIBRARY_TYPE=static
+                        -DSENTRY_BUILD_TESTS=off
+                        -DSENTRY_BUILD_EXAMPLES=off)
     endif()
     
 
