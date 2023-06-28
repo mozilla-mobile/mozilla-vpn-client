@@ -54,14 +54,14 @@ tasks:
         fetch:
             type: static-url
             url: https://firefoxci.taskcluster-artifacts.net/JPmV_PJ7SueUPjU9JoOA5g/0/public/build/conda-windows.tar.gz
-            sha256: 9034d99ee08e92b3d79866bcd77732e2173c430c9b10282c0c169c1aace2dc03
+            sha256: 72485e6afa0acced8bde87fe61c9c16c3229daff611ffaa3a200ca96feab5c29
             size: 3334686516
     win-go:
         description: go1.18.8
         fetch:
             type: static-url
             url: https://go.dev/dl/go1.18.8.windows-amd64.zip
-            sha256: 980788761e75ed33ffc4f2a7a3ff07cd90949bd023eb1a8d855ef0b5de9cbcba
+            sha256: 72485e6afa0acced8bde87fe61c9c16c3229daff611ffaa3a200ca96feab5c29
             size: 155201453
     win-sentry-cli:
         description: Sentry-Cli.exe
