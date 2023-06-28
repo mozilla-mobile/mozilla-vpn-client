@@ -83,7 +83,8 @@ if( ${_SUPPORTED} GREATER -1 )
                         -DSENTRY_BACKEND=inproc
             )
     
-    elseif(LINUX)
+    endif()
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
         # Compile Static for apple and link to libsentry.a
         target_link_libraries(shared-sources INTERFACE sentry)
