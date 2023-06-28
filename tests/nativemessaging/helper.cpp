@@ -10,7 +10,7 @@ QProcess* TestHelper::s_nativeMessagingProcess = nullptr;
 TestHelper::TestHelper() { s_testList.append(this); }
 
 // static
-void TestHelper::runNativeMessaging(const char* app) {
+void TestHelper::runNativeMessaging(const char* app, QStringList arguments = QStringList()) {
   Q_ASSERT(s_nativeMessagingProcess == nullptr);
 
   s_nativeMessagingProcess = new QProcess();
@@ -20,7 +20,7 @@ void TestHelper::runNativeMessaging(const char* app) {
     qDebug() << "[mozillavpnnp - stderr]"
              << s_nativeMessagingProcess->readAllStandardError();
   });
-  s_nativeMessagingProcess->start(app, QStringList(),
+  s_nativeMessagingProcess->start(app, arguments,
                                   QProcess::Unbuffered | QProcess::ReadWrite);
   if (!s_nativeMessagingProcess->waitForStarted()) {
     qFatal("Failed to start the naive messaging process");
@@ -52,8 +52,13 @@ void TestHelper::killNativeMessaging() {
 
 int TestHelper::runTests(const char* app) {
   int failures = 0;
-
+  s_app=app;
   for (QObject* obj : TestHelper::s_testList) {
+    QStringList args; 
+    args.append("/some/url/to/manifest.json");
+    // A valid extension id.
+    args.append("@testpilot-containers");
+    
     runNativeMessaging(app);
 
     int result = QTest::qExec(obj);

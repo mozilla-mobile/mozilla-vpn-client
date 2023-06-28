@@ -23,6 +23,8 @@ target_sources(nativemessaging_tests PRIVATE
     testbridge.h
     testnoop.cpp
     testnoop.h
+    test_illegal_invoke.cpp
+    test_illegal_invoke.h
 )
 
 add_dependencies(nativemessaging_tests mozillavpnnp)

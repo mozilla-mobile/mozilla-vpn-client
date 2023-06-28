@@ -11,8 +11,13 @@ use std::mem::size_of;
 use std::sync::mpsc::channel;
 use std::sync::Arc;
 use std::{thread, time};
+use std::env;
 
 const SERVER_AND_PORT: &str = "127.0.0.1:8754";
+
+const ALLOW_LISTED_WEBEXTENSIONS: [&str;1] = [
+    "@testpilot-containers"
+];
 
 #[derive(PartialEq)]
 enum ReaderState {
@@ -126,6 +131,23 @@ fn write_vpn_up() {
 }
 
 fn main() {
+    /*
+        There are two arguments are passed to this binary when it starts.
+        - The complete path to the app manifest.
+        - The ID (as given in the browser_specific_settings manifest.json key) of the add-on that started it.
+
+        Note: Chrome handles the passed arguments differently - we need to change that, if we ever want to support that. 
+    */
+    let arguments: Vec<String> = env::args().collect();
+    if arguments.len() != 2 {
+        return;
+    }
+    let ext_id = arguments.last().expect("We cannot start without an extension id");
+    if !ALLOW_LISTED_WEBEXTENSIONS.contains(&ext_id.as_str()){
+        return; 
+    }
+
+
     // A poll to process VPN and STDIN events.
     let mut poll = Poll::new().expect("Failed to allocate a poll");
     let mut events = Events::with_capacity(128);

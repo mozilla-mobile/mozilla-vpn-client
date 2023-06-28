@@ -7,6 +7,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QStringList>
 #include <QVector>
 #include <QtTest/QtTest>
 
@@ -25,11 +26,12 @@ class TestHelper : public QObject {
 
   static int runTests(const char* app);
 
- private:
-  static void runNativeMessaging(const char* app);
+ protected:
+  static void runNativeMessaging(const char* app, QStringList arguments);
   static void killNativeMessaging();
 
  public:
+  static const char* s_app;
   static QVector<QObject*> s_testList;
 
   static QProcess* s_nativeMessagingProcess;
