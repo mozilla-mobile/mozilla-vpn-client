@@ -15,10 +15,9 @@ task-defaults:
     fetches:
         fetch:
             - win-dev-env
-            - win-rustup
-            - win-go
             - win-perl
             - win-sentry-cli
+            - win-rust-conda
         build:
             - artifact: mozillavpn-sources.tar.gz
         toolchain:
