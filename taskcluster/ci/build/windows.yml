@@ -15,7 +15,6 @@ task-defaults:
     fetches:
         fetch:
             - win-dev-env
-            - win-go
             - win-perl
             - win-sentry-cli
             - win-rust-conda
