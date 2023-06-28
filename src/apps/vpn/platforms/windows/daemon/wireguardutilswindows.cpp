@@ -162,6 +162,12 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
 
+  // Exclude the server address, except for multihop exit servers.
+  if (config.m_hopType != "exit") {
+    m_routeMonitor.addExclusionRoute(config.m_serverIpv4AddrIn);
+    m_routeMonitor.addExclusionRoute(config.m_serverIpv6AddrIn);
+  }
+
   QString reply = m_tunnel.uapiCommand(message);
   logger.debug() << "DATA:" << reply;
   return true;
@@ -170,6 +176,12 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
 bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
+
+  // Clear exclustion routes for this peer.
+  if (config.m_hopType != "exit") {
+    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  }
 
   // Disable the windows firewall for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
@@ -217,9 +229,7 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   entry->Age = 0;
 }
 
-bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix,
-                                              int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -236,9 +246,7 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix,
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix,
-                                              int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -255,10 +263,10 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix,
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::addExclusionRoute(const QHostAddress& address) {
-  return m_routeMonitor.addExclusionRoute(address);
+bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
+  return m_routeMonitor.addExclusionRoute(prefix);
 }
 
-bool WireguardUtilsWindows::deleteExclusionRoute(const QHostAddress& address) {
-  return m_routeMonitor.deleteExclusionRoute(address);
+bool WireguardUtilsWindows::deleteExclusionRoute(const IPAddress& prefix) {
+  return m_routeMonitor.deleteExclusionRoute(prefix);
 }

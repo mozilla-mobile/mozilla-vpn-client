@@ -226,9 +226,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
@@ -249,9 +247,7 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix,
   return false;
 }
 
-bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }

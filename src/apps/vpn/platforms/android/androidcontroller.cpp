@@ -117,7 +117,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 
 void AndroidController::activate(const InterfaceConfig& config,
                                  Controller::Reason reason) {
-  Q_ASSERT(config.m_hopindex == 0);
+  Q_ASSERT(config.m_hopType == "single");
   logger.debug() << "Activation";
 
   m_device = *device;
@@ -152,6 +152,12 @@ void AndroidController::activate(const InterfaceConfig& config,
   }
   foreach (auto addr, config.m_excludedAddresses) {
     excludedIPs.append(IPAddress(addr));
+  }
+  if (!config.m_serverIpv4AddrIn.isEmpty()) {
+    excludedIPs.append(IPAddress(config.m_serverIpv4AddrIn));
+  }
+  if (!config.m_serverIpv6AddrIn.isEmpty()) {
+    excludedIPs.append(IPAddress(config.m_serverIpv6AddrIn));
   }
   foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
     fullAllowedIPs.append(QJsonValue(item.toString()));

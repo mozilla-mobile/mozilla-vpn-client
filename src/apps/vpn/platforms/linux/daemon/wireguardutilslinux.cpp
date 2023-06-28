@@ -214,8 +214,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    logger.error() << "Failed to set peer endpoint for hop"
-                   << config.m_hopindex;
+    logger.error() << "Failed to set peer endpoint for" << config.m_hopType << "hop";
     return false;
   }
 
@@ -223,15 +222,15 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // *WAAAY* too long, which we aren't really using anways since the routing
   // policy rules are doing all the work for us anyways.
   //
-  // To work around the issue, just set default routes for hopindex zero.
-  if (config.m_hopindex == 0) {
+  // To work around the issue, just set default routes for the exit hop.
+  if ((config.m_hopType == "single") || (config.m_hopType == "exit")) {
     if (!config.m_deviceIpv4Address.isNull()) {
       addPeerPrefix(peer, IPAddress("0.0.0.0/0"));
     }
     if (!config.m_deviceIpv6Address.isNull()) {
       addPeerPrefix(peer, IPAddress("::/0"));
     }
-  } else {
+  } else if (config.m_hopType == "entry") {
     // Add allowed addresses for the multihop entry server(s)
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       bool ok = addPeerPrefix(peer, ip);
@@ -260,7 +259,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS |
                       WGPEER_HAS_PERSISTENT_KEEPALIVE_INTERVAL);
   if (wg_set_device(device) != 0) {
-    logger.error() << "Failed to set the new peer hop" << config.m_hopindex;
+    logger.error() << "Failed to set the new peer" << config.m_hopType << "hop";
     return false;
   }
 
@@ -289,7 +288,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
 
   // Clear routing policy tweaks for multihop.
-  if (config.m_hopindex != 0) {
+  if (config.m_hopType != "entry") {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
     }
@@ -360,18 +359,14 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
   logger.debug() << "Adding route to" << prefix.toString();
 
   const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
   return rtmSendRoute(RTM_NEWROUTE, flags, RTN_UNICAST, prefix);
 }
 
-bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
-  Q_UNUSED(hopindex);
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
   logger.debug() << "Removing route to" << logger.sensitive(prefix.toString());
 
   const int flags = NLM_F_REQUEST | NLM_F_ACK;

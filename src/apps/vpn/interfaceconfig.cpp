@@ -11,7 +11,7 @@
 
 QJsonObject InterfaceConfig::toJson() const {
   QJsonObject json;
-  json.insert("hopindex", QJsonValue((double)m_hopindex));
+  json.insert("hopType", QJsonValue(m_hopType));
   json.insert("privateKey", QJsonValue(m_privateKey));
   json.insert("deviceIpv4Address", QJsonValue(m_deviceIpv4Address));
   json.insert("deviceIpv6Address", QJsonValue(m_deviceIpv6Address));
@@ -19,7 +19,7 @@ QJsonObject InterfaceConfig::toJson() const {
   json.insert("serverIpv4AddrIn", QJsonValue(m_serverIpv4AddrIn));
   json.insert("serverIpv6AddrIn", QJsonValue(m_serverIpv6AddrIn));
   json.insert("serverPort", QJsonValue((double)m_serverPort));
-  if (m_hopindex == 0) {
+  if ((m_hopType == "exit") || (m_hopType == "single")) {
     json.insert("serverIpv4Gateway", QJsonValue(m_serverIpv4Gateway));
     json.insert("serverIpv6Gateway", QJsonValue(m_serverIpv6Gateway));
     json.insert("dnsServer", QJsonValue(m_dnsServer));

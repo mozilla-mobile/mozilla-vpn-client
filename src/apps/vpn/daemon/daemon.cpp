@@ -70,7 +70,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   logger.debug() << "Activating interface";
   auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
-  if (m_connections.contains(config.m_hopindex)) {
+  if (m_connections.contains(config.m_hopType)) {
     if (supportServerSwitching(config)) {
       logger.debug() << "Already connected. Server switching supported.";
 
@@ -89,7 +89,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       bool status = run(Switch, config);
       logger.debug() << "Connection status:" << status;
       if (status) {
-        m_connections[config.m_hopindex] = ConnectionState(config);
+        m_connections[config.m_hopType] = ConnectionState(config);
         m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
         emit_failure_guard.dismiss();
         return true;
@@ -102,7 +102,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
 
-    Q_ASSERT(!m_connections.contains(config.m_hopindex));
+    Q_ASSERT(!m_connections.contains(config.m_hopType));
     if (activate(config)) {
       emit_failure_guard.dismiss();
       return true;
@@ -146,7 +146,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   // set routing
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
       logger.debug() << "Routing configuration failed for"
                      << logger.sensitive(ip.toString());
       return false;
@@ -156,7 +156,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   bool status = run(Up, config);
   logger.debug() << "Connection status:" << status;
   if (status) {
-    m_connections[config.m_hopindex] = ConnectionState(config);
+    m_connections[config.m_hopType] = ConnectionState(config);
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
     emit_failure_guard.dismiss();
     return true;
@@ -165,7 +165,11 @@ bool Daemon::activate(const InterfaceConfig& config) {
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
-  if ((config.m_hopindex == 0) && supportDnsUtils()) {
+  if (!supportDnsUtils()) {
+    return true;
+  }
+
+  if ((config.m_hopType == "exit") || (config.m_hopType == "single")) {
     QList<QHostAddress> resolvers;
     resolvers.append(QHostAddress(config.m_dnsServer));
 
@@ -273,15 +277,15 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     config.m_dnsServer = value.toString();
   }
 
-  if (!obj.contains("hopindex")) {
-    config.m_hopindex = 0;
+  if (!obj.contains("hopType")) {
+    config.m_hopType = "single";
   } else {
-    QJsonValue value = obj.value("hopindex");
-    if (!value.isDouble()) {
-      logger.error() << "hopindex is not a number";
+    QJsonValue value = obj.value("hopType");
+    if (!value.isString()) {
+      logger.error() << "hopType is not a string";
       return false;
     }
-    config.m_hopindex = value.toInt();
+    config.m_hopType = value.toString();
   }
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
@@ -375,9 +379,9 @@ bool Daemon::deactivate(bool emitSignals) {
   // Cleanup peers and routing
   for (const ConnectionState& state : m_connections) {
     const InterfaceConfig& config = state.m_config;
-    logger.debug() << "Deleting routes for hop" << config.m_hopindex;
+    logger.debug() << "Deleting routes for" << config.m_hopType << "hop";
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+      wgutils()->deleteRoutePrefix(ip);
     }
     wgutils()->deletePeer(config);
   }
@@ -412,11 +416,11 @@ QString Daemon::logs() {
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
-  if (!m_connections.contains(config.m_hopindex)) {
+  if (!m_connections.contains(config.m_hopType)) {
     return false;
   }
   const InterfaceConfig& current =
-      m_connections.value(config.m_hopindex).m_config;
+      m_connections.value(config.m_hopType).m_config;
 
   return current.m_privateKey == config.m_privateKey &&
          current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
@@ -428,19 +432,13 @@ bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
 bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 
-  logger.debug() << "Switching server for hop" << config.m_hopindex;
+  logger.debug() << "Switching server for" << config.m_hopType << "hop";
 
-  Q_ASSERT(m_connections.contains(config.m_hopindex));
+  Q_ASSERT(m_connections.contains(config.m_hopType));
   const InterfaceConfig& lastConfig =
-      m_connections.value(config.m_hopindex).m_config;
+      m_connections.value(config.m_hopType).m_config;
 
   // Configure routing for new excluded addresses.
-  if (!config.m_serverIpv4AddrIn.isEmpty()) {
-    addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-  }
-  if (!config.m_serverIpv6AddrIn.isEmpty()) {
-    addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
-  }
   for (const QString& i : config.m_excludedAddresses) {
     addExclusionRoute(IPAddress(i));
   }
@@ -451,7 +449,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     return false;
   }
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
       logger.error() << "Server switch failed to update the routing table";
       break;
     }
@@ -463,7 +461,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   }
   for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
-      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+      wgutils()->deleteRoutePrefix(ip);
     }
   }
 
@@ -474,7 +472,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     }
   }
 
-  m_connections[config.m_hopindex] = ConnectionState(config);
+  m_connections[config.m_hopType] = ConnectionState(config);
   return true;
 }
 

@@ -322,7 +322,6 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
   exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
   exitConfig.m_serverPort = exitServer.choosePort();
-  exitConfig.m_hopindex = 0;
   exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
   exitConfig.m_excludedAddresses = getExcludedAddresses();
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
@@ -341,6 +340,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
+    exitConfig.m_hopType = "single";
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -352,6 +352,8 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     logger.info() << "Activating multi-hop (through platform controller)";
+    exitConfig.m_hopType = "exit";
+
     Server entryServer = serverSelectionPolicy == DoNotRandomizeServerSelection &&
                            !m_serverData.entryServerPublicKey().isEmpty()
                        ? MozillaVPN::instance()->serverCountryModel()->server(
@@ -372,7 +374,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     entryConfig.m_serverPort = entryServer.choosePort();
-    entryConfig.m_hopindex = 1;
+    entryConfig.m_hopType = "entry";
     entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
     entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
 
@@ -387,7 +389,9 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
   else {
-    logger.info() << "Activating multi-hop (not through platform controller)";
+    logger.info() << "Activating multi-hop (through multihop port)";
+    exitConfig.m_hopType = "single";
+
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()

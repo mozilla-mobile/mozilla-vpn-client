@@ -11,8 +11,10 @@
 #include <winsock2.h>
 #include <ws2ipdef.h>
 
-#include <QHostAddress>
 #include <QObject>
+
+#include "ipaddress.h"
+
 class WindowsRouteMonitor final : public QObject {
   Q_OBJECT
 
@@ -20,8 +22,8 @@ class WindowsRouteMonitor final : public QObject {
   WindowsRouteMonitor(QObject* parent);
   ~WindowsRouteMonitor();
 
-  bool addExclusionRoute(const QHostAddress& address);
-  bool deleteExclusionRoute(const QHostAddress& address);
+  bool addExclusionRoute(const IPAddress& prefix);
+  bool deleteExclusionRoute(const IPAddress& prefix);
   void flushExclusionRoutes();
 
   void setLuid(quint64 luid) { m_luid = luid; }
@@ -34,7 +36,7 @@ class WindowsRouteMonitor final : public QObject {
   void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
   void updateValidInterfaces(int family);
 
-  QHash<QHostAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
+  QHash<IPAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
   QList<quint64> m_validInterfacesIpv4;
   QList<quint64> m_validInterfacesIpv6;
 
