@@ -32,8 +32,8 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool updateRoutePrefix(const IPAddress& prefix) override;
   bool deleteRoutePrefix(const IPAddress& prefix) override;
 
-  bool addExclusionRoute(const QHostAddress& address) override;
-  bool deleteExclusionRoute(const QHostAddress& address) override;
+  bool addExclusionRoute(const IPAddress& prefix) override;
+  bool deleteExclusionRoute(const IPAddress& prefix) override;
 
  signals:
   void backendFailure();

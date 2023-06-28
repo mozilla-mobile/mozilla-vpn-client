@@ -162,6 +162,12 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
 
+  // Exclude the server address, except for multihop exit servers.
+  if ((config.m_hopType != "exit") && (m_rtmonitor != nullptr)) {
+    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  }
+
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
     logger.error() << "Peer configuration failed:" << strerror(err);
@@ -172,6 +178,12 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
+
+  // Clear exclustion routes for this peer.
+  if ((config.m_hopType != "exit") && (m_rtmonitor != nullptr)) {
+    m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  }
 
   QString message;
   QTextStream out(&message);
@@ -267,18 +279,18 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   }
 }
 
-bool WireguardUtilsMacos::addExclusionRoute(const QHostAddress& address) {
+bool WireguardUtilsMacos::addExclusionRoute(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->addExclusionRoute(address);
+  return m_rtmonitor->addExclusionRoute(prefix);
 }
 
-bool WireguardUtilsMacos::deleteExclusionRoute(const QHostAddress& address) {
+bool WireguardUtilsMacos::deleteExclusionRoute(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->deleteExclusionRoute(address);
+  return m_rtmonitor->deleteExclusionRoute(prefix);
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

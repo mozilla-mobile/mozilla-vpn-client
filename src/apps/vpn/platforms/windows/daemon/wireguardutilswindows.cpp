@@ -164,8 +164,8 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
 
   // Exclude the server address, except for multihop exit servers.
   if (config.m_hopType != "exit") {
-    m_routeMonitor.addExclusionRoute(config.m_serverIpv4AddrIn);
-    m_routeMonitor.addExclusionRoute(config.m_serverIpv6AddrIn);
+    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
 
   QString reply = m_tunnel.uapiCommand(message);
