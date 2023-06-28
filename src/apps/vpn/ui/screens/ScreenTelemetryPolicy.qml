@@ -100,6 +100,7 @@ MZFlickable {
                 labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
+                Layout.fillWidth: true
             }
 
         }
