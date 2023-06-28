@@ -109,13 +109,14 @@ MZFlickable {
 
             ColumnLayout {
                 Layout.topMargin: MZTheme.theme.windowMargin / 2
+                Layout.preferredWidth: parent.width
+
                 spacing: MZTheme.theme.windowMargin / 2
 
                 MZHeadline {
                     id: headline
                     width: undefined
-                    Layout.maximumWidth: col.width - MZTheme.theme.vSpacing * 2
-                    Layout.minimumWidth: col.width - MZTheme.theme.vSpacing * 2
+                    Layout.fillWidth: true
                     Component.onCompleted: {
                         if (
                                 MZAuthInApp.state === MZAuthInApp.StateSignIn ||
@@ -129,18 +130,20 @@ MZFlickable {
                     }
                 }
 
-                MZLinkButton {
+                Loader {
                     Layout.alignment: Qt.AlignHCenter
-                    labelText: MZI18n.InAppAuthChangeEmailLink
-                    visible: _changeEmailLinkVisible
-                    onClicked: MZAuthInApp.reset()
+                    active: _changeEmailLinkVisible
+                    sourceComponent: MZLinkButton {
+                        labelText: MZI18n.InAppAuthChangeEmailLink
+                        visible: _changeEmailLinkVisible
+                        onClicked: MZAuthInApp.reset()
+                    }
                 }
 
                 MZSubtitle {
                     id: subtitle
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.maximumWidth: col.width - MZTheme.theme.vSpacing * 2
-                    Layout.minimumWidth: col.width - MZTheme.theme.vSpacing * 2
+                    width: undefined
+                    Layout.fillWidth: true
                 }
 
             }
@@ -151,7 +154,7 @@ MZFlickable {
 
             ColumnLayout {
                 id: inputs
-                Layout.maximumWidth: col.width - MZTheme.theme.vSpacing * 2
+                Layout.preferredWidth: parent.width
             }
         }
 

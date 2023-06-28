@@ -32,6 +32,7 @@ ColumnLayout {
     Component.onCompleted: if (typeof(authError) === "undefined" || !authError.visible) activeInput().forceActiveFocus();
 
     spacing: MZTheme.theme.vSpacing - MZTheme.theme.listSpacing
+    Layout.preferredWidth: parent.width
 
     ColumnLayout {
         function submitInfo(input) {
@@ -45,15 +46,16 @@ ColumnLayout {
         id: col
 
         spacing: MZTheme.theme.listSpacing
+        Layout.preferredWidth: parent.width
 
-        RowLayout {
-            Layout.fillWidth: true
+        Row {
             spacing: MZTheme.theme.windowMargin / 2
 
             MZTextField {
                 id: textInput
                 objectName: base.objectName + "-textInput"
-                Layout.fillWidth: true
+                width: base.width - (inputPasteButton.visible ? inputPasteButton.width - parent.spacing : 0)
+                height: MZTheme.theme.rowHeight
                 _placeholderText: _inputPlaceholderText
                 Keys.onReturnPressed: col.submitInfo(textInput)
                 onTextChanged: if (hasError) hasError = false
@@ -64,17 +66,16 @@ ColumnLayout {
                 objectName: base.objectName + "-passwordInput"
                 _placeholderText: _inputPlaceholderText
                 Keys.onReturnPressed: col.submitInfo(passwordInput)
-                Layout.fillWidth: true
+                width: base.width - inputPasteButton.width - parent.spacing
+                height: MZTheme.theme.rowHeight
                 onTextChanged: if (hasError) hasError = false
             }
 
             MZPasteButton {
                 id: inputPasteButton
                 objectName: base.objectName + "-inputPasteButton"
-                Layout.preferredWidth: MZTheme.theme.rowHeight
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-                height: undefined
-                width: undefined
+                width: MZTheme.theme.rowHeight
+                height: MZTheme.theme.rowHeight
                 onClicked: {
                    activeInput().paste();
                    activeInput().forceActiveFocus();
