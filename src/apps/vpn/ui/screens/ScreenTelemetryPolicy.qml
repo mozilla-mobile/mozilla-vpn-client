@@ -104,6 +104,7 @@ MZFlickable {
                 labelText: qsTrId("vpn.telemetryPolicy.MozillaVPNPrivacyNotice")
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
+                Layout.fillWidth: true
             }
 
         }
