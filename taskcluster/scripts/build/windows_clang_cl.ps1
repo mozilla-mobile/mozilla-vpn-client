@@ -8,19 +8,19 @@ $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
 # Prep Env:
-# Switch to the work dir, enable qt, enable msvc, enable rust
+# Switch to the work dir, configure qt
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
 
 # We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :) 
+# TODO: We need to handle this at some point. 
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 # TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
-
 
 
 # Setup Openssl Import
@@ -35,11 +35,13 @@ tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
-## Install Mini-conda 
+## Setup the conda enviroment 
 . $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
 conda-unpack
 
-# Run the activation scripts. 
+# Conda Pack excpets to be run under cmd. therefore it will 
+# (unlike conda) ignore activate.d powershell scripts.
+# So let's manually run the activation scripts. 
 #
 $CONDA_PREFIX = $env:CONDA_PREFIX 
 
@@ -48,18 +50,15 @@ foreach ($script in  $ACTIVATION_SCRIPTS)  {
     Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
     . "$CONDA_PREFIX\etc\conda\activate.d\$script"
 }
-
+# This is a wierd bug `PREFIX/bin` does not seem to be on the PATH 
+# when we run the activate.bat :shrugs: 
+# This will cause go to be missing. 
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
 
+
+# Okay We are ready to build! 
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
-
-$env:PATH 
-## Debugging: 
-## Why does it complain now? 
-gci env:
-
-
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
@@ -70,9 +69,9 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_DSN = Get-Content sentry_dsn
     #
     cmake -S $SOURCE_DIR -B $BUILD_DIR `
-        -GNinja -DCMAKE_BUILD_TYPE=Release`
+        -GNinja -DCMAKE_BUILD_TYPE=Release `
         -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" `
-        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe"`
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe"` # Make sure that we use the Conda Env python, not the taskcluster-vm one. 
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe"`
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 } else {
