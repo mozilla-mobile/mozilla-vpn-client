@@ -213,11 +213,11 @@ function(add_rust_library TARGET_NAME)
         set(RUST_TARGET_SHARED 0)
     endif()
 
-    if(${RUST_TARGET_SHARED} AND NOT RUST_TARGET_FW_NAME)
+    if(${RUST_TARGET_SHARED} AND IOS AND NOT RUST_TARGET_FW_NAME)
         message(FATAL_ERROR "A framework name must be provided when building a shared Rust library for iOS.")
     endif()
 
-    if(RUST_TARGET_FW_NAME)
+    if(IOS AND RUST_TARGET_FW_NAME)
         set(FW_INFO_PLIST_FILE_PATH ${CMAKE_SOURCE_DIR}/scripts/cmake/Info.plist.${RUST_TARGET_FW_NAME})
 
         if(NOT EXISTS ${FW_INFO_PLIST_FILE_PATH})
