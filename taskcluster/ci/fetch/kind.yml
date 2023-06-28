@@ -55,7 +55,7 @@ tasks:
             type: static-url
             url: https://firefoxci.taskcluster-artifacts.net/JPmV_PJ7SueUPjU9JoOA5g/0/public/build/conda-windows.tar.gz
             sha256: 9034d99ee08e92b3d79866bcd77732e2173c430c9b10282c0c169c1aace2dc03
-            size: 182508647
+            size: 3334686516
     win-go:
         description: go1.18.8
         fetch:
