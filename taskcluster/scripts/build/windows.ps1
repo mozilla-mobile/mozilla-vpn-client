@@ -10,6 +10,16 @@ $PERL_GCC_PATH =resolve-path "$FETCHES_PATH/c/bin"
 # Prep Env:
 # Switch to the work dir, enable qt, enable msvc, enable rust
 $env:PATH ="$FETCHES_PATH;$FETCHES_PATH\Library\bin;$FETCHES_PATH\bin;$QTPATH;$env:PATH"
+
+Remove-Item -Path "$FETCHES_PATH\Library\bin\clang.exe"
+Remove-Item -Path "$FETCHES_PATH\Library\bin\clang++.exe"
+
+Remove-Item -Path "$FETCHES_PATH\Library\bin\clang.exe"
+Remove-Item -Path "$FETCHES_PATH\Library\bin\clang++.exe"
+Remove-Item -Path "$FETCHES_PATH\Library\bin\clang-cl.exe"
+
+
+
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
