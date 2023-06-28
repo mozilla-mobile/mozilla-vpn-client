@@ -86,8 +86,9 @@ if( ${_SUPPORTED} GREATER -1 )
     elseif(LINUX)
         target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
         # Compile Static for apple and link to libsentry.a
-        target_link_libraries(shared-sources INTERFACE libsentry.a)
-        target_link_libraries(shared-sources INTERFACE libbreakpad_client.a)
+        target_link_libraries(shared-sources INTERFACE sentry)
+        target_link_libraries(shared-sources INTERFACE breakpad_client)
+        target_link_directories( shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib64)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
         SET(SENTRY_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DSENTRY_BACKEND=breakpad)
