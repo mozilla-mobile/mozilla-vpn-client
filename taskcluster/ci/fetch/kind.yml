@@ -46,15 +46,14 @@ tasks:
         description: Rustup for Windows v1.59.0
         fetch:
             type: static-url
-            url: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
-            sha256: f7ddacce04969a59f7080a64c466b936d7c2ae661b4fda44be8fe54aac0972ec
-            size: 9996288
+            url: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/JPmV_PJ7SueUPjU9JoOA5g/runs/0/artifacts/public%2Fbuild%2Fconda-windows.tar.gz
+            sha256: 72485e6afa0acced8bde87fe61c9c16c3229daff611ffaa3a200ca96feab5c29
+            size: 3334686516
     win-rust-conda:
         description: Rust
         fetch:
             type: static-url
-            url: https://anaconda.org/conda-forge/rust/1.69.0/download/win-64/rust-1.69.0-hf8d6059_4.conda
-            artifact-name: rust.conda
+            url: https://firefoxci.taskcluster-artifacts.net/JPmV_PJ7SueUPjU9JoOA5g/0/public/build/conda-windows.tar.gz
             sha256: 9034d99ee08e92b3d79866bcd77732e2173c430c9b10282c0c169c1aace2dc03
             size: 182508647
     win-go:
