@@ -49,6 +49,7 @@ foreach ($script in  $ACTIVATION_SCRIPTS)  {
     . "$CONDA_PREFIX\etc\conda\activate.d\$script"
 }
 
+$env:PATH="$CONDA_PREFIX\bin;$env:Path"
 
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
