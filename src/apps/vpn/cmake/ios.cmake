@@ -23,9 +23,10 @@ target_sources(mozillavpn PRIVATE
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 
-# Note: Just directly using the qtglean_bindings target here didn't seem to work.
-# Instead we are just going to add the dylib directly as a framework.
+# We have to manually build the QtGlean bindings framework,
+# so we also have to manually add it.
 get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
+get_filename_component(QTGLEAN_FW_LOCATION ${QTGLEAN_LIB_LOCATION} DIRECTORY)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
@@ -56,7 +57,7 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
     # Make sure Glean is added as a framework to the final bundle
-    XCODE_EMBED_FRAMEWORKS "${QTGLEAN_LIB_LOCATION};iosglean"
+    XCODE_EMBED_FRAMEWORKS "${QTGLEAN_FW_LOCATION};iosglean"
     XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
     XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
