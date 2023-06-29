@@ -24,14 +24,15 @@ class TestHelper : public QObject {
   QByteArray read();
   QByteArray readIgnoringStatus();
 
-  static int runTests(const char* app);
+  static int runTests(char* app);
 
  protected:
   static void runNativeMessaging(const char* app, QStringList arguments);
   static void killNativeMessaging();
 
  public:
-  static const char* s_app;
+  static char* s_app;
+  static int s_last_exit_code;
   static QVector<QObject*> s_testList;
 
   static QProcess* s_nativeMessagingProcess;

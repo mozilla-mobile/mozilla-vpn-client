@@ -6,19 +6,25 @@
 
 QVector<QObject*> TestHelper::s_testList;
 QProcess* TestHelper::s_nativeMessagingProcess = nullptr;
+char* TestHelper::s_app = nullptr; 
+int TestHelper::s_last_exit_code = 0; 
 
 TestHelper::TestHelper() { s_testList.append(this); }
 
 // static
-void TestHelper::runNativeMessaging(const char* app, QStringList arguments = QStringList()) {
+void TestHelper::runNativeMessaging(const char* app, QStringList arguments) {
   Q_ASSERT(s_nativeMessagingProcess == nullptr);
 
   s_nativeMessagingProcess = new QProcess();
   s_nativeMessagingProcess->setReadChannel(QProcess::StandardOutput);
+  s_last_exit_code=0;
 
   connect(s_nativeMessagingProcess, &QProcess::readyReadStandardError, []() {
     qDebug() << "[mozillavpnnp - stderr]"
              << s_nativeMessagingProcess->readAllStandardError();
+  });
+  connect(s_nativeMessagingProcess, &QProcess::finished, [&](int exitCode) {
+    s_last_exit_code=exitCode;
   });
   s_nativeMessagingProcess->start(app, arguments,
                                   QProcess::Unbuffered | QProcess::ReadWrite);
@@ -50,7 +56,7 @@ void TestHelper::killNativeMessaging() {
   s_nativeMessagingProcess = nullptr;
 }
 
-int TestHelper::runTests(const char* app) {
+int TestHelper::runTests(char* app) {
   int failures = 0;
   s_app=app;
   for (QObject* obj : TestHelper::s_testList) {
@@ -59,7 +65,7 @@ int TestHelper::runTests(const char* app) {
     // A valid extension id.
     args.append("@testpilot-containers");
     
-    runNativeMessaging(app);
+    runNativeMessaging(app,args);
 
     int result = QTest::qExec(obj);
     if (result != 0) {

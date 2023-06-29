@@ -139,12 +139,15 @@ fn main() {
         Note: Chrome handles the passed arguments differently - we need to change that, if we ever want to support that. 
     */
     let arguments: Vec<String> = env::args().collect();
-    if arguments.len() != 2 {
-        return;
+    if arguments.len() != 3 { 
+        println!("Expected 2 arguments got: {}", arguments.len() -1 );
+        println!("Please invoke using <manifest path> <extension id> ");
+        std::process::exit(1);
     }
     let ext_id = arguments.last().expect("We cannot start without an extension id");
     if !ALLOW_LISTED_WEBEXTENSIONS.contains(&ext_id.as_str()){
-        return; 
+        println!("mozillavpnnp is not accessible for extension: {}", ext_id.as_str());
+        std::process::exit(1);
     }
 
 
