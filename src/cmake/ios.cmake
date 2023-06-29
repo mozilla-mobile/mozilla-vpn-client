@@ -92,21 +92,21 @@ target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 # iOS platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/macos/macospingsender.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/tasks/purchase/taskpurchase.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosiaphandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosglue.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnetworkwatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosnotificationhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscontroller.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosglue.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnotificationhandler.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnotificationhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosutils.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosutils.h
 )
 
 target_sources(mozillavpn PRIVATE
@@ -134,13 +134,13 @@ target_compile_options(mozillavpn PRIVATE
     -DVPN_NE_BUNDLEID=\"${BUILD_IOS_APP_IDENTIFIER}.network-extension\"
 )
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioscontroller.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iosconstants.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/ioslogger.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmessage.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/platforms/ios/iostunnelmanager.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscontroller.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosconstants.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmessage.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
 )
 
 target_sources(mozillavpn PRIVATE

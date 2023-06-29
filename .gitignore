@@ -95,6 +95,7 @@ Debug/
 !android/resources/debug/
 Debug-iphone*
 Release/
+!src/tasks/release
 Release-iphone*
 !android/resources/release/
 macos/gobridge/wireguard-go-version.h

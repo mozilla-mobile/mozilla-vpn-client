@@ -25,7 +25,7 @@ include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
-include_directories(${MZ_SOURCE_DIR}/apps/auth_tests)
+include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
 qt_add_executable(app_auth_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_auth_tests)

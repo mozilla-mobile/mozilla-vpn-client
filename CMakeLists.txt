@@ -95,10 +95,10 @@ endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 if(MSVC)
-    include(src/apps/vpn/cmake/msvc.cmake)
+    include(src/cmake/msvc.cmake)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
-    include(src/apps/vpn/cmake/clang.cmake)
+    include(src/cmake/clang.cmake)
 endif()
 
 set(CMAKE_AUTOMOC ON)

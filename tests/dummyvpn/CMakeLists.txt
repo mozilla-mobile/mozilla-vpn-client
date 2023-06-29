@@ -31,8 +31,8 @@ target_link_libraries(dummyvpn PRIVATE
 )
 
 target_sources(dummyvpn PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.cpp
-    ${CMAKE_SOURCE_DIR}/src/apps/vpn/platforms/dummy/dummycontroller.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.cpp
+    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.h
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
