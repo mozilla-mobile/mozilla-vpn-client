@@ -45,7 +45,7 @@ MZFlickable {
 
         ColumnLayout {
             spacing: MZTheme.theme.windowMargin * 1.25
-            Layout.fillWidth: true
+            Layout.preferredWidth: parent.width
             Layout.alignment: Qt.AlignHCenter
 
             MZSubtitle {
