@@ -64,15 +64,6 @@ MZViewBase {
                 if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
                     MZSettings.stagingServerAddress = serverAddressInput.text;
                 }
-
-                // If the server address has been deleted, uncheck checkBoxRowStagingServer to not use a
-                // staging server. Also reset the server address to the default, so the user can easily switch
-                // back to it by rechecking the checkbox.
-                if (serverAddressInput.text.length == 0) {
-                    MZSettings.stagingServer = false;
-                    serverAddressInput.text = "https://stage.guardian.nonprod.cloudops.mozgcp.net";
-                    MZSettings.stagingServerAddress = serverAddressInput.text;
-                }
             }
 
             Component.onCompleted: {
