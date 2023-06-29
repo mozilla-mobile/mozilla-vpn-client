@@ -15,7 +15,7 @@ vpn_root_folder = os.path.realpath(os.path.join(script_folder, os.pardir, os.par
 
 # Paths are relative to the root folder
 paths = [
-    "translations_*.ts",
+    "translations.ts",
     "addon_ts/*.ts",
 ]
 

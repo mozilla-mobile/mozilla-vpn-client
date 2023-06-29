@@ -1,14 +1,13 @@
 name: i18n Updater
-# This Workflow will periodically go in: 
+# This Workflow will periodically go in:
 # 1. update the i18n repo.
-# 2. file a pr. 
-# 3. approve the pr. 
-# 4. Mark is as auto merge, which means, if CI does pass, this will be merged automatically. 
-
+# 2. file a pr.
+# 3. approve the pr.
+# 4. Mark is as auto merge, which means, if CI does pass, this will be merged automatically.
 
 on:
   schedule:
-    - cron: '0 6 * * *' # Every Day 6:00 UTC
+    - cron: "0 6 * * *" # Every Day 6:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -23,10 +22,10 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Checkout mozilla-vpn-client-l10n Git
         run: |
-          git submodule update --init --remote src/apps/vpn/translations/i18n/
+          git submodule update --init --remote src/translations/i18n/
       - uses: peter-evans/create-pull-request@v5
         id: cpr
         with:
@@ -108,4 +107,3 @@ jobs:
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

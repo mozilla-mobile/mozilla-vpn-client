@@ -58,7 +58,7 @@ def parseTranslationStrings(project, yamlfile):
 
         for category in yaml_content:
             for key in yaml_content[category]:
-                string_id = f"{project}.{category}.{key}"
+                string_id = f"vpn.{category}.{key}"
                 obj = yaml_content[category][key]
                 value = []
                 comments = []
