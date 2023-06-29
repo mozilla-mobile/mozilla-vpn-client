@@ -20,7 +20,6 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
@@ -50,7 +49,7 @@ endif()
 target_link_libraries(app_auth_tests PRIVATE
     qtglean
     shared-sources
-    translations_auth_tests
+    translations
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

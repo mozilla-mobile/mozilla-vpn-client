@@ -26,7 +26,7 @@ target_link_libraries(dummyvpn PRIVATE
     mozillavpn-sources
     lottie
     nebula
-    translations_vpn
+    translations
     qtglean
 )
 
