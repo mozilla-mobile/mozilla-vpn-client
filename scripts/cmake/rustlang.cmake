@@ -105,7 +105,7 @@ function(build_rust_archives)
 
     ## For build Apple shared binaries, the install path needs to be relative to the runpath.
     if (RUST_BUILD_SHARED AND APPLE)
-        list(APPEND CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
+        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
     endif()
 
     if(ANDROID)
