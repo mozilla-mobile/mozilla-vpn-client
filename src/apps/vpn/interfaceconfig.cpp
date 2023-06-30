@@ -99,8 +99,8 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
 
   out << "\n[Peer]\n";
   out << "PublicKey = " << m_serverPublicKey << "\n";
-  out << "Endpoint = " << m_serverIpv4AddrIn.toUtf8() << ":"
-      << m_serverPort << "\n";
+  out << "Endpoint = " << m_serverIpv4AddrIn.toUtf8() << ":" << m_serverPort
+      << "\n";
 
   /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
    * to be happy if there are 2 endpoints.

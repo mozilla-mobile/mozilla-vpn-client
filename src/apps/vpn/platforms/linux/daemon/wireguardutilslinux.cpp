@@ -214,7 +214,8 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    logger.error() << "Failed to set peer endpoint for" << config.m_hopType << "hop";
+    logger.error() << "Failed to set peer endpoint for" << config.m_hopType
+                   << "hop";
     return false;
   }
 
@@ -243,7 +244,6 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
       rtmIncludePeer(RTM_NEWRULE, flags, ip);
     }
-    
   }
 
   // Update the firewall to mark inbound traffic from the server.
@@ -617,9 +617,9 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
 
 bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
                                          const IPAddress& prefix) {
-  constexpr size_t fib_max_size =
-      sizeof(struct fib_rule_hdr) + RTA_SPACE(sizeof(struct in6_addr)) +
-      2 * RTA_SPACE(sizeof(quint32));
+  constexpr size_t fib_max_size = sizeof(struct fib_rule_hdr) +
+                                  RTA_SPACE(sizeof(struct in6_addr)) +
+                                  2 * RTA_SPACE(sizeof(quint32));
 
   char buf[NLMSG_SPACE(fib_max_size)];
   struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
@@ -657,9 +657,9 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
     return false;
   }
 
-  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
-                          reinterpret_cast<struct sockaddr*>(&nladdr),
-                          sizeof(nladdr));
+  ssize_t result =
+      sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+             reinterpret_cast<struct sockaddr*>(&nladdr), sizeof(nladdr));
   return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 

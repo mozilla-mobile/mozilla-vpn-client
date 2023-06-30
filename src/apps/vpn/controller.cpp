@@ -354,18 +354,19 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     logger.info() << "Activating multi-hop (through platform controller)";
     exitConfig.m_hopType = "exit";
 
-    Server entryServer = serverSelectionPolicy == DoNotRandomizeServerSelection &&
-                           !m_serverData.entryServerPublicKey().isEmpty()
-                       ? MozillaVPN::instance()->serverCountryModel()->server(
-                             m_serverData.entryServerPublicKey())
-                       : Server::weightChooser(m_serverData.entryServers());
+    Server entryServer = 
+        serverSelectionPolicy == DoNotRandomizeServerSelection &&
+                !m_serverData.entryServerPublicKey().isEmpty()
+           ? MozillaVPN::instance()->serverCountryModel()->server(
+                 m_serverData.entryServerPublicKey())
+           : Server::weightChooser(m_serverData.entryServers());
 
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
       return;
     }
-  
+
     InterfaceConfig entryConfig;
     entryConfig.m_privateKey = vpn->keys()->privateKey();
     entryConfig.m_deviceIpv4Address = device->ipv4Address();
@@ -375,8 +376,10 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     entryConfig.m_serverPort = entryServer.choosePort();
     entryConfig.m_hopType = "entry";
-    entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv4AddrIn()));
-    entryConfig.m_allowedIPAddressRanges.append(IPAddress(exitServer.ipv6AddrIn()));
+    entryConfig.m_allowedIPAddressRanges.append(
+        IPAddress(exitServer.ipv4AddrIn()));
+    entryConfig.m_allowedIPAddressRanges.append(
+        IPAddress(exitServer.ipv6AddrIn()));
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -414,8 +417,10 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   }
 
   m_activationQueue.append(exitConfig);
-  m_serverData.setEntryServerPublicKey(m_activationQueue.first().m_serverPublicKey);
-  m_serverData.setExitServerPublicKey(m_activationQueue.last().m_serverPublicKey);
+  m_serverData.setEntryServerPublicKey(
+      m_activationQueue.first().m_serverPublicKey);
+  m_serverData.setExitServerPublicKey(
+      m_activationQueue.last().m_serverPublicKey);
 
   m_ping_received = false;
   m_ping_canary.start(m_activationQueue.first().m_serverIpv4AddrIn,
