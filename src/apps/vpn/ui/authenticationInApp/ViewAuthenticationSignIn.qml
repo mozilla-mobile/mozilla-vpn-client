@@ -77,6 +77,7 @@ MZInAppAuthenticationBase {
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
+        Layout.preferredWidth: parent.width
         spacing: MZTheme.theme.windowMargin
 
         MZLinkButton {
