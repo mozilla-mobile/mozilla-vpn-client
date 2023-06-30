@@ -349,7 +349,7 @@ void MacosRouteMonitor::rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen,
 
 bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
                                      unsigned int ifindex,
-				     const void* gateway) {
+                                     const void* gateway) {
   constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
                                   sizeof(struct sockaddr_in6) * 2 +
                                   sizeof(struct sockaddr_storage);

@@ -354,12 +354,12 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     logger.info() << "Activating multi-hop (through platform controller)";
     exitConfig.m_hopType = "exit";
 
-    Server entryServer = 
+    Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
-           ? MozillaVPN::instance()->serverCountryModel()->server(
-                 m_serverData.entryServerPublicKey())
-           : Server::weightChooser(m_serverData.entryServers());
+            ? MozillaVPN::instance()->serverCountryModel()->server(
+                  m_serverData.entryServerPublicKey())
+            : Server::weightChooser(m_serverData.entryServers());
 
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
