@@ -120,7 +120,6 @@ void AndroidController::activate(const InterfaceConfig& config,
   Q_ASSERT(config.m_hopType == "single");
   logger.debug() << "Activation";
 
-  m_device = *device;
   m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialise arguments for the VPNService

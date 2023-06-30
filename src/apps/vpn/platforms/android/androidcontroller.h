@@ -36,7 +36,6 @@ class AndroidController final : public ControllerImpl {
   QString m_devicePublicKey;
   qint64 m_deviceCreationTime;
   QString m_serverPublicKey;
-  Device m_device;
   std::function<void(const QString&)> m_logCallback;
 };
 
