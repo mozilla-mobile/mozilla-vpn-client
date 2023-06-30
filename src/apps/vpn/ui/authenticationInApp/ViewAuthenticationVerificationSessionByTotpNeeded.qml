@@ -38,6 +38,7 @@ MZInAppAuthenticationBase {
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
+        Layout.preferredWidth: parent.width
 
         MZCancelButton {
             anchors.horizontalCenter: parent.horizontalCenter
