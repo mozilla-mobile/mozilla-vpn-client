@@ -1,4 +1,11 @@
-
+.gradle/
+allure-results/
+build/
+out/
+bin/
+*.class
+*.jar
+*.apk
 Makefile
 Makefile.*
 *.o
