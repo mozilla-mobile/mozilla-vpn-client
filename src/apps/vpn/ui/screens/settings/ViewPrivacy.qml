@@ -20,6 +20,7 @@ MZViewBase {
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5
+        Layout.preferredWidth: parent.width
 
         MZInformationCard {
             objectName: "privacySettingsViewInformationCard"

@@ -82,6 +82,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         # so that it can be linked to both the main app and the network extension.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static")
         set(SHARED 1)
+        set(FW_NAME "QtGleanBindings")
     elseif(ANDROID)
         if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
             set(RUST_ARCH "aarch64-linux-android")
@@ -119,6 +120,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
         SHARED ${SHARED}
+        FW_NAME ${FW_NAME}
     )
 
     target_link_libraries(qtglean PRIVATE qtglean_bindings)

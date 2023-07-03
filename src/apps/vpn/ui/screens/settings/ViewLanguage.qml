@@ -40,7 +40,7 @@ MZViewBase {
         id: col
         objectName: "languageList"
 
-        Layout.fillWidth: true
+        Layout.preferredWidth: parent.width
 
         spacing: MZTheme.theme.vSpacing
 

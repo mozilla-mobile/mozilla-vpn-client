@@ -14,7 +14,6 @@ Text {
     font.pixelSize: MZTheme.theme.fontSizeSmall
     lineHeightMode: Text.FixedHeight
     lineHeight: 21
-    width: MZTheme.theme.maxTextWidth
     wrapMode: Text.Wrap
     Layout.alignment: Qt.AlignLeft
     horizontalAlignment: Qt.AlignLeft

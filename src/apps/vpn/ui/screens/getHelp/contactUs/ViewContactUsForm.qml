@@ -18,6 +18,7 @@ MZViewBase {
     _menuTitle: MZI18n.InAppSupportWorkflowSupportNavLinkText
    _viewContentData: ColumnLayout {
        property string _emailAddress: ""
+       Layout.preferredWidth: parent.width
 
        id: contactUsRoot
 

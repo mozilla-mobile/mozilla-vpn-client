@@ -19,6 +19,7 @@ MZViewBase {
     _menuTitle: MZI18n.SubscriptionManagementMenuTitle
     _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
+        Layout.preferredWidth: parent.width
         spacing: MZTheme.theme.windowMargin
 
         ListModel {
@@ -50,6 +51,7 @@ MZViewBase {
             Layout.alignment: Qt.AlignTop
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.preferredWidth: parent.width
 
 
             MZMetropolisLabel {

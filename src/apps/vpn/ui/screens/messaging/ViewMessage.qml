@@ -84,7 +84,7 @@ MZViewBase {
             spacing: 20
 
             Loader {
-                Layout.preferredWidth: item.width
+                Layout.preferredWidth: item.implicitWidth
                 active: message.badge !== MZAddonMessage.None
                 sourceComponent: MZBadge {
 
