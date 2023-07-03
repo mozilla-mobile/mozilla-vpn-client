@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id'io.qameta.allure' version '2.8.0'
+}
+
+group 'ui'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+test {
+    useTestNG() {
+        
+    }
+}
+
+dependencies {
+    implementation group: 'org.testng', name: 'testng', version: '7.7.1'
+    implementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    testImplementation 'io.appium:java-client:8.5.0'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.9.1'
+    implementation group: 'io.qameta.allure', name: 'allure-testng', version: '2.22.2'
+    implementation group: 'org.aeonbits.owner', name: 'owner', version: '1.0.12'
+
+}
