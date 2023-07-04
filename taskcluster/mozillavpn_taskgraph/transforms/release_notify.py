@@ -13,7 +13,7 @@ from taskgraph.transforms.base import TransformSequence
 from taskgraph.util.schema import resolve_keyed_by
 
 transforms = TransformSequence()
-TEMPLATE = Template(
+SLACK_TEMPLATE = Template(
     """
 [
     {
@@ -51,6 +51,21 @@ TEMPLATE = Template(
 ]
 """
 )
+MATRIX_BODY_TEMPLATE = Template(
+    """mozilla-vpn-client $version release phase $phase is successful
+
+Revision: $repo/commit/$rev
+Task group: $${{task.taskGroupId}}
+"""
+)
+MATRIX_FORMATTED_TEMPLATE = Template(
+    """mozilla-vpn-client $version release phase <a href="$taskcluster_root_url/tasks/groups/$${{task.taskGroupId}}">$phase</a> is successful.
+<p>
+Build Directory: $destinations
+<p>
+Revision: <a href="$repo/commit/$rev">$rev</a>
+"""
+)
 
 
 @transforms.add
@@ -63,7 +78,7 @@ def resolve_keys(config, tasks):
                 item_name=task["name"],
                 **{
                     "level": config.params["level"],
-                }
+                },
             )
         yield task
 
@@ -97,14 +112,22 @@ def add_dependencies(config, tasks):
 
 @transforms.add
 def format_message(config, tasks):
+    if config.params["version"]:
+        version = config.params["version"]
+    elif "releases" in config.params["head_ref"]:
+        version = config.params["head_ref"].split("/")[-1]
+    else:  # addons are not versioned
+        version = config.params["moz_build_date"]
     for task in tasks:
-        context = {
+        slack_context = {
             "destinations": "",
             "phase": task["attributes"]["shipping-phase"],
             "repo": config.params["head_repository"],
             "rev": config.params["head_rev"],
             "taskcluster_root_url": os.environ["TASKCLUSTER_ROOT_URL"],
+            "version": version,
         }
+        matrix_context = slack_context.copy()
 
         dirs = set()
         for label, dep_task in config.kind_dependencies_tasks.items():
@@ -115,7 +138,7 @@ def format_message(config, tasks):
             dirs.add((dep_task.task["extra"]["release_destinations"][0], platform))
 
         for i, d in enumerate(dirs):
-            context["destinations"] += dedent(
+            slack_context["destinations"] += dedent(
                 f"""
                 {{
                     "type": "mrkdwn",
@@ -123,9 +146,16 @@ def format_message(config, tasks):
                 }}{"," if i != len(dirs) - 1 else ""}
             """.lstrip()
             )
+            matrix_context["destinations"] += f'\t<a href="{d[0]}">{d[1]}</a>'
 
-        message = json.loads(TEMPLATE.substitute(**context))
+        slack_message = json.loads(SLACK_TEMPLATE.substitute(**slack_context))
         task.setdefault("notify", {}).setdefault("content", {}).setdefault("slack", {})[
             "blocks"
-        ] = message
+        ] = slack_message
+        matrix_message = {
+            "body": MATRIX_BODY_TEMPLATE.substitute(**matrix_context),
+            "formatted-body": MATRIX_FORMATTED_TEMPLATE.substitute(**matrix_context),
+            "format": "org.matrix.custom.html",
+        }
+        task["notify"]["content"]["matrix"] = matrix_message
         yield task
