@@ -98,6 +98,7 @@ Release/
 !src/tasks/release
 Release-iphone*
 !android/resources/release/
+!src/tasks/release/
 macos/gobridge/wireguard-go-version.h
 ios/gobridge/wireguard-go-version.h
 
