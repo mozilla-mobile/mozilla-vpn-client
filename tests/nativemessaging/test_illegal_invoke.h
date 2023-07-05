@@ -8,5 +8,13 @@ class TestIllegalNoop final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void illegal_noop();
+  void setup();
+
+  // No operations here. We test that the app fails to start with no params
+  void no_params();
+  // Make sure if the params are wrong, the app fails to start
+  void wrong_param();
+  // Make sure if the first 2 are correct, but there are too many, the app
+  // fails.
+  void partially_wrong_param();
 };
