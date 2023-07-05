@@ -28,6 +28,7 @@ Build-Depends: debhelper (>= 11.2),
                qt6-base-dev (>=6.2.0~),
                qt6-base-dev-tools (>=6.2.0~),
                qt6-declarative-dev (>=6.2.0~),
+               qt6-declarative-private-dev (>=6.2.0~),
                qt6-declarative-dev-tools (>=6.2.0~),
                qt6-l10n-tools (>=6.2.0~),
                qt6-tools-dev-tools (>=6.2.0~)

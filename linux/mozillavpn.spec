@@ -21,6 +21,7 @@ BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
+BuildRequires: qt6-qtbase-private-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
 BuildRequires: qt6-qtsvg-devel >= 6.0
