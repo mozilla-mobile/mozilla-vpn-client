@@ -101,3 +101,4 @@ tasks:
             url: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/ZswGg-syTMWyn2UTOaMVQg/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip
             size: 446046644
             sha256: 68ec769ed98206784234c1c8dfae7ebb3f1be869cddfca984bb81104542a6721
+            artifact-name: qt.zip
