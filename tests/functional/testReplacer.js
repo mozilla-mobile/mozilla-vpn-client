@@ -9,6 +9,14 @@ const queries = require('./queries.js');
 describe('Addon content replacer', function() {
   this.timeout(60000);
 
+  beforeEach(async () => {
+    await vpn.flipFeatureOn('replacerAddon');
+  });
+
+  afterEach(async () => {
+    await vpn.flipFeatureOff('replacerAddon');
+  });
+
   describe('Addon replacer', function() {
     beforeEach(async () => {
       await vpn.resetAddons('07_replacer');

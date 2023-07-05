@@ -110,6 +110,7 @@ class Feature : public QObject {
 
 #ifdef UNIT_TEST
   friend class TestAddonIndex;
+  friend class TestResourceLoader;
 #endif
 };
 
