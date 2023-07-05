@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# This Script will build a conda-enviroment suitable to build 
+# This Script will build a conda-environment suitable to build 
 # the vpn for windows. 
 # It currently includes the windows-sdk, go, rust, c++ 
 # compilers.
