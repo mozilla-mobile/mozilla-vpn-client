@@ -234,6 +234,15 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
