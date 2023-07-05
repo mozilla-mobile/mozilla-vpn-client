@@ -22,6 +22,5 @@ windows-conda-pack:
                 - scripts/windows/conda_install_extras.ps1
                 - scripts/windows/conda_setup_win_qt.ps1
                 - scripts/windows/conda_setup_win_sdk.ps1
-                - scripts/windows/conda_trim.ps1
             toolchain-alias: conda-windows-x86_64
             toolchain-artifact: public/build/conda-windows.tar.gz
