@@ -28,9 +28,8 @@ void SentryAdapter::onLoglineAdded(const QByteArray& line) { Q_UNUSED(line); }
 sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
                                       sentry_value_t event, void* closure) {
   Q_UNUSED(uctx);
-  Q_UNUSED(event);
   Q_UNUSED(closure);
-  return nullptr;
+  return event;
 }
 
 // static

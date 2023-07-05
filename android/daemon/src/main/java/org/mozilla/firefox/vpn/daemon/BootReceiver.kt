@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import org.mozilla.firefox.qt.common.Prefs
 
 class BootReceiver : BroadcastReceiver() {
     private val TAG = "BootReceiver"
