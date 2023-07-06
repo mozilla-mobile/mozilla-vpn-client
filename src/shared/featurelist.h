@@ -75,5 +75,12 @@ FEATURE(webPurchase,           // Feature ID
         QStringList(),         // feature dependencies
         FeatureCallback_webPurchase)
 
+FEATURE(replacerAddon,         // Feature ID
+        "Replacer Addon",      // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
 // The app must implement its feature list file.
 #include "appfeaturelist.h"

@@ -10,6 +10,7 @@
 
 #include "addons/addonreplacer.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "feature.h"
 #include "helper.h"
 #include "languagei18n.h"
 #include "localizer.h"
@@ -159,6 +160,10 @@ void TestResourceLoader::addon() {
   SettingsHolder settingsHolder;
   Localizer l;
 
+  settingsHolder.setFeaturesFlippedOn(QStringList{"replacerAddon"});
+  const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
+      ->maybeFlipOnOrOff();
+
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -207,6 +212,10 @@ void TestResourceLoader::addon() {
   QCOMPARE(rl->loadFile(":/dir/file.txt"), ":/replace/file.txt");
   QCOMPARE(rl->loadDir(":/dir"), ":/replace/");
   QCOMPARE(rl->loadDir(":/dir/"), ":/replace/");
+
+  settingsHolder.setFeaturesFlippedOff(QStringList{"replacerAddon"});
+  const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
+      ->maybeFlipOnOrOff();
 }
 
 static TestResourceLoader s_testResourceLoader;
