@@ -1,8 +1,11 @@
 #
 # This script fetches all remote branches
 # And filteres out branches that have a github release connected to that. 
-# It Writes a JSON array to GITHUB_OUTPUT to use it in workflows as step output c: 
-#
+# Draft releases will count too. 
+# It Writes a key=value expression
+# Where value: JSONArray<version> 
+# to STDOUT, for easy use in Github workflows
+# use: ./.github/scripts/get_unreleased_branches.ps1  >> $env:GITHUB_OUTPUT
 
 git fetch
 $REMOTE_RELEASE_BRANCHES = $(git branch -r).Split([Environment]::NewLine) `
@@ -25,5 +28,15 @@ $(gh release list).Split([Environment]::NewLine) | ForEach-Object{
 # Now we have 2 Lists. 
 
 $UNRELEASED_BRANCHES = $REMOTE_RELEASE_BRANCHES | Where-Object { !($releases_on_github -contains $_) } 
-$json_value = ConvertTo-Json $UNRELEASED_BRANCHES -Compress 
+
+# If we only have one Branch this will be a string, so let's json pack it. 
+# If not this is a list and we can just use ConvertTo-Json
+if ( $UNRELEASED_BRANCHES.GetType() -Eq [string] ){
+    $json_value = "[ $UNRELEASED_BRANCHES ]"
+}else{
+    $json_value = ConvertTo-Json $UNRELEASED_BRANCHES -Compress 
+}
+
+
+
 Write-Output "branches=$json_value"
