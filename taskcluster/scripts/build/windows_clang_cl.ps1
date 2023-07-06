@@ -5,24 +5,22 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/bin/"
+$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
-New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
-$CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
 # Prep Env:
-# Switch to the work dir, enable qt, enable msvc, enable rust
+# Switch to the work dir, configure qt
 Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
 
 # We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :) 
+# TODO: We need to handle this at some point. 
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 # TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x86.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
-
 
 
 # Setup Openssl Import
@@ -37,42 +35,30 @@ tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
-## Install MiniConda 
-Start-Process "$FETCHES_PATH/miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$CONDA_DIR")
-# We don't have the ability to do conda init - as that need's admin rights.
-# So let's just do that ourselves :3
-$Env:CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
-$Env:_CE_M = ""
-$Env:_CE_CONDA = ""
-$Env:_CONDA_ROOT = "$CONDA_DIR"
-$Env:_CONDA_EXE = "$CONDA_DIR\Scripts\conda.exe"
-$CondaModuleArgs = @{ChangePs1 = $False}
-Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaModuleArgs
+## Setup the conda environment 
+. $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
+conda-unpack
 
-$env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
+# Conda Pack excpets to be run under cmd. therefore it will 
+# (unlike conda) ignore activate.d powershell scripts.
+# So let's manually run the activation scripts. 
+#
+$CONDA_PREFIX = $env:CONDA_PREFIX 
 
-## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN
+$ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CONDA_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
+foreach ($script in  $ACTIVATION_SCRIPTS)  {
+    Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
+    . "$CONDA_PREFIX\etc\conda\activate.d\$script"
+}
+# This is a wierd bug `PREFIX/bin` does not seem to be on the PATH 
+# when we run the activate.bat :shrugs: 
+# This will cause go to be missing. 
+$env:PATH="$CONDA_PREFIX\bin;$env:Path"
 
-conda info --envs
 
-conda activate VPN
-. "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
-. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
-conda deactivate
-conda activate VPN  # We should now be able to compile!
-
+# Okay We are ready to build! 
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
-
-$env:PATH 
-## Debugging: 
-## Why does it complain now? 
-gci env:
-
-## 
-
-
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     # Only on a release build we have access to those secrects.
@@ -82,10 +68,19 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
     $SENTRY_DSN = Get-Content sentry_dsn
     #
-    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR `
+        -GNinja -DCMAKE_BUILD_TYPE=Release `
+        -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" `
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe"` # Make sure that we use the Conda Env python, not the taskcluster-vm one. 
+        -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe"`
+        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 } else {
     # Do the generic build
-   cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE="$CONDA_DIR\envs\VPN\python.exe"
+    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
+        -DCMAKE_BUILD_TYPE=Release `
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
+        -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
+        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 }
 cmake --build $BUILD_DIR
 
