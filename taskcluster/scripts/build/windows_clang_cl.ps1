@@ -71,8 +71,8 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     cmake -S $SOURCE_DIR -B $BUILD_DIR `
         -GNinja -DCMAKE_BUILD_TYPE=Release `
         -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" `
-        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe"` # Make sure that we use the Conda Env python, not the taskcluster-vm one. 
-        -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe"`
+        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
+        -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 } else {
     # Do the generic build
