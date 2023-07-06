@@ -69,13 +69,6 @@ MZViewBase {
             Component.onCompleted: {
                 serverAddressInput.text = MZSettings.stagingServerAddress;
             }
-
-            Component.onDestruction: {
-                // If a server address is not specified, don't use a staging server
-                if (serverAddressInput.text.length == 0) {
-                    MZSettings.stagingServer = false;
-                }
-            }
         }
 
         MZCheckBoxRow {
