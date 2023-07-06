@@ -94,3 +94,11 @@ tasks:
             url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.tar.xz
             sha256: cfe41905b6bde3712c65b102ea3d46fc80a44c9d1487669f14e4a6ee82ebb8fd
             size: 661663792
+    qt-hotfix:
+        description: Qt 6.2.4 Status build
+        fetch:
+            type: static-url
+            url: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/ZswGg-syTMWyn2UTOaMVQg/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip
+            size: 446046644
+            sha256: 68ec769ed98206784234c1c8dfae7ebb3f1be869cddfca984bb81104542a6721
+            artifact-name: qt.zip
