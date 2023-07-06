@@ -119,7 +119,7 @@ Once an ongoing session is ended,
 
 1. The `daemonsession` ping is submitted with the reason `daemon_end`.
 2. The daemon's local storage for the `shared_session_id` is cleared.
-3. The `shared_session_id` metric is set to a known value. Due to it's `User` lifetime,
+3. The `shared_session_id` metric is set to a known value. Due to its `User` lifetime,
    this metric cannot be cleared from storage ever. To indicate a period of inactivity,
    we will leverage a known UUID.
 
@@ -166,7 +166,7 @@ If the main application is active during a session end it will,
 #### On application start
 
 When the main application is started, just like in the daemon, there may be some lingering data
-from a previous session in storage. Om the main application, the session_id is not directly managed,
+from a previous session in storage. On the main application, the session_id is not directly managed,
 so there is no way to know if there is lingering data or not.
 
 In this case, the main application will submit the `vpnsession` ping with reason `flush_init` on
@@ -200,7 +200,7 @@ In order to validate this feature after release, these questions need to be answ
 ## Considered Alternatives
 
 Following are the other considered alternatives to address the same issue as the proposed solution
-and the reasoning on why these were ultimately not the chosen alternatives.
+and the reasoning on why these were ultimately not the chosen solution.
 
 ### Collect all data on the daemon
 
