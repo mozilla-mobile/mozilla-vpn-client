@@ -94,7 +94,7 @@ jobs:
           commit-message: "[Bot] Update i18n"
           branch: i18n_automation_for_${{matrix.branch}}
           delete-branch: true
-          title: "[Bot]  Update i18n on ${{matrix.branch}}"
+          title: "[Bot] Update i18n on ${{matrix.branch}}"
           token: ${{ secrets.WIKI_TOKEN }}
       - name: Approve l10n_branch.
         run: gh pr review --approve "$PR_URL"
