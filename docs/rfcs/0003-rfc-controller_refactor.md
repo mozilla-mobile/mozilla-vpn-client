@@ -67,24 +67,20 @@ Here is the proposed set of `ConnectionManager` states and how they map to the `
   }
 
   enum ConnectionState {
-    ConnectionStateInternetProbe,      // Corresponds to controller states:
-                                       // StateConnecting
-    ConnectionStateServerProbe,        // Corresponds to controller states:
-                                       // StateConnecting
-    ConnectionStateFirewall,           // Corresponds to controller states:
-                                       // StateConnecting
-    ConnectionStateCaptivePortal,      // Corresponds to controller states:
-                                       // StateConnecting
-    ConnectionStateCheckSubscription,  // Corresponds to controller states:
-                                       // StateCheckSubscription
-
-    // Mirrored from Controller states
-    ConnectionStateSilentSwitching,  // Corresponds to StateSilentSwitching
-    ConnectionStateSwitching,        // Corresponds to StateSwitching
-    ConnectionStateConfirming,       // Corresponds to controller states:
-                                     // StateConfirming
-    ConnectionStateDisconnecting     // Corresponds to controller state:
-                                     // StateDisconnecting
+    ConnectionStateOff,                // Corresponds to client state:
+                                       // VPNClientStateOff
+    ConnectionStateInternetProbe,      // Corresponds to client state:
+                                       // VPNClientStateConnecting
+    ConnectionStateServerProbe,        // Corresponds to client state:
+                                       // VPNClientStateConnecting
+    ConnectionStateFirewall,           // Corresponds to client state:
+                                       // VPNClientStateConnecting
+    ConnectionStateCaptivePortal,      // Corresponds to client state:
+                                       // VPNClientStateConnecting
+    ConnectionStateCheckSubscription,  // Corresponds to client state:
+                                       // VPNClientStateConnecting
+    ConnectionStateOn,                 // Corresponds to client state:
+                                       // VPNClientStateOn
   };
 ```
 
