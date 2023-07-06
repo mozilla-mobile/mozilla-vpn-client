@@ -41,9 +41,6 @@ task-defaults:
         command: taskcluster/scripts/build/windows.ps1
 
 windows/opt:
-    fetches:
-        toolchain:
-            - conda-windows-x86_64
     description: "Windows Build"
     treeherder:
         symbol: B

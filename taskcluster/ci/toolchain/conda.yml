@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
-    description: "Conda Pack an environment"
+    description: "Conda Pack an enviroment"
     worker:
         env:
             QT_VERSION: "6.2.4"
