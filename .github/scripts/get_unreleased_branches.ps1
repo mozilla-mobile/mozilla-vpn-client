@@ -32,7 +32,7 @@ $UNRELEASED_BRANCHES = $REMOTE_RELEASE_BRANCHES | Where-Object { !($releases_on_
 # If we only have one Branch this will be a string, so let's json pack it. 
 # If not this is a list and we can just use ConvertTo-Json
 if ( $UNRELEASED_BRANCHES.GetType() -Eq [string] ){
-    $json_value = "[ $UNRELEASED_BRANCHES ]"
+    $json_value = "[ '$UNRELEASED_BRANCHES' ]"
 }else{
     $json_value = ConvertTo-Json $UNRELEASED_BRANCHES -Compress 
 }
