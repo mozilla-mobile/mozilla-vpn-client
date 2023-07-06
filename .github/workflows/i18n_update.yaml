@@ -68,7 +68,7 @@ jobs:
         run: |
           ./.github/scripts/get_unreleased_branches.ps1  >> $env:GITHUB_OUTPUT
   update_release_branches:
-    name: [v${{matrix.branch}}] Update submodules
+    name: ${{matrix.branch}} Update submodules
     needs:
       - get_release_branches
     runs-on: ubuntu-latest
