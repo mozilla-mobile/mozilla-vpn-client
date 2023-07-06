@@ -202,10 +202,3 @@ osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.
 
 # Perform codesigning.
 osx_codesign_target(mozillavpn FORCE)
-
-if(NOT QT_FEATURE_static)
-    # If we are not using a static build of QT, auto deploy all 
-    # qt dependencies into the .app bundle c: 
-    message("Enabling macdeployqt")
-    osx_deploy_qt(mozillavpn)
-endif()
