@@ -26,7 +26,7 @@ $ProgressPreference = 'Continue'
 Write-Output("Unpack x-win")
 tar -xf xwin.tar.gz
 Copy-Item -Path "xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc/xwin.exe"  -Destination "$conda_folder/bin"
-ls $conda_folder/bin
+
 Remove-Item "xwin-0.2.10-x86_64-pc-windows-msvc" -Confirm  -ErrorAction SilentlyContinue -Force -Recurse
 Remove-Item "xwin.tar.gz" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
 
@@ -36,36 +36,8 @@ $env:PATH ="$conda_folder\bin;$env:PATH"
 Write-Output("Downloading the windows SDK")
 xwin --accept-license --manifest-version 16 splat --include-debug-symbols --include-debug-libs --output xwin
 
-Write-Output("Updating the current Conda ENV")
-# Set rust variables for target. 
-conda env config vars set CC_x86_64_pc_windows_msvc="clang-cl" | Out-Null
-conda env config vars set CXX_x86_64_pc_windows_msvc="clang-cl" | Out-Null
-conda env config vars set AR_x86_64_pc_windows_msvc="llvm-lib"| Out-Null
-conda env config vars set LD_x86_64_pc_windows_msvc="lld-link"| Out-Null
-# Make sure clang can find stuff
-conda env config vars set CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link $conda_folder\\xwin\\crt\\include $conda_folder\\xwin\\sdk\\include\\ucrt $conda_folder\\xwin\\sdk\\include\\um $conda_folder\\xwin\\sdk\\include\\shared"  | Out-Null
-conda env config vars set RUSTFLAGS="-C linker=lld-link -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=$conda_folder\\xwin\\sdk\\lib\\ucrt\\x86_64" | Out-Null
-
-# Overwrite default conf. 
-conda env config vars set CXX="clang-cl" | Out-Null
-conda env config vars set CC="clang-cl" | Out-Null
-conda env config vars set AR="llvm-lib"| Out-Null
-conda env config vars set LD="lld-link"| Out-Null
-conda env config vars set CMAKE_CXX_COMPILER="clang-cl" | Out-Null
-conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
-conda env config vars set CMAKE_C_COMPILER="clang-cl" | Out-Null
-conda env config vars set CMAKE_LINKER="lld-link" | Out-Null
-conda env config vars set CMAKE_MT="llvm-mt" | Out-Null
-
-conda env config vars set CMAKE_GENERATOR="Ninja" | Out-Null
-
-# TODO: Check why Go-Root is broken on conda-forge. 
-# it's pointing to D:\bld\go-cgo_1670946228663\work\go
-# Probably a CI related path? 
-conda env config vars set GOROOT="$conda_folder\go"| Out-Null
-
-$XWIN_PATH="$conda_folder\xwin"
-
+## Generate the INCLUDE env
+$XWIN_PATH="`$env:CONDA_PREFIX\xwin"
 $INCLUDE_ADDS =   `
                   "$XWIN_PATH\sdk\include;",`
                   "$XWIN_PATH\crt\include;",`
@@ -80,11 +52,68 @@ ForEach-Object -InputObject $INCLUDE_ADDS {
 }
 $INCLUDE_TARGET= $INCLUDE_TARGET-replace("; ",";")
 
-conda env config vars set INCLUDE=$INCLUDE_TARGET | Out-Null
-conda env config vars set LIB="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
-# Leaving this here: 
-# It's set in the MSVC dev enviroment but it seems we're fine without it. 
-#conda env config vars set LIBPATH="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;" | Out-Null
+# Generate & write (de/)activation scripts
+
+
+$activate = @"
+`$env:CXX="clang-cl"
+`$env:CC="clang-cl"
+`$env:AR="llvm-lib"
+`$env:LD="lld-link"
+
+`$env:CMAKE_CXX_COMPILER="clang-cl"
+`$env:CMAKE_C_COMPILER="clang-cl"
+`$env:CMAKE_C_COMPILER="clang-cl"
+`$env:CMAKE_LINKER="lld-link"
+`$env:CMAKE_MT="llvm-mt"
+`$env:CMAKE_GENERATOR="Ninja"
+
+`$env:CC_x86_64_pc_windows_msvc="clang-cl"
+`$env:CXX_x86_64_pc_windows_msvc="clang-cl"
+`$env:AR_x86_64_pc_windows_msvc="llvm-lib"
+`$env:LD_x86_64_pc_windows_msvc="lld-link"
+`$env:CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link `$env:CONDA_PREFIX\\xwin\\crt\\include `$env:CONDA_PREFIX\\xwin\\sdk\\include\\ucrt `$env:CONDA_PREFIX\\xwin\\sdk\\include\\um `$env:CONDA_PREFIX\\xwin\\sdk\\include\\shared"  | Out-Null
+`$env:RUSTFLAGS="-C linker=lld-link -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\ucrt\\x86_64" | Out-Null
+
+# Conda/go does not ship an activate.ps1 -> therefore stuff is broken on powershell. 
+`$env:GOROOT="`$env:CONDA_PREFIX\go"
+
+`$env:INCLUDE="$INCLUDE_TARGET"
+`$env:LIB="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;"
+"@
+Out-File -Encoding utf8 `
+         -FilePath  "$conda_folder\etc\conda\activate.d\vpn_clang_cl.ps1"`
+         -InputObject $activate 
+
+
+$deactivate = @"
+Remove-Item Env:\OPENSSL_ROOT_DIR
+Remove-Item Env:\QT_HOST_PATH
+Remove-Item Env:\CMAKE_PREFIX_PATH
+Remove-Item Env:\CXX
+Remove-Item Env:\CC
+Remove-Item Env:\AR
+Remove-Item Env:\LD
+Remove-Item Env:\CMAKE_CXX_COMPILER
+Remove-Item Env:\CMAKE_C_COMPILER
+Remove-Item Env:\CMAKE_C_COMPILER
+Remove-Item Env:\CMAKE_LINKER
+Remove-Item Env:\CMAKE_MT
+Remove-Item Env:\CMAKE_GENERATOR
+Remove-Item Env:\CC_x86_64_pc_windows_msvc
+Remove-Item Env:\CXX_x86_64_pc_windows_msvc
+Remove-Item Env:\AR_x86_64_pc_windows_msvc
+Remove-Item Env:\LD_x86_64_pc_windows_msvc
+Remove-Item Env:\CL_FLAGS
+Remove-Item Env:\RUSTFLAGS
+Remove-Item Env:\GOROOT
+Remove-Item Env:\INCLUDE
+Remove-Item Env:\LIB
+
+"@
+Out-File -Encoding utf8 `
+         -FilePath  "$conda_folder\etc\conda\deactivate.d\vpn_clang_cl.ps1"`
+         -InputObject $deactivate 
 
 
 Write-Output("You are SET! - Please re-activate your conda env to have stuff applied.")

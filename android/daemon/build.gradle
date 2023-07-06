@@ -113,10 +113,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation SharedDependencies.androidx_core
-    implementation "androidx.security:security-crypto:1.1.0-alpha06"
-    implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.21"
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     implementation project(path: ':qtglean')
+    implementation project(path: ':common')
 }

@@ -115,3 +115,8 @@ release-promotion:
             target-tasks-method: client-target-tasks
         ship-client:
             target-tasks-method: client-target-tasks
+    rebuild-kinds:
+        - docker-image
+        - fetch
+        - toolchain
+        - toolchain-openssl

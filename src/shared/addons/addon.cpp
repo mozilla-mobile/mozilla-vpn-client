@@ -374,6 +374,13 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
   }
 
   else if (type == "replacer") {
+    if (!Feature::get(Feature::Feature_replacerAddon)->isSupported()) {
+      // This addon type is blocked pending
+      // https://mozilla-hub.atlassian.net/browse/VPN-4858
+      logger.error() << "The replacer type addon is unsupported.";
+      return nullptr;
+    }
+
     addon = AddonReplacer::create(parent, manifestFileName, id, name, obj);
   }
 

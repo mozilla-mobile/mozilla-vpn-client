@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.firefox.vpn.daemon
+package org.mozilla.firefox.qt.common
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -24,7 +24,7 @@ object Prefs {
                 sharedPrefsFile,
                 mainKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
             )
             return sharedPreferences
         } catch (e: Exception) {

@@ -1,0 +1,26 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Conda Pack an environment"
+    worker:
+        max-run-time: 14400
+    worker-type: b-win2012
+    run:
+        resources:
+            - requirements.txt
+            - env.yml
+
+windows-conda-pack: 
+        fetches:
+            fetch:
+                - win-conda
+        run:
+            script: conda_pack_windows.ps1
+            resources:
+                - scripts/windows/conda_install_extras.ps1
+                - scripts/windows/conda_setup_win_qt.ps1
+                - scripts/windows/conda_setup_win_sdk.ps1
+            toolchain-alias: conda-windows-x86_64
+            toolchain-artifact: public/build/conda-windows.tar.gz

@@ -11,7 +11,6 @@ if( $conda_env.active_prefix_name -eq "base"){
     Write-Output("Not in an active conda env. abort")
     return -1
 }
-
 $conda_folder = $conda_env.active_prefix 
 Write-Output("Installing in $conda_folder")
 $OLD_PWD = $PWD # Backup that to go back once we done. 
@@ -29,8 +28,28 @@ $ProgressPreference = 'Continue'
 Remove-Item "qt.zip" -ErrorAction SilentlyContinue
 
 # Let conda find QT: 
-conda env config vars set CMAKE_PREFIX_PATH="$conda_folder\\TaskCluster_QT\\QT_OUT\\lib\\cmake" | Out-Null
-conda env config vars set OPENSSL_ROOT_DIR="$conda_folder\\TaskCluster_QT\\QT_OUT\\SSL" | Out-Null
+
+# For that we add an activation script. 
+#
+
+$activate = @"
+`$env:CMAKE_PREFIX_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\lib\cmake"
+`$env:OPENSSL_ROOT_DIR="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\SSL"
+`$env:QT_HOST_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\"
+"@
+Out-File -Encoding utf8 `
+         -FilePath  "$conda_folder\etc\conda\activate.d\vpn_qt.ps1"`
+         -InputObject $activate 
+
+
+$deactivate = @"
+Remove-Item Env:\OPENSSL_ROOT_DIR
+Remove-Item Env:\QT_HOST_PATH
+Remove-Item Env:\CMAKE_PREFIX_PATH
+"@
+Out-File -Encoding utf8 `
+         -FilePath  "$conda_folder\etc\conda\deactivate.d\vpn_qt.ps1"`
+         -InputObject $deactivate 
 
 
 Write-Output("You are SET! - Please re-activate your conda env to have stuff applied.")

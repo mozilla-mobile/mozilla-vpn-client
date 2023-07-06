@@ -12,6 +12,7 @@ import android.os.Parcel
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.Prefs
 import kotlin.Exception
 
 class VPNServiceBinder(service: VPNService) : Binder() {
