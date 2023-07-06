@@ -6,7 +6,6 @@ import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import org.openqa.selenium.WebElement;
-import org.testng.log4testng.Logger;
 
 public class SignUpPageFirstStep extends BasePage {
 		public SignUpPageFirstStep(AppiumDriver driver) {
@@ -20,7 +19,7 @@ public class SignUpPageFirstStep extends BasePage {
 		WebElement emailField;
 
 		@AndroidFindBy(xpath = "(//android.view.View.VirtualChild[@content-desc=\"Continue \"])[2]")
-		@iOSXCUITFindBy(xpath = "test")
+		@iOSXCUITFindBy(iOSNsPredicate = "")
 		WebElement continueButton;
 
 		@Step("Verify sign up page is open")

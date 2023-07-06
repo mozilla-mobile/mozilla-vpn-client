@@ -1,12 +1,11 @@
 package pages;
 
-import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.pagefactory.AndroidBy;
 import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.iOSXCUITBy;
+import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -17,6 +16,7 @@ public class HomePage extends BasePage {
 
 		@AndroidFindBy(xpath = "(//android.view.View.VirtualChild[@content-desc=\"Sign up \"])[2]")
 		@FindBy()
+		@iOSXCUITFindBy()
 		public WebElement signUpButton;
 
 		@Step("Verify home page is open")
