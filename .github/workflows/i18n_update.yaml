@@ -68,7 +68,7 @@ jobs:
         run: |
           ./.github/scripts/get_unreleased_branches.ps1  >> $env:GITHUB_OUTPUT
   update_release_branches:
-    name: Update Release branch submodules
+    name: [v${{matrix.branch}}] Update submodules
     needs:
       - get_release_branches
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: 'true'
-          ref: 'refs/remotes/origin/releases/${{matrix.branch}}'
+          ref: 'releases/${{matrix.branch}}'
       - name: Checkout mozilla-vpn-client-l10n Git
         run: |
           git submodule update --init --remote src/apps/vpn/translations/i18n/
