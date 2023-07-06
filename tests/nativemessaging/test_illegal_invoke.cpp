@@ -14,7 +14,7 @@ void TestIllegalNoop::setup() {
 
 void TestIllegalNoop::no_params() {
   // // Now we verify that it does not start
-  runNativeMessaging(s_app,QStringList());
+  runNativeMessaging(s_app, QStringList());
   s_nativeMessagingProcess->waitForFinished();
   s_nativeMessagingProcess = nullptr;
   QVERIFY(s_last_exit_code == 1);
