@@ -65,7 +65,7 @@ exports.endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
 
-    '/api/v1/vpn/crashreporting': {status: 200, body: {dsn: "12345",endpoint: "http://not-gonna-happen.com" }},
+    '/api/v1/vpn/crashreporting': {status: 404, body: {}},
 
     '/api/v1/vpn/versions': {status: 200, body: {}},
 
