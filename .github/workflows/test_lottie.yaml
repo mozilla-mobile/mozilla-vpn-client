@@ -24,7 +24,7 @@ jobs:
       - name: Install Linux packages
         run: |
           sudo apt update
-          sudo apt install git libgl-dev libegl-dev clang-10 liboath-dev python3 xz-utils libbrotli-dev brotli -y
+          sudo apt install git libgl-dev libgles2-mesa-dev libgles2 libgl-dev libegl-dev clang-10 liboath-dev python3 xz-utils libbrotli-dev brotli -y
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-linux.latest/artifacts/public%2Fbuild%2Fqt6_linux.tar.xz -O /opt/qt.tar.xz
           tar -xf /opt/qt.tar.xz -C /opt
           ls /opt/
