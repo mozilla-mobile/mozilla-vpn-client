@@ -32,7 +32,7 @@ The existing Connection Health object in VPN performs checks that act in the sam
 
 One exception to the rule is `ConnectionHealth::ConnectionStability::Unstable`. The connection health object periodically sends pings and measures the received responses to assess whether or not the network connectivity is stable. To continue notifying users about their unstable network, we will continue to use this state within `ConnectionManager`. 
 
-Beyond the connectivity checks, the Controller also manages how much time has elapsed since the VPN was toggled on. Having this logic in the controller bloats the code without any gains, so that code will be moved out of `Controller` and instead a simple `Timer` object will encapsulates the related logic. The timer starts when the VPN enters State On since doing the initial checks may take a few seconds that we don't need to account for.
+Beyond the connectivity checks, the Controller also manages how much time has elapsed since the VPN was toggled on. Having this logic in the controller bloats the code without any gains, so that code will be moved out of `Controller` and instead a simple `Timer` object will encapsulate the related logic. The timer starts when the VPN enters State On since doing the initial checks may take a few seconds that we don't need to account for.
 
 Because this is all part of a unified connectivity experience, we do not want to release bits and pieces of this until everything is implemented, tested, and ready to go, this means that all implementation will live behind a feature flag until we are ready to test and release.
 
@@ -45,7 +45,7 @@ Introduce a new `ConnectionManager` component that is activated when the client 
 - Server probe: upon activation and then priodically check if there are available servers within user's selection location.
 - Subscription status: ensure that user has an active subscription, and if not, show the "No Subscription Found" screen.
 
-The logic to calculate elapsed time since the VPN was activated will also be moved out of the Controller and into a new `Timer` component. This bit of work will likely require a separate RFC. 
+The logic to calculate elapsed time since the VPN was activated will also be moved out of the Controller and into a new `Timer` component. This bit of work is out of scope for this RFC. 
 
 
 The `ConnectionManager` will have two state machines:
@@ -56,7 +56,7 @@ Before the VPN is toggled on, it is in `VPNClientStateOff`. When user toggles on
 
 The `ConnectionManager` will communicate to the `Controller` to `activate()` and `deactivate()` the VPN. During one of the iterations of this proposal, someone asked if we can have signals instead of states in the `ConnectionManager`. The short answer is no. While emitting a signal to notify the UI about what we should be showing the user does the same thing, we still need to keep track of the current state internally so we know what to do next in case anything goes wrong at any other point.
 
-Here is the proposed set of `ConnectionManager` states and how they map to the `Controller` states. Please note that some of these states may go away once we are further along the implementation (e.g. we may not need `ConnectionStateSilentSwitching` anymore):
+Here is the proposed set of `ConnectionManager` states and how they map to the `Controller` states:
 
 ```c++
   enum VPNClientState {
