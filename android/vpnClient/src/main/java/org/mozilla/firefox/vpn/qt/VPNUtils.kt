@@ -18,7 +18,6 @@ import android.util.Log
 import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 
 // Companion for AndroidUtils.cpp
 object VPNUtils {
