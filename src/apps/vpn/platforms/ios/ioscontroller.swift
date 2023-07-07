@@ -22,6 +22,8 @@ let VPN_NAME = "Mozilla VPN"
 }
 
 public class IOSControllerImpl : NSObject {
+    private static let logger = IOSLoggerImpl(tag: "IOSController")
+
     private var stateChangeCallback: ((Bool, Date?) -> Void?)? = nil
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
@@ -31,8 +33,6 @@ public class IOSControllerImpl : NSObject {
 
     @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool, Date?) -> Void) {
         super.init()
-
-        Logger.configureGlobal(tagged: "APP", withFilePath: "")
 
         stateChangeCallback = callback
         self.privateKey = PrivateKey(rawValue: privateKey)
@@ -60,19 +60,19 @@ public class IOSControllerImpl : NSObject {
 
         switch session.status {
         case .connected:
-            Logger.global?.log(message: "STATE CHANGED: connected")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
         case .connecting:
-            Logger.global?.log(message: "STATE CHANGED: connecting")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
         case .disconnected:
-            Logger.global?.log(message: "STATE CHANGED: disconnected")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
         case .disconnecting:
-            Logger.global?.log(message: "STATE CHANGED: disconnecting")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnecting")
         case .invalid:
-            Logger.global?.log(message: "STATE CHANGED: invalid")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: invalid")
         case .reasserting:
-            Logger.global?.log(message: "STATE CHANGED: reasserting")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: reasserting")
         default:
-            Logger.global?.log(message: "STATE CHANGED: unknown status")
+            IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
 
         // We care about "unknown" state changes.
@@ -117,7 +117,7 @@ public class IOSControllerImpl : NSObject {
     }
 
     @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
-        Logger.global?.log(message: "Connecting")
+        IOSControllerImpl.logger.debug(message: "Connecting")
         
         let _ = TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
@@ -164,7 +164,7 @@ public class IOSControllerImpl : NSObject {
             proto!.serverAddress = serverName;
 
             if #available(iOS 15.1, *) {
-                Logger.global?.log(message: "Activating includeAllNetworks")
+                IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
                 proto!.excludeLocalNetworks = true
 
@@ -180,33 +180,33 @@ public class IOSControllerImpl : NSObject {
 
             return tunnel.saveToPreferences { saveError in
                 if let error = saveError {
-                    Logger.global?.log(message: "Connect Tunnel Save Error: \(error)")
+                    IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
                     return
                 }
 
-                Logger.global?.log(message: "Saving the tunnel succeeded")
+                IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
 
                tunnel.loadFromPreferences { error in
                     if let error = error {
-                        Logger.global?.log(message: "Connect Tunnel Load Error: \(error)")
+                        IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
                         failureCallback()
                         return
                     }
 
-                    Logger.global?.log(message: "Loading the tunnel succeeded")
+                   IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
 
                     do {
                         if (reason == 1 /* ReasonSwitching */) {
                             let settings = config.asWgQuickConfig()
                             let message = TunnelMessage.configurationSwitch(settings)
-                            Logger.global?.log(message: "Sending new message \(message)")
+                            IOSControllerImpl.logger.info(message: "Sending new message \(message)")
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
                             try TunnelManager.session?.startTunnel()
                         }
                     } catch let error {
-                        Logger.global?.log(message: "Something went wrong: \(error)")
+                        IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")
                         failureCallback()
                         return
                     }
@@ -216,12 +216,12 @@ public class IOSControllerImpl : NSObject {
     }
 
     @objc func disconnect() {
-        Logger.global?.log(message: "Disconnecting")
+        IOSControllerImpl.logger.info(message: "Disconnecting")
         TunnelManager.session?.stopTunnel()
     }
 
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
-        Logger.global?.log(message: "Check status")
+        IOSControllerImpl.logger.info(message: "Check status")
         
         let _ = TunnelManager.withTunnel { tunnel in
             let proto = tunnel.protocolConfiguration as? NETunnelProviderProtocol
@@ -256,12 +256,12 @@ public class IOSControllerImpl : NSObject {
 
             do {
                 let message = TunnelMessage.getRuntimeConfiguration;
-                Logger.global?.log(message: "Sending new message \(message)");
+                IOSControllerImpl.logger.info(message: "Sending new message \(message)");
                 try session.sendProviderMessage(message.encode()) { [callback] data in
                     guard let data = data,
                           let configString = String(data: data, encoding: .utf8)
                     else {
-                        Logger.global?.log(message: "Failed to convert data to string")
+                        IOSControllerImpl.logger.error(message: "Failed to convert data to string")
                         callback("", "", "")
                         return
                     }
@@ -269,7 +269,7 @@ public class IOSControllerImpl : NSObject {
                     callback("\(serverIpv4Gateway!)", "\(deviceIpv4Address!)", configString)
                 }
             } catch {
-                Logger.global?.log(message: "Failed to retrieve data from session")
+                IOSControllerImpl.logger.error(message: "Failed to retrieve data from session. \(error)")
                 callback("", "", "")
             }
             

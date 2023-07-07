@@ -5,6 +5,8 @@
 import IOSGlean
 
 public class IOSGleanBridgeImpl : NSObject {
+    private static let logger = IOSLoggerImpl(tag: "IOSGleanBridge")
+
   @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String) {
       super.init()
       
@@ -29,14 +31,14 @@ public class IOSGleanBridgeImpl : NSObject {
       
       if let session = TunnelManager.session {
         do {
-            Logger.global?.log(message: "Attempting to send telemetry state change message.");
+            IOSGleanBridgeImpl.logger.info(message: "Attempting to send telemetry state change message.");
           try session.sendProviderMessage(
               TunnelMessage.telemetryEnabledChanged(isTelemetryEnabled).encode()
           ) { _ in
-              Logger.global?.log(message: "Telemetry state change message sent.")
+              IOSGleanBridgeImpl.logger.info(message: "Telemetry state change message sent.")
           }
         } catch {
-            Logger.global?.log(message: "Error sending telemetry state change message: \(error)");
+            IOSGleanBridgeImpl.logger.error(message: "Error sending telemetry state change message: \(error)");
         }
       }
   }
@@ -47,7 +49,7 @@ public class IOSGleanBridgeImpl : NSObject {
         // This is just a warning and can be ignored.
         let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
         if (defaults == nil) {
-            Logger.global?.log(message: "Attempted to access UserDefaults, but it's not available.")
+            IOSGleanBridgeImpl.logger.error(message: "Attempted to access UserDefaults, but it's not available.")
             return
         }
         

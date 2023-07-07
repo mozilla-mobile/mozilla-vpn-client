@@ -7,17 +7,21 @@ import os
 import IOSGlean
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
+    private let logger = IOSLoggerImpl(tag: "Tunnel")
 
     private lazy var adapter: WireGuardAdapter = {
-        return WireGuardAdapter(with: self) { logLevel, message in
-            wg_log(logLevel.osLogLevel, message: message)
+        return WireGuardAdapter(with: self) { [self] logLevel, message in
+            switch logLevel {
+            case .verbose:
+                return logger.debug(message: message)
+            case .error:
+                return logger.error(message: message)
+            }
         }
     }()
 
     override init() {
         super.init()
-
-        Logger.configureGlobal(tagged: "NET", withFilePath: FileManager.logFileURL?.path)
 
         // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
@@ -51,7 +55,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let activationAttemptId = options?["activationAttemptId"] as? String
         let errorNotifier = ErrorNotifier(activationAttemptId: activationAttemptId)
 
-        wg_log(.info, message: "Starting tunnel from the " + (activationAttemptId == nil ? "OS directly, rather than the app" : "app"))
+        logger.info(message: "Starting tunnel from the " + (activationAttemptId == nil ? "OS directly, rather than the app" : "app"))
 
         guard let tunnelProviderProtocol = self.protocolConfiguration as? NETunnelProviderProtocol,
               let tunnelConfiguration = tunnelProviderProtocol.asTunnelConfiguration() else {
@@ -65,7 +69,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             guard let adapterError = adapterError else {
                 let interfaceName = self.adapter.interfaceName ?? "unknown"
 
-                wg_log(.info, message: "Tunnel interface is \(interfaceName)")
+                self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
                 completionHandler(nil)
                 return
@@ -73,24 +77,24 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
             switch adapterError {
             case .cannotLocateTunnelFileDescriptor:
-                wg_log(.error, staticMessage: "Starting tunnel failed: could not determine file descriptor")
+                self.logger.error(message: "Starting tunnel failed: could not determine file descriptor")
                 errorNotifier.notify(PacketTunnelProviderError.couldNotDetermineFileDescriptor)
                 completionHandler(PacketTunnelProviderError.couldNotDetermineFileDescriptor)
 
             case .dnsResolution(let dnsErrors):
                 let hostnamesWithDnsResolutionFailure = dnsErrors.map { $0.address }
                     .joined(separator: ", ")
-                wg_log(.error, message: "DNS resolution failed for the following hostnames: \(hostnamesWithDnsResolutionFailure)")
+                self.logger.error(message: "DNS resolution failed for the following hostnames: \(hostnamesWithDnsResolutionFailure)")
                 errorNotifier.notify(PacketTunnelProviderError.dnsResolutionFailure)
                 completionHandler(PacketTunnelProviderError.dnsResolutionFailure)
 
             case .setNetworkSettings(let error):
-                wg_log(.error, message: "Starting tunnel failed with setTunnelNetworkSettings returning \(error.localizedDescription)")
+                self.logger.error(message: "Starting tunnel failed with setTunnelNetworkSettings returning \(error.localizedDescription)")
                 errorNotifier.notify(PacketTunnelProviderError.couldNotSetNetworkSettings)
                 completionHandler(PacketTunnelProviderError.couldNotSetNetworkSettings)
 
             case .startWireGuardBackend(let errorCode):
-                wg_log(.error, message: "Starting tunnel failed with wgTurnOn returning \(errorCode)")
+                self.logger.error(message: "Starting tunnel failed with wgTurnOn returning \(errorCode)")
                 errorNotifier.notify(PacketTunnelProviderError.couldNotStartBackend)
                 completionHandler(PacketTunnelProviderError.couldNotStartBackend)
 
@@ -102,13 +106,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
-        wg_log(.info, staticMessage: "Stopping tunnel")
+        logger.info(message: "Stopping tunnel")
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
 
             if let error = error {
-                wg_log(.error, message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
+                self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
             }
             completionHandler()
 
@@ -126,7 +130,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         
         do {
             let message = try TunnelMessage(messageData)
-            NSLog("Received new message: \(message)")
+            logger.info(message: "Received new message: \(message)")
             
             switch message {
             case .getRuntimeConfiguration:
@@ -139,13 +143,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 }
             case .configurationSwitch(let configString):
                 // Updates the tunnel configuration and responds with the active configuration
-                wg_log(.info, message: "Switching tunnel configuration")
+                logger.info(message: "Switching tunnel configuration")
 
                 do {
                   let tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: configString)
                   adapter.update(tunnelConfiguration: tunnelConfiguration) { error in
                     if let error = error {
-                      wg_log(.error, message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
+                        self.logger.error(message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
                       completionHandler(nil)
                       return
                     }
@@ -166,19 +170,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 completionHandler(nil)
             }
         } catch {
-            wg_log(.error, message: "Unexpected error while parsing message: \(error).")
+            logger.error(message: "Unexpected error while parsing message: \(error).")
             completionHandler(nil)
-        }
-    }
-}
-
-extension WireGuardLogLevel {
-    var osLogLevel: OSLogType {
-        switch self {
-        case .verbose:
-            return .debug
-        case .error:
-            return .error
         }
     }
 }

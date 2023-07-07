@@ -29,6 +29,7 @@
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
+#  include "platforms/ios/ioslogger.h"
 #endif
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
@@ -58,6 +59,9 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
 
 // Please! Use this `logger` carefully in this file to avoid log loops!
 Logger logger("LogHandler");
+#ifdef MZ_IOS
+IOSLogger iosLogger("mozillavpn");
+#endif
 
 class LogSerializeHelper final {
  public:
@@ -228,15 +232,30 @@ void LogHandler::addLog(const Log& log,
     prettyOutput(*m_output, log);
   }
 
-  if (m_stderrEnabled) {
-    QTextStream out(stderr);
-    prettyOutput(out, log);
-  }
-
   QByteArray buffer;
   {
     QTextStream out(&buffer);
     prettyOutput(out, log);
+  }
+
+  if (m_stderrEnabled) {
+#if defined(MZ_IOS)
+    switch (log.m_logLevel) {
+      case Error:
+      case Warning:
+        IOSLogger::error(buffer);
+        break;
+      case Info:
+        IOSLogger::info(buffer);
+        break;
+      default:
+        IOSLogger::debug(buffer);
+        break;
+    }
+#else
+    QTextStream out(stderr);
+    prettyOutput(out, log);
+#endif
   }
 
   emit logEntryAdded(buffer);
