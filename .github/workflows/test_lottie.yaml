@@ -25,8 +25,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install git libgl-dev libegl-dev clang-10 liboath-dev python3 xz-utils -y
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-linux.latest/artifacts/public%2Fbuild%2Fqt6_linux.tar.xz -o /opt/taqt.tar.xz
-          tar -xf /opt/taqt.tar.xz
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-linux.latest/artifacts/public%2Fbuild%2Fqt6_linux.tar.xz -O /opt/qt.tar.xz
+          tar -xf /opt/qt.tar.xz -C /opt
+          ls /opt/
 
       - name: Clone repository
         uses: actions/checkout@v3
