@@ -11,12 +11,6 @@ ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && 
 	export PATH := $(GODIR)/bin:$(PATH)
 endif
 
-GCC_NATIVE_VERSION = $(shell gcc -dumpversion 2>/dev/null || echo 0)
-ifneq (ok,$(shell dpkg --compare-versions $(GCC_NATIVE_VERSION) ge 8 && echo ok))
-	export CC := gcc-8
-	export CXX := g++-8
-endif
-
 %:
 	dh $@ --with=systemd --warn-missing
 

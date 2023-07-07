@@ -25,16 +25,6 @@ task-defaults:
         use-caches: true
         command: /builds/worker/builder.sh
 
-linux/bionic:
-    description: "Linux Build (Ubuntu/Bionic)"
-    treeherder:
-        platform: linux/bionic
-    worker:
-        docker-image: {in-tree: linux-build-bionic}
-    add-index-routes:
-        name: linux-bionic
-        type: build
-
 linux/focal:
     description: "Linux Build (Ubuntu/Focal)"
     treeherder:
