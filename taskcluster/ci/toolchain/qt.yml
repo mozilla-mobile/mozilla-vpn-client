@@ -18,6 +18,7 @@ qt-mac:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
+            - env.yml
         toolchain-alias: qt-mac
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
@@ -38,6 +39,7 @@ qt-win:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
+            - env.yml
         toolchain-alias: qt-win
         toolchain-artifact: public/build/qt6_win.zip
     treeherder:
@@ -50,6 +52,7 @@ qt-ios:
         script: bundle_qt_ios.sh
         resources:
             - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+            - env.yml
         toolchain-alias: qt-ios
         toolchain-artifact: public/build/qt6_ios.zip
     treeherder:
