@@ -26,7 +26,6 @@ can be used to run tests locally or via the CI.
 
 - ./utils/bake_shaders.sh - create the shader resources
 - ./utils/commons.sh - common set of functions
-- ./utils/generate_glean.py - generate glean resources
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
 - ./utils/getversion.py - parse and extract the project version
 - ./utils/import_languages.py - process languages and import them

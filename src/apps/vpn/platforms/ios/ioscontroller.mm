@@ -217,29 +217,11 @@ void IOSController::checkStatus() {
 void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
   std::function<void(const QString&)> callback = std::move(a_callback);
 
-  QString groupId(GROUP_ID);
-  NSURL* groupPath = [[NSFileManager defaultManager]
-      containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
-
-  NSURL* path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
-
-  QFile file(QString::fromNSString([path path]));
-  if (!file.open(QIODevice::ReadOnly)) {
-    callback("Network extension log file missing or unreadable.");
-    return;
-  }
-
-  QByteArray content = file.readAll();
-  callback(content);
+  [IOSLoggerImpl getAppexLogsWithCallback:^(NSString* logs) {
+    callback(QString::fromNSString(logs));
+  }];
 }
 
 void IOSController::cleanupBackendLogs() {
-  QString groupId(GROUP_ID);
-  NSURL* groupPath = [[NSFileManager defaultManager]
-      containerURLForSecurityApplicationGroupIdentifier:groupId.toNSString()];
-
-  NSURL* path = [groupPath URLByAppendingPathComponent:@"networkextension.log"];
-
-  QFile file(QString::fromNSString([path path]));
-  file.remove();
+    [IOSLoggerImpl clearAppexLogs];
 }

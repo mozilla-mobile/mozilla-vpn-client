@@ -19,7 +19,15 @@ const QString& AppConstants::getStagingServerAddress() {
 
 void AppConstants::setStaging() {
   Constants::setStaging();
+
+  // Get staging server address. If it was set to empty by the user, remove it
+  // from SettingsHolder, and then query for it again to get the default
+  // address.
   s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
+  if (s_stagingServerAddress.isEmpty()) {
+    SettingsHolder::instance()->removeStagingServerAddress();
+    s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
+  }
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
 
