@@ -154,22 +154,3 @@ function(osx_codesign_target TARGET)
         endforeach()
     endif()
 endfunction()
-
-
-## A helper to copy qt-files into the app
-function(osx_deploy_qt TARGET)
-    # Deploy Qt runtime dependencies during installation.
-    get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
-    get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
-    find_program(QT_DEPLOY_BIN
-        NAMES macdeployqt
-        PATHS ${QT_TOOL_PATH}
-        NO_DEFAULT_PATH)
-    get_target_property(TARGET_SOURCE_DIR ${TARGET} SOURCE_DIR)
-
-    add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND_EXPAND_LISTS
-            COMMAND ${QT_DEPLOY_BIN} $<TARGET_BUNDLE_DIR:${TARGET}> -qmldir=${TARGET_SOURCE_DIR} -always-overwrite   
-            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling ${FILE}"
-        )
-endfunction(osx_deploy_qt)

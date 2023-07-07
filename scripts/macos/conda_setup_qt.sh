@@ -17,9 +17,9 @@ fi
 
 export QT_DIR=$CONDA_PREFIX/Qt
 # QT_Host Tools
-python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET -m qt5compat qtimageformats qtnetworkauth qtshadertools qtwebsockets 
+python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 # QT Android Tools
-python -m aqt install-qt --outputdir $QT_DIR $HOST ios ${QT_VERSION} -m qt5compat qtimageformats qtnetworkauth qtshadertools qtwebsockets 
+python -m aqt install-qt --outputdir $QT_DIR $HOST ios ${QT_VERSION} -m all 
 
 echo "$QT_DIR/$QT_VERSION/ios/bin/qt-cmake"
 
