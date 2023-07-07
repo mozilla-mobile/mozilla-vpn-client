@@ -66,7 +66,8 @@ lrelease = os.path.join(qtbinpath, 'lrelease')
 
 # Step 1 (continued)
 # Get the latest translations from i18n remote
-os.system(f"git submodule update --init --remote --depth 1 i18n")
+# !!!! Commenting this out for 2.15.2, as we need to pin the i18n commit
+# os.system(f"git submodule update --init --remote --depth 1 i18n")
 
 # Step 2
 # Go through the i18n repo, check each XLIFF file and take

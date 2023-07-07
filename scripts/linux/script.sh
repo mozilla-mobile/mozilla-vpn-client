@@ -122,7 +122,8 @@ mkdir .tmp || die "Failed to create the temporary directory"
 
 print Y "Get the submodules..."
 git submodule update --init --depth 1 || die "Failed to init submodules"
-git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
+# !!!! Commenting this out for 2.15.2, as we need to pin the i18n commit
+# git submodule update --remote i18n || die "Failed to pull latest i18n from remote"
 print G "done."
 
 print G "Creating the orig tarball"
