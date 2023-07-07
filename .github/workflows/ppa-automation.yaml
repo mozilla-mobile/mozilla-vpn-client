@@ -67,6 +67,7 @@ jobs:
           KEYGRIP=$(gpg --with-colons --with-keygrip --list-keys | grep -m1 '^grp:' | tr -d [grp:])
           echo "$GPG_PASSWORD" | /lib/gnupg2/gpg-preset-passphrase --preset $KEYGRIP
 
+          JOB_EXIT_CODE=0
           PACKAGE_DSC_FILE=$(find . -name '*.dsc')
           for dist in ${PPA_TARGET_DISTS}; do
             dpkg-source -x ${PACKAGE_DSC_FILE} $(pwd)/mozillavpn-source/
@@ -78,12 +79,15 @@ jobs:
             dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${PACKAGE_DIST_VERSION} -D ${dist}  "Release for ${dist}"
             (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
 
-            dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes
+            dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes || JOB_EXIT_CODE=1
             rm -rf $(pwd)/mozillavpn-source
           done
 
+          exit $JOB_EXIT_CODE
+
       - name: Uploading sources
         uses: actions/upload-artifact@v3
+        if: always()
         with:
             name: Sources
             path: .tmp
