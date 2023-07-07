@@ -101,12 +101,9 @@ jobs:
       - name: Install Qt6
         shell: bash
         run: |
-          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-          git clone https://github.com/mozilla-mobile/qt_static_macos --depth 1
-          cd qt_static_macos
-          cat qt6* > qt_static.tar.gz
-          tar xf qt_static.tar.gz
-          sudo mv qt6 /opt
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          unzip -a mac.zip
+          sudo mv qt_dist /opt
           cd ..
 
       - name: Cache grcov
@@ -125,7 +122,7 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
-          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
@@ -135,7 +132,7 @@ jobs:
         shell: bash
         working-directory: ./build
         run: |
-          export PATH=/opt/qt6/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
           grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
