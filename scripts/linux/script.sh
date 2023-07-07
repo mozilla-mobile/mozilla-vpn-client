@@ -137,9 +137,6 @@ rsync -a --exclude='.*' ${RSYNC_EXCLUDE_DIRS} . .tmp/${WORKDIR} || die "Failed"
 print G "done."
 cd .tmp
 
-print Y "Generating glean samples..."
-(cd $WORKDIR && python3 scripts/utils/generate_glean.py) || die "Failed to generate glean samples"
-
 print Y "Generating Glean (qtglean) files..."
 (cd $WORKDIR && python3 qtglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (qtglean) files"
 

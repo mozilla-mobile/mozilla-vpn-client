@@ -26,11 +26,6 @@ jobs:
           sudo apt-get install -y aspell aspell-en $(./scripts/linux/getdeps.py -b linux/debian/control)
           pip3 install -r requirements.txt
 
-      - name: Generating glean samples
-        shell: bash
-        run: |
-          python3 scripts/utils/generate_glean.py
-
       - name: Importing translation files
         shell: bash
         run: |
