@@ -145,7 +145,7 @@ jobs:
         run: |
           Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
           Expand-Archive win.zip
-          mv QT_OUT "C:\\MozillaVPNBuild"
+          mv win\QT_OUT "C:\\MozillaVPNBuild"
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
