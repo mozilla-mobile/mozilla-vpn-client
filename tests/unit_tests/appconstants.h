@@ -20,7 +20,7 @@ constexpr const char* SETTINGS_APP_NAME = "UnitTests";
 // The localization filename prefix. The real file name should be called:
 // `LOCALIZER_FILENAME_PREFIX` + '_' + languageCode + ".qm". For instance:
 // `mozillavpn_it.qm
-constexpr const char* LOCALIZER_FILENAME_PREFIX = "unit_tests";
+constexpr const char* LOCALIZER_FILENAME_PREFIX = "mozillavpn";
 
 // The prefix for the user-agent requests
 constexpr const char* NETWORK_USERAGENT_PREFIX = "UnitTests";
