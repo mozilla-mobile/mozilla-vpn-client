@@ -147,6 +147,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
     }
   });
 
+  connect(this, &MozillaVPN::aboutNeeded, this, []() {
+    Navigator::instance()->requestScreenFromBottomBar(
+        MozillaVPN::ScreenSettings,
+        (Navigator::instance()->currentScreen() == MozillaVPN::ScreenSettings
+             ? Navigator::ForceReload
+             : Navigator::NoFlags));
+  });
+
   connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
 
