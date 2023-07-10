@@ -16,18 +16,13 @@ concurrency:
 
 jobs:
   linux-lottie-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Run Lottie tests on Linux
-    env:
-      QTVERSION: 6.2.4
     steps:
       - name: Install Linux packages
         run: |
-          sudo apt update
-          sudo apt install git libgl-dev libgles2-mesa-dev  libxkbcommon-x11-0 libgles2 libgl-dev libegl-dev clang-10 liboath-dev python3 xz-utils libbrotli-dev brotli -y
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-linux.latest/artifacts/public%2Fbuild%2Fqt6_linux.tar.xz -O /opt/qt.tar.xz
-          tar -xf /opt/qt.tar.xz -C /opt
-          ls /opt/
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
       - name: Clone repository
         uses: actions/checkout@v3
@@ -49,10 +44,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          export PATH=/opt/qt_dist/bin/:$PATH
-          mkdir -p /usr/lib/x86_64-linux-gnu/
-          cp  /opt/qt_dist/lib/*.so /usr/lib/x86_64-linux-gnu/
-          /opt/qt_dist/bin/qt-cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build -j$(nproc)
 
