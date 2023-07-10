@@ -193,7 +193,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
           cmake --build ./build --target build_tests
 
       - name: Running tests
