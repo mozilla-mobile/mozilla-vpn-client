@@ -15,7 +15,7 @@
 #  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID)
-#  include "../apps/vpn/platforms/android/androidvpnactivity.h"
+#  include "../platforms/android/androidvpnactivity.h"
 #  include "platforms/android/androidcommons.h"
 #endif
 #if defined(MZ_IOS)
