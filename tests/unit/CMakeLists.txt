@@ -7,7 +7,6 @@ get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
-include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/addons)
 include_directories(${MZ_SOURCE_DIR}/shared/composer)
@@ -35,97 +34,97 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations_vpn)
+target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
-    ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/captiveportal/captiveportal.h
-    ${MZ_SOURCE_DIR}/apps/vpn/connectionhealth.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/connectionhealth.h
-    ${MZ_SOURCE_DIR}/apps/vpn/command.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/command.h
-    ${MZ_SOURCE_DIR}/apps/vpn/commandlineparser.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/commandlineparser.h
-    ${MZ_SOURCE_DIR}/apps/vpn/controller.h
-    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/dnshelper.h
-    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/ipaddresslookup.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/device.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/device.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/devicemodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/keys.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/keys.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recentconnections.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recentconnections.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/supportcategorymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/supportcategorymodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/user.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/user.h
-    ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/networkwatcher.h
-    ${MZ_SOURCE_DIR}/apps/vpn/networkwatcherimpl.h
-    ${MZ_SOURCE_DIR}/apps/vpn/notificationhandler.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/notificationhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummynetworkwatcher.h
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/releasemonitor.h
-    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
-    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${MZ_SOURCE_DIR}/apps/vpn/statusicon.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/statusicon.h
-    ${MZ_SOURCE_DIR}/apps/vpn/systemtraynotificationhandler.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/account/taskaccount.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/adddevice/taskadddevice.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/ipfinder/taskipfinder.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/release/taskrelease.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/appconstants.cpp
+    ${MZ_SOURCE_DIR}/appconstants.h
+    ${MZ_SOURCE_DIR}/captiveportal/captiveportal.cpp
+    ${MZ_SOURCE_DIR}/captiveportal/captiveportal.h
+    ${MZ_SOURCE_DIR}/connectionhealth.cpp
+    ${MZ_SOURCE_DIR}/connectionhealth.h
+    ${MZ_SOURCE_DIR}/command.cpp
+    ${MZ_SOURCE_DIR}/command.h
+    ${MZ_SOURCE_DIR}/commandlineparser.cpp
+    ${MZ_SOURCE_DIR}/commandlineparser.h
+    ${MZ_SOURCE_DIR}/controller.h
+    ${MZ_SOURCE_DIR}/dnshelper.cpp
+    ${MZ_SOURCE_DIR}/dnshelper.h
+    ${MZ_SOURCE_DIR}/dnspingsender.cpp
+    ${MZ_SOURCE_DIR}/dnspingsender.h
+    ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
+    ${MZ_SOURCE_DIR}/ipaddresslookup.h
+    ${MZ_SOURCE_DIR}/models/device.cpp
+    ${MZ_SOURCE_DIR}/models/device.h
+    ${MZ_SOURCE_DIR}/models/devicemodel.cpp
+    ${MZ_SOURCE_DIR}/models/devicemodel.h
+    ${MZ_SOURCE_DIR}/models/keys.cpp
+    ${MZ_SOURCE_DIR}/models/keys.h
+    ${MZ_SOURCE_DIR}/models/location.cpp
+    ${MZ_SOURCE_DIR}/models/location.h
+    ${MZ_SOURCE_DIR}/models/recentconnections.cpp
+    ${MZ_SOURCE_DIR}/models/recentconnections.h
+    ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
+    ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
+    ${MZ_SOURCE_DIR}/models/server.cpp
+    ${MZ_SOURCE_DIR}/models/server.h
+    ${MZ_SOURCE_DIR}/models/servercity.cpp
+    ${MZ_SOURCE_DIR}/models/servercity.h
+    ${MZ_SOURCE_DIR}/models/servercountry.cpp
+    ${MZ_SOURCE_DIR}/models/servercountry.h
+    ${MZ_SOURCE_DIR}/models/servercountrymodel.cpp
+    ${MZ_SOURCE_DIR}/models/servercountrymodel.h
+    ${MZ_SOURCE_DIR}/models/serverdata.cpp
+    ${MZ_SOURCE_DIR}/models/serverdata.h
+    ${MZ_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MZ_SOURCE_DIR}/models/subscriptiondata.h
+    ${MZ_SOURCE_DIR}/models/supportcategorymodel.cpp
+    ${MZ_SOURCE_DIR}/models/supportcategorymodel.h
+    ${MZ_SOURCE_DIR}/models/user.cpp
+    ${MZ_SOURCE_DIR}/models/user.h
+    ${MZ_SOURCE_DIR}/mozillavpn.h
+    ${MZ_SOURCE_DIR}/networkwatcher.cpp
+    ${MZ_SOURCE_DIR}/networkwatcher.h
+    ${MZ_SOURCE_DIR}/networkwatcherimpl.h
+    ${MZ_SOURCE_DIR}/notificationhandler.cpp
+    ${MZ_SOURCE_DIR}/notificationhandler.h
+    ${MZ_SOURCE_DIR}/pinghelper.cpp
+    ${MZ_SOURCE_DIR}/pinghelper.h
+    ${MZ_SOURCE_DIR}/pingsender.h
+    ${MZ_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MZ_SOURCE_DIR}/pingsenderfactory.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/releasemonitor.cpp
+    ${MZ_SOURCE_DIR}/releasemonitor.h
+    ${MZ_SOURCE_DIR}/serveri18n.cpp
+    ${MZ_SOURCE_DIR}/serveri18n.h
+    ${MZ_SOURCE_DIR}/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/serverlatency.h
+    ${MZ_SOURCE_DIR}/statusicon.cpp
+    ${MZ_SOURCE_DIR}/statusicon.h
+    ${MZ_SOURCE_DIR}/systemtraynotificationhandler.h
+    ${MZ_SOURCE_DIR}/tasks/account/taskaccount.cpp
+    ${MZ_SOURCE_DIR}/tasks/account/taskaccount.h
+    ${MZ_SOURCE_DIR}/tasks/adddevice/taskadddevice.cpp
+    ${MZ_SOURCE_DIR}/tasks/adddevice/taskadddevice.h
+    ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
+    ${MZ_SOURCE_DIR}/tasks/ipfinder/taskipfinder.cpp
+    ${MZ_SOURCE_DIR}/tasks/ipfinder/taskipfinder.h
+    ${MZ_SOURCE_DIR}/tasks/release/taskrelease.cpp
+    ${MZ_SOURCE_DIR}/tasks/release/taskrelease.h
+    ${MZ_SOURCE_DIR}/tasks/servers/taskservers.cpp
+    ${MZ_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${MZ_SOURCE_DIR}/update/updater.cpp
+    ${MZ_SOURCE_DIR}/update/updater.h
+    ${MZ_SOURCE_DIR}/update/versionapi.cpp
+    ${MZ_SOURCE_DIR}/update/versionapi.h
+    ${MZ_SOURCE_DIR}/update/webupdater.cpp
+    ${MZ_SOURCE_DIR}/update/webupdater.h
     ${MZ_SOURCE_DIR}/shared/addons/addon.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addon.h
     ${MZ_SOURCE_DIR}/shared/addons/addonapi.cpp
@@ -235,6 +234,15 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
@@ -321,7 +329,7 @@ target_sources(unit_tests PRIVATE
 
 # VPN Client UI resources
 target_sources(unit_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/resources/public_keys/public_keys.qrc
+    ${MZ_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
 
 # Unit test source files

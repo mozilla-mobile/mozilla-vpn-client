@@ -20,13 +20,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
-include_directories(${MZ_SOURCE_DIR}/apps/auth_tests)
+include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
 qt_add_executable(app_auth_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_auth_tests)
@@ -49,7 +48,7 @@ endif()
 target_link_libraries(app_auth_tests PRIVATE
     qtglean
     shared-sources
-    translations_auth_tests
+    translations
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

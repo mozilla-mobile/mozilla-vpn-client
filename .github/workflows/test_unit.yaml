@@ -67,10 +67,10 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/src/apps/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
 
-          grcov $(pwd)/src/apps/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for linux unit tests to Codecov
@@ -144,10 +144,10 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/src/apps/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
 
-          grcov $(pwd)/src/apps/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for macos unit tests to Codecov
