@@ -49,6 +49,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
+          export PATH=/opt/qt_dist/bin/:$PATH
+          export $LD_LIBRARY_PATH=:$LD_LIBRARY_PATH
+          mkdir -p /usr/lib/x86_64-linux-gnu/
+          cp  /opt/qt_dist/lib/*.so /usr/lib/x86_64-linux-gnu/
           /opt/qt_dist/bin/qt-cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build -j$(nproc)
