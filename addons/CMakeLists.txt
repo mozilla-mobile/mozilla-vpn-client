@@ -15,7 +15,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../scripts/cmake/addons.cmake)
 add_addon_target(addons
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src/apps/vpn/translations/i18n
+    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src/translations/i18n
 )
 
 # If this is the top level project, build and install the addons by default.

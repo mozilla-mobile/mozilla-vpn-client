@@ -1,6 +1,6 @@
 [submodule "i18n"]
-	path = src/apps/vpn/translations/i18n
-	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
+	path = src/translations/i18n
+	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n
 	branch = main
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools

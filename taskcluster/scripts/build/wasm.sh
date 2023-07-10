@@ -9,9 +9,7 @@ source /opt/emsdk/emsdk_env.sh
 # Reqs
 git submodule update --init --depth 1
 
-for i in src/apps/*/translations/i18n; do
-  git submodule update --remote $i
-done
+git submodule update --remote src/translations/i18n
 
 pip3 install -r requirements.txt
 
