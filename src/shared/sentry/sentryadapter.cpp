@@ -6,8 +6,8 @@
 
 #ifndef UNIT_TEST
 // This is not found when building tests ... wierd.
-# include <QtQml/private/qqmlengine_p.h>
-#endif 
+#  include <QtQml/private/qqmlengine_p.h>
+#endif
 #include <sentry.h>
 
 #include <QDir>
@@ -200,7 +200,7 @@ void SentryAdapter::captureQMLStacktrace(const char* description) {
   }
   sentry_value_set_by_key(crumb, "data", data);
   sentry_add_breadcrumb(crumb);
-#else 
+#else
   Q_UNUSED(description);
 #endif
 }
