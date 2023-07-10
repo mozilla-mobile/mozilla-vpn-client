@@ -68,7 +68,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=Release)
+        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
     endif()
 
     if(ANDROID)
@@ -101,7 +101,7 @@ if( ${_SUPPORTED} GREATER -1 )
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
         GIT_SUBMODULES 3rdparty/sentry
         GIT_SUBMODULES_RECURSE true
-        CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=OFF  -DSENTRY_BUILD_EXAMPLES=OFF -DSENTRY_BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
+        CMAKE_ARGS -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=OFF  -DSENTRY_BUILD_EXAMPLES=OFF -DSENTRY_BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 
     target_include_directories(shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)
