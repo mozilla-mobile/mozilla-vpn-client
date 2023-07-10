@@ -22,9 +22,9 @@ class TaskSentry final : public Task {
 
   void run() override;
 
-  // NonDeletable because user needs to be prompted always to send crash
+  // Reschedulable because user needs to be prompted always to send crash
   // reports
-  DeletePolicy deletePolicy() const override { return NonDeletable; }
+  DeletePolicy deletePolicy() const override { return DeletePolicy::Reschedulable; }
 
   enum ContentType { Unknown, Ping, CrashReport };
   Q_ENUM(ContentType);
