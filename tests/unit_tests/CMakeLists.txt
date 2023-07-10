@@ -20,13 +20,12 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
-include_directories(${MZ_SOURCE_DIR}/apps/unit_tests)
+include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
@@ -47,10 +46,13 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
+generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
+
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
-    translations_unit_tests
+    translations-unit-tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
