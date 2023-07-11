@@ -60,7 +60,6 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -make libs  `
   -no-sql-psql  `
   -no-sql-odbc   `
-  -qt-sqlite  `
   -skip qt3d  `
   -skip webengine  `
   -skip qtmultimedia  `
