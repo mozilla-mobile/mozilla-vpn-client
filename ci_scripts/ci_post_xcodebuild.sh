@@ -15,8 +15,16 @@ fi
 
 
 sentry-cli login --auth-token $SENTRY_UPLOAD_KEY
+
 sentry-cli --auth-token $SENTRY_UPLOAD_KEY \
     upload-dif --org mozilla \
     --include-sources . \
     --project vpn-client \
     $CI_ARCHIVE_PATH
+
+# Upload debug symbols
+sentry-cli debug-files upload --auth-token $SENTRY_UPLOAD_KEY \
+  --include-sources \
+  --org mozilla \
+  --project vpn-client \
+  $CI_ARCHIVE_PATH/dSYMs
