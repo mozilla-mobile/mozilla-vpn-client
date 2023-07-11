@@ -288,7 +288,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
 
   // Clear routing policy tweaks for multihop.
-  if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
+  if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
     }
