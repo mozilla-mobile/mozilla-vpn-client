@@ -21,7 +21,9 @@ public enum TunnelMessage: Codable, CustomStringConvertible {
         case .getRuntimeConfiguration:
             return "getRuntimeConfiguration"
         case .configurationSwitch(let newConfig):
-            return "configurationSwitch(\(newConfig))"
+            // We do not want to log the configuration itself.
+            // It contains private information.
+            return "configurationSwitch"
         case .telemetryEnabledChanged(let flag): 
             return "telemetryEnabledChanged(\(flag))"
         }
