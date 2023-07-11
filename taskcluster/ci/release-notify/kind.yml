@@ -24,7 +24,11 @@ task-defaults:
                 "3":
                     - type: slack-channel
                       channel-id: C01DCUKG95E  # mozilla-vpn-release
-                default: []
+                    - type: matrix-room
+                      room-id: "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
+                default:
+                    - type: matrix-room
+                      room-id: "!wGgsWXnVncJLSBYmuf:mozilla.org"  # #releaseduty-dev:mozilla.org
 
 tasks:
     promote-addons:

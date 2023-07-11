@@ -6,21 +6,26 @@
 
 QVector<QObject*> TestHelper::s_testList;
 QProcess* TestHelper::s_nativeMessagingProcess = nullptr;
+char* TestHelper::s_app = nullptr;
+int TestHelper::s_last_exit_code = 0;
 
 TestHelper::TestHelper() { s_testList.append(this); }
 
 // static
-void TestHelper::runNativeMessaging(const char* app) {
+void TestHelper::runNativeMessaging(const char* app, QStringList arguments) {
   Q_ASSERT(s_nativeMessagingProcess == nullptr);
 
   s_nativeMessagingProcess = new QProcess();
   s_nativeMessagingProcess->setReadChannel(QProcess::StandardOutput);
+  s_last_exit_code = 0;
 
   connect(s_nativeMessagingProcess, &QProcess::readyReadStandardError, []() {
     qDebug() << "[mozillavpnnp - stderr]"
              << s_nativeMessagingProcess->readAllStandardError();
   });
-  s_nativeMessagingProcess->start(app, QStringList(),
+  connect(s_nativeMessagingProcess, &QProcess::finished,
+          [&](int exitCode) { s_last_exit_code = exitCode; });
+  s_nativeMessagingProcess->start(app, arguments,
                                   QProcess::Unbuffered | QProcess::ReadWrite);
   if (!s_nativeMessagingProcess->waitForStarted()) {
     qFatal("Failed to start the naive messaging process");
@@ -29,6 +34,9 @@ void TestHelper::runNativeMessaging(const char* app) {
 
 // static
 void TestHelper::killNativeMessaging() {
+  if (s_nativeMessagingProcess == nullptr) {
+    return;
+  }
   Q_ASSERT(s_nativeMessagingProcess);
 
   s_nativeMessagingProcess->closeWriteChannel();
@@ -50,11 +58,16 @@ void TestHelper::killNativeMessaging() {
   s_nativeMessagingProcess = nullptr;
 }
 
-int TestHelper::runTests(const char* app) {
+int TestHelper::runTests(char* app) {
   int failures = 0;
-
+  s_app = app;
   for (QObject* obj : TestHelper::s_testList) {
-    runNativeMessaging(app);
+    QStringList args;
+    args.append("/some/url/to/manifest.json");
+    // A valid extension id.
+    args.append("@testpilot-containers");
+
+    runNativeMessaging(app, args);
 
     int result = QTest::qExec(obj);
     if (result != 0) {
