@@ -11,6 +11,8 @@
 
 #include "task.h"
 
+// Task to get user consent and send crash report to
+// Sentry (https://github.com/getsentry/sentry-native)
 class TaskSentry final : public Task {
   Q_DISABLE_COPY_MOVE(TaskSentry)
 
@@ -19,6 +21,12 @@ class TaskSentry final : public Task {
   ~TaskSentry();
 
   void run() override;
+
+  // Reschedulable because user needs to be prompted always to send crash
+  // reports
+  DeletePolicy deletePolicy() const override {
+    return DeletePolicy::Reschedulable;
+  }
 
   enum ContentType { Unknown, Ping, CrashReport };
   Q_ENUM(ContentType);
