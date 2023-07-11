@@ -287,7 +287,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
       logger.error() << "hopType is not a string";
       return false;
     }
-    
+
     bool okay;
     QByteArray vdata = value.toString().toUtf8();
     QMetaEnum meta = QMetaEnum::fromType<InterfaceConfig::HopType>();

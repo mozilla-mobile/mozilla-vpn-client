@@ -18,11 +18,7 @@ class InterfaceConfig {
  public:
   InterfaceConfig() {}
 
-  enum HopType {
-    SingleHop,
-    MultiHopEntry,
-    MultiHopExit
-  };
+  enum HopType { SingleHop, MultiHopEntry, MultiHopExit };
   Q_ENUM(HopType)
 
   HopType m_hopType;
