@@ -34,15 +34,10 @@ target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${M
 
 target_link_libraries(app_auth_tests PRIVATE
     Qt6::Core
-    Qt6::Xml
-    Qt6::Network
-    Qt6::NetworkAuth
+    Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
-    Qt6::Gui
-    Qt6::Qml
-    Qt6::Quick
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
