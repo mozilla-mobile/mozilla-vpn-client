@@ -52,7 +52,7 @@ void SentryAdapter::init() {
     // If we have no info on where to put crash info, let's
     // query that and retry later.
     logger.error() << "Sentry failed to init, no sentry config present";
-    auto t = new TaskSentryConfig();
+    auto sentryConfig = new TaskSentryConfig();
     TaskScheduler::scheduleTask(t);
     return;
   }
