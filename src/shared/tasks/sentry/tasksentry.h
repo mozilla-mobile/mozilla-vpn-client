@@ -24,7 +24,9 @@ class TaskSentry final : public Task {
 
   // Reschedulable because user needs to be prompted always to send crash
   // reports
-  DeletePolicy deletePolicy() const override { return DeletePolicy::Reschedulable; }
+  DeletePolicy deletePolicy() const override {
+    return DeletePolicy::Reschedulable;
+  }
 
   enum ContentType { Unknown, Ping, CrashReport };
   Q_ENUM(ContentType);
