@@ -56,8 +56,6 @@ bool TaskSentryConfig::handleNetworkResponse(const QByteArray& data) {
     logger.error() << "Failed to get Sentry info";
     return false;
   }
-  // The only thing right now, we don't want to send
-  // crash-data, so we will only check for that.
   QJsonObject obj = doc.object();
   if (!obj.contains("dsn")) {
     logger.error() << "DSN missing from Sentry info";
