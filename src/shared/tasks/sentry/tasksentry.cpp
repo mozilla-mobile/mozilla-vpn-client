@@ -80,7 +80,7 @@ void TaskSentry::sendRequest() {
   auto endpoint = settings->sentryEndpoint();
   auto dsn = settings->sentryDSN();
   if (endpoint.isNull() || dsn.isNull()) {
-    // We could have not even been initializing sentry without that?!
+    // We should not be able to initialize Sentry without an endpoint and DSN
     Q_ASSERT(false);
     emit completed();
     return;
