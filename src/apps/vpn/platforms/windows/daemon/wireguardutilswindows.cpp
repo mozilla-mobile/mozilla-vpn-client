@@ -163,7 +163,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   }
 
   // Exclude the server address, except for multihop exit servers.
-  if (config.m_hopType != "exit") {
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
     m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
     m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
@@ -178,7 +178,7 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
   // Clear exclustion routes for this peer.
-  if (config.m_hopType != "exit") {
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
     m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
     m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }

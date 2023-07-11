@@ -214,8 +214,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    logger.error() << "Failed to set peer endpoint for" << config.m_hopType
-                   << "hop";
+    logger.error() << "Failed to set peer endpoint for" << config.m_hopType;
     return false;
   }
 
@@ -224,14 +223,15 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // policy rules are doing all the work for us anyways.
   //
   // To work around the issue, just set default routes for the exit hop.
-  if ((config.m_hopType == "single") || (config.m_hopType == "exit")) {
+  if ((config.m_hopType == InterfaceConfig::SingleHop) ||
+      (config.m_hopType == InterfaceConfig::MultiHopExit)) {
     if (!config.m_deviceIpv4Address.isNull()) {
       addPeerPrefix(peer, IPAddress("0.0.0.0/0"));
     }
     if (!config.m_deviceIpv6Address.isNull()) {
       addPeerPrefix(peer, IPAddress("::/0"));
     }
-  } else if (config.m_hopType == "entry") {
+  } else if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
     // Add allowed addresses for the multihop entry server(s)
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       bool ok = addPeerPrefix(peer, ip);
@@ -259,7 +259,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS |
                       WGPEER_HAS_PERSISTENT_KEEPALIVE_INTERVAL);
   if (wg_set_device(device) != 0) {
-    logger.error() << "Failed to set the new peer" << config.m_hopType << "hop";
+    logger.error() << "Failed to set the new peer" << config.m_hopType;
     return false;
   }
 
@@ -288,7 +288,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
 
   // Clear routing policy tweaks for multihop.
-  if (config.m_hopType != "entry") {
+  if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
     }

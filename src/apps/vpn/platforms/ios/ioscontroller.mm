@@ -109,7 +109,7 @@ void IOSController::activate(const InterfaceConfig& config,
                              Controller::Reason reason) {
 
   // These features are not supported on ios yet.
-  Q_ASSERT(config.m_hopType == "single");
+  Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
 
   logger.debug() << "IOSController activating" << config.m_serverPublicKey;

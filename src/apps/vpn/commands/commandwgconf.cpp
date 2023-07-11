@@ -56,7 +56,7 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
     const Device* cd = dm->currentDevice(vpn.keys());
-    config.m_hopType = "single";
+    config.m_hopType = InterfaceConfig::SingleHop;
     config.m_privateKey = vpn.keys()->privateKey();
     config.m_deviceIpv4Address = cd->ipv4Address();
     config.m_deviceIpv6Address = cd->ipv6Address();

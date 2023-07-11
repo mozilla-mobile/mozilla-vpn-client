@@ -117,7 +117,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 
 void AndroidController::activate(const InterfaceConfig& config,
                                  Controller::Reason reason) {
-  Q_ASSERT(config.m_hopType == "single");
+  Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   logger.debug() << "Activation";
 
   m_serverPublicKey = config.m_serverPublicKey;

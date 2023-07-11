@@ -82,7 +82,7 @@ class Daemon : public QObject {
     QDateTime m_date;
     InterfaceConfig m_config;
   };
-  QMap<QString, ConnectionState> m_connections;
+  QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QHash<IPAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
 };

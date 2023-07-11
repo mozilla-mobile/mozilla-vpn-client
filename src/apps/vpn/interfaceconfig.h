@@ -13,10 +13,19 @@
 class QJsonObject;
 
 class InterfaceConfig {
+  Q_GADGET
+
  public:
   InterfaceConfig() {}
 
-  QString m_hopType;  // One of: "single", "entry", or "exit"
+  enum HopType {
+    SingleHop,
+    MultiHopEntry,
+    MultiHopExit
+  };
+  Q_ENUM(HopType)
+
+  HopType m_hopType;
   QString m_privateKey;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;

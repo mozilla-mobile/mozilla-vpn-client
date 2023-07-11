@@ -340,7 +340,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
       !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
-    exitConfig.m_hopType = "single";
+    exitConfig.m_hopType = InterfaceConfig::SingleHop;
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -352,7 +352,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // The entry server should start first, followed by the exit server.
   else if (m_impl->multihopSupported()) {
     logger.info() << "Activating multi-hop (through platform controller)";
-    exitConfig.m_hopType = "exit";
+    exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
 
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -375,7 +375,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
     entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     entryConfig.m_serverPort = entryServer.choosePort();
-    entryConfig.m_hopType = "entry";
+    entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
     entryConfig.m_allowedIPAddressRanges.append(
         IPAddress(exitServer.ipv4AddrIn()));
     entryConfig.m_allowedIPAddressRanges.append(
@@ -393,7 +393,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // connection to the exit server via the multihop port.
   else {
     logger.info() << "Activating multi-hop (through multihop port)";
-    exitConfig.m_hopType = "single";
+    exitConfig.m_hopType = InterfaceConfig::SingleHop;
 
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&

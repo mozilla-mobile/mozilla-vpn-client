@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 #include <QTimer>
 
 #include "leakdetector.h"
@@ -169,7 +170,8 @@ bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
     return true;
   }
 
-  if ((config.m_hopType == "exit") || (config.m_hopType == "single")) {
+  if ((config.m_hopType == InterfaceConfig::MultiHopExit) ||
+      (config.m_hopType == InterfaceConfig::SingleHop)) {
     QList<QHostAddress> resolvers;
     resolvers.append(QHostAddress(config.m_dnsServer));
 
@@ -278,14 +280,23 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   }
 
   if (!obj.contains("hopType")) {
-    config.m_hopType = "single";
+    config.m_hopType = InterfaceConfig::SingleHop;
   } else {
     QJsonValue value = obj.value("hopType");
     if (!value.isString()) {
       logger.error() << "hopType is not a string";
       return false;
     }
-    config.m_hopType = value.toString();
+    
+    bool okay;
+    QByteArray vdata = value.toString().toUtf8();
+    QMetaEnum meta = QMetaEnum::fromType<InterfaceConfig::HopType>();
+    config.m_hopType =
+        InterfaceConfig::HopType(meta.keyToValue(vdata.constData(), &okay));
+    if (!okay) {
+      logger.error() << "hopType" << value.toString() << "is not valid";
+      return false;
+    }
   }
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
@@ -355,8 +366,8 @@ bool Daemon::deactivate(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
 
   // Deactivate the main interface.
-  if (m_connections.contains(0)) {
-    const ConnectionState& state = m_connections.value(0);
+  if (!m_connections.isEmpty()) {
+    const ConnectionState& state = m_connections.first();
     if (!run(Down, state.m_config)) {
       return false;
     }
@@ -379,7 +390,7 @@ bool Daemon::deactivate(bool emitSignals) {
   // Cleanup peers and routing
   for (const ConnectionState& state : m_connections) {
     const InterfaceConfig& config = state.m_config;
-    logger.debug() << "Deleting routes for" << config.m_hopType << "hop";
+    logger.debug() << "Deleting routes for" << config.m_hopType;
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip);
     }
@@ -432,7 +443,7 @@ bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
 bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 
-  logger.debug() << "Switching server for" << config.m_hopType << "hop";
+  logger.debug() << "Switching server for" << config.m_hopType;
 
   Q_ASSERT(m_connections.contains(config.m_hopType));
   const InterfaceConfig& lastConfig =
@@ -481,12 +492,12 @@ QJsonObject Daemon::getStatus() {
   QJsonObject json;
   logger.debug() << "Status request";
 
-  if (!m_connections.contains(0) || !wgutils()->interfaceExists()) {
+  if (!wgutils()->interfaceExists() || m_connections.isEmpty()) {
     json.insert("connected", QJsonValue(false));
     return json;
   }
 
-  const ConnectionState& connection = m_connections.value(0);
+  const ConnectionState& connection = m_connections.first();
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
   for (const WireguardUtils::PeerStatus& status : peers) {
     if (status.m_pubkey != connection.m_config.m_serverPublicKey) {
