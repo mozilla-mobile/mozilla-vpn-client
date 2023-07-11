@@ -75,7 +75,7 @@ bool TaskSentryConfig::handleNetworkResponse(const QByteArray& data) {
   };
   auto endpoint = obj["endpoint"].toString();
   if (endpoint.isNull()) {
-    logger.error() << "endpoint missing from Sentry info";
+    logger.error() << "Sentry provided endpoint is null";
     return false;
   };
   auto settings = SettingsHolder::instance();
