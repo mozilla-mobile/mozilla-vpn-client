@@ -32,17 +32,15 @@ DummyController::DummyController() : m_delayTimer(this) {
 
 DummyController::~DummyController() { MZ_COUNT_DTOR(DummyController); }
 
-void DummyController::activate(const HopConnection& hop, const Device* device,
-                               const Keys* keys, Controller::Reason reason) {
-  Q_UNUSED(device);
-  Q_UNUSED(keys);
+void DummyController::activate(const InterfaceConfig& config,
+                               Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  logger.debug() << "DummyController activated" << hop.m_server.hostname();
-  logger.debug() << "DummyController DNS" << hop.m_dnsServer.toString();
+  logger.debug() << "DummyController activated" << config.m_serverIpv4AddrIn;
+  logger.debug() << "DummyController DNS" << config.m_dnsServer;
 
   m_connected = true;
-  m_publicKey = hop.m_server.publicKey();
+  m_publicKey = config.m_serverPublicKey;
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 

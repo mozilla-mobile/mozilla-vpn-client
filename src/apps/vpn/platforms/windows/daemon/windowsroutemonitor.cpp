@@ -202,11 +202,11 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
   }
 }
 
-bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
+bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Adding exclusion route for"
-                 << logger.sensitive(address.toString());
+                 << logger.sensitive(prefix.toString());
 
-  if (m_exclusionRoutes.contains(address)) {
+  if (m_exclusionRoutes.contains(prefix)) {
     logger.warning() << "Exclusion route already exists";
     return false;
   }
@@ -214,18 +214,18 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   // Allocate and initialize the MIB routing table row.
   MIB_IPFORWARD_ROW2* data = new MIB_IPFORWARD_ROW2;
   InitializeIpForwardEntry(data);
-  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    Q_IPV6ADDR buf = address.toIPv6Address();
+  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR buf = prefix.address().toIPv6Address();
 
     memcpy(&data->DestinationPrefix.Prefix.Ipv6.sin6_addr, &buf, sizeof(buf));
     data->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
-    data->DestinationPrefix.PrefixLength = 128;
+    data->DestinationPrefix.PrefixLength = prefix.prefixLength();
   } else {
-    quint32 buf = address.toIPv4Address();
+    quint32 buf = prefix.address().toIPv4Address();
 
     data->DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr = htonl(buf);
     data->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
-    data->DestinationPrefix.PrefixLength = 32;
+    data->DestinationPrefix.PrefixLength = prefix.prefixLength();
   }
   data->NextHop.si_family = data->DestinationPrefix.Prefix.si_family;
 
@@ -242,7 +242,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
 
   PMIB_IPFORWARD_TABLE2 table;
   int family;
-  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
     family = AF_INET6;
   } else {
     family = AF_INET;
@@ -258,16 +258,16 @@ bool WindowsRouteMonitor::addExclusionRoute(const QHostAddress& address) {
   updateExclusionRoute(data, table);
   FreeMibTable(table);
 
-  m_exclusionRoutes[address] = data;
+  m_exclusionRoutes[prefix] = data;
   return true;
 }
 
-bool WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
+bool WindowsRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Deleting exclusion route for"
-                 << logger.sensitive(address.toString());
+                 << logger.sensitive(prefix.address().toString());
 
   for (;;) {
-    MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.take(address);
+    MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.take(prefix);
     if (data == nullptr) {
       break;
     }
@@ -275,7 +275,7 @@ bool WindowsRouteMonitor::deleteExclusionRoute(const QHostAddress& address) {
     DWORD result = DeleteIpForwardEntry2(data);
     if ((result != ERROR_NOT_FOUND) && (result != NO_ERROR)) {
       logger.error() << "Failed to delete route to"
-                     << logger.sensitive(address.toString())
+                     << logger.sensitive(prefix.toString())
                      << "result:" << result;
     }
     delete data;

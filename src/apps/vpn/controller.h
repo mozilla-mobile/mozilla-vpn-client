@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <functional>
 
+#include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "loghandler.h"
 #include "models/server.h"
@@ -21,18 +22,6 @@
 
 class ControllerImpl;
 class MozillaVPN;
-
-class HopConnection {
- public:
-  HopConnection() {}
-
-  Server m_server;
-  int m_hopindex = 0;
-  QList<IPAddress> m_allowedIPAddressRanges;
-  QStringList m_excludedAddresses;
-  QStringList m_vpnDisabledApps;
-  QHostAddress m_dnsServer;
-};
 
 class Controller final : public QObject, public LogSerializer {
   Q_OBJECT
@@ -249,7 +238,7 @@ class Controller final : public QObject, public LogSerializer {
 
   int m_connectionRetry = 0;
 
-  QList<HopConnection> m_activationQueue;
+  QList<InterfaceConfig> m_activationQueue;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,

@@ -105,16 +105,14 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const HopConnection& hop, const Device* device, const Keys* keys,
+void IOSController::activate(const InterfaceConfig& config,
                              Controller::Reason reason) {
-  Q_UNUSED(device);
-  Q_UNUSED(keys);
 
-  // These features are not supported on macos/ios yet.
-  Q_ASSERT(hop.m_hopindex == 0);
-  Q_ASSERT(hop.m_vpnDisabledApps.isEmpty());
+  // These features are not supported on ios yet.
+  Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
+  Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
 
-  logger.debug() << "IOSController activating" << hop.m_server.hostname();
+  logger.debug() << "IOSController activating" << config.m_serverPublicKey;
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
@@ -122,11 +120,11 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
     return;
   }
 
-  m_serverPublicKey = hop.m_server.publicKey();
+  m_serverPublicKey = config.m_serverPublicKey;
 
   NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
-      [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:hop.m_allowedIPAddressRanges.length()];
-  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
+      [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
+  for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     VPNIPAddressRange* range =
         [[VPNIPAddressRange alloc] initWithAddress:i.address().toString().toNSString()
                                networkPrefixLength:i.prefixLength()
@@ -134,11 +132,11 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
-  [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
-           serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
-             serverPublicKey:hop.m_server.publicKey().toNSString()
-            serverIpv4AddrIn:hop.m_server.ipv4AddrIn().toNSString()
-                  serverPort:hop.m_server.choosePort()
+  [impl connectWithDnsServer:config.m_dnsServer.toNSString()
+           serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
+             serverPublicKey:config.m_serverPublicKey.toNSString()
+            serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
+                  serverPort:config.m_serverPort
       allowedIPAddressRanges:allowedIPAddressRangesNS
                       reason:reason
              failureCallback:^() {

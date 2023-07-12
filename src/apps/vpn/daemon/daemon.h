@@ -53,6 +53,8 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
+  bool addExclusionRoute(const IPAddress& address);
+  bool delExclusionRoute(const IPAddress& address);
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
@@ -80,8 +82,8 @@ class Daemon : public QObject {
     QDateTime m_date;
     InterfaceConfig m_config;
   };
-  QMap<int, ConnectionState> m_connections;
-  QHash<QHostAddress, int> m_excludedAddrSet;
+  QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
+  QHash<IPAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
 };
 

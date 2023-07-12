@@ -22,8 +22,8 @@ class LinuxController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const HopConnection& hop, const Device* device,
-                const Keys* keys, Controller::Reason reason) override;
+  void activate(const InterfaceConfig& config,
+                Controller::Reason reason) override;
 
   void deactivate(Controller::Reason reason) override;
 

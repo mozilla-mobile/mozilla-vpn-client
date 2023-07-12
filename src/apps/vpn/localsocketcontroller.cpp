@@ -114,49 +114,12 @@ void LocalSocketController::daemonConnected() {
   checkStatus();
 }
 
-void LocalSocketController::activate(const HopConnection& hop,
-                                     const Device* device, const Keys* keys,
+void LocalSocketController::activate(const InterfaceConfig& config,
                                      Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  QJsonObject json;
+  QJsonObject json = config.toJson();
   json.insert("type", "activate");
-  json.insert("hopindex", QJsonValue((double)hop.m_hopindex));
-  json.insert("privateKey", QJsonValue(keys->privateKey()));
-  json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
-  json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
-  json.insert("serverPublicKey", QJsonValue(hop.m_server.publicKey()));
-  json.insert("serverIpv4AddrIn", QJsonValue(hop.m_server.ipv4AddrIn()));
-  json.insert("serverIpv6AddrIn", QJsonValue(hop.m_server.ipv6AddrIn()));
-  json.insert("serverPort", QJsonValue((double)hop.m_server.choosePort()));
-  if (hop.m_hopindex == 0) {
-    json.insert("serverIpv4Gateway", QJsonValue(hop.m_server.ipv4Gateway()));
-    json.insert("serverIpv6Gateway", QJsonValue(hop.m_server.ipv6Gateway()));
-    json.insert("dnsServer", QJsonValue(hop.m_dnsServer.toString()));
-  }
-
-  QJsonArray jsAllowedIPAddesses;
-  for (const IPAddress& i : hop.m_allowedIPAddressRanges) {
-    QJsonObject range;
-    range.insert("address", QJsonValue(i.address().toString()));
-    range.insert("range", QJsonValue((double)i.prefixLength()));
-    range.insert("isIpv6",
-                 QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
-    jsAllowedIPAddesses.append(range);
-  };
-  json.insert("allowedIPAddressRanges", jsAllowedIPAddesses);
-
-  QJsonArray jsExcludedAddresses;
-  for (const auto& address : hop.m_excludedAddresses) {
-    jsExcludedAddresses.append(QJsonValue(address));
-  }
-  json.insert("excludedAddresses", jsExcludedAddresses);
-
-  QJsonArray splitTunnelApps;
-  for (const auto& uri : hop.m_vpnDisabledApps) {
-    splitTunnelApps.append(QJsonValue(uri));
-  }
-  json.insert("vpnDisabledApps", splitTunnelApps);
 
   write(json);
 }

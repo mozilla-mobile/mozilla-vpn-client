@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 #include <QTimer>
 
 #include "leakdetector.h"
@@ -70,7 +71,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   logger.debug() << "Activating interface";
   auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
-  if (m_connections.contains(config.m_hopindex)) {
+  if (m_connections.contains(config.m_hopType)) {
     if (supportServerSwitching(config)) {
       logger.debug() << "Already connected. Server switching supported.";
 
@@ -89,7 +90,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       bool status = run(Switch, config);
       logger.debug() << "Connection status:" << status;
       if (status) {
-        m_connections[config.m_hopindex] = ConnectionState(config);
+        m_connections[config.m_hopType] = ConnectionState(config);
         m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
         emit_failure_guard.dismiss();
         return true;
@@ -102,7 +103,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
 
-    Q_ASSERT(!m_connections.contains(config.m_hopindex));
+    Q_ASSERT(!m_connections.contains(config.m_hopType));
     if (activate(config)) {
       emit_failure_guard.dismiss();
       return true;
@@ -122,13 +123,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   // Configure routing for excluded addresses.
   for (const QString& i : config.m_excludedAddresses) {
-    QHostAddress address(i);
-    if (m_excludedAddrSet.contains(address)) {
-      m_excludedAddrSet[address]++;
-      continue;
-    }
-    wgutils()->addExclusionRoute(address);
-    m_excludedAddrSet[address] = 1;
+    addExclusionRoute(IPAddress(i));
   }
 
   // Add the peer to this interface.
@@ -152,7 +147,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   // set routing
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
       logger.debug() << "Routing configuration failed for"
                      << logger.sensitive(ip.toString());
       return false;
@@ -162,7 +157,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   bool status = run(Up, config);
   logger.debug() << "Connection status:" << status;
   if (status) {
-    m_connections[config.m_hopindex] = ConnectionState(config);
+    m_connections[config.m_hopType] = ConnectionState(config);
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
     emit_failure_guard.dismiss();
     return true;
@@ -171,7 +166,12 @@ bool Daemon::activate(const InterfaceConfig& config) {
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
-  if ((config.m_hopindex == 0) && supportDnsUtils()) {
+  if (!supportDnsUtils()) {
+    return true;
+  }
+
+  if ((config.m_hopType == InterfaceConfig::MultiHopExit) ||
+      (config.m_hopType == InterfaceConfig::SingleHop)) {
     QList<QHostAddress> resolvers;
     resolvers.append(QHostAddress(config.m_dnsServer));
 
@@ -208,6 +208,28 @@ bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
     }
   }
   return true;
+}
+
+bool Daemon::addExclusionRoute(const IPAddress& prefix) {
+  if (m_excludedAddrSet.contains(prefix)) {
+    m_excludedAddrSet[prefix]++;
+    return true;
+  }
+  if (!wgutils()->addExclusionRoute(prefix)) {
+    return false;
+  }
+  m_excludedAddrSet[prefix] = 1;
+  return true;
+}
+
+bool Daemon::delExclusionRoute(const IPAddress& prefix) {
+  Q_ASSERT(m_excludedAddrSet.contains(prefix));
+  if (m_excludedAddrSet[prefix] > 1) {
+    m_excludedAddrSet[prefix]--;
+    return true;
+  }
+  m_excludedAddrSet.remove(prefix);
+  return wgutils()->deleteExclusionRoute(prefix);
 }
 
 // static
@@ -257,15 +279,24 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     config.m_dnsServer = value.toString();
   }
 
-  if (!obj.contains("hopindex")) {
-    config.m_hopindex = 0;
+  if (!obj.contains("hopType")) {
+    config.m_hopType = InterfaceConfig::SingleHop;
   } else {
-    QJsonValue value = obj.value("hopindex");
-    if (!value.isDouble()) {
-      logger.error() << "hopindex is not a number";
+    QJsonValue value = obj.value("hopType");
+    if (!value.isString()) {
+      logger.error() << "hopType is not a string";
       return false;
     }
-    config.m_hopindex = value.toInt();
+
+    bool okay;
+    QByteArray vdata = value.toString().toUtf8();
+    QMetaEnum meta = QMetaEnum::fromType<InterfaceConfig::HopType>();
+    config.m_hopType =
+        InterfaceConfig::HopType(meta.keyToValue(vdata.constData(), &okay));
+    if (!okay) {
+      logger.error() << "hopType" << value.toString() << "is not valid";
+      return false;
+    }
   }
 
   if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
@@ -335,8 +366,8 @@ bool Daemon::deactivate(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
 
   // Deactivate the main interface.
-  if (m_connections.contains(0)) {
-    const ConnectionState& state = m_connections.value(0);
+  if (!m_connections.isEmpty()) {
+    const ConnectionState& state = m_connections.first();
     if (!run(Down, state.m_config)) {
       return false;
     }
@@ -359,9 +390,9 @@ bool Daemon::deactivate(bool emitSignals) {
   // Cleanup peers and routing
   for (const ConnectionState& state : m_connections) {
     const InterfaceConfig& config = state.m_config;
-    logger.debug() << "Deleting routes for hop" << config.m_hopindex;
+    logger.debug() << "Deleting routes for" << config.m_hopType;
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+      wgutils()->deleteRoutePrefix(ip);
     }
     wgutils()->deletePeer(config);
   }
@@ -396,11 +427,11 @@ QString Daemon::logs() {
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
-  if (!m_connections.contains(config.m_hopindex)) {
+  if (!m_connections.contains(config.m_hopType)) {
     return false;
   }
   const InterfaceConfig& current =
-      m_connections.value(config.m_hopindex).m_config;
+      m_connections.value(config.m_hopType).m_config;
 
   return current.m_privateKey == config.m_privateKey &&
          current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
@@ -412,21 +443,15 @@ bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
 bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 
-  logger.debug() << "Switching server for hop" << config.m_hopindex;
+  logger.debug() << "Switching server for" << config.m_hopType;
 
-  Q_ASSERT(m_connections.contains(config.m_hopindex));
+  Q_ASSERT(m_connections.contains(config.m_hopType));
   const InterfaceConfig& lastConfig =
-      m_connections.value(config.m_hopindex).m_config;
+      m_connections.value(config.m_hopType).m_config;
 
   // Configure routing for new excluded addresses.
   for (const QString& i : config.m_excludedAddresses) {
-    QHostAddress address(i);
-    if (m_excludedAddrSet.contains(address)) {
-      m_excludedAddrSet[address]++;
-      continue;
-    }
-    wgutils()->addExclusionRoute(address);
-    m_excludedAddrSet[address] = 1;
+    addExclusionRoute(IPAddress(i));
   }
 
   // Activate the new peer and its routes.
@@ -435,7 +460,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     return false;
   }
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip, config.m_hopindex)) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
       logger.error() << "Server switch failed to update the routing table";
       break;
     }
@@ -443,18 +468,11 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
 
   // Remove routing entries for the old peer.
   for (const QString& i : lastConfig.m_excludedAddresses) {
-    QHostAddress address(i);
-    Q_ASSERT(m_excludedAddrSet.contains(address));
-    if (m_excludedAddrSet[address] > 1) {
-      m_excludedAddrSet[address]--;
-      continue;
-    }
-    wgutils()->deleteExclusionRoute(address);
-    m_excludedAddrSet.remove(address);
+    delExclusionRoute(QHostAddress(i));
   }
   for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
     if (!config.m_allowedIPAddressRanges.contains(ip)) {
-      wgutils()->deleteRoutePrefix(ip, config.m_hopindex);
+      wgutils()->deleteRoutePrefix(ip);
     }
   }
 
@@ -465,7 +483,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     }
   }
 
-  m_connections[config.m_hopindex] = ConnectionState(config);
+  m_connections[config.m_hopType] = ConnectionState(config);
   return true;
 }
 
@@ -474,12 +492,12 @@ QJsonObject Daemon::getStatus() {
   QJsonObject json;
   logger.debug() << "Status request";
 
-  if (!m_connections.contains(0) || !wgutils()->interfaceExists()) {
+  if (!wgutils()->interfaceExists() || m_connections.isEmpty()) {
     json.insert("connected", QJsonValue(false));
     return json;
   }
 
-  const ConnectionState& connection = m_connections.value(0);
+  const ConnectionState& connection = m_connections.first();
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
   for (const WireguardUtils::PeerStatus& status : peers) {
     if (status.m_pubkey != connection.m_config.m_serverPublicKey) {

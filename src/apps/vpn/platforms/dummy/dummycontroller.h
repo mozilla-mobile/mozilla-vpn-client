@@ -24,8 +24,8 @@ class DummyController final : public ControllerImpl {
     emit initialized(true, false, QDateTime());
   }
 
-  void activate(const HopConnection& hop, const Device* device,
-                const Keys* keys, Controller::Reason reason) override;
+  void activate(const InterfaceConfig& config,
+                Controller::Reason reason) override;
 
   void deactivate(Controller::Reason reason) override;
 

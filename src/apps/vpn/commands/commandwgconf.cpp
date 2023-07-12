@@ -9,8 +9,8 @@
 
 #include "commandlineparser.h"
 #include "controller.h"
-#include "daemon/interfaceconfig.h"
 #include "dnshelper.h"
+#include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -18,7 +18,6 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "wgquickprocess.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)
     : Command(parent, "wgconf", "Generate a wireguard configuration file.") {
@@ -49,7 +48,7 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
 
-    struct InterfaceConfig config;
+    InterfaceConfig config;
     DeviceModel* dm = vpn.deviceModel();
     Q_ASSERT(dm);
     if (!dm->hasCurrentDevice(vpn.keys())) {
@@ -57,7 +56,7 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
     const Device* cd = dm->currentDevice(vpn.keys());
-    config.m_hopindex = 0;
+    config.m_hopType = InterfaceConfig::SingleHop;
     config.m_privateKey = vpn.keys()->privateKey();
     config.m_deviceIpv4Address = cd->ipv4Address();
     config.m_deviceIpv6Address = cd->ipv6Address();
@@ -82,7 +81,7 @@ int CommandWgConf::run(QStringList& tokens) {
         Controller::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
-    stream << WgQuickProcess::createConfigString(config) << Qt::endl;
+    stream << config.toWgConf() << Qt::endl;
     return 0;
   });
 }
