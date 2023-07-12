@@ -1,0 +1,6 @@
+<!-- Band-aid solution to capture the legacy strings in this file. -->
+<RCC>
+    <qresource prefix="/nebula">
+        <file>components/MZSystemAlert.qml</file>
+    </qresource>
+</RCC>

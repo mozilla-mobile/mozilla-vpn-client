@@ -6,7 +6,7 @@
 
 . $(dirname $0)/commons.sh
 
-print N "This script generates 'ts' files for apps under src/apps."
+print N "This script generates 'ts' files for the Mozilla VPN app."
 print N ""
 
 cd $(dirname $0)/../.. || die
@@ -21,136 +21,146 @@ mkdir -p cache || die
 cp scripts/utils/generate_strings.py cache || die
 print G "done."
 
-for project in src/apps/*; do
-  project=$(basename $project)
+mkdir -p translations/generated || die
 
-  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] || [ "$project" = ".DS_Store" ] && continue
+printn Y "Generating strings... "
+python3 cache/generate_strings.py src/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated
+print G "done."
 
-  mkdir -p translations/generated/$project || die
+printn Y "Generating a dummy PRO file... "
+cat > translations/generated/dummy_ts.pro << EOF
+HEADERS += i18nstrings.h
+HEADERS += \$\$files(../../src/*.h, true)
+HEADERS += \$\$files(../../nebula/*.h, true)
 
-  printn Y "$project - Generating strings... "
-  python3 cache/generate_strings.py src/apps/$project/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated/$project -p $project
-  print G "done."
+SOURCES += i18nstrings_p.cpp
+SOURCES += ../i18nstrings.cpp
+SOURCES += \$\$files(../../src/*.cpp, true)
+SOURCES += \$\$files(../../nebula/*.cpp, true)
 
-  printn Y "$project - Generating a dummy PRO file... "
-  cat > translations/generated/$project/dummy_ts.pro << EOF
+TRANSLATIONS += translations.ts
+
+RESOURCES += \$\$files(../../src/*.qrc, true)
+RESOURCES += \$\$files(../../nebula/*.qrc, true)
+EOF
+print G "done"
+
+QT_HOST_BINS=$(qmake6 -query QT_HOST_BINS)
+
+print Y "Generating the main translation file... "
+${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts translations.ts || die
+
+print Y "Generating strings for addons... "
+cmake cmake -S $(pwd)/addons -B build-addons/
+cmake --build build-addons/
+mkdir -p addon_ts || die
+cp build-addons/*.ts addon_ts
+
+for branch in $(git branch -r | grep origin/releases); do
+  # Temporarily skip 2.15.* branches. All translations for these versions
+  # have been removed from the l10n repository ahead of time, and we don't
+  # want to reintroduce these strings for translation.
+  # TODO: remove this check when 2.15.* branches are removed.
+  if [[ "$branch" == *"2.15"* ]]; then
+    echo "Skipping branch: $branch"
+    continue
+  fi
+
+  echo "Checking out to branch $branch"
+  git checkout $branch || die
+
+  UNFLATTENED=false
+
+  EXTRA_STRINGS=
+  if [ -f src/shared/translations/strings.yaml ]; then
+    EXTRA_STRINGS=src/shared/translations/strings.yaml
+  fi
+  if [ -f translations/strings.yaml ]; then
+    python3 cache/generate_strings.py -o translations/generated translations/strings.yaml || die
+  # TODO: Remove this once all branches have been updated to not have the apps/ folder.
+  elif [ -f src/apps/vpn/translations/strings.yaml ]; then 
+    UNFLATTENED=true
+    python3 cache/generate_strings.py -o translations/generated src/apps/vpn/translations/strings.yaml $EXTRA_STRINGS || die
+  elif [ -f src/translations/strings.yaml ]; then
+    python3 cache/generate_strings.py -o translations/generated src/translations/strings.yaml $EXTRA_STRINGS || die
+  else
+    die "Unable to find the strings.yaml"
+  fi
+
+  # Regenerate the base .ts file for unflattened versions of the repo,
+  # where the apps/ folder was present.
+  if [ "$UNFLATTENED" = true ]; then
+      if ! [ -f translations/generated/unflattened_dummy_ts.pro ]; then
+        printn Y "Generating another dummy PRO file... "
+        cat > translations/generated/unflattened_dummy_ts.pro << EOF
 HEADERS += i18nstrings.h
 HEADERS += \$\$files(../../../src/shared/*.h, true)
-HEADERS += \$\$files(../../../src/apps/$project/*.h, true)
+HEADERS += \$\$files(../../../src/apps/vpn/*.h, true)
 HEADERS += \$\$files(../../../nebula/*.h, true)
 
 SOURCES += i18nstrings_p.cpp
 SOURCES += ../../i18nstrings.cpp
 SOURCES += \$\$files(../../../src/shared/*.cpp, true)
-SOURCES += \$\$files(../../../src/apps/$project/*.cpp, true)
+SOURCES += \$\$files(../../../src/apps/vpn/*.cpp, true)
 SOURCES += \$\$files(../../../nebula/*.cpp, true)
 
 TRANSLATIONS += translations.ts
 
 RESOURCES += \$\$files(../../../src/shared/*.qrc, true)
-RESOURCES += \$\$files(../../../src/apps/$project/*.qrc, true)
+RESOURCES += \$\$files(../../../src/apps/vpn/*.qrc, true)
 RESOURCES += \$\$files(../../../nebula/*.qrc, true)
 EOF
-  print G "done"
-
-  QT_HOST_BINS=$(qmake6 -query QT_HOST_BINS)
-
-  print Y "$project - Generating the main translation file... "
-  ${QT_HOST_BINS}/lupdate translations/generated/$project/dummy_ts.pro -ts translations.ts || die
-
-  print Y "$project - Generating strings for addons... "
-  cmake cmake -S $(pwd)/addons -B build-addons/
-  cmake --build build-addons/
-  mkdir -p addon_ts || die
-  cp build-addons/*.ts addon_ts
-
-  for branch in $(git branch -r | grep origin/releases); do
-    # Temporarily skip 2.15.* branches. All translations for these versions
-    # have been removed from the l10n repository ahead of time, and we don't
-    # want to reintroduce these strings for translation.
-    # TODO: remove this check when 2.15.* branches are removed.
-    if [[ "$branch" == *"2.15"* ]]; then
-      echo "Skipping branch: $branch"
-      continue
     fi
 
-    git checkout $branch &>/dev/null || die
+    ${QT_HOST_BINS}/lupdate translations/generated/unflattened_dummy_ts.pro -ts branch.ts || die
 
-    print Y "Importing main strings from $branch..."
-    if [ -f translations/strings.yaml ]; then
-      if [ $project = "vpn" ]; then
-        python3 cache/generate_strings.py -o translations/generated/$project -p $project translations/strings.yaml || die
-      else
-        echo "# dummy" > translations/generated/dummy_strings.yaml
-        python3 cache/generate_strings.py -o translations/generated/$project -p $project translations/generated/dummy_strings.yaml || die
-      fi
-    elif [ -f src/apps/$project/translations/strings.yaml ]; then
-      EXTRA_STRINGS=
-      if [ -f src/shared/translations/strings.yaml ]; then
-        EXTRA_STRINGS=src/shared/translations/strings.yaml
-      fi
-      python3 cache/generate_strings.py -o translations/generated/$project -p $project src/apps/$project/translations/strings.yaml $EXTRA_STRINGS || die
-    else
-      die "Unable to find the strings.yaml"
-    fi
-
-    ${QT_HOST_BINS}/lupdate translations/generated/$project/dummy_ts.pro -ts branch.ts || die
-    ${QT_HOST_BINS}/lconvert -i translations.ts branch.ts -o tmp.ts || die
-    mv tmp.ts translations.ts || die
-    rm branch.ts || die
-
-    if [ "$project" = "vpn" ]; then
-      print Y "Importing addon strings from $branch..."
-      if [ -f "scripts/addon/generate_all.py" ]; then
-        # Use the old python scripts to generate addons.
-        python3 scripts/addon/generate_all.py
-        ts_files="addons/generated/addons/*.ts"
-      elif [ -f "addons/CMakeLists.txt" ]; then
-        # Use the CMake project to generate addons.
-        mkdir -p build-addons-$branch/
-        cmake -S addons/ -B build-addons-$branch/
-        cmake --build build-addons-$branch/
-        ts_files="build-addons-$branch/*.ts"
-      else
-        # No addons to process.
-        ts_files=
-      fi
-
-      for f in $ts_files
-      do
-        ts_name=$(basename "$f")
-        if [ -f "addon_ts/${ts_name}" ]; then
-          print Y "File ${ts_name} exists, updating with branch strings..."
-          ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "$f" -o tmp.ts || die
-          mv tmp.ts "addon_ts/${ts_name}"
-        else
-          print Y "File ${ts_name} does not exist, copying over..."
-          cp "$f" addon_ts/
-        fi
-        rm $f || die
-      done
-    fi
-  done
-
-  if [ "$BRANCHNAME" ]; then
-    printn Y "Go back to the initial branch... "
-    git checkout "$BRANCHNAME" &>/dev/null || die
-    print G "done."
+  else
+      ${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
   fi
 
-  mv translations.ts "translations_$project.ts"
+  ${QT_HOST_BINS}/lconvert -i translations.ts branch.ts -o tmp.ts || die
+  mv tmp.ts translations.ts || die
+  rm branch.ts || die
+
+  print Y "Importing addon strings from $branch..."
+  if [ -f "scripts/addon/generate_all.py" ]; then
+    # Use the old python scripts to generate addons.
+    python3 scripts/addon/generate_all.py
+    ts_files="addons/generated/addons/*.ts"
+  elif [ -f "addons/CMakeLists.txt" ]; then
+    # Use the CMake project to generate addons.
+    mkdir -p build-addons-$branch/
+    cmake -S addons/ -B build-addons-$branch/
+    cmake --build build-addons-$branch/
+    ts_files="build-addons-$branch/*.ts"
+  else
+    # No addons to process.
+    ts_files=
+  fi
+
+  for f in $ts_files
+  do
+    ts_name=$(basename "$f")
+    if [ -f "addon_ts/${ts_name}" ]; then
+      print Y "File ${ts_name} exists, updating with branch strings..."
+      ${QT_HOST_BINS}/lconvert -i "addon_ts/${ts_name}" "$f" -o tmp.ts || die
+      mv tmp.ts "addon_ts/${ts_name}"
+    else
+      print Y "File ${ts_name} does not exist, copying over..."
+      cp "$f" addon_ts/
+    fi
+    rm $f || die
+  done
 done
+
+if [ "$BRANCHNAME" ]; then
+  printn Y "Go back to the initial branch... "
+  git checkout "$BRANCHNAME" &>/dev/null || die
+  print G "done."
+fi
 
 printn Y "Remove cache... "
 rm -rf cache || die
 print G "done."
-
-for project in src/apps/*; do
-  project=$(basename $project)
-  [ $project = "auth_tests" ] || [ $project = "template" ] || [ "$project" = "unit_tests" ] && continue
-
-  printn Y "Generated file: "
-  print G translations_$project.ts
-done
 
 exit 0

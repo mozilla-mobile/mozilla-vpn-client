@@ -26,7 +26,7 @@ jobs:
           submodules: 'true'
       - name: Checkout mozilla-vpn-client-l10n Git
         run: |
-          git submodule update --init --remote src/apps/vpn/translations/i18n/
+          git submodule update --init --remote src/translations/i18n/
       - uses: peter-evans/create-pull-request@v5
         id: cpr
         with:
