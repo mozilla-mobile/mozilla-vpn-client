@@ -7,6 +7,6 @@ qt_add_qml_module(utils
     URI utils
     STATIC 
     RESOURCE_PREFIX /nebula
-    QML_FILES
-        MZUiUtils.qml
+    RESOURCES
+        MZUiUtils.js
 )
