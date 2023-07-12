@@ -117,21 +117,21 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             ErrorNotifier.removeLastErrorFile()
             if self.isSuperDooperFeatureActive {
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
-
-                // Wait for all ping submission to be finished before continuing.
-                // Very shortly after the completionHandler is called, iOS kills
-                // the network extension. If this Glean.shared.shutdown() line is
-                // in this class's deinit, the NE is killed before it can record
-                // the ping. Thus, it MUST be before the completionHandler is
-                // called.
-                // Note: This doesn't wait for pings to be uploaded,
-                // just for Glean to persist the ping for later sending.
-                Glean.shared.shutdown();
             }
 
             if let error = error {
                 self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
             }
+
+            // Wait for all ping submission to be finished before continuing.
+            // Very shortly after the completionHandler is called, iOS kills
+            // the network extension. If this Glean.shared.shutdown() line is
+            // in this class's deinit, the NE is killed before it can record
+            // the ping. Thus, it MUST be before the completionHandler is
+            // called.
+            // Note: This doesn't wait for pings to be uploaded,
+            // just for Glean to persist the ping for later sending.
+            Glean.shared.shutdown();
             completionHandler()
         }
     }
