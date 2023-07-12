@@ -35,8 +35,6 @@ constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
 
-  m_daemonExePath = getPidExePath(getpid());
-
   m_wgutils = new WireguardUtilsLinux(this);
 
   if (!removeInterfaceIfExists()) {
@@ -150,6 +148,7 @@ bool DBusService::deactivate(bool emitSignals) {
     return false;
   }
 
+  m_sessionUid = 0;
   firewallClear();
   return Daemon::deactivate(emitSignals);
 }
@@ -323,16 +322,12 @@ void DBusService::dropRootPermissions() {
   // Acquire CAP_SETUID, we need it to masquerade as other users on their
   // session busses for application tracking.
   //
-  // Acquire CAP_SYS_PTRACE, we need it to resolve the calling processes's
-  // /proc/<pid>/exe path when checking if the binary is permitted to
-  // access the D-Bus API while lacking CAP_NET_ADMIN.
-  //
   // NOTE: ptrace is a dangerous permission to hold. If it may be safer to
   // relent on the executable check and grant CAP_NET_ADMIN to the client
   // process during installation.
   //
   // Clear all other capabilities, effectively discarding our root permissions.
-  cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID, CAP_SYS_PTRACE};
+  cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID};
   int numcaps = sizeof(newcaps)/sizeof(cap_value_t);
   if (cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET) ||
       cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET)) {
@@ -351,21 +346,39 @@ bool DBusService::checkCallerAuthz() {
     // If this is not a D-Bus call, it came from the daemon itself.
     return true;
   }
+  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
+
+  // If the VPN is active, and we know the UID that turned it on, as a special
+  // case we permit that user full access to the D-Bus API in order to manage
+  // the connection.
+  if (m_sessionUid != 0) {
+    QDBusReply<uint> reply = iface->serviceUid(message().service());
+    if (reply.isValid() && m_sessionUid == reply.value()) {
+      return true;
+    }
+  }
+  // Otherwise, if this is the activate method, we permit any non-root user to
+  // activate the VPN, but we will remember their UID for later authentication.
+  else if ((message().type() == QDBusMessage::MethodCallMessage) &&
+           (message().member() == "activate")) {
+    QDBusReply<uint> reply = iface->serviceUid(message().service());
+    uint senderuid = reply.value();
+    if (reply.isValid() && senderuid != 0) {
+      m_sessionUid = senderuid;
+      return true;
+    }
+  }
+  // In all other cases, the use of this D-Bus API requires the CAP_NET_ADMIN
+  // permission, which we can check by examining the PID of the sender. Note
+  // that a zero UID (root) is used as a guard value to fall back to this case.
 
   // Get the PID of the D-Bus message sender.
-  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
   QDBusReply<uint> reply = iface->servicePid(message().service());
   uint senderpid = reply.value();
   if (!reply.isValid() || (senderpid == 0)) {
     // Could not lookup the sender's PID. Rejected!
     logger.warning() << "Failed to resolve sender PID";
     return false;
-  }
-
-  // Allow the call if it was made by the same binary.
-  if (!m_daemonExePath.isEmpty() &&
-      (getPidExePath(senderpid) == m_daemonExePath)) {
-    return true;
   }
 
   // Get the capabilties of the sender process.
@@ -385,17 +398,19 @@ bool DBusService::checkCallerAuthz() {
   return (flag == CAP_SET);
 }
 
-// static
-QString DBusService::getPidExePath(uint pid) {
-  char exepath[256];
-  char pathbuf[PATH_MAX + 1];
-  snprintf(exepath, sizeof(exepath), "/proc/%u/exe", pid);
-  ssize_t len = readlink(exepath, pathbuf, PATH_MAX);
-  if ((len <= 0) || (len >= PATH_MAX)) {
-    // Either the call to readlink failed, or the result was truncated.
-    return QString();
+uint DBusService::getCallerUid() {
+  if (!calledFromDBus()) {
+    // If this is not a D-Bus call, it came from the daemon itself.
+    return getuid();
   }
 
-  pathbuf[len] = '\0';
-  return QString::fromLocal8Bit(pathbuf, len);
+  // Get the UID of the D-Bus message sender.
+  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
+  QDBusReply<uint> reply = iface->serviceUid(message().service());
+  if (!reply.isValid()) {
+    // Could not lookup the sender's PID. Rejected!
+    logger.warning() << "Failed to resolve sender UID";
+    return 0;
+  }
+  return reply.value();
 }
