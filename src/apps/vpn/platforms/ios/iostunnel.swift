@@ -20,6 +20,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
     }()
 
+    private var isSuperDooperFeatureActive: Bool {
+        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
+    }
+
     override init() {
         super.init()
 
@@ -44,13 +48,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         )
     }
 
-    deinit {
-        // Wait for all ping submission to be finished before shutdown.
-        // Note: This doesn't wait for pings to be uploaded, 
-        // just for Glean to persist the ping for later sending.
-        Glean.shared.shutdown();
-    }
-
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
         let activationAttemptId = options?["activationAttemptId"] as? String
         let errorNotifier = ErrorNotifier(activationAttemptId: activationAttemptId)
@@ -64,12 +61,20 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
 
+        if isSuperDooperFeatureActive {
+            GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonFlush)
+        }
+
         // Start the tunnel
         adapter.start(tunnelConfiguration: tunnelConfiguration) { adapterError in
             guard let adapterError = adapterError else {
                 let interfaceName = self.adapter.interfaceName ?? "unknown"
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
+
+                if self.isSuperDooperFeatureActive {
+                    GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
+                }
 
                 completionHandler(nil)
                 return
@@ -110,18 +115,24 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
+            if self.isSuperDooperFeatureActive {
+                GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
+
+                // Wait for all ping submission to be finished before continuing.
+                // Very shortly after the completionHandler is called, iOS kills
+                // the network extension. If this Glean.shared.shutdown() line is
+                // in this class's deinit, the NE is killed before it can record
+                // the ping. Thus, it MUST be before the completionHandler is
+                // called.
+                // Note: This doesn't wait for pings to be uploaded,
+                // just for Glean to persist the ping for later sending.
+                Glean.shared.shutdown();
+            }
 
             if let error = error {
                 self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
             }
             completionHandler()
-
-            #if os(macOS)
-            // HACK: This is a filthy hack to work around Apple bug 32073323 (dup'd by us as 47526107).
-            // Remove it when they finally fix this upstream and the fix has been rolled out to
-            // sufficient quantities of users.
-            exit(0)
-            #endif
         }
     }
 

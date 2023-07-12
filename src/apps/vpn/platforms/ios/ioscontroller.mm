@@ -135,16 +135,17 @@ void IOSController::activate(const HopConnection& hop, const Device* device, con
   }
 
   [impl connectWithDnsServer:hop.m_dnsServer.toString().toNSString()
-           serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
-             serverPublicKey:hop.m_server.publicKey().toNSString()
-            serverIpv4AddrIn:hop.m_server.ipv4AddrIn().toNSString()
-                  serverPort:hop.m_server.choosePort()
-      allowedIPAddressRanges:allowedIPAddressRangesNS
-                      reason:reason
-             failureCallback:^() {
-               logger.error() << "IOSSWiftController - connection failed";
-               emit disconnected();
-             }];
+               serverIpv6Gateway:hop.m_server.ipv6Gateway().toNSString()
+                 serverPublicKey:hop.m_server.publicKey().toNSString()
+                serverIpv4AddrIn:hop.m_server.ipv4AddrIn().toNSString()
+                      serverPort:hop.m_server.choosePort()
+          allowedIPAddressRanges:allowedIPAddressRangesNS
+                          reason:reason
+      isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
+                 failureCallback:^() {
+                   logger.error() << "IOSSWiftController - connection failed";
+                   emit disconnected();
+                 }];
 }
 
 void IOSController::deactivate(Controller::Reason reason) {
