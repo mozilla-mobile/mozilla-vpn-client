@@ -51,9 +51,9 @@ void SentryAdapter::init() {
   if (!settings->hasSentryEndpoint() || !settings->hasSentryDSN()) {
     // If we have no info on where to put crash info, let's
     // query that and retry later.
-    logger.error() << "Sentry failed to init, no sentry config present";
+    logger.info() << "No sentry config present, attempting to fetch";
     auto sentryConfig = new TaskSentryConfig();
-    TaskScheduler::scheduleTask(t);
+    TaskScheduler::scheduleTask(sentryConfig);
     return;
   }
   auto log = LogHandler::instance();
