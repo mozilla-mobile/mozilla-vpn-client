@@ -41,10 +41,10 @@ SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
 SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
-  if (m_initialized) {
+  if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
+  if (m_initialized) {
     return;
   }
   auto settings = SettingsHolder::instance();
