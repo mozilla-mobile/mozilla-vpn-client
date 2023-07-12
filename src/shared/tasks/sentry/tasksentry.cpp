@@ -85,11 +85,15 @@ void TaskSentry::sendRequest() {
     emit completed();
     return;
   }
-
+  QUrl target_endpoint(endpoint, QUrl::StrictMode);
+  if (!target_endpoint.isValid()) {
+    logger.error() << "Invalid URL for Sentry provided: " << endpoint;
+    return;
+  }
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");
   request->requestInternal().setRawHeader("dsn", dsn.toLocal8Bit());
-  request->post(QUrl(endpoint), m_envelope);
+  request->post(target_endpoint, m_envelope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
