@@ -33,51 +33,52 @@ void TaskSentryConfig::run() {
   url.setPath("/api/v1/vpn/crashreporting");
 
   connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            Q_UNUSED(error);
+          [this](QNetworkReply::NetworkError, const QByteArray&) {
             logger.error() << "Failed to get Sentry info";
             emit completed();
           });
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            if (handleNetworkResponse(data)) {
-              // We now should have sentry info - let's init
-              SentryAdapter::instance()->init();
-            }
+            parseSentryConfig(data);
             emit completed();
           });
 
   request->get(url);
 }
 
-bool TaskSentryConfig::handleNetworkResponse(const QByteArray& data) {
+void TaskSentryConfig::parseSentryConfig(const QByteArray& data) {
   auto doc = QJsonDocument::fromJson(data);
   if (!doc.isObject()) {
     logger.error() << "Failed to get Sentry info";
-    return false;
+    return;
   }
   QJsonObject obj = doc.object();
   if (!obj.contains("dsn")) {
     logger.error() << "DSN missing from Sentry info";
-    return false;
+    return;
   };
   auto dsn = obj["dsn"].toString();
   if (dsn.isNull()) {
     logger.error() << "DSN missing from Sentry info";
-    return false;
+    return;
   };
 
   if (!obj.contains("endpoint")) {
     logger.error() << "endpoint missing from Sentry info";
-    return false;
+    return;
   };
   auto endpoint = obj["endpoint"].toString();
   if (endpoint.isNull()) {
     logger.error() << "Sentry provided endpoint is null";
-    return false;
+    return;
   };
+  if (!QUrl(endpoint).isValid()) {
+    logger.error() << "Sentry provided endpoint is not a valid url";
+    return;
+  }
   auto settings = SettingsHolder::instance();
   settings->setSentryEndpoint(endpoint);
   settings->setSentryDSN(dsn);
-  return true;
+
+  SentryAdapter::instance()->init();
 }
