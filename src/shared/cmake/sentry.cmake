@@ -86,7 +86,6 @@ if( ${_SUPPORTED} GREATER -1 )
     endif()
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         target_compile_definitions(shared-sources INTERFACE SENTRY_BUILD_STATIC)
-        # Compile Static for apple and link to libsentry.a
         target_link_libraries(shared-sources INTERFACE sentry)
         target_link_libraries(shared-sources INTERFACE breakpad_client)
         target_link_directories( shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib64)
