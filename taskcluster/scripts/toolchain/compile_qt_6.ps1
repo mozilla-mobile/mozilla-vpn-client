@@ -66,8 +66,26 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -skip qtserialport  `
   -skip qtsensors  `
   -skip qtgamepad  `
-  -skip qtwebchannel  `
   -skip qtandroidextras  `
+  -skip qtactiveqt  `
+  -skip qtcharts  `
+  -skip qtcoap  `
+  -skip qtdatavis3d  `
+  -skip qtgrpc  `
+  -skip qtremoteobjects  `
+  -skip qtlottie  `
+  -skip qtmqtt  `
+  -skip qtopcua  `
+  -skip qtpositioning  `
+  -skip qtquick3d  `
+  -skip qtscxml  `
+  -skip qtserialbus  `
+  -skip qtserialport  `
+  -skip qtspeech  `
+  -skip qtwayland  `
+  -skip qtvirtualkeyboard  `
+  -skip qtwebview  `
+
   -feature-imageformat_png  `
   -qt-libpng  `
   -qt-zlib  `
