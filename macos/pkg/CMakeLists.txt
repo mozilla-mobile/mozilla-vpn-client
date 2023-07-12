@@ -12,14 +12,14 @@ add_custom_target(pkg_resources
 set_target_properties(pkg_resources PROPERTIES FOLDER "Installer")
 
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true
-    RELATIVE ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n/*)
+    RELATIVE ${CMAKE_SOURCE_DIR}/src/translations/i18n ${CMAKE_SOURCE_DIR}/src/translations/i18n/*)
 list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})
-    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n/${LOCALE}/mozillavpn.xliff)
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/src/translations/i18n/${LOCALE}/mozillavpn.xliff)
         list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
         continue()
     endif()
-    set(XLIFFTOOL ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n/${LOCALE}/mozillavpn.xliff)
+    set(XLIFFTOOL ${CMAKE_SOURCE_DIR}/scripts/utils/xlifftool.py ${CMAKE_SOURCE_DIR}/src/translations/i18n/${LOCALE}/mozillavpn.xliff)
     execute_process(
         RESULT_VARIABLE XLIFF_CHECK_RESULT
         COMMAND ${XLIFFTOOL} --locale=${LOCALE} --check
@@ -31,7 +31,7 @@ foreach(LOCALE ${I18N_LOCALES})
     add_custom_target(pkg_resources_${LOCALE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
         SOURCES
-            ${CMAKE_SOURCE_DIR}/src/apps/vpn/translations/i18n/${LOCALE}/mozillavpn.xliff
+            ${CMAKE_SOURCE_DIR}/src/translations/i18n/${LOCALE}/mozillavpn.xliff
             ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in
             ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCALE}.lproj

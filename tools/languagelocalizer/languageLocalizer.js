@@ -13,7 +13,7 @@ import WBK from 'wikibase-sdk';
 
 const DEFAULT_MOZILLAVPN = '../../build/src/mozillavpn';
 const LANGUAGES_OUTPUT_FILE =
-    '../../src/apps/vpn/translations/extras/languages.json';
+    '../../src/translations/extras/languages.json';
 
 const LanguageLocalizer = {
   get vpn() {

@@ -31,9 +31,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
-          for i in src/apps/*/translations/i18n; do
-            git submodule update --remote $i
-          done
+          git submodule update --remote src/translations/i18n
 
       - name: Cache grcov
         id: cache-grcov

@@ -43,7 +43,7 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: Translation files
-            path: |
-              translations_*.ts
-              addon_ts/*.ts
+          name: Translation files
+          path: |
+            translations.ts
+            addon_ts/*.ts

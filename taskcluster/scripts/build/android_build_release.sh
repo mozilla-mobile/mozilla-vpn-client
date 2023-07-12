@@ -7,9 +7,7 @@ set -e
 # This script is used in the Android Build Release (universal) build task
 git submodule update --init --recursive
 
-for i in src/apps/*/translations/i18n; do
-  git submodule update --remote $i
-done
+git submodule update --remote src/translations/i18n
 
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
