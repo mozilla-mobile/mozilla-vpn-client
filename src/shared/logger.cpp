@@ -99,5 +99,5 @@ void Logger::Log::addMetaEnum(quint64 value, const QMetaObject* meta,
     ts << value << ")";
   }
 
-  m_data->m_ts << out;
+  m_data->m_ts << out << ' ';
 }

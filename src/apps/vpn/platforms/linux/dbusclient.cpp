@@ -8,6 +8,7 @@
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 
+#include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -47,51 +48,11 @@ QDBusPendingCallWatcher* DBusClient::version() {
   return watcher;
 }
 
-QDBusPendingCallWatcher* DBusClient::activate(
-    const Server& server, const Device* device, const Keys* keys, int hopindex,
-    const QList<IPAddress>& allowedIPAddressRanges,
-    const QStringList& excludedAddresses, const QStringList& vpnDisabledApps,
-    const QHostAddress& dnsServer) {
-  QJsonObject json;
-  json.insert("privateKey", QJsonValue(keys->privateKey()));
-  json.insert("deviceIpv4Address", QJsonValue(device->ipv4Address()));
-  json.insert("deviceIpv6Address", QJsonValue(device->ipv6Address()));
-  json.insert("serverIpv4Gateway", QJsonValue(server.ipv4Gateway()));
-  json.insert("serverIpv6Gateway", QJsonValue(server.ipv6Gateway()));
-  json.insert("serverPublicKey", QJsonValue(server.publicKey()));
-  json.insert("serverIpv4AddrIn", QJsonValue(server.ipv4AddrIn()));
-  json.insert("serverIpv6AddrIn", QJsonValue(server.ipv6AddrIn()));
-  json.insert("serverPort", QJsonValue((double)server.choosePort()));
-  json.insert("dnsServer", QJsonValue(dnsServer.toString()));
-  json.insert("hopindex", QJsonValue((double)hopindex));
-
-  QJsonArray allowedIPAddesses;
-  for (const IPAddress& i : allowedIPAddressRanges) {
-    QJsonObject range;
-    range.insert("address", QJsonValue(i.address().toString()));
-    range.insert("range", QJsonValue((double)i.prefixLength()));
-    range.insert("isIpv6",
-                 QJsonValue(i.type() == QAbstractSocket::IPv6Protocol));
-    allowedIPAddesses.append(range);
-  };
-  json.insert("allowedIPAddressRanges", allowedIPAddesses);
-
-  QJsonArray jsExcludedAddresses;
-  for (const QString& i : excludedAddresses) {
-    jsExcludedAddresses.append(QJsonValue(i));
-  }
-  json.insert("excludedAddresses", jsExcludedAddresses);
-
-  QJsonArray disabledApps;
-  for (const QString& i : vpnDisabledApps) {
-    disabledApps.append(QJsonValue(i));
-    logger.debug() << "Disabling:" << i;
-  }
-  json.insert("vpnDisabledApps", disabledApps);
-
+QDBusPendingCallWatcher* DBusClient::activate(const InterfaceConfig& config) {
   logger.debug() << "Activate via DBus";
-  QDBusPendingReply<bool> reply =
-      m_dbus->activate(QJsonDocument(json).toJson(QJsonDocument::Compact));
+  QJsonObject obj = config.toJson();
+  QByteArray json = QJsonDocument(obj).toJson(QJsonDocument::Compact);
+  QDBusPendingReply<bool> reply = m_dbus->activate(QString::fromUtf8(json));
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
                    &QDBusPendingCallWatcher::deleteLater);

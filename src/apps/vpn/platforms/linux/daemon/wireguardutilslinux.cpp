@@ -214,8 +214,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // Endpoint
   if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
                        config.m_serverPort)) {
-    logger.error() << "Failed to set peer endpoint for hop"
-                   << config.m_hopindex;
+    logger.error() << "Failed to set peer endpoint for" << config.m_hopType;
     return false;
   }
 
@@ -223,21 +222,27 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   // *WAAAY* too long, which we aren't really using anways since the routing
   // policy rules are doing all the work for us anyways.
   //
-  // To work around the issue, just set default routes for hopindex zero.
-  if (config.m_hopindex == 0) {
+  // To work around the issue, just set default routes for the exit hop.
+  if ((config.m_hopType == InterfaceConfig::SingleHop) ||
+      (config.m_hopType == InterfaceConfig::MultiHopExit)) {
     if (!config.m_deviceIpv4Address.isNull()) {
       addPeerPrefix(peer, IPAddress("0.0.0.0/0"));
     }
     if (!config.m_deviceIpv6Address.isNull()) {
       addPeerPrefix(peer, IPAddress("::/0"));
     }
-  } else {
+  } else if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
+    // Add allowed addresses for the multihop entry server(s)
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       bool ok = addPeerPrefix(peer, ip);
       if (!ok) {
         logger.error() << "Invalid IP address:" << ip.toString();
         return false;
       }
+
+      // Direct multihop exit destinations to use the wireguard table.
+      int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
+      rtmIncludePeer(RTM_NEWRULE, flags, ip);
     }
   }
 
@@ -254,7 +259,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REPLACE_ALLOWEDIPS |
                       WGPEER_HAS_PERSISTENT_KEEPALIVE_INTERVAL);
   if (wg_set_device(device) != 0) {
-    logger.error() << "Failed to set the new peer hop" << config.m_hopindex;
+    logger.error() << "Failed to set the new peer" << config.m_hopType;
     return false;
   }
 
@@ -281,6 +286,13 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   // Public Key
   peer->flags = (wg_peer_flags)(WGPEER_HAS_PUBLIC_KEY | WGPEER_REMOVE_ME);
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
+
+  // Clear routing policy tweaks for multihop.
+  if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
+    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+      rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
+    }
+  }
 
   // Clear firewall settings for this server.
   GoString goAddress = {.p = qPrintable(config.m_serverIpv4AddrIn),
@@ -347,44 +359,39 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
   logger.debug() << "Adding route to" << prefix.toString();
+
   const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-  return rtmSendRoute(RTM_NEWROUTE, flags, prefix, hopindex);
+  return rtmSendRoute(RTM_NEWROUTE, flags, RTN_UNICAST, prefix);
 }
 
-bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix,
-                                            int hopindex) {
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
   logger.debug() << "Removing route to" << logger.sensitive(prefix.toString());
+
   const int flags = NLM_F_REQUEST | NLM_F_ACK;
-  return rtmSendRoute(RTM_DELROUTE, flags, prefix, hopindex);
+  return rtmSendRoute(RTM_DELROUTE, flags, RTN_UNICAST, prefix);
 }
 
-bool WireguardUtilsLinux::addExclusionRoute(const QHostAddress& address) {
+bool WireguardUtilsLinux::addExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Adding exclusion route for"
-                 << logger.sensitive(address.toString());
+                 << logger.sensitive(prefix.toString());
   const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-  return rtmSendExclude(RTM_NEWRULE, flags, address);
+  return rtmSendRoute(RTM_NEWROUTE, flags, RTN_THROW, prefix);
 }
 
-bool WireguardUtilsLinux::deleteExclusionRoute(const QHostAddress& address) {
+bool WireguardUtilsLinux::deleteExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Removing exclusion route for"
-                 << logger.sensitive(address.toString());
-  return rtmSendExclude(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, address);
+                 << logger.sensitive(prefix.toString());
+  const int flags = NLM_F_REQUEST | NLM_F_ACK;
+  return rtmSendRoute(RTM_DELROUTE, flags, RTN_THROW, prefix);
 }
 
-bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
-                                       const IPAddress& prefix, int hopindex) {
+bool WireguardUtilsLinux::rtmSendRoute(int action, int flags, int type,
+                                       const IPAddress& prefix) {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
-  int index = if_nametoindex(WG_INTERFACE);
-  if (index <= 0) {
-    logger.error() << "if_nametoindex() failed:" << strerror(errno);
-    return false;
-  }
-
   wg_allowedip ip;
   if (!buildAllowedIp(&ip, prefix)) {
     logger.warning() << "Invalid destination prefix";
@@ -403,24 +410,28 @@ bool WireguardUtilsLinux::rtmSendRoute(int action, int flags,
   nlmsg->nlmsg_seq = m_nlseq++;
   rtm->rtm_dst_len = ip.cidr;
   rtm->rtm_family = ip.family;
-  rtm->rtm_type = RTN_UNICAST;
+  rtm->rtm_type = type;
+  rtm->rtm_table = RT_TABLE_UNSPEC;
   rtm->rtm_protocol = RTPROT_BOOT;
   rtm->rtm_scope = RT_SCOPE_UNIVERSE;
 
-  // Routes for the main hop should be placed into their own table.
-  if (hopindex == 0) {
-    rtm->rtm_table = RT_TABLE_UNSPEC;
-    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
-  } else {
-    rtm->rtm_table = RT_TABLE_MAIN;
-  }
+  // Place all routes in their own table.
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
 
   if (rtm->rtm_family == AF_INET6) {
     nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
   } else {
     nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
   }
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
+
+  if (rtm->rtm_type == RTN_UNICAST) {
+    int index = if_nametoindex(WG_INTERFACE);
+    if (index <= 0) {
+      logger.error() << "if_nametoindex() failed:" << strerror(errno);
+      return false;
+    }
+    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
+  }
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
@@ -604,10 +615,11 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   return true;
 }
 
-bool WireguardUtilsLinux::rtmSendExclude(int action, int flags,
-                                         const QHostAddress& address) {
-  constexpr size_t fib_max_size =
-      sizeof(struct fib_rule_hdr) + RTA_SPACE(sizeof(struct in6_addr));
+bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
+                                         const IPAddress& prefix) {
+  constexpr size_t fib_max_size = sizeof(struct fib_rule_hdr) +
+                                  RTA_SPACE(sizeof(struct in6_addr)) +
+                                  2 * RTA_SPACE(sizeof(quint32));
 
   char buf[NLMSG_SPACE(fib_max_size)];
   struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
@@ -617,41 +629,38 @@ bool WireguardUtilsLinux::rtmSendExclude(int action, int flags,
   memset(&nladdr, 0, sizeof(nladdr));
   nladdr.nl_family = AF_NETLINK;
 
-  /* Create a routing policy rule to select the main routing table for
-   * packets matching the destination address. This is equivalent to:
-   *     ip rule add to $ADDRESS table main
-   */
+  // Create a routing policy rule to select the wireguard routing table for
+  // marked packets matching the destination address. This is equivalent to:
+  //    ip rule add fwmark $MARK to $PREFIX table $WG_ROUTE_TABLE
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
   nlmsg->nlmsg_type = action;
   nlmsg->nlmsg_flags = flags;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
-  rule->table = RT_TABLE_MAIN;
+  rule->table = RT_TABLE_UNSPEC;
   rule->action = FR_ACT_TO_TBL;
   rule->flags = 0;
+  rule->dst_len = prefix.prefixLength();
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_FWMARK, WG_FIREWALL_MARK);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
 
-  if (address.protocol() == QAbstractSocket::IPv6Protocol) {
-    Q_IPV6ADDR dst = address.toIPv6Address();
+  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR dst = prefix.address().toIPv6Address();
     nlmsg_append_attr(nlmsg, sizeof(buf), FRA_DST, &dst, sizeof(dst));
     rule->family = AF_INET6;
-    rule->dst_len = 128;
-  } else if (address.protocol() == QAbstractSocket::IPv4Protocol) {
-    quint32 dst = address.toIPv4Address();
+  } else if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
+    quint32 dst = prefix.address().toIPv4Address();
     nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST, htonl(dst));
     rule->family = AF_INET;
-    rule->dst_len = 32;
   } else {
     return false;
   }
 
-  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
-                          (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
-  return true;
+  ssize_t result =
+      sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+             reinterpret_cast<struct sockaddr*>(&nladdr), sizeof(nladdr));
+  return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 
 void WireguardUtilsLinux::nlsockReady() {

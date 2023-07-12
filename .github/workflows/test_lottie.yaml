@@ -16,21 +16,15 @@ concurrency:
 
 jobs:
   linux-lottie-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Run Lottie tests on Linux
-    env:
-      QTVERSION: 6.2.4
     steps:
-      - name: Install Linux packages
-        run: |
-          sudo apt update
-          sudo apt install git libgl-dev libegl-dev clang-10 liboath-dev python3 -y
-          python3 -m pip install aqtinstall
-          aqt install-qt --outputdir /opt linux desktop $QTVERSION gcc_64 -m all
-
       - name: Clone repository
         uses: actions/checkout@v3
-
+      - name: Install Linux packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3
@@ -49,7 +43,6 @@ jobs:
         run: |
           mkdir -p build
           cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
-            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake/ \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build -j$(nproc)
 

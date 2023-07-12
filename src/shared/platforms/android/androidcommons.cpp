@@ -14,6 +14,7 @@
 #include "logger.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
+constexpr auto VPN_UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 
 namespace {
 Logger logger("AndroidCommons");
@@ -58,7 +59,7 @@ bool AndroidCommons::verifySignature(const QByteArray& publicKey,
 // static
 bool AndroidCommons::shareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
-      COMMON_UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
+      VPN_UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
       QJniObject::fromString(text).object());
 }
 

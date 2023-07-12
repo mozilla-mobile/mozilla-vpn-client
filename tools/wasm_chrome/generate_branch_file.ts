@@ -11,7 +11,7 @@
  * api calls to github and also allow us to filter :)
  */
 import { parse } from "https://deno.land/std/flags/mod.ts";
-import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+import { Octokit } from "https://esm.sh/@octokit/core";
 import { getGithubPaginatedData } from "./helpers.mjs";
 
 interface Commit {
