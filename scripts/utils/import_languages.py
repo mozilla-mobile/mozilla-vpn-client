@@ -64,18 +64,16 @@ lupdate = os.path.join(qtbinpath, 'lupdate')
 lconvert = os.path.join(qtbinpath, 'lconvert')
 lrelease = os.path.join(qtbinpath, 'lrelease')
 
-for project in os.listdir(os.path.join('src', 'apps')):
-    title(f"Project {project}")
+l10n_files = []
 
-    l10n_files = []
+projectname = "mozillavpn"
 
-    projectname = project
-    i18ntemplate = os.path.join('src', 'apps', project, 'translations', 'template')
-    if os.path.isfile(i18ntemplate):
-        with open(i18ntemplate) as f:
-            projectname = f.read().strip()
+i18ndir = os.path.join('src', 'translations', 'i18n')
 
-    i18ndir = os.path.join('src', 'apps', project, 'translations', 'i18n')
+if os.path.isdir(i18ndir):
+    # Step 1 (continued)
+    # Get the latest translations from i18n remote
+    os.system(f"git submodule update --init --remote --depth 1 {i18ndir}")
 
     if os.path.isdir(i18ndir):
         # Step 1
@@ -88,44 +86,19 @@ for project in os.listdir(os.path.join('src', 'apps')):
             if not os.path.isdir(os.path.join(i18ndir, locale)):
                 continue
 
-            # Skip hidden folders
-            if locale.startswith('.'):
-                continue
+        xliff_path = os.path.join(i18ndir, locale, f"{projectname}.xliff")
 
-            xliff_path = os.path.join(i18ndir, locale, f"{projectname}.xliff")
-
-            # If it's the source locale (en), ignore parsing for completeness and
-            # add it to the list.
-            if locale == 'en':
-                print(f'OK\t- en added (reference locale)')
-                l10n_files.append({
-                    'locale': 'en',
-                    'ts': os.path.join('translations', 'generated', project, f"{projectname}_en.ts"),
-                    'xliff': xliff_path,
-                    'completeness': 1.0
-                })
-                continue
-
-            tree = ET.parse(xliff_path)
-            root = tree.getroot()
-
-            sources = 0
-            translations = 0
-
-            for element in root.iter('{urn:oasis:names:tc:xliff:document:1.2}source'):
-                sources += 1
-            for element in root.iter('{urn:oasis:names:tc:xliff:document:1.2}target'):
-                translations += 1
-
-            completeness = translations/(sources*1.0)
-
-            print(f'- {locale} added ({round(completeness*100, 2)}% translated)')
+        # If it's the source locale (en), ignore parsing for completeness and
+        # add it to the list.
+        if locale == 'en':
+            print(f'OK\t- en added (reference locale)')
             l10n_files.append({
-                'locale': locale,
-                'ts': os.path.join('translations', 'generated', project, f'{projectname}_{locale}.ts'),
+                'locale': 'en',
+                'ts': os.path.join('translations', 'generated', f"{projectname}_en.ts"),
                 'xliff': xliff_path,
-                'completeness': completeness
+                'completeness': 1.0
             })
+            continue
 
     # Step 2
     title("Creating output directory...")
@@ -148,21 +121,20 @@ for project in os.listdir(os.path.join('src', 'apps')):
         for file in l10n_files:
             qrcfile.write(f'        <file>{projectname}_{file["locale"]}.qm</file>\n')
 
-        extradir = os.path.join('src', 'apps', project, 'translations', 'extras')
-        extras = []
-        if os.path.isdir(extradir):
-            for extra in os.listdir(extradir):
-                extras.append(extra)
-                qrcfile.write(f'      <file alias="{extra}">{os.path.join(os.getcwd(), extradir, extra)}</file>\n')
+        completeness = translations/(sources*1.0)
 
-        shred_extradir = os.path.join('src', 'shared', 'translations', 'extras')
-        if os.path.isdir(shred_extradir):
-            for shred_extra in os.listdir(shred_extradir):
-                if (not shred_extra in extras):
-                    qrcfile.write(f'      <file alias="{shred_extra}">{os.path.join(os.getcwd(), shred_extradir, shred_extra)}</file>\n')
+        print(f'- {locale} added ({round(completeness*100, 2)}% translated)')
+        l10n_files.append({
+            'locale': locale,
+            'ts': os.path.join('translations', 'generated', f'{projectname}_{locale}.ts'),
+            'xliff': xliff_path,
+            'completeness': completeness
+        })
 
-        qrcfile.write('    </qresource>\n')
-        qrcfile.write('</RCC>\n')
+# Step 3
+title("Creating output directory...")
+gendir = os.path.join('translations', 'generated')
+os.makedirs(gendir, exist_ok=True)
 
     # Step 5
     title("Generate the Js/C++ string definitions...")
@@ -200,18 +172,81 @@ for project in os.listdir(os.path.join('src', 'apps')):
     # Step 7
     title("Generate translation resources...")
     for l10n_file in l10n_files:
-        os.system(f"{lconvert} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
+        file.write(f'{l10n_file["locale"]}:{l10n_file["completeness"]}\n')
 
-    os.system(f"{lupdate} {os.path.join('translations', 'generated', project, 'dummy_language.pro')}")
+# Step 5
+title("Write resource file to import the locales...")
+with open(os.path.join(gendir, 'translations.qrc'), 'w') as qrcfile:
+    qrcfile.write('<!-- AUTOGENERATED! DO NOT EDIT!! -->\n')
+    qrcfile.write('<RCC>\n')
+    qrcfile.write('    <qresource prefix="/i18n">\n')
+    qrcfile.write('      <file>translations.completeness</file>\n')
+    for file in l10n_files:
+        qrcfile.write(f'        <file>{projectname}_{file["locale"]}.qm</file>\n')
+
+    extradir = os.path.join('src', 'translations', 'extras')
+    extras = []
+    if os.path.isdir(extradir):
+        for extra in os.listdir(extradir):
+            extras.append(extra)
+            qrcfile.write(f'      <file alias="{extra}">{os.path.join(os.getcwd(), extradir, extra)}</file>\n')
+
+    shred_extradir = os.path.join('src', 'shared', 'translations', 'extras')
+    if os.path.isdir(shred_extradir):
+        for shred_extra in os.listdir(shred_extradir):
+            if (not shred_extra in extras):
+                qrcfile.write(f'      <file alias="{shred_extra}">{os.path.join(os.getcwd(), shred_extradir, shred_extra)}</file>\n')
+
+    qrcfile.write('    </qresource>\n')
+    qrcfile.write('</RCC>\n')
+
+# Step 6
+title("Generate the Js/C++ string definitions...")
+try:
+    subprocess.call([sys.executable, os.path.join('scripts', 'utils', 'generate_strings.py'),
+                        '-o', gendir,
+                        os.path.join('src', 'translations', 'strings.yaml'),
+                        os.path.join('src', 'shared', 'translations', 'strings.yaml')])
+except Exception as e:
+    print("generate_strings.py failed. Try with:\n\tpip3 install -r requirements.txt --user")
+    print(e)
+    exit(1)
+
+# Step 7
+# Build a dummy project to glob together everything that might contain strings
+title("Scanning for new strings...")
+with open(os.path.join('translations', 'generated', 'dummy_language.pro'), 'w') as dummyproj:
+    dummyproj.write('### AUTOGENERATED! DO NOT EDIT!! ###\n')
+    dummyproj.write(f"HEADERS += i18nstrings.h\n")
+    dummyproj.write(f"SOURCES += i18nstrings_p.cpp\n")
+    dummyproj.write(f"SOURCES += ../../i18nstrings.cpp\n\n")
     for l10n_file in l10n_files:
-        # Let's remove the non-translated strings if needed
-        if l10n_file['locale'] != 'en':
-            os.system(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
-        os.system(f"{lrelease} -idbased {l10n_file['ts']}")
+        dummyproj.write(f"TRANSLATIONS += {os.path.basename(l10n_file['ts'])}\n")
 
-    print(f'Imported {len(l10n_files)} locales')
+    dummyproj.write("\n")
+    dummyproj.write(f"HEADERS += $$files(../../../src/shared/*.h, true)\n")
+    dummyproj.write(f"HEADERS += $$files(../../../src/*.h, true)\n")
+    dummyproj.write(f"SOURCES += $$files(../../../src/shared/*.cpp, true)\n")
+    dummyproj.write(f"SOURCES += $$files(../../../src/*.cpp, true)\n")
+    dummyproj.write(f"RESOURCES += $$files(../../../nebula/*.qrc, true)\n\n")
+    dummyproj.write(f"RESOURCES += $$files(../../../src/*.qrc, true)\n\n")
+    dummyproj.write(f"RESOURCES += $$files(../../../src/shared/*.qrc, true)\n\n")
 
-    if os.path.isdir(i18ndir):
-        git = os.popen(f'git submodule status {i18ndir}')
-        git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
-        print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')
+# Step 8
+title("Generate translation resources...")
+for l10n_file in l10n_files:
+    os.system(f"{lconvert} -if xlf -i {l10n_file['xliff']} -o {l10n_file['ts']}")
+
+os.system(f"{lupdate} {os.path.join('translations', 'generated', 'dummy_language.pro')}")
+for l10n_file in l10n_files:
+    # Let's remove the non-translated strings if needed
+    if l10n_file['locale'] != 'en':
+        os.system(f"{lconvert} -i {l10n_file['ts']} -no-untranslated -o {l10n_file['ts']}")
+    os.system(f"{lrelease} -idbased {l10n_file['ts']}")
+
+print(f'Imported {len(l10n_files)} locales')
+
+if os.path.isdir(i18ndir):
+    git = os.popen(f'git submodule status {i18ndir}')
+    git_commit_hash = git.read().strip().replace("+","").split(' ')[0]
+    print(f'Current commit:  https://github.com/mozilla-l10n/mozilla-vpn-client-l10n/commit/{git_commit_hash}')
