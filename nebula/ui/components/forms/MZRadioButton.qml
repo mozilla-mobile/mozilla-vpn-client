@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
 import components 0.1
-import utils 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 RadioDelegate {
     id: radioControl

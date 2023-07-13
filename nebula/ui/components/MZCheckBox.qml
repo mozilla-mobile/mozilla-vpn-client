@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import utils 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 CheckBox {
     property var uiState: MZTheme.theme.uiState
