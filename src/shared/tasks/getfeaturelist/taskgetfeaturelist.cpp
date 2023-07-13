@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/featuremodel.h"
@@ -25,7 +25,7 @@ TaskGetFeatureList::~TaskGetFeatureList() { MZ_COUNT_DTOR(TaskGetFeatureList); }
 
 void TaskGetFeatureList::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->get(Constants::apiUrl(Constants::FeatureList));
+  request->get(AppConstants::apiUrl(AppConstants::FeatureList));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

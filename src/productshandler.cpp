@@ -137,7 +137,7 @@ void ProductsHandler::addProduct(const QJsonValue& value) {
   // The products endpoint returns products for all platforms
   // only continue if the product is for the current platform
   if (obj["platform"].toString().toLower() !=
-      QString(Constants::PLATFORM_NAME).toLower()) {
+      QString(AppConstants::PLATFORM_NAME).toLower()) {
     return;
   }
 

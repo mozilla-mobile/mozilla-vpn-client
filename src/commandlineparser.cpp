@@ -68,7 +68,7 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 
   if (versionOption.m_set) {
     QTextStream stream(stdout);
-    stream << argv[0] << " " << Constants::versionString() << Qt::endl;
+    stream << argv[0] << " " << AppConstants::versionString() << Qt::endl;
     return 0;
   }
 

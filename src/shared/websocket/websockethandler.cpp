@@ -8,7 +8,7 @@
 #include <QGuiApplication>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"

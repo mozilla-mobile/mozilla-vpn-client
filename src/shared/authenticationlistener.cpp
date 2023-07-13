@@ -4,7 +4,7 @@
 
 #include "authenticationlistener.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapplistener.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -66,7 +66,7 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   QString path = QString("/api/v2/%1/login/").arg(AppConstants::AUTH_PROD_NAME);
 
 #if !defined(MZ_DUMMY)
-  path.append(Constants::PLATFORM_NAME);
+  path.append(AppConstants::PLATFORM_NAME);
 #else
   // Let's use ios here.
   path.append("ios");

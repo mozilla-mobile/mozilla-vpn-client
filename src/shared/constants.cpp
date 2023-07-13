@@ -8,55 +8,55 @@
 #include <QString>
 #include <QtGlobal>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "settingsholder.h"
 #include "version.h"
 
-namespace {
-bool s_inProduction = true;
-QString s_versionOverride = "";
-}  // namespace
+//namespace {
+//bool s_inProduction = true;
+//QString s_versionOverride = "";
+//}  // namespace
 
-QString Constants::apiUrl(ApiEndpoint endpoint) {
-  static QMap<ApiEndpoint, const char*> endpoints{
-      {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
-      {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"}};
+// QString AppConstants::apiUrl(ApiEndpoint endpoint) {
+//   static QMap<ApiEndpoint, const char*> endpoints{
+//       {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
+//       {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"}};
 
-  Q_ASSERT(endpoints.contains(endpoint));
+//   Q_ASSERT(endpoints.contains(endpoint));
 
-  QString apiBaseUrl = AppConstants::apiBaseUrl();
-  return apiBaseUrl.append(endpoints[endpoint]);
-}
+//   QString apiBaseUrl = AppConstants::apiBaseUrl();
+//   return apiBaseUrl.append(endpoints[endpoint]);
+// }
 
-bool Constants::inProduction() { return s_inProduction; }
+// bool AppConstants::inProduction() { return s_inProduction; }
 
-void Constants::setStaging() { s_inProduction = false; }
+// void AppConstants::setStaging() { s_inProduction = false; }
 
-void Constants::setVersionOverride(const QString& versionOverride) {
-  s_versionOverride = versionOverride;
-}
+// void AppConstants::setVersionOverride(const QString& versionOverride) {
+//   s_versionOverride = versionOverride;
+// }
 
-QString Constants::versionString() {
-  if (!s_inProduction && !s_versionOverride.isEmpty()) {
-    return s_versionOverride;
-  }
-  return QStringLiteral(APP_VERSION);
-}
+// QString AppConstants::versionString() {
+//   if (!s_inProduction && !s_versionOverride.isEmpty()) {
+//     return s_versionOverride;
+//   }
+//   return QStringLiteral(APP_VERSION);
+// }
 
-QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
+// QString AppConstants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
-QString Constants::envOrDefault(const QString& name,
-                                const QString& defaultValue) {
-  QString env;
+// QString AppConstants::envOrDefault(const QString& name,
+//                                 const QString& defaultValue) {
+//   QString env;
 
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (pe.contains(name)) {
-    env = pe.value(name);
-  }
+//   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+//   if (pe.contains(name)) {
+//     env = pe.value(name);
+//   }
 
-  if (env.isEmpty()) {
-    return defaultValue;
-  }
+//   if (env.isEmpty()) {
+//     return defaultValue;
+//   }
 
-  return env;
-}
+//   return env;
+// }

@@ -19,7 +19,7 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
   NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
   if(adjustToken.length) {
-    NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
+    NSString *environment = AppConstants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];

@@ -7,7 +7,7 @@
 #include <QFileInfo>
 #include <QLocalSocket>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 

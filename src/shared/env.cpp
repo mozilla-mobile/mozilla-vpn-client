@@ -91,12 +91,12 @@ void Env::setDebugMode(bool debugMode) {
 #endif
 
 // static
-bool Env::stagingMode() { return !Constants::inProduction(); }
+bool Env::stagingMode() { return !AppConstants::inProduction(); }
 
 #ifdef UNIT_TEST
 void Env::setStagingMode(bool stagingMode) {
   if (stagingMode) {
-    Constants::setStaging();
+    AppConstants::setStaging();
   }
   emit stagingModeChanged();
 }

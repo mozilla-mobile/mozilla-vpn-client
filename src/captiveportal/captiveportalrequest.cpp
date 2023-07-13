@@ -4,7 +4,7 @@
 
 #include "captiveportalrequest.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"

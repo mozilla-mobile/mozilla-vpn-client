@@ -4,7 +4,7 @@
 
 #include "keyregenerator.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "controller.h"
 #include "feature.h"
 #include "leakdetector.h"

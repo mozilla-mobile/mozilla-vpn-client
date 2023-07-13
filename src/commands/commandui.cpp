@@ -11,7 +11,7 @@
 #include <QQmlContext>
 
 #include "addons/manager/addonmanager.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
@@ -148,7 +148,7 @@ int CommandUI::run(QStringList& tokens) {
       AppConstants::setStaging();
     }
 
-    logger.info() << "MozillaVPN" << Constants::versionString();
+    logger.info() << "MozillaVPN" << AppConstants::versionString();
     logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
     logger.debug() << "UI starting";

@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include <QJsonObject>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "models/location.h"
 #include "models/servercity.h"

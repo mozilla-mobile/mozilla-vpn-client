@@ -5,7 +5,7 @@
 #include <QRandomGenerator>
 #include <QtDBus/QtDBus>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "cryptosettings.h"
 #include "logger.h"
 

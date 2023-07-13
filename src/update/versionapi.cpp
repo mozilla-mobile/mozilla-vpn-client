@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -59,7 +59,7 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonObject obj = json.object();
 
-  QString platformKey = Constants::PLATFORM_NAME;
+  QString platformKey = AppConstants::PLATFORM_NAME;
 
   if (!obj.contains(platformKey)) {
     logger.debug() << "No key" << platformKey;

@@ -77,12 +77,12 @@ constexpr const char* UI_PIPE = "/tmp/unittests.ui.sock";
 #endif
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return Constants::inProduction() ? prod : beta; }
+  inline type functionName() { return AppConstants::inProduction() ? prod : beta; }
 
 PRODBETAEXPR(
     QString, addonBaseUrl,
     "https://archive.mozilla.org/pub/unittests/addons/releases/latest/",
-    Constants::envOrDefault(
+    AppConstants::envOrDefault(
         "MZ_ADDON_URL",
         "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 

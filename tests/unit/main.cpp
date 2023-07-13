@@ -4,7 +4,7 @@
 
 #include <QCoreApplication>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"

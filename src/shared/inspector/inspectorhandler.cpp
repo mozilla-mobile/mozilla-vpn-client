@@ -566,7 +566,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"set_version_override", "Override the version string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString versionOverride = QString(arguments[1]);
-                       Constants::setVersionOverride(versionOverride);
+                       AppConstants::setVersionOverride(versionOverride);
                        return QJsonObject();
                      }},
 };
@@ -576,7 +576,7 @@ void InspectorHandler::initialize() {
 #ifdef MZ_WASM
   WasmInspector::instance();
 #else
-  if (!Constants::inProduction()) {
+  if (!AppConstants::inProduction()) {
     InspectorWebSocketServer* inspectWebSocketServer =
         new InspectorWebSocketServer(qApp);
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,

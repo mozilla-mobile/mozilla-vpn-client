@@ -7,7 +7,7 @@
 #include <QJsonObject>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"

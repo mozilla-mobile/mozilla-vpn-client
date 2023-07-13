@@ -64,7 +64,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(AppConstants::versionString());
 
   if (tokens.length() > 1) {
     QList<CommandLineParser::Option*> options;

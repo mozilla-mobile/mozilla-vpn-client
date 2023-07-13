@@ -5,7 +5,7 @@
 #include "taskcaptiveportallookup.h"
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "captiveportal/captiveportal.h"
 #include "leakdetector.h"
 #include "logger.h"

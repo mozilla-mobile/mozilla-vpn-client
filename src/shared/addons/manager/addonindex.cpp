@@ -234,10 +234,10 @@ bool AddonIndex::validateSingleAddonIndex(const QJsonValue& addonValue) {
 // static
 bool AddonIndex::validateIndexSignature(const QByteArray& index,
                                         const QByteArray& indexSignature) {
-  QString publicKeyUrl(Constants::ADDON_PRODUCTION_KEY);
-  if (!Constants::inProduction() &&
+  QString publicKeyUrl(AppConstants::ADDON_PRODUCTION_KEY);
+  if (!AppConstants::inProduction() &&
       !SettingsHolder::instance()->addonProdKeyInStaging()) {
-    publicKeyUrl = Constants::ADDON_STAGING_KEY;
+    publicKeyUrl = AppConstants::ADDON_STAGING_KEY;
   }
 
   QFile publicKeyFile(publicKeyUrl);

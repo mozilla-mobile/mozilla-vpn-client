@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscommons.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
