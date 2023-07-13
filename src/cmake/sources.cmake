@@ -33,7 +33,7 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/appsettingslist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetection.cpp
