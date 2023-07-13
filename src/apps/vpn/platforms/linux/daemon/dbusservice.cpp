@@ -328,7 +328,7 @@ void DBusService::dropRootPermissions() {
   //
   // Clear all other capabilities, effectively discarding our root permissions.
   cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID};
-  int numcaps = sizeof(newcaps)/sizeof(cap_value_t);
+  int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
   if (cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET) ||
       cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET)) {
     logger.warning() << "Failed to set process capability flags";
