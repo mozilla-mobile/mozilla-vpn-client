@@ -10,10 +10,19 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
-Set-Location $FETCHES_PATH
+$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
-Rename-Item -Path qt.zip.noextract -NewName qt.zip
-unzip -o -qq qt.zip
+Set-Location $FETCHES_PATH
+Write-Output "Downloading : $QT_URI"
+Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
+if($?){
+    Write-Output "Downloaded : $QT_URI"
+}else{
+    Write-Output "Failed to download : $QT_URI"
+    exit 1
+}
+
+unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
@@ -51,32 +60,15 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -make libs  `
   -no-sql-psql  `
   -no-sql-odbc   `
+  -qt-sqlite  `
   -skip qt3d  `
   -skip webengine  `
   -skip qtmultimedia  `
   -skip qtserialport  `
   -skip qtsensors  `
   -skip qtgamepad  `
+  -skip qtwebchannel  `
   -skip qtandroidextras  `
-  -skip qtactiveqt  `
-  -skip qtcharts  `
-  -skip qtcoap  `
-  -skip qtdatavis3d  `
-  -skip qtgrpc  `
-  -skip qtremoteobjects  `
-  -skip qtlottie  `
-  -skip qtmqtt  `
-  -skip qtopcua  `
-  -skip qtpositioning  `
-  -skip qtquick3d  `
-  -skip qtscxml  `
-  -skip qtserialbus  `
-  -skip qtserialport  `
-  -skip qtspeech  `
-  -skip qtwayland  `
-  -skip qtvirtualkeyboard  `
-  -skip qtwebview  `
-  -skip qtlocation `
   -skip qtquick3dphysics `
   -feature-imageformat_png  `
   -qt-libpng  `
@@ -84,21 +76,9 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
 
-if($?){
-    Write-Output "Qt configured! "
-}else{
-    Write-Output "Failed to configure!"
-    exit 1
-}
+
 
  cmake --build . --parallel
-
-if($?){
-  Write-Output "Qt BUILT "
-}else{
-  Write-Output "Failed to build!!"
-  exit 1
-}
 
  cmake --install . --config Debug
  cmake --install . --config Release
