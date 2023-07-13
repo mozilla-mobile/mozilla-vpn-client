@@ -32,7 +32,7 @@ UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(UrlOpener);
 
   registerUrlLabel("account", []() -> QString {
-    QUrl url(Constants::fxaUrl());
+    QUrl url(AppConstants::fxaUrl());
     QUrlQuery query(url.query());
     query.addQueryItem("email", SettingsHolder::instance()->userEmail());
     url.setQuery(query);
@@ -40,7 +40,7 @@ UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
   });
 
   UrlOpener::registerUrlLabel("forgotPassword", []() -> QString {
-    return QString("%1/reset_password").arg(Constants::fxaUrl());
+    return QString("%1/reset_password").arg(AppConstants::fxaUrl());
   });
 }
 
@@ -60,7 +60,7 @@ void UrlOpener::openUrl(const QString& linkUrl) {
 void UrlOpener::openUrl(const QUrl& a_url) {
   QUrl url = replaceUrlParams(a_url);
 
-  if (!Constants::inProduction()) {
+  if (!AppConstants::inProduction()) {
     setLastUrl(url.toString());
 
     if (m_stealUrls) {

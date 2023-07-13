@@ -9,7 +9,7 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"

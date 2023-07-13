@@ -99,7 +99,7 @@ void AdjustHandler::initialize() {
 
 #ifdef MZ_ANDROID
   QJniObject::callStaticMethod<void>(CORE_APPLICATION, "initializeAdjust",
-                                     "(ZI)V", Constants::inProduction(),
+                                     "(ZI)V", AppConstants::inProduction(),
                                      s_adjustProxy->serverPort());
 #endif
 

@@ -6,7 +6,7 @@
 
 #include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "dnshelper.h"
@@ -618,7 +618,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(Constants::versionString());
+  settingsHolder->setDeviceKeyVersion(AppConstants::versionString());
 
   settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
@@ -1344,7 +1344,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionFxa", []() -> QString {
-    return QString("%1/subscriptions").arg(Constants::fxaUrl());
+    return QString("%1/subscriptions").arg(AppConstants::fxaUrl());
   });
 
   uo->registerUrlLabel("contactSupport", []() -> QString {
@@ -1367,14 +1367,14 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #else
             AppConstants::apiUrl(
                 AppConstants::RedirectUpdateWithPlatformArgument)
-                .arg(Constants::PLATFORM_NAME)
+                .arg(AppConstants::PLATFORM_NAME)
 #endif
         ;
   });
 
   uo->registerUrlLabel("upgradeToBundle", []() -> QString {
     return QString("%1/r/vpn/upgradeToPrivacyBundle")
-        .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
+        .arg(AppConstants::inProduction() ? AppConstants::API_PRODUCTION_URL
                                        : AppConstants::API_STAGING_URL);
   });
 }
@@ -2154,7 +2154,7 @@ void MozillaVPN::registerInspectorCommands() {
 // static
 QString MozillaVPN::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return Constants::versionString();
+    return AppConstants::versionString();
   }
 
   return s_updateVersion;

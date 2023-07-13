@@ -85,7 +85,7 @@ AndroidVPNActivity* AndroidVPNActivity::instance() {
 void AndroidVPNActivity::sendToService(ServiceAction type,
                                        const QString& data) {
   int messageType = (int)type;
-  if (!Constants::inProduction()) {
+  if (!AppConstants::inProduction()) {
     logger.debug() << "sendToService: " << messageType << " " << data;
   }
   QJniEnvironment env;

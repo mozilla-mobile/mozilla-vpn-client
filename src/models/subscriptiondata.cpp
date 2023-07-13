@@ -11,7 +11,7 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -126,7 +126,7 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
   } else if (planInterval == "month") {
     planIntervalMonths = 1;
   } else if ((planInterval == "week" || planInterval == "day") &&
-             !Constants::inProduction()) {
+             !AppConstants::inProduction()) {
     // For testing purposes we support additional intervals
     // and use a monthly plan as fallback
     planIntervalMonths = 1;

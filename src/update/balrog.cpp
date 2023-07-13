@@ -12,7 +12,7 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"

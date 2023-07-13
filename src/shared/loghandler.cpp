@@ -16,7 +16,7 @@
 #include <QTextStream>
 #include <QUrl>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "logger.h"
 #include "urlopener.h"
@@ -261,7 +261,7 @@ void LogHandler::addLog(const Log& log,
   emit logEntryAdded(buffer);
 
 #if defined(MZ_ANDROID)
-  if (!Constants::inProduction()) {
+  if (!AppConstants::inProduction()) {
     const char* str = buffer.constData();
     if (str) {
       __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME,

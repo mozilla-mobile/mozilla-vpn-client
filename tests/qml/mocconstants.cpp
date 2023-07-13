@@ -4,20 +4,20 @@
 
 #include <QString>
 
-#include "appconstants.h"
+#include "constants.h"
 
 namespace {
 bool s_productionMode = true;
 }  // namespace
 
-bool Constants::inProduction() { return s_productionMode; }
+bool AppConstants::inProduction() { return s_productionMode; }
 
 const QString& AppConstants::getStagingServerAddress() {
   static QString stagingServerAddress = AppConstants::API_STAGING_URL;
   return stagingServerAddress;
 }
 
-void Constants::setVersionOverride(const QString& versionOverride) {
+void AppConstants::setVersionOverride(const QString& versionOverride) {
   Q_UNUSED(versionOverride);
 }
 
@@ -25,16 +25,15 @@ QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
 
 QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }
 
-void Constants::setStaging() { s_productionMode = false; }
 void AppConstants::setStaging() { s_productionMode = false; }
 
-QString Constants::versionString() {
+QString AppConstants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");
 }
 
-QString Constants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
+QString AppConstants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
 
-QString Constants::envOrDefault(const QString& name,
+QString AppConstants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {
   Q_UNUSED(name);
   return defaultValue;

@@ -344,7 +344,7 @@ SETTING_STRING(
     removeStagingServerAddress,  // remover
     hasStagingServerAddress,     // has
     "stagingServerAddress",      // key
-    Constants::envOrDefault("MVPN_API_BASE_URL",
+    AppConstants::envOrDefault("MVPN_API_BASE_URL",
                             AppConstants::API_STAGING_URL),  // default value
     false,                                                   // user setting
     false,  // remove when reset

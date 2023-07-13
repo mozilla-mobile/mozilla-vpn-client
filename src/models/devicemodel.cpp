@@ -307,8 +307,8 @@ void DeviceModel::serializeLogs(
   out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
 #endif
 
-  out << "APP Version -> " << Constants::versionString() << Qt::endl;
-  out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
+  out << "APP Version -> " << AppConstants::versionString() << Qt::endl;
+  out << "Build ID -> " << AppConstants::buildNumber() << Qt::endl;
   out << "Device ID -> " << Device::uniqueDeviceId() << Qt::endl;
 
 #ifndef QT_NO_SSL

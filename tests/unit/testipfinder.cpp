@@ -6,7 +6,7 @@
 
 #include <QHostInfo>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "helper.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"

@@ -8,7 +8,7 @@
 #include <QFileOpenEvent>
 #include <QUrlQuery>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"

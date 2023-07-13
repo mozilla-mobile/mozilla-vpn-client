@@ -4,7 +4,7 @@
 
 #include "command.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "captiveportal/captiveportal.h"
 #include "commandlineparser.h"
 #include "glean/mzglean.h"
@@ -103,13 +103,13 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << AppConstants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(AppConstants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -130,13 +130,13 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << AppConstants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(AppConstants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -185,7 +185,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(AppConstants::versionString());
 
   Localizer localizer;
 

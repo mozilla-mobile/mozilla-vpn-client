@@ -9,7 +9,7 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"

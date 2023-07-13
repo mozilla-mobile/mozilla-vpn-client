@@ -13,7 +13,7 @@
 #include <QLocale>
 #include <QTranslator>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "languagei18n.h"
@@ -200,7 +200,7 @@ void Localizer::loadLanguagesFromI18n() {
         parts[0].remove(0, strlen(AppConstants::LOCALIZER_FILENAME_PREFIX) +
                                /* the final '_': */ 1);
 
-    if (Constants::inProduction() &&
+    if (AppConstants::inProduction() &&
         m_translationCompleteness.value(code, 0) < 0.7) {
       logger.debug() << "Language excluded:" << code << "completeness:"
                      << m_translationCompleteness.value(code, 0);
@@ -428,7 +428,7 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
 QString Localizer::nativeLanguageName(const QLocale& locale,
                                       const QString& code) {
 #ifndef UNIT_TEST
-  if (!Constants::inProduction()) {
+  if (!AppConstants::inProduction()) {
     Q_ASSERT_X(LanguageI18N::instance()->languageExists(code), "localizer",
                "Languages are out of sync with the translations");
   }

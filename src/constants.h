@@ -5,7 +5,8 @@
 #ifndef APPCONSTANTS_H
 #define APPCONSTANTS_H
 
-#include "constants.h"
+#include <stdint.h>
+#include <QString>
 
 namespace AppConstants {
 
@@ -16,11 +17,13 @@ QString apiBaseUrl();
 
 enum ApiEndpoint {
   Account,
+  Adjust,
   CreateSupportTicket,
   CreateSupportTicketGuest,
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
+  FeatureList,
   Heartbeat,
   IPInfo,
   LoginVerify,
@@ -49,8 +52,20 @@ enum ApiEndpoint {
 QString apiUrl(ApiEndpoint endpoint);
 
 // Returns true if we are in a production environment.
+bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
+
+/**
+ * @brief In staging only, override the version string for testing
+ * purposes.
+ */
+void setVersionOverride(const QString& versionOverride);
+
+// Project version and build strings.
+QString versionString();
+QString buildNumber();
+QString envOrDefault(const QString& name, const QString& defaultValue);
 
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "vpn";
@@ -96,6 +111,50 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 // Cooldown period for unresponsive servers
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
 
+constexpr const char* ADDON_PRODUCTION_KEY =
+    ":/addons_signature/production.der";
+constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
+
+constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+
+constexpr const char* PLATFORM_NAME =
+#if defined(MZ_IOS)
+    "ios"
+#elif defined(MZ_MACOS)
+    "macos"
+#elif defined(MZ_LINUX)
+    "linux"
+#elif defined(MZ_ANDROID)
+    "android"
+#elif defined(MZ_WINDOWS)
+    "windows"
+#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
+    "dummy"
+#else
+#  error "Unsupported platform"
+#endif
+    ;
+
+#define PRODBETAEXPR(type, functionName, prod, beta) \
+  inline type functionName() { return AppConstants::inProduction() ? prod : beta; }
+
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
+
+PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
+             AppConstants::envOrDefault("MZ_FXA_API_BASE_URL",
+                                     "https://api-accounts.stage.mozaws.net"))
+
+#undef PRODBETAEXPR
+
+#ifdef SENTRY_ENABLED
+constexpr const char* SENTRY_DSN_ENDPOINT = SENTRY_DSN;
+constexpr const char* SENTRY_ENVELOPE_INGESTION = SENTRY_ENVELOPE_ENDPOINT;
+#else
+constexpr const char* SENTRY_DSN_ENDPOINT = "";
+constexpr const char* SENTRY_ENVELOPE_INGESTION = "";
+#endif
+
 // Number of msecs for max runtime of the connection benchmarks.
 constexpr uint32_t BENCHMARK_MAX_BYTES_UPLOAD = 10485760;  // 10 Megabyte
 constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
@@ -111,7 +170,7 @@ constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue,   \
                     testingValue)                                   \
     inline type functionName() {                                    \
-      return Constants::inProduction() ? releaseValue : debugValue; \
+      return AppConstants::inProduction() ? releaseValue : debugValue; \
     }
 #endif
 
@@ -153,7 +212,7 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return Constants::inProduction() ? prod : beta; }
+  inline type functionName() { return AppConstants::inProduction() ? prod : beta; }
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
@@ -163,25 +222,25 @@ PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
 
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
-             Constants::envOrDefault(
+             AppConstants::envOrDefault(
                  "MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
 PRODBETAEXPR(QString, benchmarkDownloadUrl,
              "https://archive.mozilla.org/pub/vpn/speedtest/50m.data",
-             Constants::envOrDefault(
+             AppConstants::envOrDefault(
                  "MZ_BENCHMARK_DOWNLOAD_URL",
                  "https://archive.mozilla.org/pub/vpn/speedtest/50m.data"));
 
 PRODBETAEXPR(
     QString, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
-    Constants::envOrDefault(
+    AppConstants::envOrDefault(
         "MZ_BENCHMARK_UPLOAD_URL",
         "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/"
         "upload"));
 
 PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
-             Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
+             AppConstants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
                                      "http://%1/success.txt"));
 
 PRODBETAEXPR(

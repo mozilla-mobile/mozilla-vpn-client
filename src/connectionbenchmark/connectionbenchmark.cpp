@@ -4,7 +4,7 @@
 
 #include "connectionbenchmark.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"

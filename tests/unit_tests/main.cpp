@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 #endif
   {
     SettingsHolder settingsHolder;
-    Constants::setStaging();
+    AppConstants::setStaging();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();

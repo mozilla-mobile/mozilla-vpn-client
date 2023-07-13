@@ -7,7 +7,7 @@
 #include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "controller.h"
 #include "externalophandler.h"
 #include "i18nstrings.h"

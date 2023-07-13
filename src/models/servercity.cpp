@@ -76,7 +76,7 @@ bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
   }
 
   QList<QString> servers;
-  if (!Constants::inProduction() || !name.toString().contains("BETA")) {
+  if (!AppConstants::inProduction() || !name.toString().contains("BETA")) {
     QJsonArray serversArray = serversValue.toArray();
     for (const QJsonValue& serverValue : serversArray) {
       if (!serverValue.isObject()) {

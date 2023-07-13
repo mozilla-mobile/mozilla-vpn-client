@@ -59,7 +59,7 @@ class ConnectionHealth final : public QObject {
   ConnectionStability stability() const { return m_stability; }
 
   void overwriteStabilityForInspector(ConnectionStability stability) {
-    if (Constants::inProduction()) {
+    if (AppConstants::inProduction()) {
       qFatal(
           "Connection health stability mode can only be overwritten in Dev "
           "mode!");

@@ -47,7 +47,7 @@ void AdjustTaskSubmission::run() {
   }
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->post(Constants::apiUrl(Constants::Adjust),
+  request->post(AppConstants::apiUrl(AppConstants::Adjust),
                 QJsonObject{{"method", m_method},
                             {"path", m_path},
                             {"headers", headersObj},

@@ -111,15 +111,15 @@ void MZGlean::initialize() {
                            gleanDirectory.absolutePath().toUtf8());
 #elif defined(MZ_IOS)
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
-                       Constants::inProduction() ? "production" : "staging");
+                       AppConstants::inProduction() ? "production" : "staging");
 #elif defined(MZ_ANDROID)
     AndroidCommons::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
-        Constants::inProduction() ? "production" : "staging");
+        AppConstants::inProduction() ? "production" : "staging");
 #elif not(defined(MZ_WASM))
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toUtf8(),
-                     Constants::inProduction() ? "production" : "staging");
+                     AppConstants::inProduction() ? "production" : "staging");
 #endif
   }
 }
