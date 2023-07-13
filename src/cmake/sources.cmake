@@ -28,7 +28,7 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/featurelistcallback.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/appfeaturelist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/featurelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/appimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.cpp

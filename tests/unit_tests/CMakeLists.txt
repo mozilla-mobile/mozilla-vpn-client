@@ -69,7 +69,6 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
-    appfeaturelist.h
     appsettingslist.h
     helper.h
     main.cpp
