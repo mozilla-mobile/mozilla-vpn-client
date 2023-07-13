@@ -87,6 +87,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -skip qtwayland  `
   -skip qtvirtualkeyboard  `
   -skip qtwebview  `
+  -skip qtlocation `
 
   -feature-imageformat_png  `
   -qt-libpng  `
