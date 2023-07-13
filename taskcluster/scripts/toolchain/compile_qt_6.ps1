@@ -80,6 +80,15 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
  cmake --build . --parallel
 
+ if($?){
+  Write-Output "Compiled QT"
+}else{
+  Write-Output "Failed to Compile QT"
+   cmake --build .  --verbose
+  ./qtbase/bin/qsb.exe --glsl 100es,120,150 --hlsl 50 --msl 12 -b -c -O -s -o qtdeclarative/src/quick/.qsb/scenegraph/shaders_ng/8bittextmask_a.frag.qsb qtdeclarative/src/quick/scenegraph/shaders_ng/8bittextmask_a.frag
+  exit 1
+}
+
  cmake --install . --config Debug
  cmake --install . --config Release
 
