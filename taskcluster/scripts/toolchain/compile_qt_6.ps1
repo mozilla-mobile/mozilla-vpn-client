@@ -77,7 +77,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -skip qtvirtualkeyboard  `
   -skip qtwebview  `
   -skip qtlocation `
-
+  -skip qtquick3dphysics `
   -feature-imageformat_png  `
   -qt-libpng  `
   -qt-zlib  `
