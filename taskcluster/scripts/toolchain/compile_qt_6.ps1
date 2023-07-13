@@ -10,20 +10,10 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
-$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
-
-
 Set-Location $FETCHES_PATH
-Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
-if($?){
-    Write-Output "Downloaded : $QT_URI"
-}else{
-    Write-Output "Failed to download : $QT_URI"
-    exit 1
-}
 
-unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
+Rename-Item -Path qt.zip.noextract -NewName qt.zip
+unzip -o -qq qt.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import

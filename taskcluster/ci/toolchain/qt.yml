@@ -30,6 +30,7 @@ qt-win:
     fetches:
         fetch:
             - win-dev-env
+            - qt-source-zip
         openssl:
             - artifact: open_ssl_win.zip
               extract: false  # For some reason unzip exits with 1 even tho the file is okay
