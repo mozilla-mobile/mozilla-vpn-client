@@ -94,9 +94,21 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
 
-
+if($?){
+    Write-Output "Qt configured! "
+}else{
+    Write-Output "Failed to configure!"
+    exit 1
+}
 
  cmake --build . --parallel
+
+if($?){
+  Write-Output "Qt BUILT "
+}else{
+  Write-Output "Failed to build!!"
+  exit 1
+}
 
  cmake --install . --config Debug
  cmake --install . --config Release
