@@ -105,9 +105,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const InterfaceConfig& config,
-                             Controller::Reason reason) {
-
+void IOSController::activate(const InterfaceConfig& config, Controller::Reason reason) {
   // These features are not supported on ios yet.
   Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
@@ -122,8 +120,8 @@ void IOSController::activate(const InterfaceConfig& config,
 
   m_serverPublicKey = config.m_serverPublicKey;
 
-  NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS =
-      [NSMutableArray<VPNIPAddressRange*> arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
+  NSMutableArray<VPNIPAddressRange*>* allowedIPAddressRangesNS = [NSMutableArray<VPNIPAddressRange*>
+      arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     VPNIPAddressRange* range =
         [[VPNIPAddressRange alloc] initWithAddress:i.address().toString().toNSString()
@@ -133,16 +131,17 @@ void IOSController::activate(const InterfaceConfig& config,
   }
 
   [impl connectWithDnsServer:config.m_dnsServer.toNSString()
-           serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
-             serverPublicKey:config.m_serverPublicKey.toNSString()
-            serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
-                  serverPort:config.m_serverPort
-      allowedIPAddressRanges:allowedIPAddressRangesNS
-                      reason:reason
-             failureCallback:^() {
-               logger.error() << "IOSSWiftController - connection failed";
-               emit disconnected();
-             }];
+               serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
+                 serverPublicKey:config.m_serverPublicKey.toNSString()
+                serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
+                      serverPort:config.m_serverPort
+          allowedIPAddressRanges:allowedIPAddressRangesNS
+                          reason:reason
+      isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
+                 failureCallback:^() {
+                   logger.error() << "IOSSWiftController - connection failed";
+                   emit disconnected();
+                 }];
 }
 
 void IOSController::deactivate(Controller::Reason reason) {

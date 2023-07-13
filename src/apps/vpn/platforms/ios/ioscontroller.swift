@@ -116,9 +116,9 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, isSuperDooperFeatureActive: Bool, failureCallback: @escaping () -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
-        
+
         let _ = TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
             (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
@@ -152,11 +152,11 @@ public class IOSControllerImpl : NSObject {
 
             let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", failureCallback: failureCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", isSuperDooperFeatureActive: isSuperDooperFeatureActive, failureCallback: failureCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, isSuperDooperFeatureActive: Bool, failureCallback: @escaping () -> Void) {
         let _ = TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
@@ -173,6 +173,10 @@ public class IOSControllerImpl : NSObject {
                     proto!.excludeAPNs = false
                 }
             }
+
+            var configHack = proto?.providerConfiguration ?? [:]
+            configHack["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            proto?.providerConfiguration = configHack
 
             tunnel.protocolConfiguration = proto
             tunnel.localizedDescription = VPN_NAME
