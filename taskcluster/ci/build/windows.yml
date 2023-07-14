@@ -53,18 +53,3 @@ windows/opt:
             "3":
                 - secrets:get:project/mozillavpn/tokens
             default: []
-
-windows/clang-cl:
-    description: "Windows Build"
-    treeherder:
-        symbol: B(clang-cl)
-    scopes:
-        by-level:
-            "3":
-                - secrets:get:project/mozillavpn/tokens
-            default: []
-    run:
-        using: run-task
-        cwd: '{checkout}'
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows_clang_cl.ps1
