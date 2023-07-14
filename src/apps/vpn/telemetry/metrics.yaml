@@ -179,7 +179,7 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
-daemon_session_start:
+  daemon_session_start:
     type: datetime
     description: |
       (Mobile-only) The time the user starts a VPN session from the daemon or network extension
@@ -234,7 +234,7 @@ daemon_session_start:
       - vpn-telemetry@mozilla.com
     expires: never
 
-daemon_session_source:
+  daemon_session_source:
     type: string
     description: |
       (Mobile-only) Where the session started from. Should be "app", "system settings",

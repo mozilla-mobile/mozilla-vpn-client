@@ -207,7 +207,7 @@ public class IOSControllerImpl : NSObject {
                             IOSControllerImpl.logger.info(message: "Sending new message \(message)")
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
-                            try TunnelManager.session?.startTunnel()
+                            try TunnelManager.session?.startTunnel(options: ["source":"app"])
                         }
                     } catch let error {
                         IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")
