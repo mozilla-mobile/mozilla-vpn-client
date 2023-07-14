@@ -120,6 +120,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             if self.isSuperDooperFeatureActive {
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
+
+                // We are rotating the UUID here as a safety measure. It is rotated
+                // again before the next session start, and we expect to see the
+                // UUID created here in only one ping: The daemon ping with a
+                // "flush" reason, which should contain this UUID and no other
+                // metrics.
                 GleanMetrics.Session.daemonSessionId.generateAndSet()
             }
 
