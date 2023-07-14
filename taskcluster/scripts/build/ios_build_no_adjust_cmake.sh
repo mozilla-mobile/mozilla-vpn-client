@@ -42,9 +42,7 @@ conda info
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."
 git submodule update --init --recursive || die "Failed to init submodules"
-for i in src/apps/*/translations/i18n; do
-  git submodule update --remote $i || die "Failed to pull latest i18n from remote ($i)"
-done
+git submodule update --remote src/translations/i18n || die "Failed to pull latest i18n from remote (src/translations/i18n)"
 print G "done."
 
 print Y "Configuring the build..."

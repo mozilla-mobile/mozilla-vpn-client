@@ -2,7 +2,7 @@
 ./android/tunnel/*
 ./android/src/com/wireguard/*
 ./src/shared/hacl-star/*
-./src/apps/vpn/platforms/windows/golang-msvc-types.h
+./src/platforms/windows/golang-msvc-types.h
 ./extension/app/json.hpp
 ./translations/generated/*
 ./build/*

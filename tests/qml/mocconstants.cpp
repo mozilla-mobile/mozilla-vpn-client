@@ -17,6 +17,10 @@ const QString& AppConstants::getStagingServerAddress() {
   return stagingServerAddress;
 }
 
+void Constants::setVersionOverride(const QString& versionOverride) {
+  Q_UNUSED(versionOverride);
+}
+
 QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
 
 QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }

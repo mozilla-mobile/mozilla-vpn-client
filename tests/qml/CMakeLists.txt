@@ -6,7 +6,6 @@ get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
-include_directories(${MZ_SOURCE_DIR}/apps/vpn)
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/addons)
 include_directories(${MZ_SOURCE_DIR}/shared/composer)
@@ -30,7 +29,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations_vpn)
+target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -38,47 +37,47 @@ target_compile_definitions(qml_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/appconstants.h
-    ${MZ_SOURCE_DIR}/apps/vpn/controller.h
-    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/dnspingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/location.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/location.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/recommendedlocationmodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/server.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/server.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercity.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountry.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/servercountrymodel.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/serverdata.h
-    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/models/subscriptiondata.h
-    ${MZ_SOURCE_DIR}/apps/vpn/mozillavpn.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/pinghelper.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsender.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/pingsenderfactory.h
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/platforms/dummy/dummypingsender.h
-    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/serveri18n.h
-    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/serverlatency.h
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/tasks/controlleraction/taskcontrolleraction.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/updater.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/versionapi.h
-    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.cpp
-    ${MZ_SOURCE_DIR}/apps/vpn/update/webupdater.h
+    ${MZ_SOURCE_DIR}/appconstants.h
+    ${MZ_SOURCE_DIR}/controller.h
+    ${MZ_SOURCE_DIR}/dnspingsender.cpp
+    ${MZ_SOURCE_DIR}/dnspingsender.h
+    ${MZ_SOURCE_DIR}/models/location.cpp
+    ${MZ_SOURCE_DIR}/models/location.h
+    ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
+    ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
+    ${MZ_SOURCE_DIR}/models/server.cpp
+    ${MZ_SOURCE_DIR}/models/server.h
+    ${MZ_SOURCE_DIR}/models/servercity.cpp
+    ${MZ_SOURCE_DIR}/models/servercity.h
+    ${MZ_SOURCE_DIR}/models/servercountry.cpp
+    ${MZ_SOURCE_DIR}/models/servercountry.h
+    ${MZ_SOURCE_DIR}/models/servercountrymodel.cpp
+    ${MZ_SOURCE_DIR}/models/servercountrymodel.h
+    ${MZ_SOURCE_DIR}/models/serverdata.cpp
+    ${MZ_SOURCE_DIR}/models/serverdata.h
+    ${MZ_SOURCE_DIR}/models/subscriptiondata.cpp
+    ${MZ_SOURCE_DIR}/models/subscriptiondata.h
+    ${MZ_SOURCE_DIR}/mozillavpn.h
+    ${MZ_SOURCE_DIR}/pinghelper.cpp
+    ${MZ_SOURCE_DIR}/pinghelper.h
+    ${MZ_SOURCE_DIR}/pingsender.cpp
+    ${MZ_SOURCE_DIR}/pingsender.h
+    ${MZ_SOURCE_DIR}/pingsenderfactory.cpp
+    ${MZ_SOURCE_DIR}/pingsenderfactory.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
+    ${MZ_SOURCE_DIR}/serveri18n.cpp
+    ${MZ_SOURCE_DIR}/serveri18n.h
+    ${MZ_SOURCE_DIR}/serverlatency.cpp
+    ${MZ_SOURCE_DIR}/serverlatency.h
+    ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
+    ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
+    ${MZ_SOURCE_DIR}/update/updater.cpp
+    ${MZ_SOURCE_DIR}/update/updater.h
+    ${MZ_SOURCE_DIR}/update/versionapi.cpp
+    ${MZ_SOURCE_DIR}/update/versionapi.h
+    ${MZ_SOURCE_DIR}/update/webupdater.cpp
+    ${MZ_SOURCE_DIR}/update/webupdater.h
     ${MZ_SOURCE_DIR}/shared/addons/addon.cpp
     ${MZ_SOURCE_DIR}/shared/addons/addon.h
     ${MZ_SOURCE_DIR}/shared/addons/addonapi.cpp
@@ -189,6 +188,15 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/hkdf.cpp
     ${MZ_SOURCE_DIR}/shared/hkdf.h
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhandler.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectoritempicker.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorhotreloader.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketconnection.cpp
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.h
+    ${MZ_SOURCE_DIR}/shared/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/shared/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/shared/ipaddress.cpp
@@ -269,7 +277,7 @@ target_sources(qml_tests PRIVATE
 
 # VPN Client UI resources
 target_sources(qml_tests PRIVATE
-    ${MZ_SOURCE_DIR}/apps/vpn/ui/ui.qrc
+    ${MZ_SOURCE_DIR}/ui/ui.qrc
 )
 
 # QML test source files
