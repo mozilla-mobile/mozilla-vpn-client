@@ -186,7 +186,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
-      - ADD THIS IN AFTER REVIEW
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
     send_in_pings:
       - daemonsession
     data_sensitivity:
@@ -203,7 +203,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
-      - ADD THIS IN AFTER REVIEW
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
     send_in_pings:
       - daemonsession
     data_sensitivity:
@@ -224,7 +224,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
-      - ADD THIS IN AFTER REVIEW
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
     send_in_pings:
       - daemonsession
     data_sensitivity:
@@ -242,7 +242,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
-      - ADD THIS IN AFTER REVIEW
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
     send_in_pings:
       - daemonsession
     data_sensitivity:
