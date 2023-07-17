@@ -97,10 +97,10 @@ session:
     type: uuid
     lifetime: user
     description: |
-      A unique identifier for each session, shared with the daemon instance
-      of Glean. This is used to connect unique VPN sessions across pings, and
-      as a safety check on edge cases of VPN activation/deactivation, such as
-      a session being started/ended from mobile system settings.
+      A unique identifier for each session. This is used to connect unique VPN
+      sessions across pings, and as a safety check on edge cases of VPN
+      activation/deactivation, such as a session being started/ended from mobile
+      system settings.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4064
     data_reviews:
@@ -174,6 +174,79 @@ session:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6783#pullrequestreview-1407551157
     data_sensitivity:
       - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_session_start:
+    type: datetime
+    description: |
+      (Mobile-only) The time the user starts a VPN session from the daemon or network extension
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4038
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
+    send_in_pings:
+      - daemonsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_session_end:
+    type: datetime
+    description: |
+      (Mobile-only) The time the user ends a VPN session from the daemon or network extension
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4038
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
+    send_in_pings:
+      - daemonsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_session_id:
+    type: uuid
+    lifetime: user
+    description: |
+      (Mobile-only) A unique identifier for each session. This is used to connect
+      unique VPN sessions across pings, and as a safety check on edge cases of VPN
+      activation/deactivation, such as a session being started/ended from mobile
+      system settings.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4038
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
+    send_in_pings:
+      - daemonsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_session_source:
+    type: string
+    description: |
+      (Mobile-only) Where the session started from. Should be "app", "system settings",
+      or "autostart on boot".
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4038
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7513#pullrequestreview-1529674762
+    send_in_pings:
+      - daemonsession
+    data_sensitivity:
+      - interaction
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com

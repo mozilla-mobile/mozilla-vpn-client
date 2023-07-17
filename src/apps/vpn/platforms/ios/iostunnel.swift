@@ -49,10 +49,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-        let activationAttemptId = options?["activationAttemptId"] as? String
-        let errorNotifier = ErrorNotifier(activationAttemptId: activationAttemptId)
-
-        logger.info(message: "Starting tunnel from the " + (activationAttemptId == nil ? "OS directly, rather than the app" : "app"))
+        let errorNotifier = ErrorNotifier(activationAttemptId: nil)
+        let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
+        logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))
 
         guard let tunnelProviderProtocol = self.protocolConfiguration as? NETunnelProviderProtocol,
               let tunnelConfiguration = tunnelProviderProtocol.asTunnelConfiguration() else {
@@ -73,6 +72,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
                 if self.isSuperDooperFeatureActive {
+                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system settings")
+                    GleanMetrics.Session.daemonSessionId.generateAndSet()
+                    GleanMetrics.Session.daemonSessionStart.set()
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
@@ -116,7 +118,15 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
             if self.isSuperDooperFeatureActive {
+                GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
+
+                // We are rotating the UUID here as a safety measure. It is rotated
+                // again before the next session start, and we expect to see the
+                // UUID created here in only one ping: The daemon ping with a
+                // "flush" reason, which should contain this UUID and no other
+                // metrics.
+                GleanMetrics.Session.daemonSessionId.generateAndSet()
             }
 
             if let error = error {
