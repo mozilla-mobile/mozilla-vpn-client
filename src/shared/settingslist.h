@@ -231,7 +231,7 @@ SETTING_STRING(sentryDSN,        // getter
                "sentry/dsn",     // key
                "",               // default value
                false,            // user setting
-               true,            // remove when reset
+               true,             // remove when reset
                true              // sensitive (do not log)
 )
 
@@ -242,7 +242,7 @@ SETTING_STRING(sentryEndpoint,        // getter
                "sentry/endpoint",     // key
                "",                    // default value
                false,                 // user setting
-               true,                 // remove when reset
+               true,                  // remove when reset
                true                   // sensitive (do not log)
 )
 
