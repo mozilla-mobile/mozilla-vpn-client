@@ -10,11 +10,12 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
-$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
+# Let's use the taskcluster one for a bit. 
+$QT_URI = "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/OqOVDih6Q-C9TIP647Juzg/runs/0/artifacts/public%2Fqt-everywhere-src-6.5.1.tar.xz"
 
 Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
+Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.tar.xf
 if($?){
     Write-Output "Downloaded : $QT_URI"
 }else{
@@ -22,7 +23,7 @@ if($?){
     exit 1
 }
 
-unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
+tar -xf qt-everywhere-src-$QT_VERSION.tar.xf
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
@@ -76,6 +77,10 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
 
+# Print all the targets, so i can build the problematic ones first, 
+# save some time. 
+cmake --build . --target help
+
 
 
  cmake --build . --parallel
@@ -85,7 +90,8 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 }else{
   Write-Output "Failed to Compile QT"
    cmake --build .  --verbose
-  ./qtbase/bin/qsb.exe --glsl 100es,120,150 --hlsl 50 --msl 12 -b -c -O -s -o qtdeclarative/src/quick/.qsb/scenegraph/shaders_ng/8bittextmask_a.frag.qsb qtdeclarative/src/quick/scenegraph/shaders_ng/8bittextmask_a.frag
+  # So this did indeed not output anything....
+   ./qtbase/bin/qsb.exe --glsl 100es,120,150 --hlsl 50 --msl 12 -b -c -O -s -o qtdeclarative/src/quick/.qsb/scenegraph/shaders_ng/8bittextmask_a.frag.qsb qtdeclarative/src/quick/scenegraph/shaders_ng/8bittextmask_a.frag
   exit 1
 }
 
