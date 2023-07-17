@@ -11,11 +11,11 @@ $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
 # Let's use the taskcluster one for a bit. 
-$QT_URI = "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/OqOVDih6Q-C9TIP647Juzg/runs/0/artifacts/public%2Fqt-everywhere-src-6.5.1.tar.xz"
+$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
 Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.tar.xf
+Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
 if($?){
     Write-Output "Downloaded : $QT_URI"
 }else{
@@ -23,7 +23,7 @@ if($?){
     exit 1
 }
 
-tar -xf qt-everywhere-src-$QT_VERSION.tar.xf
+unzip -o -qq -a -aa qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
