@@ -145,10 +145,10 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     if (testingOption.m_set) {
-      AppConstants::setStaging();
+      Constants::setStaging();
     }
 
-    logger.info() << "MozillaVPN" << AppConstants::versionString();
+    logger.info() << "MozillaVPN" << Constants::versionString();
     logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
     logger.debug() << "UI starting";

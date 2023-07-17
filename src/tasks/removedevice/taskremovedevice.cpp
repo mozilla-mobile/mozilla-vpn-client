@@ -47,7 +47,7 @@ void TaskRemoveDevice::run() {
   NetworkRequest* request = new NetworkRequest(this, 204);
   request->auth(m_authHeader);
   request->deleteResource(
-      AppConstants::apiUrl(AppConstants::DeviceWithPublicKeyArgument)
+      Constants::apiUrl(Constants::DeviceWithPublicKeyArgument)
           .arg(QUrl::toPercentEncoding(m_publicKey)));
 
   request->disableTimeout();

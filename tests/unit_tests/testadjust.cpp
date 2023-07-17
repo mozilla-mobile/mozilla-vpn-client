@@ -50,7 +50,7 @@ void TestAdjust::paramFiltering_data() {
 
   QTest::addRow("mirror default")
       << QUrlQuery{{"device_name", "a"}}.toString()
-      << QUrlQuery{{"device_name", AppConstants::PLATFORM_NAME}}.toString()
+      << QUrlQuery{{"device_name", Constants::PLATFORM_NAME}}.toString()
       << QStringList();
 
   QTest::addRow("everything together")
@@ -59,7 +59,7 @@ void TestAdjust::paramFiltering_data() {
                    {"os_name", "os"},
                    {"region", "what"}}
              .toString()
-      << QUrlQuery{{"device_name", AppConstants::PLATFORM_NAME},
+      << QUrlQuery{{"device_name", Constants::PLATFORM_NAME},
                    {"os_name", "os"},
                    {"region", "xxxxx"}}
              .toString()

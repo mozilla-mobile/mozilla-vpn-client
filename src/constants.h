@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <QString>
 
-namespace AppConstants {
+namespace Constants {
 
 /**
  * @brief expose the API base URL for guardian
@@ -136,13 +136,13 @@ constexpr const char* PLATFORM_NAME =
     ;
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return AppConstants::inProduction() ? prod : beta; }
+  inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
 PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
              "https://accounts.stage.mozaws.net")
 
 PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
-             AppConstants::envOrDefault("MZ_FXA_API_BASE_URL",
+             Constants::envOrDefault("MZ_FXA_API_BASE_URL",
                                      "https://api-accounts.stage.mozaws.net"))
 
 #undef PRODBETAEXPR
@@ -170,7 +170,7 @@ constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue,   \
                     testingValue)                                   \
     inline type functionName() {                                    \
-      return AppConstants::inProduction() ? releaseValue : debugValue; \
+      return Constants::inProduction() ? releaseValue : debugValue; \
     }
 #endif
 
@@ -212,7 +212,7 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
 #define PRODBETAEXPR(type, functionName, prod, beta) \
-  inline type functionName() { return AppConstants::inProduction() ? prod : beta; }
+  inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
@@ -222,25 +222,25 @@ PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
 
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
-             AppConstants::envOrDefault(
+             Constants::envOrDefault(
                  "MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
 PRODBETAEXPR(QString, benchmarkDownloadUrl,
              "https://archive.mozilla.org/pub/vpn/speedtest/50m.data",
-             AppConstants::envOrDefault(
+             Constants::envOrDefault(
                  "MZ_BENCHMARK_DOWNLOAD_URL",
                  "https://archive.mozilla.org/pub/vpn/speedtest/50m.data"));
 
 PRODBETAEXPR(
     QString, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
-    AppConstants::envOrDefault(
+    Constants::envOrDefault(
         "MZ_BENCHMARK_UPLOAD_URL",
         "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/"
         "upload"));
 
 PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
-             AppConstants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
+             Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
                                      "http://%1/success.txt"));
 
 PRODBETAEXPR(
@@ -317,6 +317,6 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
 // TODO: #endif
 
-};  // namespace AppConstants
+};  // namespace Constants
 
 #endif  // APPCONSTANTS_H

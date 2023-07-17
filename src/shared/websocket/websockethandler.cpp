@@ -59,7 +59,7 @@ QString WebSocketHandler::webSocketServerUrl() {
     return s_customWebSocketServerUrl;
   }
 
-  QString httpServerUrl = AppConstants::apiBaseUrl();
+  QString httpServerUrl = Constants::apiBaseUrl();
   return httpServerUrl.toLower().replace("http", "ws");
 }
 

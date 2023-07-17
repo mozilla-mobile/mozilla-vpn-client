@@ -91,7 +91,7 @@ void Env::setDebugMode(bool debugMode) {
 #endif
 
 // static
-bool Env::stagingMode() { return !AppConstants::inProduction(); }
+bool Env::stagingMode() { return !Constants::inProduction(); }
 
 #ifdef UNIT_TEST
 void Env::setStagingMode(bool stagingMode) {

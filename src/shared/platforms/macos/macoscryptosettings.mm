@@ -23,7 +23,7 @@ NSString* getAppId() {
 #ifdef MZ_IOS
     appId = QString(AppConstants::IOS_FALLBACK_APP_ID).toNSString();
 #else
-    appId = QString(AppConstants::MACOS_FALLBACK_APP_ID).toNSString();
+    appId = QString(Constants::MACOS_FALLBACK_APP_ID).toNSString();
 #endif
   }
   return appId;
@@ -35,7 +35,7 @@ NSString* getAppId() {
 void CryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
-  NSData* service = QByteArray(AppConstants::CRYPTO_SETTINGS_SERVICE).toNSData();
+  NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
   NSString* appId = getAppId();
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
@@ -60,7 +60,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     logger.debug() << "Retrieving the key from the keychain";
 
-    NSData* service = QByteArray(AppConstants::CRYPTO_SETTINGS_SERVICE).toNSData();
+    NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
     NSString* appId = getAppId();
 
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];

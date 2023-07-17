@@ -41,7 +41,7 @@ SettingsHolder::SettingsHolder()
 #else
                  "mozilla_testing",
 #endif
-                 AppConstants::SETTINGS_APP_NAME) {
+                 Constants::SETTINGS_APP_NAME) {
   MZ_COUNT_CTOR(SettingsHolder);
 
   // The location changes after the initialization of the app. Let's store the
@@ -186,7 +186,7 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
   logger.debug() << "Clean up the settings for group" << group;
 
   const QString groupKey(
-      QString("%1/%2").arg(AppConstants::ADDON_SETTINGS_GROUP, group));
+      QString("%1/%2").arg(Constants::ADDON_SETTINGS_GROUP, group));
 
   m_settings.beginGroup(groupKey);
   m_settings.remove("");
@@ -198,7 +198,7 @@ void SettingsHolder::clearAddonSettings(const QString& group) {
 // static
 QString SettingsHolder::getAddonSettingKey(const AddonSettingQuery& query) {
   return QString("%1/%2/%3/%4")
-      .arg(AppConstants::ADDON_SETTINGS_GROUP, query.m_addonGroup, query.m_addonId,
+      .arg(Constants::ADDON_SETTINGS_GROUP, query.m_addonGroup, query.m_addonId,
            query.m_setting);
 }
 

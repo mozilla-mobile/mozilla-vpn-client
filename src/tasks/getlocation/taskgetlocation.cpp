@@ -30,7 +30,7 @@ TaskGetLocation::TaskGetLocation(
 TaskGetLocation::~TaskGetLocation() { MZ_COUNT_DTOR(TaskGetLocation); }
 
 void TaskGetLocation::run() {
-  QUrl url(AppConstants::apiUrl(AppConstants::IPInfo));
+  QUrl url(Constants::apiUrl(Constants::IPInfo));
   QString host = url.host();
 
   NetworkRequest* request = new NetworkRequest(this, 200);

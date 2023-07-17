@@ -21,7 +21,7 @@ void TestIpFinder::ipv4AndIpv6() {
   TestHelper::networkConfig.clear();
 
   QEventLoop loop;
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
 
   bool ipv4Expected = false;
   bool ipv6Expected = false;

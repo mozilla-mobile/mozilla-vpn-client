@@ -10,30 +10,30 @@ namespace {
 bool s_productionMode = true;
 }  // namespace
 
-bool AppConstants::inProduction() { return s_productionMode; }
+bool Constants::inProduction() { return s_productionMode; }
 
-const QString& AppConstants::getStagingServerAddress() {
-  static QString stagingServerAddress = AppConstants::API_STAGING_URL;
+const QString& Constants::getStagingServerAddress() {
+  static QString stagingServerAddress = Constants::API_STAGING_URL;
   return stagingServerAddress;
 }
 
-void AppConstants::setVersionOverride(const QString& versionOverride) {
+void Constants::setVersionOverride(const QString& versionOverride) {
   Q_UNUSED(versionOverride);
 }
 
-QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
+QString Constants::apiBaseUrl() { return Constants::API_STAGING_URL; }
 
-QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }
+QString Constants::apiUrl(ApiEndpoint) { return "something here"; }
 
-void AppConstants::setStaging() { s_productionMode = false; }
+void Constants::setStaging() { s_productionMode = false; }
 
-QString AppConstants::versionString() {
+QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");
 }
 
-QString AppConstants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
+QString Constants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
 
-QString AppConstants::envOrDefault(const QString& name,
+QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {
   Q_UNUSED(name);
   return defaultValue;

@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 #endif
   {
     SettingsHolder settingsHolder;
-    AppConstants::setStaging();
+    Constants::setStaging();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();

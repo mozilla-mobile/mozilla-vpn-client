@@ -49,7 +49,7 @@ Telemetry::Telemetry() {
   connect(&m_gleanControllerUpTimer, &QTimer::timeout, this,
           &Telemetry::periodicStateRecorder);
   m_gleanControllerUpTimer.start(
-      AppConstants::controllerPeriodicStateRecorderMsec());
+      Constants::controllerPeriodicStateRecorderMsec());
   m_gleanControllerUpTimer.setSingleShot(false);
 #endif
 }

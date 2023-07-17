@@ -56,7 +56,7 @@ QString AddonManager::addonServerAddress() {
     return settingsHolder->addonCustomServerAddress();
   }
 
-  return AppConstants::addonBaseUrl();
+  return Constants::addonBaseUrl();
 }
 
 AddonManager::AddonManager(QObject* parent)
@@ -463,7 +463,7 @@ void AddonManager::reset() {
 
 // static
 bool AddonManager::signatureVerificationNeeded() {
-  if (AppConstants::inProduction()) {
+  if (Constants::inProduction()) {
     return true;
   }
 

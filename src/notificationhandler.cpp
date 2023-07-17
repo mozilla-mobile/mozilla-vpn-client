@@ -255,7 +255,7 @@ void NotificationHandler::captivePortalBlockNotificationRequired() {
       i18nStrings->t(I18nStrings::NotificationsCaptivePortalBlockMessage2);
 
   notifyInternal(CaptivePortalBlock, title, message,
-                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::captivePortalUnblockNotificationRequired() {
@@ -270,7 +270,7 @@ void NotificationHandler::captivePortalUnblockNotificationRequired() {
       i18nStrings->t(I18nStrings::NotificationsCaptivePortalUnblockMessage2);
 
   notifyInternal(CaptivePortalUnblock, title, message,
-                 AppConstants::CAPTIVE_PORTAL_ALERT_MSEC);
+                 Constants::CAPTIVE_PORTAL_ALERT_MSEC);
 }
 
 void NotificationHandler::unsecuredNetworkNotification(
@@ -287,7 +287,7 @@ void NotificationHandler::unsecuredNetworkNotification(
           .arg(networkName);
 
   notifyInternal(UnsecuredNetwork, title, message,
-                 AppConstants::UNSECURED_NETWORK_ALERT_MSEC);
+                 Constants::UNSECURED_NETWORK_ALERT_MSEC);
 }
 
 void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
@@ -310,7 +310,7 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
           : i18nStrings->t(I18nStrings::ServerUnavailableNotificationBodyText);
 
   notifyInternal(ServerUnavailable, title, message,
-                 AppConstants::SERVER_UNAVAILABLE_ALERT_MSEC);
+                 Constants::SERVER_UNAVAILABLE_ALERT_MSEC);
 }
 
 void NotificationHandler::newInAppMessageNotification(const QString& title,
@@ -323,7 +323,7 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
   }
 
   notifyInternal(NewInAppMessage, title, message,
-                 AppConstants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
+                 Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
 
 void NotificationHandler::subscriptionNotFoundNotification() {
@@ -338,7 +338,7 @@ void NotificationHandler::subscriptionNotFoundNotification() {
       i18nStrings->t(I18nStrings::NotificationsSubscriptionNotFound);
 
   notifyInternal(SubscriptionNotFound, notificationTitle, notificationBody,
-                 AppConstants::DEFAULT_OS_NOTIFICATION_MSEC);
+                 Constants::DEFAULT_OS_NOTIFICATION_MSEC);
 }
 
 void NotificationHandler::notifyInternal(Message type, const QString& title,

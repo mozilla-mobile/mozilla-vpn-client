@@ -87,7 +87,7 @@ void Balrog::start(Task* task) {
   }
 
   QString url =
-      QString(AppConstants::balrogUrl()).arg(appVersion()).arg(userAgent());
+      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = new NetworkRequest(task, 200);
@@ -236,7 +236,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   QByteArray updateDataCopy = updateData;
   GoString updateDataGo{updateDataCopy.constData(), updateDataCopy.length()};
 
-  QByteArray rootHashCopy = AppConstants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
+  QByteArray rootHashCopy = Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
   rootHashCopy = rootHashCopy.toUpper();
   GoString rootHashGo{rootHashCopy.constData(), rootHashCopy.length()};
 

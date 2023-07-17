@@ -41,9 +41,9 @@ class Env final : public QObject {
 
   ~Env() = default;
 
-  static bool inProduction() { return AppConstants::inProduction(); }
-  static QString versionString() { return AppConstants::versionString(); }
-  static QString buildNumber() { return AppConstants::buildNumber(); }
+  static bool inProduction() { return Constants::inProduction(); }
+  static QString versionString() { return Constants::versionString(); }
+  static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MZ_WINDOWS
     return WindowsUtils::windowsVersion();
@@ -52,7 +52,7 @@ class Env final : public QObject {
 #endif
   }
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
-  static QString platform() { return AppConstants::PLATFORM_NAME; }
+  static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
   static QString graphicsApi();
 

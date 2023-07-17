@@ -69,7 +69,7 @@ const QIcon& StatusIcon::icon() {
 void StatusIcon::activateAnimation() {
   logger.debug() << "Activate animation";
   m_animatedIconIndex = 0;
-  m_animatedIconTimer.start(AppConstants::statusIconAnimationMsec());
+  m_animatedIconTimer.start(Constants::statusIconAnimationMsec());
 }
 
 void StatusIcon::animateIcon() {

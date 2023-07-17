@@ -63,16 +63,16 @@ AuthenticationListener::~AuthenticationListener() {
 QUrl AuthenticationListener::createAuthenticationUrl(
     const QString& codeChallenge, const QString& codeChallengeMethod,
     const QString& emailAddress) {
-  QString path = QString("/api/v2/%1/login/").arg(AppConstants::AUTH_PROD_NAME);
+  QString path = QString("/api/v2/%1/login/").arg(Constants::AUTH_PROD_NAME);
 
 #if !defined(MZ_DUMMY)
-  path.append(AppConstants::PLATFORM_NAME);
+  path.append(Constants::PLATFORM_NAME);
 #else
   // Let's use ios here.
   path.append("ios");
 #endif
 
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   url.setPath(path);
 
   QUrlQuery query;
@@ -89,9 +89,9 @@ QUrl AuthenticationListener::createAuthenticationUrl(
 }
 
 QUrl AuthenticationListener::createLoginVerifyUrl() {
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   url.setPath(
-      QString("/api/v2/%1/login/verify").arg(AppConstants::AUTH_PROD_NAME));
+      QString("/api/v2/%1/login/verify").arg(Constants::AUTH_PROD_NAME));
   return url;
 }
 

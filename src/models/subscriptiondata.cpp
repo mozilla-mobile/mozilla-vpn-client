@@ -126,7 +126,7 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
   } else if (planInterval == "month") {
     planIntervalMonths = 1;
   } else if ((planInterval == "week" || planInterval == "day") &&
-             !AppConstants::inProduction()) {
+             !Constants::inProduction()) {
     // For testing purposes we support additional intervals
     // and use a monthly plan as fallback
     planIntervalMonths = 1;
@@ -197,7 +197,7 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     for (const QJsonValue& subscriptionValue : subscriptionsList) {
       QJsonObject subscription = subscriptionValue.toObject();
       if (subscription["product_id"] ==
-          AppConstants::privacyBundleProductId()) {
+          Constants::privacyBundleProductId()) {
         m_isPrivacyBundleSubscriber = true;
         break;
       }

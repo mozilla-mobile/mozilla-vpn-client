@@ -48,7 +48,7 @@ void TaskIPFinder::run() {
   return;
 #endif
 
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   m_lookupId = QHostInfo::lookupHost(url.host(), this,
                                      SLOT(dnsLookupCompleted(QHostInfo)));
 }
@@ -87,7 +87,7 @@ void TaskIPFinder::dnsLookupCompleted(const QHostInfo& hostInfo) {
 }
 
 void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   QString host = url.host();
 
   if (address.protocol() == QAbstractSocket::IPv6Protocol) {

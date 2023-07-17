@@ -96,20 +96,20 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << AppConstants::versionString();
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(AppConstants::versionString());
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -123,20 +123,20 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << AppConstants::versionString();
+  logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(AppConstants::versionString());
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -145,7 +145,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
-  QIcon icon(AppConstants::LOGO_URL);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
@@ -157,7 +157,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
@@ -185,7 +185,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(AppConstants::versionString());
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
 
@@ -193,7 +193,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
-  QIcon icon(AppConstants::LOGO_URL);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();

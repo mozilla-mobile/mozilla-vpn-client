@@ -27,7 +27,7 @@ Logger logger("AuthenticationInAppSession");
 NetworkRequest* fxaHawkPostRequest(Task* parent, const QString& path,
                                    const QByteArray& sessionToken,
                                    const QJsonObject& obj) {
-  QUrl url(QString("%1%2").arg(AppConstants::fxaApiBaseUrl(), path));
+  QUrl url(QString("%1%2").arg(Constants::fxaApiBaseUrl(), path));
   QByteArray payload = QJsonDocument(obj).toJson(QJsonDocument::Compact);
 
   HawkAuth hawk = HawkAuth(sessionToken);
@@ -174,7 +174,7 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
   aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
   NetworkRequest* request = new NetworkRequest(m_task, 200);
-  request->post(QString("%1/v1/account/status").arg(AppConstants::fxaApiBaseUrl()),
+  request->post(QString("%1/v1/account/status").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{{"email", m_emailAddress}});
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -277,7 +277,7 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
   }
 
   NetworkRequest* request = new NetworkRequest(m_task, 200);
-  request->post(QString("%1/v1/account/login").arg(AppConstants::fxaApiBaseUrl()),
+  request->post(QString("%1/v1/account/login").arg(Constants::fxaApiBaseUrl()),
                 obj);
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -336,7 +336,7 @@ void AuthenticationInAppSession::signUp() {
       AuthenticationInApp::StateSigningUp, this);
 
   NetworkRequest* request = new NetworkRequest(m_task, 200);
-  request->post(QString("%1/v1/account/create").arg(AppConstants::fxaApiBaseUrl()),
+  request->post(QString("%1/v1/account/create").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{
                     {
                         "email",
@@ -398,7 +398,7 @@ void AuthenticationInAppSession::sendUnblockCodeEmail() {
 
   NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/login/send_unblock_code")
-                    .arg(AppConstants::fxaApiBaseUrl()),
+                    .arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{{"email", m_emailAddressCaseFix}});
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -573,7 +573,7 @@ void AuthenticationInAppSession::createTotpCodes() {
 
 void AuthenticationInAppSession::startAccountDeletionFlow() {
   QUrl url(QString("%1/v1/account/attached_clients")
-               .arg(AppConstants::fxaApiBaseUrl()));
+               .arg(Constants::fxaApiBaseUrl()));
 
   HawkAuth hawk = HawkAuth(m_sessionToken);
   QByteArray hawkHeader = hawk.generate(url, "GET", "", "").toUtf8();

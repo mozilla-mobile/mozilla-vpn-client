@@ -69,7 +69,7 @@ void TaskPurchase::run() {
 #ifdef MZ_IOS
     case IOS:
       request->post(
-          AppConstants::apiUrl(AppConstants::PurchasesIOS),
+          Constants::apiUrl(Constants::PurchasesIOS),
           QJsonObject{{"receipt", m_iOSReceipt},
                       {"appId", QString::fromNSString(IOSUtils::appId())}});
       break;
@@ -77,13 +77,13 @@ void TaskPurchase::run() {
 #ifdef MZ_ANDROID
     case Android:
       request->post(
-          AppConstants::apiUrl(AppConstants::PurchasesAndroid),
+          Constants::apiUrl(Constants::PurchasesAndroid),
           QJsonObject{{"sku", m_androidSku}, {"token", m_androidToken}});
       break;
 #endif
 #ifdef MZ_WASM
     case Wasm:
-      request->post(AppConstants::apiUrl(AppConstants::PurchasesWasm),
+      request->post(Constants::apiUrl(Constants::PurchasesWasm),
                     QJsonObject{{"productId", m_productId}});
       break;
 #endif

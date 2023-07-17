@@ -188,7 +188,7 @@ void Localizer::loadLanguagesFromI18n() {
   QDir dir(ResourceLoader::instance()->loadDir(":/i18n"));
   QStringList files = dir.entryList();
   for (const QString& file : files) {
-    if (!file.startsWith(AppConstants::LOCALIZER_FILENAME_PREFIX) ||
+    if (!file.startsWith(Constants::LOCALIZER_FILENAME_PREFIX) ||
         !file.endsWith(".qm")) {
       continue;
     }
@@ -197,10 +197,10 @@ void Localizer::loadLanguagesFromI18n() {
     Q_ASSERT(parts.length() == 2);
 
     QString code =
-        parts[0].remove(0, strlen(AppConstants::LOCALIZER_FILENAME_PREFIX) +
+        parts[0].remove(0, strlen(Constants::LOCALIZER_FILENAME_PREFIX) +
                                /* the final '_': */ 1);
 
-    if (AppConstants::inProduction() &&
+    if (Constants::inProduction() &&
         m_translationCompleteness.value(code, 0) < 0.7) {
       logger.debug() << "Language excluded:" << code << "completeness:"
                      << m_translationCompleteness.value(code, 0);
@@ -370,7 +370,7 @@ bool Localizer::createTranslator(const QLocale& locale) {
   m_translators.append(translator);
   QCoreApplication::installTranslator(translator);
 
-  return translator->load(locale, AppConstants::LOCALIZER_FILENAME_PREFIX, "_",
+  return translator->load(locale, Constants::LOCALIZER_FILENAME_PREFIX, "_",
                           ":/i18n");
 }
 
@@ -428,7 +428,7 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
 QString Localizer::nativeLanguageName(const QLocale& locale,
                                       const QString& code) {
 #ifndef UNIT_TEST
-  if (!AppConstants::inProduction()) {
+  if (!Constants::inProduction()) {
     Q_ASSERT_X(LanguageI18N::instance()->languageExists(code), "localizer",
                "Languages are out of sync with the translations");
   }

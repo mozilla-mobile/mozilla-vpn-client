@@ -43,13 +43,13 @@ void CaptivePortalRequest::run() {
   // delete all the others.
 
   for (const QString& address : ipv4Addresses) {
-    QUrl url(AppConstants::captivePortalUrl().arg(address));
+    QUrl url(Constants::captivePortalUrl().arg(address));
     createRequest(url);
   }
 
   for (const QString& address : ipv6Addresses) {
     QUrl url(
-        AppConstants::captivePortalUrl().arg(QString("[%1]").arg(address)));
+        Constants::captivePortalUrl().arg(QString("[%1]").arg(address)));
     createRequest(url);
   }
 }

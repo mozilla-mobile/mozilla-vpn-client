@@ -32,7 +32,7 @@ void TaskCaptivePortalLookup::run() {
 
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(App::authorizationHeader());
-  request->get(AppConstants::apiUrl(AppConstants::DNSDetectPortal));
+  request->get(Constants::apiUrl(Constants::DNSDetectPortal));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

@@ -89,8 +89,8 @@ QByteArray NetworkManager::userAgent() {
     flags.append("iap:true");
 
     QTextStream out(&userAgent);
-    out << AppConstants::NETWORK_USERAGENT_PREFIX << "/"
-        << AppConstants::versionString() << " (" << flags.join("; ") << ")";
+    out << Constants::NETWORK_USERAGENT_PREFIX << "/"
+        << Constants::versionString() << " (" << flags.join("; ") << ")";
   }
 
   return userAgent;

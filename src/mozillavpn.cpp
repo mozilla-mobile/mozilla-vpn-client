@@ -618,7 +618,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(AppConstants::versionString());
+  settingsHolder->setDeviceKeyVersion(Constants::versionString());
 
   settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
@@ -892,7 +892,7 @@ void MozillaVPN::mainWindowLoaded() {
     mozilla::glean_pings::Main.submit();
     emit MozillaVPN::sendGleanPings();
   });
-  m_gleanTimer.start(AppConstants::gleanTimeoutMsec());
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
 #ifdef SENTRY_ENABLED
@@ -922,9 +922,9 @@ void MozillaVPN::telemetryPolicyCompleted() {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-                 << AppConstants::schedulePeriodicTaskTimerMsec();
+                 << Constants::schedulePeriodicTaskTimerMsec();
   m_periodicOperationsTimer.start(
-      AppConstants::schedulePeriodicTaskTimerMsec());
+      Constants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
@@ -1307,7 +1307,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("captivePortal", []() -> QString {
     SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-    return AppConstants::captivePortalUrl().arg(
+    return Constants::captivePortalUrl().arg(
         settingsHolder->captivePortalIpv4Addresses().isEmpty()
             ? "127.0.0.1"
             : settingsHolder->captivePortalIpv4Addresses().first());
@@ -1318,11 +1318,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("privacyNotice", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectPrivacy);
+    return Constants::apiUrl(Constants::RedirectPrivacy);
   });
 
   uo->registerUrlLabel("relayPremium", []() -> QString {
-    return QString("%1/premium").arg(AppConstants::relayUrl());
+    return QString("%1/premium").arg(Constants::relayUrl());
   });
 
   // TODO: This should link to a more helpful article
@@ -1332,30 +1332,30 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectSubscriptionBlocked);
+    return Constants::apiUrl(Constants::RedirectSubscriptionBlocked);
   });
 
   uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
-    return AppConstants::APPLE_SUBSCRIPTIONS_URL;
+    return Constants::APPLE_SUBSCRIPTIONS_URL;
   });
 
   uo->registerUrlLabel("subscriptionIapGoogle", []() -> QString {
-    return AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
+    return Constants::GOOGLE_SUBSCRIPTIONS_URL;
   });
 
   uo->registerUrlLabel("subscriptionFxa", []() -> QString {
-    return QString("%1/subscriptions").arg(AppConstants::fxaUrl());
+    return QString("%1/subscriptions").arg(Constants::fxaUrl());
   });
 
   uo->registerUrlLabel("contactSupport", []() -> QString {
-    return AppConstants::contactSupportUrl();
+    return Constants::contactSupportUrl();
   });
 
   uo->registerUrlLabel(
-      "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
+      "sumo", []() -> QString { return Constants::MOZILLA_VPN_SUMO_URL; });
 
   uo->registerUrlLabel("termsOfService", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectTermsOfService);
+    return Constants::apiUrl(Constants::RedirectTermsOfService);
   });
 
   uo->registerUrlLabel("update", []() -> QString {
@@ -1365,17 +1365,17 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #elif defined(MZ_ANDROID)
                               AppConstants::GOOGLE_PLAYSTORE_URL
 #else
-            AppConstants::apiUrl(
-                AppConstants::RedirectUpdateWithPlatformArgument)
-                .arg(AppConstants::PLATFORM_NAME)
+            Constants::apiUrl(
+                Constants::RedirectUpdateWithPlatformArgument)
+                .arg(Constants::PLATFORM_NAME)
 #endif
         ;
   });
 
   uo->registerUrlLabel("upgradeToBundle", []() -> QString {
     return QString("%1/r/vpn/upgradeToPrivacyBundle")
-        .arg(AppConstants::inProduction() ? AppConstants::API_PRODUCTION_URL
-                                       : AppConstants::API_STAGING_URL);
+        .arg(Constants::inProduction() ? Constants::API_PRODUCTION_URL
+                                       : Constants::API_STAGING_URL);
   });
 }
 
@@ -2154,7 +2154,7 @@ void MozillaVPN::registerInspectorCommands() {
 // static
 QString MozillaVPN::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return AppConstants::versionString();
+    return Constants::versionString();
   }
 
   return s_updateVersion;

@@ -52,7 +52,7 @@ void TaskGetSubscriptionDetails::run() {
 void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(App::authorizationHeader());
-  request->get(AppConstants::apiUrl(AppConstants::SubscriptionDetails));
+  request->get(Constants::apiUrl(Constants::SubscriptionDetails));
 
   connect(
       request, &NetworkRequest::requestFailed, this,
@@ -148,7 +148,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
             NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
-                AppConstants::apiUrl(AppConstants::LoginVerify),
+                Constants::apiUrl(Constants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},
                             {"code_verifier", QString(pkceCodeVerifier)}});
 

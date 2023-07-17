@@ -80,8 +80,8 @@ void TaskSentry::sendRequest() {
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");
   request->requestInternal().setRawHeader("dsn",
-                                          AppConstants::SENTRY_DSN_ENDPOINT);
-  request->post(QUrl(AppConstants::SENTRY_ENVELOPE_INGESTION), m_envelope);
+                                          Constants::SENTRY_DSN_ENDPOINT);
+  request->post(QUrl(Constants::SENTRY_ENVELOPE_INGESTION), m_envelope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

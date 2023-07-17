@@ -172,11 +172,11 @@ QList<ConditionCallback> s_conditionCallbacks{
        }
 
        if (env == "staging") {
-         return !AppConstants::inProduction();
+         return !Constants::inProduction();
        }
 
        if (env == "production") {
-         return AppConstants::inProduction();
+         return Constants::inProduction();
        }
 
        logger.info() << "Unknown env value:" << env;
@@ -190,7 +190,7 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"min_client_version",
      [](const QJsonValue& value) -> bool {
        QString min = value.toString();
-       QString currentVersion = AppConstants::versionString();
+       QString currentVersion = Constants::versionString();
 
        if (!min.isEmpty() &&
            VersionUtils::compareVersions(min, currentVersion) == 1) {
@@ -209,7 +209,7 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"max_client_version",
      [](const QJsonValue& value) -> bool {
        QString max = value.toString();
-       QString currentVersion = AppConstants::versionString();
+       QString currentVersion = Constants::versionString();
 
        if (!max.isEmpty() &&
            VersionUtils::compareVersions(max, currentVersion) == -1) {

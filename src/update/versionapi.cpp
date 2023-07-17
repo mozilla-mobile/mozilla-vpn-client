@@ -31,7 +31,7 @@ VersionApi::~VersionApi() {
 
 void VersionApi::start(Task* task) {
   NetworkRequest* request = new NetworkRequest(task, 200);
-  request->get(AppConstants::apiUrl(AppConstants::Versions));
+  request->get(Constants::apiUrl(Constants::Versions));
 
   connect(request, &NetworkRequest::requestFailed, request,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -59,7 +59,7 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonObject obj = json.object();
 
-  QString platformKey = AppConstants::PLATFORM_NAME;
+  QString platformKey = Constants::PLATFORM_NAME;
 
   if (!obj.contains(platformKey)) {
     logger.debug() << "No key" << platformKey;

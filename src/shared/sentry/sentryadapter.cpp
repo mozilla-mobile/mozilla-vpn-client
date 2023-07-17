@@ -40,8 +40,8 @@ void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (QString(AppConstants::SENTRY_DSN_ENDPOINT).isEmpty() ||
-      QString(AppConstants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
+  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
+      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
     logger.error() << "Sentry failed to init, no sentry config present";
     return;
   }
@@ -58,11 +58,11 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, AppConstants::SENTRY_DSN_ENDPOINT);
+  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
   sentry_options_set_environment(
-      options, AppConstants::inProduction() ? "production" : "stage");
+      options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(
-      options, AppConstants::versionString().toLocal8Bit().constData());
+      options, Constants::versionString().toLocal8Bit().constData());
   sentry_options_set_database_path(options,
                                    sentryFolder.toLocal8Bit().constData());
   sentry_options_set_on_crash(options, &SentryAdapter::onCrash, NULL);

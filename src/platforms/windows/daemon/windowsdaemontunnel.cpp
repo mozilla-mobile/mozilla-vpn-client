@@ -36,7 +36,7 @@ int WindowsDaemonTunnel::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Tunnel");
-  QCoreApplication::setApplicationVersion(AppConstants::versionString());
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   if (tokens.length() != 2) {
     logger.error() << "Expected 1 parameter only: the config file.";

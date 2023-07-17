@@ -19,13 +19,13 @@ bool s_inProduction = true;
 QString s_versionOverride = "";
 }  // namespace
 
-bool AppConstants::inProduction() { return s_inProduction; }
+bool Constants::inProduction() { return s_inProduction; }
 
-const QString& AppConstants::getStagingServerAddress() {
+const QString& Constants::getStagingServerAddress() {
   return s_stagingServerAddress;
 }
 
-void AppConstants::setStaging() {
+void Constants::setStaging() {
   s_inProduction = false;
 
   // Get staging server address. If it was set to empty by the user, remove it
@@ -39,20 +39,20 @@ void AppConstants::setStaging() {
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
 
-void AppConstants::setVersionOverride(const QString& versionOverride) {
+void Constants::setVersionOverride(const QString& versionOverride) {
   s_versionOverride = versionOverride;
 }
 
-QString AppConstants::versionString() {
+QString Constants::versionString() {
   if (!s_inProduction && !s_versionOverride.isEmpty()) {
     return s_versionOverride;
   }
   return QStringLiteral(APP_VERSION);
 }
 
-QString AppConstants::buildNumber() { return QStringLiteral(BUILD_ID); }
+QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
-QString AppConstants::envOrDefault(const QString& name,
+QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {
   QString env;
 
@@ -69,15 +69,15 @@ QString AppConstants::envOrDefault(const QString& name,
 }
 
 
-QString AppConstants::apiBaseUrl() {
-  if (AppConstants::inProduction()) {
-    return AppConstants::API_PRODUCTION_URL;
+QString Constants::apiBaseUrl() {
+  if (Constants::inProduction()) {
+    return Constants::API_PRODUCTION_URL;
   }
 
-  return AppConstants::getStagingServerAddress();
+  return Constants::getStagingServerAddress();
 }
 
-QString AppConstants::apiUrl(ApiEndpoint endpoint) {
+QString Constants::apiUrl(ApiEndpoint endpoint) {
   static QMap<ApiEndpoint, const char*> endpoints{
       {ApiEndpoint::Account, "/api/v1/vpn/account"},
       {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
@@ -110,6 +110,6 @@ QString AppConstants::apiUrl(ApiEndpoint endpoint) {
 
   Q_ASSERT(endpoints.contains(endpoint));
 
-  QString apiBaseUrl = AppConstants::apiBaseUrl();
+  QString apiBaseUrl = Constants::apiBaseUrl();
   return apiBaseUrl.append(endpoints[endpoint]);
 }

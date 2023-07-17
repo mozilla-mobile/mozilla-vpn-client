@@ -16,7 +16,7 @@ Logger logger("BenchmarkTaskPing");
 
 BenchmarkTaskPing::BenchmarkTaskPing()
     : BenchmarkTask("BenchmarkTaskPing",
-                    AppConstants::BENCHMARK_MAX_DURATION_PING) {
+                    Constants::BENCHMARK_MAX_DURATION_PING) {
   MZ_COUNT_CTOR(BenchmarkTaskPing);
 
   connect(this, &BenchmarkTask::stateChanged, this,

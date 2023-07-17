@@ -26,7 +26,7 @@ EventListener::EventListener() {
 
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
-  logger.debug() << "Server path:" << AppConstants::UI_PIPE;
+  logger.debug() << "Server path:" << Constants::UI_PIPE;
 
 #ifdef MZ_LINUX
   if (QFileInfo::exists(AppConstants::UI_PIPE)) {
@@ -34,7 +34,7 @@ EventListener::EventListener() {
   }
 #endif
 
-  if (!m_server.listen(AppConstants::UI_PIPE)) {
+  if (!m_server.listen(Constants::UI_PIPE)) {
     logger.error() << "Failed to listen the daemon path";
     return;
   }
@@ -90,7 +90,7 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
     return true;
   }
 #else
-  if (!QFileInfo::exists(AppConstants::UI_PIPE)) {
+  if (!QFileInfo::exists(Constants::UI_PIPE)) {
     logger.warning() << "No other instances found - no unix socket";
     return true;
   }
@@ -99,7 +99,7 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
   logger.debug() << "Try to communicate with the existing instance";
 
   QLocalSocket socket;
-  socket.connectToServer(AppConstants::UI_PIPE);
+  socket.connectToServer(Constants::UI_PIPE);
   if (!socket.waitForConnected(1000)) {
     logger.error() << "Connection failed.";
     return true;

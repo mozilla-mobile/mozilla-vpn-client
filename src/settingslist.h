@@ -47,7 +47,7 @@ SETTING_STRING(addonCustomServerAddress,        // getter
                removeAddonCustomServerAddress,  // remover
                hasAddonCustomServerAddress,     // has
                "addon/customServerAddress",     // key
-               AppConstants::addonBaseUrl(),    // default value
+               Constants::addonBaseUrl(),    // default value
                false,                           // user setting
                false,                           // remove when reset
                false                            // sensitive (do not log)
@@ -507,8 +507,8 @@ SETTING_STRING(
     removeStagingServerAddress,  // remover
     hasStagingServerAddress,     // has
     "stagingServerAddress",      // key
-    AppConstants::envOrDefault("MVPN_API_BASE_URL",
-                            AppConstants::API_STAGING_URL),  // default value
+    Constants::envOrDefault("MVPN_API_BASE_URL",
+                            Constants::API_STAGING_URL),  // default value
     false,                                                   // user setting
     false,  // remove when reset
     false   // sensitive (do not log)

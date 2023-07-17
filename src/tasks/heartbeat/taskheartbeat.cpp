@@ -25,7 +25,7 @@ TaskHeartbeat::~TaskHeartbeat() { MZ_COUNT_DTOR(TaskHeartbeat); }
 
 void TaskHeartbeat::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->get(AppConstants::apiUrl(AppConstants::Heartbeat));
+  request->get(Constants::apiUrl(Constants::Heartbeat));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray&) {

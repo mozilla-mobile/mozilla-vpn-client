@@ -17,35 +17,35 @@
 //QString s_versionOverride = "";
 //}  // namespace
 
-// QString AppConstants::apiUrl(ApiEndpoint endpoint) {
+// QString Constants::apiUrl(ApiEndpoint endpoint) {
 //   static QMap<ApiEndpoint, const char*> endpoints{
 //       {ApiEndpoint::Adjust, "/api/v1/vpn/adjust"},
 //       {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"}};
 
 //   Q_ASSERT(endpoints.contains(endpoint));
 
-//   QString apiBaseUrl = AppConstants::apiBaseUrl();
+//   QString apiBaseUrl = Constants::apiBaseUrl();
 //   return apiBaseUrl.append(endpoints[endpoint]);
 // }
 
-// bool AppConstants::inProduction() { return s_inProduction; }
+// bool Constants::inProduction() { return s_inProduction; }
 
-// void AppConstants::setStaging() { s_inProduction = false; }
+// void Constants::setStaging() { s_inProduction = false; }
 
-// void AppConstants::setVersionOverride(const QString& versionOverride) {
+// void Constants::setVersionOverride(const QString& versionOverride) {
 //   s_versionOverride = versionOverride;
 // }
 
-// QString AppConstants::versionString() {
+// QString Constants::versionString() {
 //   if (!s_inProduction && !s_versionOverride.isEmpty()) {
 //     return s_versionOverride;
 //   }
 //   return QStringLiteral(APP_VERSION);
 // }
 
-// QString AppConstants::buildNumber() { return QStringLiteral(BUILD_ID); }
+// QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
-// QString AppConstants::envOrDefault(const QString& name,
+// QString Constants::envOrDefault(const QString& name,
 //                                 const QString& defaultValue) {
 //   QString env;
 

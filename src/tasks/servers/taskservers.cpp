@@ -27,7 +27,7 @@ TaskServers::~TaskServers() { MZ_COUNT_DTOR(TaskServers); }
 void TaskServers::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth(App::authorizationHeader());
-  request->get(AppConstants::apiUrl(AppConstants::Servers));
+  request->get(Constants::apiUrl(Constants::Servers));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

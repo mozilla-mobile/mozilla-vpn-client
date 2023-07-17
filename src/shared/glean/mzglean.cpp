@@ -119,7 +119,7 @@ void MZGlean::initialize() {
 #elif not(defined(MZ_WASM))
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toUtf8(),
-                     AppConstants::inProduction() ? "production" : "staging");
+                     Constants::inProduction() ? "production" : "staging");
 #endif
   }
 }

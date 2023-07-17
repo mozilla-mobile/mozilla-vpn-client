@@ -65,10 +65,10 @@ Updater::~Updater() {
 
 // static
 QString Updater::appVersion() {
-  if (!AppConstants::inProduction()) {
+  if (!Constants::inProduction()) {
     return MozillaVPN::appVersionForUpdate();
   }
-  return AppConstants::versionString();
+  return Constants::versionString();
 }
 
 // static
