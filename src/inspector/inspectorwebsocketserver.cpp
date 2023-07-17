@@ -7,7 +7,10 @@
 #include <QHostAddress>
 #include <QWebSocket>
 
+#include <QWebchannel>
+
 #include "inspectorwebsocketconnection.h"
+#include "inspectorwebchannel.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -53,8 +56,5 @@ void InspectorWebSocketServer::newConnectionReceived() {
     return;
   }
 #endif
-
-  InspectorWebSocketConnection* connection =
-      new InspectorWebSocketConnection(this, child);
-  connect(child, &QWebSocket::disconnected, connection, &QObject::deleteLater);
+  InspectorWebChannel::instance()->attach(child);
 }

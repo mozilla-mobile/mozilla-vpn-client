@@ -5,7 +5,7 @@
 # For CMake versions prior to 3.19, we may need to perform manual
 # finalization in order to pick up QML dependencies when built
 # statically.
-qt_add_executable(mozillavpn MANUAL_FINALIZATION)
+qt_add_executable(mozillavpn MANUAL_FINALIZATION shared/inspector/inspectorwebchanneltransport.cpp shared/inspector/inspectorwebchanneltransport.h)
 
 mz_target_handle_warnings(mozillavpn)
 
@@ -13,6 +13,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
+    Qt6::WebChannel
     Qt6::Widgets
     Qt6::Svg
 )
