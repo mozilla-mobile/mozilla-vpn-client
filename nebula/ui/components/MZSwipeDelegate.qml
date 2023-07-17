@@ -12,6 +12,8 @@ SwipeDelegate {
     id: swipeDelegate
 
     property alias content: contentLoader
+    property bool hasUiStates: true
+    property bool blockClose: false
     property bool isSwipeOpen: false
     property var onSwipeOpen: () => {}
     property var onSwipeClose: () => {}
@@ -20,7 +22,8 @@ SwipeDelegate {
     padding: 0
     clip: true
     hoverEnabled: true
-    activeFocusOnTab: true
+    activeFocusOnTab: !blockClose
+    implicitHeight: contentLoader.item.implicitHeight
 
     background: Rectangle {
         color: MZTheme.theme.bgColor
@@ -42,6 +45,18 @@ SwipeDelegate {
     swipe.onClosed: {
         isSwipeOpen = false
         onSwipeClose()
+    }
+
+    Keys.onRightPressed: {
+        if(swipe.left) {
+            swipe.open(SwipeDelegate.Left)
+        }
+    }
+
+    Keys.onLeftPressed: {
+        if(swipe.left && !blockClose) {
+            swipe.close()
+        }
     }
 
     onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(swipeDelegate)
@@ -129,17 +144,15 @@ SwipeDelegate {
         anchors.leftMargin: swipeDelegate.isSwipeOpen && swipe.leftItem ? swipe.leftItem.width : 0
         anchors.rightMargin: swipeDelegate.isSwipeOpen && swipe.rightItem ? swipe.rightItem.width : 0
 
-        onMouseXChanged: if(mouseX < pressedMouseX) swipeDelegate.swipe.close()
+        onMouseXChanged: if(mouseX < pressedMouseX && !blockClose) swipeDelegate.swipe.close()
         onPressed: pressedMouseX = mouseX
-        onClicked: if(!swipeDelegate.isSwipeOpen || mouseX <= pressedMouseX) swipeDelegate.swipe.close()
+        onClicked: if(!swipeDelegate.isSwipeOpen || mouseX <= pressedMouseX && !blockClose) swipeDelegate.swipe.close()
         onReleased: swipeDelegate.state = swipeDelegate.uiState.stateDefault
     }
 
     MZMouseArea {
         id: buttonMouseArea
         propagateComposedEvents: true
-        onPressed: (mouse) => {
-                       mouse.accepted = false
-                   }
+        onPressed: (mouse) => { mouse.accepted = false }
     }
 }

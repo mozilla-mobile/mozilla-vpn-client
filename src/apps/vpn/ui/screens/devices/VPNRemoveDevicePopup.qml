@@ -50,16 +50,4 @@ MZSimplePopup {
             }
         }
     ]
-
-    onClosed: {
-        // When closing the dialog, put the focus back on the
-        // remove button that originally triggered the dialog.
-        if (wasmView) {
-            return;
-        }
-
-        if (deviceList.focusedIconButton) {
-            deviceList.focusedIconButton.forceActiveFocus();
-        }
-    }
 }

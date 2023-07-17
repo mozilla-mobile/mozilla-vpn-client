@@ -853,6 +853,20 @@ inAppMessaging:
     value: Survey
     comment: A badge shown in a message signifying that this message contains a survey
 
+devices:
+  countLabel:
+    value: "%1 out of %2 devices added"
+    comment: Label at the top of the "My devices" setting screen indicating the number of devices registered to the users account (1st arg) vs the max limit of devices available for their account (2nd arg)
+  limitTitle: 
+    value: Device not added
+    comment: Title of the "device limit" view stating that the device has not yet been added to the list of active devices (because we are at the device limit)
+  limitDescription:
+    value: You’re already using VPN on 5 devices. To use VPN on this device, please remove one.
+    comment: Description of the "device limit" view describing why the device has not yet been added to the list of active devices (because we are at the device limit)
+  removingTitle:
+    value: Removing device…
+    comment: Title for "Removing device" screen
+
 global:
   expand:
     value: Expand

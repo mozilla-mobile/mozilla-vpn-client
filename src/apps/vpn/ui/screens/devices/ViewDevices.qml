@@ -15,15 +15,24 @@ MZViewBase {
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
     property string deviceCountLabelText: ""
+    property bool isEditing: false
+    property bool isDeletingLastItem
     property Component rightMenuButton: Component {
-        MZLightLabel {
-            text: vpnFlickable.deviceCountLabelText
-            elide: Text.ElideRight
-            horizontalAlignment: Text.AlignRight
+        MZLinkButton {
+            id: editLink
+
+            property bool isEditing: false
+            property bool skipEnsureVisible: true
+
+            enabled: VPNDeviceModel.rowCount() > 1
+            labelText: !vpnFlickable.isEditing ? MZI18n.InAppMessagingEditButton : MZI18n.InAppSupportWorkflowSupportResponseButton
+            onClicked: {
+                vpnFlickable.isEditing = !vpnFlickable.isEditing
+            }
         }
     }
 
-    state: VPN.state !== VPN.StateDeviceLimit ? "active" : "deviceLimit"
+    onIsEditingChanged: deviceList.isEditingChanged(isEditing)
 
     //% "My devices"
     _menuTitle: qsTrId("vpn.devices.myDevices")
@@ -31,76 +40,36 @@ MZViewBase {
         id: content
 
         objectName: "deviceListView"
-        Layout.fillWidth: true
-        spacing: MZTheme.theme.windowMargin
+        spacing: 0
 
-        VPNDevicesListHeader {
-            id: maxDevicesReached
+        MZInterLabel {
+            Layout.topMargin: -8
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
             Layout.fillWidth: true
-            visible: VPN.state === VPN.StateDeviceLimit
+
+            horizontalAlignment: Text.AlignLeft
+            color: MZTheme.theme.fontColor
+            text: MZI18n.DevicesCountLabel.arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
         }
 
-        Repeater {
+        Rectangle {
+            Layout.topMargin: MZTheme.theme.listSpacing
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+
+            color: MZTheme.colors.grey10
+        }
+
+        VPNDeviceList {
             id: deviceList
-            model: VPNDeviceModel
             Layout.fillWidth: true
-            delegate: VPNDeviceListItem { objectName: "device-" + name }
-        }
-
-        ColumnLayout {
-            id: col
-            Layout.fillWidth: true
-
-            MZVerticalSpacer {
-                Layout.preferredHeight: MZTheme.theme.windowMargin * 2
-                Layout.fillWidth: true
-
-                Rectangle {
-                    id: divider
-                    height: 1
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        leftMargin: MZTheme.theme.windowMargin
-                        rightMargin: MZTheme.theme.windowMargin
-                        verticalCenter: parent.verticalCenter
-                    }
-                    color: "#e7e7e7"
-                }
-            }
-
-            MZLinkButton {
-                id: getHelpLink
-
-                labelText: MZI18n.GetHelpLinkTitle
-                Layout.alignment: Qt.AlignHCenter
-                onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-            }
-
-            MZSignOut {
-                id: signOff
-                anchors.bottom: undefined
-                anchors.horizontalCenter: undefined
-                anchors.bottomMargin: undefined
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-            }
+            onRemoveItem: (name, publicKey) => { removePopup.initializeAndOpen(name, publicKey) }
         }
     }
+
     VPNRemoveDevicePopup {
         id: removePopup
-
-        Connections {
-            target: VPN
-            function onDeviceRemoving(devPublicKey) {
-                if(VPN.state === VPN.StateDeviceLimit) {
-                    for(var i = 0; i < deviceList.count; i++) {
-                        deviceList.itemAt(i).enabled = false
-                    }
-                }
-            }
-        }
 
         function initializeAndOpen(name, publicKey) {
             removePopup.deviceName = name;
@@ -109,49 +78,14 @@ MZViewBase {
         }
     }
 
-    Component.onCompleted: {
-        VPN.refreshDevices()
-        if (wasmView) {
-            state = "deviceLimit"
+    Connections {
+        target: deviceList
+        function onIsEditing(isEditing) {
+            vpnFlickable.isEditing = isEditing
         }
     }
 
-    states: [
-        State {
-            name: "active" // normal mode
-
-            PropertyChanges {
-                target: vpnFlickable
-                //% "%1 of %2"
-                //: Example: You have "x of y" devices in your account, where y is the limit of allowed devices.
-                deviceCountLabelText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
-            }
-            PropertyChanges {
-                target: col
-                visible: false
-            }
-            PropertyChanges {
-                target: menu
-                btnDisabled: false
-            }
-        },
-        State {
-            name: "deviceLimit"
-
-            PropertyChanges {
-                target: vpnFlickable
-                //% "%1 of %2"
-                //: Example: You have "x of y" devices in yor account, where y is the limit of allowed devices.
-                deviceCountLabelText: qsTrId("vpn.devices.activeVsMaxDeviceCount").arg(VPNDeviceModel.activeDevices + 1).arg(VPNUser.maxDevices)
-            }
-            PropertyChanges {
-                target: col
-                visible: true
-            }
-            PropertyChanges {
-                target: menu
-                btnDisabled: true
-            }
-        }
-    ]
+    Component.onCompleted: {
+        VPN.refreshDevices()
+    }
 }
