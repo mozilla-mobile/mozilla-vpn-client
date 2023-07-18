@@ -9,6 +9,8 @@
 
 #include "pingsender.h"
 
+class QThread;
+
 class DnsPingSender final : public PingSender {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DnsPingSender)
@@ -19,11 +21,16 @@ class DnsPingSender final : public PingSender {
 
   void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
+  void start();
+  void stop() { m_socket.close(); }
+
  private:
   void readData();
 
  private:
   QUdpSocket m_socket;
+  QThread* m_thread = nullptr;
+  QHostAddress m_source;
 };
 
 #endif  // DNSPINGSENDER_H
