@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+import { Octokit } from "https://esm.sh/@octokit/core";
 const octokit = new Octokit({});
 const static_branch_info = fetch("./branch_runs.json").then((r) => r.json());
 

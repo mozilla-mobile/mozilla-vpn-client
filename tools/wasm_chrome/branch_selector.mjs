@@ -4,7 +4,7 @@
 
 import "./fluent_components.mjs";
 import { getGithubPaginatedData } from "./helpers.mjs";
-import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+import { Octokit } from "https://esm.sh/@octokit/core";
 
 const octokit = new Octokit({});
 
