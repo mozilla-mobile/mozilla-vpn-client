@@ -13,7 +13,7 @@
 #include <QProcessEnvironment>
 #include <QTest>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"

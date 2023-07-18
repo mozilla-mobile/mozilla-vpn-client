@@ -9,7 +9,7 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "collator.h"
 #include "feature.h"
 #include "leakdetector.h"
@@ -254,7 +254,7 @@ void ServerCountryModel::setCooldownForAllServersInACity(
     }
     for (const QString& pubkey : city.servers()) {
       MozillaVPN::instance()->serverLatency()->setCooldown(
-          pubkey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+          pubkey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
     }
   }
 }

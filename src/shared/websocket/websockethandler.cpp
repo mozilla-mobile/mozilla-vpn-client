@@ -8,7 +8,7 @@
 #include <QGuiApplication>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "exponentialbackoffstrategy.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
@@ -59,7 +59,7 @@ QString WebSocketHandler::webSocketServerUrl() {
     return s_customWebSocketServerUrl;
   }
 
-  QString httpServerUrl = AppConstants::apiBaseUrl();
+  QString httpServerUrl = Constants::apiBaseUrl();
   return httpServerUrl.toLower().replace("http", "ws");
 }
 

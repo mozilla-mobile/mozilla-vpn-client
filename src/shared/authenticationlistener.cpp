@@ -4,7 +4,7 @@
 
 #include "authenticationlistener.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapplistener.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -63,7 +63,7 @@ AuthenticationListener::~AuthenticationListener() {
 QUrl AuthenticationListener::createAuthenticationUrl(
     const QString& codeChallenge, const QString& codeChallengeMethod,
     const QString& emailAddress) {
-  QString path = QString("/api/v2/%1/login/").arg(AppConstants::AUTH_PROD_NAME);
+  QString path = QString("/api/v2/%1/login/").arg(Constants::AUTH_PROD_NAME);
 
 #if !defined(MZ_DUMMY)
   path.append(Constants::PLATFORM_NAME);
@@ -72,7 +72,7 @@ QUrl AuthenticationListener::createAuthenticationUrl(
   path.append("ios");
 #endif
 
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   url.setPath(path);
 
   QUrlQuery query;
@@ -89,9 +89,9 @@ QUrl AuthenticationListener::createAuthenticationUrl(
 }
 
 QUrl AuthenticationListener::createLoginVerifyUrl() {
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   url.setPath(
-      QString("/api/v2/%1/login/verify").arg(AppConstants::AUTH_PROD_NAME));
+      QString("/api/v2/%1/login/verify").arg(Constants::AUTH_PROD_NAME));
   return url;
 }
 

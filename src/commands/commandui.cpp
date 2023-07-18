@@ -11,7 +11,7 @@
 #include <QQmlContext>
 
 #include "addons/manager/addonmanager.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
@@ -145,7 +145,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     if (testingOption.m_set) {
-      AppConstants::setStaging();
+      Constants::setStaging();
     }
 
     logger.info() << "MozillaVPN" << Constants::versionString();

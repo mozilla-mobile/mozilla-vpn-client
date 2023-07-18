@@ -9,7 +9,7 @@
 #include <QJsonValue>
 #include <QStringList>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -29,7 +29,7 @@ TaskSentryConfig::~TaskSentryConfig() { MZ_COUNT_DTOR(TaskSentryConfig); }
 void TaskSentryConfig::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
 
-  QUrl url(AppConstants::apiBaseUrl());
+  QUrl url(Constants::apiBaseUrl());
   url.setPath("/api/v1/vpn/crashreporting");
 
   connect(request, &NetworkRequest::requestFailed, this,

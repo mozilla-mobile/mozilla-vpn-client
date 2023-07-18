@@ -38,8 +38,6 @@ target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
-    ${MZ_SOURCE_DIR}/appconstants.cpp
-    ${MZ_SOURCE_DIR}/appconstants.h
     ${MZ_SOURCE_DIR}/captiveportal/captiveportal.cpp
     ${MZ_SOURCE_DIR}/captiveportal/captiveportal.h
     ${MZ_SOURCE_DIR}/connectionhealth.cpp
@@ -48,6 +46,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/command.h
     ${MZ_SOURCE_DIR}/commandlineparser.cpp
     ${MZ_SOURCE_DIR}/commandlineparser.h
+    ${MZ_SOURCE_DIR}/constants.cpp
+    ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/dnshelper.cpp
     ${MZ_SOURCE_DIR}/dnshelper.h
@@ -201,8 +201,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/composer/composerblocktitle.h
     ${MZ_SOURCE_DIR}/shared/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/shared/composer/composerblockunorderedlist.h
-    ${MZ_SOURCE_DIR}/shared/constants.cpp
-    ${MZ_SOURCE_DIR}/shared/constants.h
     ${MZ_SOURCE_DIR}/shared/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/shared/cryptosettings.h
     ${MZ_SOURCE_DIR}/shared/curve25519.cpp
