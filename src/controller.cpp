@@ -5,7 +5,7 @@
 #include "controller.h"
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
 #include "controllerimpl.h"
@@ -247,7 +247,7 @@ bool Controller::activate(const ServerData& serverData,
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
     request->auth(App::authorizationHeader());
-    request->get(AppConstants::apiUrl(AppConstants::Account));
+    request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
             [this, serverSelectionPolicy](QNetworkReply::NetworkError error,
@@ -469,7 +469,7 @@ bool Controller::silentSwitchServers(
 
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
-        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 
   m_nextServerData = m_serverData;
@@ -570,7 +570,7 @@ void Controller::handshakeTimeout() {
   // Block the offending server and try again.
   InterfaceConfig& hop = m_activationQueue.first();
   vpn->serverLatency()->setCooldown(
-      hop.m_serverPublicKey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+      hop.m_serverPublicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
   emit handshakeFailed(hop.m_serverPublicKey);
 

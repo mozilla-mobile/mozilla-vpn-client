@@ -96,8 +96,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblocktitle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblockunorderedlist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblockunorderedlist.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp

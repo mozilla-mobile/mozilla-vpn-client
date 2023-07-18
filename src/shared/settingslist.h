@@ -45,7 +45,7 @@ SETTING_STRING(addonCustomServerAddress,        // getter
                removeAddonCustomServerAddress,  // remover
                hasAddonCustomServerAddress,     // has
                "addon/customServerAddress",     // key
-               AppConstants::addonBaseUrl(),    // default value
+               Constants::addonBaseUrl(),    // default value
                false,                           // user setting
                false,                           // remove when reset
                false                            // sensitive (do not log)

@@ -9,7 +9,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "cryptosettings.h"
 #include "env.h"
 #include "feature.h"
@@ -41,7 +41,7 @@ SettingsHolder::SettingsHolder()
 #else
                  "mozilla_testing",
 #endif
-                 AppConstants::SETTINGS_APP_NAME) {
+                 Constants::SETTINGS_APP_NAME) {
   MZ_COUNT_CTOR(SettingsHolder);
 
   // The location changes after the initialization of the app. Let's store the

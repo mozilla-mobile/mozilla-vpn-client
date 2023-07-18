@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef APPCONSTANTS_H
-#define APPCONSTANTS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include "constants.h"
 
-namespace AppConstants {
+namespace Constants {
 
 /**
  * @brief expose the API base URL for guardian
@@ -88,6 +88,6 @@ PRODBETAEXPR(
 
 #undef PRODBETAEXPR
 
-};  // namespace AppConstants
+};  // namespace Constants
 
-#endif  // APPCONSTANTS_H
+#endif  // CONSTANTS_H

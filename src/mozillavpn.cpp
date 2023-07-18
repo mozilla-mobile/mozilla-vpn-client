@@ -6,7 +6,7 @@
 
 #include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "dnshelper.h"
@@ -892,7 +892,7 @@ void MozillaVPN::mainWindowLoaded() {
     mozilla::glean_pings::Main.submit();
     emit MozillaVPN::sendGleanPings();
   });
-  m_gleanTimer.start(AppConstants::gleanTimeoutMsec());
+  m_gleanTimer.start(Constants::gleanTimeoutMsec());
   m_gleanTimer.setSingleShot(false);
 #endif
 #ifdef SENTRY_ENABLED
@@ -922,9 +922,9 @@ void MozillaVPN::telemetryPolicyCompleted() {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
-                 << AppConstants::schedulePeriodicTaskTimerMsec();
+                 << Constants::schedulePeriodicTaskTimerMsec();
   m_periodicOperationsTimer.start(
-      AppConstants::schedulePeriodicTaskTimerMsec());
+      Constants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
@@ -1053,7 +1053,7 @@ void MozillaVPN::subscriptionCompleted() {
   logger.debug() << "Subscription completed";
 
 #ifdef MZ_ADJUST
-  AdjustHandler::trackEvent(AppConstants::ADJUST_SUBSCRIPTION_COMPLETED);
+  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
 #endif
 
   completeActivation();
@@ -1307,7 +1307,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("captivePortal", []() -> QString {
     SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-    return AppConstants::captivePortalUrl().arg(
+    return Constants::captivePortalUrl().arg(
         settingsHolder->captivePortalIpv4Addresses().isEmpty()
             ? "127.0.0.1"
             : settingsHolder->captivePortalIpv4Addresses().first());
@@ -1318,11 +1318,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("privacyNotice", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectPrivacy);
+    return Constants::apiUrl(Constants::RedirectPrivacy);
   });
 
   uo->registerUrlLabel("relayPremium", []() -> QString {
-    return QString("%1/premium").arg(AppConstants::relayUrl());
+    return QString("%1/premium").arg(Constants::relayUrl());
   });
 
   // TODO: This should link to a more helpful article
@@ -1332,15 +1332,15 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("subscriptionBlocked", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectSubscriptionBlocked);
+    return Constants::apiUrl(Constants::RedirectSubscriptionBlocked);
   });
 
   uo->registerUrlLabel("subscriptionIapApple", []() -> QString {
-    return AppConstants::APPLE_SUBSCRIPTIONS_URL;
+    return Constants::APPLE_SUBSCRIPTIONS_URL;
   });
 
   uo->registerUrlLabel("subscriptionIapGoogle", []() -> QString {
-    return AppConstants::GOOGLE_SUBSCRIPTIONS_URL;
+    return Constants::GOOGLE_SUBSCRIPTIONS_URL;
   });
 
   uo->registerUrlLabel("subscriptionFxa", []() -> QString {
@@ -1348,25 +1348,25 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("contactSupport", []() -> QString {
-    return AppConstants::contactSupportUrl();
+    return Constants::contactSupportUrl();
   });
 
   uo->registerUrlLabel(
-      "sumo", []() -> QString { return AppConstants::MOZILLA_VPN_SUMO_URL; });
+      "sumo", []() -> QString { return Constants::MOZILLA_VPN_SUMO_URL; });
 
   uo->registerUrlLabel("termsOfService", []() -> QString {
-    return AppConstants::apiUrl(AppConstants::RedirectTermsOfService);
+    return Constants::apiUrl(Constants::RedirectTermsOfService);
   });
 
   uo->registerUrlLabel("update", []() -> QString {
     return
 #if defined(MZ_IOS)
-        AppConstants::APPLE_STORE_URL
+        Constants::APPLE_STORE_URL
 #elif defined(MZ_ANDROID)
-                              AppConstants::GOOGLE_PLAYSTORE_URL
+                              Constants::GOOGLE_PLAYSTORE_URL
 #else
-            AppConstants::apiUrl(
-                AppConstants::RedirectUpdateWithPlatformArgument)
+            Constants::apiUrl(
+                Constants::RedirectUpdateWithPlatformArgument)
                 .arg(Constants::PLATFORM_NAME)
 #endif
         ;
@@ -1374,8 +1374,8 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("upgradeToBundle", []() -> QString {
     return QString("%1/r/vpn/upgradeToPrivacyBundle")
-        .arg(Constants::inProduction() ? AppConstants::API_PRODUCTION_URL
-                                       : AppConstants::API_STAGING_URL);
+        .arg(Constants::inProduction() ? Constants::API_PRODUCTION_URL
+                                       : Constants::API_STAGING_URL);
   });
 }
 

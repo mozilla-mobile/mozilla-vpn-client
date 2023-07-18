@@ -11,7 +11,7 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -197,7 +197,7 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     for (const QJsonValue& subscriptionValue : subscriptionsList) {
       QJsonObject subscription = subscriptionValue.toObject();
       if (subscription["product_id"] ==
-          AppConstants::privacyBundleProductId()) {
+          Constants::privacyBundleProductId()) {
         m_isPrivacyBundleSubscriber = true;
         break;
       }

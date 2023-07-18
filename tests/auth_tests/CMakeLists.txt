@@ -65,7 +65,7 @@ target_compile_definitions(app_auth_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_auth_tests PRIVATE
-    appconstants.h
+    constants.h
     appfeaturelistcallback.h
     appfeaturelist.h
     appsettingslist.h

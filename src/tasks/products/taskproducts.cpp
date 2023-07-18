@@ -5,7 +5,7 @@
 #include "taskproducts.h"
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,7 +25,7 @@ TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 void TaskProducts::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->get(QString("%1/v1/oauth/subscriptions/iap/plans/%2")
-                   .arg(Constants::fxaApiBaseUrl(), AppConstants::IAP_PLANS));
+                   .arg(Constants::fxaApiBaseUrl(), Constants::IAP_PLANS));
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
