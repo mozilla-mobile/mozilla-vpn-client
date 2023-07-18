@@ -56,8 +56,8 @@ TextField {
     onTextChanged: {
         if (Qt.platform.os === "osx") {
             textField.focusReasonA11y = true
-            textField.focus = false;
-            textField.forceActiveFocus();
+            Accessible.focused = false
+            Accessible.focused = true
             textField.focusReasonA11y = false
         }
     }
