@@ -4,7 +4,7 @@
 
 #include "benchmarktaskping.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "connectionhealth.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -16,7 +16,7 @@ Logger logger("BenchmarkTaskPing");
 
 BenchmarkTaskPing::BenchmarkTaskPing()
     : BenchmarkTask("BenchmarkTaskPing",
-                    AppConstants::BENCHMARK_MAX_DURATION_PING) {
+                    Constants::BENCHMARK_MAX_DURATION_PING) {
   MZ_COUNT_CTOR(BenchmarkTaskPing);
 
   connect(this, &BenchmarkTask::stateChanged, this,

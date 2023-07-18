@@ -8,7 +8,7 @@
 #include <QEventLoop>
 #include <QTest>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/incrementaldecoder.h"
 #include "tasks/authenticate/taskauthenticate.h"

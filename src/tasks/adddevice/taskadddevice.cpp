@@ -9,7 +9,7 @@
 #include <QRandomGenerator>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -57,7 +57,7 @@ void TaskAddDevice::run() {
 
   NetworkRequest* request = new NetworkRequest(this, 201);
   request->auth(App::authorizationHeader());
-  request->post(AppConstants::apiUrl(AppConstants::Device),
+  request->post(Constants::apiUrl(Constants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},
                             {"pubkey", QString(publicKey)}});

@@ -10,7 +10,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"

@@ -8,7 +8,7 @@
 #include <QFileOpenEvent>
 #include <QUrlQuery>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"
@@ -39,7 +39,7 @@ bool MacosAuthenticationListener::eventFilter(QObject* obj, QEvent* event) {
 
   QFileOpenEvent* ev = static_cast<QFileOpenEvent*>(event);
   QUrl url = ev->url();
-  if ((url.scheme() != AppConstants::DEEP_LINK_SCHEME) ||
+  if ((url.scheme() != Constants::DEEP_LINK_SCHEME) ||
       (url.authority() != "login")) {
     logger.warning() << "Received unknown URL:" << url.toString();
     return false;

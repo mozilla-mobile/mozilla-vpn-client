@@ -4,7 +4,7 @@
 
 #include "networkmanager.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
@@ -89,7 +89,7 @@ QByteArray NetworkManager::userAgent() {
     flags.append("iap:true");
 
     QTextStream out(&userAgent);
-    out << AppConstants::NETWORK_USERAGENT_PREFIX << "/"
+    out << Constants::NETWORK_USERAGENT_PREFIX << "/"
         << Constants::versionString() << " (" << flags.join("; ") << ")";
   }
 

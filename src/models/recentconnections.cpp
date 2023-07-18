@@ -9,7 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -230,7 +230,7 @@ bool RecentConnectionModel::add(RecentConnection& newRecentConnection,
     m_list.removeAt(index);
   }
 
-  while (m_list.count() > AppConstants::RECENT_CONNECTIONS_MAX_COUNT) {
+  while (m_list.count() > Constants::RECENT_CONNECTIONS_MAX_COUNT) {
     m_list.removeLast();
   }
 

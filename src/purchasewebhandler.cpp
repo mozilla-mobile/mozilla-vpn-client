@@ -4,7 +4,7 @@
 
 #include "purchasewebhandler.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationlistener.h"
 #include "leakdetector.h"
 #include "logger.h"

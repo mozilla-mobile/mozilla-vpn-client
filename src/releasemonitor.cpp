@@ -4,7 +4,7 @@
 
 #include "releasemonitor.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -51,7 +51,7 @@ void ReleaseMonitor::runSoon(
 
 void ReleaseMonitor::schedule() {
   logger.debug() << "ReleaseMonitor scheduling";
-  m_timer.start(AppConstants::releaseMonitorMsec());
+  m_timer.start(Constants::releaseMonitorMsec());
 }
 
 void ReleaseMonitor::updateRequired() {
