@@ -17,6 +17,8 @@ MZSwipeDelegate {
 
     hasUiStates: false
 
+    //% "%1 %2"
+    //: Example: "deviceName deviceDescription"
     Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceSubtitle())
     Accessible.role: Accessible.ListItem
 
