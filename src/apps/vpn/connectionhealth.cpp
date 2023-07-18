@@ -61,6 +61,8 @@ void ConnectionHealth::stop() {
   m_pingHelper.stop();
   m_noSignalTimer.stop();
   m_healthCheckTimer.stop();
+
+  m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
   setStability(Stable);
@@ -80,6 +82,8 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
   m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
+
+  m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 }
 
@@ -94,6 +98,8 @@ void ConnectionHealth::startIdle() {
   m_dnsPingSequence = QRandomGenerator::global()->bounded(UINT16_MAX);
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
+
+  m_dnsPingSender.start();
   m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
 
   // Send an initial ping right away.
