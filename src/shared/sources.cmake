@@ -234,6 +234,23 @@ target_sources(shared-sources INTERFACE
 )
 
 target_sources(shared-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustfiltering.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusthandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusthandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxyconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxyconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusttasksubmission.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared/adjust/adjusttasksubmission.h
+)
+
+
+
+target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/license.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/resources/resources.qrc
 )

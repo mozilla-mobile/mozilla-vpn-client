@@ -27,8 +27,12 @@ namespace {
 Logger logger("AdjustHandler");
 bool s_initialized = false;
 AdjustProxy* s_adjustProxy = nullptr;
+
+#ifdef MZ_ANDROID
 constexpr auto CORE_APPLICATION =
     "org/mozilla/firefox/qt/common/CoreApplication";
+#endif
+
 }  // namespace
 
 void AdjustHandler::initialize() {
