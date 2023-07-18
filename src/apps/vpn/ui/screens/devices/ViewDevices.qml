@@ -39,7 +39,6 @@ MZViewBase {
     _viewContentData: ColumnLayout {
         id: content
 
-        objectName: "deviceListView"
         spacing: 0
 
         MZInterLabel {

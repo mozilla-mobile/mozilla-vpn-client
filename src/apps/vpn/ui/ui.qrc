@@ -19,6 +19,7 @@
         <file>screens/devices/VPNRemoveDevicePopup.qml</file>
         <file>screens/devices/ViewDeviceLimit.qml</file>
         <file>screens/devices/VPNDeviceList.qml</file>
+        <file>screens/ScreenRemovingDevice.qml</file>
         <file>screens/getHelp/ViewGetHelp.qml</file>
         <file>screens/getHelp/contactUs/ViewContactUsForm.qml</file>
         <file>screens/getHelp/contactUs/ViewContactUsThankYou.qml</file>
@@ -103,6 +104,5 @@
         <file>sharedViews/ViewUpdate.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>
         <file>screens/initialize/ViewOnboarding.qml</file>
-        <file>screens/ScreenRemovingDevice.qml</file>
     </qresource>
 </RCC>

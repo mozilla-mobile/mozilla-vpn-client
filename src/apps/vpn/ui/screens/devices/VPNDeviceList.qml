@@ -12,6 +12,7 @@ import components 0.1
 
 ListView {
     id: listView
+    objectName: "deviceList"
 
     property bool isDeviceLimit: false
 
@@ -75,6 +76,7 @@ ListView {
 
     model: VPNDeviceModel
     delegate: ColumnLayout {
+        objectName: "deviceListLayout"
         //See https://bugreports.qt.io/browse/QTBUG-81976
         width: ListView.view.width
         spacing: 0

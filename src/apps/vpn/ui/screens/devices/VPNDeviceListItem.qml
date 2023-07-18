@@ -103,9 +103,12 @@ MZSwipeDelegate {
     }
 
     swipe.left: Loader {
+        objectName: "swipeActionLoader"
         active: !currentOne
         height: parent.height
         sourceComponent: MZSwipeAction {
+            objectName: "swipeActionDelete"
+
             activeFocusOnTab: swipeDelegate.isSwipeOpen
             bgColor: MZTheme.theme.redHovered
             content: Image {
