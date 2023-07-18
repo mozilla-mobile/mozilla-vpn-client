@@ -30,10 +30,14 @@ include_directories(${MZ_SOURCE_DIR}/apps/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
-target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
-target_compile_definitions(app_unit_tests PRIVATE MZ_ADJUST)
 
-target_link_libraries(app_unit_tests PRIVATE
+add_library(app_unit_test_core INTERFACE)
+
+
+target_compile_definitions(app_unit_test_core INTERFACE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+target_compile_definitions(app_unit_test_core INTERFACE MZ_ADJUST)
+
+target_link_libraries(app_unit_test_core INTERFACE
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
@@ -42,7 +46,7 @@ target_link_libraries(app_unit_tests PRIVATE
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
    AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
-    target_link_libraries(app_unit_tests PRIVATE
+    target_link_libraries(app_unit_test_core INTERFACE
         Qt6::NetworkAuth
     )
 endif()
@@ -51,19 +55,26 @@ target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
     translations_unit_tests
+    app_unit_test_core
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(app_unit_tests PRIVATE Qt6::DBus)
+    target_link_libraries(app_unit_test_core PRIVATE Qt6::DBus)
 
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(app_unit_tests PRIVATE PkgConfig::libsecret)
+    target_link_libraries(app_unit_test_core PRIVATE PkgConfig::libsecret)
 endif()
 
-target_compile_definitions(app_unit_tests PRIVATE MZ_DEBUG)
-target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
+target_compile_definitions(app_unit_test_core INTERFACE MZ_DEBUG)
+target_compile_definitions(app_unit_test_core INTERFACE MZ_DUMMY)
+
+target_sources(app_unit_test_core INTERFACE
+    helper.h
+    main.cpp
+)
+
 
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
@@ -71,8 +82,6 @@ target_sources(app_unit_tests PRIVATE
     appfeaturelistcallback.h
     appfeaturelist.h
     appsettingslist.h
-    helper.h
-    main.cpp
     testaddon.cpp
     testaddon.h
     testaddonapi.cpp
@@ -143,22 +152,6 @@ if(NOT BUILD_ADJUST_SDK_TOKEN)
     )
 endif()
 
-## Add the tests to be run, one for each test class.
-get_target_property(UTEST_SOURCES app_unit_tests SOURCES)
-list(FILTER UTEST_SOURCES INCLUDE REGEX "test.*.h$")
-foreach(filename ${UTEST_SOURCES})
-    execute_process(
-        OUTPUT_VARIABLE UTEST_CLASS_LIST
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p TestHelper ${filename}
-    )
-
-    foreach(UTEST_CLASS ${UTEST_CLASS_LIST})
-        add_test(NAME ${UTEST_CLASS} COMMAND app_unit_tests ${UTEST_CLASS})
-        set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
-    endforeach()
-endforeach()
 
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
@@ -170,4 +163,7 @@ target_sources(app_unit_tests PRIVATE
     resourceloader/resourceloader.qrc
 )
 
+register_tests(app_unit_tests)
 qt_finalize_target(app_unit_tests)
+
+add_subdirectory(sentry)

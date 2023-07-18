@@ -147,6 +147,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     # Enable testing
     include(CTest)
     add_custom_target(build_tests)
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/test_scan.cmake)
     set_target_properties(build_tests PROPERTIES
         EXCLUDE_FROM_ALL TRUE
         FOLDER "Tests"
