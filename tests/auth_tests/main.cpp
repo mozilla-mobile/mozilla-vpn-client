@@ -8,7 +8,7 @@
 #include <QtTest/QtTest>
 
 #include "app.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "glean/mzglean.h"
 #include "leakdetector.h"

@@ -42,7 +42,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/daemon/daemon.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/daemon.h
     ${CMAKE_SOURCE_DIR}/src/daemon/dnsutils.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/interfaceconfig.h
     ${CMAKE_SOURCE_DIR}/src/daemon/iputils.h
     ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp

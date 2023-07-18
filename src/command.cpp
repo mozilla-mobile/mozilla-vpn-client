@@ -4,7 +4,7 @@
 
 #include "command.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "captiveportal/captiveportal.h"
 #include "commandlineparser.h"
 #include "glean/mzglean.h"
@@ -103,7 +103,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
@@ -130,7 +130,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
@@ -152,7 +152,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
-  QIcon icon(AppConstants::LOGO_URL);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();
@@ -164,7 +164,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
-    AppConstants::setStaging();
+    Constants::setStaging();
     LogHandler::setStderr(true);
   }
 
@@ -206,7 +206,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
 
-  QIcon icon(AppConstants::LOGO_URL);
+  QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
   return callback();

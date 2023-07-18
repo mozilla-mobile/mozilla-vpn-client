@@ -2,7 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// NOTE! Do not include this file directly. Use featurelistcallback.h instead.
+#ifndef FEATURELISTCALLBACK_H
+#define FEATURELISTCALLBACK_H
+
+#ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
+#endif
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/daemon/windowssplittunnel.h"
@@ -15,8 +20,33 @@
 #  include "versionutils.h"
 #endif
 
+// Generic callback functions
+// --------------------------
+
+bool FeatureCallback_true() { return true; }
+
+bool FeatureCallback_false() { return false; }
+
+bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
+
+bool FeatureCallback_iosOrAndroid() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID)
+  return true;
+#else
+  return false;
+#endif
+}
+
 // Custom callback functions
 // -------------------------
+
+bool FeatureCallback_sentry() {
+#if defined(MZ_IOS)
+  return FeatureCallback_inStaging();
+#else
+  return true;
+#endif
+}
 
 bool FeatureCallback_accountDeletion() {
 #if defined(MZ_IOS)
@@ -132,3 +162,25 @@ bool FeatureCallback_freeTrial() {
   return false;
 #endif
 }
+
+bool FeatureCallback_shareLogs() {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_IOS) || defined(MZ_DUMMY)
+  return true;
+#elif defined(MZ_ANDROID)
+  return AndroidCommons::getSDKVersion() >=
+         29;  // Android Q (10) is required for this
+#else
+  return false;
+#endif
+}
+
+bool FeatureCallback_webPurchase() {
+#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
+  return false;
+#else
+  return true;
+#endif
+}
+
+#endif  // FEATURELISTCALLBACK_H

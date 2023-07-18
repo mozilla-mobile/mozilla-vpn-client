@@ -7,12 +7,14 @@
 #include "helper.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
+#include "constants.h"
 
 void TestNetworkManager::basic() {
   SettingsHolder settingsHolder;
   SimpleNetworkManager snm;
   QCOMPARE(&snm, NetworkManager::instance());
-  QVERIFY(snm.userAgent().contains("UnitTest"));
+  qDebug() << snm.userAgent();
+  QVERIFY(snm.userAgent().contains(Constants::NETWORK_USERAGENT_PREFIX));
   QCOMPARE(snm.networkAccessManager(), snm.networkAccessManager());
 }
 

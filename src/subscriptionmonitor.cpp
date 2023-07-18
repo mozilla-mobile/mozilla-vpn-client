@@ -6,7 +6,7 @@
 
 #include <QCoreApplication>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"

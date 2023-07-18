@@ -2,7 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// NOTE! Do not include this file directly. Use featurelist.h instead.
+// 1. Define the FEATURE macro
+// 2. include this file
+// 3. undefine the FEATURE macro
+
+// If you want to use the callback, include `featurelistcallback.h`
+
+#if defined(_MSVC_TRADITIONAL) && _MSVC_TRADITIONAL
+#  error Not supported
+#endif
 
 FEATURE(accountDeletion,        // Feature ID
         "Account deletion",     // Feature name
@@ -11,12 +19,33 @@ FEATURE(accountDeletion,        // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_accountDeletion)
 
+FEATURE(addon,                 // Feature ID
+        "Addon support",       // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_true)
+
+FEATURE(addonSignature,             // Feature ID
+        "Addons Signature",         // Feature name
+        FeatureCallback_inStaging,  // Can be flipped on
+        FeatureCallback_inStaging,  // Can be flipped off
+        QStringList{"addon"},       // feature dependencies
+        FeatureCallback_true)       
+
 FEATURE(alwaysPort53,          // Feature ID
         "Always use port 53",  // Feature name
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         FeatureCallback_false)
+
+FEATURE(appReview,              // Feature ID
+        "App Review",           // Feature name
+        FeatureCallback_false,  // Can be flipped on
+        FeatureCallback_false,  // Can be flipped off
+        QStringList(),          // feature dependencies
+        FeatureCallback_iosOrAndroid)        
 
 FEATURE(benchmarkUpload,       // Feature ID
         "Benchmark Upload",    // Feature name
@@ -53,6 +82,27 @@ FEATURE(freeTrial,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_false)  // Disabled while we rethink free trials
 
+FEATURE(gleanRust,             // Feature ID
+        "Glean Rust SDK",      // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_true)        
+
+FEATURE(inAppAccountCreate,                  // Feature ID
+        "In-app Account Creation",           // Feature name
+        FeatureCallback_true,                // Can be flipped on
+        FeatureCallback_true,                // Can be flipped off
+        QStringList{"inAppAuthentication"},  // feature dependencies
+        FeatureCallback_true)
+
+FEATURE(inAppAuthentication,      // Feature ID
+        "In-app Authentication",  // Feature name
+        FeatureCallback_true,     // Can be flipped on
+        FeatureCallback_true,     // Can be flipped off
+        QStringList(),            // feature dependencies
+        FeatureCallback_true)        
+
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
         FeatureCallback_true,  // Can be flipped on
@@ -82,6 +132,20 @@ FEATURE(recommendedServers,     // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
+FEATURE(replacerAddon,         // Feature ID
+        "Replacer Addon",      // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
+FEATURE(sentry,                     // Feature ID
+        "Sentry Crash Report SDK",  // Feature name
+        FeatureCallback_true,       // Can be flipped on
+        FeatureCallback_true,       // Can be flipped off
+        QStringList(),              // feature dependencies
+        FeatureCallback_sentry)     
+
 FEATURE(serverUnavailableNotification,      // Feature ID
         "Server unavailable notification",  // Feature name
         FeatureCallback_true,               // Can be flipped on
@@ -95,6 +159,13 @@ FEATURE(serverConnectionScore,      // Feature ID
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
         FeatureCallback_true)
+
+FEATURE(shareLogs,              // Feature ID
+        "Share Logs",           // Feature name
+        FeatureCallback_false,  // Can be flipped on
+        FeatureCallback_false,  // Can be flipped off
+        QStringList(),          // feature dependencies
+        FeatureCallback_shareLogs)           
 
 FEATURE(splitTunnel,            // Feature ID
         "Split-tunnel",         // Feature name
@@ -130,3 +201,10 @@ FEATURE(unsecuredNetworkNotification,      // Feature ID
         FeatureCallback_false,             // Can be flipped off
         QStringList(),                     // feature dependencies
         FeatureCallback_unsecuredNetworkNotification)
+
+FEATURE(webPurchase,           // Feature ID
+        "Web Purchase",        // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_webPurchase)

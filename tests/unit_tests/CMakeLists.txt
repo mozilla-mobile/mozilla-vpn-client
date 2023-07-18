@@ -20,6 +20,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/shared)
 include_directories(${MZ_SOURCE_DIR}/shared/glean)
 include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
@@ -69,10 +70,6 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
-    appconstants.h
-    appfeaturelistcallback.h
-    appfeaturelist.h
-    appsettingslist.h
     helper.h
     main.cpp
     testaddon.cpp

@@ -4,7 +4,7 @@
 
 #include "connectionbenchmark.h"
 
-#include "appconstants.h"
+#include "constants.h"
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
@@ -49,9 +49,9 @@ void ConnectionBenchmark::setConnectionSpeed() {
   logger.debug() << "Set connection speed";
 
   // TODO: Take uploadBps for calculating speed into account
-  if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_FAST) {
+  if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_FAST) {
     m_speed = SpeedFast;
-  } else if (m_downloadBps >= AppConstants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
+  } else if (m_downloadBps >= Constants::BENCHMARK_THRESHOLD_SPEED_MEDIUM) {
     m_speed = SpeedMedium;
   } else {
     m_speed = SpeedSlow;
@@ -103,7 +103,7 @@ void ConnectionBenchmark::start() {
   // Create download benchmark
   BenchmarkTaskTransfer* downloadTask = new BenchmarkTaskTransfer(
       "BenchmarkTaskDownload", BenchmarkTaskTransfer::BenchmarkDownload,
-      AppConstants::benchmarkDownloadUrl());
+      Constants::benchmarkDownloadUrl());
   connect(downloadTask, &BenchmarkTaskTransfer::finished, this,
           &ConnectionBenchmark::downloadBenchmarked);
   connect(downloadTask->sentinel(), &BenchmarkTaskSentinel::sentinelDestroyed,
@@ -116,7 +116,7 @@ void ConnectionBenchmark::start() {
   if (Feature::get(Feature::Feature_benchmarkUpload)->isSupported()) {
     BenchmarkTaskTransfer* uploadTask = new BenchmarkTaskTransfer(
         "BenchmarkTaskUpload", BenchmarkTaskTransfer::BenchmarkUpload,
-        AppConstants::benchmarkUploadUrl());
+        Constants::benchmarkUploadUrl());
     Q_UNUSED(uploadTask);
 
     connect(uploadTask, &BenchmarkTaskTransfer::finished, this,

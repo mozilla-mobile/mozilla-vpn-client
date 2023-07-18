@@ -4,7 +4,7 @@
 
 #include <QString>
 
-#include "appconstants.h"
+#include "constants.h"
 
 namespace {
 bool s_productionMode = true;
@@ -12,8 +12,8 @@ bool s_productionMode = true;
 
 bool Constants::inProduction() { return s_productionMode; }
 
-const QString& AppConstants::getStagingServerAddress() {
-  static QString stagingServerAddress = AppConstants::API_STAGING_URL;
+const QString& Constants::getStagingServerAddress() {
+  static QString stagingServerAddress = Constants::API_STAGING_URL;
   return stagingServerAddress;
 }
 
@@ -21,12 +21,11 @@ void Constants::setVersionOverride(const QString& versionOverride) {
   Q_UNUSED(versionOverride);
 }
 
-QString AppConstants::apiBaseUrl() { return AppConstants::API_STAGING_URL; }
+QString Constants::apiBaseUrl() { return Constants::API_STAGING_URL; }
 
-QString AppConstants::apiUrl(ApiEndpoint) { return "something here"; }
+QString Constants::apiUrl(ApiEndpoint) { return "something here"; }
 
 void Constants::setStaging() { s_productionMode = false; }
-void AppConstants::setStaging() { s_productionMode = false; }
 
 QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");

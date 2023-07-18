@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef APPCONSTANTS_H
-#define APPCONSTANTS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
-#include "constants.h"
+#include <stdint.h>
 
-namespace AppConstants {
+#include <QString>
+
+namespace Constants {
 
 /**
  * @brief expose the API base URL for guardian
@@ -16,11 +18,13 @@ QString apiBaseUrl();
 
 enum ApiEndpoint {
   Account,
+  Adjust,
   CreateSupportTicket,
   CreateSupportTicketGuest,
   Device,
   DeviceWithPublicKeyArgument,
   DNSDetectPortal,
+  FeatureList,
   Heartbeat,
   IPInfo,
   LoginVerify,
@@ -49,8 +53,20 @@ enum ApiEndpoint {
 QString apiUrl(ApiEndpoint endpoint);
 
 // Returns true if we are in a production environment.
+bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
+
+/**
+ * @brief In staging only, override the version string for testing
+ * purposes.
+ */
+void setVersionOverride(const QString& versionOverride);
+
+// Project version and build strings.
+QString versionString();
+QString buildNumber();
+QString envOrDefault(const QString& name, const QString& defaultValue);
 
 // This is used by SettingsHolder to configure the QSetting file.
 constexpr const char* SETTINGS_APP_NAME = "vpn";
@@ -95,6 +111,42 @@ constexpr int RECENT_CONNECTIONS_MAX_COUNT = 2;
 
 // Cooldown period for unresponsive servers
 constexpr uint32_t SERVER_UNRESPONSIVE_COOLDOWN_SEC = 300;
+
+constexpr const char* ADDON_PRODUCTION_KEY =
+    ":/addons_signature/production.der";
+constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
+
+constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+
+constexpr const char* PLATFORM_NAME =
+#if defined(MZ_IOS)
+    "ios"
+#elif defined(MZ_MACOS)
+    "macos"
+#elif defined(MZ_LINUX)
+    "linux"
+#elif defined(MZ_ANDROID)
+    "android"
+#elif defined(MZ_WINDOWS)
+    "windows"
+#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
+    "dummy"
+#else
+#  error "Unsupported platform"
+#endif
+    ;
+
+#define PRODBETAEXPR(type, functionName, prod, beta) \
+  inline type functionName() { return Constants::inProduction() ? prod : beta; }
+
+PRODBETAEXPR(const char*, fxaUrl, "https://accounts.firefox.com",
+             "https://accounts.stage.mozaws.net")
+
+PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
+             Constants::envOrDefault("MZ_FXA_API_BASE_URL",
+                                     "https://api-accounts.stage.mozaws.net"))
+
+#undef PRODBETAEXPR
 
 // Number of msecs for max runtime of the connection benchmarks.
 constexpr uint32_t BENCHMARK_MAX_BYTES_UPLOAD = 10485760;  // 10 Megabyte
@@ -258,6 +310,6 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
 // TODO: #endif
 
-};  // namespace AppConstants
+};  // namespace Constants
 
-#endif  // APPCONSTANTS_H
+#endif  // CONSTANTS_H

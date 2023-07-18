@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscommons.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
@@ -90,7 +90,7 @@ void IOSCommons::shareLogs(const QString& logs) {
 
   NSURL* url =
       [NSURL fileURLWithPath:[NSTemporaryDirectory()
-                                 stringByAppendingString:QString(AppConstants::LOG_FILE_NAME)
+                                 stringByAppendingString:QString(Constants::LOG_FILE_NAME)
                                                              .toNSString()]];
   NSData* data = [logs.toNSString() dataUsingEncoding:NSUTF8StringEncoding];
   [data writeToURL:url atomically:NO];

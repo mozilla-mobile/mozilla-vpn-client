@@ -25,15 +25,13 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # VPN Client source files
 target_sources(mozillavpn-sources INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/appconstants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/appconstants.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/appfeaturelist.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/appfeaturelistcallback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/featurelistcallback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/featurelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/appimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/appsettingslist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetection.cpp
@@ -87,6 +85,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.h

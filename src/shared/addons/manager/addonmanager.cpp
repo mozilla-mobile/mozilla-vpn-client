@@ -19,7 +19,7 @@
 #include "addondirectory.h"
 #include "addonindex.h"
 #include "addons/addonmessage.h"
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,7 +56,7 @@ QString AddonManager::addonServerAddress() {
     return settingsHolder->addonCustomServerAddress();
   }
 
-  return AppConstants::addonBaseUrl();
+  return Constants::addonBaseUrl();
 }
 
 AddonManager::AddonManager(QObject* parent)
