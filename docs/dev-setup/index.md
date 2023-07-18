@@ -11,7 +11,7 @@ To try and provide a smooth dev experience we focus on ensuring that a minimal s
 ```bash
 git clone https://github.com/mozilla-mobile/mozilla-vpn-client.git
 cd mozilla-vpn-client
-git submodule update --init
+git submodule update --init --recursive
 ```
 
 # Building
