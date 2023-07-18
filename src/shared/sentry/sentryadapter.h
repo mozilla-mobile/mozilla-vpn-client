@@ -34,11 +34,11 @@ class SentryAdapter final : public QObject {
 
   /**
    * @brief Checks if Sentry is initalized
-   * 
+   *
    * @return true - Sentry is ready to report crashes
    * @return false - Sentry failed to Init
    */
-  inline bool const ready(){ return m_initialized; }
+  inline bool const ready() { return m_initialized; }
 
   /**
    * @brief Sends an "Issue" report to Sentry

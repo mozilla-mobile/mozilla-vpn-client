@@ -71,12 +71,12 @@ void SentryAdapter::init() {
 
   sentry_options_t* options = sentry_options_new();
   sentry_options_set_dsn(options, dsn.toLocal8Bit().constData());
-  #ifdef UNIT_TEST
-    sentry_options_set_environment( options, "testing" );
-  #else 
-    sentry_options_set_environment(
+#ifdef UNIT_TEST
+  sentry_options_set_environment(options, "testing");
+#else
+  sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
-  #endif
+#endif
   sentry_options_set_release(
       options, Constants::versionString().toLocal8Bit().constData());
   sentry_options_set_database_path(options,

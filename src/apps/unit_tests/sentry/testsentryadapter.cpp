@@ -12,7 +12,6 @@
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 
-
 /* Test's that Sentry will, (if
  * no configuration is present)
  *
@@ -29,19 +28,18 @@ void TestSentryAdapter::init_creates_task() {
   }
   NetworkRequest::setRequestHandler(
       // DELETE
-      [](NetworkRequest*) { return false; },  
+      [](NetworkRequest*) { return false; },
       // GET
       [&networkRequest_fired](NetworkRequest* req) {
         if (req->url().path().endsWith("/crashreporting")) {
           networkRequest_fired = true;
         }
         return true;
-      }, 
-      // POST                                                        
-      [](NetworkRequest*, const QByteArray&) { return false; },  
+      },
+      // POST
+      [](NetworkRequest*, const QByteArray&) { return false; },
       // POST with an io device
-      [](NetworkRequest*, QIODevice*) {return false;}  
-  );
+      [](NetworkRequest*, QIODevice*) { return false; });
   SentryAdapter::instance()->init();
   QEventLoop loop;
   loop.processEvents(QEventLoop::AllEvents, 2000);
@@ -49,10 +47,10 @@ void TestSentryAdapter::init_creates_task() {
 };
 
 /**
- * @brief When the configuration is Present, 
+ * @brief When the configuration is Present,
  * Sentry should *NOT* have created a request to guardian.
  */
-void TestSentryAdapter::init_no_task_when_config_in_settings(){
+void TestSentryAdapter::init_no_task_when_config_in_settings() {
   SettingsHolder settingsHolder;
   settingsHolder.clear();
   settingsHolder.setSentryDSN("abcd");
@@ -63,16 +61,15 @@ void TestSentryAdapter::init_no_task_when_config_in_settings(){
     FeatureModel::instance()->toggle("sentry");
   }
   NetworkRequest::setRequestHandler(
-      [](NetworkRequest*) { return false; },  
+      [](NetworkRequest*) { return false; },
       [&networkRequest_fired](NetworkRequest* req) {
         if (req->url().path().endsWith("/crashreporting")) {
           networkRequest_fired = true;
         }
         return true;
-      },                                            
-      [](NetworkRequest*, const QByteArray&) { return false; },  
-      [](NetworkRequest*, QIODevice*) {return false;}  
-  );
+      },
+      [](NetworkRequest*, const QByteArray&) { return false; },
+      [](NetworkRequest*, QIODevice*) { return false; });
   SentryAdapter::instance()->init();
   QEventLoop loop;
   loop.processEvents(QEventLoop::AllEvents, 2000);
@@ -80,6 +77,5 @@ void TestSentryAdapter::init_no_task_when_config_in_settings(){
   QVERIFY(!networkRequest_fired);
   QVERIFY(SentryAdapter::instance()->ready());
 }
-
 
 static TestSentryAdapter s_TestSentryAdapter;
