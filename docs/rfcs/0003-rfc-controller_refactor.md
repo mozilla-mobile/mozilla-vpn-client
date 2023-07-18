@@ -50,37 +50,22 @@ The logic to calculate elapsed time since the VPN was activated will also be mov
 
 The `ConnectionManager` will have two state machines:
 1. `VPNClientState` to determine if the VPN client is off, connecting, or on. 
-2. `ConnectionState` to keep track of which connection related task the VPN is performing at any given point. 
+2. `ConnectionState` to keep track of which connection related task the VPN is performing at any given point via the corresponding task manager `ConnectionTaskManager`. 
 
 Before the VPN is toggled on, it is in `VPNClientStateOff`. When user toggles on the VPN, the client goes into `VPNClientStateConnecting`, the connection manager will perform the needed connection checks such as `ConnectionStateInternetProbe` and `ConnectionStateServerProbe`. If they all succeed, the VPN will enter `VPNClientStateOn` and call `Controller::activate()`.
 
-The `ConnectionManager` will communicate to the `Controller` to `activate()` and `deactivate()` the VPN. During one of the iterations of this proposal, someone asked if we can have signals instead of states in the `ConnectionManager`. The short answer is no. While emitting a signal to notify the UI about what we should be showing the user does the same thing, we still need to keep track of the current state internally so we know what to do next in case anything goes wrong at any other point.
+The `ConnectionManager` will communicate to the `Controller` to `activate()` and `deactivate()` the VPN. During one of the iterations of this proposal, someone asked if we can have signals instead of states in the `ConnectionManager`. The short answer is no. While emitting a signal to notify the UI about what we should be showing the user does the same thing, we still need to keep track of the current state internally so we know what to do next in case anything goes wrong at any other point. The Controller will have a boolean member variable to maintain whether or not the VPN is toggled on.
 
-Here is the proposed set of `ConnectionManager` states and how they map to the `Controller` states:
+Here is the proposed set of `ConnectionManager` states:
 
 ```c++
-  enum VPNClientState {
-    VPNClientStateOff,          // VPN is off
-    VPNClientStateConnecting,   // VPN is perform connection and 
-                                // subscription probes in ConnectionState
-    VPNClientStateOn,           // VPN is on
-  }
-
   enum ConnectionState {
-    ConnectionStateOff,                // Corresponds to client state:
-                                       // VPNClientStateOff
-    ConnectionStateInternetProbe,      // Corresponds to client state:
-                                       // VPNClientStateConnecting
-    ConnectionStateServerProbe,        // Corresponds to client state:
-                                       // VPNClientStateConnecting
-    ConnectionStateFirewall,           // Corresponds to client state:
-                                       // VPNClientStateConnecting
-    ConnectionStateCaptivePortal,      // Corresponds to client state:
-                                       // VPNClientStateConnecting
-    ConnectionStateCheckSubscription,  // Corresponds to client state:
-                                       // VPNClientStateConnecting
-    ConnectionStateOn,                 // Corresponds to client state:
-                                       // VPNClientStateOn
+    ConnectionStateInternetProbe,
+    ConnectionStateServerProbe,
+    ConnectionStateFirewall,
+    ConnectionStateCaptivePortal,
+    ConnectionStateCheckSubscription,
+    ConnectionStateUnstable,           
   };
 ```
 
@@ -90,7 +75,7 @@ If at any point any of the checks in `ConnectionManager::ConnectionStates` fails
 
 This change also means that prior to the activation of the VPN, there are multiple checks and probes that need to succeed; this will take some time (hopefully no more than a couple of seconds), and as long as we communicate to the user via front end prompts about what is happening, this is acceptable. 
 
-To confidently determine that these checks do not delay the VPN activation by an unacceptable amount, we need to measure the duration of the _time elapsed from toggling on the VPN to activation_. This is the only relevant metric, given that in any other scenario the checks run in the background and would not affect the user experience.
+To confidently determine that these checks do not delay the VPN activation by an unacceptable amount, we need to measure the duration of the _time elapsed from toggling on the VPN to activation_. This is the only relevant metric, given that in any other scenario the checks run in the background and would not affect the user experience. 
 
 ## Task Breakdown
 
@@ -105,7 +90,3 @@ This is a big undertaking that will take multiple sprints to complete. The work 
 7. Get rid of the `ConnectionHealth` object
 8. Audit and cleanup `Controller::stateChanged`. We need to audit all areas where code is listening to `Controller::stateChanged` and see if it should be monitoring the `ConnectionManager` instead, if that is the case, make the necessary changes. [Here](https://searchfox.org/mozilla-vpn-client/search?q=Controller%3A%3AstateChanged&path=&case=false&regexp=false) is a current list of every instance we should audit.
 9. Move timestamp code to its own class/object
-
-
-## Questions
-- None at the moment
