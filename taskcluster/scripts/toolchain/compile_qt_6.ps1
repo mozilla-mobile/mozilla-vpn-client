@@ -10,6 +10,11 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
+Get-Command "curl"
+Get-Command "wget"
+
+
+
 # Let's use the taskcluster one for a bit. 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
@@ -61,7 +66,6 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -make libs  `
   -no-sql-psql  `
   -no-sql-odbc   `
-  -qt-sqlite  `
   -skip qt3d  `
   -skip webengine  `
   -skip qtmultimedia  `
@@ -72,6 +76,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -skip qtandroidextras  `
   -skip qtquick3dphysics `
   -feature-imageformat_png  `
+  -no-feature-quick-shadereffect `
   -qt-libpng  `
   -qt-zlib  `
   -openssl-runtime `
@@ -79,9 +84,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
 # Print all the targets, so i can build the problematic ones first, 
 # save some time. 
-cmake --build . --target help
-
-
+#cmake --build . --target help
 
  cmake --build . --parallel
 
