@@ -10,13 +10,18 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
+# Init conda, download curl. 
+# Powerhshell's native downloading is ... slow. 
+. $PSScriptRoot/conda_init.ps1
+conda install -y  curl
+Get-Command curl
 
 # Let's use the taskcluster one for a bit. 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
 Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
+curl $QT_URI -O qt-everywhere-src-$QT_VERSION.zip
 if($?){
     Write-Output "Downloaded : $QT_URI"
 }else{
