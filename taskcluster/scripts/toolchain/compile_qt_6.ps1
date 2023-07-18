@@ -10,10 +10,6 @@ $BIN_PATH = "$REPO_ROOT_PATH/bin"
 $QT_VERSION = $env:QT_VERSION
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
-Get-Command "curl"
-Get-Command "wget"
-
-
 
 # Let's use the taskcluster one for a bit. 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
@@ -28,7 +24,7 @@ if($?){
     exit 1
 }
 
-unzip -o -qq -a -aa qt-everywhere-src-$QT_VERSION.zip
+Expand-Archive qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
