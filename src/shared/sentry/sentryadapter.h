@@ -33,6 +33,14 @@ class SentryAdapter final : public QObject {
   void init();
 
   /**
+   * @brief Checks if Sentry is initalized
+   * 
+   * @return true - Sentry is ready to report crashes
+   * @return false - Sentry failed to Init
+   */
+  inline bool const ready(){ return m_initialized; }
+
+  /**
    * @brief Sends an "Issue" report to Sentry
    *
    * @param category - "Category" of the error, any String is valid.
