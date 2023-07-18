@@ -73,7 +73,6 @@ target_sources(app_unit_tests PRIVATE
     appsettingslist.h
     helper.h
     main.cpp
-    mocsentryadapter.cpp
     testaddon.cpp
     testaddon.h
     testaddonapi.cpp

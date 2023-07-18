@@ -65,6 +65,8 @@ exports.endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
 
+    '/api/v1/vpn/crashreporting': {status: 404, body: {}},
+
     '/api/v1/vpn/versions': {status: 200, body: {}},
 
     '/__heartbeat__': {status: 200, body: {mullvadOK: true, dbOK: true}},

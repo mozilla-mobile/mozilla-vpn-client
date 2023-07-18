@@ -22,7 +22,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: 'recursive'
 
       - name: Install dependences
         run: |
@@ -90,7 +90,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: 'recursive'
 
       - name: Install dependencies
         shell: bash
@@ -167,7 +167,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: 'recursive'
 
       - name: Install Qt
         shell: pwsh

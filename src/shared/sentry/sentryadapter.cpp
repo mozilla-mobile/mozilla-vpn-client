@@ -4,7 +4,10 @@
 
 #include "sentryadapter.h"
 
-#include <QtQml/private/qqmlengine_p.h>
+#ifndef UNIT_TEST
+// This is not found when building tests ... weird.
+#  include <QtQml/private/qqmlengine_p.h>
+#endif
 #include <sentry.h>
 
 #include <QDir>
@@ -19,6 +22,7 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
+#include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"
 
 namespace {
@@ -40,13 +44,21 @@ void SentryAdapter::init() {
   if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
     return;
   }
-  if (QString(Constants::SENTRY_DSN_ENDPOINT).isEmpty() ||
-      QString(Constants::SENTRY_ENVELOPE_INGESTION).isEmpty()) {
-    logger.error() << "Sentry failed to init, no sentry config present";
+  if (m_initialized) {
     return;
   }
-
+  auto settings = SettingsHolder::instance();
+  if (!settings->hasSentryEndpoint() || !settings->hasSentryDSN()) {
+    // If we have no info on where to put crash info, let's
+    // query that and retry later.
+    logger.info() << "No sentry config present, attempting to fetch";
+    auto sentryConfig = new TaskSentryConfig();
+    TaskScheduler::scheduleTask(sentryConfig);
+    return;
+  }
   auto log = LogHandler::instance();
+
+  auto dsn = settings->sentryDSN();
 
   QDir dataDir(
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
@@ -58,7 +70,7 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_dsn(options, Constants::SENTRY_DSN_ENDPOINT);
+  sentry_options_set_dsn(options, dsn.toLocal8Bit().constData());
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   sentry_options_set_release(
@@ -159,6 +171,7 @@ void SentryAdapter::declineCrashReporting() {
 }
 
 void SentryAdapter::captureQMLStacktrace(const char* description) {
+#ifndef UNIT_TEST
   auto engine = QmlEngineHolder::instance()->engine();
   auto privateEngine = QQmlEnginePrivate::get(engine);
   QV4::ExecutionEngine* qv4Engine = privateEngine->v4engine();
@@ -187,4 +200,7 @@ void SentryAdapter::captureQMLStacktrace(const char* description) {
   }
   sentry_value_set_by_key(crumb, "data", data);
   sentry_add_breadcrumb(crumb);
+#else
+  Q_UNUSED(description);
+#endif
 }
