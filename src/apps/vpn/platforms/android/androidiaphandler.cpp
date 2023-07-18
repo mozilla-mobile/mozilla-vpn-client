@@ -270,14 +270,18 @@ void AndroidIAPHandler::onSubscriptionFailed(JNIEnv* env, jobject thiz,
 
 void AndroidIAPHandler::updateProductsInfo(const QJsonArray& returnedProducts) {
   ProductsHandler* productsHandler = ProductsHandler::instance();
-  Q_ASSERT(productsHandler->isRegistering());
+  if(!productsHandler->isRegistering()){
+    return;
+  }
   QStringList productsUpdated;
 
   for (auto product : returnedProducts) {
     QString productIdentifier = product[QString("sku")].toString();
     ProductsHandler::Product* productData =
         productsHandler->findProduct(productIdentifier);
-    Q_ASSERT(productData);
+    if(productData == nullptr){
+      continue;
+    }
     productData->m_trialDays = product[QString("trialDays")].toInt();
     productData->m_price = product[QString("totalPriceString")].toString();
     productData->m_monthlyPrice =
