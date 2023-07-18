@@ -70,7 +70,7 @@ void SentryAdapter::init() {
           &SentryAdapter::onLoglineAdded);
 
   sentry_options_t* options = sentry_options_new();
-  sentry_options_set_max_breadcrumbs(options,500);
+  sentry_options_set_max_breadcrumbs(options, 500);
   sentry_options_set_dsn(options, dsn.toLocal8Bit().constData());
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
