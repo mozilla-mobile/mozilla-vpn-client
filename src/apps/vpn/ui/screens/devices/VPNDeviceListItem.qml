@@ -115,6 +115,8 @@ MZSwipeDelegate {
 
             SwipeDelegate.onClicked: removeItem(name, publicKey)
 
+            //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
+            //% "Remove %1"
             Accessible.name: qsTrId("vpn.devices.removeA11Y").arg(name)
         }
     }
