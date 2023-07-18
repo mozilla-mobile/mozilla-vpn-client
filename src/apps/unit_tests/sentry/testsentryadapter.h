@@ -9,5 +9,5 @@ class TestSentryAdapter final : public TestHelper {
 
  private slots:
   void init_creates_task();
-  void init_no_task_when_init();
+  void init_no_task_when_config_in_settings();
 };
