@@ -4,4 +4,5 @@ remove)
   killall -q mozillavpn || true
   ;;
 esac
-exit 0
+
+#DEBHELPER#
