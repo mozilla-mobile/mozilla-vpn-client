@@ -21,7 +21,7 @@ $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/singl
 
 Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
-curl $QT_URI -O qt-everywhere-src-$QT_VERSION.zip
+conda run curl $QT_URI -O qt-everywhere-src-$QT_VERSION.zip
 if($?){
     Write-Output "Downloaded : $QT_URI"
 }else{
@@ -29,7 +29,7 @@ if($?){
     exit 1
 }
 
-Expand-Archive qt-everywhere-src-$QT_VERSION.zip
+unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
@@ -37,7 +37,6 @@ $SSL_PATH = resolve-path "$FETCHES_PATH/SSL"
 $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
 $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
-Get-ChildItem env:
 # Enter the DEV Shell
 . "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
 
@@ -52,6 +51,18 @@ $BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/QT_OUT").toString()
 
 # Enter QT source directory
 Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
+
+
+##Fix Line endings of qsb files
+Get-ChildItem * -Include *.qsb | ForEach-Object {
+  ## If contains UNIX line endings, replace with Windows line endings
+  if (Get-Content $_.FullName -Delimiter "`0" | Select-String "[^`r]`n")
+  {
+      $content = Get-Content $_.FullName
+      $content | Set-Content $_.FullName
+  }
+}
+
 
 ./configure.bat `
   -static  `
