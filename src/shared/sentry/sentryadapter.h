@@ -123,6 +123,13 @@ class SentryAdapter final : public QObject {
    */
   Q_INVOKABLE void declineCrashReporting();
 
+  /**
+   * @brief Helper Function, will print the current
+   * stacktrace of the QJSEngine.
+   * @param description - Description of the Stacktrace.
+   */
+  Q_INVOKABLE static void captureQMLStacktrace(const char* description);
+
  signals:
   /**
    * @brief Signal that is fired whenever the consent changed, note: can sill be
