@@ -76,8 +76,8 @@ Item {
                 // fails to narrate any accessible content and action. After regaining
                 // active focus the screen reader keeps working as expected.
                 if (Qt.platform.os === "osx") {
-                    textArea.focus = false;
-                    textArea.forceActiveFocus();
+                    Accessible.focused = false
+                    Accessible.focused = true
                 }
             }
 
