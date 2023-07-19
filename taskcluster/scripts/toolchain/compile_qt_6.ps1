@@ -21,7 +21,7 @@ $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/singl
 
 Set-Location $FETCHES_PATH
 Write-Output "Downloading : $QT_URI"
-conda run curl $QT_URI -O qt-everywhere-src-$QT_VERSION.zip
+curl $QT_URI -O qt-everywhere-src-$QT_VERSION.zip
 if($?){
     Write-Output "Downloaded : $QT_URI"
 }else{
