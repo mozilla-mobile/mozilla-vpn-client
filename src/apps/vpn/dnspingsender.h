@@ -9,7 +9,6 @@
 
 #include "pingsender.h"
 
-class QThread;
 
 class DnsPingSender final : public PingSender {
   Q_OBJECT
