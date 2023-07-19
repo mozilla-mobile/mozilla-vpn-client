@@ -146,14 +146,14 @@ If the main application is active during a session start it will,
 
 1. Signal to the daemon that a new session is to be started.
 2. It will then ask the daemon for the value of the shared session id it created.
-3. If the previous two communications where successful
+3. If the previous two communications were successful
    1. The `vpnsession` ping will be submitted with reason `flush`.
    2. The value of the retrieved `shared_session_id` is recorded.
    3. Other session metrics may be recorded from this point.
    4. If the communication with the daemon fails, an error metric is recorded.
 
 > **Note**: If the retrieved session id is the known inactive session id,
-> this is considered an unsuccessful retrieval and the error path is taken.
+> this is considered an unsuccessful retrieval and the error path -- i.e. step 4 of the above steps -- is taken.
 
 #### On session end
 
