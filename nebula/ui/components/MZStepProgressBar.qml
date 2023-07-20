@@ -55,8 +55,8 @@ Item {
             model: progressBar.model
             delegate:  MZStepProgressBarDelegate {
                 id: progressBarDelegate
-                iconSource: model.iconSource
-                labelText: MZI18n[model.labelText]
+                source: model.source
+                labelText: model.labelText
                 labelWidth: progressBar.width / progressBar.model.count
                 currentState: {
                     if (index === activeIndex) {
