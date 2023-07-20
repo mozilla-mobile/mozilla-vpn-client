@@ -107,7 +107,8 @@ Get-ChildItem * -Include *.qsb | ForEach-Object {
    cmake --build .  --verbose
   # So this did indeed not output anything....
    ./qtbase/bin/qsb.exe --glsl 100es,120,150 --hlsl 50 --msl 12 -b -c -O -s -o qtdeclarative/src/quick/.qsb/scenegraph/shaders_ng/8bittextmask_a.frag.qsb qtdeclarative/src/quick/scenegraph/shaders_ng/8bittextmask_a.frag
-  exit 1
+   cp qtdeclarative/src/quick/.qsb/scenegraph/shaders_ng/8bittextmask_a.frag.qsb $BUILD_PREFIX 
+   cp ./qtbase/bin/qsb.exe $BUILD_PREFIX
 }
 
  cmake --install . --config Debug
