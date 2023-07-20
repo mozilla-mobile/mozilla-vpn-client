@@ -9,7 +9,6 @@
 
 #include "pingsender.h"
 
-
 class DnsPingSender final : public PingSender {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DnsPingSender)
