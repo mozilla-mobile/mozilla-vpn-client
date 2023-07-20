@@ -5,6 +5,10 @@
 import Foundation
 import NetworkExtension
 
+class TunnelError: Error {
+
+}
+
 // Singleton that manages the VPN tunnel and exposes functions
 // for interacting with it.
 class TunnelManager {
@@ -32,13 +36,14 @@ class TunnelManager {
         
         logger.debug(message: "Attempting to initialize VPN tunnel")
         
-        TunnelManager.instance.setTunnel { 
-            if let tunnel = TunnelManager.instance.tunnel {
-                logger.info(message: "Tunnel initialized succesfully")
-                return completionHandler(nil, tunnel)
-            } else {
-                fatalError("IMPOSSIBLE: Attempted to set the VPN tunnel, but didn't get an error nor a tunnel.")
+        TunnelManager.instance.setTunnel {
+            guard let tunnel = TunnelManager.instance.tunnel else {
+                completionHandler(TunnelError(), nil)
+                return
             }
+
+            logger.info(message: "Tunnel initialized succesfully")
+            completionHandler(nil, tunnel)
         }
     }
     
