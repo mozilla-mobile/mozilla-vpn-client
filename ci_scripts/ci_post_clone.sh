@@ -18,7 +18,7 @@ fi
 git submodule update --init
 
 # Install Conda and build tooling.
-brew install conda
+brew install miniconda
 
 conda env create --force -f env.yml
 conda activate VPN
