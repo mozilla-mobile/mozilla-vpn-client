@@ -200,26 +200,28 @@ void Telemetry::initialize() {
             ._sku = PurchaseHandler::instance()->currentSKU()});
   });
 
-  connect(controller, &Controller::stateChanged, this, [this, controller]() {
-    if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-      if (controller->state() == Controller::StateOn) {
-        mozilla::glean_pings::Vpnsession.submit("flush");
+  connect(
+      controller, &Controller::newConnectionSucceeded, this,
+      [this, controller]() {
+        if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+          if (controller->state() == Controller::StateOn) {
+            mozilla::glean_pings::Vpnsession.submit("flush");
 
-        mozilla::glean::session::session_id.generateAndSet();
-        mozilla::glean::session::session_start.set();
-        mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
-        mozilla::glean::session::apps_excluded.set(
-            AppPermission::instance()->disabledAppCount());
+            mozilla::glean::session::session_id.generateAndSet();
+            mozilla::glean::session::session_start.set();
+            mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
+            mozilla::glean::session::apps_excluded.set(
+                AppPermission::instance()->disabledAppCount());
 
-        mozilla::glean_pings::Vpnsession.submit("start");
-        m_vpnSessionPingTimer.start(
-            (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
-                 ? VPNSESSION_PING_TIMER_DEBUG_SEC
-                 : VPNSESSION_PING_TIMER_SEC) *
-            1000);
-      }
-    }
-  });
+            mozilla::glean_pings::Vpnsession.submit("start");
+            m_vpnSessionPingTimer.start(
+                (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
+                     ? VPNSESSION_PING_TIMER_DEBUG_SEC
+                     : VPNSESSION_PING_TIMER_SEC) *
+                1000);
+          }
+        }
+      });
 
   connect(
       controller, &Controller::controllerDisconnected, this,
