@@ -61,6 +61,8 @@ void ConnectionHealth::stop() {
   m_pingHelper.stop();
   m_noSignalTimer.stop();
   m_healthCheckTimer.stop();
+
+  m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
   setStability(Stable);
@@ -70,7 +72,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
                                    const QString& deviceIpv4Address) {
   logger.debug() << "ConnectionHealth started";
 
-  if (m_suspended || serverIpv4Gateway.isEmpty() ||
+  if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
     return;
   }
@@ -80,6 +82,8 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
   m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
   m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
+
+  m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 }
 
@@ -94,6 +98,8 @@ void ConnectionHealth::startIdle() {
   m_dnsPingSequence = QRandomGenerator::global()->bounded(UINT16_MAX);
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
+
+  m_dnsPingSender.start();
   m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
 
   // Send an initial ping right away.
@@ -237,20 +243,20 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
 #else
   switch (state) {
     case Qt::ApplicationState::ApplicationActive:
-      if (m_suspended) {
-        m_suspended = false;
+      if (!m_suspended) return;
 
-        Q_ASSERT(!m_noSignalTimer.isActive());
-        logger.debug() << "Resuming connection check from Suspension";
-        startActive(m_currentGateway, m_deviceAddress);
-      }
+      m_suspended = false;
+      logger.debug() << "Resuming connection check from suspension";
+      connectionStateChanged();
       break;
 
     case Qt::ApplicationState::ApplicationSuspended:
     case Qt::ApplicationState::ApplicationInactive:
     case Qt::ApplicationState::ApplicationHidden:
-      logger.debug() << "Pausing connection for Suspension";
+      if (m_suspended) return;
+
       m_suspended = true;
+      logger.debug() << "Pausing connection for suspension";
       stop();
       break;
   }
