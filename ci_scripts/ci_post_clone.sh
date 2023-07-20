@@ -17,10 +17,13 @@ fi
 # should already be done by XCode cloud cloning but just to make sure
 git submodule update --init
 
-# add necessary directories to path
-export PATH=/Users/local/Library/Python/3.8/bin:$PATH
+# Install Conda and build tooling.
+brew install conda
 
-python3 -m pip install --upgrade pip
+conda env create --force -f env.yml
+conda activate VPN
+./scripts/macos/conda_install_extras.sh  
+conda info
 
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
