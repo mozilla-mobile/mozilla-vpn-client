@@ -27,7 +27,6 @@ class DnsPingSender final : public PingSender {
 
  private:
   QUdpSocket m_socket;
-  QThread* m_thread = nullptr;
   QHostAddress m_source;
 };
 
