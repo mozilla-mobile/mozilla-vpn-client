@@ -520,6 +520,8 @@ void Controller::connected(const QString& pubkey,
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
+  emit newConnectionSucceeded();
+
   // In case the Controller provided a valid timestamp that
   // should be used.
   if (connectionTimestamp.isValid()) {
