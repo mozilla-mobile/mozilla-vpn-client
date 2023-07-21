@@ -34,47 +34,6 @@ FocusScope {
         multiHopStackView.pop();
     }
 
-    function scrollToActiveServer(serverListFlickable) {
-        if (!(serverListFlickable && serverListFlickable.countries)) {
-            return;
-        }
-        // Scroll vpnFlickable so that the current server city is
-        // vertically centered in the view
-        const serverListYCenter = serverListFlickable.height * 0.5 - listOffset
-
-        for (let idx = 0; idx < serverListFlickable.countries.count; idx++) {
-            const countryItem = serverListFlickable.countries.itemAt(idx);
-
-            if (
-                // Country does not host current active server
-                countryItem._countryCode !== currentServer.countryCode ||
-                // Country is already above the vertical center
-                countryItem.y < serverListYCenter
-            ) {
-                continue;
-            }
-
-            // Get distance to the current server city and scroll
-            const currentCityYPosition = (countryItem.y
-                + MZTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
-                - serverListYCenter);
-            const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
-                ? serverListFlickable.contentHeight - serverListFlickable.height
-                : currentCityYPosition;
-            serverListFlickable.contentY = destinationY;
-
-            if (!countryItem.cityListVisible) {
-                countryItem.openCityList();
-            }
-
-            return;
-        }
-    }
-
-    function centerActiveServer() {
-        scrollToActiveServer(serverListLoader.item);
-    }
-
     Layout.fillWidth: true
     Layout.fillHeight: true
     Accessible.name: menu.title
@@ -254,22 +213,9 @@ FocusScope {
 
         MZFlickable {
             objectName: "serverCountryView"
-            property alias countries: countriesRepeater
             id: vpnFlickable
 
-            flickContentHeight: serverList.implicitHeight
             anchors.fill: parent
-
-            onHeightChanged: {
-                scrollToActiveServer(this)
-            }
-
-            NumberAnimation on contentY {
-                id: scrollAnimation
-
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
 
             Column {
                 id: serverList
@@ -280,6 +226,7 @@ FocusScope {
                 anchors.top: parent.top
 
                 Item {
+                    id: serverListSpacer
                     height: MZTheme.theme.vSpacing - parent.spacing
                     width: parent.width
                 }
@@ -300,7 +247,7 @@ FocusScope {
 
                             return includesName || includesLocalizedName || matchesCountryCode;
                         }
-                    _searchBarHasError: countriesRepeater.count === 0
+                    _searchBarHasError: countriesListView.count === 0
                     _searchBarPlaceholderText: MZI18n.ServersViewSearchPlaceholder
 
                     anchors {
@@ -311,24 +258,42 @@ FocusScope {
                     }
                 }
 
-
-                RecentConnections {
-                    id: recentConnections
-                    anchors {
-                        left: parent.left
-                        leftMargin: anchors.rightMargin
-                        right: parent.right
-                        rightMargin: MZTheme.theme.windowMargin * 0.5
+                Component {
+                    id: countriesListViewHeader
+                    RecentConnections {
+                        id: recentConnections
+                        anchors {
+                            left: parent.left
+                            leftMargin: anchors.rightMargin
+                            right: parent.right
+                            rightMargin: MZTheme.theme.windowMargin * 0.5
+                        }
+                        height: implicitHeight
+                        showMultiHopRecentConnections: false
                     }
-                    height: showRecentConnections ? implicitHeight : 0
-                    showMultiHopRecentConnections: false
-                    visible: showRecentConnections && searchBar.getSearchBarText().length === 0
                 }
 
-                Repeater {
-                    id: countriesRepeater
+                Component{
+                    id: countriesListViewFooter
+                    Item {
+                        height: 2 * MZTheme.theme.menuHeight
+                        width: parent.width
+                    }
+                }
+
+                ListView {
+                    id: countriesListView
                     model: searchBar.getProxyModel()
                     delegate: ServerCountry {}
+                    clip: true
+                    height: vpnFlickable.height - searchBar.height - serverListSpacer.height - serverList.spacing
+                    width: parent.width
+                    header: (showRecentConnections && searchBar.getSearchBarText().length === 0) ? countriesListViewHeader : Item
+                    footer: countriesListViewFooter
+                    Component.onCompleted: {
+                        const index = VPNServerCountryModel.indexOfCountryCode(currentServer.countryCode);
+                        positionViewAtIndex(index, ListView.Beginning);
+                    }
                 }
             }
         }
@@ -343,12 +308,6 @@ FocusScope {
             height: parent.height - MZTheme.theme.menuHeight
             width: parent.width
             z: 1
-
-            handleTabClick: (tabButton) => {
-                if (tabButton.objectName === "tabAllServers") {
-                    scrollToActiveServer(loaderServersAll.item);
-                }
-            }
 
             tabList: ListModel {
                 id: tabButtonList

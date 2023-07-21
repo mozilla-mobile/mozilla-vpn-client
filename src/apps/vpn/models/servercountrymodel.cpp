@@ -237,6 +237,18 @@ const QString ServerCountryModel::countryName(
   return QString();
 }
 
+const int ServerCountryModel::indexOfCountryCode(
+    const QString& countryCode) const {
+  int i = 0;
+  for (const ServerCountry& country : m_countries) {
+    if (country.code() == countryCode) {
+      return i;
+    }
+    i++;
+  }
+  return -1;
+}
+
 void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();

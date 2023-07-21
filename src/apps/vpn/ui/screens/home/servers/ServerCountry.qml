@@ -29,15 +29,6 @@ MZClickableRow {
 
     function openCityList() {
         cityListVisible = !cityListVisible;
-        const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
-        const listScrollPosition = vpnFlickable.contentY
-
-        if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
-            return;
-        }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - MZTheme.theme.rowHeight * 1.5 : listScrollPosition + cityList.height + MZTheme.theme.rowHeight;
-        scrollAnimation.duration = animationDuration
-        scrollAnimation.start();
     }
 
     Keys.onReleased: event => {
@@ -50,8 +41,8 @@ MZClickableRow {
 
     activeFocusOnTab: true
     accessibleName: localizedName
-    Keys.onDownPressed: countriesRepeater.itemAt(index + 1) ? countriesRepeater.itemAt(index + 1).forceActiveFocus() : countriesRepeater.itemAt(0).forceActiveFocus()
-    Keys.onUpPressed: countriesRepeater.itemAt(index - 1) ? countriesRepeater.itemAt(index - 1).forceActiveFocus() : recentConnections.focusItemAt(recentConnections.numVisibleConnections - 1)
+    Keys.onDownPressed: countriesListView.itemAtIndex(index + 1) ? countriesListView.itemAtIndex(index + 1).forceActiveFocus() : countriesListView.itemAtIndex(0).forceActiveFocus()
+    Keys.onUpPressed: countriesListView.itemAtIndex(index - 1) ? countriesListView.itemAtIndex(index - 1).forceActiveFocus() : recentConnections.focusItemAt(recentConnections.numVisibleConnections - 1)
     Keys.onBacktabPressed: {
         serverSearchInput.forceActiveFocus();
     }
