@@ -65,7 +65,8 @@ Here is the proposed set of `ConnectionManager` states:
     ConnectionStateFirewall,
     ConnectionStateCaptivePortal,
     ConnectionStateCheckSubscription,
-    ConnectionStateUnstable,           
+    ConnectionStateUnstable,     
+    ConnectionStateIdle,       // Used when there are no active probes ongoing
   };
 ```
 
@@ -75,7 +76,9 @@ If at any point any of the checks in `ConnectionManager::ConnectionStates` fails
 
 This change also means that prior to the activation of the VPN, there are multiple checks and probes that need to succeed; this will take some time (hopefully no more than a couple of seconds), and as long as we communicate to the user via front end prompts about what is happening, this is acceptable. 
 
-To confidently determine that these checks do not delay the VPN activation by an unacceptable amount, we need to measure the duration of the _time elapsed from toggling on the VPN to activation_. This is the only relevant metric, given that in any other scenario the checks run in the background and would not affect the user experience. 
+To confidently determine that these checks do not delay the VPN activation by an unacceptable amount, we need to measure the duration of the _time elapsed from toggling on the VPN to activation_. We are interested in the VPN activation duration because it delays the VPN being toggled on.
+
+In addition to collecting metrics to assess the user experience, keeping track of the duration of each operation allows us to continually monitor the system health and identify any slow downs and changes.
 
 ## Task Breakdown
 
