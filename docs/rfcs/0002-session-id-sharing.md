@@ -29,7 +29,7 @@ this process may go dormant intermittently after the application is backgrounded
 
 #### The daemon process may be started independently from the main application on mobile platforms
 
-Both the operational system and the Mozilla VPN application expose features that allow the user
+Both the operating system and the Mozilla VPN application expose features that allow the user
 to turn on the VPN without interacting with the main application. On mobile environments, when
 the VPN is turned on through any of these methods, the main application process is never launched
 while the daemon process is.
@@ -49,7 +49,7 @@ throughout most or any of the VPN session, having the main application manage th
 This identifier needs to be rotated on every session start/end and the main application process may
 not be running at these times.
 
-Moreover, on mobile platforms, the fact that the main application process is killed whenever
+Moreover, on mobile platforms, the fact that the main application process may be killed whenever
 the application goes to the background makes the main application telemetry insufficient for collecting
 all the telemetry required to understand the health of the Mozilla VPN application and its usage patterns.
 To address this issue, mobile daemons have a separate instance of Glean, used to collect telemetry
@@ -103,7 +103,7 @@ the `daemonsession` ping on the daemon process.
 Once a new session is started,
 
 1. The `daemonsession` ping will be submitted with reason `flush`, in order to flush out
-   any lingering data before starting collection telemetry related to the new session.
+   any lingering data before starting to collect telemetry related to the new session.
 2. The `shared_session_id` is generated and recorded.
 3. The value recorded to telemetry is also persisted on the daemon's local storage.
 4. Session metrics may be recorded from this point on.
