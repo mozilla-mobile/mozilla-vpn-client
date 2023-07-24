@@ -106,7 +106,7 @@ QString DBusService::version() {
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
 
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -143,7 +143,7 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -159,7 +159,7 @@ QString DBusService::status() {
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return QString();
   }
@@ -234,7 +234,7 @@ QString DBusService::runningApps() {
 
 /* Update the firewall for running applications matching the application ID. */
 bool DBusService::firewallApp(const QString& appName, const QString& state) {
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -265,7 +265,7 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
 
 /* Update the firewall for the application matching the desired PID. */
 bool DBusService::firewallPid(int rootpid, const QString& state) {
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -291,7 +291,7 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
 
 /* Clear the firewall and return all applications to the active state */
 bool DBusService::firewallClear() {
-  if (!checkCallerAuthz()) {
+  if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -328,7 +328,7 @@ void DBusService::dropRootPermissions() {
   //
   // Clear all other capabilities, effectively discarding our root permissions.
   cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID};
-  int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
+  const int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
   if (cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET) ||
       cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET)) {
     logger.warning() << "Failed to set process capability flags";
@@ -341,28 +341,30 @@ void DBusService::dropRootPermissions() {
 }
 
 /* Checks to see if the caller has sufficient authorization */
-bool DBusService::checkCallerAuthz() {
+bool DBusService::isCallerAuthorized() {
   if (!calledFromDBus()) {
     // If this is not a D-Bus call, it came from the daemon itself.
     return true;
   }
-  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
+  const QDBusConnectionInterface* iface =
+      QDBusConnection::systemBus().interface();
 
   // If the VPN is active, and we know the UID that turned it on, as a special
   // case we permit that user full access to the D-Bus API in order to manage
   // the connection.
   if (m_sessionUid != 0) {
-    QDBusReply<uint> reply = iface->serviceUid(message().service());
+    const QDBusReply<uint> reply = iface->serviceUid(message().service());
     if (reply.isValid() && m_sessionUid == reply.value()) {
       return true;
     }
   }
   // Otherwise, if this is the activate method, we permit any non-root user to
-  // activate the VPN, but we will remember their UID for later authentication.
+  // activate the VPN, but we will remember their UID for later authorization
+  // checks.
   else if ((message().type() == QDBusMessage::MethodCallMessage) &&
            (message().member() == "activate")) {
-    QDBusReply<uint> reply = iface->serviceUid(message().service());
-    uint senderuid = reply.value();
+    const QDBusReply<uint> reply = iface->serviceUid(message().service());
+    const uint senderuid = reply.value();
     if (reply.isValid() && senderuid != 0) {
       m_sessionUid = senderuid;
       return true;
@@ -373,8 +375,8 @@ bool DBusService::checkCallerAuthz() {
   // that a zero UID (root) is used as a guard value to fall back to this case.
 
   // Get the PID of the D-Bus message sender.
-  QDBusReply<uint> reply = iface->servicePid(message().service());
-  uint senderpid = reply.value();
+  const QDBusReply<uint> reply = iface->servicePid(message().service());
+  const uint senderpid = reply.value();
   if (!reply.isValid() || (senderpid == 0)) {
     // Could not lookup the sender's PID. Rejected!
     logger.warning() << "Failed to resolve sender PID";
@@ -396,21 +398,4 @@ bool DBusService::checkCallerAuthz() {
     return false;
   }
   return (flag == CAP_SET);
-}
-
-uint DBusService::getCallerUid() {
-  if (!calledFromDBus()) {
-    // If this is not a D-Bus call, it came from the daemon itself.
-    return getuid();
-  }
-
-  // Get the UID of the D-Bus message sender.
-  QDBusConnectionInterface* iface = QDBusConnection::systemBus().interface();
-  QDBusReply<uint> reply = iface->serviceUid(message().service());
-  if (!reply.isValid()) {
-    // Could not lookup the sender's PID. Rejected!
-    logger.warning() << "Failed to resolve sender UID";
-    return 0;
-  }
-  return reply.value();
 }

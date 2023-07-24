@@ -53,8 +53,7 @@ class DBusService final : public Daemon, protected QDBusContext {
 
  private:
   bool removeInterfaceIfExists();
-  bool checkCallerAuthz();
-  uint getCallerUid();
+  bool isCallerAuthorized();
   void dropRootPermissions();
 
  private slots:
