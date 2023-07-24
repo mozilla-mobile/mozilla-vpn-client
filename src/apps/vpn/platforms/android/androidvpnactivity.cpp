@@ -53,6 +53,9 @@ AndroidVPNActivity::AndroidVPNActivity() {
   LogoutObserver* lo = new LogoutObserver(this);
   QObject::connect(lo, &LogoutObserver::ready, this,
                    &AndroidVPNActivity::onLogout);
+
+  QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
+                   &AndroidVPNActivity::onAppStateChange);
 }
 
 void AndroidVPNActivity::maybeInit() {
@@ -159,4 +162,20 @@ void AndroidVPNActivity::startAtBootChanged() {
 
 void AndroidVPNActivity::onLogout() {
   sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
+}
+
+void AndroidVPNActivity::onAppStateChange() {
+  if (!Constants::inProduction()) {
+    // Do not restrict screencap on debug
+    return;
+  }
+  // When the App State changes, check if we are doing Authentification
+  // if so, mark the content as sensitive, so no screenshots can be taken from
+  // those screens.
+  auto state = MozillaVPN::instance()->state();
+  bool isSensitive = state == App::StateAuthenticating;
+  AndroidCommons::runOnAndroidThreadSync([isSensitive]() {
+    QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",
+                                       "(Z)V", isSensitive);
+  });
 }

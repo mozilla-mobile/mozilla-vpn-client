@@ -81,6 +81,7 @@ class AndroidVPNActivity : public QObject {
   static bool handleBackButton(JNIEnv* env, jobject thiz);
   static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
+  void onAppStateChange();
 
  signals:
   void serviceConnected();
