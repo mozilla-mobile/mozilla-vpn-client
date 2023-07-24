@@ -246,6 +246,8 @@ class MozillaVPN final : public App {
 
   void scheduleRefreshDataTasks();
 
+  static void ensureApplicationIdExists();
+
   static void registerUrlOpenerLabels();
 
   static void registerErrorHandlers();
