@@ -15,11 +15,11 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.view.KeyEvent;
-
+import android.view.Window;
+import android.view.WindowManager;
+import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
-
-import java.nio.charset.StandardCharsets;
 
 public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   @Override
@@ -71,6 +71,15 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
 
   public static void sendToService(int actionCode, String body) {
     VPNActivity.getInstance().dispatchParcel(actionCode, body);
+  }
+
+  // Prevents Screenshots, if isSensitive is true.
+  public static void setScreenSensitivity(boolean isSensitive) {
+    if (isSensitive) {
+      VPNActivity.getInstance().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    } else {
+      VPNActivity.getInstance().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+    }
   }
 
   private void dispatchParcel(int actionCode, String body) {
