@@ -29,7 +29,34 @@ constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
 
 // static
-QString AndroidUtils::GetDeviceName() {
+QString AndroidUtils::getDeviceName() {
+  QJniEnvironment env;
+  jclass BUILD = env->FindClass("android/os/Build");
+  jfieldID model = env->GetStaticFieldID(BUILD, "DEVICE", "Ljava/lang/String;");
+  jstring value = (jstring)env->GetStaticObjectField(BUILD, model);
+  if (!value) {
+    return QString("Android Device");
+  }
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    return QString("Android Device");
+  }
+  QString res(buffer);
+  env->ReleaseStringUTFChars(value, buffer);
+  return res;
+};
+
+bool AndroidUtils::isChromeOSContext() {
+  /*
+   * If the device name end's with "_cheets" we're
+   * we are running in a Chrome OS / Android Emulator
+   * Situation.
+   */
+  return getDeviceName().endsWith("_cheets");
+}
+
+// static
+QString AndroidUtils::getDeviceModel() {
   QJniEnvironment env;
   jclass BUILD = env->FindClass("android/os/Build");
   jfieldID model = env->GetStaticFieldID(BUILD, "MODEL", "Ljava/lang/String;");

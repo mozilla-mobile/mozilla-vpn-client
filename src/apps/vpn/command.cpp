@@ -30,6 +30,13 @@
 #  include "platforms/windows/windowscommons.h"
 #endif
 
+#ifdef MZ_ANDROID
+#  include <QQuickWindow>
+#  include <QSGRendererInterface>
+
+#  include "platforms/android/androidutils.h"
+#endif
+
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif
@@ -178,6 +185,12 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
 #ifdef MZ_WINDOWS
   if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
+#ifdef MZ_ANDROID
+  if (AndroidUtils::isChromeOSContext()) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
 #endif

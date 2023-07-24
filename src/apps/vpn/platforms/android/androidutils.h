@@ -20,7 +20,29 @@ class AndroidUtils final : public QObject {
   Q_DISABLE_COPY_MOVE(AndroidUtils)
 
  public:
-  static QString GetDeviceName();
+  /**
+   * @brief Returns the name of the Device.
+   * Checks: Build.DEVICE
+   * Unlike GetDeviceName, returns the internal model name.
+   * I.e "Google Pixel 7" is 'Panther'
+   * @return QString of Build.DEVICE
+   */
+  static QString getDeviceName();
+
+  /**
+   * @brief Get the Device Model Name
+   * Checks: Build.Model
+   * Name here means how the manufacturer calls it.
+   * I.e "Google Pixel 7" is .. a Google Pixel 7
+   * @return QString of Build.Model
+   */
+  static QString getDeviceModel();
+
+  /**
+   * @brief Checks if we are running on ChromeOS+ Android Subsystem
+   *
+   */
+  static bool isChromeOSContext();
 
   static QByteArray DeviceId();
 
