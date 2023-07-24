@@ -169,7 +169,7 @@ void AndroidVPNActivity::onAppStateChange() {
     // Do not restrict screencap on debug
     return;
   }
-  // When the App State changes, check if we are doing Authentification
+  // When the App State changes, check if we are doing Authentication
   // if so, mark the content as sensitive, so no screenshots can be taken from
   // those screens.
   auto state = MozillaVPN::instance()->state();
