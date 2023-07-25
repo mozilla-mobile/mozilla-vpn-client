@@ -5,6 +5,7 @@
 #include "recommendedlocationmodel.h"
 
 #include <QCoreApplication>
+#include <QPointer>
 
 #include "leakdetector.h"
 #include "location.h"
@@ -46,12 +47,15 @@ void RecommendedLocationModel::initialize() {
   connect(MozillaVPN::instance()->serverLatency(),
           &ServerLatency::progressChanged, this,
           &RecommendedLocationModel::maybeRefreshModel);
+  connect(MozillaVPN::instance()->serverCountryModel(),
+          &ServerCountryModel::changed, this,
+          &RecommendedLocationModel::refreshModel);
 }
 
 void RecommendedLocationModel::refreshModel() {
   logger.debug() << "Model refresh";
 
-  QList<const ServerCity*> cities = recommendedLocations(DEFAULT_ENTRIES);
+  QList<QPointer<ServerCity>> cities = recommendedLocations(DEFAULT_ENTRIES);
   if (m_recommendedCities.length() != cities.length()) {
     beginResetModel();
     m_recommendedCities.swap(cities);
@@ -65,14 +69,14 @@ void RecommendedLocationModel::refreshModel() {
 }
 
 // static
-QList<const ServerCity*> RecommendedLocationModel::recommendedLocations(
+QList<QPointer<ServerCity>> RecommendedLocationModel::recommendedLocations(
     unsigned int maxResults) {
   double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }
 
-  QVector<const ServerCity*> cityResults;
+  QVector<QPointer<ServerCity>> cityResults;
   QVector<double> rankResults;
   cityResults.reserve(maxResults + 1);
   rankResults.reserve(maxResults + 1);
@@ -96,7 +100,7 @@ QList<const ServerCity*> RecommendedLocationModel::recommendedLocations(
     }
     if (i < static_cast<qsizetype>(maxResults)) {
       rankResults.insert(i, cityRanking);
-      cityResults.insert(i, &city);
+      cityResults.insert(i, (ServerCity*)&city);
     }
     if (rankResults.count() > static_cast<qsizetype>(maxResults)) {
       rankResults.resize(maxResults);
@@ -118,10 +122,13 @@ QVariant RecommendedLocationModel::data(const QModelIndex& index,
   if (!index.isValid() || index.row() >= m_recommendedCities.length()) {
     return QVariant();
   }
-
+  QPointer<ServerCity> city = m_recommendedCities.at(index.row());
   switch (role) {
     case CityRole:
-      return QVariant::fromValue(m_recommendedCities.at(index.row()));
+      if (city.isNull()) {
+        return QVariant();
+      }
+      return QVariant::fromValue(city.data());
 
     default:
       return QVariant();
