@@ -27,6 +27,8 @@ endif()
 add_executable(validation validate.cpp)
 target_link_libraries(validation PRIVATE Qt6::Core)
 
+add_dependencies(addons validation)
+
 # Validate the generated addons
 add_custom_command(
     TARGET addons
