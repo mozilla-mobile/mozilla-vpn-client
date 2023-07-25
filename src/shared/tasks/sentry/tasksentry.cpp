@@ -34,6 +34,8 @@ void TaskSentry::run() {
   }
   // If it's still unknown, parsing failed. abort.
   if (m_Type == ContentType::Unknown) {
+    logger.info() << "Dropping Sentry-Ping:Unknown";
+    logger.info() << m_envelope;
     emit completed();
     return;
   }
