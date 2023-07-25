@@ -48,11 +48,12 @@ QString AndroidUtils::getDeviceName() {
 
 bool AndroidUtils::isChromeOSContext() {
   /*
-   * If the device name end's with "_cheets" we're
-   * we are running in a Chrome OS / Android Emulator
+   * If the device name ends or starts with "cheets" we're
+   * we are running in a Chrome OS / Android Runtime Container
    * Situation.
    */
-  return getDeviceName().endsWith("_cheets");
+  auto name = getDeviceName();
+  return name.endsWith("_cheets") || name.startsWith("cheets_");
 }
 
 // static
