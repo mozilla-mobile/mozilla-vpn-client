@@ -2,7 +2,7 @@
 - Date: 2023-06-07
 - Author: [@brizental](https://github.com/brizental)
 - RFC PR: [#7112](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7112)
-- Implementation GitHub issue: TODO
+- Implementation GitHub issue: https://github.com/mozilla-mobile/mozilla-vpn-client/issues/7588
 
 ## Problem Statement
 
