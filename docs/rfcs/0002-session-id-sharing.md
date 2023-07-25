@@ -218,6 +218,5 @@ for cases such as iOS where the daemon process is only alive while a session is 
 ### Share the management burdens of the shared session id
 
 The first iteration of the proposed solution, included the main application storing and managing
-the `shared_session_id` and passing it along to the daemon when possible. That can be read on
-[7e20c2c933fc868b3ea50d6eb35651b904628658](https://github.com/mozilla-mobile/mozilla-vpn-client/tree/7e20c2c933fc868b3ea50d6eb35651b904628658).
+the `shared_session_id` and passing it along to the daemon when possible.
 Ultimately, that is an overly complex way to achieve the same end goal as the current proposal.
