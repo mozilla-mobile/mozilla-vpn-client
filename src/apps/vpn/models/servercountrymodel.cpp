@@ -189,7 +189,7 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
 // Select the city that we think is going to perform the best
 QStringList ServerCountryModel::pickBest() const {
-  QList<QPointer<ServerCity>> list =
+  QList<const ServerCity*> list =
       RecommendedLocationModel::recommendedLocations(1);
   if (list.isEmpty()) {
     return QStringList();

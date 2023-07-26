@@ -55,28 +55,37 @@ void RecommendedLocationModel::initialize() {
 void RecommendedLocationModel::refreshModel() {
   logger.debug() << "Model refresh";
 
-  QList<QPointer<ServerCity>> cities = recommendedLocations(DEFAULT_ENTRIES);
+  QList<const ServerCity*> cities = recommendedLocations(DEFAULT_ENTRIES);
   if (m_recommendedCities.length() != cities.length()) {
     beginResetModel();
-    m_recommendedCities.swap(cities);
+    m_recommendedCities.clear();
+    for (auto& city : cities) {
+      // Wrap that pointers into a
+      // QPointer, so that we are notified if they are
+      // deleted.
+      m_recommendedCities.append(QPointer((ServerCity*)city));
+    }
     endResetModel();
     return;
   }
 
-  m_recommendedCities.swap(cities);
+  m_recommendedCities.clear();
+  for (auto& city : cities) {
+    m_recommendedCities.append(QPointer((ServerCity*)city));
+  }
   int numLocations = static_cast<int>(m_recommendedCities.length());
   emit dataChanged(createIndex(0, 0), createIndex(numLocations - 1, 0));
 }
 
 // static
-QList<QPointer<ServerCity>> RecommendedLocationModel::recommendedLocations(
+QList<const ServerCity*> RecommendedLocationModel::recommendedLocations(
     unsigned int maxResults) {
   double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }
 
-  QVector<QPointer<ServerCity>> cityResults;
+  QVector<const ServerCity*> cityResults;
   QVector<double> rankResults;
   cityResults.reserve(maxResults + 1);
   rankResults.reserve(maxResults + 1);
@@ -100,7 +109,7 @@ QList<QPointer<ServerCity>> RecommendedLocationModel::recommendedLocations(
     }
     if (i < static_cast<qsizetype>(maxResults)) {
       rankResults.insert(i, cityRanking);
-      cityResults.insert(i, (ServerCity*)&city);
+      cityResults.insert(i, &city);
     }
     if (rankResults.count() > static_cast<qsizetype>(maxResults)) {
       rankResults.resize(maxResults);

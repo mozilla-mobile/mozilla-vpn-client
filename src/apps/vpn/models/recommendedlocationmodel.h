@@ -26,7 +26,7 @@ class RecommendedLocationModel final : public QAbstractListModel {
 
   void initialize();
 
-  Q_INVOKABLE static QList<QPointer<ServerCity>> recommendedLocations(
+  Q_INVOKABLE static QList<const ServerCity*> recommendedLocations(
       unsigned int maxResults);
 
   // QAbstractListModel methods
