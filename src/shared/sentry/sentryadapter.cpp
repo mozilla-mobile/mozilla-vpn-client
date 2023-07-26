@@ -96,7 +96,7 @@ void SentryAdapter::init() {
     return;
   };
   m_initialized = true;
-  setPlatformTags();
+  setPlatformTag();
   logger.info() << "Sentry initialized";
 }
 
