@@ -34,8 +34,7 @@ MZViewBase {
 
     onIsEditingChanged: deviceList.isEditingChanged(isEditing)
 
-    //% "My devices"
-    _menuTitle: qsTrId("vpn.devices.myDevices")
+    _menuTitle: MZI18n.DevicesMenuTitle
     _viewContentData: ColumnLayout {
         id: content
 

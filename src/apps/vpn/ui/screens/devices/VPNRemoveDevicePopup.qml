@@ -23,18 +23,13 @@ MZSimplePopup {
     showCloseButton: false
     imageSrc: "qrc:/ui/resources/devicesRemove.svg"
     imageSize: Qt.size(116, 80)
-    //% "Remove device?"
-    title: qsTrId("vpn.devices.removeDeviceQuestion")
-    //: %1 is the name of the device being removed. The name is displayed on purpose on a new line.
-    //% "Please confirm you would like to remove\n%1."
-    description: qsTrId("vpn.devices.deviceRemovalConfirm").replace("\n", " ").arg(popup.deviceName)
+    title: MZI18n.DevicesRemovePopupTitle
+    description: MZI18n.DevicesRemovePopupDescription.arg(popup.deviceName)
     buttons: [
         MZPopupButton {
             objectName: "confirmRemoveDeviceButton"
 
-            //: This is the “remove” device button.
-            //% "Remove"
-            buttonText: qsTrId("vpn.devices.removeDeviceButton")
+            buttonText: MZI18n.DevicesRemovePopupPrimaryButtonLabel
             buttonTextColor: MZTheme.theme.white
             colorScheme: MZTheme.theme.redButton
             onClicked: {

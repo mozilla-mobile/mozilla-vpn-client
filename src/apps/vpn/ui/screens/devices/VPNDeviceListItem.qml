@@ -25,26 +25,20 @@ MZSwipeDelegate {
 
     function deviceSubtitle() {
         if (currentOne) {
-            //% "Current Device"
-            return qsTrId("vpn.devices.currentDevice");
+            return MZI18n.DevicesListItemDescriptionCurrent
         }
 
         const diff = (Date.now() - createdAt.valueOf()) / 1000;
         if (diff < 3600) {
-            //% "Added less than an hour ago"
-            return qsTrId("vpn.devices.addedltHour");
+            return MZI18n.DevicesListItemDescriptionAddedOneHourAgo
         }
 
         if (diff < 86400) {
-            //: %1 is the number of hours.
-            //% "Added a few hours ago (%1)"
-            return qsTrId("vpn.devices.addedXhoursAgo").arg(Math.floor(diff / 3600));
+            return MZI18n.DevicesListItemDescriptionAddedFewHoursAgo.arg(Math.floor(diff / 3600))
         }
 
-        //% "Added %1 days ago"
-        //: %1 is the number of days.
         //: Note: there is currently no support for proper plurals
-        return qsTrId("vpn.devices.addedXdaysAgo").arg(Math.floor(diff / 86400));
+        return MZI18n.DevicesListItemDescriptionAddedDaysAgo.arg(Math.floor(diff / 86400))
     }
 
     content.sourceComponent: Column {
@@ -119,9 +113,7 @@ MZSwipeDelegate {
 
             SwipeDelegate.onClicked: removeItem(name, publicKey)
 
-            //: Label used for accessibility on the button to remove a device. %1 is the name of the device.
-            //% "Remove %1"
-            Accessible.name: qsTrId("vpn.devices.removeA11Y").arg(name)
+            Accessible.name: MZI18n.DevicesListItemRemoveDeviceAccessibility.arg(name)
         }
     }
 }
