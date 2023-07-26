@@ -122,7 +122,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4712
     data_reviews:
-      - ADD THIS ONCE DONE
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7581#pullrequestreview-1544692201
     send_in_pings:
       - vpnsession
       - daemonsession
