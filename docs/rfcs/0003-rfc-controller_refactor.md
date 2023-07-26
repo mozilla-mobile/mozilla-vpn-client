@@ -41,8 +41,8 @@ Because this is all part of a unified connectivity experience, we do not want to
 Introduce a new `ConnectionManager` component that is activated when the client is launched and connects to `networkWatcher` in case anything changes. This new component will manage the following work:
 - Internet probe: assess if there is a network connection.
 - Firewall: assess if firewall is limiting network connectivity.
-- Captive portal check: determine uf the network is behind a captive portal.
-- Server probe: upon activation and then priodically check if there are available servers within user's selection location.
+- Captive portal check: determine if the network is behind a captive portal.
+- Server probe: upon activation and then periodically check if there are available servers within user's selection location.
 - Subscription status: ensure that user has an active subscription, and if not, show the "No Subscription Found" screen.
 
 The logic to calculate elapsed time since the VPN was activated will also be moved out of the Controller and into a new `Timer` component. This bit of work is out of scope for this RFC. 
@@ -92,4 +92,4 @@ This is a big undertaking that will take multiple sprints to complete. The work 
 6. Add server probing to `ConnectionManager`: To ensure that the servers within the user's selected location are available and running.
 7. Get rid of the `ConnectionHealth` object
 8. Audit and cleanup `Controller::stateChanged`. We need to audit all areas where code is listening to `Controller::stateChanged` and see if it should be monitoring the `ConnectionManager` instead, if that is the case, make the necessary changes. [Here](https://searchfox.org/mozilla-vpn-client/search?q=Controller%3A%3AstateChanged&path=&case=false&regexp=false) is a current list of every instance we should audit.
-9. Move timestamp code to its own class/object
+9. Move timestamp code to its own class/object - [Epic](https://mozilla-hub.atlassian.net/browse/VPN-5266)
