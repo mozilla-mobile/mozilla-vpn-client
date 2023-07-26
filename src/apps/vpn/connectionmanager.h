@@ -11,10 +11,16 @@
 #include <QTimer>
 
 #include "interfaceconfig.h"
+#include "ipaddress.h"
+#include "loghandler.h"
+#include "models/server.h"
+#include "models/serverdata.h"
+#include "pinghelper.h"
 
+class ControllerImpl;
 class MozillaVPN;
 
-class ConnectionManager final : public QObject  {
+class ConnectionManager : public QObject, public LogSerializer {
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(ConnectionManager)
  
@@ -97,6 +103,7 @@ public:
  ~ConnectionManager();
 
  void initialize();
+ static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
 
 private:
   enum NextStep {
@@ -118,6 +125,10 @@ NextStep m_nextStep = None;
   void activateInternal(DNSPortPolicy dnsPort,
                         ServerSelectionPolicy serverSelectionPolicy);
   
+  void clearConnectedTime();
+  QStringList getExcludedAddresses();
+  void activateNext();
+  
 private:
   QTimer m_timer;
   QTimer m_connectingTimer;
@@ -130,6 +141,28 @@ private:
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;
   
+  QScopedPointer<ControllerImpl> m_impl;
+  
+  // Server data can change while the controller is busy completing an
+  // activation or a server switch because they are managed by the
+  // SettingsHolder object and exposed to user interaction, addons, and JS.
+  //
+  // But the controller needs to know the location to use for the entire
+  // duration of its tasks. When the client schedules a VPN activation,
+  // `m_serverData` is set as a copy of the current `MozillaVPN::serverData()`,
+  // ignoring further updates until the pending operations terminate. Instead,
+  // `m_nextServerData` is set when a server-switch request is scheduled while
+  // an activation operation is still in progress.
+  //
+  // At initialization time, these two member variables are set to
+  // MozillaVPN::serverData() to do not let not initialize.
+  //
+  // Please, do not use MozillaVPN::serverData() in the controller!
+  ServerData m_serverData;
+  ServerData m_nextServerData;
+
+  PingHelper m_ping_canary;
+  bool m_ping_received = false;
 };  // namespace ConnectionManager
 
 #endif  // CONNECTIONMANAGER_H
