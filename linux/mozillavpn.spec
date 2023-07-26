@@ -17,6 +17,7 @@ Requires:  wireguard-tools
 
 BuildRequires: cargo
 BuildRequires: golang >= 1.18
+BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
 BuildRequires: python3-yaml
