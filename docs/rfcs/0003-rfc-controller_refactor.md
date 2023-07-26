@@ -1,5 +1,5 @@
-- Status: In review
-- Date: 2023-06-20
+- Status: Accepted
+- Date: 2023-07-26
 - Author: [@gela](https://github.com/gela)
 - RFC PR: https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7269
 - Implementation GitHub issue: TBD.
