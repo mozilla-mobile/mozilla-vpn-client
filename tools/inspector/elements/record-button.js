@@ -69,7 +69,7 @@ export class RecordButton extends LitElement {
     const blob = new Blob([entries.join('\n')], {type: 'octet/stream'});
     const url = window.URL.createObjectURL(blob);
     a.href = url;
-    a.download = 'mozillavpn.txt';
+    a.download = 'mozillavpn.log';
     a.click();
     window.URL.revokeObjectURL(url);
   }
