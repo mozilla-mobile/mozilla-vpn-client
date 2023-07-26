@@ -207,7 +207,7 @@ void SentryAdapter::captureQMLStacktrace(const char* description) {
 #endif
 }
 
-void SentryAdapter::setPlatformTags() const {
+void SentryAdapter::setPlatformTag() const {
 #if defined(MZ_LINUX)
   sentry_set_tag("platform", "Linux");
 #elif defined(MZ_MACOS)

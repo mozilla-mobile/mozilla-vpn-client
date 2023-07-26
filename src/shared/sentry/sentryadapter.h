@@ -148,7 +148,7 @@ class SentryAdapter final : public QObject {
   /**
    * @brief Set's Tags related to the Platform
    */
-  void setPlatformTags() const;
+  void setPlatformTag() const;
 
   bool m_initialized = false;
   UserConsentResult m_userConsent = UserConsentResult::Pending;
