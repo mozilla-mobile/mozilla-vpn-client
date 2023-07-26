@@ -4,7 +4,7 @@
   "name": "Update to Mozilla VPN 2.16",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.15.9"
+    "max_client_version": "1.0.0"
   },
   "javascript": {
     "enable": "enable.js"
