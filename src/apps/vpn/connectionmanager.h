@@ -6,8 +6,11 @@
 #define CONNECTIONMANAGER_H
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QTimer>
+
+#include "interfaceconfig.h"
 
 class MozillaVPN;
 
@@ -50,16 +53,24 @@ public:
 
 public:
   qint64 time() const;
+  void serverUnavailable();
   
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
   }
   
+  enum ServerSelectionPolicy {
+    RandomizeServerSelection,
+    DoNotRandomizeServerSelection,
+  };
+  
+  int connectionRetry() const { return m_connectionRetry; }
+  
 private:
 // Q_PROPERTY(State state READ state NOTIFY stateChanged)
  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
-// Q_PROPERTY(
-//     int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
+ Q_PROPERTY(
+     int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
                 NOTIFY enableDisconnectInConfirmingChanged);
 // Q_PROPERTY(bool silentServerSwitchingSupported READ
@@ -78,6 +89,8 @@ private slots:
 signals:
   void timeChanged();
   void enableDisconnectInConfirmingChanged();
+  void handshakeFailed(const QString& serverHostname);
+  void connectionRetryChanged();
   
 public:
   ConnectionManager();
@@ -85,6 +98,26 @@ public:
 
  void initialize();
 
+private:
+  enum NextStep {
+    None,
+    Quit,
+    Update,
+    Disconnect,
+    BackendFailure,
+    ServerUnavailable,
+  };
+
+NextStep m_nextStep = None;
+  
+  enum DNSPortPolicy {
+    ForceDNSPort,
+    DoNotForceDNSPort,
+  };
+  
+  void activateInternal(DNSPortPolicy dnsPort,
+                        ServerSelectionPolicy serverSelectionPolicy);
+  
 private:
   QTimer m_timer;
   QTimer m_connectingTimer;
@@ -94,6 +127,9 @@ private:
   
   State m_state = StateInitializing;
   bool m_enableDisconnectInConfirming = false;
+  QList<InterfaceConfig> m_activationQueue;
+  int m_connectionRetry = 0;
+  
 };  // namespace ConnectionManager
 
 #endif  // CONNECTIONMANAGER_H

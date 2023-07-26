@@ -4,11 +4,47 @@
 
 #include "connectionmanager.h"
 
-#include "controller.h"
+//#include "controller.h"
+#include "app.h"
+#include "appconstants.h"
+#include "apppermission.h"
+#include "captiveportal/captiveportal.h"
+#include "controllerimpl.h"
+#include "dnshelper.h"
+#include "feature.h"
+#include "frontend/navigator.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/devicemodel.h"
+#include "models/keys.h"
+#include "models/server.h"
+#include "models/servercountrymodel.h"
 #include "mozillavpn.h"
-#include "networkwatcher.h"
+#include "networkrequest.h"
+#include "rfc/rfc1112.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
+#include "serveri18n.h"
+#include "serverlatency.h"
+#include "settingsholder.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/function/taskfunction.h"
+#include "tasks/heartbeat/taskheartbeat.h"
+#include "taskscheduler.h"
+#include "tutorial/tutorial.h"
+
+//constexpr const uint32_t TIMER_MSEC = 1000;
+
+// X connection retries.
+constexpr const int CONNECTION_MAX_RETRY = 9;
+
+//constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+//constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
+
+class ControllerImpl;
+class MozillaVPN;
 
 namespace {
 Logger logger("Connection Manager");
@@ -56,37 +92,194 @@ void ConnectionManager::timerTimeout() {
 void ConnectionManager::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
-//  MozillaVPN* vpn = MozillaVPN::instance();
-//  Q_ASSERT(!m_activationQueue.isEmpty());
-//
-//  // Block the offending server and try again.
-//  InterfaceConfig& hop = m_activationQueue.first();
-//  vpn->serverLatency()->setCooldown(
-//      hop.m_serverPublicKey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-//
-//  emit handshakeFailed(hop.m_serverPublicKey);
-//
-//  if (m_nextStep != None) {
+  MozillaVPN* vpn = MozillaVPN::instance();
+  Q_ASSERT(!m_activationQueue.isEmpty());
+
+  // Block the offending server and try again.
+  InterfaceConfig& hop = m_activationQueue.first();
+  vpn->serverLatency()->setCooldown(
+      hop.m_serverPublicKey, AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+
+  emit handshakeFailed(hop.m_serverPublicKey);
+
+  if (m_nextStep != None) {
 //    deactivate();
+    return;
+  }
+
+  // Try again, again if there are sufficient retries left.
+  ++m_connectionRetry;
+  emit connectionRetryChanged();
+  logger.info() << "Connection attempt " << m_connectionRetry;
+  if (m_connectionRetry == 1) {
+    logger.info() << "Connection Attempt: Using Port 53 Option this time.";
+    // On the first retry, opportunisticly try again using the port 53
+    // option enabled, if that feature is disabled.
+    activateInternal(ForceDNSPort, RandomizeServerSelection);
+    return;
+  } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection);
+    return;
+  }
+
+  // Otherwise, the give up and report the location as unavailable.
+  logger.error() << "Connection retries exhausted, giving up";
+  serverUnavailable();
+}
+
+void ConnectionManager::serverUnavailable() {
+  logger.error() << "server unavailable";
+
+  m_nextStep = ServerUnavailable;
+
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateConfirming || m_state == StateCheckSubscription) {
+//    deactivate();
+    return;
+  }
+}
+void ConnectionManager::activateInternal(DNSPortPolicy dnsPort,
+                                  ServerSelectionPolicy serverSelectionPolicy) {
+//  logger.debug() << "Activation internal";
+//  Q_ASSERT(m_impl);
+//
+//  clearConnectedTime();
+//  m_handshakeTimer.stop();
+//  m_activationQueue.clear();
+//
+//  Server exitServer =
+//      serverSelectionPolicy == DoNotRandomizeServerSelection &&
+//              !m_serverData.exitServerPublicKey().isEmpty()
+//          ? MozillaVPN::instance()->serverCountryModel()->server(
+//                m_serverData.exitServerPublicKey())
+//          : Server::weightChooser(m_serverData.exitServers());
+//  if (!exitServer.initialized()) {
+//    logger.error() << "Empty exit server list in state" << m_state;
+//    serverUnavailable();
 //    return;
 //  }
 //
-//  // Try again, again if there are sufficient retries left.
-//  ++m_connectionRetry;
-//  emit connectionRetryChanged();
-//  logger.info() << "Connection attempt " << m_connectionRetry;
-//  if (m_connectionRetry == 1) {
-//    logger.info() << "Connection Attempt: Using Port 53 Option this time.";
-//    // On the first retry, opportunisticly try again using the port 53
-//    // option enabled, if that feature is disabled.
-//    activateInternal(ForceDNSPort, RandomizeServerSelection);
-//    return;
-//  } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-//    activateInternal(DoNotForceDNSPort, RandomizeServerSelection);
-//    return;
+//  MozillaVPN* vpn = MozillaVPN::instance();
+//  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+//  SettingsHolder* settingsHolder = SettingsHolder::instance();
+//
+//  // Prepare the exit server's connection data.
+//  InterfaceConfig exitConfig;
+//  exitConfig.m_privateKey = vpn->keys()->privateKey();
+//  exitConfig.m_deviceIpv4Address = device->ipv4Address();
+//  exitConfig.m_deviceIpv6Address = device->ipv6Address();
+//  exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
+//  exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
+//  exitConfig.m_serverPublicKey = exitServer.publicKey();
+//  exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
+//  exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+//  exitConfig.m_serverPort = exitServer.choosePort();
+//  exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+//  exitConfig.m_excludedAddresses = getExcludedAddresses();
+//  exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+//#if defined(MZ_ANDROID) || defined(MZ_IOS)
+//  exitConfig.m_installationId = settingsHolder->installationId();
+//#endif
+//  logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
+//
+//  // Splittunnel-feature could have been disabled due to a driver conflict.
+//  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
+//    exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+//  }
+//  if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+//    dnsPort = ForceDNSPort;
 //  }
 //
-//  // Otherwise, the give up and report the location as unavailable.
-//  logger.error() << "Connection retries exhausted, giving up";
-//  serverUnavailable();
+//  // For single-hop connections, exclude the entry server
+//  if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
+//      !m_serverData.multihop()) {
+//    logger.info() << "Activating single hop";
+//    exitConfig.m_hopType = InterfaceConfig::SingleHop;
+//
+//    // If requested, force the use of port 53/DNS.
+//    if (dnsPort == ForceDNSPort) {
+//      logger.info() << "Forcing port 53";
+//      exitConfig.m_serverPort = 53;
+//    }
+//  }
+//  // For controllers that support multiple hops, create a queue of connections.
+//  // The entry server should start first, followed by the exit server.
+//  else if (m_impl->multihopSupported()) {
+//    logger.info() << "Activating multi-hop (through platform controller)";
+//    exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
+//
+//    Server entryServer =
+//        serverSelectionPolicy == DoNotRandomizeServerSelection &&
+//                !m_serverData.entryServerPublicKey().isEmpty()
+//            ? MozillaVPN::instance()->serverCountryModel()->server(
+//                  m_serverData.entryServerPublicKey())
+//            : Server::weightChooser(m_serverData.entryServers());
+//
+//    if (!entryServer.initialized()) {
+//      logger.error() << "Empty entry server list in state" << m_state;
+//      serverUnavailable();
+//      return;
+//    }
+//
+//    InterfaceConfig entryConfig;
+//    entryConfig.m_privateKey = vpn->keys()->privateKey();
+//    entryConfig.m_deviceIpv4Address = device->ipv4Address();
+//    entryConfig.m_deviceIpv6Address = device->ipv6Address();
+//    entryConfig.m_serverPublicKey = entryServer.publicKey();
+//    entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+//    entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+//    entryConfig.m_serverPort = entryServer.choosePort();
+//    entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
+//    entryConfig.m_allowedIPAddressRanges.append(
+//        IPAddress(exitServer.ipv4AddrIn()));
+//    entryConfig.m_allowedIPAddressRanges.append(
+//        IPAddress(exitServer.ipv6AddrIn()));
+//
+//    // If requested, force the use of port 53/DNS.
+//    if (dnsPort == ForceDNSPort) {
+//      logger.info() << "Forcing port 53";
+//      entryConfig.m_serverPort = 53;
+//    }
+//
+//    m_activationQueue.append(entryConfig);
+//  }
+//  // Otherwise, we can approximate multihop support by redirecting the
+//  // connection to the exit server via the multihop port.
+//  else {
+//    logger.info() << "Activating multi-hop (through multihop port)";
+//    exitConfig.m_hopType = InterfaceConfig::SingleHop;
+//
+//    Server entryServer =
+//        serverSelectionPolicy == DoNotRandomizeServerSelection &&
+//                !m_serverData.entryServerPublicKey().isEmpty()
+//            ? MozillaVPN::instance()->serverCountryModel()->server(
+//                  m_serverData.entryServerPublicKey())
+//            : Server::weightChooser(m_serverData.entryServers());
+//
+//    if (!entryServer.initialized()) {
+//      logger.error() << "Empty entry server list in state" << m_state;
+//      serverUnavailable();
+//      return;
+//    }
+//
+//    // NOTE: For platforms without multihop support, we cannot emulate multihop
+//    // and use port 53 at the same time. If the user has selected both options
+//    // then let's choose multihop.
+//    exitConfig.m_serverPort = exitServer.multihopPort();
+//    exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+//    exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+//  }
+//
+//  m_activationQueue.append(exitConfig);
+//  m_serverData.setEntryServerPublicKey(
+//      m_activationQueue.first().m_serverPublicKey);
+//  m_serverData.setExitServerPublicKey(
+//      m_activationQueue.last().m_serverPublicKey);
+//
+//  m_ping_received = false;
+//  m_ping_canary.start(m_activationQueue.first().m_serverIpv4AddrIn,
+//                      "0.0.0.0/0");
+//  logger.info() << "Canary Ping Started";
+//  activateNext();
 }
