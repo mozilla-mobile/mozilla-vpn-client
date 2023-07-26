@@ -310,6 +310,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
@@ -325,9 +326,11 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
   exitConfig.m_excludedAddresses = getExcludedAddresses();
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  exitConfig.m_installationId = settingsHolder->installationId();
+#endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
   // Splittunnel-feature could have been disabled due to a driver conflict.
   if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
