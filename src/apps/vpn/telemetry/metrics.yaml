@@ -114,6 +114,25 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
+  installation_id:
+    type: uuid
+    lifetime: user
+    description: |
+      A unique identifier to connect the app and daemon Glean instances.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4712
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/7581#pullrequestreview-1544692201
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
   dns_type:
     type: string
     description: |

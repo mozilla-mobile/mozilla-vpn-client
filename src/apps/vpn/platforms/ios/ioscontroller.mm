@@ -138,6 +138,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
           allowedIPAddressRanges:allowedIPAddressRangesNS
                           reason:reason
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
+                  installationId:config.m_installationId.toNSString()
                  failureCallback:^() {
                    logger.error() << "IOSSWiftController - connection failed";
                    emit disconnected();
