@@ -19,6 +19,10 @@ SwipeDelegate {
     property var onSwipeClose: () => {}
     property var uiState: MZTheme.theme.uiState
 
+    function closeSwipe() {
+        if(!swipeDelegate.isSwipeOpen || overlayMouseArea.mouseX <= overlayMouseArea.pressedMouseX && !swipeDelegate.blockClose) swipeDelegate.swipe.close()
+    }
+
     padding: 0
     clip: true
     hoverEnabled: true
@@ -57,6 +61,14 @@ SwipeDelegate {
         if(swipe.left && !blockClose) {
             swipe.close()
         }
+    }
+
+    Keys.onEnterPressed: {
+         swipeDelegate.closeSwipe()
+    }
+
+    Keys.onReturnPressed: {
+        swipeDelegate.closeSwipe()
     }
 
     onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(swipeDelegate)
@@ -137,6 +149,7 @@ SwipeDelegate {
 
     //Tap to close, but lose closing swipe gesture fullly interuptible control (auto closes on swipe instead)
     MouseArea {
+        id: overlayMouseArea
         property real pressedMouseX
 
         enabled: swipeDelegate.isSwipeOpen
@@ -146,7 +159,7 @@ SwipeDelegate {
 
         onMouseXChanged: if(mouseX < pressedMouseX && !blockClose) swipeDelegate.swipe.close()
         onPressed: pressedMouseX = mouseX
-        onClicked: if(!swipeDelegate.isSwipeOpen || mouseX <= pressedMouseX && !blockClose) swipeDelegate.swipe.close()
+        onClicked: swipeDelegate.closeSwipe()
         onReleased: swipeDelegate.state = swipeDelegate.uiState.stateDefault
     }
 
