@@ -7,7 +7,8 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret)
+pkg_check_modules(libcap REQUIRED IMPORTED_TARGET libcap)
+target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret PkgConfig::libcap)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
