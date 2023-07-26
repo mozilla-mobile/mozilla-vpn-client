@@ -16,6 +16,7 @@ MZSwipeDelegate {
     signal removeItem(name: string, publicKey: string)
 
     hasUiStates: false
+    activeFocusOnTab: false
 
     //% "%1 %2"
     //: Example: "deviceName deviceDescription"
