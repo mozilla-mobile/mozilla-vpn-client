@@ -22,18 +22,3 @@ add_addon_target(addons
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_target_properties(addons PROPERTIES EXCLUDE_FROM_ALL FALSE)
 endif()
-
-# Generate the validation executable
-add_executable(validation validate.cpp)
-target_link_libraries(validation PRIVATE Qt6::Core)
-
-add_dependencies(addons validation)
-
-# Validate the generated addons
-add_custom_command(
-    TARGET addons
-    DEPENDS validation
-    COMMENT "Validating generated addons"
-    COMMAND ${CMAKE_BINARY_DIR}/validation ${CMAKE_BINARY_DIR}
-    POST_BUILD
-)

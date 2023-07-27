@@ -475,5 +475,5 @@ with open(args.source, "r", encoding="utf-8") as file:
 
     print("Creating the final addon...")
     rcc_file = os.path.join(args.dest, f"{manifest['id']}.rcc")
-    os.system(f"{rcc} {qrc_file} -o {rcc_file} -binary")
+    os.system(f"{rcc} --binary --no-zstd --output {rcc_file} {qrc_file}")
     print(f"Done: {rcc_file}")
