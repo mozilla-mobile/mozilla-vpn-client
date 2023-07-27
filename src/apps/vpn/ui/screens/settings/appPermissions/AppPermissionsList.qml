@@ -20,6 +20,8 @@ ColumnLayout {
 
     spacing: MZTheme.theme.vSpacing
 
+    Layout.preferredWidth: parent.width
+
     MZSearchBar {
         property bool sorted: false;
         id: searchBarWrapper
@@ -38,7 +40,8 @@ ColumnLayout {
         objectName: "appExclusionsList"
 
         spacing: MZTheme.theme.windowMargin / 2
-        Layout.fillWidth: true
+
+        Layout.preferredWidth: parent.width
 
         MZLinkButton {
             property int numDisabledApps: MZSettings.vpnDisabledApps.length
