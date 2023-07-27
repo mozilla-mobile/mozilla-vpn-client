@@ -554,12 +554,12 @@ onboarding:
     comment: Label for onboarding progress bar step
   progressBarGetStarted:
     value: Start
-    comment: Label for onboarding progress bar step
+    comment: Label for onboarding progress bar step. It's the final step in the progress, and indicates that the user can now start using the app.
   progressBarAccessibilityStepComplete:
-    value: "%1. Onboarding step %2 of %3. Select to go back to this step."
+    value: "Onboarding step “%1” (%2 of %3). Select to go back to this step."
     comment: Accessibility read out for the completed steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
   progressBarAccessibilityStepCurrent:
-    value: "%1. Onboarding step %2 of %3. You are currently on this step."
+    value: "Onboarding step “%1” (%2 of %3). You are currently on this step."
     comment: Accessibility read out for the current step in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
 
 inAppAuth:
