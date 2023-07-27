@@ -1716,6 +1716,20 @@ void MozillaVPN::registerNavigatorScreens() {
         return true;
       });
 
+  Navigator::registerScreen(
+      MozillaVPN::ScreenRemovingDevice, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenRemovingDevice.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenRemovingDevice)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
   connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound,
           Navigator::instance(), []() {
             Navigator::instance()->requestScreen(

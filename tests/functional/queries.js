@@ -273,10 +273,10 @@ const screenSettings = {
   myDevicesView: {
     BACK: new QmlQueryComposer('//deviceList-back'),
     CONFIRM_REMOVAL_BUTTON: new QmlQueryComposer('//confirmRemoveDeviceButton'),
-    DEVICE_LIST: new QmlQueryComposer('//deviceListView'),
+    DEVICE_LIST: new QmlQueryComposer('//deviceList'),
     DEVICE_LIMIT_HEADER: new QmlQueryComposer('//deviceLimitHeader'),
     REMOVE_DEVICE_BUTTON: new QmlQueryComposer(
-        '//deviceListView/device-device_1/deviceLayout/deviceRemoveButton'),
+        '//deviceList/deviceListLayout/device-device_1/swipeActionLoader/swipeActionDelete'),
 
   },
 
