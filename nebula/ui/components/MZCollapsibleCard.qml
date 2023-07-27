@@ -163,14 +163,13 @@ Rectangle {
         Column {
             id: column
 
-            Layout.preferredWidth: accordionTitle.width
             Layout.leftMargin: icon.width + MZTheme.theme.listSpacing * 4
             Layout.rightMargin: MZTheme.theme.listSpacing
 
             ColumnLayout {
                 id: cardContent
 
-                width: parent.width
+                width: accordionTitle.width
 
                 //becomes invisible so that it is no longer calculated in the implicitHeight (or picked up by screen readers)
                 visible: opacity > 0
