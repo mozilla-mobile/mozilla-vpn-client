@@ -1,0 +1,25 @@
+name: Post GH releases Actions
+
+on:
+  release:
+    types: [published] 
+  workflow_dispatch:
+
+jobs:
+  update_sentry_info:
+    name: Sentry - Mark as Released
+    runs-on: ubuntu-latest
+    steps:
+        - name: Clone repository
+          uses: actions/checkout@v2
+        - name: Get Files
+          env:
+            SENTRY_KEY: ${{ secrets.SENTRY_KEY }}
+          run: | 
+            TAG=${{github.ref_name}}
+            VERSION=${TAG:1}
+            npm install -g @sentry/cli
+            sentry-cli login --auth-token $SENTRY_KEY            
+            sentry-cli releases --org mozilla -p vpn-client finalize $VERSION
+
+          
