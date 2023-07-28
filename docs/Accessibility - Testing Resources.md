@@ -363,7 +363,12 @@ of color blindness.
   - [High
          Contrast](https://help.ubuntu.com/stable/ubuntu-help/a11y-contrast.html.en)
 
-### Vision - Personalization of Text Size,Text Cursor and Mouse Pointer
+**Testing Scenarios:**
+
+1. Enable specific contrast themes and color filters, then navigate through all
+     the VPN Client screens and ensure the readability of all text.
+
+### Vision - Personalization of Text Size, Text Cursor and Mouse Pointer
 
 Text size can be changed to improve readability.
 
