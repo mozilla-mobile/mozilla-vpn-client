@@ -640,7 +640,6 @@ automatically suppress such notifications in this mode.
 
   - [Do Not
          Disturb](https://support.google.com/android/answer/9069335?sjid=3029603282803568608-NA)
-         *\[Is flashing supported on notifications?\]*
 
 - Linux
 
