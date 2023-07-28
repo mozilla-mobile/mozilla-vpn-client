@@ -91,7 +91,8 @@ Testing](#manual-accessibility-testing) section.
    Some ATs, like Screen Magnification, Voice Typing, Eye Control, and
  Switch Control, typically don\'t need customized application support,
  as they integrate with core platform subsystems. Issues in these areas
- are usually attributable to problems in the AT or platform.
+ are usually attributable to problems in the AT or platform, making the
+ testing priority relatively lower.
 
 2. **Reduce Redundancy:** Minimize redundant testing by focusing on ATs
  like Screen Readers, which require the VPN Client to provide Accessibility
@@ -122,17 +123,18 @@ Based on the [Principles for Testing](#principles-for-testing-of-accessibility-f
 section, the following is a suggested prioritized list for testing
 Accessibility in the VPN Client:
 
-1. Screen Reader
+1. Personalization of Text Size
 
-2. Keyboard Access
+2. Screen Reader
 
-3. High Contrast Themes and Color Filters
+3. Keyboard Access
 
-4. Personalization of Text Size and Text Cursor
+4. High Contrast Themes and Color Filters
 
 5. Notification Suppression
 
-6. Ability to Turn Off Animation, Cues for Audio Notification
+6. Ability to Turn Off Animation, Cues for Audio Notification,
+ Personalization of Text Cursor
 
 As resources become available, other areas can be tested to further
 validate Accessibility support in the application.
@@ -479,7 +481,8 @@ Many platforms allow the user to configure this duration.
 
 - iOS
 
-  - *\[Is this supported?\]*
+  - [Banner
+         Style](https://discussions.apple.com/thread/253491387)
 
 - Android
 
