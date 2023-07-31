@@ -55,36 +55,40 @@ void RecommendedLocationModel::initialize() {
 void RecommendedLocationModel::refreshModel() {
   logger.debug() << "Model refresh";
 
-  QList<const ServerCity*> cities = recommendedLocations(DEFAULT_ENTRIES);
+  QList<QPointer<ServerCity>> cities = recommendedLocations(DEFAULT_ENTRIES);
   if (m_recommendedCities.length() != cities.length()) {
     beginResetModel();
-    m_recommendedCities.clear();
-    for (auto& city : cities) {
-      // Wrap that pointers into a
-      // QPointer, so that we can check if the object has been deleted
-      m_recommendedCities.append(QPointer((ServerCity*)city));
-    }
+    m_recommendedCities.swap(cities);
     endResetModel();
     return;
   }
 
-  m_recommendedCities.clear();
-  for (auto& city : cities) {
-    m_recommendedCities.append(QPointer((ServerCity*)city));
-  }
+  m_recommendedCities.swap(cities);
   int numLocations = static_cast<int>(m_recommendedCities.length());
   emit dataChanged(createIndex(0, 0), createIndex(numLocations - 1, 0));
 }
+// static
+QList<const ServerCity*> RecommendedLocationModel::recommendedLocationsRaw(
+    unsigned int maxResults) {
+  QList<const ServerCity*> raw_list;
+  auto serverCityList = recommendedLocations(maxResults);
+  for (auto& cityPointer : serverCityList) {
+    if (!cityPointer.isNull()) {
+      raw_list.append(cityPointer.data());
+    }
+  }
+  return raw_list;
+}
 
 // static
-QList<const ServerCity*> RecommendedLocationModel::recommendedLocations(
+QList<QPointer<ServerCity>> RecommendedLocationModel::recommendedLocations(
     unsigned int maxResults) {
   double latencyScale = MozillaVPN::instance()->serverLatency()->avgLatency();
   if (latencyScale < 100.0) {
     latencyScale = 100.0;
   }
 
-  QVector<const ServerCity*> cityResults;
+  QVector<QPointer<ServerCity>> cityResults;
   QVector<double> rankResults;
   cityResults.reserve(maxResults + 1);
   rankResults.reserve(maxResults + 1);
@@ -108,7 +112,7 @@ QList<const ServerCity*> RecommendedLocationModel::recommendedLocations(
     }
     if (i < static_cast<qsizetype>(maxResults)) {
       rankResults.insert(i, cityRanking);
-      cityResults.insert(i, &city);
+      cityResults.insert(i, QPointer((ServerCity*)&city));
     }
     if (rankResults.count() > static_cast<qsizetype>(maxResults)) {
       rankResults.resize(maxResults);
