@@ -38,6 +38,9 @@ set_target_properties(iosglean PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_SKIP_INSTALL "YES"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
+    # Do not strip debug symbols on copy
+    XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
+    XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
 )
 
 target_sources(iosglean PRIVATE
