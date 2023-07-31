@@ -29,10 +29,10 @@ constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
 
 // static
-QString AndroidUtils::getDeviceName() {
+QString AndroidUtils::getDeviceCodename() {
   auto name = readStaticString("android/os/Build", "DEVICE");
   if (name.isNull()) {
-    return QString("Unknown Device");
+    return QString("Android Device");
   }
   return name;
 };
@@ -43,12 +43,12 @@ bool AndroidUtils::isChromeOSContext() {
    * running in a Chrome OS / Android Runtime Container
    * Situation.
    */
-  auto name = getDeviceName();
+  auto name = getDeviceCodename();
   return name.endsWith("_cheets") || name.startsWith("cheets_");
 }
 
 // static
-QString AndroidUtils::getDeviceModel() {
+QString AndroidUtils::getDeviceName() {
   auto model = readStaticString("android/os/Build", "MODEL");
   if (model.isNull()) {
     return QString("Unknown Model");
@@ -68,7 +68,8 @@ QString AndroidUtils::readStaticString(const char* classname,
   if (!propertyValue) {
     return QString();
   }
-  const char* propertyValueBuffer = env->GetStringUTFChars(value, nullptr);
+  const char* propertyValueBuffer =
+      env->GetStringUTFChars(propertyValue, nullptr);
   if (!propertyValueBuffer) {
     return QString();
   }

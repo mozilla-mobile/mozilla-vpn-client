@@ -27,7 +27,7 @@ class AndroidUtils final : public QObject {
    * I.e "Google Pixel 7" is 'Panther'
    * @return QString of Build.DEVICE
    */
-  static QString getDeviceName();
+  static QString getDeviceCodename();
 
   /**
    * @brief Get the Device Model Name
@@ -36,7 +36,7 @@ class AndroidUtils final : public QObject {
    * I.e "Google Pixel 7" is .. a Google Pixel 7
    * @return QString of Build.Model
    */
-  static QString getDeviceModel();
+  static QString getDeviceName();
 
   /**
    * @brief Checks if we are running on ChromeOS+ Android Subsystem
@@ -55,8 +55,8 @@ class AndroidUtils final : public QObject {
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
 
  private:
-  static QSting readStaticString(const char* classname,
-                                 const char* propertyName);
+  static QString readStaticString(const char* classname,
+                                  const char* propertyName);
 
   AndroidUtils(QObject* parent);
   ~AndroidUtils();
