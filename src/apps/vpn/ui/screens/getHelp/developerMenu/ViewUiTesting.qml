@@ -44,40 +44,22 @@ MZViewBase {
                     model: ListModel {
                         id: stepProgressModel
 
-                        //Hacky workaround since QML list models can't take in scripts (the MZI18n localization script) as property values
-                        //This circumvents us having to make a C++ class for the progress bar delegates and a model for the progress bar as a whole
-                        //(i.e. navigationbarmodel.h/cpp and navigationbarbutton.h/cpp)
-                        //reference: https://stackoverflow.com/a/33161093
-                        property bool completed: false
-                        property string firstString: MZI18n.OnboardingProgressBarDataUse
-                        property string secondString: MZI18n.OnboardingProgressBarMorePrivacy
-                        property string thirdString: MZI18n.OnboardingProgressBarAddDevices
-                        property string fourthString: MZI18n.OnboardingProgressBarGetStarted
-
-                        onFirstStringChanged: {
-                            if(completed) setProperty(0, "labelText", firstString);
+                        ListElement {
+                            labelText: "OnboardingProgressBarDataUse"
+                            iconSource: "qrc:/nebula/resources/lock.svg"
                         }
-
-                        onSecondStringChanged: {
-                            if(completed) setProperty(0, "labelText", firstString);
+                        ListElement {
+                            labelText: "OnboardingProgressBarMorePrivacy"
+                            iconSource: "qrc:/ui/resources/settings/privacy.svg"
                         }
-
-                        onThirdStringChanged: {
-                            if(completed) setProperty(0, "labelText", firstString);
+                        ListElement {
+                            labelText: "OnboardingProgressBarAddDevices"
+                            iconSource: "qrc:/ui/resources/devices.svg"
                         }
-
-                        onFourthStringChanged: {
-                            if(completed) setProperty(0, "labelText", firstString);
+                        ListElement {
+                            labelText: "OnboardingProgressBarGetStarted"
+                            iconSource: "qrc:/nebula/resources/startup.svg"
                         }
-
-                        Component.onCompleted: {
-                            append({source: "qrc:/nebula/resources/lock.svg", labelText: firstString});
-                            append({source: "qrc:/ui/resources/settings/privacy.svg", labelText: secondString});
-                            append({source: "qrc:/ui/resources/devices.svg", labelText: thirdString});
-                            append({source: "qrc:/nebula/resources/startup.svg", labelText: fourthString});
-                            completed = true;
-                        }
-
                     }
                 }
 
