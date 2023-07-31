@@ -29,8 +29,6 @@ Item {
     }
 
     MZRadialGradient {  
-        height: Screen.height
-        width: Screen.width
         anchors.fill: fallBackBackground
 
         gradient: Gradient {
