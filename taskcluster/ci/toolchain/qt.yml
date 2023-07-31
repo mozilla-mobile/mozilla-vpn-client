@@ -45,6 +45,11 @@ qt-win:
     treeherder:
         symbol: TL(qt-win)
     worker-type: b-win2012
+    worker:
+        env:
+            # Keep this at 6.2 until we have solved build issues
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
 
 qt-ios:
     description: "QT ios bundle Task"
