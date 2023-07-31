@@ -12,7 +12,6 @@ import components 0.1
 MZViewBase {
     _menuTitle: "UI Testing"
     _viewContentData: ColumnLayout {
-        id: featureListHolder
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
@@ -40,7 +39,7 @@ MZViewBase {
                     id: stepProgress
                     Layout.alignment: Qt.AlignHCenter
                     Layout.fillWidth: true
-
+                    Layout.maximumWidth: 500
 
                     model: ListModel {
                         id: stepProgressModel
