@@ -9,7 +9,7 @@ import compat 0.1
 
 Column {
     id: delegate
-    property string source
+    property string iconSource
     property alias labelText: label.text
     property alias labelWidth: label.width
     property string accessibleName: ""
@@ -88,7 +88,7 @@ Column {
             MZIcon {
                 id: icon
 
-                source: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? "qrc:/nebula/resources/checkmark-green.svg" : delegate.source
+                source: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? "qrc:/nebula/resources/checkmark-green.svg" : delegate.iconSource
             }
 
             MZColorOverlay {
