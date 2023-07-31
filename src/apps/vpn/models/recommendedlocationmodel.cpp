@@ -61,8 +61,7 @@ void RecommendedLocationModel::refreshModel() {
     m_recommendedCities.clear();
     for (auto& city : cities) {
       // Wrap that pointers into a
-      // QPointer, so that we are notified if they are
-      // deleted.
+      // QPointer, so that we can check if the object has been deleted
       m_recommendedCities.append(QPointer((ServerCity*)city));
     }
     endResetModel();
