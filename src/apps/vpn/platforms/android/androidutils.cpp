@@ -31,7 +31,7 @@ constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 // static
 QString AndroidUtils::getDeviceName() {
   auto name = readStaticString("android/os/Build", "DEVICE");
-  if(name.isNull()){
+  if (name.isNull()) {
     return QString("Unknown Device");
   }
   return name;
@@ -50,19 +50,21 @@ bool AndroidUtils::isChromeOSContext() {
 // static
 QString AndroidUtils::getDeviceModel() {
   auto model = readStaticString("android/os/Build", "MODEL");
-  if(model.isNull()){
+  if (model.isNull()) {
     return QString("Unknown Model");
   }
   return model;
 };
 
-
 // static
-QString AndroidUtils::readStaticString(const char* classname, const char* propertyName) {
+QString AndroidUtils::readStaticString(const char* classname,
+                                       const char* propertyName) {
   QJniEnvironment env;
   jclass targetClass = env->FindClass(classname);
-  jfieldID propertyID = env->GetStaticFieldID(targetClass, propertyName, "Ljava/lang/String;");
-  jstring propertyValue = (jstring)env->GetStaticObjectField(targetClass, propertyID);
+  jfieldID propertyID =
+      env->GetStaticFieldID(targetClass, propertyName, "Ljava/lang/String;");
+  jstring propertyValue =
+      (jstring)env->GetStaticObjectField(targetClass, propertyID);
   if (!propertyValue) {
     return QString();
   }
@@ -70,7 +72,8 @@ QString AndroidUtils::readStaticString(const char* classname, const char* proper
   if (!propertyValueBuffer) {
     return QString();
   }
-  auto guard = qScopeGuard([&] { env->ReleaseStringUTFChars(propertyValue, propertyValueBuffer); });
+  auto guard = qScopeGuard(
+      [&] { env->ReleaseStringUTFChars(propertyValue, propertyValueBuffer); });
   QString res(propertyValueBuffer);
   return res;
 }

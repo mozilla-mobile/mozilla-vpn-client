@@ -55,8 +55,8 @@ class AndroidUtils final : public QObject {
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
 
  private:
-  static QSting readStaticString(const char* classname, const char* propertyName);
-
+  static QSting readStaticString(const char* classname,
+                                 const char* propertyName);
 
   AndroidUtils(QObject* parent);
   ~AndroidUtils();
