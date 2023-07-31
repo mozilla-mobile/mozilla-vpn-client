@@ -60,6 +60,9 @@ public:
 public:
   qint64 time() const;
   void serverUnavailable();
+  void captivePortalPresent();
+  void captivePortalGone();
+  bool switchServers(const ServerData& serverData);
   
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
@@ -71,16 +74,34 @@ public:
   };
   
   int connectionRetry() const { return m_connectionRetry; }
+  State state() const;
+  bool silentServerSwitchingSupported() const;
+  void cleanupBackendLogs();
+  
+  // LogSerializer interface
+  void serializeLogs(
+      std::function<void(const QString& name, const QString& logs)>&& callback)
+      override;
+  
+  void getStatus(
+      std::function<void(const QString& serverIpv4Gateway,
+                         const QString& deviceIpv4Address, uint64_t txBytes,
+                         uint64_t rxBytes)>&& callback);
+  
+#ifdef MZ_DUMMY
+  QString currentServerString() const;
+#endif
+
   
 private:
-// Q_PROPERTY(State state READ state NOTIFY stateChanged)
+ Q_PROPERTY(State state READ state NOTIFY stateChanged)
  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
  Q_PROPERTY(
      int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
                 NOTIFY enableDisconnectInConfirmingChanged);
-// Q_PROPERTY(bool silentServerSwitchingSupported READ
-//                silentServerSwitchingSupported CONSTANT);
+ Q_PROPERTY(bool silentServerSwitchingSupported READ
+                silentServerSwitchingSupported CONSTANT);
 
 #ifdef MZ_DUMMY
  // This is just for testing purposes. Not exposed in prod.
@@ -91,12 +112,25 @@ private:
 private slots:
   void timerTimeout();
   void handshakeTimeout();
+  void connected(const QString& pubkey,
+                 const QDateTime& connectionTimestamp = QDateTime());
+  void disconnected();
+  void statusUpdated(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
+                     uint64_t rxBytes);
 
 signals:
+  void stateChanged();
   void timeChanged();
   void enableDisconnectInConfirmingChanged();
   void handshakeFailed(const QString& serverHostname);
   void connectionRetryChanged();
+  void newConnectionSucceeded();
+  void controllerDisconnected();
+  void readyToQuit();
+  void readyToUpdate();
+  void readyToBackendFailure();
+  void readyToServerUnavailable(bool pingReceived);
   
 public:
   ConnectionManager();
@@ -104,6 +138,14 @@ public:
 
  void initialize();
  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+  
+  enum ServerCoolDownPolicyForSilentSwitch {
+    eServerCoolDownNeeded,
+    eServerCoolDownNotNeeded,
+  };
+  
+  bool silentSwitchServers(
+      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
 
 private:
   enum NextStep {
@@ -126,8 +168,14 @@ NextStep m_nextStep = None;
                         ServerSelectionPolicy serverSelectionPolicy);
   
   void clearConnectedTime();
+  void clearRetryCounter();
   QStringList getExcludedAddresses();
   void activateNext();
+  void setState(State state);
+  void resetConnectedTime();
+  bool processNextStep();
+  void maybeEnableDisconnectInConfirming();
+  void serverDataChanged();
   
 private:
   QTimer m_timer;
@@ -142,6 +190,7 @@ private:
   int m_connectionRetry = 0;
   
   QScopedPointer<ControllerImpl> m_impl;
+  bool m_portalDetected = false;
   
   // Server data can change while the controller is busy completing an
   // activation or a server switch because they are managed by the
@@ -163,6 +212,14 @@ private:
 
   PingHelper m_ping_canary;
   bool m_ping_received = false;
+  
+  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
+  
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
+                           uint64_t rxBytes)>>
+      m_getStatusCallbacks;
+  
 };  // namespace ConnectionManager
 
 #endif  // CONNECTIONMANAGER_H

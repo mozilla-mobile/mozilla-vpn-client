@@ -35,13 +35,13 @@
 #include "taskscheduler.h"
 #include "tutorial/tutorial.h"
 
-//constexpr const uint32_t TIMER_MSEC = 1000;
+constexpr const uint32_t TIMER_MSEC = 1000;
 
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
-//constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
-//constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
+constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
 #ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -53,6 +53,19 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 
 namespace {
 Logger logger("Connection Manager");
+
+//ConnectionManager::Reason stateToReason(ConnectionManager::State state) {
+//  if (state == ConnectionManager::StateSwitching ||
+//      state == ConnectionManager::StateSilentSwitching) {
+//    return ConnectionManager::ReasonSwitching;
+//  }
+//
+//  if (state == ConnectionManager::StateConfirming) {
+//    return ConnectionManager::ReasonConfirming;
+//  }
+//
+//  return ConnectionManager::ReasonNone;
+//}
 }
 
 ConnectionManager::ConnectionManager() {
@@ -384,19 +397,315 @@ QStringList ConnectionManager::getExcludedAddresses() {
 }
 
 void ConnectionManager::activateNext() {
-//  MozillaVPN* vpn = MozillaVPN::instance();
-//  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-//  if (device == nullptr) {
-//    REPORTERROR(ErrorHandler::AuthenticationError, "controller");
-//    vpn->reset(false);
-//    return;
-//  }
-//  const InterfaceConfig& config = m_activationQueue.first();
-//
-//  logger.debug() << "Activating peer" << logger.keys(config.m_serverPublicKey);
-//  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
+  MozillaVPN* vpn = MozillaVPN::instance();
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  if (device == nullptr) {
+    REPORTERROR(ErrorHandler::AuthenticationError, "connection manager");
+    vpn->reset(false);
+    return;
+  }
+  const InterfaceConfig& config = m_activationQueue.first();
+
+  logger.debug() << "Activating peer" << logger.keys(config.m_serverPublicKey);
+  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
 //  m_impl->activate(config, stateToReason(m_state));
-//
-//  // Move to the confirming state if we are awaiting any connection handshakes.
-//  setState(StateConfirming);
+
+  // Move to the confirming state if we are awaiting any connection handshakes.
+  setState(StateConfirming);
 }
+
+void ConnectionManager::setState(State state) {
+  if (m_state == state) {
+    return;
+  }
+  logger.debug() << "Setting state:" << state;
+  m_state = state;
+  emit stateChanged();
+}
+
+ConnectionManager::State ConnectionManager::state() const { return m_state; }
+
+bool ConnectionManager::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
+
+  if (m_state != StateOn) {
+    logger.warning() << "Cannot silent switch if not on";
+    return false;
+  }
+
+  if (serverCoolDownPolicy == eServerCoolDownNeeded) {
+    // Set a cooldown timer on the current server.
+    QList<Server> servers = m_serverData.exitServers();
+    Q_ASSERT(!servers.isEmpty());
+
+    if (servers.length() <= 1) {
+      logger.warning()
+          << "Cannot silent switch servers because there is only one available";
+      return false;
+    }
+
+    MozillaVPN::instance()->serverLatency()->setCooldown(
+        m_serverData.exitServerPublicKey(),
+        AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+  }
+
+  m_nextServerData = m_serverData;
+  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
+                                    ? RandomizeServerSelection
+                                    : DoNotRandomizeServerSelection;
+
+  clearConnectedTime();
+  clearRetryCounter();
+
+  logger.debug() << "Switching to a different server";
+
+  setState(StateSilentSwitching);
+//  deactivate();
+
+  return true;
+}
+
+void ConnectionManager::clearRetryCounter() {
+  m_connectionRetry = 0;
+  emit connectionRetryChanged();
+}
+
+void ConnectionManager::connected(const QString& pubkey,
+                           const QDateTime& connectionTimestamp) {
+  logger.debug() << "handshake completed with:" << logger.keys(pubkey);
+  if (m_activationQueue.isEmpty()) {
+    if (m_serverData.exitServerPublicKey() != pubkey) {
+      logger.warning() << "Unexpected handshake: no pending connections.";
+      return;
+    }
+    // Continue anyways if the VPN service was activated externally.
+    logger.info() << "Unexpected handshake: external VPN activation.";
+  } else if (m_activationQueue.first().m_serverPublicKey != pubkey) {
+    logger.warning() << "Unexpected handshake: public key mismatch.";
+    return;
+  } else {
+    // Start the next connection if there is more work to do.
+    m_activationQueue.removeFirst();
+    if (!m_activationQueue.isEmpty()) {
+      activateNext();
+      return;
+    }
+  }
+  m_handshakeTimer.stop();
+  m_ping_canary.stop();
+
+  // Clear the retry counter after all connections have succeeded.
+  m_connectionRetry = 0;
+  emit connectionRetryChanged();
+
+  // We have succesfully completed all pending connections.
+  logger.debug() << "Connected from state:" << m_state;
+  setState(StateOn);
+  emit newConnectionSucceeded();
+
+  // In case the Controller provided a valid timestamp that
+  // should be used.
+  if (connectionTimestamp.isValid()) {
+    m_connectedTimeInUTC = connectionTimestamp;
+    emit timeChanged();
+    m_timer.start(TIMER_MSEC);
+  } else {
+    resetConnectedTime();
+  }
+
+  if (m_nextStep != None) {
+//    deactivate();
+    return;
+  }
+}
+
+void ConnectionManager::resetConnectedTime() {
+  m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  emit timeChanged();
+  m_timer.start(TIMER_MSEC);
+}
+
+void ConnectionManager::disconnected() {
+  logger.debug() << "Disconnected from state:" << m_state;
+
+  clearConnectedTime();
+  clearRetryCounter();
+
+  NextStep nextStep = m_nextStep;
+
+  if (processNextStep()) {
+    setState(StateOff);
+    return;
+  }
+
+  if (nextStep == None &&
+      (m_state == StateSwitching || m_state == StateSilentSwitching)) {
+//    activate(m_nextServerData, m_nextServerSelectionPolicy);
+    return;
+  }
+
+  setState(StateOff);
+  emit controllerDisconnected();
+}
+
+bool ConnectionManager::processNextStep() {
+  NextStep nextStep = m_nextStep;
+  m_nextStep = None;
+
+  if (nextStep == Quit) {
+    emit readyToQuit();
+    return true;
+  }
+
+  if (nextStep == Update) {
+    emit readyToUpdate();
+    return true;
+  }
+
+  if (nextStep == BackendFailure) {
+    emit readyToBackendFailure();
+    return true;
+  }
+
+  if (nextStep == ServerUnavailable) {
+    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+
+    emit readyToServerUnavailable(m_ping_received);
+    return true;
+  }
+
+  return false;
+}
+
+void ConnectionManager::maybeEnableDisconnectInConfirming() {
+  if (m_state == StateConfirming) {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+  } else {
+    m_enableDisconnectInConfirming = false;
+    emit enableDisconnectInConfirmingChanged();
+    m_connectingTimer.stop();
+  }
+}
+
+bool ConnectionManager::silentServerSwitchingSupported() const {
+  return m_impl->silentServerSwitchingSupported();
+}
+
+void ConnectionManager::serializeLogs(
+    std::function<void(const QString& name, const QString& logs)>&&
+        a_callback) {
+  std::function<void(const QString& name, const QString&)> callback =
+      std::move(a_callback);
+
+  if (!m_impl) {
+    callback("Mozilla VPN backend logs", QString());
+    return;
+  }
+
+  m_impl->getBackendLogs([callback](const QString& logs) {
+    callback("Mozilla VPN backend logs", logs);
+  });
+}
+
+void ConnectionManager::cleanupBackendLogs() {
+  if (m_impl) {
+    m_impl->cleanupBackendLogs();
+  }
+}
+
+void ConnectionManager::getStatus(
+    std::function<void(const QString& serverIpv4Gateway,
+                       const QString& deviceIpv4Address, uint64_t txByte,
+                       uint64_t rxBytes)>&& a_callback) {
+  logger.debug() << "check status";
+
+  std::function<void(const QString& serverIpv4Gateway,
+                     const QString& deviceIpv4Address, uint64_t txBytes,
+                     uint64_t rxBytes)>
+      callback = std::move(a_callback);
+
+  if (m_state != StateOn && m_state != StateConfirming) {
+    callback(QString(), QString(), 0, 0);
+    return;
+  }
+
+  bool requestStatus = m_getStatusCallbacks.isEmpty();
+
+  m_getStatusCallbacks.append(std::move(callback));
+
+  if (m_impl && requestStatus) {
+    m_impl->checkStatus();
+  }
+}
+
+void ConnectionManager::statusUpdated(const QString& serverIpv4Gateway,
+                               const QString& deviceIpv4Address,
+                               uint64_t txBytes, uint64_t rxBytes) {
+  logger.debug() << "Status updated";
+  QList<std::function<void(const QString& serverIpv4Gateway,
+                           const QString& deviceIpv4Address, uint64_t txBytes,
+                           uint64_t rxBytes)>>
+      list;
+
+  list.swap(m_getStatusCallbacks);
+  for (const std::function<void(
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           uint64_t txBytes, uint64_t rxBytes)>&func : list) {
+    func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
+  }
+}
+
+void ConnectionManager::captivePortalGone() {
+  m_portalDetected = false;
+  logger.info() << "Captive-Portal Gone, next activation will not show prompt";
+}
+
+void ConnectionManager::captivePortalPresent() {
+  if (m_portalDetected) {
+    return;
+  }
+  m_portalDetected = true;
+  logger.info() << "Captive-Portal Present, next activation will show prompt";
+}
+/////
+void ConnectionManager::serverDataChanged() {
+  if (m_state == StateOff) {
+    logger.debug() << "Server data changed but we are off";
+    return;
+  }
+
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eSwitch));
+}
+
+bool ConnectionManager::switchServers(const ServerData& serverData) {
+  if (m_state == StateOff) {
+    logger.debug() << "Server data changed but we are off";
+    return false;
+  }
+
+  m_nextServerData = serverData;
+  m_nextServerSelectionPolicy = RandomizeServerSelection;
+
+  clearConnectedTime();
+  clearRetryCounter();
+
+  logger.debug() << "Switching to a different server";
+
+  setState(StateSwitching);
+//  deactivate();
+
+  return true;
+}
+
+#ifdef MZ_DUMMY
+QString ConnectionManager::currentServerString() const {
+  return QString("%1-%2-%3-%4")
+      .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
+           m_serverData.entryCountryCode(), m_serverData.entryCityName());
+}
+#endif
