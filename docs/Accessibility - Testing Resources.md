@@ -241,7 +241,7 @@ At minimum, learn how to do the following with a screen reader:
 2. Navigate to each control using Tab, Shift-Tab, Arrow Keys, swipe
      left/right and verify that the control's accessible name is read.
      Verify that any primary functionality can be invoked by using the
-     Enter/Spacebar key or a double tap.
+     Enter/Return/Spacebar key or a double tap.
 
 3. Use the screen-reader's specialized keyboard shortcuts and touch
      gestures to move between controls, read text and read a control's
