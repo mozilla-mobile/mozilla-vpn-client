@@ -146,7 +146,7 @@ class SentryAdapter final : public QObject {
 
  private:
   /**
-   * @brief Set's Tags related to the Platform
+   * @brief Sets Tags related to the Platform
    */
   void setPlatformTag() const;
 
