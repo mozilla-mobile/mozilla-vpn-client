@@ -173,7 +173,7 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     return false;
   }
   // Restrict use of the local routing table to RFC1918 address spaces only.
-  if (!rtmSendKernelLocal(RTM_DELRULE)) {
+  if (!rtmRestrictLocal(RTM_NEWRULE)) {
     return false;
   }
 
@@ -320,7 +320,7 @@ bool WireguardUtilsLinux::deleteInterface() {
   NetfilterClearTables();
 
   // Restore the kernel's local routing table policy.
-  rtmSendKernelLocal(RTM_NEWRULE);
+  rtmRestrictLocal(RTM_DELRULE);
 
   // Clear routing policy rules
   if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
@@ -626,54 +626,6 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
     return false;
   }
 
-  /* Create routing policy rules to try RFC1918 IP addresses via the local
-   * routing table. This is equivalent to:
-   *     ip rule add to 192.168.0.0/16 table local
-   *     ip rule add to 172.16.0.0/12 table local
-   *     ip rule add to 10.0.0.0/8 table local
-   */
-  if (addrfamily == AF_INET) {
-    memset(buf, 0, sizeof(buf));
-    nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-    nlmsg->nlmsg_type = action;
-    nlmsg->nlmsg_flags = flags;
-    nlmsg->nlmsg_pid = getpid();
-    nlmsg->nlmsg_seq = m_nlseq++;
-    rule->family = addrfamily;
-    rule->table = RT_TABLE_LOCAL;
-    rule->action = FR_ACT_TO_TBL;
-    rule->flags = 0;
-
-    /* 192.168.0.0/16 */
-    rule->dst_len = 16;
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
-                        qToBigEndian<quint32>((192 << 24) | (168 << 16)));
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 10);
-    if (!rtmSendMsg(nlmsg)) {
-      return false;
-    }
-
-    /* 172.16.0.0/12 */
-    nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-    rule->dst_len = 12;
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
-                        qToBigEndian<quint32>((172 << 24) | (16 << 16)));
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 10);
-    if (!rtmSendMsg(nlmsg)) {
-      return false;
-    }
-    
-    /* 10.0.0.0/8 */
-    nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-    rule->dst_len = 8;
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
-                        qToBigEndian<quint32>(10 << 24));
-    nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 10);
-    if (!rtmSendMsg(nlmsg)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -725,29 +677,38 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
   return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 
-bool WireguardUtilsLinux::rtmSendKernelLocal(int action) {
+bool WireguardUtilsLinux::rtmRestrictLocal(int action) {
   constexpr size_t fib_max_size = sizeof(struct fib_rule_hdr) +
-                                  RTA_SPACE(sizeof(quint32));
+                                  2 * RTA_SPACE(sizeof(quint32));
 
   char buf[NLMSG_SPACE(fib_max_size)];
   struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
   struct fib_rule_hdr* rule =
       static_cast<struct fib_rule_hdr*>(NLMSG_DATA(nlmsg));
 
-  // Remove the routing policy rule which tries to send packets via the kernel's
-  // local routing table, this should be equivalent to:
-  //    ip rule add table local prio 0
+  int nlflags = NLM_F_REQUEST | NLM_F_ACK;
+  if (action == RTM_NEWRULE) {
+    nlflags |= NLM_F_CREATE | NLM_F_REPLACE;
+  }
+
+  // Replace the routing policy rule which tries to send packets via the
+  // kernel's local routing table, with one that is limited to marked packets
+  // only. this should be equivalent to:
+  //    ip rule delete table local prio 0
+  //    ip rule add fwmark $MARK table local prio 0
   //
   // This rule is normally installed by the kernel, but we need to remove
   // or restrict it when activating the VPN to prevent local routes from
   // being able to hijack the user's internet traffic.
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-  nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
-  if (nlmsg->nlmsg_type == RTM_NEWRULE) {
-    nlmsg->nlmsg_flags |= NLM_F_CREATE | NLM_F_REPLACE;
+  if (action == RTM_NEWRULE) {
+    // Invert the action for this case.
+    nlmsg->nlmsg_type = RTM_DELRULE;
+  } else {
+    nlmsg->nlmsg_type = RTM_NEWRULE;
   }
+  nlmsg->nlmsg_flags = nlflags ^ (NLM_F_CREATE | NLM_F_REPLACE);
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
   rule->family = AF_INET;
@@ -756,8 +717,68 @@ bool WireguardUtilsLinux::rtmSendKernelLocal(int action) {
   rule->flags = 0;
   rule->dst_len = 0;
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 0);
+  if (!rtmSendMsg(nlmsg)) {
+    return false;
+  }
+  // Re-add the same rule, but with the mark set.
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = nlflags;
+  nlmsg->nlmsg_seq = m_nlseq++;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_FWMARK, WG_FIREWALL_MARK);
+  if (!rtmSendMsg(nlmsg)) {
+    return false;
+  }
 
-  return rtmSendMsg(nlmsg);
+
+  // Create routing policy rules to try RFC1918 IP addresses via the local
+  // routing table. This is equivalent to:
+  //     ip rule add to 192.168.0.0/16 table local prio 0
+  //     ip rule add to 172.16.0.0/12 table local prio 0
+  //     ip rule add to 10.0.0.0/8 table local prio 0
+  memset(buf, 0, sizeof(buf));
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = nlflags;
+  nlmsg->nlmsg_pid = getpid();
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rule->family = AF_INET;
+  rule->table = RT_TABLE_LOCAL;
+  rule->action = FR_ACT_TO_TBL;
+  rule->flags = 0;
+
+  /* 192.168.0.0/16 */
+  rule->dst_len = 16;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
+                      qToBigEndian<quint32>((192 << 24) | (168 << 16)));
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 0);
+  if (!rtmSendMsg(nlmsg)) {
+    return false;
+  }
+
+  /* 172.16.0.0/12 */
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rule->dst_len = 12;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
+                      qToBigEndian<quint32>((172 << 24) | (16 << 16)));
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 0);
+  if (!rtmSendMsg(nlmsg)) {
+    return false;
+  }
+    
+  /* 10.0.0.0/8 */
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rule->dst_len = 8;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST,
+                      qToBigEndian<quint32>(10 << 24));
+  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_PRIORITY, 0);
+  if (!rtmSendMsg(nlmsg)) {
+    return false;
+  }
+
+  // Success!
+  return true;
 }
 
 void WireguardUtilsLinux::nlsockReady() {

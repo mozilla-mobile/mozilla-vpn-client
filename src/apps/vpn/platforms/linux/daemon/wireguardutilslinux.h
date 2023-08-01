@@ -44,7 +44,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool rtmSendRule(int action, int flags, int addrfamily);
   bool rtmSendRoute(int action, int flags, int type, const IPAddress& prefix);
   bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
-  bool rtmSendKernelLocal(int action);
+  bool rtmRestrictLocal(int action);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
