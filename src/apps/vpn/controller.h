@@ -29,24 +29,24 @@ class Controller final : public QObject, public LogSerializer {
   Q_DISABLE_COPY_MOVE(Controller)
 
  public:
-  enum State {
-    StateInitializing,
-    StateOff,
-    StateCheckSubscription,
-    StateConnecting,
-    StateConfirming,
-    StateOn,
-    StateDisconnecting,
-    StateSilentSwitching,
-    StateSwitching,
-  };
-  Q_ENUM(State)
-
-  enum Reason {
-    ReasonNone = 0,
-    ReasonSwitching,
-    ReasonConfirming,
-  };
+//  enum State {
+//    StateInitializing,
+//    StateOff,
+//    StateCheckSubscription,
+//    StateConnecting,
+//    StateConfirming,
+//    StateOn,
+//    StateDisconnecting,
+//    StateSilentSwitching,
+//    StateSwitching,
+//  };
+//  Q_ENUM(State)
+//
+//  enum Reason {
+//    ReasonNone = 0,
+//    ReasonSwitching,
+//    ReasonConfirming,
+//  };
 
  private:
 //  Q_PROPERTY(State state READ state NOTIFY stateChanged)
@@ -74,7 +74,7 @@ class Controller final : public QObject, public LogSerializer {
 
 //  Q_INVOKABLE void logout();
 
-  qint64 time() const;
+//  qint64 time() const;
 
 //  bool switchServers(const ServerData& serverData);
 
@@ -88,7 +88,7 @@ class Controller final : public QObject, public LogSerializer {
 
 //  void updateRequired();
 
-  void cleanupBackendLogs();
+//  void cleanupBackendLogs();
 
 //  void getStatus(
 //      std::function<void(const QString& serverIpv4Gateway,
