@@ -64,6 +64,8 @@ public:
   void captivePortalGone();
   bool switchServers(const ServerData& serverData);
   void backendFailure();
+  void updateRequired();
+  
   const ServerData& currentServer() const { return m_serverData; }
   
   bool enableDisconnectInConfirming() const {
@@ -77,6 +79,7 @@ public:
   
   int connectionRetry() const { return m_connectionRetry; }
   State state() const;
+  Q_INVOKABLE void logout();
   bool silentServerSwitchingSupported() const;
   void cleanupBackendLogs();
   
@@ -129,6 +132,8 @@ private slots:
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
+  void implInitialized(bool status, bool connected,
+                       const QDateTime& connectionDate);
 
 signals:
   void stateChanged();
@@ -224,6 +229,7 @@ private:
 
   PingHelper m_ping_canary;
   bool m_ping_received = false;
+  bool m_connectedBeforeTransaction = false;
   
   ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
   

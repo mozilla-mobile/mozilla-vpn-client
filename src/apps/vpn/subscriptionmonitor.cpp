@@ -39,7 +39,7 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
             }
           });
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+  connect(MozillaVPN::instance()->connectionManager(), &ConnectionManager::stateChanged, this,
           [this]() {
             ConnectionManager::State state =
                 MozillaVPN::instance()->connectionManager()->state();

@@ -5,6 +5,7 @@
 #include "macosmenubar.h"
 
 #include "controller.h"
+#include "connectionmanager.h"
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
@@ -57,7 +58,7 @@ void MacOSMenuBar::initialize() {
 
   // Do not use qtTrId here!
   QAction* quit =
-      fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+      fileMenu->addAction("quit", vpn->connectionManager(), &ConnectionManager::quit);
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!

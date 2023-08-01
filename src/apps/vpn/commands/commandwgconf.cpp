@@ -78,7 +78,7 @@ int CommandWgConf::run(QStringList& tokens) {
     }
     config.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
     config.m_allowedIPAddressRanges =
-        Controller::getAllowedIPAddressRanges(exitServer);
+    ConnectionManager::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
     stream << config.toWgConf() << Qt::endl;

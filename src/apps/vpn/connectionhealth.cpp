@@ -152,7 +152,7 @@ void ConnectionHealth::connectionStateChanged() {
 
   switch (state) {
     case ConnectionManager::StateOn:
-      MozillaVPN::instance()->controller()->getStatus(
+      MozillaVPN::instance()->connectionManager()->getStatus(
           [this](const QString& serverIpv4Gateway,
                  const QString& deviceIpv4Address, uint64_t txBytes,
                  uint64_t rxBytes) {

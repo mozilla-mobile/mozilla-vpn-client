@@ -191,7 +191,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
           &ServerConnection::writeState);
 }
 

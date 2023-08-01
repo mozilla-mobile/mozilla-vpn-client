@@ -75,7 +75,7 @@ int CommandActivate::run(QStringList& tokens) {
         loop.exit();
       }
     });
-    vpn.controller()->activate(*vpn.serverData());
+    vpn.connectionManager()->activate(*vpn.serverData());
     loop.exec();
     vpn.controller()->disconnect();
 

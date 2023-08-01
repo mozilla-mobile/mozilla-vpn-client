@@ -49,7 +49,7 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
 #undef DNS_CONNECT
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+  connect(MozillaVPN::instance()->connectionManager(), &ConnectionManager::stateChanged, this,
           [this]() {
               ConnectionManager::State state =
               MozillaVPN::instance()->connectionManager()->state();

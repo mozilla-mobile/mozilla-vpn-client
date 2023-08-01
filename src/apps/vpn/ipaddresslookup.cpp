@@ -35,7 +35,7 @@ void IpAddressLookup::initialize() {
 
   connect(vpn, &MozillaVPN::stateChanged, this, &IpAddressLookup::stateChanged);
 
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
           &IpAddressLookup::stateChanged);
 }
 

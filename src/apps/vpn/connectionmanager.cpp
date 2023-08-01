@@ -35,6 +35,18 @@
 #include "taskscheduler.h"
 #include "tutorial/tutorial.h"
 
+#if defined(MZ_LINUX)
+#  include "platforms/linux/linuxcontroller.h"
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
+#  include "localsocketcontroller.h"
+#elif defined(MZ_IOS)
+#  include "platforms/ios/ioscontroller.h"
+#elif defined(MZ_ANDROID)
+#  include "platforms/android/androidcontroller.h"
+#else
+#  include "platforms/dummy/dummycontroller.h"
+#endif
+
 constexpr const uint32_t TIMER_MSEC = 1000;
 
 // X connection retries.
@@ -93,6 +105,108 @@ ConnectionManager::~ConnectionManager() {
 
 void ConnectionManager::initialize() {
   logger.debug() << "Initializing the connection manager";
+  
+  if (m_state != ConnectionManager::StateInitializing) {
+    setState(ConnectionManager::StateInitializing);
+  }
+
+  // Let's delete the previous controller before creating a new one.
+  if (m_impl) {
+    m_impl.reset(nullptr);
+  }
+
+  m_serverData = *MozillaVPN::instance()->serverData();
+  m_nextServerData = *MozillaVPN::instance()->serverData();
+
+#if defined(MZ_LINUX)
+  m_impl.reset(new LinuxController());
+#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
+  m_impl.reset(new LocalSocketController());
+#elif defined(MZ_IOS)
+  m_impl.reset(new IOSController());
+#elif defined(MZ_ANDROID)
+  m_impl.reset(new AndroidController());
+#else
+  m_impl.reset(new DummyController());
+#endif
+
+  connect(m_impl.get(), &ControllerImpl::connected, this,
+          &ConnectionManager::connected);
+  connect(m_impl.get(), &ControllerImpl::disconnected, this,
+          &ConnectionManager::disconnected);
+  connect(m_impl.get(), &ControllerImpl::initialized, this,
+          &ConnectionManager::implInitialized);
+  connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
+          &ConnectionManager::statusUpdated);
+  connect(this, &ConnectionManager::stateChanged, this,
+          &ConnectionManager::maybeEnableDisconnectInConfirming);
+
+  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, this, [this]() {
+    m_ping_canary.stop();
+    m_ping_received = true;
+    logger.info() << "Canary Ping Succeeded";
+  });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
+          [this]() { m_connectedBeforeTransaction = m_state == ConnectionManager::StateOn; });
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
+            if (!m_connectedBeforeTransaction)
+              MozillaVPN::instance()->deactivate();
+          });
+
+  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack,
+          this, [this]() {
+            if (m_connectedBeforeTransaction)
+              MozillaVPN::instance()->activate();
+          });
+
+  MozillaVPN* vpn = MozillaVPN::instance();
+
+  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  m_impl->initialize(device, vpn->keys());
+
+  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
+          &ConnectionManager::serverDataChanged);
+
+  connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
+          &ConnectionManager::cleanupBackendLogs);
+
+  connect(this, &ConnectionManager::readyToServerUnavailable, Tutorial::instance(),
+          &Tutorial::stop);
+}
+
+void ConnectionManager::implInitialized(bool status, bool a_connected,
+                                 const QDateTime& connectionDate) {
+  logger.debug() << "Controller initialized with status:" << status
+                 << "connected:" << a_connected
+                 << "connectionDate:" << connectionDate.toString();
+
+  Q_ASSERT(m_state == ConnectionManager::StateInitializing);
+
+  if (!status) {
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    setState(StateOff);
+    return;
+  }
+
+  if (processNextStep()) {
+    setState(StateOff);
+    return;
+  }
+
+  setState(a_connected ? StateOn : StateOff);
+
+  // If we are connected already at startup time, we can trigger the connection
+  // sequence of tasks.
+  if (a_connected) {
+    m_connectedTimeInUTC = connectionDate.isValid()
+                               ? connectionDate.toUTC()
+                               : QDateTime::currentDateTimeUtc();
+    emit timeChanged();
+    m_timer.start(TIMER_MSEC);
+  }
 }
 
 qint64 ConnectionManager::time() const {
@@ -139,7 +253,7 @@ void ConnectionManager::handshakeTimeout() {
   emit handshakeFailed(hop.m_serverPublicKey);
 
   if (m_nextStep != None) {
-//    deactivate();
+    deactivate();
     return;
   }
 
@@ -171,10 +285,44 @@ void ConnectionManager::serverUnavailable() {
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
       m_state == StateConfirming || m_state == StateCheckSubscription) {
-//    deactivate();
+    deactivate();
     return;
   }
 }
+
+void ConnectionManager::updateRequired() {
+  logger.warning() << "Update required";
+
+  if (m_state == StateOff) {
+    emit readyToUpdate();
+    return;
+  }
+
+  m_nextStep = Update;
+
+  if (m_state == StateOn) {
+    deactivate();
+    return;
+  }
+}
+
+void ConnectionManager::logout() {
+  logger.debug() << "Logout";
+
+  MozillaVPN::instance()->logout();
+
+  if (m_state == StateOff) {
+    return;
+  }
+
+  m_nextStep = Disconnect;
+
+  if (m_state == StateOn) {
+    deactivate();
+    return;
+  }
+}
+
 void ConnectionManager::activateInternal(DNSPortPolicy dnsPort,
                                   ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation internal";
@@ -426,7 +574,7 @@ void ConnectionManager::activateNext() {
 
   logger.debug() << "Activating peer" << logger.keys(config.m_serverPublicKey);
   m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
-//  m_impl->activate(config, stateToReason(m_state));
+  m_impl->activate(config, stateToReason(m_state));
 
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
@@ -479,7 +627,7 @@ bool ConnectionManager::silentSwitchServers(
   logger.debug() << "Switching to a different server";
 
   setState(StateSilentSwitching);
-//  deactivate();
+  deactivate();
 
   return true;
 }
@@ -533,7 +681,7 @@ void ConnectionManager::connected(const QString& pubkey,
   }
 
   if (m_nextStep != None) {
-//    deactivate();
+    deactivate();
     return;
   }
 }
@@ -559,7 +707,7 @@ void ConnectionManager::disconnected() {
 
   if (nextStep == None &&
       (m_state == StateSwitching || m_state == StateSilentSwitching)) {
-//    activate(m_nextServerData, m_nextServerSelectionPolicy);
+    activate(m_nextServerData, m_nextServerSelectionPolicy);
     return;
   }
 
@@ -715,7 +863,7 @@ bool ConnectionManager::switchServers(const ServerData& serverData) {
   logger.debug() << "Switching to a different server";
 
   setState(StateSwitching);
-//  deactivate();
+  deactivate();
 
   return true;
 }
@@ -733,7 +881,7 @@ void ConnectionManager::backendFailure() {
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
       m_state == StateCheckSubscription || m_state == StateConfirming) {
-//    deactivate();
+    deactivate();
     return;
   }
 }

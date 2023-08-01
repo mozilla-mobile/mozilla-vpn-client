@@ -6,6 +6,7 @@
 
 #include "appconstants.h"
 #include "controller.h"
+#include "connectionmanager.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -27,7 +28,7 @@ KeyRegenerator::KeyRegenerator() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &KeyRegenerator::stateChanged);
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
           &KeyRegenerator::stateChanged);
   connect(&m_timer, &QTimer::timeout, this, &KeyRegenerator::stateChanged);
   connect(Feature::get(Feature::Feature_keyRegeneration),

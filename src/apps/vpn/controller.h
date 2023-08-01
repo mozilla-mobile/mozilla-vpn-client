@@ -50,19 +50,19 @@ class Controller final : public QObject, public LogSerializer {
 
  private:
 //  Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
-  Q_PROPERTY(
-      int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
-  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
-                 NOTIFY enableDisconnectInConfirmingChanged);
-  Q_PROPERTY(bool silentServerSwitchingSupported READ
-                 silentServerSwitchingSupported CONSTANT);
+//  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+//  Q_PROPERTY(
+//      int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
+//  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
+//                 NOTIFY enableDisconnectInConfirmingChanged);
+//  Q_PROPERTY(bool silentServerSwitchingSupported READ
+//                 silentServerSwitchingSupported CONSTANT);
 
-#ifdef MZ_DUMMY
-  // This is just for testing purposes. Not exposed in prod.
-  Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
-                 currentServerChanged);
-#endif
+//#ifdef MZ_DUMMY
+//  // This is just for testing purposes. Not exposed in prod.
+//  Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
+//                 currentServerChanged);
+//#endif
 
  public:
   Controller();
@@ -72,28 +72,28 @@ class Controller final : public QObject, public LogSerializer {
 
 //  State state() const;
 
-  Q_INVOKABLE void logout();
+//  Q_INVOKABLE void logout();
 
   qint64 time() const;
 
-  bool switchServers(const ServerData& serverData);
+//  bool switchServers(const ServerData& serverData);
 
-  enum ServerCoolDownPolicyForSilentSwitch {
-    eServerCoolDownNeeded,
-    eServerCoolDownNotNeeded,
-  };
+//  enum ServerCoolDownPolicyForSilentSwitch {
+//    eServerCoolDownNeeded,
+//    eServerCoolDownNotNeeded,
+//  };
 
-  bool silentSwitchServers(
-      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
+//  bool silentSwitchServers(
+//      ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
 
-  void updateRequired();
+//  void updateRequired();
 
   void cleanupBackendLogs();
 
-  void getStatus(
-      std::function<void(const QString& serverIpv4Gateway,
-                         const QString& deviceIpv4Address, uint64_t txBytes,
-                         uint64_t rxBytes)>&& callback);
+//  void getStatus(
+//      std::function<void(const QString& serverIpv4Gateway,
+//                         const QString& deviceIpv4Address, uint64_t txBytes,
+//                         uint64_t rxBytes)>&& callback);
 
   int connectionRetry() const { return m_connectionRetry; }
 
@@ -114,7 +114,7 @@ class Controller final : public QObject, public LogSerializer {
   QString currentServerString() const;
 #endif
 
-  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+//  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
 
   enum ServerSelectionPolicy {
     RandomizeServerSelection,
@@ -129,38 +129,38 @@ class Controller final : public QObject, public LogSerializer {
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
-  bool activate(
-      const ServerData& serverData,
-      ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-  bool deactivate();
+//  bool activate(
+//      const ServerData& serverData,
+//      ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
+//  bool deactivate();
 
-  Q_INVOKABLE void quit();
+//  Q_INVOKABLE void quit();
 
  private slots:
-  void connected(const QString& pubkey,
-                 const QDateTime& connectionTimestamp = QDateTime());
-  void disconnected();
-  void timerTimeout();
-  void implInitialized(bool status, bool connected,
-                       const QDateTime& connectionDate);
-  void statusUpdated(const QString& serverIpv4Gateway,
-                     const QString& deviceIpv4Address, uint64_t txBytes,
-                     uint64_t rxBytes);
-  void handshakeTimeout();
+//  void connected(const QString& pubkey,
+//                 const QDateTime& connectionTimestamp = QDateTime());
+//  void disconnected();
+//  void timerTimeout();
+//  void implInitialized(bool status, bool connected,
+//                       const QDateTime& connectionDate);
+//  void statusUpdated(const QString& serverIpv4Gateway,
+//                     const QString& deviceIpv4Address, uint64_t txBytes,
+//                     uint64_t rxBytes);
+//  void handshakeTimeout();
 
  signals:
-  void stateChanged();
-  void timeChanged();
-  void readyToQuit();
-  void readyToUpdate();
-  void readyToBackendFailure();
-  void readyToServerUnavailable(bool pingReceived);
-  void connectionRetryChanged();
-  void enableDisconnectInConfirmingChanged();
-  void activationBlockedForCaptivePortal();
-  void handshakeFailed(const QString& serverHostname);
-  void controllerDisconnected();
-  void newConnectionSucceeded();
+//  void stateChanged();
+//  void timeChanged();
+//  void readyToQuit();
+//  void readyToUpdate();
+//  void readyToBackendFailure();
+//  void readyToServerUnavailable(bool pingReceived);
+//  void connectionRetryChanged();
+//  void enableDisconnectInConfirmingChanged();
+//  void activationBlockedForCaptivePortal();
+//  void handshakeFailed(const QString& serverHostname);
+//  void controllerDisconnected();
+//  void newConnectionSucceeded();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();
@@ -183,9 +183,9 @@ class Controller final : public QObject, public LogSerializer {
                         ServerSelectionPolicy serverSelectionPolicy);
   void activateNext();
 
-  void clearRetryCounter();
-  void clearConnectedTime();
-  void resetConnectedTime();
+//  void clearRetryCounter();
+//  void clearConnectedTime();
+//  void resetConnectedTime();
 
   void serverDataChanged();
 
