@@ -51,7 +51,7 @@ bool AndroidUtils::isChromeOSContext() {
 QString AndroidUtils::getDeviceName() {
   auto model = readStaticString("android/os/Build", "MODEL");
   if (model.isNull()) {
-    return QString("Unknown Model");
+    return QString("Android Device");
   }
   return model;
 };
