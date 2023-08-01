@@ -63,6 +63,8 @@ public:
   void captivePortalPresent();
   void captivePortalGone();
   bool switchServers(const ServerData& serverData);
+  void backendFailure();
+  const ServerData& currentServer() const { return m_serverData; }
   
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
@@ -92,6 +94,15 @@ public:
   QString currentServerString() const;
 #endif
 
+public slots:
+   // These 2 methods activate/deactivate the VPN. Return true if a signal will
+   // be emitted at the end of the operation.
+   bool activate(
+       const ServerData& serverData,
+       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
+   bool deactivate();
+
+   Q_INVOKABLE void quit();
   
 private:
  Q_PROPERTY(State state READ state NOTIFY stateChanged)
@@ -131,6 +142,7 @@ signals:
   void readyToUpdate();
   void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
+  void activationBlockedForCaptivePortal();
   
 public:
   ConnectionManager();

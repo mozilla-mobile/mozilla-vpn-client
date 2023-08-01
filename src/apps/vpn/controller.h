@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <functional>
 
+#include "connectionmanager.h"
 #include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "loghandler.h"
@@ -48,7 +49,7 @@ class Controller final : public QObject, public LogSerializer {
   };
 
  private:
-  Q_PROPERTY(State state READ state NOTIFY stateChanged)
+//  Q_PROPERTY(State state READ state NOTIFY stateChanged)
   Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
@@ -69,7 +70,7 @@ class Controller final : public QObject, public LogSerializer {
 
   void initialize();
 
-  State state() const;
+//  State state() const;
 
   Q_INVOKABLE void logout();
 
@@ -189,7 +190,7 @@ class Controller final : public QObject, public LogSerializer {
   void serverDataChanged();
 
  private:
-  State m_state = StateInitializing;
+  ConnectionManager::State m_state = ConnectionManager::StateInitializing;
 
   QTimer m_timer;
 

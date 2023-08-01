@@ -127,11 +127,11 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  Controller::State state = vpn->controller()->state();
-  if (state == Controller::StateOn || state == Controller::StateConnecting ||
-      state == Controller::StateCheckSubscription ||
-      state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching) {
+  ConnectionManager::State state = vpn->connectionManager()->state();
+  if (state == ConnectionManager::StateOn || state == ConnectionManager::StateConnecting ||
+      state == ConnectionManager::StateCheckSubscription ||
+      state == ConnectionManager::StateSwitching ||
+      state == ConnectionManager::StateSilentSwitching) {
     logger.debug() << "VPN on. Ignoring unsecured network";
     return;
   }

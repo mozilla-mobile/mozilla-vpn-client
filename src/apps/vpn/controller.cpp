@@ -51,7 +51,7 @@ constexpr const uint32_t TIMER_MSEC = 1000;
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
 
-constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
+//constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
 constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
 
 #ifndef MZ_IOS
@@ -65,17 +65,17 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 namespace {
 Logger logger("Controller");
 
-Controller::Reason stateToReason(Controller::State state) {
-  if (state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching) {
-    return Controller::ReasonSwitching;
+ConnectionManager::Reason stateToReason(ConnectionManager::State state) {
+  if (state == ConnectionManager::StateSwitching ||
+      state == ConnectionManager::StateSilentSwitching) {
+    return ConnectionManager::ReasonSwitching;
   }
 
-  if (state == Controller::StateConfirming) {
-    return Controller::ReasonConfirming;
+  if (state == ConnectionManager::StateConfirming) {
+    return ConnectionManager::ReasonConfirming;
   }
 
-  return Controller::ReasonNone;
+  return ConnectionManager::ReasonNone;
 }
 
 }  // namespace
@@ -83,20 +83,20 @@ Controller::Reason stateToReason(Controller::State state) {
 Controller::Controller() {
   MZ_COUNT_CTOR(Controller);
 
-  m_connectingTimer.setSingleShot(true);
-  m_handshakeTimer.setSingleShot(true);
-
-  connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
-
-  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
-    m_enableDisconnectInConfirming = true;
-    emit enableDisconnectInConfirmingChanged();
-  });
-
-  connect(&m_handshakeTimer, &QTimer::timeout, this,
-          &Controller::handshakeTimeout);
-
-  LogHandler::instance()->registerLogSerializer(this);
+//  m_connectingTimer.setSingleShot(true);
+//  m_handshakeTimer.setSingleShot(true);
+//
+//  connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
+//
+//  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
+//    m_enableDisconnectInConfirming = true;
+//    emit enableDisconnectInConfirmingChanged();
+//  });
+//
+//  connect(&m_handshakeTimer, &QTimer::timeout, this,
+//          &Controller::handshakeTimeout);
+//
+//  LogHandler::instance()->registerLogSerializer(this);
 }
 
 Controller::~Controller() {
@@ -105,14 +105,14 @@ Controller::~Controller() {
   LogHandler::instance()->unregisterLogSerializer(this);
 }
 
-Controller::State Controller::state() const { return m_state; }
+//ConnectionManager::State ConnectionManager::state() const { return m_state; }
 
 void Controller::initialize() {
   logger.debug() << "Initializing the controller";
 
-  if (m_state != StateInitializing) {
-    setState(StateInitializing);
-  }
+//  if (m_state != ConnectionManager::StateInitializing) {
+//    setState(ConnectionManager::StateInitializing);
+//  }
 
   // Let's delete the previous controller before creating a new one.
   if (m_impl) {
@@ -152,7 +152,7 @@ void Controller::initialize() {
   });
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
-          [this]() { m_connectedBeforeTransaction = m_state == StateOn; });
+          [this]() { m_connectedBeforeTransaction = m_state == ConnectionManager::StateOn; });
 
   connect(SettingsHolder::instance(),
           &SettingsHolder::transactionAboutToRollBack, this, [this]() {
@@ -187,7 +187,7 @@ void Controller::implInitialized(bool status, bool a_connected,
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
-  Q_ASSERT(m_state == StateInitializing);
+  Q_ASSERT(m_state == ConnectionManager::StateInitializing);
 
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
@@ -216,8 +216,8 @@ void Controller::implInitialized(bool status, bool a_connected,
 bool Controller::activate(const ServerData& serverData,
                           ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
-  if (m_state != StateOff && m_state != StateSwitching &&
-      m_state != StateSilentSwitching) {
+  if (m_state != ConnectionManager::StateOff && m_state != ConnectionManager::StateSwitching &&
+      m_state != ConnectionManager::StateSilentSwitching) {
     logger.debug() << "Already connected";
     return false;
   }
@@ -228,7 +228,7 @@ bool Controller::activate(const ServerData& serverData,
   emit currentServerChanged();
 #endif
 
-  if (m_state == StateOff) {
+  if (m_state == ConnectionManager::StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
       Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
@@ -454,7 +454,7 @@ bool Controller::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
-  if (m_state != StateOn) {
+  if (m_state != ConnectionManager::StateOn) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
   }
@@ -494,15 +494,15 @@ bool Controller::silentSwitchServers(
 bool Controller::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateSilentSwitching && m_state != StateConfirming &&
-      m_state != StateConnecting && m_state != StateCheckSubscription) {
+  if (m_state != ConnectionManager::StateOn && m_state != ConnectionManager::StateSwitching &&
+      m_state != ConnectionManager::StateSilentSwitching && m_state != ConnectionManager::StateConfirming &&
+      m_state != ConnectionManager::StateConnecting && m_state != ConnectionManager::StateCheckSubscription) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateConnecting || m_state == StateCheckSubscription) {
+  if (m_state == ConnectionManager::StateOn || m_state == ConnectionManager::StateConfirming ||
+      m_state == ConnectionManager::StateConnecting || m_state == ConnectionManager::StateCheckSubscription) {
     setState(StateDisconnecting);
   }
 
@@ -605,154 +605,154 @@ void Controller::handshakeTimeout() {
 }
 
 void Controller::disconnected() {
-  logger.debug() << "Disconnected from state:" << m_state;
-
-  clearConnectedTime();
-  clearRetryCounter();
-
-  NextStep nextStep = m_nextStep;
-
-  if (processNextStep()) {
-    setState(StateOff);
-    return;
-  }
-
-  if (nextStep == None &&
-      (m_state == StateSwitching || m_state == StateSilentSwitching)) {
-    activate(m_nextServerData, m_nextServerSelectionPolicy);
-    return;
-  }
-
-  setState(StateOff);
-  emit controllerDisconnected();
+//  logger.debug() << "Disconnected from state:" << m_state;
+//
+//  clearConnectedTime();
+//  clearRetryCounter();
+//
+//  NextStep nextStep = m_nextStep;
+//
+//  if (processNextStep()) {
+//    setState(StateOff);
+//    return;
+//  }
+//
+//  if (nextStep == None &&
+//      (m_state == ConnectionManager::StateSwitching || m_state == ConnectionManager::StateSilentSwitching)) {
+//    activate(m_nextServerData, m_nextServerSelectionPolicy);
+//    return;
+//  }
+//
+//  setState(StateOff);
+//  emit controllerDisconnected();
 }
 
 void Controller::timerTimeout() {
-  Q_ASSERT(m_state == StateOn);
-  emit timeChanged();
+//  Q_ASSERT(m_state == StateOn);
+//  emit timeChanged();
 }
 
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
-    emit readyToQuit();
-    return;
-  }
-
-  m_nextStep = Quit;
-
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription) {
-    deactivate();
-    return;
-  }
+//  if (m_state == StateInitializing || m_state == StateOff) {
+//    emit readyToQuit();
+//    return;
+//  }
+//
+//  m_nextStep = Quit;
+//
+//  if (m_state == StateOn || m_state == StateSwitching ||
+//      m_state == StateSilentSwitching || m_state == StateConnecting ||
+//      m_state == StateCheckSubscription) {
+//    deactivate();
+//    return;
+//  }
 }
 
 void Controller::backendFailure() {
   logger.error() << "backend failure";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
-    emit readyToBackendFailure();
-    return;
-  }
-
-  m_nextStep = BackendFailure;
-
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming) {
-    deactivate();
-    return;
-  }
+//  if (m_state == StateInitializing || m_state == StateOff) {
+//    emit readyToBackendFailure();
+//    return;
+//  }
+//
+//  m_nextStep = BackendFailure;
+//
+//  if (m_state == StateOn || m_state == StateSwitching ||
+//      m_state == StateSilentSwitching || m_state == StateConnecting ||
+//      m_state == StateCheckSubscription || m_state == StateConfirming) {
+//    deactivate();
+//    return;
+//  }
 }
 
 void Controller::serverUnavailable() {
   logger.error() << "server unavailable";
 
-  m_nextStep = ServerUnavailable;
-
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming || m_state == StateCheckSubscription) {
-    deactivate();
-    return;
-  }
+//  m_nextStep = ServerUnavailable;
+//
+//  if (m_state == StateOn || m_state == StateSwitching ||
+//      m_state == StateSilentSwitching || m_state == StateConnecting ||
+//      m_state == StateConfirming || m_state == StateCheckSubscription) {
+//    deactivate();
+//    return;
+//  }
 }
 
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
-  if (m_state == StateOff) {
-    emit readyToUpdate();
-    return;
-  }
-
-  m_nextStep = Update;
-
-  if (m_state == StateOn) {
-    deactivate();
-    return;
-  }
+//  if (m_state == StateOff) {
+//    emit readyToUpdate();
+//    return;
+//  }
+//
+//  m_nextStep = Update;
+//
+//  if (m_state == StateOn) {
+//    deactivate();
+//    return;
+//  }
 }
 
 void Controller::logout() {
   logger.debug() << "Logout";
 
-  MozillaVPN::instance()->logout();
-
-  if (m_state == StateOff) {
-    return;
-  }
-
-  m_nextStep = Disconnect;
-
-  if (m_state == StateOn) {
-    deactivate();
-    return;
-  }
+//  MozillaVPN::instance()->logout();
+//
+//  if (m_state == StateOff) {
+//    return;
+//  }
+//
+//  m_nextStep = Disconnect;
+//
+//  if (m_state == StateOn) {
+//    deactivate();
+//    return;
+//  }
 }
 
 bool Controller::processNextStep() {
-  NextStep nextStep = m_nextStep;
-  m_nextStep = None;
-
-  if (nextStep == Quit) {
-    emit readyToQuit();
-    return true;
-  }
-
-  if (nextStep == Update) {
-    emit readyToUpdate();
-    return true;
-  }
-
-  if (nextStep == BackendFailure) {
-    emit readyToBackendFailure();
-    return true;
-  }
-
-  if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
-
-    emit readyToServerUnavailable(m_ping_received);
-    return true;
-  }
-
+//  NextStep nextStep = m_nextStep;
+//  m_nextStep = None;
+//
+//  if (nextStep == Quit) {
+//    emit readyToQuit();
+//    return true;
+//  }
+//
+//  if (nextStep == Update) {
+//    emit readyToUpdate();
+//    return true;
+//  }
+//
+//  if (nextStep == BackendFailure) {
+//    emit readyToBackendFailure();
+//    return true;
+//  }
+//
+//  if (nextStep == ServerUnavailable) {
+//    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+//
+//    emit readyToServerUnavailable(m_ping_received);
+//    return true;
+//  }
+//
   return false;
 }
 
 void Controller::maybeEnableDisconnectInConfirming() {
-  if (m_state == StateConfirming) {
-    m_enableDisconnectInConfirming = false;
-    emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
-  } else {
-    m_enableDisconnectInConfirming = false;
-    emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.stop();
-  }
+//  if (m_state == StateConfirming) {
+//    m_enableDisconnectInConfirming = false;
+//    emit enableDisconnectInConfirmingChanged();
+//    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+//  } else {
+//    m_enableDisconnectInConfirming = false;
+//    emit enableDisconnectInConfirmingChanged();
+//    m_connectingTimer.stop();
+//  }
 }
 
 bool Controller::silentServerSwitchingSupported() const {
@@ -760,35 +760,35 @@ bool Controller::silentServerSwitchingSupported() const {
 }
 
 void Controller::setState(State state) {
-  if (m_state == state) {
-    return;
-  }
-  logger.debug() << "Setting state:" << state;
-  m_state = state;
-  emit stateChanged();
+//  if (m_state == state) {
+//    return;
+//  }
+//  logger.debug() << "Setting state:" << state;
+//  m_state = state;
+//  emit stateChanged();
 }
 
 qint64 Controller::time() const {
-  if (m_connectedTimeInUTC.isValid()) {
-    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
-  }
+//  if (m_connectedTimeInUTC.isValid()) {
+//    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
+//  }
   return 0;
 }
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&
         a_callback) {
-  std::function<void(const QString& name, const QString&)> callback =
-      std::move(a_callback);
-
-  if (!m_impl) {
-    callback("Mozilla VPN backend logs", QString());
-    return;
-  }
-
-  m_impl->getBackendLogs([callback](const QString& logs) {
-    callback("Mozilla VPN backend logs", logs);
-  });
+//  std::function<void(const QString& name, const QString&)> callback =
+//      std::move(a_callback);
+//
+//  if (!m_impl) {
+//    callback("Mozilla VPN backend logs", QString());
+//    return;
+//  }
+//
+//  m_impl->getBackendLogs([callback](const QString& logs) {
+//    callback("Mozilla VPN backend logs", logs);
+//  });
 }
 
 void Controller::cleanupBackendLogs() {
@@ -801,25 +801,25 @@ void Controller::getStatus(
     std::function<void(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address, uint64_t txByte,
                        uint64_t rxBytes)>&& a_callback) {
-  logger.debug() << "check status";
-
-  std::function<void(const QString& serverIpv4Gateway,
-                     const QString& deviceIpv4Address, uint64_t txBytes,
-                     uint64_t rxBytes)>
-      callback = std::move(a_callback);
-
-  if (m_state != StateOn && m_state != StateConfirming) {
-    callback(QString(), QString(), 0, 0);
-    return;
-  }
-
-  bool requestStatus = m_getStatusCallbacks.isEmpty();
-
-  m_getStatusCallbacks.append(std::move(callback));
-
-  if (m_impl && requestStatus) {
-    m_impl->checkStatus();
-  }
+//  logger.debug() << "check status";
+//
+//  std::function<void(const QString& serverIpv4Gateway,
+//                     const QString& deviceIpv4Address, uint64_t txBytes,
+//                     uint64_t rxBytes)>
+//      callback = std::move(a_callback);
+//
+//  if (m_state != StateOn && m_state != StateConfirming) {
+//    callback(QString(), QString(), 0, 0);
+//    return;
+//  }
+//
+//  bool requestStatus = m_getStatusCallbacks.isEmpty();
+//
+//  m_getStatusCallbacks.append(std::move(callback));
+//
+//  if (m_impl && requestStatus) {
+//    m_impl->checkStatus();
+//  }
 }
 
 void Controller::statusUpdated(const QString& serverIpv4Gateway,
@@ -958,32 +958,32 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (m_state == StateOff) {
-    logger.debug() << "Server data changed but we are off";
-    return;
-  }
-
-  TaskScheduler::deleteTasks();
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eSwitch));
+//  if (m_state == StateOff) {
+//    logger.debug() << "Server data changed but we are off";
+//    return;
+//  }
+//
+//  TaskScheduler::deleteTasks();
+//  TaskScheduler::scheduleTask(
+//      new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
 bool Controller::switchServers(const ServerData& serverData) {
-  if (m_state == StateOff) {
-    logger.debug() << "Server data changed but we are off";
-    return false;
-  }
-
-  m_nextServerData = serverData;
-  m_nextServerSelectionPolicy = RandomizeServerSelection;
-
-  clearConnectedTime();
-  clearRetryCounter();
-
-  logger.debug() << "Switching to a different server";
-
-  setState(StateSwitching);
-  deactivate();
+//  if (m_state == StateOff) {
+//    logger.debug() << "Server data changed but we are off";
+//    return false;
+//  }
+//
+//  m_nextServerData = serverData;
+//  m_nextServerSelectionPolicy = RandomizeServerSelection;
+//
+//  clearConnectedTime();
+//  clearRetryCounter();
+//
+//  logger.debug() << "Switching to a different server";
+//
+//  setState(StateSwitching);
+//  deactivate();
 
   return true;
 }

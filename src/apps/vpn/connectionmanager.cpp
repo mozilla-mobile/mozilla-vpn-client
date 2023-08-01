@@ -54,18 +54,18 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 namespace {
 Logger logger("Connection Manager");
 
-//ConnectionManager::Reason stateToReason(ConnectionManager::State state) {
-//  if (state == ConnectionManager::StateSwitching ||
-//      state == ConnectionManager::StateSilentSwitching) {
-//    return ConnectionManager::ReasonSwitching;
-//  }
-//
-//  if (state == ConnectionManager::StateConfirming) {
-//    return ConnectionManager::ReasonConfirming;
-//  }
-//
-//  return ConnectionManager::ReasonNone;
-//}
+ConnectionManager::Reason stateToReason(ConnectionManager::State state) {
+  if (state == ConnectionManager::StateSwitching ||
+      state == ConnectionManager::StateSilentSwitching) {
+    return ConnectionManager::ReasonSwitching;
+  }
+
+  if (state == ConnectionManager::StateConfirming) {
+    return ConnectionManager::ReasonConfirming;
+  }
+
+  return ConnectionManager::ReasonNone;
+}
 }
 
 ConnectionManager::ConnectionManager() {
@@ -105,6 +105,24 @@ qint64 ConnectionManager::time() const {
 void ConnectionManager::timerTimeout() {
   Q_ASSERT(m_state == StateOn);
   emit timeChanged();
+}
+
+void ConnectionManager::quit() {
+  logger.debug() << "Quitting";
+
+  if (m_state == StateInitializing || m_state == StateOff) {
+    emit readyToQuit();
+    return;
+  }
+
+  m_nextStep = Quit;
+
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription) {
+    deactivate();
+    return;
+  }
 }
 
 void ConnectionManager::handshakeTimeout() {
@@ -702,6 +720,24 @@ bool ConnectionManager::switchServers(const ServerData& serverData) {
   return true;
 }
 
+void ConnectionManager::backendFailure() {
+  logger.error() << "backend failure";
+
+  if (m_state == StateInitializing || m_state == StateOff) {
+    emit readyToBackendFailure();
+    return;
+  }
+
+  m_nextStep = BackendFailure;
+
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription || m_state == StateConfirming) {
+//    deactivate();
+    return;
+  }
+}
+
 #ifdef MZ_DUMMY
 QString ConnectionManager::currentServerString() const {
   return QString("%1-%2-%3-%4")
@@ -709,3 +745,105 @@ QString ConnectionManager::currentServerString() const {
            m_serverData.entryCountryCode(), m_serverData.entryCityName());
 }
 #endif
+
+//These will eventually go back to the controller but to get the code working for now they will reside here
+
+bool ConnectionManager::activate(const ServerData& serverData,
+                          ServerSelectionPolicy serverSelectionPolicy) {
+  logger.debug() << "Activation" << m_state;
+  if (m_state != ConnectionManager::StateOff && m_state != ConnectionManager::StateSwitching &&
+      m_state != ConnectionManager::StateSilentSwitching) {
+    logger.debug() << "Already connected";
+    return false;
+  }
+
+  m_serverData = serverData;
+
+#ifdef MZ_DUMMY
+  emit currentServerChanged();
+#endif
+
+  if (m_state == ConnectionManager::StateOff) {
+    if (m_portalDetected) {
+      emit activationBlockedForCaptivePortal();
+      Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
+
+      m_portalDetected = false;
+      return true;
+    }
+
+    // Before attempting to enable VPN connection we should check that the
+    // subscription is active.
+    setState(StateCheckSubscription);
+
+    // Set up a network request to check the subscription status.
+    // "task" is an empty task function which is being used to
+    // replicate the behavior of a TaskAccount.
+    TaskFunction* task = new TaskFunction([]() {});
+    NetworkRequest* request = new NetworkRequest(task, 200);
+    request->auth(App::authorizationHeader());
+    request->get(AppConstants::apiUrl(AppConstants::Account));
+
+    connect(request, &NetworkRequest::requestFailed, this,
+            [this, serverSelectionPolicy](QNetworkReply::NetworkError error,
+                                          const QByteArray&) {
+              logger.error() << "Account request failed" << error;
+              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
+                                 "PreActivationSubscriptionCheck");
+
+              // Check if the error propagation has changed the Mozilla VPN
+              // state. Continue only if the user is still authenticated and
+              // subscribed.
+              if (App::instance()->state() != App::StateMain) {
+                return;
+              }
+
+              setState(StateConnecting);
+
+              clearRetryCounter();
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+            });
+
+    connect(request, &NetworkRequest::requestCompleted, this,
+            [this, serverSelectionPolicy](const QByteArray& data) {
+              MozillaVPN::instance()->accountChecked(data);
+              setState(StateConnecting);
+
+              clearRetryCounter();
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+            });
+
+    connect(request, &QObject::destroyed, task, &QObject::deleteLater);
+    return true;
+  }
+
+  clearRetryCounter();
+  activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+  return true;
+}
+
+bool ConnectionManager::deactivate() {
+  logger.debug() << "Deactivation" << m_state;
+
+  if (m_state != StateOn && m_state != StateSwitching &&
+      m_state != StateSilentSwitching && m_state != StateConfirming &&
+      m_state != StateConnecting && m_state != StateCheckSubscription) {
+    logger.warning() << "Already disconnected";
+    return false;
+  }
+
+  if (m_state == StateOn || m_state == StateConfirming ||
+      m_state == StateConnecting || m_state == StateCheckSubscription) {
+    setState(StateDisconnecting);
+  }
+
+  m_ping_canary.stop();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
+  clearConnectedTime();
+  clearRetryCounter();
+
+  Q_ASSERT(m_impl);
+  m_impl->deactivate(stateToReason(m_state));
+  return true;
+}

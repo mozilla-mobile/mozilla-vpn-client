@@ -45,7 +45,7 @@ void SystemTrayNotificationHandler::initialize() {
   connect(vpn->serverData(), &ServerData::changed, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
   connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
@@ -150,8 +150,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   bool isStateMain = vpn->state() == App::StateMain;
 
-  m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
-                                                    Controller::StateOn);
+  m_disconnectAction->setVisible(isStateMain && vpn->connectionManager()->state() ==
+                                                    ConnectionManager::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);
@@ -174,28 +174,28 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn->controller()->state()) {
-    case Controller::StateOn:
+  switch (vpn->connectionManager()->state()) {
+    case ConnectionManager::StateOn:
       [[fallthrough]];
-    case Controller::StateSilentSwitching:
+    case ConnectionManager::StateSilentSwitching:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
       break;
 
-    case Controller::StateOff:
+    case ConnectionManager::StateOff:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
       break;
 
-    case Controller::StateSwitching:
+    case ConnectionManager::StateSwitching:
       [[fallthrough]];
-    case Controller::StateConnecting:
+    case ConnectionManager::StateConnecting:
       [[fallthrough]];
-    case Controller::StateCheckSubscription:
+    case ConnectionManager::StateCheckSubscription:
       [[fallthrough]];
-    case Controller::StateConfirming:
+    case ConnectionManager::StateConfirming:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
       break;
 
-    case Controller::StateDisconnecting:
+    case ConnectionManager::StateDisconnecting:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusDisconnectingFrom);
       break;
 
@@ -222,8 +222,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
-                                  Controller::StateOff);
+  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
+                                  ConnectionManager::StateOff);
 }
 
 void SystemTrayNotificationHandler::updateIcon() {

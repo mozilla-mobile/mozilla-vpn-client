@@ -10,6 +10,7 @@
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "connectionmanager.h"
 #include "ipaddresslookup.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -32,6 +33,7 @@ struct MozillaVPNPrivate {
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionBenchmark m_connectionBenchmark;
   ConnectionHealth m_connectionHealth;
+  ConnectionManager m_connectionManager;
   Controller m_controller;
   DeviceModel m_deviceModel;
   IpAddressLookup m_ipAddressLookup;

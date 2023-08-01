@@ -102,7 +102,7 @@ void NotificationHandler::showNotification() {
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
       !(vpn->state() == App::StateInitialize &&
-        vpn->controller()->state() == Controller::StateOff)) {
+        vpn->connectionManager()->state() == ConnectionManager::StateOff)) {
     return;
   }
 
@@ -114,8 +114,8 @@ void NotificationHandler::showNotification() {
   QString localizedCountryName =
       vpn->controller()->currentServer().localizedExitCountryName();
 
-  switch (vpn->controller()->state()) {
-    case Controller::StateOn:
+  switch (vpn->connectionManager()->state()) {
+    case ConnectionManager::StateOn:
       if (m_switching) {
         m_switching = false;
 
@@ -189,7 +189,7 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case Controller::StateOff:
+    case ConnectionManager::StateOff:
       if (m_connected) {
         m_connected = false;
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
@@ -226,12 +226,12 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case Controller::StateSilentSwitching:
+    case ConnectionManager::StateSilentSwitching:
       m_connected = true;
       m_switching = false;
       return;
 
-    case Controller::StateSwitching:
+    case ConnectionManager::StateSwitching:
       m_connected = true;
       m_switching = true;
       return;
