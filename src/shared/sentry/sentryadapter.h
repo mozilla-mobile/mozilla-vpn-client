@@ -145,6 +145,11 @@ class SentryAdapter final : public QObject {
   void needsCrashReportScreen() const;
 
  private:
+  /**
+   * @brief Sets Tags related to the Platform
+   */
+  void setPlatformTag() const;
+
   bool m_initialized = false;
   UserConsentResult m_userConsent = UserConsentResult::Pending;
   SentryAdapter();

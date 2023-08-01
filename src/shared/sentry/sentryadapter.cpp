@@ -96,6 +96,7 @@ void SentryAdapter::init() {
     return;
   };
   m_initialized = true;
+  setPlatformTag();
   logger.info() << "Sentry initialized";
 }
 
@@ -203,5 +204,21 @@ void SentryAdapter::captureQMLStacktrace(const char* description) {
   sentry_add_breadcrumb(crumb);
 #else
   Q_UNUSED(description);
+#endif
+}
+
+void SentryAdapter::setPlatformTag() const {
+#if defined(MZ_LINUX)
+  sentry_set_tag("platform", "Linux");
+#elif defined(MZ_MACOS)
+  sentry_set_tag("platform", "MacOS");
+#elif defined(MZ_WINDOWS)
+  sentry_set_tag("platform", "Windows");
+#elif defined(MZ_IOS)
+  sentry_set_tag("platform", "iOS");
+#elif defined(MZ_ANDROID)
+  sentry_set_tag("platform", "Android");
+#else
+  sentry_set_tag("platform", "Dummy");
 #endif
 }
