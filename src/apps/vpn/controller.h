@@ -95,31 +95,31 @@ class Controller final : public QObject, public LogSerializer {
 //                         const QString& deviceIpv4Address, uint64_t txBytes,
 //                         uint64_t rxBytes)>&& callback);
 
-  int connectionRetry() const { return m_connectionRetry; }
+//  int connectionRetry() const { return m_connectionRetry; }
+//
+//  bool enableDisconnectInConfirming() const {
+//    return m_enableDisconnectInConfirming;
+//  }
 
-  bool enableDisconnectInConfirming() const {
-    return m_enableDisconnectInConfirming;
-  }
+//  void backendFailure();
+//  void serverUnavailable();
+//
+//  void captivePortalPresent();
+//  void captivePortalGone();
+//
+//  const ServerData& currentServer() const { return m_serverData; }
+//  bool silentServerSwitchingSupported() const;
 
-  void backendFailure();
-  void serverUnavailable();
-
-  void captivePortalPresent();
-  void captivePortalGone();
-
-  const ServerData& currentServer() const { return m_serverData; }
-  bool silentServerSwitchingSupported() const;
-
-#ifdef MZ_DUMMY
-  QString currentServerString() const;
-#endif
+//#ifdef MZ_DUMMY
+//  QString currentServerString() const;
+//#endif
 
 //  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
 
-  enum ServerSelectionPolicy {
-    RandomizeServerSelection,
-    DoNotRandomizeServerSelection,
-  };
+//  enum ServerSelectionPolicy {
+//    RandomizeServerSelection,
+//    DoNotRandomizeServerSelection,
+//  };
 
   // LogSerializer interface
   void serializeLogs(
@@ -167,21 +167,21 @@ class Controller final : public QObject, public LogSerializer {
 #endif
 
  private:
-  void setState(State state);
-
-  void maybeEnableDisconnectInConfirming();
-
-  bool processNextStep();
-  QStringList getExcludedAddresses();
-
-  enum DNSPortPolicy {
-    ForceDNSPort,
-    DoNotForceDNSPort,
-  };
-
-  void activateInternal(DNSPortPolicy dnsPort,
-                        ServerSelectionPolicy serverSelectionPolicy);
-  void activateNext();
+//  void setState(State state);
+//
+//  void maybeEnableDisconnectInConfirming();
+//
+//  bool processNextStep();
+//  QStringList getExcludedAddresses();
+//
+//  enum DNSPortPolicy {
+//    ForceDNSPort,
+//    DoNotForceDNSPort,
+//  };
+//
+//  void activateInternal(DNSPortPolicy dnsPort,
+//                        ServerSelectionPolicy serverSelectionPolicy);
+//  void activateNext();
 
 //  void clearRetryCounter();
 //  void clearConnectedTime();
@@ -236,7 +236,7 @@ class Controller final : public QObject, public LogSerializer {
   ServerData m_serverData;
   ServerData m_nextServerData;
 
-  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
+//  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
 
   int m_connectionRetry = 0;
 

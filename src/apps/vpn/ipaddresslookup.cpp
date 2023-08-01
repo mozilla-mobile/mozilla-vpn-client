@@ -79,7 +79,7 @@ void IpAddressLookup::updateIpAddress() {
         // and not the MozillaVPN::serverData() which could be changed in the
         // meantime, because of a server-switch request.
         if (country != MozillaVPN::instance()
-                           ->controller()
+                           ->connectionManager()
                            ->currentServer()
                            .exitCountryCode()) {
           // In case the country-we're reported in does not match the

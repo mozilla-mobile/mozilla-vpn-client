@@ -669,18 +669,18 @@ void Controller::initialize() {
 ////  }
 //}
 
-void Controller::serverUnavailable() {
-  logger.error() << "server unavailable";
-
-//  m_nextStep = ServerUnavailable;
+//void Controller::serverUnavailable() {
+//  logger.error() << "server unavailable";
 //
-//  if (m_state == StateOn || m_state == StateSwitching ||
-//      m_state == StateSilentSwitching || m_state == StateConnecting ||
-//      m_state == StateConfirming || m_state == StateCheckSubscription) {
-//    deactivate();
-//    return;
-//  }
-}
+////  m_nextStep = ServerUnavailable;
+////
+////  if (m_state == StateOn || m_state == StateSwitching ||
+////      m_state == StateSilentSwitching || m_state == StateConnecting ||
+////      m_state == StateConfirming || m_state == StateCheckSubscription) {
+////    deactivate();
+////    return;
+////  }
+//}
 
 //void Controller::updateRequired() {
 //  logger.warning() << "Update required";
@@ -715,7 +715,7 @@ void Controller::serverUnavailable() {
 ////  }
 //}
 
-bool Controller::processNextStep() {
+//bool Controller::processNextStep() {
 //  NextStep nextStep = m_nextStep;
 //  m_nextStep = None;
 //
@@ -741,8 +741,8 @@ bool Controller::processNextStep() {
 //    return true;
 //  }
 //
-  return false;
-}
+//  return false;
+//}
 
 //void Controller::maybeEnableDisconnectInConfirming() {
 ////  if (m_state == StateConfirming) {
@@ -760,36 +760,36 @@ bool Controller::processNextStep() {
 //  return m_impl->silentServerSwitchingSupported();
 //}
 
-void Controller::setState(State state) {
+//void Controller::setState(State state) {
 //  if (m_state == state) {
 //    return;
 //  }
 //  logger.debug() << "Setting state:" << state;
 //  m_state = state;
 //  emit stateChanged();
-}
+//}
 
-qint64 Controller::time() const {
+//qint64 Controller::time() const {
 //  if (m_connectedTimeInUTC.isValid()) {
 //    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
 //  }
-  return 0;
-}
+//  return 0;
+//}
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&
         a_callback) {
-//  std::function<void(const QString& name, const QString&)> callback =
-//      std::move(a_callback);
-//
-//  if (!m_impl) {
-//    callback("Mozilla VPN backend logs", QString());
-//    return;
-//  }
-//
-//  m_impl->getBackendLogs([callback](const QString& logs) {
-//    callback("Mozilla VPN backend logs", logs);
-//  });
+  std::function<void(const QString& name, const QString&)> callback =
+      std::move(a_callback);
+
+  if (!m_impl) {
+    callback("Mozilla VPN backend logs", QString());
+    return;
+  }
+
+  m_impl->getBackendLogs([callback](const QString& logs) {
+    callback("Mozilla VPN backend logs", logs);
+  });
 }
 
 //void Controller::cleanupBackendLogs() {

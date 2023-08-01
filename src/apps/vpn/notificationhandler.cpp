@@ -110,9 +110,9 @@ void NotificationHandler::showNotification() {
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
   QString localizedExitCityName =
-      vpn->controller()->currentServer().localizedExitCityName();
+      vpn->connectionManager()->currentServer().localizedExitCityName();
   QString localizedCountryName =
-      vpn->controller()->currentServer().localizedExitCountryName();
+      vpn->connectionManager()->currentServer().localizedExitCountryName();
 
   switch (vpn->connectionManager()->state()) {
     case ConnectionManager::StateOn:
@@ -125,11 +125,11 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->controller()
+            vpn->connectionManager()
                 ->currentServer()
                 .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->controller()->currentServer().localizedPreviousExitCityName();
+            vpn->connectionManager()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedExitCityName)) {
@@ -164,10 +164,10 @@ void NotificationHandler::showNotification() {
 
         if (serverData->multihop()) {
           QString localizedEntryCityName =
-              vpn->controller()->currentServer().localizedEntryCityName();
+              vpn->connectionManager()->currentServer().localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->controller()->currentServer().localizedExitCityName();
+              vpn->connectionManager()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
@@ -200,10 +200,10 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
         if (serverData->multihop()) {
           QString localizedEntryCityName =
-              vpn->controller()->currentServer().localizedEntryCityName();
+              vpn->connectionManager()->currentServer().localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->controller()->currentServer().localizedExitCityName();
+              vpn->connectionManager()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
