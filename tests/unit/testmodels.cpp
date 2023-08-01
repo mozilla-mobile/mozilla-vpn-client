@@ -1646,8 +1646,7 @@ void TestModels::serverCountryModelPick() {
     QCOMPARE(MozillaVPN::instance()->serverCountryModel()->fromJson(json),
              true);
 
-    QList<const ServerCity*> results =
-        RecommendedLocationModel::recommendedLocations(1);
+    auto results = RecommendedLocationModel::recommendedLocations(1);
     QCOMPARE(results.length(), 1);
 
     const ServerCity* city = results.first();
