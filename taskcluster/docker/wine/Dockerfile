@@ -34,10 +34,13 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     && rm -rf /var/lib/apt/lists/*
 
 
-# Initialize the wine environment. Wait until the wineserver process has
+USER worker 
+# Initialize the wine environment for the user "worker". Wait until the wineserver process has
 # exited before closing the session, to avoid corrupting the wine prefix.
 RUN wine64 wineboot --init && \
     while pgrep wineserver > /dev/null; do sleep 1; done
+
+USER root
 
 RUN git clone https://github.com/mstorsjo/msvc-wine /opt/msvc
 
