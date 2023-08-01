@@ -18,6 +18,7 @@
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "controller.h"
+#include "connectionmanager.h"
 #include "feature.h"
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
@@ -306,7 +307,8 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         MozillaVPN::instance()->captivePortalDetection());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
-                                 MozillaVPN::instance()->controller());
+                                  MozillaVPN::instance()->connectionManager());
+                                //  MozillaVPN::instance()->controller());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
                                  MozillaVPN::instance()->user());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
