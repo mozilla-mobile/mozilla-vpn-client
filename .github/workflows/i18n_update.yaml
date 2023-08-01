@@ -50,4 +50,62 @@ jobs:
         env:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
- 
+  get_release_branches: 
+    name: Get Unreleased Branches
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.branches }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Generate Branch List
+        id: gen
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./.github/scripts/get_unreleased_branches.ps1  >> $env:GITHUB_OUTPUT
+  update_release_branches:
+    name: ${{matrix.branch}} Update submodules
+    needs:
+      - get_release_branches
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        branch: ${{ fromJson(needs.get_release_branches.outputs.matrix) }}
+    steps:
+      - name: Clone repository and checkout ${{matrix.branch}}
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+          ref: 'releases/${{matrix.branch}}'
+      - name: Checkout mozilla-vpn-client-l10n Git
+        run: |
+          git submodule update --init --remote src/apps/vpn/translations/i18n/
+      - uses: peter-evans/create-pull-request@v5
+        id: cpr
+        with:
+          # This may not be GitHub, because GitHub actions cannot self-approve
+          author: GitHub <noreply@github.com>
+          committer: GitHub <noreply@github.com>
+          commit-message: "[Bot] Update i18n"
+          branch: i18n_automation_for_${{matrix.branch}}
+          delete-branch: true
+          title: "[Bot] Update i18n on ${{matrix.branch}}"
+          token: ${{ secrets.WIKI_TOKEN }}
+      - name: Approve l10n_branch.
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Finally, this sets the PR to allow auto-merging for patch and minor
+      # updates if all checks pass
+      - name: Enable auto-merge the i18n PR
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
