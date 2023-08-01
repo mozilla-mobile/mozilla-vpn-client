@@ -72,3 +72,7 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: fedora:37
+    linux-build-windows-wine-v140:
+        symbol: I(windows-wine-v140)
+        definition: wine
+        parent: base
