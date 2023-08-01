@@ -13,8 +13,15 @@ if [[ $(command -v sentry-cli) == "" ]]; then
     curl -sL https://sentry.io/get-cli/ | bash
 fi
 
-
 sentry-cli login --auth-token $SENTRY_UPLOAD_KEY
+
+echo "Extracting the Symbols..."
+dsymutil ${$CI_ARCHIVE_PATH}/Products/Applications/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o MozillaVPN.dSYMs
+
+echo "Checking & genrating a symbols bundle"
+ls MozillaVPN.dSYMs/Contents/Resources/DWARF/
+sentry-cli difutil check MozillaVPN.dSYMs/Contents/Resources/DWARF/*
+sentry-cli difutil bundle-sources MozillaVPN.dSYMs/Contents/Resources/DWARF/*
 
 sentry-cli --auth-token $SENTRY_UPLOAD_KEY \
     upload-dif --org mozilla \
@@ -22,9 +29,8 @@ sentry-cli --auth-token $SENTRY_UPLOAD_KEY \
     --project vpn-client \
     $CI_ARCHIVE_PATH
 
-# Upload debug symbols
-sentry-cli debug-files upload --auth-token $SENTRY_UPLOAD_KEY \
+sentry-cli debug-files upload \
   --include-sources \
   --org mozilla \
   --project vpn-client \
-  $CI_ARCHIVE_PATH/dSYMs
+  MozillaVPN.dSYMs

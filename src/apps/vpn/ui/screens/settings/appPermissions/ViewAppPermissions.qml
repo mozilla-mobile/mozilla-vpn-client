@@ -26,6 +26,8 @@ MZViewBase {
     _menuTitle: MZI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
 
+        Layout.preferredWidth: parent.width
+
         Loader {
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin

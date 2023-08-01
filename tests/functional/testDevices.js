@@ -151,16 +151,15 @@ describe('Devices', function() {
       await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.BACK.visible());
-      await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
+      //Wait for swipe delegate delay
+      await vpn.wait(1000);
 
       // Let's remove a device
       await vpn.waitForQueryAndClick(
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
@@ -289,12 +288,7 @@ describe('Devices', function() {
       await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.BACK.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
-
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
+        queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
       const key = UserData.devices[0].pubkey;
       UserData.devices.splice(0, 1);
@@ -431,16 +425,14 @@ describe('Devices', function() {
       await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.BACK.visible());
-      await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
-
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIMIT_HEADER.visible());
 
       // Let's remove a device
       const key = UserData.devices[0].pubkey;
       UserData.devices.splice(0, 1);
+
+      //Wait for swipe delegate delay
+      await vpn.wait(1000);
 
       // Let's remove a device by clicking the button
       await vpn.waitForQueryAndClick(

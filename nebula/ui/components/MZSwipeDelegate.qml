@@ -12,15 +12,22 @@ SwipeDelegate {
     id: swipeDelegate
 
     property alias content: contentLoader
+    property bool hasUiStates: true
+    property bool blockClose: false
     property bool isSwipeOpen: false
     property var onSwipeOpen: () => {}
     property var onSwipeClose: () => {}
     property var uiState: MZTheme.theme.uiState
 
+    function closeSwipe() {
+        if(!swipeDelegate.isSwipeOpen || overlayMouseArea.mouseX <= overlayMouseArea.pressedMouseX && !swipeDelegate.blockClose) swipeDelegate.swipe.close()
+    }
+
     padding: 0
     clip: true
     hoverEnabled: true
-    activeFocusOnTab: true
+    activeFocusOnTab: !blockClose
+    implicitHeight: contentLoader.item.implicitHeight
 
     background: Rectangle {
         color: MZTheme.theme.bgColor
@@ -42,6 +49,26 @@ SwipeDelegate {
     swipe.onClosed: {
         isSwipeOpen = false
         onSwipeClose()
+    }
+
+    Keys.onRightPressed: {
+        if(swipe.left) {
+            swipe.open(SwipeDelegate.Left)
+        }
+    }
+
+    Keys.onLeftPressed: {
+        if(swipe.left && !blockClose) {
+            swipe.close()
+        }
+    }
+
+    Keys.onEnterPressed: {
+         swipeDelegate.closeSwipe()
+    }
+
+    Keys.onReturnPressed: {
+        swipeDelegate.closeSwipe()
     }
 
     onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(swipeDelegate)
@@ -122,6 +149,7 @@ SwipeDelegate {
 
     //Tap to close, but lose closing swipe gesture fullly interuptible control (auto closes on swipe instead)
     MouseArea {
+        id: overlayMouseArea
         property real pressedMouseX
 
         enabled: swipeDelegate.isSwipeOpen
@@ -129,17 +157,15 @@ SwipeDelegate {
         anchors.leftMargin: swipeDelegate.isSwipeOpen && swipe.leftItem ? swipe.leftItem.width : 0
         anchors.rightMargin: swipeDelegate.isSwipeOpen && swipe.rightItem ? swipe.rightItem.width : 0
 
-        onMouseXChanged: if(mouseX < pressedMouseX) swipeDelegate.swipe.close()
+        onMouseXChanged: if(mouseX < pressedMouseX && !blockClose) swipeDelegate.swipe.close()
         onPressed: pressedMouseX = mouseX
-        onClicked: if(!swipeDelegate.isSwipeOpen || mouseX <= pressedMouseX) swipeDelegate.swipe.close()
+        onClicked: swipeDelegate.closeSwipe()
         onReleased: swipeDelegate.state = swipeDelegate.uiState.stateDefault
     }
 
     MZMouseArea {
         id: buttonMouseArea
         propagateComposedEvents: true
-        onPressed: (mouse) => {
-                       mouse.accepted = false
-                   }
+        onPressed: (mouse) => { mouse.accepted = false }
     }
 }

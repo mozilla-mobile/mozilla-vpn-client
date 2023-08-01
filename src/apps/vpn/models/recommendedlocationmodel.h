@@ -6,6 +6,7 @@
 #define RECOMMENDEDLOCATIONMODEL_H
 
 #include <QAbstractListModel>
+#include <QPointer>
 #include <QSet>
 #include <QTimer>
 
@@ -25,7 +26,10 @@ class RecommendedLocationModel final : public QAbstractListModel {
 
   void initialize();
 
-  Q_INVOKABLE static QList<const ServerCity*> recommendedLocations(
+  Q_INVOKABLE static QList<const ServerCity*> recommendedLocationsRaw(
+      unsigned int maxResults);
+
+  static QList<QPointer<ServerCity>> recommendedLocations(
       unsigned int maxResults);
 
   // QAbstractListModel methods
@@ -45,7 +49,7 @@ class RecommendedLocationModel final : public QAbstractListModel {
   void refreshModel();
 
  private:
-  QList<const ServerCity*> m_recommendedCities;
+  QList<QPointer<ServerCity>> m_recommendedCities;
   QTimer m_timer;
 };
 

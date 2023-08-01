@@ -32,7 +32,7 @@ Item {
         objectName: parent.objectName + "-flickable"
 
         anchors.fill: root
-        flickContentHeight: viewContent.implicitHeight + viewContent.anchors.topMargin + viewContent.anchors.bottomMargin
+        flickContentHeight: viewContent.childrenRect.height + viewContent.anchors.topMargin + viewContent.anchors.bottomMargin
 
         ColumnLayout {
             id: viewContent
