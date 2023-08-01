@@ -39,7 +39,7 @@ QString AndroidUtils::getDeviceCodename() {
 
 bool AndroidUtils::isChromeOSContext() {
   /*
-   * If the device name ends or starts with "cheets" we're
+   * If the device code name ends or starts with "cheets" we're
    * running in a Chrome OS / Android Runtime Container
    * Situation.
    */
