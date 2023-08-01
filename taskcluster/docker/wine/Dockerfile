@@ -54,3 +54,6 @@ RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --major=${MSVC_MAJOR_VER
 # %include taskcluster/docker/wine/wine_cross.toolchain
 ADD topsrcdir/taskcluster/docker/wine/wine_cross.toolchain /opt/msvc/wine_cross.toolchain
 ENV CMAKE_TOOLCHAIN_FILE="/opt/msvc/wine_cross.toolchain"
+
+VOLUME /builds/worker/.cache
+VOLUME /builds/worker/checkouts
