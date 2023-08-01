@@ -6,7 +6,7 @@
 # finalization in order to pick up QML dependencies when built
 # statically.
 qt_add_executable(dummyvpn MANUAL_FINALIZATION)
-
+include(ExternalProject)
 target_link_libraries(dummyvpn PRIVATE
     Qt6::Quick
     Qt6::Test
@@ -46,6 +46,19 @@ endif()
 
 target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
+
+# We should not build into the source dir
+# but that is how we are currently doing things, 
+# at least we no longer invoke python scripts to 
+# invoke cmake. 
+#  ¯\_(ツ)_/¯
+ExternalProject_Add(functional_test_addons
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons
+    BINARY_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons/generated
+    CMAKE_CACHE_ARGS -DQt6_DIR:PATH=${Qt6_DIR} -DQt6QmlTools_DIR:PATH=${Qt6QmlTools_DIR} -DQt6CoreTools_DIR:PATH=${Qt6CoreTools_DIR}
+    INSTALL_COMMAND ""
+)
+add_dependencies(dummyvpn functional_test_addons)
 
 qt6_add_qml_module(dummyvpn
   URI Mozilla.Shared.qmlcomponents
