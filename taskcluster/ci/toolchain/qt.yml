@@ -74,3 +74,22 @@ qt-linux:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
+
+qt-win-cross:
+    description: "Windows QT compile Task using wine"
+    fetches:
+        fetch:
+            - qt-source-tarball-6-5-1
+    run:
+        script: compile_qt_6_windows_wine.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-windows-cross
+        toolchain-artifact: public/build/qt6_windows_cross.tar.xz
+    treeherder:
+        symbol: TL(qt-wine)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-build-windows-wine-v140}
+        env:
+            QT_VERSION: "6.5.1" # Todo: remove after all merged

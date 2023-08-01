@@ -46,7 +46,8 @@ WORKDIR /opt/msvc
 RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --major=${MSVC_MAJOR_VERSION} --dest /opt/msvc \
     && ./install.sh /opt/msvc \
     && rm lowercase fixinclude install.sh vsdownload.py \
-    && rm -rf wrappers
+    && rm -rf wrappers \
+    && chmod -R 777 /opt/
 
 
 # Pull in the Toolchain File for this container.
