@@ -92,4 +92,5 @@ tasks:
         fetch:
             type: static-url
             url: https://download.qt.io/archive/qt/6.5/6.5.1/single/qt-everywhere-src-6.5.1.tar.xz
+            sha256: a2d88a6f8c3835dca52f3b7433149c3de606a96bbf024640c27657276cc7350a
             size: 796599948
