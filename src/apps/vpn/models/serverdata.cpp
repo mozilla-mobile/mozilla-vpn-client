@@ -36,7 +36,7 @@ ServerData::ServerData(const ServerData& other) {
 ServerData::~ServerData() { MZ_COUNT_DTOR(ServerData); }
 
 ServerData& ServerData::operator=(const ServerData& other) {
-gi  m_initialized = other.m_initialized;
+  m_initialized = other.m_initialized;
   m_exitCountryCode = other.m_exitCountryCode;
   m_exitCityName = other.m_exitCityName;
   m_entryCountryCode = other.m_entryCountryCode;
