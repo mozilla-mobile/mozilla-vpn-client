@@ -169,7 +169,7 @@ const LanguageLocalizer = {
     if (!languageData.wikiDataID) {
       if(this.options.check){
         console.error(`${ languageData.languageCode } - No Wikidata ID found.`)
-        console.error(`This is Likely a new Language check this branch out and run this`)
+        console.error(`This is likely a new language. Check this branch out and run this`)
         console.error(`tool locally again!`)
         process.exit(1);
       }
