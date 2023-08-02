@@ -101,4 +101,4 @@ jobs:
         run: |
           cd tools/languagelocalizer
           npm install 
-          node .\languageLocalizer.js --check
+          node languageLocalizer.js --check
