@@ -38,7 +38,8 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
 USER worker 
 # Initialize the wine environment for the user "worker". Wait until the wineserver process has
 # exited before closing the session, to avoid corrupting the wine prefix.
-RUN wine64 wineboot --init 
+RUN wine64 wineboot --init \
+    && wineserver -k
 
 WORKDIR /opt/
 
