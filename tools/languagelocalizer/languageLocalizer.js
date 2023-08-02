@@ -143,8 +143,8 @@ const LanguageLocalizer = {
     let languageData = structuredClone(language_old_Data);
     if (!languageData) {
       if(this.options.check){
-        console.error(`New Unknown Language ${language} - cannot continue`);
-        console.error(`This is Likely a new Language check this branch out and run this`);
+        console.error(`New unknown language ${language} - cannot continue`);
+        console.error(`This is likely a new language. Check this branch out and run this`);
         console.error(`tool locally again!`);
         process.exit(1);
       }
