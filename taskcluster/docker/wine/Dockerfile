@@ -10,7 +10,7 @@ RUN apt-get update -qq \
     # We need to install tzdata before all of the other packages. Otherwise it will show an interactive dialog that
     # we cannot navigate while building the Docker image.
     && apt-get install -y tzdata \
-    && apt-get install -y python3 msitools python3-simplejson git wget winbind pip libgl1-mesa-glx ninja-build libegl1 \
+    && apt-get install -y python3 msitools python3-simplejson git wget winbind pip libgl1-mesa-glx ninja-build libegl1 xvfb  \
                        python3-six ca-certificates \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
@@ -37,8 +37,7 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
 USER worker 
 # Initialize the wine environment for the user "worker". Wait until the wineserver process has
 # exited before closing the session, to avoid corrupting the wine prefix.
-RUN wine64 wineboot --init && \
-    while pgrep wineserver > /dev/null; do sleep 1; done
+RUN wine64 wineboot --init 
 
 USER root
 
