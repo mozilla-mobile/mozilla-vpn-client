@@ -37,7 +37,7 @@ jobs:
           branch: i18n_automation
           delete-branch: true
           title: "[Bot] Update i18n"
-          token: ${{ secrets.WIKI_TOKEN }}
+          token: ${{ secrets.WIKI_TOKEN }}         
       - name: Approve l10n_branch.
         run: gh pr review --approve "$PR_URL"
         env:
