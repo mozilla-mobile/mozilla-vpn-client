@@ -45,9 +45,9 @@ int CommandActivate::run(QStringList& tokens) {
       }
     });
 
-    vpn.controller()->initialize();
+    vpn.connectionManager()->initialize();
     loop.exec();
-    vpn.controller()->disconnect();
+    vpn.connectionManager()->disconnect();
 
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
@@ -60,7 +60,7 @@ int CommandActivate::run(QStringList& tokens) {
         }
       });
       loop.exec();
-      vpn.controller()->disconnect();
+      vpn.connectionManager()->disconnect();
     }
 
     if (vpn.connectionManager()->state() != ConnectionManager::StateOff) {
@@ -77,7 +77,7 @@ int CommandActivate::run(QStringList& tokens) {
     });
     vpn.connectionManager()->activate(*vpn.serverData());
     loop.exec();
-    vpn.controller()->disconnect();
+    vpn.connectionManager()->disconnect();
 
     if (vpn.connectionManager()->state() == ConnectionManager::StateOn) {
       QTextStream stream(stdout);

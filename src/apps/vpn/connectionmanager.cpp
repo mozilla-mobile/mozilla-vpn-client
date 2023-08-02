@@ -4,7 +4,7 @@
 
 #include "connectionmanager.h"
 
-//#include "controller.h"
+#include "controller.h"
 #include "app.h"
 #include "appconstants.h"
 #include "apppermission.h"
@@ -990,6 +990,8 @@ bool ConnectionManager::deactivate() {
   m_activationQueue.clear();
   clearConnectedTime();
   clearRetryCounter();
+  
+  
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
