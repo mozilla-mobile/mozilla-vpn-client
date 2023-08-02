@@ -13,7 +13,8 @@ RUN apt-get update -qq \
     && apt-get install -y python3 msitools python3-simplejson git wget winbind pip libgl1-mesa-glx ninja-build libegl1 xvfb  \
                        python3-six ca-certificates \
     && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod -R 777 /opt/
 
 # Get wine from winehq
 RUN dpkg --add-architecture i386  \
@@ -38,18 +39,15 @@ USER worker
 # Initialize the wine environment for the user "worker". Wait until the wineserver process has
 # exited before closing the session, to avoid corrupting the wine prefix.
 RUN wine64 wineboot --init 
-
-USER root
-
 RUN git clone https://github.com/mstorsjo/msvc-wine /opt/msvc
+
 
 WORKDIR /opt/msvc
 
 RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --major=${MSVC_MAJOR_VERSION} --dest /opt/msvc \
     && ./install.sh /opt/msvc \
     && rm lowercase fixinclude install.sh vsdownload.py \
-    && rm -rf wrappers \
-    && chmod -R 777 /opt/
+    && rm -rf wrappers 
 
 
 # Pull in the Toolchain File for this container.
@@ -59,4 +57,7 @@ ENV CMAKE_TOOLCHAIN_FILE="/opt/msvc/wine_cross.toolchain"
 
 VOLUME /builds/worker/.cache
 VOLUME /builds/worker/checkouts
+
+ # runtask expects to be root
+USER root 
 
