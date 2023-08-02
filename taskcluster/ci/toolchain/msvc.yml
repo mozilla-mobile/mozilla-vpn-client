@@ -6,6 +6,7 @@ task-defaults:
     description: "Pack MSVC"
     worker-type: b-linux
     worker:
+        max-run-time: 14400
         docker-image: {in-tree: linux-build-windows-wine-v140}
     run:
       script: bundle_msvc.sh
