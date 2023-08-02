@@ -860,8 +860,8 @@ devices:
   limitTitle: 
     value: Device not added
     comment: Title of the "device limit" view stating that the device has not yet been added to the list of active devices (because we are at the device limit)
-  limitDescription:
-    value: You’re already using VPN on 5 devices. To use VPN on this device, please remove one.
+  limitDescription2:
+    value: You’re using VPN on 5 devices. To add another device, please remove one.
     comment: Description of the "device limit" view describing why the device has not yet been added to the list of active devices (because we are at the device limit)
   removingTitle:
     value: Removing device…
