@@ -39,21 +39,13 @@ USER worker
 # Initialize the wine environment for the user "worker". Wait until the wineserver process has
 # exited before closing the session, to avoid corrupting the wine prefix.
 RUN wine64 wineboot --init 
-RUN git clone https://github.com/mstorsjo/msvc-wine /opt/msvc
 
-
-WORKDIR /opt/msvc
-
-RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --major=${MSVC_MAJOR_VERSION} --dest /opt/msvc \
-    && ./install.sh /opt/msvc \
-    && rm lowercase fixinclude install.sh vsdownload.py \
-    && rm -rf wrappers 
-
+WORKDIR /opt/
 
 # Pull in the Toolchain File for this container.
 # %include taskcluster/docker/wine/wine_cross.toolchain
-ADD topsrcdir/taskcluster/docker/wine/wine_cross.toolchain /opt/msvc/wine_cross.toolchain
-ENV CMAKE_TOOLCHAIN_FILE="/opt/msvc/wine_cross.toolchain"
+ADD topsrcdir/taskcluster/docker/wine/wine_cross.toolchain /opt/wine_cross.toolchain
+ENV CMAKE_TOOLCHAIN_FILE="/opt/wine_cross.toolchain"
 
 VOLUME /builds/worker/.cache
 VOLUME /builds/worker/checkouts

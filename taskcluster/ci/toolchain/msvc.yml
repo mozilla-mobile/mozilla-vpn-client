@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Pack MSVC"
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-build-windows-wine-v140}
+    run:
+      script: bundle_msvc.sh
+
+msvc-16-pack: 
+    treeherder:
+      symbol: TL(msvc-15)
+    worker:
+      env:
+        MSVC_MAJOR_VERSION: "16"
+    run:
+      toolchain-alias: msvc-bundled-16
+      toolchain-artifact: public/build/msvc_bundled.zip.noextract

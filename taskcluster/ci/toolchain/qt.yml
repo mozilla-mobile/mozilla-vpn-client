@@ -80,6 +80,8 @@ qt-win-cross:
     fetches:
         fetch:
             - qt-source-tarball-6-5-1
+        toolchain: 
+            - msvc-bundled-16
     run:
         script: compile_qt_6_windows_wine.sh
         resources:

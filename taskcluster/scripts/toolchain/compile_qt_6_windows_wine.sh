@@ -11,6 +11,14 @@ wineserver -p
 wine64 wineboot 
 service winbind start
 
+mv $MOZ_FETCHES_DIR/msvc_bundled.zip.noextract $MOZ_FETCHES_DIR/msvc_bundled.zip
+unzip $MOZ_FETCHES_DIR/msvc_bundled.zip -d /opt/msvc
+./install.sh /opt/msvc 
+rm lowercase fixinclude install.sh vsdownload.py 
+rm -rf wrappers 
+
+
+
 # Install the Linux Version of QT, as we are Cross-Compiling
 python3 -m pip install aqtinstall
 python3 -m aqt install-qt -O /opt/Qt_Linux linux desktop $QT_VERSION -m all 
@@ -21,7 +29,7 @@ export CC=cl
 export CXX=cl
 export CMAKE_SYSTEM_NAME="Windows"
 export QT_HOST_PATH="/opt/Qt_Linux/$QT_VERSION/gcc_64/"
-export CMAKE_TOOLCHAIN_FILE="/opt/msvc/wine_cross.toolchain"
+export CMAKE_TOOLCHAIN_FILE="/opt/wine_cross.toolchain"
 
 source /opt/msvc/bin/x64/msvcenv.sh 
 
