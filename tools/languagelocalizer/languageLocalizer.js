@@ -64,7 +64,7 @@ const LanguageLocalizer = {
     const language_folders = dir_entries
                               .filter(f => f.isDirectory())
                               .map(f=>f.name)
-                              .filter(f=>!f.startsWith(".")); // no
+                              .filter(f=>!f.startsWith("."));
 
     this.languages = language_folders;
 
