@@ -85,3 +85,20 @@ jobs:
         run: |
           conda info
           ./gradlew ktlint
+
+  check-language-json:
+    name: Check if languages.json is valid
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Run languagelocalizer
+        run: |
+          cd tools/languagelocalizer
+          npm install 
+          node .\languageLocalizer.js --check
