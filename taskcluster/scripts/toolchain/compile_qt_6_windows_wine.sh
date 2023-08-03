@@ -4,6 +4,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set -e
+
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 
 # Start Wine 
@@ -11,11 +13,9 @@ wineserver -p
 wine64 wineboot 
 service winbind start
 
-./install.sh $MOZ_FETCHES_DIR/opt/msvc
+$MOZ_FETCHES_DIR/opt/msvc/install.sh $MOZ_FETCHES_DIR/opt/msvc
 rm lowercase fixinclude install.sh vsdownload.py 
 rm -rf wrappers 
-
-
 
 # Install the Linux Version of QT, as we are Cross-Compiling
 python3 -m pip install aqtinstall
