@@ -19,4 +19,4 @@ msvc-16-pack:
         MSVC_MAJOR_VERSION: "16"
     run:
       toolchain-alias: msvc-bundled-16
-      toolchain-artifact: public/build/msvc_bundled.zip.noextract
+      toolchain-artifact: public/build/msvc_bundled.zip
