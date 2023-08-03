@@ -25,7 +25,7 @@ MZViewBase {
             property bool skipEnsureVisible: true
 
             enabled: VPNDeviceModel.activeDevices > 1
-            labelText: !vpnFlickable.isEditing || VPNDeviceModel.activeDevices < 2 ? MZI18n.InAppMessagingEditButton : MZI18n.InAppSupportWorkflowSupportResponseButton
+            labelText: (!vpnFlickable.isEditing || VPNDeviceModel.activeDevices < 2) ? MZI18n.InAppMessagingEditButton : MZI18n.InAppSupportWorkflowSupportResponseButton
             onClicked: {
                 vpnFlickable.isEditing = !vpnFlickable.isEditing
             }

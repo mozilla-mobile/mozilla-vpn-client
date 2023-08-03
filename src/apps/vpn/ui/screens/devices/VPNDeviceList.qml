@@ -115,7 +115,7 @@ ListView {
     Connections {
         target: VPNDeviceModel
         function onActiveDevicesChanged() {
-            if(!listView.anySwipesOpen()) listView.isEditing(false)
+            if (!listView.anySwipesOpen()) listView.isEditing(false)
         }
     }
 
