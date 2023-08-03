@@ -15,5 +15,4 @@ export PYTHONUNBUFFERED=1
 ./vsdownload.py --accept-license --major=$MSVC_MAJOR_VERSION --dest /opt/msvc
 
 zip -qr $UPLOAD_DIR/msvc_bundled.zip /opt/msvc/*
-mv $UPLOAD_DIR/msvc_bundled.zip  $UPLOAD_DIR/msvc_bundled.zip.noextract
 

@@ -11,9 +11,7 @@ wineserver -p
 wine64 wineboot 
 service winbind start
 
-mv $MOZ_FETCHES_DIR/msvc_bundled.zip.noextract $MOZ_FETCHES_DIR/msvc_bundled.zip
-unzip $MOZ_FETCHES_DIR/msvc_bundled.zip -d /opt/msvc
-./install.sh /opt/msvc 
+./install.sh $MOZ_FETCHES_DIR/opt/msvc
 rm lowercase fixinclude install.sh vsdownload.py 
 rm -rf wrappers 
 
@@ -24,14 +22,14 @@ python3 -m pip install aqtinstall
 python3 -m aqt install-qt -O /opt/Qt_Linux linux desktop $QT_VERSION -m all 
 
 #cd $workdir
-export PATH=/opt/msvc/bin/x64:/opt/clang/bin:$PATH
+export PATH=$MOZ_FETCHES_DIR/opt/msvc/bin/x64:$PATH
 export CC=cl 
 export CXX=cl
 export CMAKE_SYSTEM_NAME="Windows"
 export QT_HOST_PATH="/opt/Qt_Linux/$QT_VERSION/gcc_64/"
 export CMAKE_TOOLCHAIN_FILE="/opt/wine_cross.toolchain"
 
-source /opt/msvc/bin/x64/msvcenv.sh 
+source $MOZ_FETCHES_DIR/opt/msvc/bin/x64/msvcenv.sh 
 
 echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt_dist
