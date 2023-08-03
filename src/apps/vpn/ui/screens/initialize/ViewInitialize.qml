@@ -15,7 +15,10 @@ Item {
     property int safeAreaHeight: window.safeContentHeight
     property string logoSubtitle: MZI18n.ProductDescription
 
-    MZRadialGradient {
+    Rectangle {
+        id: fallBackBackground
+        // This is a fallback for MZRadialGradient
+        color: MZTheme.theme.onBoardingGradient.end
         height: Screen.height
         width: Screen.width
 
@@ -23,6 +26,10 @@ Item {
             top: parent.top
             topMargin:  -window.safeAreaHeightByDevice()
         }
+    }
+
+    MZRadialGradient {  
+        anchors.fill: fallBackBackground
 
         gradient: Gradient {
             GradientStop {

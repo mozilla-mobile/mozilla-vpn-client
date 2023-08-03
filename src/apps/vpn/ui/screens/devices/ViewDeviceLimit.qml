@@ -67,7 +67,7 @@ MZViewBase {
 
                     Layout.fillWidth: true
 
-                    text: MZI18n.DevicesLimitDescription
+                    text: MZI18n.DevicesLimitDescription2
                 }
             }
         }
