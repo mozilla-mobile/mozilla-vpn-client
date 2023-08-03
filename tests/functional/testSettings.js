@@ -697,7 +697,7 @@ describe('Settings', function() {
     await vpn.waitForCondition(async () => {
       const url = await vpn.getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
-          url.endsWith('.txt');
+          url.endsWith('.log');
     });
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.HELP_CENTER.visible());
