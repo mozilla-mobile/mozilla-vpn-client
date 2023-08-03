@@ -29,22 +29,55 @@ constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
 
 // static
-QString AndroidUtils::GetDeviceName() {
-  QJniEnvironment env;
-  jclass BUILD = env->FindClass("android/os/Build");
-  jfieldID model = env->GetStaticFieldID(BUILD, "MODEL", "Ljava/lang/String;");
-  jstring value = (jstring)env->GetStaticObjectField(BUILD, model);
-  if (!value) {
+QString AndroidUtils::getDeviceCodename() {
+  auto name = readStaticString("android/os/Build", "DEVICE");
+  if (name.isNull()) {
     return QString("Android Device");
   }
-  const char* buffer = env->GetStringUTFChars(value, nullptr);
-  if (!buffer) {
-    return QString("Android Device");
-  }
-  QString res(buffer);
-  env->ReleaseStringUTFChars(value, buffer);
-  return res;
+  return name;
 };
+
+bool AndroidUtils::isChromeOSContext() {
+  /*
+   * If the device code name ends or starts with "cheets" we're
+   * running in a Chrome OS / Android Runtime Container
+   * Situation.
+   */
+  auto name = getDeviceCodename();
+  return name.endsWith("_cheets") || name.startsWith("cheets_");
+}
+
+// static
+QString AndroidUtils::getDeviceName() {
+  auto model = readStaticString("android/os/Build", "MODEL");
+  if (model.isNull()) {
+    return QString("Android Device");
+  }
+  return model;
+};
+
+// static
+QString AndroidUtils::readStaticString(const char* classname,
+                                       const char* propertyName) {
+  QJniEnvironment env;
+  jclass targetClass = env->FindClass(classname);
+  jfieldID propertyID =
+      env->GetStaticFieldID(targetClass, propertyName, "Ljava/lang/String;");
+  jstring propertyValue =
+      (jstring)env->GetStaticObjectField(targetClass, propertyID);
+  if (!propertyValue) {
+    return QString();
+  }
+  const char* propertyValueBuffer =
+      env->GetStringUTFChars(propertyValue, nullptr);
+  if (!propertyValueBuffer) {
+    return QString();
+  }
+  auto guard = qScopeGuard(
+      [&] { env->ReleaseStringUTFChars(propertyValue, propertyValueBuffer); });
+  QString res(propertyValueBuffer);
+  return res;
+}
 
 // static
 AndroidUtils* AndroidUtils::instance() {

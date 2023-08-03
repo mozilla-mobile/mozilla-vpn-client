@@ -42,7 +42,7 @@ QString Device::currentDeviceName() {
       // status.
       MacOSUtils::computerName();
 #elif MZ_ANDROID
-      AndroidUtils::GetDeviceName();
+      AndroidUtils::getDeviceName();
 #elif MZ_WASM
       "WASM";
 #elif MZ_WINDOWS
