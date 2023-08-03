@@ -1,0 +1,25 @@
+<html>
+    <head>
+
+    </head>
+
+
+    <script src="qwebchannel.js"></script>
+    hi
+
+    <script>
+    const DEFAULT_URL ="ws://localhost:8765"
+    const websocketConnection = new WebSocket(DEFAULT_URL)
+    websocketConnection.onopen = () => {
+        console.log("Connection open");
+        new QWebChannel(websocketConnection, function(channel) {
+            window.qt = channel;
+            console.log("Channel open!")
+        });
+    }
+    
+
+
+        
+    </script>
+</html>

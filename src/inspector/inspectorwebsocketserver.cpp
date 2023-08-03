@@ -56,5 +56,6 @@ void InspectorWebSocketServer::newConnectionReceived() {
     return;
   }
 #endif
+  logger.info() << "Accepting connection";
   InspectorWebChannel::instance()->attach(child);
 }
