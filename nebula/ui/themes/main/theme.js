@@ -30,9 +30,9 @@ theme.orangeHovered = '#E27F2E';
 theme.orangeFocus = '#4DE27F2E';
 theme.orangePressed = '#C45A27';
 theme.purple60 = '#7542E5';
-theme.red = '#FF4F5E';
-theme.redHovered = '#E22850';
-theme.redPressed = '#C50042';
+theme.red = '#E22850';
+theme.redHovered = '#C50042';
+theme.redPressed = '#810220';
 theme.redDisabled = '#FFBDC5';
 theme.redfocusOutline = '#66C50042';
 theme.redBadgeText = "#810220";
@@ -204,8 +204,8 @@ theme.redButton = {
   'buttonHovered': theme.redHovered,
   'buttonPressed': theme.redPressed,
   'buttonDisabled': theme.redDisabled,
-  'focusOutline': theme.redfocusOutline,
-  'focusBorder': theme.redPressed,
+  'focusOutline': theme.redDisabled,
+  'focusBorder': theme.redHovered,
 };
 
 theme.redLinkButton = {
