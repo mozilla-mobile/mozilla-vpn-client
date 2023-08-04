@@ -16,72 +16,157 @@ MZViewBase {
         Layout.fillWidth: true
 
         MZSettingsItem {
-            settingTitle: "MZStepProgressBar"
+            settingTitle: "MZStepNavigation"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft
-            onClicked: getHelpStackView.push(progressBar)
+            onClicked: getHelpStackView.push(stepNavComponent)
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
         }
     }
 
     Component {
-        id: progressBar
+        id: stepNavComponent
         MZViewBase {
-            _menuTitle: "MZStepProgressBar"
+            _menuTitle: "MZStepNavigation"
             _viewContentData: ColumnLayout {
-                Layout.leftMargin: 36
-                Layout.rightMargin: 36
 
                 spacing: 32
 
-                MZStepProgressBar {
-                    id: stepProgress
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.fillWidth: true
-                    Layout.maximumWidth: 500
+                MZStepNavigation {
+                    id: stepNav
 
-                    model: ListModel {
-                        id: stepProgressModel
+                    views: [
+                        ColumnLayout {
 
-                        ListElement {
-                            labelText: "OnboardingProgressBarDataUse"
-                            iconSource: "qrc:/nebula/resources/lock.svg"
+                            property string labelText: "OnboardingProgressBarDataUse"
+                            property string iconSource: "qrc:/nebula/resources/lock.svg"
+
+                            spacing: 24
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: "Slide 1"
+                            }
+
+                            MZButton {
+                                text: "Next"
+                                onClicked: {
+                                    stepNav.next()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                        },
+                        ColumnLayout {
+
+                            property string labelText: "OnboardingProgressBarMorePrivacy"
+                            property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+
+                            spacing: 24
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: "Slide 2"
+                            }
+
+                            MZButton {
+                                text: "Next"
+                                onClicked: {
+                                    stepNav.next()
+                                }
+                            }
+
+                            MZLinkButton {
+                                Layout.fillWidth: true
+                                labelText: "Back"
+                                onClicked: {
+                                    stepNav.back()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                        },
+                        ColumnLayout {
+
+                            property string labelText: "OnboardingProgressBarAddDevices"
+                            property string iconSource: "qrc:/ui/resources/devices.svg"
+
+                            spacing: 24
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: "Slide 3"
+                            }
+
+                            MZButton {
+                                text: "Next"
+                                onClicked: {
+                                    stepNav.next()
+                                }
+                            }
+
+                            MZLinkButton {
+                                Layout.fillWidth: true
+                                labelText: "Back"
+                                onClicked: {
+                                    stepNav.back()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                        },
+                        ColumnLayout {
+
+                            property string labelText: "OnboardingProgressBarGetStarted"
+                            property string iconSource: "qrc:/nebula/resources/startup.svg"
+
+                            spacing: 24
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: "Slide 4"
+                            }
+
+                            MZButton {
+                                text: "Back"
+                                onClicked: {
+                                    stepNav.back()
+                                }
+                            }
+
+                            Item {
+                                Layout.fillHeight: true
+                            }
                         }
-                        ListElement {
-                            labelText: "OnboardingProgressBarMorePrivacy"
-                            iconSource: "qrc:/ui/resources/settings/privacy.svg"
-                        }
-                        ListElement {
-                            labelText: "OnboardingProgressBarAddDevices"
-                            iconSource: "qrc:/ui/resources/devices.svg"
-                        }
-                        ListElement {
-                            labelText: "OnboardingProgressBarGetStarted"
-                            iconSource: "qrc:/nebula/resources/startup.svg"
-                        }
-                    }
+                    ]
                 }
 
-                RowLayout {
-                    MZButton {
-                        Layout.fillWidth: true
-
-                        text: "Back"
-                        onClicked: {
-                            if(stepProgress.activeIndex > 0) stepProgress.activeIndex = stepProgress.activeIndex - 1
-                        }
-                    }
-
-                    MZButton {
-                        Layout.fillWidth: true
-
-                        text: "Next"
-                        onClicked: {
-                            if(stepProgress.activeIndex < stepProgressModel.count - 1)  stepProgress.activeIndex = stepProgress.activeIndex + 1
-                        }
-                    }
-                }
             }
         }
     }
