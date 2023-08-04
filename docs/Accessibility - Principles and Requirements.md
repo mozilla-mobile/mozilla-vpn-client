@@ -2,18 +2,18 @@
 
 ## Summary
 
-This document outlines principles and requirements for ensuring
+This document outlines the principles and requirements for
 accessibility in Mozilla VPN. For more information about these
 requirements and testing procedures, please refer to [Mozilla VPN
-Accessibility \-- Resources for
+Accessibility - Resources for
 Testing](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/Accessibility%20-%20Testing%20Resources.md).
 
 ## Motivation
 
 Accessibility is an important feature that ensures that all users,
 including those with disabilities, can use the Mozilla VPN Client
-effectively. Following Accessibility principles and requirements can
-enhance the user experience, reach a broader audience, and comply with
+effectively. Following accessibility principles and requirements
+enhances the user experience, reaches a broader audience, and complies with
 accessibility standards across all supported platforms.
 
 ## Principles
@@ -85,7 +85,7 @@ Testing](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/Acc
 6. **Screen Magnification:**
 
      - All screens must be readable when using the screen magnification
-      tool .
+      tool.
 
      - Any focused element should automatically scroll into the
       magnification tool\'s viewport.
@@ -105,8 +105,8 @@ reader.
 
 1. **Text Cursor and Mouse Pointer Compatibility:**
 
-     - Editable elements must support text cursor personalizations, such as
-      size, shape, and color, to enhance visibility for users.
+     - Editable elements should support the user's text cursor personalizations,
+     such as size, shape, and color, to enhance visibility.
 
      - The application should work well with the user\'s personalized mouse
       cursor.
