@@ -59,7 +59,7 @@ FEATURE(sentry,                     // Feature ID
         FeatureCallback_true,       // Can be flipped on
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
-        FeatureCallback_true)
+        FeatureCallback_sentry)
 
 FEATURE(shareLogs,              // Feature ID
         "Share Logs",           // Feature name
