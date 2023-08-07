@@ -2,6 +2,8 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import Mozilla.Shared 1.0
+
 //Usage: pass views to this component using views property
 //Note: views must be passed in order that they will appear within the navigation
 /*
@@ -26,6 +28,8 @@ ColumnLayout {
 
     property list<Item> views
     property int currentIndex: 0
+//    property alias stackView: stackView
+//    property alias stepProgressBar: stepProgressBar
 
     function next() {
         stackView.push(views[stepProgressBar.activeIndex + 1])
@@ -62,27 +66,39 @@ ColumnLayout {
     MZStepProgressBar {
         id: stepProgressBar
 
-        //May need to eventually make these margins top-level properties so they can be modified externally
+        //May need to eventually expose these margins so they can be modified externally
         Layout.topMargin: 24
         Layout.leftMargin: 44
         Layout.rightMargin: 44
         Layout.fillWidth: true
-        Layout.maximumWidth: 500
+        Layout.maximumWidth: 500 //Max size of progess bar for tablets
 
-        onActiveIndexChanged: {
-            stepNavigation.activeIndexChanged()
-        }
+        onActiveIndexChanged: stepNavigation.activeIndexChanged()
 
         model: stepProgressBarListModel
     }
 
-    StackView {
-        id: stackView
-        Layout.fillWidth: true
-        implicitHeight: 502
+    MZFlickable {
+        id: flickable
 
-        Component.onCompleted: {
-            push(stepNavigation.views[0])
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
+
+        StackView {
+            id: stackView
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            implicitWidth: flickable.width
+            implicitHeight: flickable.height
+
+            Component.onCompleted: {
+                push(stepNavigation.views[0])
+            }
         }
     }
+
 }
