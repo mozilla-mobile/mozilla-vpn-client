@@ -4,11 +4,15 @@
 
 #include "dbusservice.h"
 
+#include <sys/capability.h>
+#include <unistd.h>
+
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
 #include "dbus_adaptor.h"
@@ -57,6 +61,9 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this,
                    SLOT(userListCompleted(QDBusPendingCallWatcher*)));
+
+  // Drop as many root permissions as we are able.
+  dropRootPermissions();
 }
 
 DBusService::~DBusService() { MZ_COUNT_DTOR(DBusService); }
@@ -99,6 +106,11 @@ QString DBusService::version() {
 bool DBusService::activate(const QString& jsonConfig) {
   logger.debug() << "Activate";
 
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
   if (!json.isObject()) {
     logger.error() << "Invalid input";
@@ -131,6 +143,12 @@ bool DBusService::activate(const QString& jsonConfig) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
+  m_sessionUid = 0;
   firewallClear();
   return Daemon::deactivate(emitSignals);
 }
@@ -141,6 +159,11 @@ QString DBusService::status() {
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return QString();
+  }
+
   return Daemon::logs();
 }
 
@@ -211,6 +234,11 @@ QString DBusService::runningApps() {
 
 /* Update the firewall for running applications matching the application ID. */
 bool DBusService::firewallApp(const QString& appName, const QString& state) {
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   logger.debug() << "Setting" << appName << "to firewall state" << state;
 
   // Update the split tunnelling state for any running apps.
@@ -237,6 +265,11 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
 
 /* Update the firewall for the application matching the desired PID. */
 bool DBusService::firewallPid(int rootpid, const QString& state) {
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
 #if 0
   ProcessGroup* group = m_pidtracker->group(rootpid);
   if (!group) {
@@ -258,8 +291,111 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
 
 /* Clear the firewall and return all applications to the active state */
 bool DBusService::firewallClear() {
+  if (!isCallerAuthorized()) {
+    logger.error() << "Insufficient caller permissions";
+    return false;
+  }
+
   logger.debug() << "Clearing excluded app list";
   m_wgutils->resetAllCgroups();
   m_excludedApps.clear();
   return true;
+}
+
+/* Drop root permissions from the daemon. */
+void DBusService::dropRootPermissions() {
+  logger.debug() << "Dropping root permissions";
+
+  cap_t caps = cap_get_proc();
+  if (caps == nullptr) {
+    logger.warning() << "Failed to retrieve process capabilities";
+    return;
+  }
+  auto guard = qScopeGuard([&] { cap_free(caps); });
+
+  // Clear the capability set, which effectively makes us an unpriveleged user.
+  cap_clear(caps);
+
+  // Acquire CAP_NET_ADMIN, we need it to perform bringup and management
+  // of the network interfaces and Wireguard tunnel.
+  //
+  // Acquire CAP_SETUID, we need it to masquerade as other users on their
+  // session busses for application tracking.
+  //
+  // NOTE: ptrace is a dangerous permission to hold. If it may be safer to
+  // relent on the executable check and grant CAP_NET_ADMIN to the client
+  // process during installation.
+  //
+  // Clear all other capabilities, effectively discarding our root permissions.
+  cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID};
+  const int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
+  if (cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET) ||
+      cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET)) {
+    logger.warning() << "Failed to set process capability flags";
+    return;
+  }
+  if (cap_set_proc(caps) != 0) {
+    logger.warning() << "Failed to update process capabilities";
+    return;
+  }
+}
+
+/* Checks to see if the caller has sufficient authorization */
+bool DBusService::isCallerAuthorized() {
+  if (!calledFromDBus()) {
+    // If this is not a D-Bus call, it came from the daemon itself.
+    return true;
+  }
+  const QDBusConnectionInterface* iface =
+      QDBusConnection::systemBus().interface();
+
+  // If the VPN is active, and we know the UID that turned it on, as a special
+  // case we permit that user full access to the D-Bus API in order to manage
+  // the connection.
+  if (m_sessionUid != 0) {
+    const QDBusReply<uint> reply = iface->serviceUid(message().service());
+    if (reply.isValid() && m_sessionUid == reply.value()) {
+      return true;
+    }
+  }
+  // Otherwise, if this is the activate method, we permit any non-root user to
+  // activate the VPN, but we will remember their UID for later authorization
+  // checks.
+  else if ((message().type() == QDBusMessage::MethodCallMessage) &&
+           (message().member() == "activate")) {
+    const QDBusReply<uint> reply = iface->serviceUid(message().service());
+    const uint senderuid = reply.value();
+    if (reply.isValid() && senderuid != 0) {
+      m_sessionUid = senderuid;
+      return true;
+    }
+  }
+  // In all other cases, the use of this D-Bus API requires the CAP_NET_ADMIN
+  // permission, which we can check by examining the PID of the sender. Note
+  // that a zero UID (root) is used as a guard value to fall back to this case.
+
+  // Get the PID of the D-Bus message sender.
+  const QDBusReply<uint> reply = iface->servicePid(message().service());
+  const uint senderpid = reply.value();
+  if (!reply.isValid() || (senderpid == 0)) {
+    // Could not lookup the sender's PID. Rejected!
+    logger.warning() << "Failed to resolve sender PID";
+    return false;
+  }
+
+  // Get the capabilties of the sender process.
+  cap_t caps = cap_get_pid(senderpid);
+  if (caps == nullptr) {
+    logger.warning() << "Failed to retrieve process capabilities";
+    return false;
+  }
+  auto guard = qScopeGuard([&] { cap_free(caps); });
+
+  // Check if the calling process has CAP_NET_ADMIN.
+  cap_flag_value_t flag;
+  if (cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &flag) != 0) {
+    logger.warning() << "Failed to retrieve process cap_net_admin flags";
+    return false;
+  }
+  return (flag == CAP_SET);
 }
