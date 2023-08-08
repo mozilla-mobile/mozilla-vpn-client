@@ -11,6 +11,7 @@ import components 0.1
 
 MZViewBase {
     _menuTitle: "UI Testing"
+    _interactive: false
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
@@ -27,146 +28,208 @@ MZViewBase {
 
     Component {
         id: stepNavComponent
+
         MZViewBase {
             _menuTitle: "MZStepNavigation"
-            _viewContentData: ColumnLayout {
+            _interactive: false
+            _viewContentData: MZStepNavigation {
+                id: stepNav
 
-                spacing: 32
+                Layout.topMargin: 8
+                Layout.fillWidth: true
 
-                MZStepNavigation {
-                    id: stepNav
+                views: [
+                    ColumnLayout {
 
-                    views: [
-                        ColumnLayout {
+                        property string labelText: "OnboardingProgressBarDataUse"
+                        property string iconSource: "qrc:/nebula/resources/lock.svg"
 
-                            property string labelText: "OnboardingProgressBarDataUse"
-                            property string iconSource: "qrc:/nebula/resources/lock.svg"
 
-                            spacing: 24
+                        spacing: 24
 
-                            Item {
-                                Layout.fillHeight: true
-                            }
+                        Item {
+                            Layout.fillHeight: true
+                        }
 
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Slide 1"
-                            }
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 1"
+                        }
 
-                            MZButton {
-                                text: "Next"
-                                onClicked: {
-                                    stepNav.next()
-                                }
-                            }
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                        },
-                        ColumnLayout {
-
-                            property string labelText: "OnboardingProgressBarMorePrivacy"
-                            property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
-
-                            spacing: 24
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Slide 2"
-                            }
-
-                            MZButton {
-                                text: "Next"
-                                onClicked: {
-                                    stepNav.next()
-                                }
-                            }
-
-                            MZLinkButton {
-                                Layout.fillWidth: true
-                                labelText: "Back"
-                                onClicked: {
-                                    stepNav.back()
-                                }
-                            }
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                        },
-                        ColumnLayout {
-
-                            property string labelText: "OnboardingProgressBarAddDevices"
-                            property string iconSource: "qrc:/ui/resources/devices.svg"
-
-                            spacing: 24
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Slide 3"
-                            }
-
-                            MZButton {
-                                text: "Next"
-                                onClicked: {
-                                    stepNav.next()
-                                }
-                            }
-
-                            MZLinkButton {
-                                Layout.fillWidth: true
-                                labelText: "Back"
-                                onClicked: {
-                                    stepNav.back()
-                                }
-                            }
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                        },
-                        ColumnLayout {
-
-                            property string labelText: "OnboardingProgressBarGetStarted"
-                            property string iconSource: "qrc:/nebula/resources/startup.svg"
-
-                            spacing: 24
-
-                            Item {
-                                Layout.fillHeight: true
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: "Slide 4"
-                            }
-
-                            MZButton {
-                                text: "Back"
-                                onClicked: {
-                                    stepNav.back()
-                                }
-                            }
-
-                            Item {
-                                Layout.fillHeight: true
+                        MZButton {
+                            text: "Next"
+                            onClicked: {
+                                stepNav.next()
                             }
                         }
-                    ]
-                }
 
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                    },
+                    ColumnLayout {
+
+                        property string labelText: "OnboardingProgressBarMorePrivacy"
+                        property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+
+                        spacing: 0
+
+                        MZHeadline {
+                            Layout.topMargin: MZTheme.theme.windowMargin * 1.5
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+
+                            Layout.fillWidth: true
+
+                            text: "Get more privacy"
+                            horizontalAlignment: Text.AlignLeft
+                        }
+
+                        MZInterLabel {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.fillWidth: true
+
+                            text: "Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings."
+                            horizontalAlignment: Text.AlignLeft
+                            color: "#6D6D6E"
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 24
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block ads"
+                            subLabelText: "Reduces the amount of ads you see when you’re using Mozilla VPN"
+                            showDivider: false
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block trackers"
+                            subLabelText: "Fewer harmful domains will be able to track you"
+                            showDivider: false
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block malware"
+                            subLabelText: "Helps protect you from ransomware, phishing, spyware, viruses, and malware"
+                            showDivider: false
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                            Layout.minimumHeight: 20
+                        }
+
+                        MZButton {
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.fillWidth: true
+
+                            width: undefined
+                            text: "Continue"
+
+                            onClicked: {
+                                stepNav.next()
+                            }
+                        }
+
+                        MZLinkButton {
+                            Layout.topMargin: 16
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.bottomMargin: MZTheme.theme.windowMargin
+                            Layout.fillWidth: true
+
+                            implicitHeight: MZTheme.theme.rowHeight
+
+                            labelText: "Go back"
+
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                    },
+                    ColumnLayout {
+
+                        property string labelText: "OnboardingProgressBarAddDevices"
+                        property string iconSource: "qrc:/ui/resources/devices.svg"
+
+                        spacing: 24
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 3"
+                        }
+
+                        MZButton {
+                            text: "Next"
+                            onClicked: {
+                                stepNav.next()
+                            }
+                        }
+
+                        MZLinkButton {
+                            Layout.fillWidth: true
+                            labelText: "Back"
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                    },
+                    ColumnLayout {
+
+                        property string labelText: "OnboardingProgressBarGetStarted"
+                        property string iconSource: "qrc:/nebula/resources/startup.svg"
+
+                        spacing: 24
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 4"
+                        }
+
+                        MZButton {
+                            text: "Back"
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                    }
+                ]
             }
         }
     }

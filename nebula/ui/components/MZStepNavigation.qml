@@ -6,6 +6,7 @@ import Mozilla.Shared 1.0
 
 //Usage: pass views to this component using views property
 //Note: views must be passed in order that they will appear within the navigation
+//Note: Glitchy when used inside MZViewBase and does not consider the navbar
 /*
         views: [
             Item {
@@ -28,8 +29,6 @@ ColumnLayout {
 
     property list<Item> views
     property int currentIndex: 0
-//    property alias stackView: stackView
-//    property alias stepProgressBar: stepProgressBar
 
     function next() {
         stackView.push(views[stepProgressBar.activeIndex + 1])
@@ -66,8 +65,6 @@ ColumnLayout {
     MZStepProgressBar {
         id: stepProgressBar
 
-        //May need to eventually expose these margins so they can be modified externally
-        Layout.topMargin: 24
         Layout.leftMargin: 44
         Layout.rightMargin: 44
         Layout.fillWidth: true
@@ -83,6 +80,10 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.fillHeight: true
+
+        //Necessary to function inside an MZViewBase, but is glitchy and should be revisted if we ever need to use with an MZViewBase
+        clip: false
+
         flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
 
         StackView {
@@ -92,7 +93,6 @@ ColumnLayout {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            implicitWidth: flickable.width
             implicitHeight: flickable.height
 
             Component.onCompleted: {
