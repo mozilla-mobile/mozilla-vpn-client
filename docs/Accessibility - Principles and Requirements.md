@@ -76,11 +76,13 @@ Testing](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/Acc
       standards set by
       [WCAG](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast-contrast).
 
+5. **High Contrast:**
+
      - Users with vision impairments should be able to apply the
       platform\'s High Contrast themes without compromising readability
       within the application.
 
-5. **Screen Magnification:**
+6. **Screen Magnification:**
 
      - All screens must be readable when using the screen magnification
       tool.
