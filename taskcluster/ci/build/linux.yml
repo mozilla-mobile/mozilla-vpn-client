@@ -85,8 +85,8 @@ linux/fedora-fc37:
         name: linux-fedora-fc37
         type: build
 
-linux/static:
-    description: "Linux Build (Static Qt)"
+linux64/release-deb:
+    description: "Linux: Package a .deb file using Static Qt"
     treeherder:
         platform: linux/x86_64
     fetches:
