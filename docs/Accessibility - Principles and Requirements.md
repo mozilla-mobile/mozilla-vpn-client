@@ -76,13 +76,11 @@ Testing](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/Acc
       standards set by
       [WCAG](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast-contrast).
 
-5. **High Contrast Themes and Color Filter Compatibility:**
-
      - Users with vision impairments should be able to apply the
-      platform\'s High Contrast themes or Color Filters without
-      compromising readability within the application.
+      platform\'s High Contrast themes without compromising readability
+      within the application.
 
-6. **Screen Magnification:**
+5. **Screen Magnification:**
 
      - All screens must be readable when using the screen magnification
       tool.
@@ -90,18 +88,12 @@ Testing](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/Acc
      - Any focused element should automatically scroll into the
       magnification tool\'s viewport.
 
-7. **Animation Suppression:**
+### Lower Priority Accessibility Requirements
 
-     - If the user has disabled animations, the application should suppress
-      them accordingly, supporting users who want to reduce distraction
-      or visual stimuli, for neurodivergence or for other reasons.
-
-### Platform-Handled Accessibility Requirements: Lower Priority Due to Platform Support
-
-These requirements are generally handled by the platform, and additional
-work is typically not needed in the VPN Client, provided that the
-application has been tested and proven to be compatible with a screen
-reader.
+These requirements are lower priority due to their limited impact or
+because they are usually managed by the platform itself. As a result,
+the application often requires minimal additional effort to address these
+requirements if it has been tested to work with a screen reader.
 
 1. **Text Cursor and Mouse Pointer Compatibility:**
 
@@ -127,8 +119,20 @@ reader.
       to turn them off to maintain focus or for neurodivergence
       requirements.
 
-5. **Alternate Navigation and Input Modes:**
+5. **Color Filter Compatibility:**
+
+     - Users with vision impairments should be able to apply the
+      platform\'s Color Filters without compromising readability
+      within the application.
+
+6. **Alternate Navigation and Input Modes:**
 
      - The application must support alternate modes for navigation and
       input, such as Voice Access, Voice Typing, Eye Control, and Switch
       Control, to meet the needs of users with mobility impairments.
+
+7. **Animation Suppression:**
+
+     - If the user has disabled animations, the application should suppress
+      them accordingly, supporting users who want to reduce distraction
+      or visual stimuli, for neurodivergence or for other reasons.
