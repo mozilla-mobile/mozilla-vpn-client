@@ -88,7 +88,7 @@ linux/fedora-fc38:
 linux/static:
     description: "Linux Build (Static Qt)"
     treeherder:
-        platform: linux/static
+        platform: linux/x86_64
     fetches:
         toolchain:
             - qt-linux
