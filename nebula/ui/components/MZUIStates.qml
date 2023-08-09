@@ -16,6 +16,7 @@ Rectangle {
     property var colorScheme: MZTheme.theme.linkButton
     property real setMargins: -2
     property bool showFocusRings: true
+    property var startingState: colorScheme.defaultColor
 
     signal clicked()
 
@@ -63,6 +64,16 @@ Rectangle {
                 opacity: 1
             }
 
+        },
+        State {
+            when: itemToAnchor.state === uiState.stateFocused
+
+            PropertyChanges {
+                target: buttonBackground
+                color: colorScheme.defaultColor
+                opacity: 1
+            }
+
         }
     ]
     transitions: [
@@ -93,8 +104,12 @@ Rectangle {
 
         anchors.fill: parent
         radius: parent.radius
-        color: colorScheme.defaultColor
         antialiasing: true
+
+        //Intentionally not binding color to starting state color to avoid unecessary animation
+        color: {
+            buttonBackground.color = root.startingState
+        }
     }
 
     MZFocusBorder {
