@@ -18,6 +18,7 @@ Item {
     objectName: "viewServers"
     Accessible.name: qsTrId("vpn.servers.selectLocation")
     Accessible.ignored: !visible
+    property alias multiHopStackView: multiHopLoader.item
 
     MZMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
@@ -87,16 +88,20 @@ Item {
         }
 
         stackContent: [
-            ServerList {
-                id: singleHopServerList
-                currentServer: {
-                    "countryCode": VPNCurrentServer.exitCountryCode,
-                    "localizedCityName": VPNCurrentServer.localizedExitCityName,
-                    "cityName": VPNCurrentServer.exitCityName,
-                    "whichHop": "singleHopServer"
+            Loader {
+                active: segmentedNav.selectedIndex == 0
+                sourceComponent: ServerList {
+                    id: singleHopServerList
+                    currentServer: {
+                        "countryCode": VPNCurrentServer.exitCountryCode,
+                        "localizedCityName": VPNCurrentServer.localizedExitCityName,
+                        "cityName": VPNCurrentServer.exitCityName,
+                        "whichHop": "singleHopServer"
+                    }
+                    showRecentConnections: true
                 }
-                showRecentConnections: true
             }
+            
         ]
 
         handleSegmentClick: (segment) => {
@@ -123,10 +128,12 @@ Item {
                             }
                         }
 
-
-        ViewMultiHop {
-            id: multiHopStackView
-            visible: MZFeatureList.get("multiHop").isSupported
+        Loader {
+            id: multiHopLoader
+            active: MZFeatureList.get("multiHop").isSupported && segmentedNav.selectedIndex == 1
+            sourceComponent: ViewMultiHop {
+                id: multiHopStackView
+            }
         }
     }
 
@@ -135,7 +142,7 @@ Item {
             return;
         }
 
-        segmentedNav.stackContent.push(multiHopStackView);
+        segmentedNav.stackContent.push(multiHopLoader);
         if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
             // Set default tab to multi-hop
             return segmentedNav.setSelectedIndex(1);
