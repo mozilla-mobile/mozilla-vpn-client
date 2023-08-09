@@ -74,7 +74,10 @@ MZSwipeDelegate {
                 spacing: 0
 
                 MZInterLabel {
+                    Layout.fillWidth: true
+
                     text: name
+                    maximumLineCount: 1
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignLeft
                 }
@@ -82,10 +85,10 @@ MZSwipeDelegate {
                 MZTextBlock {
                     Layout.fillWidth: true
 
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
                     text: deviceSubtitle()
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
