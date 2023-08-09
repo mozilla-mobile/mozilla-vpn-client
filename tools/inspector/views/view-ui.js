@@ -208,15 +208,34 @@ export class ViewUi extends LitElement {
     this.requestUpdate('data')
   }
 
+  getElementCount(node) {
+    if (!node) {
+      return 0;
+    }
+    if (node.subItems.length == 0) {
+      return 1;
+    }
+    return node.subItems.reduce((i, n) => i + this.getElementCount(n), 0)
+  }
+
   render () {
     return html`
          <nav>
-            <pill-toggle noActive="true"  @click=${(e) => {this.saveImage()}}>Download Image</pill-toggle>
+            <span>Total Elements: ${
+        this.data ? this.getElementCount(this.data[0]) : 0}</span>
+            <pill-toggle noActive="true"  @click=${(e) => {
+      this.saveImage()
+    }}>Download Image</pill-toggle>
             <span>Settings:</span>
-            ${Object.keys(this.settings).map(e => html` <pill-toggle id="${e}" @click=${() => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
+            ${
+        Object.keys(this.settings)
+            .map(
+                e => html` <pill-toggle id="${e}" @click=${
+                    () => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
         </nav>
         <main>
-          <live-view .qmlHighlight=${this.detail} .showRulers=${this.settings['Show Rulers']}></live-view>
+          <live-view .qmlHighlight=${this.detail} .showRulers=${
+        this.settings['Show Rulers']}></live-view>
           <ul style="flex:1;">
             ${this.data ? this.renderNode(this.data[0]) : ''}
           </ul>
