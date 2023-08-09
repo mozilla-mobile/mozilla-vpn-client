@@ -21,7 +21,13 @@ MZClickableRow {
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
-    property alias cityList: cityLoader.item
+    property var cityList: cityListVisible ? cityLoader.item : cityLoader
+
+    Component.onCompleted:{
+        if(cityListVisible){
+            cityLoader.active = true
+        }
+    }
 
     // The city connection score can be used for every case except the multihop exit location,
     // where we need to use the scoring between the entry and exit locations instead.
@@ -82,10 +88,10 @@ MZClickableRow {
             name: "listOpen"
 
             PropertyChanges {
-                target: serverCountry
-                height: serverCountryRow.height + cityList.height
+                        target: serverCountry
+                        height: serverCountryRow.height + cityList.height
             }
-
+            
             PropertyChanges {
                 target: cityList
                 opacity: 1
@@ -120,18 +126,18 @@ MZClickableRow {
                 
         },
         Transition {
-            to: "listOpen"
-            PropertyAnimation {
-                target: serverCountry
-                property: "height"
-                to: serverCountryRow.height + cityList.implicitHeight
-                duration: animationDuration
-            }
-            PropertyAnimation {
-                target: cityList
-                property: "opacity"
-                duration: 0
-            }
+            to: "listOpen"               
+                    PropertyAnimation {
+                        target: serverCountry
+                        property: "height"
+                        to: serverCountryRow.height + cityList.implicitHeight
+                        duration: animationDuration
+                    }
+                    PropertyAnimation {
+                        target: cityList
+                        property: "opacity"
+                        duration: 0
+                    }
         }
 
     ]
