@@ -16,10 +16,12 @@ MZClickableRow {
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
     property real multiHopMenuHeight: MZFeatureList.get("multiHop").isSupported ? MZTheme.theme.menuHeight : 0
-    property real animationDuration: 200 + (citiesRepeater.count * 25)
+    property int cityCount: cities.reduce((i) => (i+1), 0) // cities.count is not available? 
+    property real animationDuration: 200 + (cityCount * 25)
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
+    property alias cityList: cityLoader.item
 
     // The city connection score can be used for every case except the multihop exit location,
     // where we need to use the scoring between the entry and exit locations instead.
@@ -28,6 +30,11 @@ MZClickableRow {
     property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
     function openCityList() {
+        if(!cityListVisible){
+            // If we are currently collapsed, 
+            // sync load the list, before we show it. 
+            cityLoader.active = true
+        }
         cityListVisible = !cityListVisible;
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
@@ -89,18 +96,28 @@ MZClickableRow {
     transitions: [
         Transition {
             to: "listClosed"
-            ParallelAnimation {
-                PropertyAnimation {
-                    target: cityList
-                    property: "opacity"
-                    duration: animationDuration
+                SequentialAnimation{
+                    ParallelAnimation {
+                        PropertyAnimation {
+                                target: cityList
+                                property: "opacity"
+                                duration: animationDuration
+                        }
+                        PropertyAnimation {
+                                target: serverCountry
+                                property: "height"
+                                duration: animationDuration
+                        }
+                    }
+                    ScriptAction{
+                        // After we the close animation
+                        // we can safely unload the list
+                        script: {
+                            cityLoader.active = false;
+                        }
+                    }
                 }
-                PropertyAnimation {
-                    target: serverCountry
-                    property: "height"
-                    duration: animationDuration
-                }
-            }
+                
         },
         Transition {
             to: "listOpen"
@@ -153,15 +170,21 @@ MZClickableRow {
 
     }
 
-    Column {
-        id: cityList
-        objectName: "serverCityList"
+    Loader {
+        id: cityLoader
+        active: false;
+        asynchronous: false; // Load sync, once we need that
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 4
         width: serverCountry.width - anchors.leftMargin
+
+  
+        sourceComponent: Column {
+        property alias count: citiesRepeater.count
+        objectName: "serverCityList"
 
         Accessible.role: Accessible.List
         //% "Cities"
@@ -217,6 +240,7 @@ MZClickableRow {
                 }
             }
         }
+    }
 
     }
 
