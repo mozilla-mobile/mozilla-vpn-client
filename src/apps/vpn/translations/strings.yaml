@@ -543,6 +543,24 @@ onboarding:
   panelThreeSubtitle: "Protecting yourself is simple: tap to connect to the VPN and you’re ready to browse safely. Mozilla VPN will start automatically for seamless protection."
   panelFourTitle: Add even more privacy
   panelFourSubtitle: You can set Mozilla VPN to protect you from ads, trackers, and malware. Plus, customize your protection for specific apps.
+  progressBarDataUse:
+    value: Data
+    comment: Label for onboarding progress bar step
+  progressBarMorePrivacy:
+    value: Privacy
+    comment: Label for onboarding progress bar step
+  progressBarAddDevices:
+    value: Devices
+    comment: Label for onboarding progress bar step
+  progressBarGetStarted:
+    value: Start
+    comment: Label for onboarding progress bar step. It's the final step in the progress, and indicates that the user can now start using the app.
+  progressBarAccessibilityStepComplete:
+    value: "Onboarding step “%1” (%2 of %3). Select to go back to this step."
+    comment: Accessibility read out for the completed steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
+  progressBarAccessibilityStepCurrent:
+    value: "Onboarding step “%1” (%2 of %3). You are currently on this step."
+    comment: Accessibility read out for the current step in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
 
 inAppAuth:
   emailInputPlaceholder: Enter email

@@ -102,6 +102,8 @@ theme.badgeVerticalPadding = 3
 theme.checkBoxHeightWidth = 20;
 theme.checkmarkHeightWidth = 12;
 
+theme.progressBarDelegateHeightWidth = 32
+
 theme.darkFocusBorder = theme.fontColor;
 theme.lightFocusBorder = '#d5d3e0';
 
@@ -322,6 +324,15 @@ theme.orangeBadge = {
 theme.blueBadge = {
     'textColor': theme.blueBadgeText,
     'backgroundColor': theme.blueBadgeBackground
+};
+
+theme.purpleStepProgressBarDelegate = {
+    'defaultColor': '#592ACB',
+    'buttonHovered': '#592ACB',
+    'buttonPressed': '#45278D',
+    'buttonDisabled': '#9E9E9E',
+    'focusOutline': theme.bgColorTransparent,
+    'focusBorder': theme.bgColorTransparent,
 };
 
 theme;
