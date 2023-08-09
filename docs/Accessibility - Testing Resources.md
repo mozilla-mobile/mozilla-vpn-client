@@ -129,12 +129,7 @@ Accessibility in the VPN Client:
 
 3. Keyboard Access
 
-4. High Contrast Themes and Color Filters
-
-5. Notification Suppression
-
-6. Ability to Turn Off Animation, Cues for Audio Notification,
- Personalization of Text Cursor
+4. High Contrast Themes
 
 As resources become available, other areas can be tested to further
 validate Accessibility support in the application.
