@@ -70,7 +70,7 @@ void ConnectionHealth::stop() {
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
                                    const QString& deviceIpv4Address) {
-  logger.debug() << "ConnectionHealth started";
+  logger.debug() << "ConnectionHealth active started";
 
   if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
@@ -88,7 +88,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 }
 
 void ConnectionHealth::startIdle() {
-  logger.debug() << "ConnectionHealth started";
+  logger.debug() << "ConnectionHealth idle started";
 
   m_pingHelper.stop();
   m_noSignalTimer.stop();
@@ -247,7 +247,7 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
 
       m_suspended = false;
       logger.debug() << "Resuming connection check from suspension";
-      connectionStateChanged();
+      startActive(m_currentGateway, m_deviceAddress);
       break;
 
     case Qt::ApplicationState::ApplicationSuspended:
