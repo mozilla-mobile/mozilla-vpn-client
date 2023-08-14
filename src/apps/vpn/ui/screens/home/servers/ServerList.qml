@@ -368,12 +368,12 @@ FocusScope {
                 Loader {
                     id: loaderServersRecommended
                     sourceComponent: listServersRecommended
-                    active: serverTabs.currentTab.objectName == "tabRecommendedServers"
+                    active: serverTabs.currentTab.objectName === "tabRecommendedServers"
                 },
                 Loader {
                     id: loaderServersAll
                     sourceComponent: listServersAll
-                    active: serverTabs.currentTab.objectName == "tabAllServers"
+                    active: serverTabs.currentTab.objectName === "tabAllServers"
                 }
             ]
 
