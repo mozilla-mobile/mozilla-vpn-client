@@ -17,7 +17,7 @@ jobs:
       runs-on: ubuntu-22.04
       steps:
       - name: Set 
-        run: gh pr edit --add-label "🛬 Landing" "$PR_URL"
+        run: gh pr edit --add-label "🛬 Landing" https://github.com/mozilla-mobile/mozilla-vpn-client/pull/$PR_NUMBER
         env:
-          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          PR_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
