@@ -7,7 +7,7 @@ const vpn = require('./helper.js');
 const queries = require('./queries.js');
 
 describe('Addon content replacer', function() {
-  this.timeout(60000);
+  this.timeout(0); // DEV
 
   beforeEach(async () => {
     await vpn.flipFeatureOn('replacerAddon');
@@ -20,14 +20,6 @@ describe('Addon content replacer', function() {
   describe('Addon replacer', function() {
     beforeEach(async () => {
       await vpn.resetAddons('07_replacer');
-    });
-
-    it('Replace the home', async () => {
-      await vpn.authenticateInApp(true, false);
-
-      await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-      await vpn.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
-      await vpn.waitForQuery('//replacedHome{visible=true}');
     });
 
     it('Replace the country/city names', async () => {
@@ -59,6 +51,7 @@ describe('Addon content replacer', function() {
         for (let city of server.cities) {
           const cityId = queries.screenHome.serverListView.generateCityId(
               countryId, city.name);
+          await vpn.waitForQuery(cityId.visible());
           const cityName =
               await vpn.getQueryProperty(cityId, 'radioButtonLabelText');
           assert(

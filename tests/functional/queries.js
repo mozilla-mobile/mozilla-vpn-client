@@ -88,7 +88,7 @@ const screenHome = {
     },
 
     generateCityId: (countryId, cityName) => {
-      return new QmlQueryComposer(`${countryId}/serverCityList/serverCity-${
+      return new QmlQueryComposer(`${countryId}//serverCity-${
           cityName.replace(/ /g, '_')}`);
     },
 
