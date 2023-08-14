@@ -17,7 +17,7 @@
         <file>resources/devicesRemove.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/download.svg</file>
-         <file>resources/flags/AC.png</file>
+        <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
         <file>resources/flags/AF.png</file>
@@ -275,6 +275,7 @@
         <file>resources/flags/ZA.png</file>
         <file>resources/flags/ZM.png</file>
         <file>resources/flags/ZW.png</file>
+        <file>resources/globe.svg</file>
         <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
         <file>resources/logo-animated1.png</file>

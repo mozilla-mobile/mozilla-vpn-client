@@ -112,6 +112,12 @@ serversView:
   serverCityWithNoConnection:
     value: "%1. No connectivity"
     comment: Button label that reads out a city name whose connection is unavailable. Argument is the city name.
+  recommendedEmptyTitle: 
+    value: Turn off VPN to see list
+    comment: Title for recommended server list when the list is empty
+  recommendedEmptyDescription:
+    value: To see recommended server locations, please turn the VPN off first.
+    comment: Description for recommended server list when the list is empty
 
 languageView:
   searchPlaceholder:
