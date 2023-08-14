@@ -4,9 +4,15 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 
-//Usage: pass views to this component using views property
-//Note: views must be passed in order that they will appear within the navigation
-//Note: Glitchy when used inside MZViewBase and does not consider the navbar
+//MZStepNavigation is a navigation component(similar to MZSegmentedNavigation and MZTabNavigation) comprised of an MZStepProgressBar in which each step corresponds to a view
+//Views reside within a StackView, and as the navigation progresses, new views are pushed on top of the previous views
+
+//Note: Views must be passed in order that they will appear within the navigation
+//Note: Does not consider the navbar
+//Warning: MZSegmentedNavigation does not currently function properly when placed directly inside an MZViewBase's `_viewContentData` (something isn't sizing right).
+//Current workaround is to disable clipping, but provides a glitchy-looking experience (due to the lack of clipping)
+
+//Usage: pass a list of views to this component using the `views` property
 /*
         views: [
             Item {
@@ -31,15 +37,19 @@ ColumnLayout {
     property int currentIndex: 0
 
     function next() {
-        stackView.push(views[stepProgressBar.activeIndex + 1])
-        currentIndex = stepProgressBar.activeIndex + 1
-        stepProgressBar.activeIndex++
+        if (stepProgressBar.activeIndex + 1 < stepProgressBar.model.count) {
+            stackView.push(views[stepProgressBar.activeIndex + 1])
+            currentIndex = stepProgressBar.activeIndex + 1
+            stepProgressBar.activeIndex++
+        }
     }
 
     function back() {
-        stackView.pop()
-        currentIndex = stepProgressBar.activeIndex - 1
-        stepProgressBar.activeIndex--
+        if (stepProgressBar.activeIndex - 1 >= 0) {
+            stackView.pop()
+            currentIndex = stepProgressBar.activeIndex - 1
+            stepProgressBar.activeIndex--
+        }
     }
 
     function activeIndexChanged() {

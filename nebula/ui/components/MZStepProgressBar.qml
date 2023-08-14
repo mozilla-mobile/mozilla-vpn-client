@@ -72,7 +72,8 @@ Item {
 
                 onClicked: activeIndex = index
 
-                accessibleName: currentState === MZStepProgressBarDelegate.State.Complete ? MZI18n.OnboardingProgressBarAccessibilityStepComplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)                                                                                           : MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                accessibleName: currentState === MZStepProgressBarDelegate.State.Complete ? MZI18n.OnboardingProgressBarAccessibilityStepComplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                                                                                          : MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)
             }
         }
     }

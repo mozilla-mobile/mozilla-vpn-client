@@ -40,10 +40,8 @@ MZViewBase {
 
                 views: [
                     ColumnLayout {
-
                         property string labelText: "OnboardingProgressBarDataUse"
                         property string iconSource: "qrc:/nebula/resources/lock.svg"
-
 
                         spacing: 24
 
@@ -69,7 +67,6 @@ MZViewBase {
 
                     },
                     ColumnLayout {
-
                         property string labelText: "OnboardingProgressBarMorePrivacy"
                         property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
 
@@ -166,7 +163,6 @@ MZViewBase {
 
                     },
                     ColumnLayout {
-
                         property string labelText: "OnboardingProgressBarAddDevices"
                         property string iconSource: "qrc:/ui/resources/devices.svg"
 
@@ -202,7 +198,6 @@ MZViewBase {
 
                     },
                     ColumnLayout {
-
                         property string labelText: "OnboardingProgressBarGetStarted"
                         property string iconSource: "qrc:/nebula/resources/startup.svg"
 
