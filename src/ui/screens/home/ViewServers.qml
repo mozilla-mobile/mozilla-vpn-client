@@ -89,7 +89,12 @@ Item {
 
         stackContent: [
             Loader {
-                active: segmentedNav.selectedIndex == 0
+                id: singleHopLoader
+                active: segmentedNav.selectedSegment.objectName === "tabSingleHop"
+                // We are setting the segmentedNav-selectedSegment in Component.onComplete
+                // therefore we may not sync wait for the loaders to be finished
+                // Before we know which one we need to load.
+                asynchronous: true
                 sourceComponent: ServerList {
                     id: singleHopServerList
                     currentServer: {
@@ -100,8 +105,16 @@ Item {
                     }
                     showRecentConnections: true
                 }
-            }
-            
+            },
+            Loader { 
+                id: multiHopLoader
+                asynchronous: true 
+                active: segmentedNav.selectedSegment.objectName === "tabMultiHop"
+                sourceComponent: ViewMultiHop {
+                    id: multiHopStackView
+                }
+            } 
+
         ]
 
         handleSegmentClick: (segment) => {
@@ -127,26 +140,18 @@ Item {
                                 }
                             }
                         }
-
-        Loader {
-            id: multiHopLoader
-            active: MZFeatureList.get("multiHop").isSupported && segmentedNav.selectedIndex == 1
-            sourceComponent: ViewMultiHop {
-                id: multiHopStackView
-            }
-        }
     }
 
     Component.onCompleted: {
-        if (!MZFeatureList.get("multiHop").isSupported) {
-            return;
-        }
-
-        segmentedNav.stackContent.push(multiHopLoader);
         if (VPNCurrentServer.entryCountryCode && VPNCurrentServer.entryCountryCode !== "") {
             // Set default tab to multi-hop
-            return segmentedNav.setSelectedIndex(1);
+            segmentedNav.setSelectedIndex(1);
         }
+        // We previously marked those as async, 
+        // Given we now have know which loader need's to load,
+        // continue loading this one sync. 
+        multiHopLoader.asynchronous = false
+        singleHopLoader.asynchronous = false;
     }
 }
 
