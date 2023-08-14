@@ -51,6 +51,11 @@ def filter_shipping(config, tasks):
     for task in tasks:
         if not shipping_phase in ALLOWED_SHIPPING_PHASES:
             continue
+        attributes = {
+            **task["attributes"],
+            "shipping-phase": shipping_phase,
+        } 
+        task["attributes"]=attributes   
         yield task
 
 @transforms.add
