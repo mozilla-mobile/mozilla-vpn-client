@@ -87,7 +87,7 @@ export class ViewUi extends LitElement {
     }
     live-view{
       position: sticky;
-      top:0px;
+      top: 0px;
     }
     `
 
