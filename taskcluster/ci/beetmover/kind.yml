@@ -25,8 +25,8 @@ task-defaults:
         chain-of-trust: true
         max-run-time: 1800
     treeherder:
-            kind: build
-            tier: 1
+        kind: build
+        tier: 1
 
 
 tasks:
@@ -114,14 +114,15 @@ tasks:
         treeherder:
             symbol: BM(addons-manifest)
             platform: addons/opt
-    linux-static-deb:
+    linux64-deb:
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
         release-artifacts: [mozillavpn.deb]
         dependencies:
-            build: linux64/release-deb
+            build: build-linux64/release-deb
         if-dependencies: [build]
         attributes:
             build-type: linux64/release-deb
         treeherder:
-            symbol: BM(addons-bundle)
+            symbol: BM(linux64)
             platform: linux64
+            tier: 1
