@@ -79,7 +79,7 @@ tasks:
             chain-of-trust: true
             max-run-time: 1800
         run-on-tasks-for: [action]
-        release-artifacts: [mozillavpn-x64-release.apk]
+        release-artifacts: [mozillavpn-x86_64-release.apk]
         dependencies:
             signing: signing-android-x64/release
         if-dependencies: [signing]
