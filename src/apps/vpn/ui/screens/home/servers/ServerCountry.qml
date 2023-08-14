@@ -16,7 +16,7 @@ MZClickableRow {
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
     property real multiHopMenuHeight: MZFeatureList.get("multiHop").isSupported ? MZTheme.theme.menuHeight : 0
-    property int cityCount: cities.reduce((i) => (i+1), 0) // cities.count is not available? 
+    property int cityCount: cities.length
     property real animationDuration: 200 + (cityCount * 25)
     property string _countryCode: code
     property var currentCityIndex
@@ -24,9 +24,7 @@ MZClickableRow {
     property var cityList: cityListVisible ? cityLoader.item : cityLoader
 
     Component.onCompleted:{
-        if(cityListVisible){
-            cityLoader.active = true
-        }
+       cityLoader.active = cityListVisible
     }
 
     // The city connection score can be used for every case except the multihop exit location,
@@ -178,8 +176,8 @@ MZClickableRow {
 
     Loader {
         id: cityLoader
-        active: false;
-        asynchronous: false; // Load sync, once we need that
+        active: false
+        asynchronous: false // Load sync, once we need that
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
@@ -189,65 +187,64 @@ MZClickableRow {
 
   
         sourceComponent: Column {
-        property alias count: citiesRepeater.count
-        objectName: "serverCityList"
+            property alias count: citiesRepeater.count
+            objectName: "serverCityList"
 
-        Accessible.role: Accessible.List
-        //% "Cities"
-        //: The title for the list of cities.
-        Accessible.name: qsTrId("cities")
+            Accessible.role: Accessible.List
+            //% "Cities"
+            //: The title for the list of cities.
+            Accessible.name: qsTrId("cities")
 
-        Repeater {
-            id: citiesRepeater
-            model: cities
+            Repeater {
+                id: citiesRepeater
+                model: cities
 
-            delegate: MZRadioDelegate {
-                property string _cityName: modelData.name
-                property string _countryCode: code
-                property string _localizedCityName: modelData.localizedName
-                property bool isAvailable: modelData.connectionScore >= 0
-                property int itemHeight: 54
+                delegate: MZRadioDelegate {
+                    property string _cityName: modelData.name
+                    property string _countryCode: code
+                    property string _localizedCityName: modelData.localizedName
+                    property bool isAvailable: modelData.connectionScore >= 0
+                    property int itemHeight: 54
 
-                id: del
-                objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
-                activeFocusOnTab: cityListVisible
-                Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
-                Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
-                radioButtonLabelText: _localizedCityName
-                accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
-                implicitWidth: parent.width
+                    id: del
+                    objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
+                    activeFocusOnTab: cityListVisible
+                    Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
+                    Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
+                    radioButtonLabelText: _localizedCityName
+                    accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
+                    implicitWidth: parent.width
 
-                onClicked: {
-                    if (!isAvailable) {
-                        return;
+                    onClicked: {
+                        if (!isAvailable) {
+                            return;
+                        }
+                        focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
+                        MZSettings.recommendedServerSelected = false
                     }
-                    focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
-                    MZSettings.recommendedServerSelected = false
-                }
-                height: itemHeight
-                checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
-                isHoverable: cityListVisible && del.isAvailable
-                enabled: cityListVisible && del.isAvailable
+                    height: itemHeight
+                    checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
+                    isHoverable: cityListVisible && del.isAvailable
+                    enabled: cityListVisible && del.isAvailable
 
-                Component.onCompleted: {
-                    if (checked) {
-                        currentCityIndex = index;
+                    Component.onCompleted: {
+                        if (checked) {
+                            currentCityIndex = index;
+                        }
                     }
-                }
 
-                ServerLatencyIndicator {
-                    id: latencyIndicator
-                    anchors {
-                        right: parent.right
-                        rightMargin: MZTheme.theme.hSpacing
-                        verticalCenter: parent.verticalCenter
+                    ServerLatencyIndicator {
+                        id: latencyIndicator
+                        anchors {
+                            right: parent.right
+                            rightMargin: MZTheme.theme.hSpacing
+                            verticalCenter: parent.verticalCenter
+                        }
+                        score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                     }
-                    score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                 }
             }
         }
-    }
-
     }
 
 }
