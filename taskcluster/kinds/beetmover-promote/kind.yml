@@ -80,9 +80,10 @@ tasks:
             signing: signing-addons-bundle
         attributes:
             build-type: addons/opt
-    linux-static-deb:
+    linux64-deb:
         release-artifacts: [mozillavpn.deb]
         dependencies:
-            build: linux64/release-deb
+            build: build-linux64/release-deb
+        if-dependencies: [build]
         attributes:
             build-type: linux64/release-deb

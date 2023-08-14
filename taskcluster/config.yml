@@ -100,6 +100,11 @@ workers:
             implementation: scriptworker-beetmover
             os: scriptworker
             worker-type: 'mozillavpn-{level}-beetmover'
+        beetmover-apt:
+            provisioner: scriptworker-k8s
+            implementation: beetmover-import-from-gcs-to-artifact-registry
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-beetmover'
         succeed:
             provisioner: built-in
             implementation: succeed
