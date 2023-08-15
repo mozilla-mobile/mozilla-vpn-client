@@ -12,6 +12,7 @@ import components 0.1
 
 StackView {
     id: multiHopStackView
+    objectName: "multiHopStackView"
 
     Component.onCompleted: function() {
         MZNavigator.addStackView(VPN.ScreenHome, multiHopStackView)

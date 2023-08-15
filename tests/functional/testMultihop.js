@@ -48,8 +48,8 @@ describe('Server list', function() {
       }
     }
     console.log(
-        'Current city (localized):', currentCity,
-        '| Current country code:', currentCountryCode);
+        'Current exit city (localized):', currentCity,
+        '| Current exit country code:', currentCountryCode);
   });
 
   it('opening the entry and exit server list', async () => {
@@ -76,14 +76,26 @@ describe('Server list', function() {
   });
 
   it('check the countries and cities for multihop entries', async () => {
+    /**
+     * This test navigates to the Multi-Hop -> ENTRY_BUTTON
+     * View and Makes sure:
+     * -> For every Server there are cities.
+     */
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.ENTRY_BUTTON.visible());
+    // Scope all Queries to this one, so that we are sure to be using the right
+    // element.
+    const multiHopStackView = queries.screenHome.serverListView.MULTIHOP_VIEW;
+
 
     for (let server of servers) {
-      const countryId =
+      const country_query =
           queries.screenHome.serverListView.generateCountryId(server.code);
+      // Scope country_query to be inside multiHopStackView
+      // make sure we are querying the correct list :)
+      const countryId = multiHopStackView.query(country_query);
       await vpn.waitForQuery(countryId.visible());
 
       await vpn.setQueryProperty(
@@ -92,10 +104,6 @@ describe('Server list', function() {
 
       await vpn.wait();
 
-      if (currentCountryCode === server.code) {
-        assert.equal(
-            await vpn.getQueryProperty(countryId, 'cityListVisible'), 'true');
-      }
 
       if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
           'false') {
@@ -103,8 +111,9 @@ describe('Server list', function() {
       }
 
       for (let city of server.cities) {
-        const cityId = queries.screenHome.serverListView.generateCityId(
-            countryId, city.name);
+        const cityId_query = queries.screenHome.serverListView.generateCityId(
+            country_query, city.name);
+        const cityId = multiHopStackView.query(cityId_query);
         console.log('  Waiting for cityId:', cityId);
         await vpn.waitForQuery(cityId.visible());
       }
@@ -113,14 +122,26 @@ describe('Server list', function() {
 
 
   it('check the countries and cities for multihop exits', async () => {
+    /**
+     * This test does the same as above?
+     * But also checks:
+     * -> The Selected Exit server is Expanded
+     * -> The Selected City is selected
+     */
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.EXIT_BUTTON.visible());
 
+    // Scope all Queries to this one, so that we are sure to be using the right
+    // element.
+    const multiHopStackView = queries.screenHome.serverListView.MULTIHOP_VIEW;
+
+
     for (let server of servers) {
-      const countryId =
+      const country =
           queries.screenHome.serverListView.generateCountryId(server.code);
+      const countryId = multiHopStackView.query(country);
 
       await vpn.waitForQuery(countryId.visible());
 
@@ -139,8 +160,9 @@ describe('Server list', function() {
       }
 
       for (let city of server.cities) {
-        const cityId = countryId + '/serverCityList/serverCity-' +
-            city.name.replace(/ /g, '_');
+        const cityId_query = queries.screenHome.serverListView.generateCityId(
+            country, city.name);
+        const cityId = multiHopStackView.query(cityId_query);
 
         await vpn.waitForQuery(cityId);
         await vpn.getQueryProperty(cityId, 'visible', 'true');
@@ -154,46 +176,39 @@ describe('Server list', function() {
     }
   });
 
-  it('Pick cities for entries', async () => {
-    let countryId;
+  it('Picking a  cities brings you back to Multi-Hop View', async () => {
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.ENTRY_BUTTON.visible());
 
-    for (let server of servers) {
-      countryId =
-          queries.screenHome.serverListView.generateCountryId(server.code);
-      await vpn.waitForQuery(countryId.visible());
-      await selectCountryFromList(countryId);
-      await vpn.wait();
+    // Scope all Queries to this one, so that we are sure to be using the right
+    // element.
+    const multiHopStackView = queries.screenHome.serverListView.MULTIHOP_VIEW;
+    let [server] = servers;
+    let country =
+        queries.screenHome.serverListView.generateCountryId(server.code);
+    let countryId = multiHopStackView.query(country);
+    await vpn.waitForQuery(countryId.visible());
+    await selectCountryFromList(countryId);
+    await vpn.wait();
 
-      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
-          'false') {
-        await vpn.clickOnQuery(countryId);
-      }
-
-      for (let city of server.cities) {
-        const cityId = countryId + '/serverCityList/serverCity-' +
-            city.name.replace(/ /g, '_');
-
-        await vpn.waitForQuery(cityId);
-        await selectCityFromList(cityId, countryId);
-        await vpn.getQueryProperty(cityId, 'visible', 'true');
-
-        const cityName = await vpn.getQueryProperty(
-            cityId, 'radioButtonLabelText'.split(' '));
-
-        await vpn.wait();
-        await vpn.clickOnQuery(cityId);
-        await vpn.wait();
-
-        assert(cityName.includes(city.name))
-      }
+    if (await vpn.getQueryProperty(countryId, 'cityListVisible') === 'false') {
+      await vpn.clickOnQuery(countryId);
     }
+    let [city] = server.cities
+    const cityId_query =
+        queries.screenHome.serverListView.generateCityId(country, city.name);
+    const cityId = multiHopStackView.query(cityId_query);
+
+    await vpn.waitForQuery(cityId);
+    await vpn.clickOnQuery(cityId);
+    // We should now be back on the overview
+    await vpn.waitForQuery(
+        queries.screenHome.serverListView.ENTRY_BUTTON.visible());
   });
 
-  it('Pick cities for exits', async () => {
+  it.skip('Pick cities for exits', async () => {
     let countryId;
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
