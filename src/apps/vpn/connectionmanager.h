@@ -21,23 +21,24 @@ class ControllerImpl;
 class MozillaVPN;
 
 class ConnectionManager : public QObject, public LogSerializer {
-    Q_OBJECT
-    Q_DISABLE_COPY_MOVE(ConnectionManager)
- 
-public:
-  
-//  enum ConnectionState {
-//    ConnectionStateInternetProbe,
-//    ConnectionStateServerProbe,
-//    ConnectionStateFirewall,
-//    ConnectionStateCaptivePortal,
-//    ConnectionStateCheckSubscription,
-//    ConnectionStateUnstable,
-//    ConnectionStateIdle,       // Used when there are no active probes ongoing
-//  };
-//  Q_ENUM(ConnectionState)
-  
-  // These are temporarily copied from the controller state to mirror them, but will eventually be removed by ConnectionState above 
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(ConnectionManager)
+
+ public:
+  //  enum ConnectionState {
+  //    ConnectionStateInternetProbe,
+  //    ConnectionStateServerProbe,
+  //    ConnectionStateFirewall,
+  //    ConnectionStateCaptivePortal,
+  //    ConnectionStateCheckSubscription,
+  //    ConnectionStateUnstable,
+  //    ConnectionStateIdle,       // Used when there are no active probes
+  //    ongoing
+  //  };
+  //  Q_ENUM(ConnectionState)
+
+  // These are temporarily copied from the controller state to mirror them, but
+  // will eventually be removed by ConnectionState above
   enum State {
     StateInitializing,
     StateOff,
@@ -50,14 +51,14 @@ public:
     StateSwitching,
   };
   Q_ENUM(State)
-  
+
   enum Reason {
     ReasonNone = 0,
     ReasonSwitching,
     ReasonConfirming,
   };
 
-public:
+ public:
   qint64 time() const;
   void serverUnavailable();
   void captivePortalPresent();
@@ -65,65 +66,65 @@ public:
   bool switchServers(const ServerData& serverData);
   void backendFailure();
   void updateRequired();
-  
+
   const ServerData& currentServer() const { return m_serverData; }
-  
+
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
   }
-  
+
   enum ServerSelectionPolicy {
     RandomizeServerSelection,
     DoNotRandomizeServerSelection,
   };
-  
+
   int connectionRetry() const { return m_connectionRetry; }
   State state() const;
   Q_INVOKABLE void logout();
   bool silentServerSwitchingSupported() const;
   void cleanupBackendLogs();
-  
+
   // LogSerializer interface
   void serializeLogs(
       std::function<void(const QString& name, const QString& logs)>&& callback)
       override;
-  
+
   void getStatus(
       std::function<void(const QString& serverIpv4Gateway,
                          const QString& deviceIpv4Address, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
-  
+
 #ifdef MZ_DUMMY
   QString currentServerString() const;
 #endif
 
-public slots:
-   // These 2 methods activate/deactivate the VPN. Return true if a signal will
-   // be emitted at the end of the operation.
-   bool activate(
-       const ServerData& serverData,
-       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-   bool deactivate();
+ public slots:
+  // These 2 methods activate/deactivate the VPN. Return true if a signal will
+  // be emitted at the end of the operation.
+  bool activate(
+      const ServerData& serverData,
+      ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
+  bool deactivate();
 
-   Q_INVOKABLE void quit();
-  
-private:
- Q_PROPERTY(State state READ state NOTIFY stateChanged)
- Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
- Q_PROPERTY(
-     int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
- Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
-                NOTIFY enableDisconnectInConfirmingChanged);
- Q_PROPERTY(bool silentServerSwitchingSupported READ
-                silentServerSwitchingSupported CONSTANT);
+  Q_INVOKABLE void quit();
+
+ private:
+  Q_PROPERTY(State state READ state NOTIFY stateChanged)
+  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+  Q_PROPERTY(
+      int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
+  Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
+                 NOTIFY enableDisconnectInConfirmingChanged);
+  Q_PROPERTY(bool silentServerSwitchingSupported READ
+                 silentServerSwitchingSupported CONSTANT);
 
 #ifdef MZ_DUMMY
- // This is just for testing purposes. Not exposed in prod.
- Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
-                currentServerChanged);
+  // This is just for testing purposes. Not exposed in prod.
+  Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
+                 currentServerChanged);
 #endif
-  
-private slots:
+
+ private slots:
   void timerTimeout();
   void handshakeTimeout();
   void connected(const QString& pubkey,
@@ -135,7 +136,7 @@ private slots:
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
 
-signals:
+ signals:
   void stateChanged();
   void timeChanged();
   void enableDisconnectInConfirmingChanged();
@@ -148,23 +149,23 @@ signals:
   void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
-  
-public:
-  ConnectionManager();
- ~ConnectionManager();
 
- void initialize();
- static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  
+ public:
+  ConnectionManager();
+  ~ConnectionManager();
+
+  void initialize();
+  static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,
     eServerCoolDownNotNeeded,
   };
-  
+
   bool silentSwitchServers(
       ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
 
-private:
+ private:
   enum NextStep {
     None,
     Quit,
@@ -174,16 +175,16 @@ private:
     ServerUnavailable,
   };
 
-NextStep m_nextStep = None;
-  
+  NextStep m_nextStep = None;
+
   enum DNSPortPolicy {
     ForceDNSPort,
     DoNotForceDNSPort,
   };
-  
+
   void activateInternal(DNSPortPolicy dnsPort,
                         ServerSelectionPolicy serverSelectionPolicy);
-  
+
   void clearConnectedTime();
   void clearRetryCounter();
   QStringList getExcludedAddresses();
@@ -193,22 +194,22 @@ NextStep m_nextStep = None;
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
-  
-private:
+
+ private:
   QTimer m_timer;
   QTimer m_connectingTimer;
   QTimer m_handshakeTimer;
-  
+
   QDateTime m_connectedTimeInUTC;
-  
+
   State m_state = StateInitializing;
   bool m_enableDisconnectInConfirming = false;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;
-  
+
   QScopedPointer<ControllerImpl> m_impl;
   bool m_portalDetected = false;
-  
+
   // Server data can change while the controller is busy completing an
   // activation or a server switch because they are managed by the
   // SettingsHolder object and exposed to user interaction, addons, and JS.
@@ -230,14 +231,14 @@ private:
   PingHelper m_ping_canary;
   bool m_ping_received = false;
   bool m_connectedBeforeTransaction = false;
-  
+
   ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
-  
+
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
-  
+
 };  // namespace ConnectionManager
 
 #endif  // CONNECTIONMANAGER_H

@@ -50,18 +50,11 @@ namespace {
 Logger logger("Connection Manager");
 }
 
-Controller::Controller() {
-  MZ_COUNT_CTOR(Controller);
-}
+Controller::Controller() { MZ_COUNT_CTOR(Controller); }
 
-Controller::~Controller() {
-  MZ_COUNT_DTOR(Controller);
-}
+Controller::~Controller() { MZ_COUNT_DTOR(Controller); }
 
-bool Controller::isVPNActive()
-{
-  return m_VPNActive;
-}
+bool Controller::isVPNActive() { return m_VPNActive; }
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&

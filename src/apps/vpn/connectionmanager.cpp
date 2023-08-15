@@ -4,11 +4,11 @@
 
 #include "connectionmanager.h"
 
-#include "controller.h"
 #include "app.h"
 #include "appconstants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
+#include "controller.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature.h"
@@ -78,11 +78,11 @@ ConnectionManager::Reason stateToReason(ConnectionManager::State state) {
 
   return ConnectionManager::ReasonNone;
 }
-}
+}  // namespace
 
 ConnectionManager::ConnectionManager() {
   MZ_COUNT_CTOR(ConnectionManager);
-  
+
   m_connectingTimer.setSingleShot(true);
   m_handshakeTimer.setSingleShot(true);
 
@@ -99,13 +99,11 @@ ConnectionManager::ConnectionManager() {
   LogHandler::instance()->registerLogSerializer(this);
 }
 
-ConnectionManager::~ConnectionManager() {
-  MZ_COUNT_DTOR(ConnectionManager);
-}
+ConnectionManager::~ConnectionManager() { MZ_COUNT_DTOR(ConnectionManager); }
 
 void ConnectionManager::initialize() {
   logger.debug() << "Initializing the connection manager";
-  
+
   if (m_state != ConnectionManager::StateInitializing) {
     setState(ConnectionManager::StateInitializing);
   }
@@ -148,7 +146,10 @@ void ConnectionManager::initialize() {
   });
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
-          [this]() { m_connectedBeforeTransaction = m_state == ConnectionManager::StateOn; });
+          [this]() {
+            m_connectedBeforeTransaction =
+                m_state == ConnectionManager::StateOn;
+          });
 
   connect(SettingsHolder::instance(),
           &SettingsHolder::transactionAboutToRollBack, this, [this]() {
@@ -173,12 +174,12 @@ void ConnectionManager::initialize() {
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &ConnectionManager::cleanupBackendLogs);
 
-  connect(this, &ConnectionManager::readyToServerUnavailable, Tutorial::instance(),
-          &Tutorial::stop);
+  connect(this, &ConnectionManager::readyToServerUnavailable,
+          Tutorial::instance(), &Tutorial::stop);
 }
 
 void ConnectionManager::implInitialized(bool status, bool a_connected,
-                                 const QDateTime& connectionDate) {
+                                        const QDateTime& connectionDate) {
   logger.debug() << "Controller initialized with status:" << status
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
@@ -323,8 +324,8 @@ void ConnectionManager::logout() {
   }
 }
 
-void ConnectionManager::activateInternal(DNSPortPolicy dnsPort,
-                                  ServerSelectionPolicy serverSelectionPolicy) {
+void ConnectionManager::activateInternal(
+    DNSPortPolicy dnsPort, ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -638,7 +639,7 @@ void ConnectionManager::clearRetryCounter() {
 }
 
 void ConnectionManager::connected(const QString& pubkey,
-                           const QDateTime& connectionTimestamp) {
+                                  const QDateTime& connectionTimestamp) {
   logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
     if (m_serverData.exitServerPublicKey() != pubkey) {
@@ -808,8 +809,8 @@ void ConnectionManager::getStatus(
 }
 
 void ConnectionManager::statusUpdated(const QString& serverIpv4Gateway,
-                               const QString& deviceIpv4Address,
-                               uint64_t txBytes, uint64_t rxBytes) {
+                                      const QString& deviceIpv4Address,
+                                      uint64_t txBytes, uint64_t rxBytes) {
   logger.debug() << "Status updated";
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
@@ -818,7 +819,7 @@ void ConnectionManager::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
+           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
@@ -894,12 +895,14 @@ QString ConnectionManager::currentServerString() const {
 }
 #endif
 
-//These will eventually go back to the controller but to get the code working for now they will reside here
+// These will eventually go back to the controller but to get the code working
+// for now they will reside here
 
 bool ConnectionManager::activate(const ServerData& serverData,
-                          ServerSelectionPolicy serverSelectionPolicy) {
+                                 ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
-  if (m_state != ConnectionManager::StateOff && m_state != ConnectionManager::StateSwitching &&
+  if (m_state != ConnectionManager::StateOff &&
+      m_state != ConnectionManager::StateSwitching &&
       m_state != ConnectionManager::StateSilentSwitching) {
     logger.debug() << "Already connected";
     return false;
@@ -990,8 +993,6 @@ bool ConnectionManager::deactivate() {
   m_activationQueue.clear();
   clearConnectedTime();
   clearRetryCounter();
-  
-  
 
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));

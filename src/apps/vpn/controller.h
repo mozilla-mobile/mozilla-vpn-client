@@ -15,22 +15,20 @@ class Controller final : public QObject, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Controller)
 
-
  public:
   Controller();
   ~Controller();
-  
+
   bool isVPNActive();
-  
+
   // LogSerializer interface
   void serializeLogs(
       std::function<void(const QString& name, const QString& logs)>&& callback)
       override;
 
-public slots:
-  
+ public slots:
 
-private:
+ private:
   bool m_VPNActive = false;
   QScopedPointer<ControllerImpl> m_impl;
 };
