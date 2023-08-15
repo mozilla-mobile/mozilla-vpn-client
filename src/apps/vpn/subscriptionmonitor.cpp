@@ -7,8 +7,8 @@
 #include <QCoreApplication>
 
 #include "appconstants.h"
-#include "controller.h"
 #include "connectionmanager.h"
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -39,8 +39,8 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
             }
           });
 
-  connect(MozillaVPN::instance()->connectionManager(), &ConnectionManager::stateChanged, this,
-          [this]() {
+  connect(MozillaVPN::instance()->connectionManager(),
+          &ConnectionManager::stateChanged, this, [this]() {
             ConnectionManager::State state =
                 MozillaVPN::instance()->connectionManager()->state();
             if (state == ConnectionManager::StateOff &&

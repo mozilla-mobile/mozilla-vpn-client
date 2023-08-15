@@ -117,12 +117,14 @@ int CommandStatus::run(QStringList& tokens) {
     ConnectionManager connectionManager;
 
     QEventLoop loop;
-    QObject::connect(&connectionManager, &ConnectionManager::stateChanged, &connectionManager, [&] {
-      if (connectionManager.state() == ConnectionManager::StateOff ||
-          connectionManager.state() == ConnectionManager::StateOn) {
-        loop.exit();
-      }
-    });
+    QObject::connect(
+        &connectionManager, &ConnectionManager::stateChanged,
+        &connectionManager, [&] {
+          if (connectionManager.state() == ConnectionManager::StateOff ||
+              connectionManager.state() == ConnectionManager::StateOn) {
+            loop.exit();
+          }
+        });
     connectionManager.initialize();
     loop.exec();
 

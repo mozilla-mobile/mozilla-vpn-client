@@ -129,7 +129,9 @@ void NotificationHandler::showNotification() {
                 ->currentServer()
                 .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->connectionManager()->currentServer().localizedPreviousExitCityName();
+            vpn->connectionManager()
+                ->currentServer()
+                .localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedExitCityName)) {
@@ -163,8 +165,9 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
-          QString localizedEntryCityName =
-              vpn->connectionManager()->currentServer().localizedEntryCityName();
+          QString localizedEntryCityName = vpn->connectionManager()
+                                               ->currentServer()
+                                               .localizedEntryCityName();
 
           QString localizedExitCityName =
               vpn->connectionManager()->currentServer().localizedExitCityName();
@@ -199,8 +202,9 @@ void NotificationHandler::showNotification() {
         // "VPN Disconnected"
         ServerData* serverData = vpn->serverData();
         if (serverData->multihop()) {
-          QString localizedEntryCityName =
-              vpn->connectionManager()->currentServer().localizedEntryCityName();
+          QString localizedEntryCityName = vpn->connectionManager()
+                                               ->currentServer()
+                                               .localizedEntryCityName();
 
           QString localizedExitCityName =
               vpn->connectionManager()->currentServer().localizedExitCityName();

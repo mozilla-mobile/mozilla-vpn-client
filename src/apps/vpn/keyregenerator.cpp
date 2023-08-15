@@ -5,8 +5,8 @@
 #include "keyregenerator.h"
 
 #include "appconstants.h"
-#include "controller.h"
 #include "connectionmanager.h"
+#include "controller.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"

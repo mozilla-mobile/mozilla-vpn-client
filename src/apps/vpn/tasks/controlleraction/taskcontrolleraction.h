@@ -8,8 +8,8 @@
 #include <QObject>
 #include <QTimer>
 
-#include "controller.h"
 #include "connectionmanager.h"
+#include "controller.h"
 #include "models/serverdata.h"
 #include "task.h"
 
@@ -27,12 +27,12 @@ class TaskControllerAction final : public Task {
     eSwitch,
   };
   Q_ENUM(TaskAction);
-  
+
   explicit TaskControllerAction(
       TaskAction action,
-      ConnectionManager::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy =
-                                ConnectionManager::eServerCoolDownNotNeeded);
-  
+      ConnectionManager::ServerCoolDownPolicyForSilentSwitch
+          serverCoolDownPolicy = ConnectionManager::eServerCoolDownNotNeeded);
+
   ~TaskControllerAction();
 
   void run() override;
@@ -48,8 +48,8 @@ class TaskControllerAction final : public Task {
   ConnectionManager::State m_lastState;
   ServerData m_serverData;
   QTimer m_timer;
-  ConnectionManager::ServerCoolDownPolicyForSilentSwitch m_serverCoolDownPolicy =
-  ConnectionManager::eServerCoolDownNotNeeded;
+  ConnectionManager::ServerCoolDownPolicyForSilentSwitch
+      m_serverCoolDownPolicy = ConnectionManager::eServerCoolDownNotNeeded;
 };
 
 #endif  // TASKCONTROLLERACTION_H

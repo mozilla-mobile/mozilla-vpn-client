@@ -73,7 +73,8 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
   logger.debug() << "ConnectionHealth active started";
 
   if (serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->connectionManager()->state() != ConnectionManager::StateOn) {
+      MozillaVPN::instance()->connectionManager()->state() !=
+          ConnectionManager::StateOn) {
     return;
   }
 
@@ -143,7 +144,8 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 }
 
 void ConnectionHealth::connectionStateChanged() {
-  ConnectionManager::State state = MozillaVPN::instance()->connectionManager()->state();
+  ConnectionManager::State state =
+      MozillaVPN::instance()->connectionManager()->state();
   logger.debug() << "Connection state changed to" << state;
 
   if (state != ConnectionManager::StateInitializing) {

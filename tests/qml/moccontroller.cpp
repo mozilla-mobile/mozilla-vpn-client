@@ -57,7 +57,9 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
   return QList<IPAddress>();
 }
 
-Controller::State Controller::state() const { return ConnectionManager::StateOff; }
+Controller::State Controller::state() const {
+  return ConnectionManager::StateOff;
+}
 
 void Controller::updateRequired() {}
 

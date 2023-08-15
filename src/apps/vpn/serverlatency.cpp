@@ -233,7 +233,8 @@ void ServerLatency::clear() {
 }
 
 void ServerLatency::stateChanged() {
-  ConnectionManager::State state = MozillaVPN::instance()->connectionManager()->state();
+  ConnectionManager::State state =
+      MozillaVPN::instance()->connectionManager()->state();
   if (state != ConnectionManager::StateOff) {
     // If the VPN is active, then do not attempt to measure the server latency.
     stop();

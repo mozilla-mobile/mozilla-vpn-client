@@ -38,12 +38,13 @@ int CommandActivate::run(QStringList& tokens) {
     }
 
     QEventLoop loop;
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
-      if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-          vpn.connectionManager()->state() == ConnectionManager::StateOn) {
-        loop.exit();
-      }
-    });
+    QObject::connect(
+        vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
+          if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
+              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+            loop.exit();
+          }
+        });
 
     vpn.connectionManager()->initialize();
     loop.exec();
@@ -53,12 +54,15 @@ int CommandActivate::run(QStringList& tokens) {
     // completed.
     if (vpn.connectionManager()->state() != ConnectionManager::StateOff &&
         vpn.connectionManager()->state() != ConnectionManager::StateOn) {
-      QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
-        if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-            vpn.connectionManager()->state() == ConnectionManager::StateOn) {
-          loop.exit();
-        }
-      });
+      QObject::connect(vpn.connectionManager(),
+                       &ConnectionManager::stateChanged, &vpn, [&] {
+                         if (vpn.connectionManager()->state() ==
+                                 ConnectionManager::StateOff ||
+                             vpn.connectionManager()->state() ==
+                                 ConnectionManager::StateOn) {
+                           loop.exit();
+                         }
+                       });
       loop.exec();
       vpn.connectionManager()->disconnect();
     }
@@ -69,12 +73,13 @@ int CommandActivate::run(QStringList& tokens) {
       return 0;
     }
 
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
-      if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-          vpn.connectionManager()->state() == ConnectionManager::StateOn) {
-        loop.exit();
-      }
-    });
+    QObject::connect(
+        vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
+          if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
+              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+            loop.exit();
+          }
+        });
     vpn.connectionManager()->activate(*vpn.serverData());
     loop.exec();
     vpn.connectionManager()->disconnect();

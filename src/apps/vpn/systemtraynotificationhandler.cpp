@@ -150,8 +150,9 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   bool isStateMain = vpn->state() == App::StateMain;
 
-  m_disconnectAction->setVisible(isStateMain && vpn->connectionManager()->state() ==
-                                                    ConnectionManager::StateOn);
+  m_disconnectAction->setVisible(isStateMain &&
+                                 vpn->connectionManager()->state() ==
+                                     ConnectionManager::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);

@@ -38,9 +38,10 @@ TaskControllerAction::~TaskControllerAction() {
 void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
 
-  ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
+  ConnectionManager* connectionManager =
+      MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
-  
+
   connect(connectionManager, &ConnectionManager::stateChanged, this,
           &TaskControllerAction::stateChanged, Qt::QueuedConnection);
 
@@ -58,7 +59,8 @@ void TaskControllerAction::run() {
       break;
 
     case eSilentSwitch:
-      expectSignal = connectionManager->silentSwitchServers(m_serverCoolDownPolicy);
+      expectSignal =
+          connectionManager->silentSwitchServers(m_serverCoolDownPolicy);
       break;
 
     case eSwitch:
@@ -83,7 +85,8 @@ void TaskControllerAction::stateChanged() {
     return;
   }
 
-  ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
+  ConnectionManager* connectionManager =
+      MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
 
   ConnectionManager::State state = connectionManager->state();
@@ -97,9 +100,10 @@ void TaskControllerAction::stateChanged() {
 }
 
 void TaskControllerAction::checkStatus() {
-  ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
+  ConnectionManager* connectionManager =
+      MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
-  
+
   if (connectionManager->state() == m_lastState) {
     m_timer.stop();
     emit completed();

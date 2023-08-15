@@ -154,12 +154,13 @@ void Telemetry::initialize() {
     }
   });
 
-  connect(connectionManager, &ConnectionManager::readyToServerUnavailable, this, []() {
-    MozillaVPN* vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
+  connect(connectionManager, &ConnectionManager::readyToServerUnavailable, this,
+          []() {
+            MozillaVPN* vpn = MozillaVPN::instance();
+            Q_ASSERT(vpn);
 
-    mozilla::glean::sample::server_unavailable_error.record();
-  });
+            mozilla::glean::sample::server_unavailable_error.record();
+          });
 
   connect(
       SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
@@ -260,7 +261,8 @@ void Telemetry::connectionStabilityEvent() {
       mozilla::glean::sample::ConnectivityStableExtra{
           ._latency = QString::number(vpn->connectionHealth()->latency()),
           ._loss = QString::number(vpn->connectionHealth()->loss()),
-          ._server = vpn->connectionManager()->currentServer().exitServerPublicKey(),
+          ._server =
+              vpn->connectionManager()->currentServer().exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
           ._transport = vpn->networkWatcher()->getCurrentTransport()});
 }

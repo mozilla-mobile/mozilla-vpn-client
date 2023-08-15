@@ -5,8 +5,8 @@
 #include "releasemonitor.h"
 
 #include "appconstants.h"
-#include "controller.h"
 #include "connectionmanager.h"
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
