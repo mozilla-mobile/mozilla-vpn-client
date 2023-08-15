@@ -38,8 +38,6 @@ TaskControllerAction::~TaskControllerAction() {
 void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
 
-//  Controller* controller = MozillaVPN::instance()->controller();
-//  Q_ASSERT(controller);
   ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
   
@@ -85,8 +83,6 @@ void TaskControllerAction::stateChanged() {
     return;
   }
 
-//  Controller* controller = MozillaVPN::instance()->controller();
-//  Q_ASSERT(controller);
   ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
 
@@ -101,8 +97,6 @@ void TaskControllerAction::stateChanged() {
 }
 
 void TaskControllerAction::checkStatus() {
-//  Controller* controller = MozillaVPN::instance()->controller();
-//  Q_ASSERT(controller);
   ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
   

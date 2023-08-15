@@ -308,7 +308,6 @@ int CommandUI::run(QStringList& tokens) {
         MozillaVPN::instance()->captivePortalDetection());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
                                   MozillaVPN::instance()->connectionManager());
-                                //  MozillaVPN::instance()->controller());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
                                  MozillaVPN::instance()->user());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",

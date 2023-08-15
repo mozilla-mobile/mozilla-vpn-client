@@ -8,7 +8,6 @@
 #include <QObject>
 #include <functional>
 
-//#include "controller.h"
 #include "connectionmanager.h"
 
 class Keys;

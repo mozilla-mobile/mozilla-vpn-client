@@ -27,11 +27,6 @@ class TaskControllerAction final : public Task {
     eSwitch,
   };
   Q_ENUM(TaskAction);
-
-//  explicit TaskControllerAction(
-//      TaskAction action,
-//      Controller::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy =
-//          Controller::eServerCoolDownNotNeeded);
   
   explicit TaskControllerAction(
       TaskAction action,
@@ -53,8 +48,6 @@ class TaskControllerAction final : public Task {
   ConnectionManager::State m_lastState;
   ServerData m_serverData;
   QTimer m_timer;
-//  Controller::ServerCoolDownPolicyForSilentSwitch m_serverCoolDownPolicy =
-//      Controller::eServerCoolDownNotNeeded;
   ConnectionManager::ServerCoolDownPolicyForSilentSwitch m_serverCoolDownPolicy =
   ConnectionManager::eServerCoolDownNotNeeded;
 };

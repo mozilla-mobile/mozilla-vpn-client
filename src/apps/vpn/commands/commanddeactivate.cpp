@@ -37,7 +37,6 @@ int CommandDeactivate::run(QStringList& tokens) {
       return 1;
     }
 
-//    Controller controller;
     ConnectionManager connectionManager;
 
     QEventLoop loop;

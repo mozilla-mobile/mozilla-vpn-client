@@ -137,7 +137,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   connect(this, &MozillaVPN::stateChanged, [this]() {
     // If we are activating the app, let's initialize the controller and the
     // periodic tasks.
-    if (state() == StateMain) {\
+    if (state() == StateMain) {
         m_private->m_connectionManager.initialize();
       startSchedulingPeriodicOperations();
     } else {

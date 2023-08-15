@@ -114,7 +114,6 @@ int CommandStatus::run(QStringList& tokens) {
            << Qt::endl;
     stream << "Server city: " << sd->exitCityName() << Qt::endl;
 
-//    Controller controller;
     ConnectionManager connectionManager;
 
     QEventLoop loop;

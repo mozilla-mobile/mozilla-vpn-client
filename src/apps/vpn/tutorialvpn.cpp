@@ -87,7 +87,6 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
   ~TutorialStepBeforeVpnOff() { MZ_COUNT_DTOR(TutorialStepBeforeVpnOff); }
 
   bool run() override {
-//    Controller* controller = MozillaVPN::instance()->controller();
     ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
     Q_ASSERT(connectionManager);
 

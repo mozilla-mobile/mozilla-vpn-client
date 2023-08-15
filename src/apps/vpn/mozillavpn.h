@@ -16,8 +16,6 @@
 #include "externalophandler.h"
 #include "frontend/navigator.h"
 
-#include "controller.h"
-
 struct MozillaVPNPrivate;
 class CaptivePortal;
 class CaptivePortalDetection;

@@ -109,7 +109,6 @@ void Telemetry::initialize() {
         mozilla::glean::sample::DeviceRemovedExtra{._source = source});
   });
 
-//  Controller* controller = vpn->controller();
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
 
@@ -133,7 +132,6 @@ void Telemetry::initialize() {
   connect(connectionManager, &ConnectionManager::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-//    Controller* controller = vpn->controller();
     ConnectionManager* connectionManager = vpn->connectionManager();
     Q_ASSERT(connectionManager);
     ConnectionManager::State state = connectionManager->state();
