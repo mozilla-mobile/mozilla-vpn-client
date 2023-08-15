@@ -22,7 +22,7 @@ tasks:
         description: description
         worker-type: beetmover-apt
         worker:
-            product: vpn
+            product: mozillavpn
             max-run-time: 1800
             gcs-sources: [] # Set from Transform beetmover_apt
         
