@@ -519,6 +519,8 @@ class VPNService : android.net.VpnService() {
             }
 
         Glean.registerPings(Pings)
+        Glean.setDebugViewTag("VPNMatt")
+        Glean.setLogPings(true)
         Glean.initialize(
             applicationContext = this.applicationContext,
             uploadEnabled = uploadEnabled,
