@@ -30,8 +30,6 @@ def get_gcs_sources(dependent_task):
         return []
 
     gcs_path_prefix = urlparse(destinations[0]).path
-    if(gcs_path_prefix.startswith("/pub")):
-        gcs_path_prefix= gcs_path_prefix.replace("/pub","")
     gcs_paths = []
     for artifact in release_artifacts:
         assert  artifact["name"].startswith("public/build/")
