@@ -11,77 +11,220 @@ import components 0.1
 
 MZViewBase {
     _menuTitle: "UI Testing"
+    _interactive: false
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         MZSettingsItem {
-            settingTitle: "MZStepProgressBar"
+            settingTitle: "MZStepNavigation"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft
-            onClicked: getHelpStackView.push(progressBar)
+            onClicked: getHelpStackView.push(stepNavComponent)
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
         }
     }
 
     Component {
-        id: progressBar
+        id: stepNavComponent
+
         MZViewBase {
-            _menuTitle: "MZStepProgressBar"
-            _viewContentData: ColumnLayout {
-                Layout.leftMargin: 36
-                Layout.rightMargin: 36
+            _menuTitle: "MZStepNavigation"
+            _interactive: false
+            _viewContentData: MZStepNavigation {
+                id: stepNav
 
-                spacing: 32
+                Layout.topMargin: 8
+                Layout.fillWidth: true
 
-                MZStepProgressBar {
-                    id: stepProgress
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.fillWidth: true
-                    Layout.maximumWidth: 500
+                views: [
+                    ColumnLayout {
+                        property string labelText: "OnboardingProgressBarDataUse"
+                        property string iconSource: "qrc:/nebula/resources/lock.svg"
 
-                    model: ListModel {
-                        id: stepProgressModel
+                        spacing: 24
 
-                        ListElement {
-                            labelText: "OnboardingProgressBarDataUse"
-                            iconSource: "qrc:/nebula/resources/lock.svg"
+                        Item {
+                            Layout.fillHeight: true
                         }
-                        ListElement {
-                            labelText: "OnboardingProgressBarMorePrivacy"
-                            iconSource: "qrc:/ui/resources/settings/privacy.svg"
+
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 1"
                         }
-                        ListElement {
-                            labelText: "OnboardingProgressBarAddDevices"
-                            iconSource: "qrc:/ui/resources/devices.svg"
+
+                        MZButton {
+                            text: "Next"
+                            onClicked: {
+                                stepNav.next()
+                            }
                         }
-                        ListElement {
-                            labelText: "OnboardingProgressBarGetStarted"
-                            iconSource: "qrc:/nebula/resources/startup.svg"
+
+                        Item {
+                            Layout.fillHeight: true
                         }
+
+                    },
+                    ColumnLayout {
+                        property string labelText: "OnboardingProgressBarMorePrivacy"
+                        property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+
+                        spacing: 0
+
+                        MZHeadline {
+                            Layout.topMargin: MZTheme.theme.windowMargin * 1.5
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+
+                            Layout.fillWidth: true
+
+                            text: "Get more privacy"
+                            horizontalAlignment: Text.AlignLeft
+                        }
+
+                        MZInterLabel {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.fillWidth: true
+
+                            text: "Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings."
+                            horizontalAlignment: Text.AlignLeft
+                            color: "#6D6D6E"
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 24
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block ads"
+                            subLabelText: "Reduces the amount of ads you see when you’re using Mozilla VPN"
+                            showDivider: false
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block trackers"
+                            subLabelText: "Fewer harmful domains will be able to track you"
+                            showDivider: false
+                        }
+
+                        MZCheckBoxRow {
+                            Layout.topMargin: 8
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            leftMargin: 0
+
+                            labelText: "Block malware"
+                            subLabelText: "Helps protect you from ransomware, phishing, spyware, viruses, and malware"
+                            showDivider: false
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                            Layout.minimumHeight: 20
+                        }
+
+                        MZButton {
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.fillWidth: true
+
+                            width: undefined
+                            text: "Continue"
+
+                            onClicked: {
+                                stepNav.next()
+                            }
+                        }
+
+                        MZLinkButton {
+                            Layout.topMargin: 16
+                            Layout.leftMargin: MZTheme.theme.windowMargin * 2
+                            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+                            Layout.bottomMargin: MZTheme.theme.windowMargin
+                            Layout.fillWidth: true
+
+                            implicitHeight: MZTheme.theme.rowHeight
+
+                            labelText: "Go back"
+
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                    },
+                    ColumnLayout {
+                        property string labelText: "OnboardingProgressBarAddDevices"
+                        property string iconSource: "qrc:/ui/resources/devices.svg"
+
+                        spacing: 24
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 3"
+                        }
+
+                        MZButton {
+                            text: "Next"
+                            onClicked: {
+                                stepNav.next()
+                            }
+                        }
+
+                        MZLinkButton {
+                            Layout.fillWidth: true
+                            labelText: "Back"
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                    },
+                    ColumnLayout {
+                        property string labelText: "OnboardingProgressBarGetStarted"
+                        property string iconSource: "qrc:/nebula/resources/startup.svg"
+
+                        spacing: 24
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: "Slide 4"
+                        }
+
+                        MZButton {
+                            text: "Back"
+                            onClicked: {
+                                stepNav.back()
+                            }
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
                     }
-                }
-
-                RowLayout {
-                    MZButton {
-                        Layout.fillWidth: true
-
-                        text: "Back"
-                        onClicked: {
-                            if(stepProgress.activeIndex > 0) stepProgress.activeIndex = stepProgress.activeIndex - 1
-                        }
-                    }
-
-                    MZButton {
-                        Layout.fillWidth: true
-
-                        text: "Next"
-                        onClicked: {
-                            if(stepProgress.activeIndex < stepProgressModel.count - 1)  stepProgress.activeIndex = stepProgress.activeIndex + 1
-                        }
-                    }
-                }
+                ]
             }
         }
     }
