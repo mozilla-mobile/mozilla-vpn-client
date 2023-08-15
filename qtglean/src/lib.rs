@@ -58,6 +58,7 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         app_build: env!("BUILD_ID").to_string(),
         app_display_version: env!("APP_VERSION").to_string(),
         channel: channel.to_string_fallible().ok(),
+        locale: None,
     };
 
     register_pings();
@@ -106,6 +107,7 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         app_build: env!("BUILD_ID").to_string(),
         app_display_version: env!("APP_VERSION").to_string(),
         channel: Some("testing".to_string()),
+        locale: None,
     };
 
     glean::test_reset_glean(cfg, client_info, true);
