@@ -21,9 +21,6 @@ tasks:
         run-on-tasks-for: [action]
         description: description
         worker-type: beetmover-apt
-        scopes: 
-            - "project:releng:beetmover:apt-repo:dep"
-            - "project:releng:beetmover:action:import-from-gcs-to-artifact-registry"
         worker:
             product: vpn
             max-run-time: 1800
