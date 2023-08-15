@@ -4,17 +4,13 @@
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 
-# Build the debug symbols for all targets, 
-# these will be uploaded to Sentry for release builds 
-# and just make sense for debug builds.
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
-set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -g")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
-set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -g")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -g")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g")
+# Based on this answer: https://stackoverflow.com/a/59314670
+#
+# Get the Release build to have the debug symbols like the ReleaseWithDebInfo build
+# Reasoning: XCode Cloud does not let us choose between Release of RelWithDebInfo,
+# and we want RelWithDebInfo to upload debug symbols to Sentry.
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -g -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-O2 -g -DNDEBUG")
 
 # This workaround will not be required anymore once Qt is updated
 # See https://bugreports.qt.io/browse/QTBUG-93268
@@ -73,6 +69,9 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
     XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
+    # Do not strip debug symbols on copy
+    XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
+    XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 

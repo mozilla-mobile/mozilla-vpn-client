@@ -29,6 +29,14 @@ bool FeatureCallback_iosOrAndroid() {
 // Custom callback functions
 // -------------------------
 
+bool FeatureCallback_sentry() {
+#if defined(MZ_IOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 bool FeatureCallback_shareLogs() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_IOS) || defined(MZ_DUMMY)

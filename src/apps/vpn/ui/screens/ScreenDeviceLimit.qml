@@ -13,8 +13,10 @@ MZScreenBase {
     id: stackview
     objectName: "deviceList"
 
+    _menuIconVisibility: false
+
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenDeviceLimit, getStack())
-        getStack().push("qrc:/ui/screens/devices/ViewDevices.qml")
+        getStack().push("qrc:/ui/screens/devices/ViewDeviceLimit.qml")
     }
 }

@@ -75,13 +75,25 @@ void TaskSentry::run() {
 }
 
 void TaskSentry::sendRequest() {
+  auto settings = SettingsHolder::instance();
+  auto endpoint = settings->sentryEndpoint();
+  auto dsn = settings->sentryDSN();
+  if (endpoint.isNull() || dsn.isNull()) {
+    // We should not be able to initialize Sentry without an endpoint and DSN
+    Q_ASSERT(false);
+    emit completed();
+    return;
+  }
   NetworkRequest* request = new NetworkRequest(this, 200);
-
+  QUrl target_endpoint(endpoint, QUrl::StrictMode);
+  if (!target_endpoint.isValid()) {
+    logger.error() << "Invalid URL for Sentry provided: " << endpoint;
+    return;
+  }
   request->requestInternal().setHeader(QNetworkRequest::ContentTypeHeader,
                                        "application/x-sentry-envelope");
-  request->requestInternal().setRawHeader("dsn",
-                                          Constants::SENTRY_DSN_ENDPOINT);
-  request->post(QUrl(Constants::SENTRY_ENVELOPE_INGESTION), m_envelope);
+  request->requestInternal().setRawHeader("dsn", dsn.toLocal8Bit());
+  request->post(target_endpoint, m_envelope);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
@@ -94,7 +106,9 @@ void TaskSentry::sendRequest() {
             Q_UNUSED(data);
             // Let's note the event id in the logs, so we can
             // connect customer support logs with sentry :)
-            logger.debug() << "Sentry sent event (" << m_eventID << ")";
+            logger.debug() << "Sentry reported crash: << "
+                              "https://mozilla.sentry.io/discover/vpn-client:"
+                           << m_eventID;
             emit completed();
           });
 }

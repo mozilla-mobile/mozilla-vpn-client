@@ -33,6 +33,7 @@ add_dependencies(build_tests app_auth_tests)
 target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 target_link_libraries(app_auth_tests PRIVATE
+    Qt6::Core
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets

@@ -136,12 +136,6 @@ static QList<RequestType> s_types{
                   return QJsonObject();
                 }},
 
-    RequestType{"deactivate",
-                [](const QJsonObject&) {
-                  MozillaVPN::instance()->deactivate();
-                  return QJsonObject();
-                }},
-
     RequestType{"servers",
                 [](const QJsonObject&) {
                   QJsonObject servers;

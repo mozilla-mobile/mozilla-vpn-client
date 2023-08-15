@@ -543,6 +543,24 @@ onboarding:
   panelThreeSubtitle: "Protecting yourself is simple: tap to connect to the VPN and you’re ready to browse safely. Mozilla VPN will start automatically for seamless protection."
   panelFourTitle: Add even more privacy
   panelFourSubtitle: You can set Mozilla VPN to protect you from ads, trackers, and malware. Plus, customize your protection for specific apps.
+  progressBarDataUse:
+    value: Data
+    comment: Label for onboarding progress bar step
+  progressBarMorePrivacy:
+    value: Privacy
+    comment: Label for onboarding progress bar step
+  progressBarAddDevices:
+    value: Devices
+    comment: Label for onboarding progress bar step
+  progressBarGetStarted:
+    value: Start
+    comment: Label for onboarding progress bar step. It's the final step in the progress, and indicates that the user can now start using the app.
+  progressBarAccessibilityStepComplete:
+    value: "Onboarding step “%1” (%2 of %3). Select to go back to this step."
+    comment: Accessibility read out for the completed steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
+  progressBarAccessibilityStepCurrent:
+    value: "Onboarding step “%1” (%2 of %3). You are currently on this step."
+    comment: Accessibility read out for the current step in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
 
 inAppAuth:
   emailInputPlaceholder: Enter email
@@ -852,6 +870,47 @@ inAppMessaging:
   surveyBadge:
     value: Survey
     comment: A badge shown in a message signifying that this message contains a survey
+
+devices:
+  countLabel:
+    value: "%1 out of %2 devices added"
+    comment: Label at the top of the "My devices" setting screen indicating the number of devices registered to the users account (1st arg) vs the max limit of devices available for their account (2nd arg)
+  limitTitle: 
+    value: Device not added
+    comment: Title of the "device limit" view stating that the device has not yet been added to the list of active devices (because we are at the device limit)
+  limitDescription2:
+    value: You’re using VPN on 5 devices. To add another device, please remove one.
+    comment: Description of the "device limit" view describing why the device has not yet been added to the list of active devices (because we are at the device limit)
+  removingTitle:
+    value: Removing device…
+    comment: Title for "Removing device" screen
+  listItemDescriptionCurrent:
+    value: Current Device
+    comment: Device list item description for the current device
+  listItemDescriptionAddedOneHourAgo:
+    value: Added less than an hour ago
+    comment: Device list item description for a device added less than 1 hour ago
+  listItemDescriptionAddedFewHoursAgo:
+    value: "Added a few hours ago (%1)"
+    comment: Device list item description for a device added a few hours ago. %1 is the number of hours.
+  listItemDescriptionAddedDaysAgo:
+    value: "Added %1 days ago"
+    comment: Device list item description for a device added days ago. %1 is the number of days.
+  listItemRemoveDeviceAccessibility:
+    value: "Remove %1"
+    comment: Label used for accessibility on the button to remove a device. %1 is the name of the device.
+  removePopupTitle:
+    value: Remove device?
+    comment: Title for the Remove Device popup
+  removePopupDescription:
+    value: "Please confirm you would like to remove %1."
+    comment: Description for the Remove Device popup. %1 is the name of the device being removed. The name is displayed on purpose on a new line."
+  removePopupPrimaryButtonLabel:
+    value: Remove
+    comment: Label for the primary button for the Remove Device poup
+  menuTitle: 
+    value: My devices
+    comment: Title for the menu bar when viewing the devices or device limit pages
 
 global:
   expand:

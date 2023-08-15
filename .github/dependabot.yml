@@ -73,19 +73,19 @@ updates:
     schedule:
       interval: "weekly"
   # Inspector
-  - package-ecosystem: "npm"
-    directory: "/tools/inspector"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
+  #- package-ecosystem: "npm"
+  #  directory: "/tools/inspector"
+  #  schedule:
+  #    interval: "weekly"
+  #  labels:
+  #    - "dependencies"
   # Language Localizer
-  - package-ecosystem: "npm"
-    directory: "/tools/languagelocalizer"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependencies"
+  #- package-ecosystem: "npm"
+  #  directory: "/tools/languagelocalizer"
+  #  schedule:
+  #    interval: "monthly"
+  #  labels:
+  #    - "dependencies"
   # Glean/Rust
   - package-ecosystem: "cargo"
     directory: "/vpnglean"

@@ -183,6 +183,17 @@ SETTING_STRINGLIST(iapProducts,        // getter
                    false               // sensitive (do not log)
 )
 
+SETTING_STRING(installationId,        // getter
+               setInstallationId,     // setter
+               removeInstallationId,  // remover
+               hasInstallationId,     // has
+               "installationId",      // key
+               "",                    // default value
+               false,                 // user setting
+               true,                  // remove when reset
+               true                   // sensitive (do not log)
+)
+
 SETTING_INT64(keyRegenerationTimeSec,        // getter
               setKeyRegenerationTimeSec,     // setter
               removeKeyRegenerationTimeSec,  // remover

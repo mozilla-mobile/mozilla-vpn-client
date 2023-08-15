@@ -193,7 +193,6 @@ MZViewBase {
                     property string subtitle: typeof(addon) !== "undefined" ? addon.subtitle : ""
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: content.item.implicitHeight
                     Accessible.name: swipeDelegate.title + ". " + swipeDelegate.formattedDate + ". " +  swipeDelegate.subtitle
 
                     onSwipeOpen: () => {

@@ -24,16 +24,12 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: 'recursive'
 
       - name: Install build dependecies
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
-
-          for i in src/apps/*/translations/i18n; do
-            git submodule update --remote $i
-          done
 
       - name: Cache grcov
         id: cache-grcov

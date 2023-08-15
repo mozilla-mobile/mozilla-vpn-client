@@ -61,6 +61,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
 
         if isSuperDooperFeatureActive {
+            if let installationIdString = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["installationId"] as? String),
+                let installationId = UUID(uuidString: installationIdString) {
+                logger.info(message: "Setting installation ID in network extension")
+                GleanMetrics.Session.installationId.set(installationId)
+            } else {
+                logger.error(message: "No installation ID found for network extension Glean instance")
+            }
+
             GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonFlush)
         }
 

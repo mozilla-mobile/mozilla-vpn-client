@@ -181,6 +181,7 @@ const LanguageLocalizer = {
 
     for (let language of this.newData) {
       delete language.translations;
+      const old_entry = this.oldData.find(e => e.languageCode === language.languageCode)
 
       if ('currencies' in language) {
         language.currencies =
@@ -191,6 +192,17 @@ const LanguageLocalizer = {
       }
 
       if ('languages' in language) {
+        if( old_entry && 'languages' in old_entry){
+          // Check if we the new languages object lost language data, if so
+          // put it back. 
+          const old_languages = Object.keys(old_entry.languages);
+          const new_languages = Object.keys(language.languages);
+          // List of keys we no longer have in the new lang obj i.e ["bg","cy"] 
+          const lost_languages = old_languages.filter( l => !new_languages.includes(l));
+          lost_languages.forEach(lost_language_code =>{
+            language.languages[lost_language_code] = old_entry.languages[lost_language_code];
+          });
+        }
         language.languages =
             Object.keys(language.languages).sort().reduce((obj, key) => {
               obj[key] = language.languages[key];
@@ -207,7 +219,9 @@ const LanguageLocalizer = {
 
   async localizeLanguage(language) {
     console.log(`  - Localizing language ${chalk.yellow(language)}...`);
-    let languageData = this.oldData.find(s => s.languageCode === language);
+    const language_old_Data = this.oldData.find(s => s.languageCode === language);
+    // Create a copy, otherwise we modify our old state
+    let languageData = structuredClone(language_old_Data);
     if (!languageData) {
       console.log('    Unknown language!');
       languageData = {
@@ -232,7 +246,7 @@ const LanguageLocalizer = {
         let answer = await inquirer.prompt([{
           type: 'confirm',
           name: 'value',
-          message: 'No Wikidata ID found. Do you know it?',
+          message: `${ languageData.languageCode } - No Wikidata ID found. Do you know it?`,
         }]);
 
         if (answer.value) {
@@ -269,7 +283,7 @@ const LanguageLocalizer = {
         let answer = await inquirer.prompt([{
           type: 'confirm',
           name: 'value',
-          message: 'No IETF ID found. Do you know it?',
+          message: `${ languageData.languageCode } - No IETF ID found. Do you know it?`,
         }]);
 
         if (!answer.value) {

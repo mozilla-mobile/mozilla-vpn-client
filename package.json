@@ -6,7 +6,7 @@
     "qml-reload": "node ./tools/qml_hot_reload/hot.js"
   },
   "devDependencies": {
-    "appium-adb": "^9.14.2",
+    "appium-adb": "^9.14.4",
     "body-parser": "^1.20.2",
     "chokidar": "^3.5.3",
     "command-line-args": "^5.2.1",
@@ -15,7 +15,7 @@
     "express": "^4.18.1",
     "jsonschema": "^1.4.1",
     "mocha": "^10.2.0",
-    "selenium-webdriver": "^4.10.0",
+    "selenium-webdriver": "^4.11.1",
     "websocket": "^1.0.34"
   }
 }

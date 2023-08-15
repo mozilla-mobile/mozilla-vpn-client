@@ -79,6 +79,7 @@ class MozillaVPN final : public App {
     ScreenUpdateRecommended,
     ScreenUpdateRequired,
     ScreenViewLogs,
+    ScreenRemovingDevice,
   };
   Q_ENUM(CustomScreen);
 
@@ -245,6 +246,8 @@ class MozillaVPN final : public App {
   void errorHandled();
 
   void scheduleRefreshDataTasks();
+
+  static void ensureApplicationIdExists();
 
   static void registerUrlOpenerLabels();
 

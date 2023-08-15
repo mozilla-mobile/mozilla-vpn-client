@@ -59,7 +59,7 @@ constexpr const char* SETTINGS_APP_NAME = "vpn";
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
 
 // The file name for the logging
-constexpr const char* LOG_FILE_NAME = "mozillavpn.txt";
+constexpr const char* LOG_FILE_NAME = "mozillavpn.log";
 
 // The localization filename prefix. The real file name should be called:
 // `LOCALIZER_FILENAME_PREFIX` + '_' + languageCode + ".qm". For instance:

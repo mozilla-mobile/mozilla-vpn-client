@@ -8,10 +8,6 @@ set -e
 # Reqs
 git submodule update --init --depth 1
 
-for i in src/apps/*/translations/i18n; do
-  git submodule update --remote $i
-done
-
 pip3 install -r requirements.txt
 
 # Get Secrets for building

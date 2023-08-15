@@ -170,6 +170,10 @@ MZViewBase {
                     title: "Animations playground"
                     viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
                 }
+                ListElement {
+                    title: "UI Testing"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewUiTesting.qml"
+                }
             }
 
             delegate: MZSettingsItem {

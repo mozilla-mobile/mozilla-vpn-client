@@ -69,5 +69,7 @@ qt_add_qml_module(resources
         copy.svg
         paste.svg
         info.svg
+        lock.svg
+        startup.svg
 
 )

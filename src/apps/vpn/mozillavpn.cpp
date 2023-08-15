@@ -236,6 +236,8 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
+
+  ensureApplicationIdExists();
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -1714,6 +1716,20 @@ void MozillaVPN::registerNavigatorScreens() {
         return true;
       });
 
+  Navigator::registerScreen(
+      MozillaVPN::ScreenRemovingDevice, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenRemovingDevice.qml", QVector<int>{},
+      [](int* requestedScreen) -> int8_t {
+        return (requestedScreen &&
+                *requestedScreen == MozillaVPN::ScreenRemovingDevice)
+                   ? 99
+                   : -1;
+      },
+      []() -> bool {
+        Navigator::instance()->requestPreviousScreen();
+        return true;
+      });
+
   connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound,
           Navigator::instance(), []() {
             Navigator::instance()->requestScreen(
@@ -2244,4 +2260,14 @@ void MozillaVPN::registerPushMessageTypes() {
         MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
         return true;
       });
+}
+
+void MozillaVPN::ensureApplicationIdExists() {
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  if (!settingsHolder->hasInstallationId()) {
+    QString uuid = mozilla::glean::session::installation_id.generateAndSet();
+    settingsHolder->setInstallationId(uuid);
+  }
+#endif
 }
