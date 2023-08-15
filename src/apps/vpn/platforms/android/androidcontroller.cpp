@@ -116,7 +116,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 }
 
 void AndroidController::activate(const InterfaceConfig& config,
-                                 Controller::Reason reason) {
+                                 ConnectionManager::Reason reason) {
   Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   logger.debug() << "Activation";
 
@@ -171,7 +171,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
   const QList<Server> serverList =
-      vpn->controller()->currentServer().exitServers();
+      vpn->connectionManager()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != config.m_serverPublicKey) {
@@ -205,7 +205,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
   QString localizedCityName =
-      vpn->controller()->currentServer().localizedExitCityName();
+      vpn->connectionManager()->currentServer().localizedExitCityName();
   args["city"] = localizedCityName;
 
   QJsonObject messages;
@@ -240,10 +240,10 @@ void AndroidController::activate(const InterfaceConfig& config,
                                     doc.toJson(QJsonDocument::Compact));
 }
 
-void AndroidController::deactivate(Controller::Reason reason) {
+void AndroidController::deactivate(ConnectionManager::Reason reason) {
   logger.debug() << "deactivation";
 
-  if (reason != Controller::ReasonNone) {
+  if (reason != ConnectionManager::ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate
