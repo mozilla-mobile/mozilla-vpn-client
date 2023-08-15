@@ -256,7 +256,7 @@ session:
   daemon_session_source:
     type: string
     description: |
-      (Mobile-only) Where the session started from. Should be "app", "system settings",
+      (Mobile-only) Where the session started from. Should be "app", "system",
       or "autostart on boot".
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
