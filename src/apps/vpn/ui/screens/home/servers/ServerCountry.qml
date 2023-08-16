@@ -16,10 +16,16 @@ MZClickableRow {
 
     property bool cityListVisible: (code === focusScope.currentServer.countryCode)
     property real multiHopMenuHeight: MZFeatureList.get("multiHop").isSupported ? MZTheme.theme.menuHeight : 0
-    property real animationDuration: 200 + (citiesRepeater.count * 25)
+    property int cityCount: cities.length
+    property real animationDuration: 200 + (cityCount * 25)
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
+    property var cityList: cityListVisible ? cityLoader.item : cityLoader
+
+    Component.onCompleted:{
+       cityLoader.active = cityListVisible
+    }
 
     // The city connection score can be used for every case except the multihop exit location,
     // where we need to use the scoring between the entry and exit locations instead.
@@ -28,6 +34,11 @@ MZClickableRow {
     property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
 
     function openCityList() {
+        if(!cityListVisible){
+            // If we are currently collapsed, 
+            // sync load the list, before we show it. 
+            cityLoader.active = true
+        }
         cityListVisible = !cityListVisible;
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
@@ -75,10 +86,10 @@ MZClickableRow {
             name: "listOpen"
 
             PropertyChanges {
-                target: serverCountry
-                height: serverCountryRow.height + cityList.height
+                        target: serverCountry
+                        height: serverCountryRow.height + cityList.height
             }
-
+            
             PropertyChanges {
                 target: cityList
                 opacity: 1
@@ -89,32 +100,42 @@ MZClickableRow {
     transitions: [
         Transition {
             to: "listClosed"
-            ParallelAnimation {
-                PropertyAnimation {
-                    target: cityList
-                    property: "opacity"
-                    duration: animationDuration
+                SequentialAnimation{
+                    ParallelAnimation {
+                        PropertyAnimation {
+                                target: cityList
+                                property: "opacity"
+                                duration: animationDuration
+                        }
+                        PropertyAnimation {
+                                target: serverCountry
+                                property: "height"
+                                duration: animationDuration
+                        }
+                    }
+                    ScriptAction{
+                        // After we the close animation
+                        // we can safely unload the list
+                        script: {
+                            cityLoader.active = false;
+                        }
+                    }
                 }
-                PropertyAnimation {
-                    target: serverCountry
-                    property: "height"
-                    duration: animationDuration
-                }
-            }
+                
         },
         Transition {
-            to: "listOpen"
-            PropertyAnimation {
-                target: serverCountry
-                property: "height"
-                to: serverCountryRow.height + cityList.implicitHeight
-                duration: animationDuration
-            }
-            PropertyAnimation {
-                target: cityList
-                property: "opacity"
-                duration: 0
-            }
+            to: "listOpen"               
+                    PropertyAnimation {
+                        target: serverCountry
+                        property: "height"
+                        to: serverCountryRow.height + cityList.implicitHeight
+                        duration: animationDuration
+                    }
+                    PropertyAnimation {
+                        target: cityList
+                        property: "opacity"
+                        duration: 0
+                    }
         }
 
     ]
@@ -153,9 +174,10 @@ MZClickableRow {
 
     }
 
-    Column {
-        id: cityList
-        objectName: "serverCityList"
+    Loader {
+        id: cityLoader
+        active: false
+        asynchronous: false // Load sync, once we need that
 
         anchors.top: serverCountryRow.bottom
         anchors.topMargin: 0
@@ -163,61 +185,66 @@ MZClickableRow {
         anchors.leftMargin: MZTheme.theme.hSpacing + MZTheme.theme.vSpacing + 4
         width: serverCountry.width - anchors.leftMargin
 
-        Accessible.role: Accessible.List
-        //% "Cities"
-        //: The title for the list of cities.
-        Accessible.name: qsTrId("cities")
+  
+        sourceComponent: Column {
+            property alias count: citiesRepeater.count
+            objectName: "serverCityList"
 
-        Repeater {
-            id: citiesRepeater
-            model: cities
+            Accessible.role: Accessible.List
+            //% "Cities"
+            //: The title for the list of cities.
+            Accessible.name: qsTrId("cities")
 
-            delegate: MZRadioDelegate {
-                property string _cityName: modelData.name
-                property string _countryCode: code
-                property string _localizedCityName: modelData.localizedName
-                property bool isAvailable: modelData.connectionScore >= 0
-                property int itemHeight: 54
+            Repeater {
+                id: citiesRepeater
+                model: cities
 
-                id: del
-                objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
-                activeFocusOnTab: cityListVisible
-                Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
-                Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
-                radioButtonLabelText: _localizedCityName
-                accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
-                implicitWidth: parent.width
+                delegate: MZRadioDelegate {
+                    property string _cityName: modelData.name
+                    property string _countryCode: code
+                    property string _localizedCityName: modelData.localizedName
+                    property bool isAvailable: modelData.connectionScore >= 0
+                    property int itemHeight: 54
 
-                onClicked: {
-                    if (!isAvailable) {
-                        return;
+                    id: del
+                    objectName: "serverCity-" + del._cityName.replace(/ /g, '_')
+                    activeFocusOnTab: cityListVisible
+                    Keys.onDownPressed: if (citiesRepeater.itemAt(index + 1)) citiesRepeater.itemAt(index + 1).forceActiveFocus()
+                    Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
+                    radioButtonLabelText: _localizedCityName
+                    accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
+                    implicitWidth: parent.width
+
+                    onClicked: {
+                        if (!isAvailable) {
+                            return;
+                        }
+                        focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
+                        MZSettings.recommendedServerSelected = false
                     }
-                    focusScope.setSelectedServer(del._countryCode, del._cityName,del._localizedCityName);
-                    MZSettings.recommendedServerSelected = false
-                }
-                height: itemHeight
-                checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
-                isHoverable: cityListVisible && del.isAvailable
-                enabled: cityListVisible && del.isAvailable
+                    height: itemHeight
+                    checked: del._countryCode === focusScope.currentServer.countryCode && del._cityName === focusScope.currentServer.cityName
+                    isHoverable: cityListVisible && del.isAvailable
+                    enabled: cityListVisible && del.isAvailable
 
-                Component.onCompleted: {
-                    if (checked) {
-                        currentCityIndex = index;
+                    Component.onCompleted: {
+                        if (checked) {
+                            currentCityIndex = index;
+                        }
                     }
-                }
 
-                ServerLatencyIndicator {
-                    id: latencyIndicator
-                    anchors {
-                        right: parent.right
-                        rightMargin: MZTheme.theme.hSpacing
-                        verticalCenter: parent.verticalCenter
+                    ServerLatencyIndicator {
+                        id: latencyIndicator
+                        anchors {
+                            right: parent.right
+                            rightMargin: MZTheme.theme.hSpacing
+                            verticalCenter: parent.verticalCenter
+                        }
+                        score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                     }
-                    score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                 }
             }
         }
-
     }
 
 }

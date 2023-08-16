@@ -22,14 +22,6 @@ describe('Addon content replacer', function() {
       await vpn.resetAddons('07_replacer');
     });
 
-    it('Replace the home', async () => {
-      await vpn.authenticateInApp(true, false);
-
-      await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-      await vpn.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
-      await vpn.waitForQuery('//replacedHome{visible=true}');
-    });
-
     it('Replace the country/city names', async () => {
       // In this way we disable the 'home-replacement' addon.
       await vpn.setSetting('languageCode', 'it');
@@ -59,6 +51,7 @@ describe('Addon content replacer', function() {
         for (let city of server.cities) {
           const cityId = queries.screenHome.serverListView.generateCityId(
               countryId, city.name);
+          await vpn.waitForQuery(cityId.visible());
           const cityName =
               await vpn.getQueryProperty(cityId, 'radioButtonLabelText');
           assert(

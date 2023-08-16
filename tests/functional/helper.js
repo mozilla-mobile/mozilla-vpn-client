@@ -233,7 +233,7 @@ module.exports = {
   async getQueryProperty(id, property) {
     assert(
         await this.query(id),
-        'Property checks must be done on existing elements');
+        `Property checks must be done on existing elements: ${id}.${property}`);
     const json = await this._writeCommand(`query_property ${
         encodeURIComponent(id)} ${encodeURIComponent(property)}`);
     assert(
