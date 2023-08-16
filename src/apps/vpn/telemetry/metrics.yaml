@@ -257,7 +257,7 @@ session:
     type: string
     description: |
       (Mobile-only) Where the session started from. Should be "app", "system",
-      or "autostart on boot".
+      or "autostart on boot". ("Autostart on boot" is only on Android.)
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
