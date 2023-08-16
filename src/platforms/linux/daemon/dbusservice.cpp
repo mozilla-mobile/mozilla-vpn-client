@@ -442,9 +442,7 @@ bool DBusService::isCallerAuthorized() {
 #if QT_VERSION < 0x060403
 class QtbugRegistrationProxy {
  public:
-  QtbugRegistrationProxy() {
-    qDBusRegisterMetaType<QDBusObjectPath>();
-  }
+  QtbugRegistrationProxy() { qDBusRegisterMetaType<QDBusObjectPath>(); }
 };
 
 static QtbugRegistrationProxy s_qtbugRegistrationProxy;
