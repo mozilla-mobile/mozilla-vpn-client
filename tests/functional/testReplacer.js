@@ -7,7 +7,7 @@ const vpn = require('./helper.js');
 const queries = require('./queries.js');
 
 describe('Addon content replacer', function() {
-  this.timeout(0);  // DEV
+  this.timeout(60000);
 
   beforeEach(async () => {
     await vpn.flipFeatureOn('replacerAddon');
