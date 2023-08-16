@@ -31,6 +31,7 @@ constexpr const char* APP_STATE_BLOCKED = "blocked";
 constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
 constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
 constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
+constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
 
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
@@ -54,11 +55,11 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
     logger.error() << "System bus is not connected?";
   }
   if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
-              SLOT(userCreated(uint, QDBusObjectPath)))) {
+                   SLOT(userCreated(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserNew signal";
   }
   if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
-              SLOT(userRemoved(uint, QDBusObjectPath)))) {
+                   SLOT(userRemoved(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserRemoved signal";
   }
 
@@ -179,7 +180,7 @@ void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
   if (reply.isValid()) {
     UserDataList list = reply.value();
     for (const auto& user : list) {
-      m_appTracker->userCreated(user.userid, user.path);
+      userCreated(user.userid, user.path);
     }
   }
 
@@ -187,11 +188,40 @@ void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
 }
 
 void DBusService::userCreated(uint uid, const QDBusObjectPath& path) {
-  m_appTracker->userCreated(uid, path);
+  QDBusInterface iface(DBUS_LOGIN_SERVICE, path.path(), DBUS_LOGIN_USER,
+                       QDBusConnection::systemBus());
+  if (!iface.isValid()) {
+    return;
+  }
+
+  // Ensure that systemd has finished creating the user object.
+  QVariant state = iface.property("State");
+  if (!state.isValid()) {
+    logger.error() << "User" << uid << "has invalid user state";
+    return;
+  }
+  logger.debug() << "User" << uid << "state is:" << state.toString();
+  if (state.toString() == "opening") {
+    // I can't find a signal to hook into, so we are reduced to polling.
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this,
+            [this, uid, path]() { userCreated(uid, path); });
+    timer->setSingleShot(true);
+    timer->start(100);
+    return;
+  }
+
+  QVariant runtime = iface.property("RuntimePath");
+  if (!runtime.isValid()) {
+    logger.error() << "User" << uid << "has invalid runtime path";
+    return;
+  }
+  m_appTracker->userCreated(uid, runtime.toString());
 }
 
 void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
-  m_appTracker->userRemoved(uid, path);
+  Q_UNUSED(path);
+  m_appTracker->userRemoved(uid);
 }
 
 void DBusService::appLaunched(const QString& cgroup, const QString& appId,
