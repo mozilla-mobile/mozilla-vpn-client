@@ -7,6 +7,25 @@ class QmlQueryComposer {
     this.path = path;
   }
 
+  /**
+   * Creates a new QmlQueryComposer with the subquery appended
+   * @param {String | QmlQueryComposer} other
+   * @returns QmlQueryComposer = QmlQueryComposer+QmlQueryComposer|String
+   */
+  query(other) {
+    if (typeof other === 'string') {
+      const path = this.path + other;
+      return new QmlQueryComposer(path)
+    } else if (typeof other === 'object') {
+      if (!other.path) {
+        throw new Error('Cannot Append Object - no .path on:' + other);
+      }
+      const path = this.path + other.path;
+      return new QmlQueryComposer(path)
+    }
+    throw new Error('Unsupported Type: append(string|QmlQueryComposer)');
+  }
+
   visible() {
     return this.prop('visible', true);
   }
@@ -88,8 +107,8 @@ const screenHome = {
     },
 
     generateCityId: (countryId, cityName) => {
-      return new QmlQueryComposer(`${countryId}/serverCityList/serverCity-${
-          cityName.replace(/ /g, '_')}`);
+      return new QmlQueryComposer(
+          `${countryId}//serverCity-${cityName.replace(/ /g, '_')}`);
     },
 
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
@@ -103,6 +122,7 @@ const screenHome = {
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabSingleHop'),
     MULTIHOP_SELECTOR_TAB: new QmlQueryComposer(
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
+    MULTIHOP_VIEW: new QmlQueryComposer('//multiHopStackView'),
     ALL_SERVERS_TAB: new QmlQueryComposer('//tabAllServers'),
     VPN_MULTHOP_CHEVRON: new QmlQueryComposer('//vpnCollapsibleCardChevron'),
     VPN_COLLAPSIBLE_CARD: new QmlQueryComposer('//vpnCollapsibleCard'),
