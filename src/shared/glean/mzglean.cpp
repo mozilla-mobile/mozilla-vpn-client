@@ -143,7 +143,7 @@ void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
     // clear out the former installation ID immediately
     SettingsHolder::instance()->removeInstallationId();
   }
-  #endif
+#endif
 }
 
 // static
