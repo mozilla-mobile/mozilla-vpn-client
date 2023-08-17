@@ -92,14 +92,14 @@ FocusScope {
 
             anchors.fill: parent
             flickContentHeight: {
-                VPNRecommendedLocationModel.rowCount() > 0 ? serverListRecommendedLoader.item.implicitHeight + serverListRecommendedLoader.item.anchors.topMargin
-                                                           : serverListRecommendedEmptyLoader.item.implicitHeight + serverListRecommendedEmptyLoader.item.anchors.topMargin
+                if(serverListRecommendedEmptyLoader.active) return serverListRecommendedEmptyLoader.item.implicitHeight + serverListRecommendedEmptyLoader.item.anchors.topMargin
+                else if (serverListRecommendedLoader.active) return serverListRecommendedLoader.item.implicitHeight + serverListRecommendedLoader.item.anchors.topMargin
             }
 
             Loader {
                 id: serverListRecommendedEmptyLoader
 
-                active: VPNRecommendedLocationModel.rowCount() === 0
+                active: VPNRecommendedLocationModel.rowCount() === 0 && !VPNServerLatency.isActive
                 anchors.fill: parent
                 sourceComponent: ColumnLayout {
 
@@ -153,7 +153,7 @@ FocusScope {
 
                 anchors.fill: parent
 
-                active: VPNRecommendedLocationModel.rowCount() > 0
+                active: VPNRecommendedLocationModel.rowCount() > 0 || VPNServerLatency.isActive
                 sourceComponent: Column {
                     objectName: "serverListRecommended"
 
