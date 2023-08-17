@@ -227,6 +227,7 @@ void AndroidController::activate(const InterfaceConfig& config,
 
   args["isSuperDooperFeatureActive"] =
       Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
+  args["installationId"] = config.m_installationId;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,

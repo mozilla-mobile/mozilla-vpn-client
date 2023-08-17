@@ -133,6 +133,17 @@ void MZGlean::setUploadEnabled(bool isTelemetryEnabled) {
 #endif
 
   broadcastUploadEnabledChange(isTelemetryEnabled);
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  if (isTelemetryEnabled) {
+    // need to reset installation ID, as it would have been cleared
+    QString uuid = mozilla::glean::session::installation_id.generateAndSet();
+    SettingsHolder::instance()->setInstallationId(uuid);
+  } else {
+    // clear out the former installation ID immediately
+    SettingsHolder::instance()->removeInstallationId();
+  }
+#endif
 }
 
 // static

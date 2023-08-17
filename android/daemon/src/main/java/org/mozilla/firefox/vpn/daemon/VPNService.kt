@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
 import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.io.File
 import java.util.*
 
@@ -254,6 +255,16 @@ class VPNService : android.net.VpnService() {
         }
 
         if (isSuperDooperMetricsActive) {
+            val installationIdString = json.getString("installationId")
+            installationIdString?.let {
+                try {
+                    val installationId = UUID.fromString(installationIdString)
+                    Session.installationId.set(installationId)
+                } catch (e: Exception) {
+                    Log.e(tag, "Daemon installation ID string was not UUID:")
+                    Log.e(tag, e.toString())
+                }
+            }
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonFlush,
             )
