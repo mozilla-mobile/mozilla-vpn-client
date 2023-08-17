@@ -91,20 +91,26 @@ FocusScope {
             id: vpnFlickable
 
             anchors.fill: parent
-            flickContentHeight: serverListRecommended.implicitHeight + serverListRecommended.anchors.topMargin
+            flickContentHeight: {
+                VPNRecommendedLocationModel.rowCount() > 0 ? serverListRecommendedLoader.item.implicitHeight + serverListRecommendedLoader.item.anchors.topMargin
+                                                           : serverListRecommendedEmptyLoader.item.implicitHeight + serverListRecommendedEmptyLoader.item.anchors.topMargin
+            }
 
             Loader {
-                anchors {
-                    top: parent.top
-                    left: parent.left
-                    right: parent.right
-                    topMargin: 48
-                    leftMargin: 32
-                    rightMargin: 32
-                }
+                id: serverListRecommendedEmptyLoader
 
                 active: VPNRecommendedLocationModel.rowCount() === 0
+                anchors.fill: parent
                 sourceComponent: ColumnLayout {
+
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        right: parent.right
+                        topMargin: 48
+                        leftMargin: 32
+                        rightMargin: 32
+                    }
 
                     spacing: 0
 
@@ -136,13 +142,19 @@ FocusScope {
                         font.pixelSize: MZTheme.theme.fontSize
                     }
 
+                    Item {
+                        Layout.fillHeight: true
+                    }
                 }
             }
 
             Loader {
+                id: serverListRecommendedLoader
+
+                anchors.fill: parent
+
                 active: VPNRecommendedLocationModel.rowCount() > 0
                 sourceComponent: Column {
-                    id: serverListRecommended
                     objectName: "serverListRecommended"
 
                     spacing: MZTheme.theme.listSpacing * 1.5
