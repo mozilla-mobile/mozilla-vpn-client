@@ -116,7 +116,8 @@ void WindowsPingSender::pingEventReady() {
       return;
     }
     QString errmsg = WindowsUtils::getErrorMessage();
-    logger.error() << "failed with error:" << errmsg;
+    logger.error() << "No ping reply. Code: " << error
+                   << " Message: " << errmsg;
     return;
   }
 

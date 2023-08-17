@@ -78,7 +78,7 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
   }
 
   if (data->NotificationCode != wlan_notification_msm_connected) {
-    logger.debug() << "The wlan code is not MSM connected";
+    logger.debug() << "Wlan unprocessed code: " << data->NotificationCode;
     return;
   }
 
