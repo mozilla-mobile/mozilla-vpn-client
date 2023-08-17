@@ -256,12 +256,13 @@ class VPNService : android.net.VpnService() {
 
         if (isSuperDooperMetricsActive) {
             val installationIdString = json.getString("installationId")
-            installationIdString?.let{
+            installationIdString?.let {
                 try {
                     val installationId = UUID.fromString(installationIdString)
                     Session.installationId.set(installationId)
                 } catch (e: Exception) {
-                    Log.e(tag, "Daemon installation ID string was not UUID")
+                    Log.e(tag, "Daemon installation ID string was not UUID:")
+                    Log.e(tag, e.toString())
                 }
             }
             Pings.daemonsession.submit(
