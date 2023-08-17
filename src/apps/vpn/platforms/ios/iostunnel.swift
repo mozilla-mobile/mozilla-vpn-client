@@ -80,7 +80,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
                 if self.isSuperDooperFeatureActive {
-                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system settings")
+                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
                     GleanMetrics.Session.daemonSessionId.generateAndSet()
                     GleanMetrics.Session.daemonSessionStart.set()
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)

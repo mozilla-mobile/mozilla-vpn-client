@@ -238,12 +238,12 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null) {
         if (json == null) {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
-        val wireguard_conf = buildWireugardConfig(json, useFallbackServer)
+        val wireguard_conf = buildWireguardConfig(json, useFallbackServer)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
             throw Error("WG_Userspace config is empty, can't continue")
@@ -321,6 +321,11 @@ class VPNService : android.net.VpnService() {
         }
 
         if (isSuperDooperMetricsActive) {
+            Session.daemonSessionStart.set()
+            Session.daemonSessionId.generateAndSet()
+            if (source != null) {
+                Session.daemonSessionSource.set(source)
+            }
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonStart,
             )
@@ -328,7 +333,7 @@ class VPNService : android.net.VpnService() {
         mMetricsTimer.start()
     }
 
-    fun reconnect(forceFallBack: Boolean = false) {
+    fun reconnect(forceFallBack: Boolean = false, source: String? = null) {
         // Save the current timestamp - so that a silent switch won't
         // reset the timer in the app.
         val currentConnectionTime = mConnectionTime
@@ -352,7 +357,7 @@ class VPNService : android.net.VpnService() {
 
         Log.v(tag, "Try to reconnect tunnel with same conf")
         try {
-            this.turnOn(config, forceFallBack)
+            this.turnOn(config, forceFallBack, source)
         } catch (e: Exception) {
             Log.e(tag, "VPN service - Reconnect failed")
             // TODO: If we end up here, we might have screwed up the connection.
@@ -385,9 +390,17 @@ class VPNService : android.net.VpnService() {
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
         if (isSuperDooperMetricsActive) {
+            Session.daemonSessionEnd.set()
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonEnd,
+                Pings.daemonsessionReasonCodes.daemonEnd
             )
+
+            // We are rotating the UUID here as a safety measure. It is rotated
+            // again before the next session start, and we expect to see the
+            // UUID created here in only one ping: The daemon ping with a
+            // "flush" reason, which should contain this UUID and no other
+            // metrics.
+            Session.daemonSessionId.generateAndSet()
         }
         mMetricsTimer.cancel()
     }
@@ -444,7 +457,7 @@ class VPNService : android.net.VpnService() {
      * Create a Wireguard [Config] from a [json] string - The [json] will be created in
      * AndroidController.cpp
      */
-    private fun buildWireugardConfig(obj: JSONObject, useFallbackServer: Boolean = false): Config {
+    private fun buildWireguardConfig(obj: JSONObject, useFallbackServer: Boolean = false): Config {
         val confBuilder = Config.Builder()
         val jServer: JSONObject =
             if (useFallbackServer) {

@@ -256,8 +256,9 @@ session:
   daemon_session_source:
     type: string
     description: |
-      (Mobile-only) Where the session started from. Should be "app", "system settings",
-      or "autostart on boot".
+      (Mobile-only) Where the VPN session started from, to determine how many sessions
+      start outside the app. Values should be "app" or "system". "system" covers
+      cases like system settings, autostart on boot, tile, etc.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
