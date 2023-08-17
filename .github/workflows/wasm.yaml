@@ -14,28 +14,43 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  QTVERSION: 6.2.4
+
+
 jobs:
+  getQt:
+    name: Get Qt
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+            name: Qt6-Wasm
+            path: /opt
   wasmQt6:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
-    env:
-      QTVERSION: 6.2.4
-
+    needs:
+      - getQt
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
             submodules: 'true'
-
       - name: Install Qt
-        shell: bash
-        run: |
-          python3 -m pip install aqtinstall
-          # qt6.2.3 for wasm needs the desktop linux installation
-          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
-          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
+        uses: actions/download-artifact@v3
+        with:
+          name: Qt6-Wasm
+          path: /opt
 
       - name: Install python dependencies
         shell: bash
@@ -79,6 +94,7 @@ jobs:
     name: Functional tests
     needs:
       - wasmQt6
+      - getQt
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     strategy:
@@ -98,12 +114,11 @@ jobs:
         with:
           path: build/
           key: ${{ github.sha }}
-
       - name: Install Qt
-        shell: bash
-        run: |
-          python3 -m pip install aqtinstall
-          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+        uses: actions/download-artifact@v3
+        with:
+          name: Qt6-Wasm
+          path: /opt
 
       - name: Install dependecies
         run: |
