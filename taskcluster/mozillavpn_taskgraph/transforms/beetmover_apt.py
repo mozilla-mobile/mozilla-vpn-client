@@ -40,7 +40,8 @@ def get_gcs_sources(dependent_task):
 
 
 ALLOWED_SHIPPING_PHASES = [
-    "ship-client"
+    "ship-client",
+    "promote-client"
 ]
 
 @transforms.add
@@ -66,7 +67,6 @@ def beetmover_apt(config, tasks):
             # We do have nothing to ship, skip this task
             continue
         task["worker"]["gcs-sources"]=gcs_sources
-
         is_relpro = (
             config.params["level"] == "3"
             and config.params["tasks_for"] in task["run-on-tasks-for"]
