@@ -211,6 +211,11 @@ const screenGetHelp = {
 
   contactSupportView: {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
+    UNAUTH_EMAIL_TEXTFIELD: new QmlQueryComposer('//Email-Textfield'),
+    UNAUTH_EMAILCONFIRM_TEXTFIELD: new QmlQueryComposer('//ConfirmEmmail-Textfield'),
+    UNAUTH_SUBJECT_TEXTFIELD: new QmlQueryComposer('//Subject-Textfield'),
+    UNAUTH_DESCRIBE_TEXTAREA: new QmlQueryComposer('//Describe-Textarea'),
+    UNAUTH_CATEGORY: new QmlQueryComposer('//chooseCategory-button'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
   }
 };

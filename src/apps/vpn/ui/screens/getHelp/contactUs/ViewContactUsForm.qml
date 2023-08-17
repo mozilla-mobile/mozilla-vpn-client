@@ -87,7 +87,7 @@ MZViewBase {
 
                     MZTextField {
                         id: emailInput
-
+                        objectName: "Email-Textfield"
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !MZAuthInApp.validateEmailAddress(emailInput.text)
@@ -97,7 +97,7 @@ MZViewBase {
 
                 MZTextField {
                     id: confirmEmailInput
-
+                    objectName: "ConfirmEmmail-Textfield"
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !MZAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
@@ -135,6 +135,7 @@ MZViewBase {
 
                 MZComboBox {
                     id: dropDown
+                    objectName: "chooseCategory-button"
                     placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
@@ -144,7 +145,7 @@ MZViewBase {
 
             MZTextField {
                 id: subjectInput
-
+                objectName: "Subject-Textfield"
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -176,6 +177,7 @@ MZViewBase {
                 Layout.fillWidth: true
 
                 MZTextBlock {
+                    objectName: "Describe-Textarea"
                     font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
                     text: MZI18n.InAppSupportWorkflowDisclaimerText
@@ -196,6 +198,7 @@ MZViewBase {
                 spacing: MZTheme.theme.windowMargin
 
                 MZButton {
+                    objectName: "contactUs-submitButton"
                     text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       Glean.sample.supportCaseSubmitted.record();
@@ -219,6 +222,7 @@ MZViewBase {
                 }
 
                 MZCancelButton {
+                    objectName: "contactUs-cancelButton"
                     Layout.minimumHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignHCenter

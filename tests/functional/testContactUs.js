@@ -32,6 +32,26 @@ describe('Contact us view', function() {
         queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUTS.visible());
   });
 
+  it('Verify unauth feedback filling out', async () => {
+    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+
+    await vpn.waitForQuery(
+        queries.screenGetHelp.contactSupportView.USER_INFO.hidden());
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenGetHelp.contactSupportView.USER_INFO, 'visible'),
+        'false');
+
+    await vpn.waitForQueryAndWriteInTextField(queries.screenGetHelp.contactSupportView.UNAUTH_EMAIL_TEXTFIELD.visible(), "automation@test.com")
+    await vpn.waitForQueryAndWriteInTextField(queries.screenGetHelp.contactSupportView.UNAUTH_EMAILCONFIRM_TEXTFIELD.visible(), "automation@test.com")
+    await vpn.waitForQueryAndWriteInTextField(queries.screenGetHelp.contactSupportView.UNAUTH_SUBJECT_TEXTFIELD.visible(), "Automation Subject")
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.contactSupportView.UNAUTH_CATEGORY.visible())
+
+  });
+
   describe('Contact us view - authenticated user', function() {
     this.ctx.authenticationNeeded = true;
 
