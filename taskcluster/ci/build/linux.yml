@@ -65,16 +65,6 @@ linux/mantic:
         name: linux-mantic
         type: build
 
-linux/fedora-fc36:
-    description: "Linux Build (Fedora/36)"
-    treeherder:
-        platform: linux/fedora-fc36
-    worker:
-        docker-image: {in-tree: linux-build-fedora-fc36}
-    add-index-routes:
-        name: linux-fedora-fc36
-        type: build
-
 linux/fedora-fc37:
     description: "Linux Build (Fedora/37)"
     treeherder:
@@ -83,6 +73,16 @@ linux/fedora-fc37:
         docker-image: {in-tree: linux-build-fedora-fc37}
     add-index-routes:
         name: linux-fedora-fc37
+        type: build
+
+linux/fedora-fc38:
+    description: "Linux Build (Fedora/38)"
+    treeherder:
+        platform: linux/fedora-fc38
+    worker:
+        docker-image: {in-tree: linux-build-fedora-fc38}
+    add-index-routes:
+        name: linux-fedora-fc38
         type: build
 
 linux/static:
