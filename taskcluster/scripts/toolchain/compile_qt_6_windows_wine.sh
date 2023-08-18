@@ -6,6 +6,9 @@
 
 set -e
 
+Xvfb :1 -screen 0 1024x768x16
+export DISPLAY=:1.0
+
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 
 # Start Wine 
