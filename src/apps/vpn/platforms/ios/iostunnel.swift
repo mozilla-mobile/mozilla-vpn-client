@@ -20,6 +20,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
     }()
 
+    private var isGleanDebugTagActive: Bool {
+        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isGleanDebugTagActive"] as? Bool) ?? false
+    }
+
     private var isSuperDooperFeatureActive: Bool {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
@@ -38,6 +42,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let appChannel = defaults!.string(forKey: Constants.UserDefaultKeys.appChannel)
 
         Glean.shared.registerPings(GleanMetrics.Pings.self)
+        if isGleanDebugTagActive {
+            logger.info(message: "Setting Glean debug tag for Network Extension.")
+            Glean.shared.setDebugViewTag("VPNTest")
+        }
         Glean.shared.initialize(
             uploadEnabled: telemetryEnabled,
             configuration: Configuration.init(

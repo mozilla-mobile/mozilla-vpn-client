@@ -11,6 +11,7 @@
 #include <QJniObject>
 #include <QTimer>
 
+#include "feature.h"
 #include "logger.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
@@ -66,13 +67,17 @@ bool AndroidCommons::shareText(const QString& text) {
 // static
 void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
-  runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
-    QJniObject::callStaticMethod<void>(
-        COMMON_UTILS_CLASS, "initializeGlean",
-        "(Landroid/content/Context;ZLjava/lang/String;)V",
-        getActivity().object(), (jboolean)isTelemetryEnabled,
-        QJniObject::fromString(channel).object());
-  });
+  bool isGleanDebugTagActive =
+      Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported();
+  runOnAndroidThreadSync(
+      [isTelemetryEnabled, channel, isGleanDebugTagActive]() {
+        QJniObject::callStaticMethod<void>(
+            COMMON_UTILS_CLASS, "initializeGlean",
+            "(Landroid/content/Context;ZLjava/lang/String;)V",
+            getActivity().object(), (jboolean)isTelemetryEnabled,
+            QJniObject::fromString(channel).object(),
+            (jboolean)isGleanDebugTagActive);
+      });
 }
 
 // static

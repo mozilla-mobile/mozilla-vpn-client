@@ -58,6 +58,11 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
+    private val isGleanDebugTagActive: Boolean
+        get() {
+            return this.mConfig?.optBoolean("isGleanDebugTagFeatureActive", false) ?: false
+        }
+
     private var currentTunnelHandle = -1
         set(value: Int) {
             field = value
@@ -529,6 +534,10 @@ class VPNService : android.net.VpnService() {
             }
 
         Glean.registerPings(Pings)
+        if (isGleanDebugTagActive) {
+            Log.i(tag, "Setting Glean debug tag for daemon.")
+            Glean.setDebugViewTag("VPNTest")
+        }
         Glean.initialize(
             applicationContext = this.applicationContext,
             uploadEnabled = uploadEnabled,
@@ -549,7 +558,7 @@ class VPNService : android.net.VpnService() {
             ),
         )
 
-        Log.i(tag, "Initialized Glean. Upload enabled state: $uploadEnabled")
+        Log.i(tag, "Initialized Glean for daemon. Upload enabled state: $uploadEnabled")
     }
 
     companion object {

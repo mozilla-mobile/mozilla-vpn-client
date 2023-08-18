@@ -227,6 +227,8 @@ void AndroidController::activate(const InterfaceConfig& config,
 
   args["isSuperDooperFeatureActive"] =
       Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
+  args["isGleanDebugTagFeatureActive"] =
+      Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported();
   args["installationId"] = config.m_installationId;
 
   QJsonDocument doc(args);

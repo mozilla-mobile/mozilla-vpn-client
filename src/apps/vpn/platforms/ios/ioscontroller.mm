@@ -137,6 +137,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                       serverPort:config.m_serverPort
           allowedIPAddressRanges:allowedIPAddressRangesNS
                           reason:reason
+           isGleanDebugTagActive:Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported()
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
                   installationId:config.m_installationId.toNSString()
                  failureCallback:^() {

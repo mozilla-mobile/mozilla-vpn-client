@@ -53,6 +53,13 @@ FEATURE(freeTrial,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_false)  // Disabled while we rethink free trials
 
+FEATURE(gleanDebugViewTag,       // Feature ID
+        "Glean Debug View Tag",  // Feature name
+        FeatureCallback_true,    // Can be flipped on
+        FeatureCallback_true,    // Can be flipped off
+        QStringList(),           // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
         FeatureCallback_true,  // Can be flipped on

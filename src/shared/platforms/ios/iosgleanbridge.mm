@@ -4,6 +4,7 @@
 
 #include "iosgleanbridge.h"
 #include "Mozilla-Swift.h"
+#include "feature.h"
 #include "leakdetector.h"
 
 #include <QString>
@@ -18,8 +19,10 @@ IOSGleanBridgeImpl* impl = nullptr;
 IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, const QString& channel) {
   MZ_COUNT_CTOR(IOSGleanBridge);
 
-  impl = [[IOSGleanBridgeImpl alloc] initWithTelemetryEnabled:isTelemetryEnabled
-                                                      channel:channel.toNSString()];
+  impl = [[IOSGleanBridgeImpl alloc]
+      initWithTelemetryEnabled:isTelemetryEnabled
+                       channel:channel.toNSString()
+         isGleanDebugTagActive:Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported()];
   Q_ASSERT(impl);
 }
 
