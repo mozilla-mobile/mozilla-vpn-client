@@ -38,6 +38,10 @@ class DBusClient final : public QObject {
 
   QDBusPendingCallWatcher* cleanupLogs();
 
+  QString interface() const {
+    return (m_dbus != nullptr) ? m_dbus->interface() : "";
+  }
+
  signals:
   void connected(const QString& pubkey);
   void disconnected();
