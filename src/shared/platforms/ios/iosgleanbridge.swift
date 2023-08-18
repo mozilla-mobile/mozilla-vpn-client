@@ -51,12 +51,11 @@ public class IOSGleanBridgeImpl : NSObject {
         // This logs an error like so:
         // "[User Defaults] Couldn't read values in CFPrefsPlistSource<0x2821ced00>..."
         // This is just a warning and can be ignored.
-        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        if (defaults == nil) {
+        guard let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier) else {
             IOSGleanBridgeImpl.logger.error(message: "Attempted to access UserDefaults, but it's not available.")
             return
         }
         
-        f(defaults!)
+        f(defaults)
     }
 }

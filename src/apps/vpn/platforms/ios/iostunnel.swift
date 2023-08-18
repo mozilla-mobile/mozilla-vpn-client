@@ -42,10 +42,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         let appChannel = defaults!.string(forKey: Constants.UserDefaultKeys.appChannel)
 
         Glean.shared.registerPings(GleanMetrics.Pings.self)
-        if isGleanDebugTagActive {
-            logger.info(message: "Setting Glean debug tag for Network Extension.")
-            Glean.shared.setDebugViewTag("VPNTest")
-        }
         Glean.shared.initialize(
             uploadEnabled: telemetryEnabled,
             configuration: Configuration.init(
@@ -57,6 +53,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
+        // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
+        if isGleanDebugTagActive {
+            logger.info(message: "Setting Glean debug tag for Network Extension.")
+            Glean.shared.setDebugViewTag("VPNTest")
+        }
+
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
         logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))
