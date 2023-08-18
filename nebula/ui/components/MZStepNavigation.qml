@@ -77,6 +77,7 @@ ColumnLayout {
         Layout.rightMargin: 44
         Layout.fillWidth: true
         Layout.maximumWidth: 500 //Max size of progess bar for tablets
+        Layout.alignment: Qt.AlignHCenter
 
         onActiveIndexChanged: stepNavigation.activeIndexChanged()
 
