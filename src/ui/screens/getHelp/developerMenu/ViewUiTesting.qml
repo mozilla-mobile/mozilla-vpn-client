@@ -38,8 +38,6 @@ MZViewBase {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                implicitHeight: window.height - mapToItem(window.contentItem, 0, 0).y - Layout.topMargin - MZTheme.theme.viewBaseTopMargin
-
                 Component.onCompleted: navbar.visible = false
 
                 views: [
