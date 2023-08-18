@@ -41,7 +41,7 @@ Item {
                 top: parent.top
                 left: parent.left
                 right: parent.right
-                topMargin: MZTheme.theme.windowMargin
+                topMargin: MZTheme.theme.viewBaseTopMargin
                 bottomMargin: navbar.visible ? 0 : MZTheme.theme.rowHeight
             }
         }

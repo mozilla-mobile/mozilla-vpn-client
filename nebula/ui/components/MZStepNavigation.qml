@@ -7,10 +7,8 @@ import Mozilla.Shared 1.0
 //MZStepNavigation is a navigation component(similar to MZSegmentedNavigation and MZTabNavigation) comprised of an MZStepProgressBar in which each step corresponds to a view
 //Views reside within a StackView, and as the navigation progresses, new views are pushed on top of the previous views
 
-//Note: Views must be passed in order that they will appear within the navigation
+//Note: Views must be passed in the order that they will appear within the navigation
 //Note: Does not consider the navbar
-//Warning: MZSegmentedNavigation does not currently function properly when placed directly inside an MZViewBase's `_viewContentData` (something isn't sizing right).
-//Current workaround is to disable clipping, but provides a glitchy-looking experience (due to the lack of clipping)
 
 //Usage: pass a list of views to this component using the `views` property
 /*
@@ -89,11 +87,8 @@ ColumnLayout {
         id: flickable
 
         Layout.fillWidth: true
-        Layout.fillHeight: true
 
-        //Necessary to function inside an MZViewBase, but is glitchy and should be revisted if we ever need to use with an MZViewBase
-        clip: false
-
+        implicitHeight: parent.implicitHeight - stepProgressBar.implicitHeight
         flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
 
         StackView {
