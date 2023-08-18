@@ -88,7 +88,7 @@ ColumnLayout {
 
         Layout.fillWidth: true
 
-        implicitHeight: parent.implicitHeight - stepProgressBar.implicitHeight
+        implicitHeight: window.height - mapToItem(window.contentItem, 0, 0).y - stepProgressBar.implicitHeight
         flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
 
         StackView {
