@@ -79,7 +79,7 @@ void LinuxController::dbusNameOwnerChanged(const QString& name,
                                            const QString& prevOwner,
                                            const QString& newOwner) {
   // If the daemon stops, or re-starts then we have been disconnected.
-  if (name != m_dbus->interface()) {
+  if (name == m_dbus->serviceName()) {
     logger.info() << "DBus name" << name << "has changed owner to" << newOwner;
     emit disconnected();
   }

@@ -39,6 +39,8 @@ DBusClient::DBusClient(QObject* parent) : QObject(parent) {
 
 DBusClient::~DBusClient() { MZ_COUNT_DTOR(DBusClient); }
 
+QString DBusClient::serviceName() const { return DBUS_SERVICE; }
+
 QDBusPendingCallWatcher* DBusClient::version() {
   logger.debug() << "Version via DBus";
   QDBusPendingReply<QString> reply = m_dbus->version();
