@@ -48,8 +48,6 @@ object Utils {
         if (isGleanDebugTagActive) {
             Log.i("VPNUtils", "Setting Glean debug tag.")
             Glean.setDebugViewTag("VPNTest")
-        } else {
-            Log.i("VPNUtils", "MATT NO DEBUG.")
         }
         Glean.initialize(
             applicationContext = ctx.applicationContext,
