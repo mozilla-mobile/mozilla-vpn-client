@@ -74,7 +74,7 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
       [isTelemetryEnabled, channel, isGleanDebugTagActive]() {
         QJniObject::callStaticMethod<void>(
             COMMON_UTILS_CLASS, "initializeGlean",
-            "(Landroid/content/Context;ZLjava/lang/String;)V",
+            "(Landroid/content/Context;ZLjava/lang/String;Z)V",
             getActivity().object(), (jboolean)isTelemetryEnabled,
             QJniObject::fromString(channel).object(),
             (jboolean)isGleanDebugTagActive);
