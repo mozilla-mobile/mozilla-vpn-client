@@ -69,6 +69,7 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
   bool isGleanDebugTagActive =
       Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported();
+  logger.info() << "MATT Glean debug view " << isGleanDebugTagActive;
   runOnAndroidThreadSync(
       [isTelemetryEnabled, channel, isGleanDebugTagActive]() {
         QJniObject::callStaticMethod<void>(
