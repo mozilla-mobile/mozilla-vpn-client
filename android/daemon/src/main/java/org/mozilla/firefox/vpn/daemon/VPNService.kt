@@ -327,7 +327,7 @@ class VPNService : android.net.VpnService() {
                 }
             }
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush,
+                Pings.daemonsessionReasonCodes.daemonFlush
             )
 
             Session.daemonSessionStart.set()
