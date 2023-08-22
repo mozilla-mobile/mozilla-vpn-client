@@ -106,9 +106,13 @@ void TaskSentry::sendRequest() {
             Q_UNUSED(data);
             // Let's note the event id in the logs, so we can
             // connect customer support logs with sentry :)
-            logger.debug() << "Sentry reported crash: << "
-                              "https://mozilla.sentry.io/discover/vpn-client:"
-                           << m_eventID;
+            if (!m_eventID.isEmpty()) {
+              QString sentry_event_url(
+                  "https://mozilla.sentry.io/discover/vpn-client:%0");
+              logger.debug() << "Sentry reported crash: << "
+                             << sentry_event_url.arg(m_eventID);
+            }
+
             emit completed();
           });
 }
