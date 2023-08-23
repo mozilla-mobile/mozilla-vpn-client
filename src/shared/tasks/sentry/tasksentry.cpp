@@ -23,6 +23,8 @@ Logger logger("TaskSentry");
 TaskSentry::TaskSentry(const QByteArray& envelope) : Task("TaskSentry") {
   MZ_COUNT_CTOR(TaskSentry);
   m_envelope = envelope;
+
+  connect(this, &TaskSentry::completed, [this]() { deleteLater(); });
 }
 
 TaskSentry::~TaskSentry() { MZ_COUNT_DTOR(TaskSentry); }
