@@ -8,7 +8,7 @@ use std::ffi::CString;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use once_cell::sync::OnceCell;
 
-// Logger implementation to integrate the Rust logs with src/shared/loghandler.cpp.
+// Logger implementation to integrate the Rust logs with src/loghandler.cpp.
 //
 // This message handler should be initialized alogside the Qt message handler.
 pub struct Logger {
@@ -39,7 +39,7 @@ impl Log for Logger {
 
     fn log(&self, record: &Record) {
         // The numbers here are dictated by the order of the enum on
-        // src/shared/loglevel.h
+        // src/loglevel.h
         let log_level: i32 = match record.level() {
             Level::Error => 4,
             Level::Warn => 3,

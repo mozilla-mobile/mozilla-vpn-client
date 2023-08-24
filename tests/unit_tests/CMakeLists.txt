@@ -20,11 +20,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MZ_SOURCE_DIR}/shared)
-include_directories(${MZ_SOURCE_DIR}/shared/glean)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR})
+include_directories(${MZ_SOURCE_DIR}/glean)
+include_directories(${MZ_SOURCE_DIR}/hacl-star)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
@@ -51,8 +51,10 @@ generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/u
 
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
-    shared-sources
+    mozillavpn-sources
     translations-unit-tests
+    lottie
+    nebula
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -127,17 +129,17 @@ target_sources(app_unit_tests PRIVATE
     websocket/testpushmessage.h
     websocket/testwebsockethandler.cpp
     websocket/testwebsockethandler.h
-    ${MZ_SOURCE_DIR}/shared/sentry/sentryadapter.h
-    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
-    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h
+    ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
+    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
+    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
 )
 
 if(NOT BUILD_ADJUST_SDK_TOKEN)
     target_sources(app_unit_tests PRIVATE
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.h
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.cpp
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.h
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
     )
 endif()
 

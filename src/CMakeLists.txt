@@ -40,11 +40,9 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(MZ_PLATFORM_NAME "wasm")
 endif()
 
-include(shared/sources.cmake)
 include(cmake/sources.cmake)
 
 target_link_libraries(mozillavpn PRIVATE
-    shared-sources
     mozillavpn-sources
     lottie
     nebula
@@ -57,7 +55,6 @@ target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
-
 
 if(NOT CMAKE_CROSSCOMPILING)
     target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)

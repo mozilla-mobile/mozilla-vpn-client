@@ -70,7 +70,7 @@ endif()
 
 if(ANDROID)
     # Don't move, this provides OpenSSL on android.
-    include(src/shared/cmake/android_openssl.cmake)
+    include(src/cmake/android_openssl.cmake)
 endif()
 
 if(NOT DEFINED BUILD_ID)

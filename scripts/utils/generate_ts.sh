@@ -24,7 +24,7 @@ print G "done."
 mkdir -p translations/generated || die
 
 printn Y "Generating strings... "
-python3 cache/generate_strings.py src/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated
+python3 cache/generate_strings.py src/translations/strings.yaml -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "

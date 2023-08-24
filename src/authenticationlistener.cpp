@@ -4,8 +4,8 @@
 
 #include "authenticationlistener.h"
 
-#include "constants.h"
 #include "authenticationinapp/authenticationinapplistener.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"

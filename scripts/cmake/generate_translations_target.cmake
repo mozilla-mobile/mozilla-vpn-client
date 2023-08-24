@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 ## Common files/directories
 get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 
@@ -54,12 +55,10 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
         OUTPUT ${GENERATED_DIR}/i18nstrings_p.cpp ${GENERATED_DIR}/i18nstrings.h
         DEPENDS 
             ${TRANSLATIONS_DIRECTORY}/strings.yaml 
-            ${CMAKE_SOURCE_DIR}/src/shared/translations/strings.yaml
             ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
         COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py 
             -o ${GENERATED_DIR} 
             ${TRANSLATIONS_DIRECTORY}/strings.yaml 
-            ${CMAKE_SOURCE_DIR}/src/shared/translations/strings.yaml
     )
 
     ## Build the list of supported locales and add rules to build them.
@@ -124,16 +123,6 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
     list(FILTER EXTRAS_FILES EXCLUDE REGEX "^\\..+")
     foreach(EXTRA ${EXTRAS_FILES})
         file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"${EXTRA}\">${TRANSLATIONS_DIRECTORY}/extras/${EXTRA}</file>\n")
-    endforeach()
-
-    ## Copy the shared extra files
-    get_filename_component(SHARED_EXTRASS_DIR ${CMAKE_SOURCE_DIR}/src/shared/translations/extras ABSOLUTE)
-    file(GLOB SHARED_EXTRASS_FILES LIST_DIRECTORIES true RELATIVE ${SHARED_EXTRASS_DIR} ${SHARED_EXTRASS_DIR}/*)
-    list(FILTER SHARED_EXTRASS_FILES EXCLUDE REGEX "^\\..+")
-    foreach(SHARED_EXTRAS ${SHARED_EXTRASS_FILES})
-        if (NOT ${SHARED_EXTRAS} IN_LIST EXTRAS_FILES)
-            file(APPEND ${GENERATED_DIR}/translations.qrc "        <file alias=\"${SHARED_EXTRAS}\">${CMAKE_SOURCE_DIR}/src/shared/translations/extras/${SHARED_EXTRAS}</file>\n")
-        endif()
     endforeach()
 
     # In case the translations.completeness is still missing (does i18n folder

@@ -112,14 +112,9 @@ if __name__ == "__main__":
 
         pings_files = [
             os.path.join(telemetry_path, "pings.yaml"),
-            os.path.join(shared_telemetry_path, "pings.yaml"),
-            os.path.join(shared_telemetry_path, "pings_deprecated.yaml")
         ]
         metrics_files = [
             os.path.join(telemetry_path, "metrics.yaml"),
-            os.path.join(telemetry_path, "metrics_deprecated.yaml"),
-            os.path.join(shared_telemetry_path, "metrics.yaml"),
-            os.path.join(shared_telemetry_path, "metrics_deprecated.yaml")
         ]
 
         # Generate C++ header files

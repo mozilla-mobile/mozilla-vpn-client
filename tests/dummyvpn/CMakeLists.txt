@@ -22,7 +22,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(dummyvpn PRIVATE
-    shared-sources
     mozillavpn-sources
     lottie
     nebula

@@ -4,13 +4,12 @@
 
 #include "collator.h"
 
-#include "localizer.h"
-
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
 #endif
 
 #if defined(MZ_WASM)
+#  include "localizer.h"
 #  include <emscripten.h>
 
 EM_JS(int, mzWasmCompareString,

@@ -4,9 +4,9 @@
 
 #include "telemetry.h"
 
-#include "constants.h"
 #include "apppermission.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
 #include "feature.h"

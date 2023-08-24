@@ -9,8 +9,8 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-#include "constants.h"
 #include "collator.h"
+#include "constants.h"
 #include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"

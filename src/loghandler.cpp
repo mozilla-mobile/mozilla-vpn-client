@@ -264,8 +264,7 @@ void LogHandler::addLog(const Log& log,
   if (!Constants::inProduction()) {
     const char* str = buffer.constData();
     if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME,
-                          str);
+      __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
     }
   }
 #endif

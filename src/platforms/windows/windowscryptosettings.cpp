@@ -36,8 +36,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     {
       PCREDENTIALW cred;
-      if (CredReadW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0,
-                    &cred)) {
+      if (CredReadW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0, &cred)) {
         s_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
         logger.debug() << "Key found with length:" << s_key.length();

@@ -13,8 +13,8 @@
 #define mozilla_CheckedInt_h
 
 #include <stdint.h>
-//#include "mozilla/Assertions.h"
-//#include "mozilla/Attributes.h"
+// #include "mozilla/Assertions.h"
+// #include "mozilla/Attributes.h"
 #include <limits>
 #include <type_traits>
 

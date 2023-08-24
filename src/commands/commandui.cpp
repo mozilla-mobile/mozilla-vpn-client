@@ -11,12 +11,12 @@
 #include <QQmlContext>
 
 #include "addons/manager/addonmanager.h"
-#include "constants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "controller.h"
 #include "feature.h"
 #include "fontloader.h"

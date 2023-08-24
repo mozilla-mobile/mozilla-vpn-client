@@ -6,9 +6,9 @@
 
 #include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
-#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "constants.h"
 #include "dnshelper.h"
 #include "externalophandler.h"
 #include "feature.h"
@@ -925,8 +925,7 @@ void MozillaVPN::telemetryPolicyCompleted() {
 void MozillaVPN::startSchedulingPeriodicOperations() {
   logger.debug() << "Start scheduling account and servers"
                  << Constants::schedulePeriodicTaskTimerMsec();
-  m_periodicOperationsTimer.start(
-      Constants::schedulePeriodicTaskTimerMsec());
+  m_periodicOperationsTimer.start(Constants::schedulePeriodicTaskTimerMsec());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {

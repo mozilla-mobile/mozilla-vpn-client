@@ -26,7 +26,6 @@ QString Constants::apiBaseUrl() { return Constants::API_STAGING_URL; }
 QString Constants::apiUrl(ApiEndpoint) { return "something here"; }
 
 void Constants::setStaging() { s_productionMode = false; }
-void Constants::setStaging() { s_productionMode = false; }
 
 QString Constants::versionString() {
   return QStringLiteral("QMLTest_AppVersion");
