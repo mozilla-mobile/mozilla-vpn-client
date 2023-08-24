@@ -5,8 +5,8 @@
 #include "constants.h"
 
 #include <QMap>
-#include <QString>
 #include <QProcessEnvironment>
+#include <QString>
 #include <QtGlobal>
 
 #include "settingsholder.h"

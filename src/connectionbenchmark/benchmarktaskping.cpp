@@ -4,8 +4,8 @@
 
 #include "benchmarktaskping.h"
 
-#include "constants.h"
 #include "connectionhealth.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

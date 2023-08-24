@@ -108,17 +108,17 @@ function(add_go_library GOTARGET SOURCE)
         )
     endif()
 
-    set_source_files_properties({CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME} PROPERTIES
-        GENERATED TRUE
-        SKIP_AUTOGEN TRUE
-    )
-
     ## Wrap up the built library as an imported target.
     add_library(${GOTARGET} STATIC IMPORTED GLOBAL)
     set_target_properties(${GOTARGET} PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
         INTERFACE_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME}
         IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})
+
+    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${HEADER_NAME} PROPERTIES
+        GENERATED TRUE
+        SKIP_AUTOGEN TRUE
+    )
 
     ## Some dependency glue to ensure we actually build the library.
     add_custom_target(${GOTARGET}_builder DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${ARCHIVE_NAME})

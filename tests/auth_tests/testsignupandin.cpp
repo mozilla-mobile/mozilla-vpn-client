@@ -13,8 +13,8 @@
 #include <QProcessEnvironment>
 #include <QTest>
 
-#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "constants.h"
 #include "networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"

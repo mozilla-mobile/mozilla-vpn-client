@@ -13,15 +13,18 @@ endif()
 # VPN client include paths
 set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin/minimal
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${CMAKE_CURRENT_SOURCE_DIR}/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+# Generated version header file
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(mozillavpn-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # VPN Client source files
 target_sources(mozillavpn-sources INTERFACE
@@ -211,6 +214,214 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/versionapi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/webupdater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/update/webupdater.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonapi.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonapi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonguide.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonguide.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addoni18n.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addoni18n.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonmessage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonmessage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonpropertylist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonpropertylist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonreplacer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addonreplacer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addontutorial.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/addontutorial.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addondirectory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addondirectory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addonindex.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addonindex.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addonmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/manager/addonmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/state/addonstate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/state/addonstatebase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/state/addonstatebase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/state/addonsessionstate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons/state/addonsessionstate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinapp.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinappsession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/authenticationinappsession.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/incrementaldecoder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/authenticationlistener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/collator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/collator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/curve25519.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/curve25519.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/env.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/env.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/errorhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/errorhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/externalophandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/externalophandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/feature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/feature.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/filterproxymodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/filterproxymodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/fontloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/fontloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigationbarbutton.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigationbarbutton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigationbarmodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigationbarmodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigatorreloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/frontend/navigatorreloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glean/mzglean.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glean/mzglean.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/hawkauth.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hawkauth.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/hkdf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hkdf.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorhandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorhandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorhotreloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorhotreloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectoritempicker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectoritempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorwebsocketconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorwebsocketconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorwebsocketserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inspector/inspectorwebsocketserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ipaddress.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ipaddress.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itempicker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/itempicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/languagei18n.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/languagei18n.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/leakdetector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/leakdetector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/localizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/localizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/logoutobserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/logoutobserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/featuremodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/featuremodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/licensemodel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/licensemodel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmlpath.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmlpath.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc1112.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc1112.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc1918.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc1918.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc4193.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc4193.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc4291.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc4291.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc5735.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/rfc/rfc5735.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/signature.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/signature.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/task.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/taskscheduler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/taskscheduler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/addon/taskaddon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/addon/taskaddon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/authenticate/taskauthenticate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/authenticate/taskauthenticate.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/deleteaccount/taskdeleteaccount.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/getfeaturelist/taskgetfeaturelist.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/getfeaturelist/taskgetfeaturelist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/function/taskfunction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/function/taskfunction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/group/taskgroup.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/group/taskgroup.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/temporarydir.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/temporarydir.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/theme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/theme.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorial.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorial.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstep.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstep.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstepbefore.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstepbefore.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstepnext.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial/tutorialstepnext.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/urlopener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/urlopener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exponentialbackoffstrategy.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/exponentialbackoffstrategy.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/pushmessage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/pushmessage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/websockethandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/websocket/websockethandler.h
 )
 
 # VPN Client UI resources
@@ -219,7 +430,39 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/certs/certs.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/license.qrc
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/resources.qrc
 )
+
+# Signal handling for unix platforms
+if(UNIX)
+     target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/signalhandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/signalhandler.h
+     )
+endif()
+
+# Sources for desktop platforms.
+if(NOT CMAKE_CROSSCOMPILING)
+     target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
+       )
+endif()
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    # Compile and link the signature library.
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+    add_rust_library(signature
+        PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        CRATE_NAME signature
+    )
+    target_compile_definitions(mozillavpn-sources INTERFACE MZ_SIGNATURE)
+    target_link_libraries(mozillavpn-sources INTERFACE signature)
+endif()
 
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
@@ -232,3 +475,6 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.h
        )
 endif()
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/sentry.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/platforms/${MZ_PLATFORM_NAME}/sources.cmake)

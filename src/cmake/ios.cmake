@@ -22,9 +22,9 @@ include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
 target_link_libraries(mozillavpn PRIVATE iosglean)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.swift
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.mm
-    ${CMAKE_SOURCE_DIR}/src/shared/platforms/ios/iosgleanbridge.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosgleanbridge.swift
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosgleanbridge.mm
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosgleanbridge.h
 )
 
 

@@ -224,13 +224,10 @@ with open(os.path.join('translations', 'generated', 'dummy_language.pro'), 'w') 
         dummyproj.write(f"TRANSLATIONS += {os.path.basename(l10n_file['ts'])}\n")
 
     dummyproj.write("\n")
-    dummyproj.write(f"HEADERS += $$files(../../../src/shared/*.h, true)\n")
     dummyproj.write(f"HEADERS += $$files(../../../src/*.h, true)\n")
-    dummyproj.write(f"SOURCES += $$files(../../../src/shared/*.cpp, true)\n")
     dummyproj.write(f"SOURCES += $$files(../../../src/*.cpp, true)\n")
     dummyproj.write(f"RESOURCES += $$files(../../../nebula/*.qrc, true)\n\n")
     dummyproj.write(f"RESOURCES += $$files(../../../src/*.qrc, true)\n\n")
-    dummyproj.write(f"RESOURCES += $$files(../../../src/shared/*.qrc, true)\n\n")
 
 # Step 8
 title("Generate translation resources...")

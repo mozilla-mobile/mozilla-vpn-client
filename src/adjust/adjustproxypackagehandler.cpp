@@ -10,7 +10,6 @@
 #include "adjustfiltering.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "qmlengineholder.h"
 
 namespace {
 Logger logger("AdjustProxyPackageHandler");

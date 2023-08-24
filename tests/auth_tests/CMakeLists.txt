@@ -20,11 +20,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MZ_SOURCE_DIR}/shared)
-include_directories(${MZ_SOURCE_DIR}/shared/glean)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR})
+include_directories(${MZ_SOURCE_DIR}/glean)
+include_directories(${MZ_SOURCE_DIR}/hacl-star)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
 qt_add_executable(app_auth_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
@@ -47,9 +47,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(app_auth_tests PRIVATE
-    qtglean
-    shared-sources
+    mozillavpn-sources
+    lottie
+    nebula
     translations
+    qtglean
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")

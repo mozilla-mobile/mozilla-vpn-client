@@ -4,8 +4,8 @@
 
 #include "captiveportalrequest.h"
 
-#include "constants.h"
 #include "captiveportal.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -48,8 +48,7 @@ void CaptivePortalRequest::run() {
   }
 
   for (const QString& address : ipv6Addresses) {
-    QUrl url(
-        Constants::captivePortalUrl().arg(QString("[%1]").arg(address)));
+    QUrl url(Constants::captivePortalUrl().arg(QString("[%1]").arg(address)));
     createRequest(url);
   }
 }
