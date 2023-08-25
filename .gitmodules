@@ -1,7 +1,3 @@
-[submodule "i18n"]
-	path = src/translations/i18n
-	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
-	branch = main
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools
 	url = https://github.com/WireGuard/wireguard-tools
@@ -27,3 +23,6 @@
 [submodule "3rdparty/sentry"]
 	path = 3rdparty/sentry
 	url = https://github.com/getsentry/sentry-native/
+[submodule "src/translations/i18n"]
+	path = src/translations/i18n
+	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
