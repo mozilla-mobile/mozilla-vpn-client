@@ -4,7 +4,7 @@
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret REQUIRED libsecret-1)
-target_include_directories(shared-sources INTERFACE ${libsecret_INCLUDE_DIRS})
+target_include_directories(mozillavpn-sources INTERFACE ${libsecret_INCLUDE_DIRS})
 
 target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.cpp
