@@ -290,12 +290,12 @@ describe('Devices', function() {
       await vpn.waitForQuery(
         queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
-      const key = UserData.devices[0].pubkey;
-      UserData.devices.splice(0, 1);
-      await vpn.sendPushMessageDeviceDeleted(key);
+      // const key = UserData.devices[0].pubkey;
+      // UserData.devices.splice(0, 1);
+      // await vpn.sendPushMessageDeviceDeleted(key);
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      // await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      // await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
     });
   });
 

@@ -225,12 +225,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/versionutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/exponentialbackoffstrategy.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/exponentialbackoffstrategy.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/pushmessage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/pushmessage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/websockethandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/websocket/websockethandler.h
 )
 
 target_sources(shared-sources INTERFACE

@@ -25,7 +25,6 @@
 #include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
-#include "websocket/websockethandler.h"
 
 struct MozillaVPNPrivate {
   CaptivePortal m_captivePortal;
@@ -47,7 +46,6 @@ struct MozillaVPNPrivate {
   SupportCategoryModel m_supportCategoryModel;
   ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
-  WebSocketHandler m_webSocketHandler;
   User m_user;
 };
 

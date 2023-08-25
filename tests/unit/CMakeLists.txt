@@ -311,12 +311,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/shared/utils.h
     ${MZ_SOURCE_DIR}/shared/versionutils.cpp
     ${MZ_SOURCE_DIR}/shared/versionutils.h
-    ${MZ_SOURCE_DIR}/shared/websocket/exponentialbackoffstrategy.cpp
-    ${MZ_SOURCE_DIR}/shared/websocket/exponentialbackoffstrategy.h
-    ${MZ_SOURCE_DIR}/shared/websocket/pushmessage.cpp
-    ${MZ_SOURCE_DIR}/shared/websocket/pushmessage.h
-    ${MZ_SOURCE_DIR}/shared/websocket/websockethandler.cpp
-    ${MZ_SOURCE_DIR}/shared/websocket/websockethandler.h
 )
 
 # VPN Client UI resources
