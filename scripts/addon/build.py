@@ -352,7 +352,7 @@ if not os.path.isfile(jsonSchema):
 
 print("Reading the translation fallback file...")
 translations_fallback = {}
-with open( os.path.join(os.path.dirname(script_path), "src", "shared", "translations", "extras", "translations_fallback.json"), "r", encoding="utf-8") as file:
+with open( os.path.join(os.path.dirname(script_path), "src", "translations", "extras", "translations_fallback.json"), "r", encoding="utf-8") as file:
     translations_fallback = json.load(file)
 
 with open(args.source, "r", encoding="utf-8") as file:
