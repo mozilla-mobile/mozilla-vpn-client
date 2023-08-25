@@ -28,18 +28,26 @@ export class ViewUi extends LitElement {
         width:100%;
     }
     aside{
-        height: 100%;
+        height: 70vh;
         max-width: 50%;
         flex-grow: 1;
         display: flex;
         flex-direction: column;
         padding: 20px;
-        border-left: solid 1px var(--lt-color-gray-900);
+        border: 1px solid var(--lt-color-gray-900);
         background: white;
-        position: sticky;
-        top: 10px;
         max-height: 92vh;
         overflow-y: auto;
+        overflow-x: auto;
+        flex: 4;
+        position: sticky;
+        top: 2px;
+        right: 30px;
+
+    }
+    aside > button {
+      position: sticky;
+      top: 0px;
     }
     aside > *{
         margin-top:5px;
