@@ -259,22 +259,6 @@ class VPNService : android.net.VpnService() {
             throw Error("turn on was called without vpn-permission!")
         }
 
-        if (isSuperDooperMetricsActive) {
-            val installationIdString = json.getString("installationId")
-            installationIdString?.let {
-                try {
-                    val installationId = UUID.fromString(installationIdString)
-                    Session.installationId.set(installationId)
-                } catch (e: Exception) {
-                    Log.e(tag, "Daemon installation ID string was not UUID:")
-                    Log.e(tag, e.toString())
-                }
-            }
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush,
-            )
-        }
-
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
@@ -325,7 +309,27 @@ class VPNService : android.net.VpnService() {
             )
         }
 
+        // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
+        // this must be after the mConfig is set to the latest data.
+        if (isGleanDebugTagActive) {
+            Log.i(tag, "Setting Glean debug tag for daemon.")
+            Glean.setDebugViewTag("VPNTest")
+        }
         if (isSuperDooperMetricsActive) {
+            val installationIdString = json.getString("installationId")
+            installationIdString?.let {
+                try {
+                    val installationId = UUID.fromString(installationIdString)
+                    Session.installationId.set(installationId)
+                } catch (e: Exception) {
+                    Log.e(tag, "Daemon installation ID string was not UUID:")
+                    Log.e(tag, e.toString())
+                }
+            }
+            Pings.daemonsession.submit(
+                Pings.daemonsessionReasonCodes.daemonFlush
+            )
+
             Session.daemonSessionStart.set()
             Session.daemonSessionId.generateAndSet()
             if (source != null) {
@@ -534,10 +538,6 @@ class VPNService : android.net.VpnService() {
             }
 
         Glean.registerPings(Pings)
-        if (isGleanDebugTagActive) {
-            Log.i(tag, "Setting Glean debug tag for daemon.")
-            Glean.setDebugViewTag("VPNTest")
-        }
         Glean.initialize(
             applicationContext = this.applicationContext,
             uploadEnabled = uploadEnabled,

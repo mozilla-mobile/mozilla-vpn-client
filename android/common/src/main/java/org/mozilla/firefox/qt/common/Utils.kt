@@ -43,7 +43,8 @@ object Utils {
     }
     @SuppressLint("NewApi")
     @JvmStatic
-    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String, isGleanDebugTagActive: Boolean) {
+    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String,
+        isGleanDebugTagActive: Boolean) {
         if (isGleanDebugTagActive) {
             Log.i("VPNUtils", "Setting Glean debug tag.")
             Glean.setDebugViewTag("VPNTest")
