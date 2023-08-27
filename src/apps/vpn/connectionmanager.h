@@ -15,8 +15,11 @@
 #include "loghandler.h"
 #include "models/server.h"
 #include "models/serverdata.h"
+#include "mozillavpn.h"
 #include "pinghelper.h"
+#include "controller.h"
 
+class Controller;
 class ControllerImpl;
 class MozillaVPN;
 
@@ -32,8 +35,8 @@ class ConnectionManager : public QObject, public LogSerializer {
   //    ConnectionStateCaptivePortal,
   //    ConnectionStateCheckSubscription,
   //    ConnectionStateUnstable,
-  //    ConnectionStateIdle,       // Used when there are no active probes
-  //    ongoing
+  //    ConnectionStateIdle,       // Used when there are no active probes ongoing
+  //    ConnectionDeviceUnregistered
   //  };
   //  Q_ENUM(ConnectionState)
 
@@ -238,6 +241,9 @@ class ConnectionManager : public QObject, public LogSerializer {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
+  
+//  Controller* m_controller = MozillaVPN::instance()->controller();
+//  Controller m_controller;
 
 };  // namespace ConnectionManager
 
