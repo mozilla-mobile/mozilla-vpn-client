@@ -21,6 +21,7 @@ qt_add_qml_module(components
          MZCard.qml
          MZCheckBox.qml
          MZCheckBoxRow.qml
+         MZCheckBoxRowWithoutDivider.qml
          MZChevron.qml
          MZClickableRow.qml
          MZCollapsibleCard.qml

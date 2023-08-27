@@ -21,6 +21,24 @@ MZViewBase {
 
         Layout.fillWidth: true
 
+        MZCheckBoxRowWithoutDivider {
+            id: dataCollection
+            objectName: "dataCollection"
+            width: parent.width - MZTheme.theme.windowMargin
+            anchors {
+                right: parent.right
+                left: parent.left
+                rightMargin: MZTheme.theme.windowMargin
+            }
+
+            labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
+            subLabelText: MZI18n.SettingsDataCollectionDescription
+            isChecked: MZSettings.gleanEnabled
+            onClicked: {
+                MZSettings.gleanEnabled = !MZSettings.gleanEnabled
+           }
+        }
+        
         MZExternalLinkListItem {
             objectName: "helpCenter"
 
