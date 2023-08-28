@@ -97,6 +97,28 @@ SETTING_STRINGLIST(featuresFlippedOn,        // getter
                    false                     // sensitive (do not log)
 )
 
+SETTING_BOOL(gleanDebugTagActive,        // getter
+             setGleanDebugTagIsActive,   // setter
+             removeGleanDebugTagActive,  // remover
+             hasGleanDebugTagActive,     // has
+             "isGleanDebugTagActive",    // key
+             false,                      // default value
+             false,                      // user setting
+             true,                       // remove when reset
+             false                       // sensitive (do not log)
+)
+
+SETTING_STRING(gleanDebugTag,        // getter
+               setGleanDebugTag,     // setter
+               removeGleanDebugTag,  // remover
+               hasGleanDebugTag,     // has
+               "gleanDebugTag",      // key
+               "VPNTest",            // default value
+               false,                // user setting
+               true,                 // remove when reset
+               false                 // sensitive (do not log)
+)
+
 // TODO - This would be better named "telemetryEnabled", but as we already
 // shipped with it called gleanEnabled it's non-trivial to change
 // the name. https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2050

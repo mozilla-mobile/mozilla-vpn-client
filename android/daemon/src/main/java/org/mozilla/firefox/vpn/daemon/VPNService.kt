@@ -58,9 +58,14 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
-    private val isGleanDebugTagActive: Boolean
+    private val gleanDebugTag: String?
         get() {
-            return this.mConfig?.optBoolean("isGleanDebugTagFeatureActive", false) ?: false
+            const this.mConfig?.optString("superDuperTag", "") ?: ""
+            if (!superDuperTag.isEmpty) {
+                return superDuperTag
+            } else {
+                return null
+            }
         }
 
     private var currentTunnelHandle = -1
@@ -311,9 +316,9 @@ class VPNService : android.net.VpnService() {
 
         // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
         // this must be after the mConfig is set to the latest data.
-        if (isGleanDebugTagActive) {
+        if (gleanDebugTag != null) {
             Log.i(tag, "Setting Glean debug tag for daemon.")
-            Glean.setDebugViewTag("VPNTest")
+            Glean.setDebugViewTag(gleanDebugTag)
         }
         if (isSuperDooperMetricsActive) {
             val installationIdString = json.getString("installationId")

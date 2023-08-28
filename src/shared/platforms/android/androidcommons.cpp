@@ -13,6 +13,7 @@
 
 #include "feature.h"
 #include "logger.h"
+#include "settingsholder.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
 constexpr auto VPN_UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
@@ -67,6 +68,8 @@ bool AndroidCommons::shareText(const QString& text) {
 // static
 void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
   bool isGleanDebugTagActive =
       Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported();
   runOnAndroidThreadSync(
@@ -76,7 +79,7 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
             "(Landroid/content/Context;ZLjava/lang/String;Z)V",
             getActivity().object(), (jboolean)isTelemetryEnabled,
             QJniObject::fromString(channel).object(),
-            (jboolean)isGleanDebugTagActive);
+            gleanDebugTag:gleanDebugTag:settingsHolder->gleanDebugTagActive() ? settingsHolder->gleanDebugTag() : "";
       });
 }
 

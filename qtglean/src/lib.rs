@@ -29,7 +29,7 @@ pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mu
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr, activate_debug_tag: bool) {
+pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr, activate_debug_tag: FfiStr) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
@@ -64,8 +64,8 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
     register_pings();
     glean::initialize(cfg, client_info);
 
-    if activate_debug_tag {
-        glean::set_debug_view_tag("VPNTest");
+    if !activate_debug_tag.as_str().is_empty() {
+        glean::set_debug_view_tag(activate_debug_tag.as_str());
     }
 }
 

@@ -127,6 +127,47 @@ MZViewBase {
         }
 
         MZCheckBoxRow {
+            id: checkBoxRowGleanDebugTag
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText: "Glean Debug View Tag"
+            subLabelText: "Glean debug view tag for testing. Must restart app to take effect."
+            isChecked: MZSettings.gleanDebugTagActive
+            showDivider: false
+            onClicked: {
+                MZSettings.gleanDebugTagActive = !MZSettings.gleanDebugTagActive
+            }
+        }
+
+        MZTextField {
+            id: gleanDebugTagString
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin * 2
+            Layout.leftMargin: MZTheme.theme.windowMargin * 3
+
+            Layout.alignment: Qt.AlignHCenter
+            enabled: MZSettings.isGleanDebugTagActive
+            _placeholderText: "VPNTest"
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+
+            PropertyAnimation on opacity {
+                duration: 200
+            }
+
+            onTextChanged: text => {
+                if (MZSettings.gleanDebugTag !== gleanDebugTagString.text) {
+                    MZSettings.gleanDebugTag = gleanDebugTagString.text;
+                }
+            }
+
+            Component.onCompleted: {
+                gleanDebugTagString.text = MZSettings.gleanDebugTag;
+            }
+        }
+
+        MZCheckBoxRow {
             id: checkBoxRowVPNSessionPingTimeout
 
             Layout.rightMargin: MZTheme.theme.windowMargin

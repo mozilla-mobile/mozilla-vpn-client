@@ -7,13 +7,13 @@ import IOSGlean
 public class IOSGleanBridgeImpl : NSObject {
     private static let logger = IOSLoggerImpl(tag: "IOSGleanBridge")
 
-  @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String, isGleanDebugTagActive: Bool) {
+  @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String, gleanDebugTag: String) {
       super.init()
       
       Glean.shared.registerPings(GleanMetrics.Pings.self)
-      if isGleanDebugTagActive {
+      if !gleanDebugTag.isEmpty {
         IOSGleanBridgeImpl.logger.info(message: "Setting Glean debug tag.")
-        Glean.shared.setDebugViewTag("VPNTest")
+        Glean.shared.setDebugViewTag(gleanDebugTag)
       }
       Glean.shared.initialize(
           uploadEnabled: isTelemetryEnabled,
