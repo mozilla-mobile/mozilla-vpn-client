@@ -9,6 +9,8 @@ import Mozilla.Shared 1.0
 
 StackView {
     id: stackView
+    // StackView's items will provide Accessibility, so the StackView itself doesn't need Accessibility.
+    Accessible.ignored: true
 
     Component.onCompleted: function(){
         if(!currentItem && initialItem) {
