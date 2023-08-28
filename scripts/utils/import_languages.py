@@ -141,7 +141,7 @@ os.makedirs(gendir, exist_ok=True)
     try:
         subprocess.call([sys.executable, os.path.join('scripts', 'utils', 'generate_strings.py'),
                          '-p', project,
-                         '-o', gendir,,
+                         '-o', gendir,
                          os.path.join('src', 'translations', 'strings.yaml')])
     except Exception as e:
         print("generate_strings.py failed. Try with:\n\tpip3 install -r requirements.txt --user")
