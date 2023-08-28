@@ -47,6 +47,7 @@ Item {
                 id: btn
                 objectName: tabButtonId
                 height: bar.contentHeight
+                Accessible.name: MZI18n[tabLabelStringId]
 
                 onClicked: handleTabClick(btn)
 
@@ -74,6 +75,8 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: btn.checked ? MZTheme.colors.purple70 : btn.hovered || btn.activeFocus ? MZTheme.colors.grey50 : MZTheme.colors.grey40
+                    // Accessibility provided by btn's Accessible properties
+                    Accessible.ignored: true
 
                     Rectangle {
                         anchors.fill: parent
@@ -117,7 +120,8 @@ Item {
         anchors.top: bar.bottom
         height: root.height
         clip: true
-
+        Accessible.role: Accessible.List
+        Accessible.name: currentTab.Accessible.name
 
         PropertyAnimation {
             id: fadeIn

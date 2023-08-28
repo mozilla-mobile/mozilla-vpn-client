@@ -77,8 +77,7 @@ FocusScope {
 
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Accessible.name: menu.title
-    Accessible.role: Accessible.List
+    Accessible.ignored: true
 
     ButtonGroup {
         id: radioButtonGroup

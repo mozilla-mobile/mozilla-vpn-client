@@ -213,6 +213,9 @@ MZClickableRow {
                     Keys.onUpPressed: if (citiesRepeater.itemAt(index - 1)) citiesRepeater.itemAt(index - 1).forceActiveFocus()
                     radioButtonLabelText: _localizedCityName
                     accessibleName: latencyIndicator.accessibleName.arg(_localizedCityName)
+                    // Radio button label is ignored for Accesibility because accessibleName
+                    // provides all the necessary information
+                    isRadioButtonLabelAccessible: false
                     implicitWidth: parent.width
 
                     onClicked: {
