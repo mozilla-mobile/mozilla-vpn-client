@@ -30,7 +30,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
 target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
-target_compile_definitions(app_unit_tests PRIVATE MZ_ADJUST)
 
 target_link_libraries(app_unit_tests PRIVATE
     Qt6::Quick
@@ -50,6 +49,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
 generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
 
 target_link_libraries(app_unit_tests PRIVATE
+    translations
     qtglean
     mozillavpn-sources
     translations-unit-tests

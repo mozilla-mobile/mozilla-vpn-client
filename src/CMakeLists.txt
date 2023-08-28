@@ -44,9 +44,9 @@ include(cmake/sources.cmake)
 
 target_link_libraries(mozillavpn PRIVATE
     mozillavpn-sources
+    translations
     lottie
     nebula
-    translations
     qtglean
 )
 
