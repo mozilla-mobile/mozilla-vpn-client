@@ -13,6 +13,7 @@ RadioDelegate {
     property bool isHoverable: true
     property var radioButtonLabelText
     property string accessibleName
+    property bool isRadioButtonLabelAccessible: true
     property var uiState: MZTheme.theme.uiState
     readonly property int labelX: radioButton.anchors.margins + radioButton.implicitWidth + radioButtonLabel.anchors.leftMargin
 
@@ -114,7 +115,7 @@ RadioDelegate {
 
     MZRadioButtonLabel {
         id: radioButtonLabel
-
+        Accessible.ignored: !isRadioButtonLabelAccessible
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: radioButton.right
         anchors.right: parent.right

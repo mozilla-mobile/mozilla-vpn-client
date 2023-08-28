@@ -16,7 +16,7 @@ import compat 0.1
 Item {
     id: root
     objectName: "viewServers"
-
+    Accessible.name: qsTrId("vpn.servers.selectLocation")
 
     MZMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
