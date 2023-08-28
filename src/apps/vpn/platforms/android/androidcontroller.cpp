@@ -231,7 +231,7 @@ void AndroidController::activate(const InterfaceConfig& config,
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  args["gleanDebugTag"] = gleanDebugTag : settingsHolder->gleanDebugTagActive()
+  args["gleanDebugTag"] = settingsHolder->gleanDebugTagActive()
                               ? settingsHolder->gleanDebugTag()
                               : "";
 

@@ -11,7 +11,6 @@
 #include <QJniObject>
 #include <QTimer>
 
-#include "feature.h"
 #include "logger.h"
 #include "settingsholder.h"
 
@@ -70,16 +69,16 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  bool isGleanDebugTagActive =
-      Feature::get(Feature::Feature_gleanDebugViewTag)->isSupported();
+  QString gleanDebugTag = settingsHolder->gleanDebugTagActive() ? settingsHolder->gleanDebugTag() : ""; 
+
   runOnAndroidThreadSync(
-      [isTelemetryEnabled, channel, isGleanDebugTagActive]() {
+      [isTelemetryEnabled, channel, gleanDebugTag]() {
         QJniObject::callStaticMethod<void>(
             COMMON_UTILS_CLASS, "initializeGlean",
-            "(Landroid/content/Context;ZLjava/lang/String;Z)V",
+            "(Landroid/content/Context;ZLjava/lang/String;Ljava/lang/String;)V",
             getActivity().object(), (jboolean)isTelemetryEnabled,
             QJniObject::fromString(channel).object(),
-            gleanDebugTag:gleanDebugTag:settingsHolder->gleanDebugTagActive() ? settingsHolder->gleanDebugTag() : "";
+            QJniObject::fromString(gleanDebugTag).object());
       });
 }
 

@@ -4,7 +4,6 @@
 
 #include "iosgleanbridge.h"
 #include "Mozilla-Swift.h"
-#include "feature.h"
 #include "leakdetector.h"
 #include "settingsholder.h"
 
