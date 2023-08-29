@@ -61,7 +61,7 @@ class SentryAdapter final : public QObject {
    * or drisk writes.
    * After calling this, any call to sentry is UB.
    */
-  Q_SLOT void onBeforeShutdown();
+  static void onBeforeShutdown();
 
   /**
    * @brief Callback for when sentry's backend recieved a crash.

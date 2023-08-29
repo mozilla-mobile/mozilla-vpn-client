@@ -64,8 +64,6 @@ void SentryAdapter::init() {
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
   QString sentryFolder = dataDir.absoluteFilePath("sentry");
 
-  connect(qApp, &QCoreApplication::aboutToQuit, this,
-          &SentryAdapter::onBeforeShutdown);
   connect(log, &LogHandler::logEntryAdded, this,
           &SentryAdapter::onLoglineAdded);
 
@@ -116,7 +114,10 @@ void SentryAdapter::report(const QString& errorType, const QString& message,
   sentry_capture_event(event);
 }
 
-void SentryAdapter::onBeforeShutdown() { sentry_close(); }
+void SentryAdapter::onBeforeShutdown() {
+  sentry_end_session();
+  sentry_close();
+}
 
 void SentryAdapter::onLoglineAdded(const QByteArray& line) {
   if (!m_initialized) {
@@ -150,11 +151,10 @@ void SentryAdapter::transportEnvelope(sentry_envelope_t* envelope,
   sentry_free(sentry_buf);
 
   auto t = new TaskSentry(qt_owned_buffer);
-  TaskScheduler::scheduleTask(t);
+  TaskScheduler::scheduleTaskNow(t);
 }
 
 SentryAdapter::UserConsentResult SentryAdapter::hasCrashUploadConsent() const {
-  Q_ASSERT(m_initialized);
   // We have not yet asked the user - let's do that.
   if (m_userConsent == UserConsentResult::Pending) {
     emit needsCrashReportScreen();
