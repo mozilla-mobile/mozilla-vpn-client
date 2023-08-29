@@ -87,7 +87,7 @@ MZViewBase {
 
                     MZTextField {
                         id: emailInput
-                        objectName: "Email-Textfield"
+                        objectName: "emailTextfield"
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         hasError: !MZAuthInApp.validateEmailAddress(emailInput.text)
@@ -145,7 +145,7 @@ MZViewBase {
 
             MZTextField {
                 id: subjectInput
-                objectName: "Subject-Textfield"
+                objectName: "subjectTextfield"
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -177,7 +177,7 @@ MZViewBase {
                 Layout.fillWidth: true
 
                 MZTextBlock {
-                    objectName: "Describe-Textarea"
+                    objectName: "describeTextarea"
                     font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
                     text: MZI18n.InAppSupportWorkflowDisclaimerText
