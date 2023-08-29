@@ -5,8 +5,8 @@
 task-defaults:
     worker:
         env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
+            QT_VERSION: "6.5.1"
+            QT_MAJOR: "6.5"
         max-run-time: 14400
 
 qt-mac:
@@ -18,6 +18,7 @@ qt-mac:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
+            - env.yml
         toolchain-alias: qt-mac
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
@@ -38,11 +39,17 @@ qt-win:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
+            - env.yml
         toolchain-alias: qt-win
         toolchain-artifact: public/build/qt6_win.zip
     treeherder:
         symbol: TL(qt-win)
     worker-type: b-win2012
+    worker:
+        env:
+            # Keep this at 6.2 until we have solved build issues
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
 
 qt-ios:
     description: "QT ios bundle Task"
@@ -50,6 +57,7 @@ qt-ios:
         script: bundle_qt_ios.sh
         resources:
             - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+            - env.yml
         toolchain-alias: qt-ios
         toolchain-artifact: public/build/qt6_ios.zip
     treeherder:
