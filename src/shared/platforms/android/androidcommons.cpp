@@ -69,17 +69,18 @@ void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  QString gleanDebugTag = settingsHolder->gleanDebugTagActive() ? settingsHolder->gleanDebugTag() : ""; 
+  QString gleanDebugTag = settingsHolder->gleanDebugTagActive()
+                              ? settingsHolder->gleanDebugTag()
+                              : "";
 
-  runOnAndroidThreadSync(
-      [isTelemetryEnabled, channel, gleanDebugTag]() {
-        QJniObject::callStaticMethod<void>(
-            COMMON_UTILS_CLASS, "initializeGlean",
-            "(Landroid/content/Context;ZLjava/lang/String;Ljava/lang/String;)V",
-            getActivity().object(), (jboolean)isTelemetryEnabled,
-            QJniObject::fromString(channel).object(),
-            QJniObject::fromString(gleanDebugTag).object());
-      });
+  runOnAndroidThreadSync([isTelemetryEnabled, channel, gleanDebugTag]() {
+    QJniObject::callStaticMethod<void>(
+        COMMON_UTILS_CLASS, "initializeGlean",
+        "(Landroid/content/Context;ZLjava/lang/String;Ljava/lang/String;)V",
+        getActivity().object(), (jboolean)isTelemetryEnabled,
+        QJniObject::fromString(channel).object(),
+        QJniObject::fromString(gleanDebugTag).object());
+  });
 }
 
 // static
