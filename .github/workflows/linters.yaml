@@ -88,7 +88,7 @@ jobs:
 
   check-language-json:
     name: Check if languages.json is valid
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3

@@ -143,9 +143,8 @@ const LanguageLocalizer = {
     let languageData = structuredClone(language_old_Data);
     if (!languageData) {
       if(this.options.check){
-        console.error(`New unknown language ${language} - cannot continue`);
-        console.error(`This is likely a new language. Check this branch out and run this`);
-        console.error(`tool locally again!`);
+        console.error(`Unknown language ${language} - cannot continue`);
+        console.error(`Check out this branch and run "npm run languages:update" to update languages.json`);
         process.exit(1);
       }
       console.log('    Unknown language!');
@@ -158,6 +157,13 @@ const LanguageLocalizer = {
     } else if (!languageData.wikiDataID) {
       console.log(
           '    Language found but we do not have a valid wikiDataID. Please update the file!');
+      if(this.options.check){
+            console.log(JSON.stringify(languageData))
+            console.error(`${ languageData.languageCode } - No Wikidata ID found.`)
+            console.error(`This is likely a new language. Check this branch out and run this`)
+            console.error(`tool locally again!`)
+            process.exit(1);
+      }
       languageData.wikiDataID = null;
       languageData.currencies = {};
       languageData.languages = {};
@@ -167,12 +173,6 @@ const LanguageLocalizer = {
     languageData.translations = {};
 
     if (!languageData.wikiDataID) {
-      if(this.options.check){
-        console.error(`${ languageData.languageCode } - No Wikidata ID found.`)
-        console.error(`This is likely a new language. Check this branch out and run this`)
-        console.error(`tool locally again!`)
-        process.exit(1);
-      }
       while (true) {
         let answer = await inquirer.prompt([{
           type: 'confirm',

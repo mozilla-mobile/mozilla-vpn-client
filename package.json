@@ -3,7 +3,9 @@
     "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000",
     "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000",
     "wasm:dev": "node tests/functional/wasm.js",
-    "qml-reload": "node ./tools/qml_hot_reload/hot.js"
+    "qml-reload": "node ./tools/qml_hot_reload/hot.js",
+    "languages:check": "cd ./tools/languagelocalizer/ && node languageLocalizer.js -c",
+    "languages:update": "cd ./tools/languagelocalizer/ && node languageLocalizer.js"
   },
   "devDependencies": {
     "appium-adb": "^9.14.4",
@@ -17,5 +19,8 @@
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.11.1",
     "websocket": "^1.0.34"
-  }
+  },
+  "workspaces":[
+    "tools/languagelocalizer"
+  ]
 }
