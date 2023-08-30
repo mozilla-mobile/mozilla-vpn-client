@@ -55,12 +55,7 @@ target_link_libraries(app_auth_tests PRIVATE
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(app_auth_tests PRIVATE Qt6::DBus)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(app_auth_tests PRIVATE PkgConfig::libsecret)
+    include(${MZ_SOURCE_DIR}/cmake/${MZ_PLATFORM_NAME}.cmake)
 endif()
 
 target_compile_definitions(app_auth_tests PRIVATE MZ_DEBUG)
