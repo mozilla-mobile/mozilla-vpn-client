@@ -23,6 +23,8 @@ Logger logger("TaskSentry");
 TaskSentry::TaskSentry(const QByteArray& envelope) : Task("TaskSentry") {
   MZ_COUNT_CTOR(TaskSentry);
   m_envelope = envelope;
+
+  connect(this, &TaskSentry::completed, [this]() { deleteLater(); });
 }
 
 TaskSentry::~TaskSentry() { MZ_COUNT_DTOR(TaskSentry); }
@@ -34,6 +36,8 @@ void TaskSentry::run() {
   }
   // If it's still unknown, parsing failed. abort.
   if (m_Type == ContentType::Unknown) {
+    logger.info() << "Dropping Sentry-Ping:Unknown";
+    logger.info() << m_envelope;
     emit completed();
     return;
   }
