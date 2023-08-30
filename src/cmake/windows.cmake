@@ -17,16 +17,16 @@ set_target_properties(mozillavpn PROPERTIES
 # See: https://gitlab.kitware.com/cmake/cmake/-/issues/20812
 #
 if(MSVC)
-    target_compile_options(mozillavpn PRIVATE $<$<CONFIG:Release>:/Zi>)
-    target_link_options(mozillavpn PRIVATE $<$<CONFIG:Release>:/debug>)
+    target_compile_options(mozillavpn-sources INTERFACE $<$<CONFIG:Release>:/Zi>)
+    target_link_options(mozillavpn-sources INTERFACE $<$<CONFIG:Release>:/debug>)
 endif()
 
 # Generate the Windows version resource file.
 configure_file(../windows/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
-target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+target_sources(mozillavpn-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(mozillavpn-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
@@ -78,7 +78,7 @@ target_sources(mozillavpn PRIVATE
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
     message(WARNING "Remove the Qt6 windows hack!")
 else()
-    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
+    target_sources(mozillavpn-sources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
@@ -100,8 +100,8 @@ add_dependencies(mozillavpn balrogdll)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
 
 # Use Balrog for update support.
-target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
-target_sources(mozillavpn PRIVATE
+target_compile_definitions(mozillavpn-sources INTERFACE MVPN_BALROG)
+target_sources(mozillavpn-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )

@@ -3,15 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
-target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
+target_link_libraries(mozillavpn-sources INTERFACE Qt6::DBus)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
 pkg_check_modules(libcap REQUIRED IMPORTED_TARGET libcap)
-target_link_libraries(mozillavpn PRIVATE PkgConfig::libsecret PkgConfig::libcap)
+target_link_libraries(mozillavpn-sources INTERFACE PkgConfig::libsecret PkgConfig::libcap)
 
 # Linux platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
@@ -35,7 +35,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Linux daemon source files
-target_sources(mozillavpn PRIVATE
+target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
     ${CMAKE_SOURCE_DIR}/src/daemon/daemon.cpp
@@ -69,11 +69,11 @@ qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
     ""
     dbus_adaptor)
-target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
+target_sources(mozillavpn-sources INTERFACE ${DBUS_GENERATED_SOURCES})
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 add_go_library(netfilter ${CMAKE_SOURCE_DIR}/linux/netfilter/netfilter.go)
-target_link_libraries(mozillavpn PRIVATE netfilter)
+target_link_libraries(mozillavpn-sources INTERFACE netfilter)
 
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)

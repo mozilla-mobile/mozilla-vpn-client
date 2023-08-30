@@ -23,28 +23,28 @@ endif()
 
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
-    target_compile_definitions(mozillavpn INTERFACE SENTRY_ENABLED)
+    target_compile_definitions(mozillavpn-sources INTERFACE SENTRY_ENABLED)
     # Let's the app know we need to provide the upload client
-    target_compile_definitions(mozillavpn INTERFACE SENTRY_NONE_TRANSPORT)
+    target_compile_definitions(mozillavpn-sources INTERFACE SENTRY_NONE_TRANSPORT)
 
     # Sentry support is given
-    target_sources(mozillavpn INTERFACE
-        sentry/sentryadapter.cpp
-        sentry/sentryadapter.h
-        tasks/sentry/tasksentry.cpp
-        tasks/sentry/tasksentry.h
-        tasks/sentryconfig/tasksentryconfig.cpp
-        tasks/sentryconfig/tasksentryconfig.h
+    target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_SOURCE_DIR}/src/sentry/sentryadapter.cpp
+        ${CMAKE_SOURCE_DIR}/src/sentry/sentryadapter.h
+        ${CMAKE_SOURCE_DIR}/src/tasks/sentry/tasksentry.cpp
+        ${CMAKE_SOURCE_DIR}/src/tasks/sentry/tasksentry.h
+        ${CMAKE_SOURCE_DIR}/src/tasks/sentryconfig/tasksentryconfig.cpp
+        ${CMAKE_SOURCE_DIR}/src/tasks/sentryconfig/tasksentryconfig.h
     )
 
     # Configure Linking and Compile
     if(APPLE)
         include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
         # Let sentry.h know we are using a static build
-        target_compile_definitions(mozillavpn INTERFACE SENTRY_BUILD_STATIC)
+        target_compile_definitions(mozillavpn-sources INTERFACE SENTRY_BUILD_STATIC)
         # Compile Static for apple and link to libsentry.a
-        target_link_libraries(mozillavpn INTERFACE libsentry.a)
-        target_link_libraries(mozillavpn INTERFACE breakpad_client.a)
+        target_link_libraries(mozillavpn-sources INTERFACE libsentry.a)
+        target_link_libraries(mozillavpn-sources INTERFACE breakpad_client.a)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
         SET(SENTRY_ARGS
@@ -63,17 +63,17 @@ if( ${_SUPPORTED} GREATER -1 )
     endif()
     if(WIN32)
         # Let sentry.h know we are using a static build
-        target_compile_definitions(mozillavpn INTERFACE SENTRY_BUILD_STATIC)
+        target_compile_definitions(mozillavpn-sources INTERFACE SENTRY_BUILD_STATIC)
         # Link against static sentry + breakpad + the stack unwind utils
-        target_link_libraries(mozillavpn INTERFACE sentry.lib)
-        target_link_libraries(mozillavpn INTERFACE breakpad_client.lib)
-        target_link_libraries(mozillavpn INTERFACE dbghelp.lib)
+        target_link_libraries(mozillavpn-sources INTERFACE sentry.lib)
+        target_link_libraries(mozillavpn-sources INTERFACE breakpad_client.lib)
+        target_link_libraries(mozillavpn-sources INTERFACE dbghelp.lib)
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
     endif()
 
     if(ANDROID)
-        target_link_libraries(mozillavpn INTERFACE libsentry.a)
-        target_link_libraries(mozillavpn INTERFACE libunwindstack.a)
+        target_link_libraries(mozillavpn-sources INTERFACE libsentry.a)
+        target_link_libraries(mozillavpn-sources INTERFACE libunwindstack.a)
         # We can only use inproc as crash backend.
         SET(SENTRY_ARGS -DANDROID_PLATFORM=21
                         -DCMAKE_SYSTEM_NAME=Android
@@ -85,9 +85,9 @@ if( ${_SUPPORTED} GREATER -1 )
     
     endif()
     if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-        target_compile_definitions(mozillavpn INTERFACE SENTRY_BUILD_STATIC)
-        target_link_libraries(mozillavpn INTERFACE sentry)
-        target_link_libraries(mozillavpn INTERFACE breakpad_client)
+        target_compile_definitions(mozillavpn-sources INTERFACE SENTRY_BUILD_STATIC)
+        target_link_libraries(mozillavpn-sources INTERFACE sentry)
+        target_link_libraries(mozillavpn-sources INTERFACE breakpad_client)
         target_link_directories( mozillavpn-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib64)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
@@ -103,9 +103,9 @@ if( ${_SUPPORTED} GREATER -1 )
         CMAKE_ARGS -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=OFF  -DSENTRY_BUILD_EXAMPLES=OFF -DSENTRY_BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
     )
 
-    target_include_directories(mozillavpn INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)
+    target_include_directories(mozillavpn-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)
     target_link_directories( mozillavpn-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib)
-    add_dependencies(mozillavpn sentry)
+    add_dependencies(mozillavpn-sources sentry)
 else()
     # Sentry is not supported on this Plattform.
     message("Sentry supported OS -> ${SENTRY_SUPPORTED_OS}")

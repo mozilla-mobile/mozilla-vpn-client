@@ -106,7 +106,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.cpp

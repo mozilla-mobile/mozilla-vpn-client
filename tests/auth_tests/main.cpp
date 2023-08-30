@@ -19,12 +19,6 @@
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
 
-// static
-App* App::instance() {
-  qFatal("This method should not be called!");
-  return nullptr;
-}
-
 int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG
   LeakDetector leakDetector;

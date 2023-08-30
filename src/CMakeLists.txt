@@ -41,6 +41,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 endif()
 
 include(cmake/sources.cmake)
+target_sources(mozillavpn PRIVATE main.cpp)
 
 target_link_libraries(mozillavpn PRIVATE
     mozillavpn-sources
