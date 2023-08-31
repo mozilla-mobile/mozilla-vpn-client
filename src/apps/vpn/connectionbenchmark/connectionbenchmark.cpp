@@ -126,6 +126,10 @@ void ConnectionBenchmark::start() {
     m_benchmarkTasks.append(uploadTask);
     TaskScheduler::scheduleTask(uploadTask);
   }
+
+  // Need this check to show error screen if there is no connection when
+  // starting test.
+  checkStability();
 }
 
 void ConnectionBenchmark::stop() {
@@ -218,11 +222,14 @@ void ConnectionBenchmark::handleStabilityChange() {
   if (m_state == StateInitial || m_state == StateReady) {
     return;
   }
+  logger.debug() << "Handle stability change";
+  checkStability();
+}
 
+void ConnectionBenchmark::checkStability() {
   ConnectionHealth::ConnectionStability stability =
       MozillaVPN::instance()->connectionHealth()->stability();
-  logger.debug() << "Handle stability change" << stability;
-
+  logger.debug() << "Current stability: " << stability;
   if (stability == ConnectionHealth::NoSignal) {
     setState(StateError);
     stop();
