@@ -10,8 +10,8 @@
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade aqtinstall
 
-aqt install-qt -O qt_ios mac desktop $QT_VERSION -m all
-aqt install-qt -O qt_ios mac ios $QT_VERSION -m all
+aqt install-qt -O qt_ios mac desktop $QT_VERSION -m qtwebsockets qt5compat qtnetworkauth
+aqt install-qt -O qt_ios mac ios $QT_VERSION -m qtwebsockets qt5compat qtnetworkauth
 
 zip -qr $UPLOAD_DIR/qt6_ios.zip qt_ios/*
 
