@@ -7,6 +7,8 @@
 # This script creates a qt-bundle that we can use in xcode-cloud and 
 # in the taskcluser/ios builds ( to be coming ... )
 
+$QT_VERSION=6.4.3 # We currently have build issues on X-Code Cloud, therefore we need to override that. 
+
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade aqtinstall
 
