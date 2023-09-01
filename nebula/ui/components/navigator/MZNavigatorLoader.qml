@@ -12,7 +12,7 @@ StackView {
   // Let's force the visibility. See
   // https://doc.qt.io/qt-5/qml-qtquick-controls2-stackview.html#visible-attached-prop
   visible: true
-   // StackView's items will provide Accessibility, so the StackView itself doesn't need Accessibility.
+  // StackView's items will provide Accessibility, so the StackView itself doesn't need Accessibility.
   Accessible.ignored: true
 
   property var screens: []
