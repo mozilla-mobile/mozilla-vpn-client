@@ -7,10 +7,14 @@ import IOSGlean
 public class IOSGleanBridgeImpl : NSObject {
     private static let logger = IOSLoggerImpl(tag: "IOSGleanBridge")
 
-  @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String) {
+  @objc init(telemetryEnabled isTelemetryEnabled: Bool, channel appChannel: String, gleanDebugTag: String) {
       super.init()
       
       Glean.shared.registerPings(GleanMetrics.Pings.self)
+      if !gleanDebugTag.isEmpty {
+        IOSGleanBridgeImpl.logger.info(message: "Setting Glean debug tag.")
+        Glean.shared.setDebugViewTag(gleanDebugTag)
+      }
       Glean.shared.initialize(
           uploadEnabled: isTelemetryEnabled,
           configuration: Configuration.init(channel: appChannel),
@@ -47,12 +51,11 @@ public class IOSGleanBridgeImpl : NSObject {
         // This logs an error like so:
         // "[User Defaults] Couldn't read values in CFPrefsPlistSource<0x2821ced00>..."
         // This is just a warning and can be ignored.
-        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        if (defaults == nil) {
+        guard let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier) else {
             IOSGleanBridgeImpl.logger.error(message: "Attempted to access UserDefaults, but it's not available.")
             return
         }
         
-        f(defaults!)
+        f(defaults)
     }
 }

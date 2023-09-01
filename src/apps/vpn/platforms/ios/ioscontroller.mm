@@ -130,6 +130,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
   [impl connectWithDnsServer:config.m_dnsServer.toNSString()
                serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
                  serverPublicKey:config.m_serverPublicKey.toNSString()
@@ -137,6 +140,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                       serverPort:config.m_serverPort
           allowedIPAddressRanges:allowedIPAddressRangesNS
                           reason:reason
+                   gleanDebugTag:settingsHolder->gleanDebugTagActive()
+                                     ? settingsHolder->gleanDebugTag().toNSString()
+                                     : @""
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
                   installationId:config.m_installationId.toNSString()
                  failureCallback:^() {

@@ -20,6 +20,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
     }()
 
+    private var gleanDebugTag: String? {
+        guard let tag = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["gleanDebugTag"] as? String,
+            !tag.isEmpty else {
+            return nil
+        }
+        return tag
+    }
+
     private var isSuperDooperFeatureActive: Bool {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
@@ -49,6 +57,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
+        // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
+        if let gleanDebugTag = gleanDebugTag {
+            logger.info(message: "Setting Glean debug tag for Network Extension.")
+            Glean.shared.setDebugViewTag(gleanDebugTag)
+        }
+
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
         logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))

@@ -12,6 +12,7 @@
 #include <QTimer>
 
 #include "logger.h"
+#include "settingsholder.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
 constexpr auto VPN_UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
@@ -66,12 +67,19 @@ bool AndroidCommons::shareText(const QString& text) {
 // static
 void AndroidCommons::initializeGlean(bool isTelemetryEnabled,
                                      const QString& channel) {
-  runOnAndroidThreadSync([isTelemetryEnabled, channel]() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  QString gleanDebugTag = settingsHolder->gleanDebugTagActive()
+                              ? settingsHolder->gleanDebugTag()
+                              : "";
+
+  runOnAndroidThreadSync([isTelemetryEnabled, channel, gleanDebugTag]() {
     QJniObject::callStaticMethod<void>(
         COMMON_UTILS_CLASS, "initializeGlean",
-        "(Landroid/content/Context;ZLjava/lang/String;)V",
+        "(Landroid/content/Context;ZLjava/lang/String;Ljava/lang/String;)V",
         getActivity().object(), (jboolean)isTelemetryEnabled,
-        QJniObject::fromString(channel).object());
+        QJniObject::fromString(channel).object(),
+        QJniObject::fromString(gleanDebugTag).object());
   });
 }
 

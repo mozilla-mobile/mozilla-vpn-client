@@ -58,6 +58,16 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
+    private val gleanDebugTag: String?
+        get() {
+            val gleanDebugTag = this.mConfig?.optString("gleanDebugTag", "") ?: ""
+            if (!(gleanDebugTag.isEmpty())) {
+                return gleanDebugTag
+            } else {
+                return null
+            }
+        }
+
     private var currentTunnelHandle = -1
         set(value: Int) {
             field = value
@@ -254,22 +264,6 @@ class VPNService : android.net.VpnService() {
             throw Error("turn on was called without vpn-permission!")
         }
 
-        if (isSuperDooperMetricsActive) {
-            val installationIdString = json.getString("installationId")
-            installationIdString?.let {
-                try {
-                    val installationId = UUID.fromString(installationIdString)
-                    Session.installationId.set(installationId)
-                } catch (e: Exception) {
-                    Log.e(tag, "Daemon installation ID string was not UUID:")
-                    Log.e(tag, e.toString())
-                }
-            }
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush,
-            )
-        }
-
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
@@ -320,7 +314,28 @@ class VPNService : android.net.VpnService() {
             )
         }
 
+        // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
+        // this must be after the mConfig is set to the latest data.
+        val gleanTag = gleanDebugTag
+        if (gleanTag != null) {
+            Log.i(tag, "Setting Glean debug tag for daemon.")
+            Glean.setDebugViewTag(gleanTag)
+        }
         if (isSuperDooperMetricsActive) {
+            val installationIdString = json.getString("installationId")
+            installationIdString?.let {
+                try {
+                    val installationId = UUID.fromString(installationIdString)
+                    Session.installationId.set(installationId)
+                } catch (e: Exception) {
+                    Log.e(tag, "Daemon installation ID string was not UUID:")
+                    Log.e(tag, e.toString())
+                }
+            }
+            Pings.daemonsession.submit(
+                Pings.daemonsessionReasonCodes.daemonFlush
+            )
+
             Session.daemonSessionStart.set()
             Session.daemonSessionId.generateAndSet()
             if (source != null) {
@@ -549,7 +564,7 @@ class VPNService : android.net.VpnService() {
             ),
         )
 
-        Log.i(tag, "Initialized Glean. Upload enabled state: $uploadEnabled")
+        Log.i(tag, "Initialized Glean for daemon. Upload enabled state: $uploadEnabled")
     }
 
     companion object {

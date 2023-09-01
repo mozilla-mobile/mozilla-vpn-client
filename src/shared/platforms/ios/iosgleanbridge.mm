@@ -5,6 +5,7 @@
 #include "iosgleanbridge.h"
 #include "Mozilla-Swift.h"
 #include "leakdetector.h"
+#include "settingsholder.h"
 
 #include <QString>
 
@@ -17,9 +18,14 @@ IOSGleanBridgeImpl* impl = nullptr;
 
 IOSGleanBridge::IOSGleanBridge(bool isTelemetryEnabled, const QString& channel) {
   MZ_COUNT_CTOR(IOSGleanBridge);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
+  NSString* gleanTag =
+      settingsHolder->gleanDebugTagActive() ? settingsHolder->gleanDebugTag().toNSString() : @"";
   impl = [[IOSGleanBridgeImpl alloc] initWithTelemetryEnabled:isTelemetryEnabled
-                                                      channel:channel.toNSString()];
+                                                      channel:channel.toNSString()
+                                                gleanDebugTag:gleanTag];
   Q_ASSERT(impl);
 }
 

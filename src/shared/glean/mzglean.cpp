@@ -117,9 +117,15 @@ void MZGlean::initialize() {
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
 #elif not(defined(MZ_WASM))
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    Q_ASSERT(settingsHolder);
+
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toUtf8(),
-                     Constants::inProduction() ? "production" : "staging");
+                     Constants::inProduction() ? "production" : "staging",
+                     settingsHolder->gleanDebugTagActive()
+                         ? settingsHolder->gleanDebugTag().toUtf8()
+                         : "");
 #endif
   }
 }

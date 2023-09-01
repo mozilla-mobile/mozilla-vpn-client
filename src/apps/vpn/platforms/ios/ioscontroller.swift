@@ -116,7 +116,7 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         let _ = TunnelManager.withTunnel { tunnel in
@@ -152,11 +152,11 @@ public class IOSControllerImpl : NSObject {
 
             let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, failureCallback: failureCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, failureCallback: failureCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
         let _ = TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
@@ -176,6 +176,7 @@ public class IOSControllerImpl : NSObject {
 
             var configHack = proto?.providerConfiguration ?? [:]
             configHack["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            configHack["gleanDebugTag"] = gleanDebugTag
             configHack["installationId"] = installationId
             proto?.providerConfiguration = configHack
 

@@ -229,6 +229,12 @@ void AndroidController::activate(const InterfaceConfig& config,
       Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
   args["installationId"] = config.m_installationId;
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+  args["gleanDebugTag"] = settingsHolder->gleanDebugTagActive()
+                              ? settingsHolder->gleanDebugTag()
+                              : "";
+
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
                                     doc.toJson(QJsonDocument::Compact));
