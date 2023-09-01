@@ -31,7 +31,7 @@ bool FeatureCallback_iosOrAndroid() {
 
 bool FeatureCallback_sentry() {
 #if defined(MZ_IOS)
-  return false;
+  return FeatureCallback_inStaging();
 #else
   return true;
 #endif
