@@ -281,81 +281,80 @@ describe('Addons', function() {
          });
     });
 
-    it.only(
-        `message display is correct when subscription expiration (no addon reload)`,
-        async () => {
-          if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
-            await vpn.flipFeatureOn('subscriptionManagement');
-          }
-          if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
-            await vpn.flipFeatureOff('accountDeletion');
-          }
+    it(`message display is correct when subscription expiration (no addon reload)`,
+       async () => {
+         if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
+           await vpn.flipFeatureOn('subscriptionManagement');
+         }
+         if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
+           await vpn.flipFeatureOff('accountDeletion');
+         }
 
-          // Load all production addons.
-          // These are loaded all together, so we don't know the exact number of
-          // addons.
-          await vpn.resetAddons('prod');
-          await vpn.waitForCondition(
-              async () =>
-                  (parseInt(
-                       await vpn.getMozillaProperty(
-                           'Mozilla.Shared', 'MZAddonManager', 'count'),
-                       10) > 0));
+         // Load all production addons.
+         // These are loaded all together, so we don't know the exact number of
+         // addons.
+         await vpn.resetAddons('prod');
+         await vpn.waitForCondition(
+             async () =>
+                 (parseInt(
+                      await vpn.getMozillaProperty(
+                          'Mozilla.Shared', 'MZAddonManager', 'count'),
+                      10) > 0));
 
-          for (const testCase of testCases) {
-            const [expiring, expiresOn, shouldBeAvailable, message] = testCase;
+         for (const testCase of testCases) {
+           const [expiring, expiresOn, shouldBeAvailable, message] = testCase;
 
-            console.log(` - Running ${message}`);
+           console.log(` - Running ${message}`);
 
-            const mockDetails = {...SubscriptionDetails};
-            mockDetails.subscription.current_period_end = expiresOn() / 1000;
-            mockDetails.subscription.cancel_at_period_end = expiring;
+           const mockDetails = {...SubscriptionDetails};
+           mockDetails.subscription.current_period_end = expiresOn() / 1000;
+           mockDetails.subscription.cancel_at_period_end = expiring;
 
-            this.ctx.guardianSubscriptionDetailsCallback = () => {
-              this.ctx.guardianOverrideEndpoints
-                  .GETs['/api/v1/vpn/subscriptionDetails']
-                  .status = 200;
-              this.ctx.guardianOverrideEndpoints
-                  .GETs['/api/v1/vpn/subscriptionDetails']
-                  .body = mockDetails;
-            };
+           this.ctx.guardianSubscriptionDetailsCallback = () => {
+             this.ctx.guardianOverrideEndpoints
+                 .GETs['/api/v1/vpn/subscriptionDetails']
+                 .status = 200;
+             this.ctx.guardianOverrideEndpoints
+                 .GETs['/api/v1/vpn/subscriptionDetails']
+                 .body = mockDetails;
+           };
 
-            await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-            await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+           await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-            await vpn.waitForQuery(
-                queries.screenSettings.USER_PROFILE.visible());
-            await vpn.waitForQuery(
-                queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-                    'text', 'Test'));
-            await vpn.waitForQuery(
-                queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible()
-                    .prop('text', 'test@mozilla.com'));
-            await vpn.waitForQueryAndClick(
-                queries.screenSettings.USER_PROFILE.visible());
-            await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE.visible());
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+                   'text', 'Test'));
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+                   'text', 'test@mozilla.com'));
+           await vpn.waitForQueryAndClick(
+               queries.screenSettings.USER_PROFILE.visible());
+           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-            await vpn.waitForQuery(
-                queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+           await vpn.waitForQuery(
+               queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
-            // TODO: Uncomment the assertion below once we re-enable
-            // "Subscription expiring" message
-            //  const loadedMessages = await vpn.messages();
-            //  assert.equal(
-            //      shouldBeAvailable,
-            //      loadedMessages.includes('message_subscription_expiring'));
+           // TODO: Uncomment the assertion below once we re-enable
+           // "Subscription expiring" message
+           //  const loadedMessages = await vpn.messages();
+           //  assert.equal(
+           //      shouldBeAvailable,
+           //      loadedMessages.includes('message_subscription_expiring'));
 
-            await vpn.waitForQueryAndClick(
-                queries.screenSettings.BACK.visible());
-            await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+           await vpn.waitForQueryAndClick(
+               queries.screenSettings.BACK.visible());
+           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-            await vpn.waitForQuery(
-                queries.screenSettings.USER_PROFILE.visible());
+           await vpn.waitForQuery(
+               queries.screenSettings.USER_PROFILE.visible());
 
-            await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-            await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-          }
-        });
+           await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+         }
+       });
   });
 
   it('Translations threshold', async () => {
