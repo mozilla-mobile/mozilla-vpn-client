@@ -129,7 +129,7 @@ void ConnectionBenchmark::start() {
 
   // Need this check to show error screen if there is no connection when
   // starting test.
-  checkStability();
+  showErrorIfNoSignal();
 }
 
 void ConnectionBenchmark::stop() {
@@ -223,10 +223,10 @@ void ConnectionBenchmark::handleStabilityChange() {
     return;
   }
   logger.debug() << "Handle stability change";
-  checkStability();
+  showErrorIfNoSignal();
 }
 
-void ConnectionBenchmark::checkStability() {
+void ConnectionBenchmark::showErrorIfNoSignal() {
   ConnectionHealth::ConnectionStability stability =
       MozillaVPN::instance()->connectionHealth()->stability();
   logger.debug() << "Current stability: " << stability;
