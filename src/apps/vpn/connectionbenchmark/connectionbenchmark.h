@@ -70,6 +70,7 @@ class ConnectionBenchmark final : public QObject {
   void setConnectionSpeed();
   void setState(State state);
   void stop();
+  void showErrorIfNoSignal();
 
  private:
   QList<BenchmarkTask*> m_benchmarkTasks;

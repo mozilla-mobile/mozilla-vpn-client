@@ -204,4 +204,25 @@ describe('Benchmark', function() {
     // Exit the benchmark
     await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
   });
+
+  it('Error when starting with no connection', async () => {
+    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await vpn.activate(true);
+
+    // Force a No Signal situation
+    await vpn.forceConnectionStabilityStatus('nosignal');
+
+    // Start the connection benchmark; it goes into Running state before Error.
+    await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
+
+    // We expect the benchmark to fail.
+    assert.strictEqual(
+        await vpn.getMozillaProperty(
+            'Mozilla.VPN', 'VPNConnectionBenchmark', 'state'),
+        'StateError');
+    await vpn.waitForQuery(queries.screenHome.CONNECTION_INFO_ERROR.visible());
+
+    // Exit the benchmark
+    await vpn.waitForQueryAndClick(queries.screenHome.CONNECTION_INFO_TOGGLE);
+  });
 });
