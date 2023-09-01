@@ -561,6 +561,11 @@ onboarding:
   progressBarAccessibilityStepCurrent:
     value: "Onboarding step “%1” (%2 of %3). You are currently on this step."
     comment: Accessibility read out for the current step in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
+  dataSlideHeader: Data collection and use
+  dataSlideBody: We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing data with Mozilla is optional.
+  dataSlideCheckboxLabel: Mozilla may collect technical data about my use of Mozilla VPN.
+  dataSlideLearnMoreCaption: Learn more about what data Mozilla collects and how it's used
+  dataSlidePrivacyLinkLabel: Mozilla VPN Privacy Notice
 
 inAppAuth:
   emailInputPlaceholder: Enter email
@@ -955,6 +960,9 @@ global:
   clear: 
     value: Clear
     comment: Accessible label for clear button
+  next: 
+    value: Next
+    comment: Label for button used to proceed
 
 getHelp:
   helpCenter: Help Center

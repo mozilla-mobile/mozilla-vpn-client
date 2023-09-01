@@ -429,7 +429,7 @@ void MozillaVPN::maybeStateMain() {
   maybeRegenerateDeviceKey();
 
   if (state() != StateUpdateRequired) {
-    setState(StateMain);
+    setState(StateOnboarding);
   }
 
 #ifdef MZ_ADJUST
@@ -1722,6 +1722,13 @@ void MozillaVPN::registerNavigatorScreens() {
         Navigator::instance()->requestPreviousScreen();
         return true;
       });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenOnboarding,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenOnboarding.qml",
+      QVector<int>{App::StateOnboarding},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound,
           Navigator::instance(), []() {

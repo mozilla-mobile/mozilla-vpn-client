@@ -33,6 +33,7 @@ ColumnLayout {
 
     property list<Item> views
     property int currentIndex: 0
+    property int progressBarHorizontalMargins: 44
 
     function next() {
         if (stepProgressBar.activeIndex + 1 < stepProgressBar.model.count) {
@@ -73,8 +74,8 @@ ColumnLayout {
     MZStepProgressBar {
         id: stepProgressBar
 
-        Layout.leftMargin: 44
-        Layout.rightMargin: 44
+        Layout.leftMargin: stepNavigation.progressBarHorizontalMargins
+        Layout.rightMargin: stepNavigation.progressBarHorizontalMargins
         Layout.fillWidth: true
         Layout.maximumWidth: 500 //Max size of progess bar for tablets
         Layout.alignment: Qt.AlignHCenter
