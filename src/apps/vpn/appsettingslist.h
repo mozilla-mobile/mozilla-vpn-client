@@ -411,17 +411,6 @@ SETTING_BOOL(telemetryPolicyShown,        // getter
              false                        // sensitive (do not log)
 )
 
-SETTING_BOOL(tipsAndTricksIntroShown,        // getter
-             setTipsAndTricksIntroShown,     // setter
-             removeTipsAndTricksIntroShown,  // remover
-             hasTipsAndTricksIntroShown,     // has
-             "tipsAndTricksIntroShown",      // key
-             false,                          // default value
-             false,                          // user setting
-             false,                          // remove when reset
-             false                           // sensitive (do not log)t
-)
-
 SETTING_BOOL(unsecuredNetworkAlert,        // getter
              setUnsecuredNetworkAlert,     // setter
              removeUnsecuredNetworkAlert,  // remover

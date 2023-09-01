@@ -1097,47 +1097,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  tips_and_tricks_modal_shown:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has been shown the tips and tricks introduction modal
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-2292
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mlichtenstein@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  tips_and_tricks_modal_closed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has dismissed the tips and tricks introduction modal
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-2292
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mlichtenstein@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      action:
-        description: |
-          The trigger that caused the modal to be closed (dismissed | cta)
-        type: string
-
   device_removed:
     type: event
     lifetime: ping

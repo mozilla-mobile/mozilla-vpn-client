@@ -109,7 +109,6 @@ exports.mochaHooks = {
 
     await startAndConnect();
     await vpn.setGleanAutomationHeader();
-    await vpn.setSetting('tipsAndTricksIntroShown', 'true')
 
     if (this.currentTest.ctx.authenticationNeeded) {
       await vpn.authenticateInApp(true, true);

@@ -717,7 +717,6 @@ freeTrials:
   freeTrialLabel: 7-day free trial
 
 tipsAndTricks:
-  settingsEntryLabel: VPN tips and tricks
   quickTipsTitle: Quick tips
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   advancedTipsTitle: Advanced tips
@@ -728,7 +727,6 @@ tipsAndTricks:
   moreTutorialsDescription2: Learn how to use Mozilla VPN’s advanced features
   quickTipsGuideViewTitle: Quick tip
   advancedTipsGuideViewTitle: Advanced tip
-  introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
   tabTitleAll:
     value: All
     comment: Tab title for the general tab of the Tips & Tricks panels
