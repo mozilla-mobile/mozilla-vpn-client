@@ -14,8 +14,7 @@ task-defaults:
     fetches:
         fetch:
             - miniconda-osx
-        toolchain:
-            - qt-mac
+            - qt-hotfix
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
