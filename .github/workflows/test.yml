@@ -1,0 +1,569 @@
+name: Tests
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
+
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-unit-tests:
+    runs-on: ubuntu-22.04
+    name: Run Unit tests on Linux
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install dependences
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          pip3 install -r requirements.txt
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
+
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S . -B $(pwd)/build \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests -j$(nproc)
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
+
+          grcov $(pwd)/src/apps/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/src/apps/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
+
+      - name: Upload coverage for linux unit tests to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: .
+          flags: linux_unit_tests
+          name: codecov-poc
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
+          verbose: true
+
+  macos-unit-tests:
+    runs-on: macos-latest
+    name: Run Unit tests on MacOS
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+          brew install ninja
+
+      - name: Install Qt6
+        shell: bash
+        run: |
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          unzip -a mac.zip
+          sudo mv qt_dist /opt
+          cd ..
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
+
+      - name: Building tests
+        shell: bash
+        run: |
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          mkdir -p build
+          cmake -S . -B $(pwd)/build -GNinja \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build --target build_tests
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
+
+          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
+
+          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
+
+          grcov $(pwd)/src/apps/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
+
+          grcov $(pwd)/src/apps/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
+
+      - name: Upload coverage for macos unit tests to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: .
+          flags: macos_unit_tests
+          name: codecov-poc
+          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
+          verbose: true
+
+  windows-unit-tests:
+    name: Run Unit tests on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install Qt
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
+          Expand-Archive win.zip
+          mv win\QT_OUT "C:\\MozillaVPNBuild"
+        
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Install depedencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Building tests
+        run: |
+          mkdir ./build
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
+          cmake --build ./build --target build_tests
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          ctest --output-on-failure
+
+  linux-lottie-tests:
+    runs-on: ubuntu-22.04
+    name: Run Lottie tests on Linux
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Install Linux packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
+
+      - name: Building tests
+        shell: bash
+        run: |
+          mkdir -p build
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build -j$(nproc)
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: .
+          flags: lottie_tests
+          name: codecov-poc
+          files: lottie_lcov.info
+          verbose: true
+
+  macos-lottie-tests:
+    runs-on: macos-latest
+    name: Run Lottie tests on MacOS
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Qt6
+        shell: bash
+        run: |
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          unzip -a mac.zip
+          sudo mv qt_dist /opt
+          cd ..
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
+
+      - name: Building tests
+        shell: bash
+        run: |
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          mkdir -p build
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON \
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake --build $(pwd)/build
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/tests/unit/CMakeFiles/lottie_tests.dir -s ${{github.workspace}} \
+              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/lottie_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: .
+          flags: lottie_tests
+          name: codecov-poc
+          files: lottie_lcov.info
+          verbose: true
+
+  windows-lottie-tests:
+    name: Run Lottie tests on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Qt
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
+          Expand-Archive win.zip
+          mv win\QT_OUT "C:\\MozillaVPNBuild"
+
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Building tests
+        shell: bash
+        run: |
+          export PATH=/c/MozillaVPNBuild/bin:$PATH
+          mkdir -p build
+          cmake -S lottie -B $(pwd)/build -DBUILD_TESTING=ON
+          cmake --build $(pwd)/build --config Release
+
+      - name: Running tests
+        shell: bash
+        working-directory: ./build
+        run: |
+          ctest --build-config Release --output-on-failure
+
+  wasm-build-dummy-client:
+    name: Wasm Qt6
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
+    env:
+      QTVERSION: 6.2.4
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+            submodules: 'true'
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          # qt6.2.3 for wasm needs the desktop linux installation
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
+
+      - name: Install python dependencies
+        shell: bash
+        run: |
+          pip install -r requirements.txt
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v7
+
+      - name: Compiling
+        shell: bash
+        run: |
+          export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
+          mkdir build
+          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j4
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
+
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+            name: WebAssembly Build Qt6
+            path: build/wasm_build
+
+  wasm-functional-tests:
+    name: Functional tests
+    needs:
+      - wasm-build-dummy-client
+    runs-on: ubuntu-20.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.wasm-build-dummy-client.outputs.matrix) }}
+    env:
+      QTVERSION: 6.2.4
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Qt
+        shell: bash
+        run: |
+          python3 -m pip install aqtinstall
+          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
+
+      - name: Install dependecies
+        run: |
+          sudo apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
+          npm install
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: WebAssembly Build Qt6
+          # Destination path, WASM_BUILD_DIRECTORY
+          path: wasm_build
+
+      - name: Build addons
+        shell: bash
+        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            export WASM_BUILD_DIRECTORY=$(pwd)/wasm_build
+            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}
+
+  linux-build-dummy-client:
+    name: Build Linux Dummy Client
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.testGen.outputs.tests }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install build dependecies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+
+      - name: Install Grcov
+        shell: bash
+        run: |
+          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
+
+      - name: Compile test client
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          pip3 install -r requirements.txt
+
+          mkdir -p build/cmake
+          mkdir -p build/profile
+          cmake -S $(pwd) -B build/cmake \
+              -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
+          cmake --build build/cmake -j$(nproc) --target dummyvpn
+
+          mkdir -p build/profile
+          rsync -a --include '*/' --include '*.gcno' --exclude '*' \
+              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+
+      - name: Compile test addons
+        shell: bash
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons
+          cmake --build build/addons
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: |
+            build/
+            !build/cmake/
+
+      - name: Generate tasklist
+        id: testGen
+        shell: bash
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+      - name: Check tests
+        shell: bash
+        env:
+          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+        run: |
+          echo $TEST_LIST | jq
+
+  linux-functional-tests:
+    name: Functional tests
+    needs:
+      - linux-build-dummy-client
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        test: ${{ fromJson(needs.linux-build-dummy-client.outputs.matrix) }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: build/
+
+      - name: Install test dependecies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
+          sudo apt install --no-upgrade firefox xvfb -y
+          pip3 install -r requirements.txt
+          npm install
+
+      - name: Check build
+        shell: bash
+        run: |
+            chmod +x ./build/dummyvpn
+            ./build/dummyvpn -v
+
+            chmod +x ${{github.workspace}}/grcov-build/bin/grcov
+            ${{github.workspace}}/grcov-build/bin/grcov --version
+
+      - name: Running ${{matrix.test.name}} Tests
+        id: runTests
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: |
+            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+            export HEADLESS=yes
+            export TZ=Europe/London
+            mkdir -p $ARTIFACT_DIR
+            xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
+        env:
+          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
+          MVPN_BIN: ./build/dummyvpn
+          MVPN_ADDONS_PATH: ./build/addons
+
+      - name: Generating grcov reports
+        id: generateGrcov
+        continue-on-error: true # Ignore GRCOV parsing errors, see github.com/mozilla/grcov/issues/570
+        timeout-minutes: 1 # Give GRCOV a short timeout in case it hangs after a panic
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          grcov build/profile \
+              -s src -t lcov --branch --ignore-not-existing \
+              -o ${{runner.temp}}/artifacts/functional_lcov.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: steps.generateGrcov.outcome == 'success'
+        with:
+          directory: .
+          flags: functional_tests
+          name: codecov-poc
+          files: ${{runner.temp}}/artifacts/functional_lcov.info
+          verbose: true
+
+      - name: Uploading artifacts
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: ${{matrix.test.name}} Logs
+          path: ${{ runner.temp }}/artifacts
