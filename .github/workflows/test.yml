@@ -39,8 +39,21 @@ jobs:
         run: |          
           pip3 install -r requirements.txt
           brew install ninja
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O $RUNNER_TEMP/mac.zip
+          cd $RUNNER_TEMP
           unzip -a mac.zip
+          # Export that for the Build Task
+          echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/qt_dist/lib/cmake" >> "$GITHUB_ENV"
+      - name: Windows Install dependencies
+        if: runner.os == 'windows'
+        shell: bash
+        run: |          
+          pip3 install -r requirements.txt
+          wget https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/VS7S5JtSRyyu4D6jqoGShw/runs/0/artifacts/public%2Fbuild%2Fqt6_win.zip -O $RUNNER_TEMP/windows.zip
+          cd $RUNNER_TEMP
+          unzip -a windows.zip
+          # Export that for the Build Task
+          echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/QT_OUT/lib/cmake" >> "$GITHUB_ENV"
       - name: Install Grcov
         shell: bash
         run: |
@@ -48,7 +61,7 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
-          export PATH={{github.workspace}}/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          echo "Using QT: $CMAKE_PREFIX_PATH"
           mkdir -p build
           cmake -S . -B $(pwd)/build \
             -DCMAKE_CXX_FLAGS=--coverage \
