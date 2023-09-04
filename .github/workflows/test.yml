@@ -38,7 +38,6 @@ jobs:
         shell: bash
         run: |          
           pip3 install -r requirements.txt
-          brew install ninja
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O $RUNNER_TEMP/mac.zip
           cd $RUNNER_TEMP
           unzip -a mac.zip
@@ -54,6 +53,20 @@ jobs:
           unzip -a windows.zip
           # Export that for the Build Task
           echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/QT_OUT/lib/cmake" >> "$GITHUB_ENV"
+          # We're using msvc, so let's enable multiprocess
+          echo "CXXFLAGS=/MP" >> "$GITHUB_ENV"
+      - name: Setup CCache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with: 
+          key: ${{ github.job }}-${{ matrix.os }}
+          max-size: "300M"
+          variant: sccache
+      - name: Enable CCache
+        shell: bash
+        run: |
+          echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+          echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+          echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
       - name: Install Grcov
         shell: bash
         run: |
