@@ -22,3 +22,5 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND QML_TEST_ARGS -platform offscreen)
 endif()
 add_test(NAME lottie_qmltest COMMAND lottie_qmltest ${QML_TEST_ARGS})
+
+add_dependencies(build_tests lottie_qmltest)

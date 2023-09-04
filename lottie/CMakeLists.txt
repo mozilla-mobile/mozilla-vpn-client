@@ -54,7 +54,5 @@ add_custom_command(
 
 ## Include self-tests, unless we are being included in another project.
 enable_testing()
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    add_subdirectory(tests/unit)
-    add_subdirectory(tests/qml)
-endif()
+add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
+add_subdirectory(tests/qml EXCLUDE_FROM_ALL)

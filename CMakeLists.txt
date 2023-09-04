@@ -17,6 +17,14 @@ project("Mozilla VPN" VERSION 2.17.0 LANGUAGES C CXX
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
+# Enable testing
+include(CTest)
+add_custom_target(build_tests)
+set_target_properties(build_tests PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+        FOLDER "Tests"
+)
+
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.
@@ -143,14 +151,6 @@ add_subdirectory(addons)
 if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
     add_subdirectory(extension)
-
-    # Enable testing
-    include(CTest)
-    add_custom_target(build_tests)
-    set_target_properties(build_tests PROPERTIES
-        EXCLUDE_FROM_ALL TRUE
-        FOLDER "Tests"
-    )
 
     # Unit Tests
     add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
