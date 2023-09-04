@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   unit-tests:
-    name: Run Unit tests on ${{matrix.os}}
+    name: ${{matrix.os}} Unit tests
     strategy:
         fail-fast: false # Don't cancel other jobs if a test fails
         matrix:
@@ -28,13 +28,13 @@ jobs:
         with:
           submodules: 'recursive'
       - name: Linux Install deps
-        if: ${{matrix.os}} == ubuntu-22.04
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
           pip3 install -r requirements.txt
       - name: MacOS Install dependencies
-        if: ${{matrix.os}} == macos-latest
+        if: runner.os == 'macOS'
         shell: bash
         run: |          
           pip3 install -r requirements.txt
@@ -45,13 +45,13 @@ jobs:
         shell: bash
         run: |
           cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
-            - name: Building tests
-      - shell: bash
+      - name: Building tests
+        shell: bash
         run: |
           export PATH={{github.workspace}}/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build \
-            -DCMAKE_CXX_FLAGS=--coverage \ 
+            -DCMAKE_CXX_FLAGS=--coverage \
             -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests -j$(nproc)
       - name: Running tests
@@ -84,32 +84,6 @@ jobs:
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
           verbose: true
 
-  windows-unit-tests:
-    name: Run Unit tests on Windows
-    runs-on: windows-latest
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-
-      - name: Install depedencies
-        shell: bash
-        run: |
-          
-
-      - name: Building tests
-        run: |
-          mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
-          cmake --build ./build --target build_tests
-
-      - name: Running tests
-        shell: bash
-        working-directory: ./build
-        run: |
-          ctest --output-on-failure
 
   linux-lottie-tests:
     runs-on: ubuntu-22.04
@@ -237,7 +211,7 @@ jobs:
           ctest --build-config Release --output-on-failure
 
   wasm-build-dummy-client:
-    name: Wasm Qt6
+    name: Build Wasm Dummy Client
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
