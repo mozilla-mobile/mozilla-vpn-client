@@ -160,6 +160,10 @@ class ConnectionManager : public QObject, public LogSerializer {
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
 
+#ifdef MZ_DUMMY
+  void currentServerChanged();
+#endif
+
  public:
   ConnectionManager();
   ~ConnectionManager();
