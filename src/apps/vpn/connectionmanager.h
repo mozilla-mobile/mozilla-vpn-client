@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 
+#include "controller.h"
 #include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "loghandler.h"
@@ -17,11 +18,15 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "pinghelper.h"
-#include "controller.h"
 
 class Controller;
 class ControllerImpl;
 class MozillaVPN;
+
+// This object is allocated when the VPN is initialized.
+// The Connection Manager component sits between the frontend and the Controller
+// to handle all connectivity related logic and let the controller only handle
+// activation and deactivation.
 
 class ConnectionManager : public QObject, public LogSerializer {
   Q_OBJECT
@@ -35,13 +40,15 @@ class ConnectionManager : public QObject, public LogSerializer {
   //    ConnectionStateCaptivePortal,
   //    ConnectionStateCheckSubscription,
   //    ConnectionStateUnstable,
-  //    ConnectionStateIdle,       // Used when there are no active probes ongoing
+  //    ConnectionStateIdle,       // Used when there are no active probes
+                                   // ongoing
   //    ConnectionDeviceUnregistered
   //  };
   //  Q_ENUM(ConnectionState)
 
-  // These are temporarily copied from the controller state to mirror them, but
-  // will eventually be removed by ConnectionState above
+  /* TODO: The states below are copied from the controller state to mirror the
+  controller, but they will eventually be removed by ConnectionState above. */
+
   enum State {
     StateInitializing,
     StateOff,
@@ -231,8 +238,8 @@ class ConnectionManager : public QObject, public LogSerializer {
   ServerData m_serverData;
   ServerData m_nextServerData;
 
-  PingHelper m_ping_canary;
-  bool m_ping_received = false;
+  PingHelper m_pingCanary;
+  bool m_pingReceived = false;
   bool m_connectedBeforeTransaction = false;
 
   ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
@@ -241,9 +248,6 @@ class ConnectionManager : public QObject, public LogSerializer {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
-  
-//  Controller* m_controller = MozillaVPN::instance()->controller();
-//  Controller m_controller;
 
 };  // namespace ConnectionManager
 

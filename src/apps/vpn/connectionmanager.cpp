@@ -139,9 +139,9 @@ void ConnectionManager::initialize() {
   connect(this, &ConnectionManager::stateChanged, this,
           &ConnectionManager::maybeEnableDisconnectInConfirming);
 
-  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, this, [this]() {
-    m_ping_canary.stop();
-    m_ping_received = true;
+  connect(&m_pingCanary, &PingHelper::pingSentAndReceived, this, [this]() {
+    m_pingCanary.stop();
+    m_pingReceived = true;
     logger.info() << "Canary Ping Succeeded";
   });
 
@@ -462,9 +462,8 @@ void ConnectionManager::activateInternal(
   m_serverData.setExitServerPublicKey(
       m_activationQueue.last().m_serverPublicKey);
 
-  m_ping_received = false;
-  m_ping_canary.start(m_activationQueue.first().m_serverIpv4AddrIn,
-                      "0.0.0.0/0");
+  m_pingReceived = false;
+  m_pingCanary.start(m_activationQueue.first().m_serverIpv4AddrIn, "0.0.0.0/0");
   logger.info() << "Canary Ping Started";
   activateNext();
 }
@@ -660,7 +659,7 @@ void ConnectionManager::connected(const QString& pubkey,
     }
   }
   m_handshakeTimer.stop();
-  m_ping_canary.stop();
+  m_pingCanary.stop();
 
   // Clear the retry counter after all connections have succeeded.
   m_connectionRetry = 0;
@@ -736,9 +735,9 @@ bool ConnectionManager::processNextStep() {
   }
 
   if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_ping_received;
+    logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
-    emit readyToServerUnavailable(m_ping_received);
+    emit readyToServerUnavailable(m_pingReceived);
     return true;
   }
 
@@ -988,7 +987,7 @@ bool ConnectionManager::deactivate() {
     setState(StateDisconnecting);
   }
 
-  m_ping_canary.stop();
+  m_pingCanary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearConnectedTime();

@@ -58,18 +58,17 @@ void Controller::initialize() {
   logger.debug() << "Initializing the controller";
   m_initialized = true;
 
-
-//  if (m_state != ConnectionManager::StateInitializing) {
-//    setState(ConnectionManager::StateInitializing);
-//  }
+  //  if (m_state != ConnectionManager::StateInitializing) {
+  //    setState(ConnectionManager::StateInitializing);
+  //  }
 
   // Let's delete the previous controller before creating a new one.
   if (m_impl) {
     m_impl.reset(nullptr);
   }
 
-//  m_serverData = *MozillaVPN::instance()->serverData();
-//  m_nextServerData = *MozillaVPN::instance()->serverData();
+  //  m_serverData = *MozillaVPN::instance()->serverData();
+  //  m_nextServerData = *MozillaVPN::instance()->serverData();
 
 #if defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
@@ -83,54 +82,57 @@ void Controller::initialize() {
   m_impl.reset(new DummyController());
 #endif
 
-//  connect(m_impl.get(), &ControllerImpl::connected, this,
-//          &ConnectionManager::connected);
-//  connect(m_impl.get(), &ControllerImpl::disconnected, this,
-//          &ConnectionManager::disconnected);
-//  connect(m_impl.get(), &ControllerImpl::initialized, this,
-//          &ConnectionManager::implInitialized);
-//  connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
-//          &ConnectionManager::statusUpdated);
-//  connect(this, &ConnectionManager::stateChanged, this,
-//          &ConnectionManager::maybeEnableDisconnectInConfirming);
+  //  connect(m_impl.get(), &ControllerImpl::connected, this,
+  //          &ConnectionManager::connected);
+  //  connect(m_impl.get(), &ControllerImpl::disconnected, this,
+  //          &ConnectionManager::disconnected);
+  //  connect(m_impl.get(), &ControllerImpl::initialized, this,
+  //          &ConnectionManager::implInitialized);
+  //  connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
+  //          &ConnectionManager::statusUpdated);
+  //  connect(this, &ConnectionManager::stateChanged, this,
+  //          &ConnectionManager::maybeEnableDisconnectInConfirming);
 
-//  connect(&m_ping_canary, &PingHelper::pingSentAndReceived, this, [this]() {
-//    m_ping_canary.stop();
-//    m_ping_received = true;
-//    logger.info() << "Canary Ping Succeeded";
-//  });
+  //  connect(&m_pingCanary, &PingHelper::pingSentAndReceived, this, [this]() {
+  //    m_pingCanary.stop();
+  //    m_pingReceived = true;
+  //    logger.info() << "Canary Ping Succeeded";
+  //  });
 
-//  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
-//          [this]() {
-//            m_connectedBeforeTransaction =
-//                m_state == ConnectionManager::StateOn;
-//          });
-//
-//  connect(SettingsHolder::instance(),
-//          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
-//            if (!m_connectedBeforeTransaction)
-//              MozillaVPN::instance()->deactivate();
-//          });
-//
-//  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack,
-//          this, [this]() {
-//            if (m_connectedBeforeTransaction)
-//              MozillaVPN::instance()->activate();
-//          });
-//
-//  MozillaVPN* vpn = MozillaVPN::instance();
-//
-//  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
-//  m_impl->initialize(device, vpn->keys());
-//
-//  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
-//          &ConnectionManager::serverDataChanged);
-//
-//  connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
-//          &ConnectionManager::cleanupBackendLogs);
-//
-//  connect(this, &ConnectionManager::readyToServerUnavailable,
-//          Tutorial::instance(), &Tutorial::stop);
+  //  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan,
+  //  this,
+  //          [this]() {
+  //            m_connectedBeforeTransaction =
+  //                m_state == ConnectionManager::StateOn;
+  //          });
+  //
+  //  connect(SettingsHolder::instance(),
+  //          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
+  //            if (!m_connectedBeforeTransaction)
+  //              MozillaVPN::instance()->deactivate();
+  //          });
+  //
+  //  connect(SettingsHolder::instance(),
+  //  &SettingsHolder::transactionRolledBack,
+  //          this, [this]() {
+  //            if (m_connectedBeforeTransaction)
+  //              MozillaVPN::instance()->activate();
+  //          });
+  //
+  //  MozillaVPN* vpn = MozillaVPN::instance();
+  //
+  //  const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  //  m_impl->initialize(device, vpn->keys());
+  //
+  //  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged,
+  //  this,
+  //          &ConnectionManager::serverDataChanged);
+  //
+  //  connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
+  //          &ConnectionManager::cleanupBackendLogs);
+  //
+  //  connect(this, &ConnectionManager::readyToServerUnavailable,
+  //          Tutorial::instance(), &Tutorial::stop);
 }
 
 bool Controller::isVPNActive() { return m_VPNActive; }
@@ -152,39 +154,35 @@ void Controller::serializeLogs(
 }
 
 bool Controller::deactivate() {
-//  logger.debug() << "Deactivation" << m_state;
+  //  logger.debug() << "Deactivation" << m_state;
   logger.debug() << "Deactivation";
 
-//  if (m_state != StateOn && m_state != StateSwitching &&
-//      m_state != StateSilentSwitching && m_state != StateConfirming &&
-//      m_state != StateConnecting && m_state != StateCheckSubscription) {
-//    logger.warning() << "Already disconnected";
-//    return false;
-//  }
-//
-//  if (m_state == StateOn || m_state == StateConfirming ||
-//      m_state == StateConnecting || m_state == StateCheckSubscription) {
-//    setState(StateDisconnecting);
-//  }
-//
-//  m_ping_canary.stop();
-//  m_handshakeTimer.stop();
-//  m_activationQueue.clear();
-//  clearConnectedTime();
-//  clearRetryCounter();
-  if (m_VPNActive)
-  {
+  //  if (m_state != StateOn && m_state != StateSwitching &&
+  //      m_state != StateSilentSwitching && m_state != StateConfirming &&
+  //      m_state != StateConnecting && m_state != StateCheckSubscription) {
+  //    logger.warning() << "Already disconnected";
+  //    return false;
+  //  }
+  //
+  //  if (m_state == StateOn || m_state == StateConfirming ||
+  //      m_state == StateConnecting || m_state == StateCheckSubscription) {
+  //    setState(StateDisconnecting);
+  //  }
+  //
+  //  m_pingCanary.stop();
+  //  m_handshakeTimer.stop();
+  //  m_activationQueue.clear();
+  //  clearConnectedTime();
+  //  clearRetryCounter();
+  if (m_VPNActive) {
     m_VPNActive = false;
-  }
-  else
-  {
+  } else {
     logger.warning() << "Already disconnected";
     return false;
   }
-  
 
   Q_ASSERT(m_impl);
-  //stop all ongoing checks
-//  m_impl->deactivate(stateToReason(m_state));
+  // stop all ongoing checks
+  //  m_impl->deactivate(stateToReason(m_state));
   return true;
 }
