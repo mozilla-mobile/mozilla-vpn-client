@@ -41,7 +41,7 @@ class ConnectionManager : public QObject, public LogSerializer {
   //    ConnectionStateCheckSubscription,
   //    ConnectionStateUnstable,
   //    ConnectionStateIdle,       // Used when there are no active probes
-                                   // ongoing
+  // ongoing
   //    ConnectionDeviceUnregistered
   //  };
   //  Q_ENUM(ConnectionState)
