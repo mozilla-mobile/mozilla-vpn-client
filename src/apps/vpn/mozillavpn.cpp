@@ -2198,9 +2198,9 @@ void MozillaVPN::registerAddonApis() {
       QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 
       QJSValue value = engine->newQObject(obj);
-      value.setPrototype(engine->newQMetaObject(&Controller::staticMetaObject));
+      value.setPrototype(engine->newQMetaObject(&ConnectionManager::staticMetaObject));
 
-      addonApi->insert("controller", QVariant::fromValue(value));
+      addonApi->insert("connectionManager", QVariant::fromValue(value));
     }
 
     {

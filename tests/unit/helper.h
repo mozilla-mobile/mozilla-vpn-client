@@ -56,7 +56,7 @@ class TestHelper : public QObject {
 
   static QVector<NetworkConfig> networkConfig;
 
-  static Controller::State controllerState;
+  static ConnectionManager::State controllerState;
 
   struct SystemNotification {
     NotificationHandler::Message type;
