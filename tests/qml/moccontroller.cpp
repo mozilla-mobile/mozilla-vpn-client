@@ -7,9 +7,9 @@
 #include "mozillavpn.h"
 #include "pinghelper.h"
 
-ConnectionManager::Controller() {}
+ConnectionManager::ConnectionManager() {}
 
-ConnectionManager::~Controller() = default;
+ConnectionManager::~ConnectionManager() = default;
 
 void ConnectionManager::initialize() {}
 
