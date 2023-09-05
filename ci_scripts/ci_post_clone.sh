@@ -33,7 +33,7 @@ EOF
 
 # THIS IS A QT HOTFIX, TO CONTINUE USING 6.2.4 - Change back to curling `latest` when we move to Qt 6.5.1.
 # curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
-curl -L https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/c9a9Uw_7Tm2L2T_QU5_Ydg/runs/0/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
+curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.pushdate.2023.06.12.20230612195331/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
 unzip -q qt_ios.zip
 ls
 
