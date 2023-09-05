@@ -130,10 +130,3 @@ FEATURE(unsecuredNetworkNotification,      // Feature ID
         FeatureCallback_false,             // Can be flipped off
         QStringList(),                     // feature dependencies
         FeatureCallback_unsecuredNetworkNotification)
-
-FEATURE(websocket,             // Feature ID
-        "WebSocket",           // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)

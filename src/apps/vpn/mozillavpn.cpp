@@ -64,8 +64,6 @@
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
-#include "websocket/pushmessage.h"
-#include "websocket/websockethandler.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
@@ -232,8 +230,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   registerExternalOperations();
 
-  registerPushMessageTypes();
-
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
 
@@ -275,10 +271,6 @@ void MozillaVPN::initialize() {
   m_private->m_serverLatency.initialize();
 
   m_private->m_serverData.initialize();
-
-  if (Feature::get(Feature::Feature_websocket)->isSupported()) {
-    m_private->m_webSocketHandler.initialize();
-  }
 
   AddonManager::instance();
 
@@ -2070,22 +2062,6 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "send_push_message_device_deleted",
-      "Simulate the receiving of a push-message type device-deleted", 1,
-      [](InspectorHandler*, const QList<QByteArray>& arguments) {
-        QJsonObject payload;
-        payload["publicKey"] = QString(arguments[1]);
-
-        QJsonObject msg;
-        msg["type"] = "DEVICE_DELETED";
-        msg["payload"] = payload;
-
-        PushMessage message(QJsonDocument(msg).toJson());
-        message.executeAction();
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
       "servers", "Returns a list of servers", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         QJsonObject obj;
@@ -2239,29 +2215,6 @@ void MozillaVPN::registerExternalOperations() {
 
   eoh->registerExternalOperation(
       OpQuit, []() { MozillaVPN::instance()->controller()->quit(); });
-}
-
-void MozillaVPN::registerPushMessageTypes() {
-  PushMessage::registerPushMessageType(
-      "DEVICE_DELETED", [](const QJsonObject& payload) -> bool {
-        const QString& publicKey = payload["publicKey"].toString();
-        if (publicKey.isEmpty()) {
-          logger.error() << "Malformed message payload for DeviceDeleted "
-                            "message. Ignoring.";
-          return false;
-        }
-
-        MozillaVPN* vpn = MozillaVPN::instance();
-        if (vpn->keys()->publicKey() == publicKey) {
-          logger.info()
-              << "Current device has been deleted from this subscription.";
-          vpn->reset(true);
-          return true;
-        }
-
-        MozillaVPN::instance()->removeDevice(publicKey, "PushMessage");
-        return true;
-      });
 }
 
 void MozillaVPN::ensureApplicationIdExists() {
