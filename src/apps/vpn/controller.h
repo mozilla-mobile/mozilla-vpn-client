@@ -18,7 +18,7 @@ class Controller final : public QObject, public LogSerializer {
  public:
   Controller();
   ~Controller();
-  
+
   void initialize();
 
   bool isVPNActive();
@@ -29,16 +29,9 @@ class Controller final : public QObject, public LogSerializer {
       override;
 
  public slots:
-  // These 2 methods activate/deactivate the VPN. Return true if a signal will
-  // be emitted at the end of the operation.
-//  bool activate(
-//      const ServerData& serverData,
-//      ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-  bool deactivate();
 
  private:
   bool m_VPNActive = false;
-  QScopedPointer<ControllerImpl> m_impl;
   bool m_initialized = false;
 };
 

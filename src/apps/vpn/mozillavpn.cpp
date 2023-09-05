@@ -902,7 +902,7 @@ void MozillaVPN::mainWindowLoaded() {
 #endif
 #ifdef SENTRY_ENABLED
   SentryAdapter::instance()->init();
-  QObject::connect(controller(), &Controller::readyToQuit,
+  QObject::connect(connectionManager(), &ConnectionManager::readyToQuit,
                    SentryAdapter::instance(), &SentryAdapter::onBeforeShutdown);
 #endif
 }
