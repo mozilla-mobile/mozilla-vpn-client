@@ -429,7 +429,7 @@ void MozillaVPN::maybeStateMain() {
   maybeRegenerateDeviceKey();
 
   if (state() != StateUpdateRequired) {
-    setState(StateOnboarding);
+    setState(StateMain);
   }
 
 #ifdef MZ_ADJUST

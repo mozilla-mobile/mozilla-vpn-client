@@ -566,6 +566,18 @@ onboarding:
   dataSlideCheckboxLabel: Mozilla may collect technical data about my use of Mozilla VPN.
   dataSlideLearnMoreCaption: Learn more about what data Mozilla collects and how it's used
   dataSlidePrivacyLinkLabel: Mozilla VPN Privacy Notice
+  privacySlideHeader: Get more privacy
+  privacySlideBody: Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings.
+  devicesSlideHeader: Install Mozilla VPN on up to 5 devices
+  devicesSlideBody: Scan this QR code using a tablet or mobile device’s camera to install the VPN on another device.
+  devicesSlideDeviceTypeLabel: "Select device type:"
+  devicesSlideDeviceTypeAndroid: Android
+  devicesSlideDeviceTypeApple: Apple
+  devicesSlideQRCodeAndroid: QR Code that links to the Mozilla VPN product page on the Google Play Store
+  devicesSlideQRCodeApple: QR Code that links to the Mozilla VPN product page on the iOS App Store
+  startSlideHeader: Connect Mozilla VPN on startup
+  startSlideBody: Turn on to launch the VPN whenever you start your device. We’ll automatically connect you to the same server location as your last session.
+
 
 inAppAuth:
   emailInputPlaceholder: Enter email
@@ -963,6 +975,9 @@ global:
   next: 
     value: Next
     comment: Label for button used to proceed
+  getStarted:
+    value: Get started
+    comment: Label for a button use to begin something / proceed
 
 getHelp:
   helpCenter: Help Center

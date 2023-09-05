@@ -69,7 +69,7 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/privacy.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewPrivacy.qml")
+                onClicked: stackview.push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
             }
 
             MZSettingsItem {

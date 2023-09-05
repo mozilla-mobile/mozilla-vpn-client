@@ -47,7 +47,6 @@ CheckBox {
     Accessible.focusable: true
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
-    font.pixelSize: undefined
 
     states: [
         State {

@@ -100,8 +100,9 @@
         <file>screens/settings/ViewLicenses.qml</file>
         <file>screens/settings/ViewNotifications.qml</file>
         <file>screens/settings/ViewPreferences.qml</file>
-        <file>screens/settings/ViewPrivacy.qml</file>
         <file>screens/settings/ViewSettingsMenu.qml</file>
+        <file>screens/settings/privacy/ViewPrivacy.qml</file>
+        <file>screens/settings/privacy/PrivacyFeaturesList.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>

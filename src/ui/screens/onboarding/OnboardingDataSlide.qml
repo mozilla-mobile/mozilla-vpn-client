@@ -9,12 +9,16 @@ import Mozilla.Shared 1.0
 import components 0.1
 
 ColumnLayout {
+    id: root
+
+    signal nextClicked()
+
     spacing: 0
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.vSpacing
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingDataSlideHeader
@@ -23,8 +27,8 @@ ColumnLayout {
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingDataSlideBody
@@ -51,8 +55,8 @@ ColumnLayout {
     }
 
     MZCheckBoxRow {
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
@@ -71,20 +75,17 @@ ColumnLayout {
     }
 
     MZButton {
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
-
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
-        text: MZI18n.GlobalContinue
-        onClicked: {
-            stepNav.next()
-        }
+        text: MZI18n.GlobalNext
+        onClicked: root.nextClicked()
     }
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingDataSlideLearnMoreCaption
