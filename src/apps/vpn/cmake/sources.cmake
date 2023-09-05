@@ -26,6 +26,7 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # VPN Client source files
 target_sources(mozillavpn-sources INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/accessiblenotification.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appconstants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apps/vpn/appfeaturelistcallback.h
