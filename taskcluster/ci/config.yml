@@ -50,6 +50,11 @@ workers:
             implementation: generic-worker
             os: windows
             worker-type: b-win2012-azure
+        b-win2022:
+            provisioner: 'mozillavpn-{level}'
+            implementation: generic-worker
+            os: windows
+            worker-type: b-win2022
         b-macos:
             provisioner: 'releng-hardware'
             implementation: generic-worker
