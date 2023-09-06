@@ -30,6 +30,16 @@ MZViewBase {
             isChecked: MZSettings.developerUnlock
             onClicked: MZSettings.developerUnlock = !MZSettings.developerUnlock
         }
+        MZCheckBoxRow {
+            id: inspectorUnlock
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText:  "Enable Inspector "
+            subLabelText: "Allow other programs to debug and remote-control this client."
+            isChecked: MZSettings.inspectorEnabled
+            onClicked: MZSettings.inspectorEnabled = !MZSettings.inspectorEnabled
+        }
 
         MZCheckBoxRow {
             id: checkBoxRowStagingServer

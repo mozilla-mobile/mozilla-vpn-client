@@ -61,6 +61,12 @@ target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 # Build the addons for functional testing.
 get_filename_component(QT6_PREFIX_PATH ${Qt6_DIR}/.. REALPATH)
+target_compile_definitions(dummyvpn PRIVATE FORCE_INSPECTOR true)
+# We should not build into the source dir
+# but that is how we are currently doing things, 
+# at least we no longer invoke python scripts to 
+# invoke cmake. 
+#  ¯\_(ツ)_/¯
 ExternalProject_Add(functional_test_addons
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/addons

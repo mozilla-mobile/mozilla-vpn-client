@@ -877,3 +877,20 @@ SETTING_STRING(sensitive,        // getter
                true              // sensitive (do not log)
 )
 #endif
+
+// Allow developers to compile using
+// -DFORCE_INSPECTOR=TRUE, enabling testing
+// independent of the server used.
+#ifndef FORCE_INSPECTOR
+#  define FORCE_INSPECTOR false
+#endif
+SETTING_BOOL(inspectorEnabled,        // getter
+             setInspectorEnabled,     // setter
+             removeInspectorEnabled,  // remover
+             hasInspectorEnabled,     // has
+             "InspectorEnabled",      // key
+             FORCE_INSPECTOR,         // default value
+             false,                   // user setting
+             true,                    // remove when reset
+             false                    // sensitive (do not log)
+)
