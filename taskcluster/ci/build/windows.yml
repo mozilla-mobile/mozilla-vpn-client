@@ -23,8 +23,6 @@ task-defaults:
             - wintun
         build:
             - artifact: mozillavpn-sources.tar.gz
-        toolchain:
-            - qt-win
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -45,9 +43,30 @@ windows/opt:
     fetches:
         toolchain:
             - conda-windows-x86_64
+            - qt-win
     description: "Windows Build"
     treeherder:
         symbol: B
+    scopes:
+        by-level:
+            "3":
+                - secrets:get:project/mozillavpn/tokens
+            default: []
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows_clang_cl.ps1
+
+
+windows/next:
+    fetches:
+        toolchain:
+            - conda-windows-x86_64
+            - qt-win-next
+    description: "Windows Build for Next Version of QT"
+    treeherder:
+        symbol: NEXT
     scopes:
         by-level:
             "3":
