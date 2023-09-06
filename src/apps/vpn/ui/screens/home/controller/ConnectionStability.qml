@@ -22,6 +22,19 @@ Item {
         grid.flow = grid.children[0].width > (window.width - MZTheme.theme.windowMargin * 2) ? Grid.TopToBottom : Grid.LeftToRight;
         col.handleMultilineText();
     }
+
+    function handleConnectionHealthStateChange() {
+        // If the stability item is not visible, there are no connection health problems to be be processed
+        if (!visible) {
+            return;
+        }
+
+        // Notify accessibility client of connection health problems
+        let notificationText = stabilityLabel.text + " " + stabilityLabelInstruction.text;
+        console.log("MZAccessibleNotification " + notificationText);
+        MZAccessibleNotification.notify(stabilityLabel, notificationText);
+    }
+
     GridLayout {
         id: grid
 
@@ -69,6 +82,7 @@ Item {
                     target: warningIcon
                     source: "qrc:/nebula/resources/warning-orange.svg"
                 }
+                StateChangeScript { script: handleConnectionHealthStateChange(); }
             },
             State {
                 name: VPNConnectionHealth.NoSignal
@@ -85,6 +99,7 @@ Item {
                     target: logoSubtitleOn
                     visible: false
                 }
+                StateChangeScript { script: handleConnectionHealthStateChange(); }
             }
         ]
 
@@ -121,6 +136,9 @@ Item {
                 text: VPNConnectionHealth.stability
                       === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
                 horizontalAlignment: Text.AlignLeft
+
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
             }
         }
 
@@ -134,6 +152,7 @@ Item {
         }
 
         MZInterLabel {
+             id: stabilityLabelInstruction
             //% "Check Connection"
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
@@ -143,6 +162,9 @@ Item {
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()
             lineHeight: grid.flow === Grid.LeftToRight ? MZTheme.theme.controllerInterLineHeight : 10
+
+            Accessible.role: Accessible.StaticText
+            Accessible.name: text
         }
     }
 
