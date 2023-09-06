@@ -291,6 +291,15 @@ MZViewBase {
         }
 
         MZButton {
+            id: resetTipsAndTricksModal
+
+            text: "Reset Intro Tips and Tricks Modal"
+            onClicked: {
+                MZSettings.tipsAndTricksIntroShown = false
+            }
+        }
+
+        MZButton {
             id: crashApp
             property int clickNeeded: 5
 

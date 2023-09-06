@@ -194,7 +194,6 @@ MZViewBase {
         ]
 
         Component.onCompleted: {
-            Sample.tipsAndTricksViewOpened.record();
             Glean.sample.tipsAndTricksViewOpened.record();
         }
     }
