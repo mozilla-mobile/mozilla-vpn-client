@@ -13,6 +13,8 @@ Item {
     property var model
     property int activeIndex: 0
 
+    signal buttonClicked(index: int)
+
     implicitHeight: delegateLayout.implicitHeight
 
     Rectangle {
@@ -70,7 +72,10 @@ Item {
                     }
                 }
 
-                onClicked: activeIndex = index
+                onClicked: {
+                    activeIndex = index
+                    buttonClicked(index)
+                }
 
                 accessibleName: currentState === MZStepProgressBarDelegate.State.Complete ? MZI18n.OnboardingProgressBarAccessibilityStepComplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
                                                                                           : MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)

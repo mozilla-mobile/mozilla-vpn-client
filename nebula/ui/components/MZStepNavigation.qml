@@ -45,13 +45,13 @@ ColumnLayout {
 
     function back() {
         if (stepProgressBar.activeIndex - 1 >= 0) {
-            stackView.pop()
-            currentIndex = stepProgressBar.activeIndex - 1
+            currentIndex--
             stepProgressBar.activeIndex--
+            stackView.pop()
         }
     }
 
-    function activeIndexChanged() {
+    function onButtonClicked() {
         let temp = currentIndex
         for (let i = 0; i < currentIndex - stepProgressBar.activeIndex; i++) {
             temp--
@@ -67,6 +67,13 @@ ColumnLayout {
         for (let i = 0; i < views.length; i++) {
             stepProgressBarListModel.append({"labelText": views[i].labelText, "iconSource": views[i].iconSource})
         }
+
+        if(views.length >= 1) stackView.push(views[0])
+
+        for (let i = 1; i <= currentIndex; i++) {
+            stackView.push(views[i])
+            stepProgressBar.activeIndex++
+        }
     }
 
     ListModel { id: stepProgressBarListModel }
@@ -80,9 +87,12 @@ ColumnLayout {
         Layout.maximumWidth: 500 //Max size of progess bar for tablets
         Layout.alignment: Qt.AlignHCenter
 
-        onActiveIndexChanged: stepNavigation.activeIndexChanged()
-
         model: stepProgressBarListModel
+
+        Connections {
+            target: stepProgressBar
+            function onButtonClicked(index) { stepNavigation.onButtonClicked() }
+        }
     }
 
     MZFlickable {
@@ -102,11 +112,6 @@ ColumnLayout {
             anchors.right: parent.right
 
             implicitHeight: flickable.height
-
-            Component.onCompleted: {
-                push(stepNavigation.views[0])
-            }
         }
     }
-
 }

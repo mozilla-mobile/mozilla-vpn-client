@@ -19,6 +19,9 @@ MZStepNavigation {
     anchors.bottom: parent.bottom
     anchors.topMargin: MZTheme.theme.vSpacing
 
+    currentIndex: MZSettings.onboardingStep
+    onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex
+
     views: [
         OnboardingDataSlide {
             property string labelText: "OnboardingProgressBarDataUse"

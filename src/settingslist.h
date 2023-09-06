@@ -368,6 +368,17 @@ SETTING_STRINGLIST(missingApps,        // getter
                    false               // sensitive (do not log)
 )
 
+SETTING_INT(onboardingStep,         // getter
+            setOnboardingStep,      // setter
+            removeOnboardingStep,   // remover
+            hasOnboardingStep,      // has
+            "onboardingStep",       // key
+            0,                      // default value
+            false,                  // user setting
+            false,                  // remove when reset
+            false                   // sensitive (do not log)
+)
+
 SETTING_BOOL(postAuthenticationShown,        // getter
              setPostAuthenticationShown,     // setter
              removePostAuthenticationShown,  // remover
