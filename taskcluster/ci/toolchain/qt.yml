@@ -44,6 +44,31 @@ qt-win:
         symbol: TL(qt-win)
     worker-type: b-win2022
 
+qt-win-next:
+    description: "Windows QT compile Task"
+    fetches:
+        fetch:
+            - win-dev-env
+        openssl:
+            - artifact: open_ssl_win.zip
+              extract: false  # For some reason unzip exits with 1 even tho the file is okay
+    dependencies:
+        openssl: toolchain-openssl-win
+    run:
+        script: compile_qt_6.ps1
+        resources:
+            - taskcluster/scripts/toolchain/configure_qt.ps1
+        toolchain-alias: qt-win-next
+        toolchain-artifact: public/build/qt6_win.zip
+    treeherder:
+        symbol: TL(qt-win-next)
+    worker-type: b-win2022
+    worker:
+        env:
+            QT_VERSION: "6.5.2"
+            QT_MAJOR: "6.5"
+
+
 qt-ios:
     description: "QT ios bundle Task"
     run:
