@@ -27,7 +27,7 @@ jobs:
         id: getDecisionTask
         shell: pwsh
         run : |
-          while (true){
+          while (1){
             $(gh pr checks).Split([Environment]::NewLine) | ForEach-Object{ 
                 if($_.contains("Decision Task (pull-request)")){
                     if($_.contains("pass")){
