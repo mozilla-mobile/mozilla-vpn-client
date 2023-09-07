@@ -31,7 +31,7 @@ FEATURE(addonSignature,             // Feature ID
         FeatureCallback_inStaging,  // Can be flipped on
         FeatureCallback_inStaging,  // Can be flipped off
         QStringList{"addon"},       // feature dependencies
-        FeatureCallback_true)       
+        FeatureCallback_true)
 
 FEATURE(alwaysPort53,          // Feature ID
         "Always use port 53",  // Feature name
@@ -45,7 +45,7 @@ FEATURE(appReview,              // Feature ID
         FeatureCallback_false,  // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_iosOrAndroid)        
+        FeatureCallback_iosOrAndroid)
 
 FEATURE(benchmarkUpload,       // Feature ID
         "Benchmark Upload",    // Feature name
@@ -87,7 +87,7 @@ FEATURE(gleanRust,             // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_true)        
+        FeatureCallback_true)
 
 FEATURE(inAppAccountCreate,                  // Feature ID
         "In-app Account Creation",           // Feature name
@@ -101,7 +101,7 @@ FEATURE(inAppAuthentication,      // Feature ID
         FeatureCallback_true,     // Can be flipped on
         FeatureCallback_true,     // Can be flipped off
         QStringList(),            // feature dependencies
-        FeatureCallback_true)        
+        FeatureCallback_true)
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
@@ -144,7 +144,7 @@ FEATURE(sentry,                     // Feature ID
         FeatureCallback_true,       // Can be flipped on
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
-        FeatureCallback_sentry)     
+        FeatureCallback_sentry)
 
 FEATURE(serverUnavailableNotification,      // Feature ID
         "Server unavailable notification",  // Feature name
@@ -165,7 +165,7 @@ FEATURE(shareLogs,              // Feature ID
         FeatureCallback_false,  // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_shareLogs)           
+        FeatureCallback_shareLogs)
 
 FEATURE(splitTunnel,            // Feature ID
         "Split-tunnel",         // Feature name

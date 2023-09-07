@@ -8,9 +8,9 @@
 #include <QEventLoop>
 #include <QTest>
 
-#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/incrementaldecoder.h"
+#include "constants.h"
 #include "tasks/authenticate/taskauthenticate.h"
 
 class EventLoop final : public QEventLoop {

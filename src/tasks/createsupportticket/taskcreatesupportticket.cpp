@@ -55,8 +55,8 @@ void TaskCreateSupportTicket::run() {
 
   request->post(
       Constants::apiUrl(App::isUserAuthenticated()
-                               ? Constants::CreateSupportTicket
-                               : Constants::CreateSupportTicketGuest),
+                            ? Constants::CreateSupportTicket
+                            : Constants::CreateSupportTicketGuest),
       QJsonObject{{"email", m_email},
                   {"logs", m_logs},
                   {"versionString", Env::versionString()},

@@ -4,10 +4,10 @@
 
 #include "testnetworkmanager.h"
 
+#include "constants.h"
 #include "helper.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-#include "constants.h"
 
 void TestNetworkManager::basic() {
   SettingsHolder settingsHolder;

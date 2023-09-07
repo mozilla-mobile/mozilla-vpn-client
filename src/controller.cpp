@@ -5,9 +5,9 @@
 #include "controller.h"
 
 #include "app.h"
-#include "constants.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
+#include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature.h"

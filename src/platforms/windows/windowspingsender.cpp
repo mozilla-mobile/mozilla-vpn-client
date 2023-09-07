@@ -16,8 +16,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "windowscommons.h"
 #include "platforms/windows/windowsutils.h"
+#include "windowscommons.h"
 
 #pragma comment(lib, "Ws2_32")
 

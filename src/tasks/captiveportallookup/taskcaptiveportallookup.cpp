@@ -5,8 +5,8 @@
 #include "taskcaptiveportallookup.h"
 
 #include "app.h"
-#include "constants.h"
 #include "captiveportal/captiveportal.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

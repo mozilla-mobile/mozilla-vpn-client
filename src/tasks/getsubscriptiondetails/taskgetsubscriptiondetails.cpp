@@ -7,10 +7,10 @@
 #include <QJsonObject>
 
 #include "app.h"
-#include "constants.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"

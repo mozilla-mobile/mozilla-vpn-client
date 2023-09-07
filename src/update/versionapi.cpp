@@ -9,7 +9,6 @@
 #include <QJsonValue>
 
 #include "constants.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
