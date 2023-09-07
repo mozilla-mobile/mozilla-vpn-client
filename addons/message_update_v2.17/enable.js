@@ -1,6 +1,6 @@
 (function (api) {
   // "Extra" fields are used only to get a localized string.
-  api.addon.composer.remove('extra_1_216_v2');
+  api.addon.composer.remove('extra_1_217');
 
   if (('updateTime' in api.settings)) {
     api.addon.date = (api.settings.updateTime.getTime() / 1000);
@@ -41,5 +41,5 @@
   api.addon.composer.remove('c_3');
 
   api.addon.setTitle(
-    'message.message_update_v2.16.block.extra_1_216_v2', 'Download the new Mozilla VPN')
+    'message.message_update_v2.17.block.extra_1_217', 'Download the new Mozilla VPN')
 })
