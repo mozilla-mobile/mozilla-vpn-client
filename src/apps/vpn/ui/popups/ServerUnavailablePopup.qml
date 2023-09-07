@@ -15,14 +15,14 @@ MZSimplePopup {
     property bool receivedPing: false;
 
     anchors.centerIn: parent
-    imageSrc: "qrc:/ui/resources/server-unavailable.svg"
+    imageSrc: receivedPing ? "qrc:/ui/resources/server-unavailable.svg" : "qrc:/ui/resources/server-unavailable2.svg"
     imageSize: Qt.size(80, 80)
-    title: MZI18n.ServerUnavailableModalHeaderText
+    title: receivedPing ? MZI18n.ServerUnavailableModalHeaderText : MZI18n.ServerUnavailableModalHeaderText2
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message
-    description: receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked : MZI18n.ServerUnavailableModalBodyText
+    description: receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked : MZI18n.ServerUnavailableModalBodyText2.arg(VPNCurrentServer.localizedExitCityName)
     buttons: [
         MZButton {
-            text: MZI18n.ServerUnavailableModalButtonLabel
+            text: receivedPing ? MZI18n.ServerUnavailableModalButtonLabel : MZI18n.ServerUnavailableModalButtonLabel2
             Layout.fillWidth: true
             onClicked: {
                 MZNavigator.requestScreen(VPN.ScreenHome)

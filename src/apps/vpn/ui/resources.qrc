@@ -335,6 +335,7 @@
         <file>resources/server-latency-weak.svg</file>
         <file>resources/server-latency-unavailable.svg</file>
         <file>resources/server-unavailable.svg</file>
+        <file>resources/server-unavailable2.svg</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
         <file>resources/switching.svg</file>

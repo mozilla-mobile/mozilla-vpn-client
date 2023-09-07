@@ -377,6 +377,42 @@ Item {
                 opacity: 1
                 startAnimation: false
             }
+        },
+        State {
+            name: "stateServerUnavailable"
+            when: VPNController.state === VPNController.StateServerUnavailable
+
+            PropertyChanges {
+                target: boxBackground
+                color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                text: qsTrId("vpn.controller.activated")
+                color: "#FFFFFF"
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: true
+            }
+
+            PropertyChanges {
+                target: connectionInfoToggleButton
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRings
+                visible: false
+            }
+
         }
     ]
     transitions: [
