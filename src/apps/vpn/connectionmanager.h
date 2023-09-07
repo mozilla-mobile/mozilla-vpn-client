@@ -47,7 +47,8 @@ class ConnectionManager : public QObject, public LogSerializer {
   //  Q_ENUM(ConnectionState)
 
   /* TODO: The states below are copied from the controller state to mirror the
-  controller, but they will eventually be removed by ConnectionState above. (VPN-3575) */
+  controller, but they will eventually be removed by ConnectionState above.
+  (VPN-3575) */
 
   enum State {
     StateInitializing,

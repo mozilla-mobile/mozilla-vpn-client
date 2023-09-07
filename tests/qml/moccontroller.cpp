@@ -19,20 +19,24 @@ bool ConnectionManager::activate(const ServerData&, ServerSelectionPolicy) {
   return false;
 }
 
-bool ConnectionManager::switchServers(const ServerData& serverData) { return false; }
+bool ConnectionManager::switchServers(const ServerData& serverData) {
+  return false;
+}
 
-bool ConnectionManager::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
+bool ConnectionManager::silentSwitchServers(
+    ServerCoolDownPolicyForSilentSwitch) {
   return false;
 }
 
 bool ConnectionManager::silentServerSwitchingSupported() const { return false; }
 
-void ConnectionManager::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {}
+void ConnectionManager::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {
+}
 
 bool ConnectionManager::deactivate() { return false; }
 
 void ConnectionManager::connected(const QString& pubkey,
-                           const QDateTime& connectionTimestamp) {
+                                  const QDateTime& connectionTimestamp) {
   Q_UNUSED(pubkey);
   Q_UNUSED(connectionTimestamp);
 }
@@ -50,9 +54,10 @@ void ConnectionManager::setState(State) {}
 qint64 ConnectionManager::time() const { return 42; }
 
 void ConnectionManager::statusUpdated(const QString&, const QString&, uint64_t,
-                               uint64_t) {}
+                                      uint64_t) {}
 
-QList<IPAddress> ConnectionManager::getAllowedIPAddressRanges(const Server& server) {
+QList<IPAddress> ConnectionManager::getAllowedIPAddressRanges(
+    const Server& server) {
   Q_UNUSED(server);
   return QList<IPAddress>();
 }
