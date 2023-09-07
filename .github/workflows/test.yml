@@ -44,7 +44,7 @@ jobs:
                 
             }
             Write-Output "Decision Task not found, sleeping 1s"
-            Start-Sleep -Seconds 1 
+            Start-Sleep -Seconds 30 
           }
   
   unit-tests:
