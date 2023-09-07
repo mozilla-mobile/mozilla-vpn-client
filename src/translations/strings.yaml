@@ -576,7 +576,7 @@ onboarding:
   devicesSlideQRCodeAndroid: QR Code that links to the Mozilla VPN product page on the Google Play Store
   devicesSlideQRCodeApple: QR Code that links to the Mozilla VPN product page on the iOS App Store
   startSlideHeader: Connect Mozilla VPN on startup
-  startSlideBody: Turn on to launch the VPN whenever you start your device. We’ll automatically connect you to the same server location as your last session.
+  startSlideBody: Turn on to launch the VPN whenever you start your device. We’ll automatically reconnect you to the same server location you last used.
 
 
 inAppAuth:

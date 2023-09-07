@@ -80,6 +80,21 @@ ColumnLayout {
                     segmentButtonId: "tabApple"
                 }
             }
+
+            Component.onCompleted: {
+                switch(Qt.platform.os) {
+                    case "osx":
+                    case "ios":
+                        selectedIndex = 1
+                        break
+                    case "windows":
+                    case "linux":
+                    case "android":
+                    default:
+                        selectedIndex = 0
+                        break
+                }
+            }
         }
     }
 
