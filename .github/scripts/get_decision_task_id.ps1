@@ -14,14 +14,18 @@ while (1){
         }
         Write-Output $_
         $url = $_.Split([char]9)[-1]
-        $script:Task_ID = $url.Replace("https://firefox-ci-tc.services.mozilla.com/tasks/","")
-        if($script:Task_ID -eq ""){
+        $id = $url.Replace("https://firefox-ci-tc.services.mozilla.com/tasks/","")
+        
+        if($id -eq ""){
             Write-Output "empty"
             return;
         }
+        Write-Output "taskID=${id}"
+        $script:Task_ID=$id
+        Write-Output "$script:Task_ID"
         break;
     }
-    Start-Sleep -Seconds 60 
+    Start-Sleep -Seconds 30 
 }
 
 Write-Output "taskID=$script:Task_ID"
