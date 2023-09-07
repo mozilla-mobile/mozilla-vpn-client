@@ -85,21 +85,21 @@ for branch in $(git branch -r | grep origin/releases); do
         printn Y "Generating another dummy PRO file... "
         cat > translations/generated/unflattened_dummy_ts.pro << EOF
 HEADERS += i18nstrings.h
-HEADERS += \$\$files(../../../src/shared/*.h, true)
-HEADERS += \$\$files(../../../src/apps/vpn/*.h, true)
-HEADERS += \$\$files(../../../nebula/*.h, true)
+HEADERS += \$\$files(../../src/shared/*.h, true)
+HEADERS += \$\$files(../../src/apps/vpn/*.h, true)
+HEADERS += \$\$files(../../nebula/*.h, true)
 
 SOURCES += i18nstrings_p.cpp
-SOURCES += ../../i18nstrings.cpp
-SOURCES += \$\$files(../../../src/shared/*.cpp, true)
-SOURCES += \$\$files(../../../src/apps/vpn/*.cpp, true)
-SOURCES += \$\$files(../../../nebula/*.cpp, true)
+SOURCES += ../i18nstrings.cpp
+SOURCES += \$\$files(../../src/shared/*.cpp, true)
+SOURCES += \$\$files(../../src/apps/vpn/*.cpp, true)
+SOURCES += \$\$files(../../nebula/*.cpp, true)
 
 TRANSLATIONS += translations.ts
 
-RESOURCES += \$\$files(../../../src/shared/*.qrc, true)
-RESOURCES += \$\$files(../../../src/apps/vpn/*.qrc, true)
-RESOURCES += \$\$files(../../../nebula/*.qrc, true)
+RESOURCES += \$\$files(../../src/shared/*.qrc, true)
+RESOURCES += \$\$files(../../src/apps/vpn/*.qrc, true)
+RESOURCES += \$\$files(../../nebula/*.qrc, true)
 EOF
     fi
 
