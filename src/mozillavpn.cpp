@@ -909,7 +909,7 @@ void MozillaVPN::onboardingCompleted() {
     #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
       logger.debug() << "onboarding completed";
       settingsHolder->setOnboardingCompleted(true);
-      //If they turn off the new onboarding, don't make them go through old onboarding (post auth + telemetry)
+      //If new onboarding is turned off in the future, don't make them go through old onboarding (post auth + telemetry)
       settingsHolder->setPostAuthenticationShown(true);
     #endif
   }
