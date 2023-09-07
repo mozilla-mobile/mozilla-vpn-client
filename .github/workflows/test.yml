@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   get-dc-task: 
+    timeout-minutes: 5
     name: Get DecisionTask
     runs-on: ubuntu-22.04
     outputs:
@@ -30,8 +31,7 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         shell: pwsh
         run : |
-          ./.github/scripts/get_decision_task_id.ps1
-#          ./.github/scripts/get_decision_task_id.ps1  >> $env:GITHUB_OUTPUT
+          ./.github/scripts/get_decision_task_id.ps1  >> $env:GITHUB_OUTPUT || true
   
   unit-tests:
     name: ${{matrix.os}} Unit tests
