@@ -29,7 +29,7 @@ NSString* getAppId() {
   return appId;
 }
 
-}  // anonymous
+}  // namespace
 
 // static
 void CryptoSettings::resetKey() {
@@ -133,7 +133,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 CryptoSettings::Version CryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-#if defined(MZ_IOS) || defined(MZ_MACOS)
+#if (defined(MZ_IOS) || defined(MZ_MACOS)) && !defined(UNIT_TEST)
   uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
   if (getKey(key)) {
     logger.debug() << "Encryption supported!";
