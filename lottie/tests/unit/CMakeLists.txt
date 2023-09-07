@@ -32,3 +32,4 @@ target_sources(lottie_tests PRIVATE
 )
 
 add_test(NAME lottie_tests COMMAND lottie_tests)
+add_dependencies(build_tests lottie_tests)
