@@ -17,7 +17,7 @@ concurrency:
 jobs:
   get-dc-task: 
     name: Get DecisionTask
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-22.04
     outputs:
       taskID: ${{ steps.getDecisionTask.outputs.taskID }}
     steps:
