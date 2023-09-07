@@ -68,7 +68,6 @@ jobs:
         run: |
           echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
           echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
-          echo "CCACHE_UMASK=777" >> "$GITHUB_ENV"
           echo "CCACHE_COMPRESSLEVEL=19" >> "$GITHUB_ENV"
           echo "CCACHE_NOHASHDIR=true" >> "$GITHUB_ENV"
           
