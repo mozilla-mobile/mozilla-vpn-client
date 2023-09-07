@@ -39,6 +39,7 @@ MZViewBase {
                 Layout.fillWidth: true
 
                 Component.onCompleted: navbar.visible = false
+                Component.onDestruction: navbar.visible = true
 
                 views: [
                     ColumnLayout {
