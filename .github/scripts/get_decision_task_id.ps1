@@ -3,7 +3,7 @@
 $script:Task_ID=""
 
 while (1){
-    $(gh pr checks ).Split([Environment]::NewLine) | ForEach-Object{ 
+    $(gh pr checks $env:PR_NUMBER).Split([Environment]::NewLine) | ForEach-Object{ 
         if(!$_.contains("Decision Task")){
             return;
         }
