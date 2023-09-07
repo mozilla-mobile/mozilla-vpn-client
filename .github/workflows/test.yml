@@ -41,6 +41,7 @@ jobs:
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O $RUNNER_TEMP/mac.zip
           cd $RUNNER_TEMP
           unzip -a mac.zip
+          rm mac.zip
           # Export that for the Build Task
           echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/qt_dist/lib/cmake" >> "$GITHUB_ENV"
       - name: Windows Install dependencies
@@ -59,14 +60,18 @@ jobs:
       - name: Setup CCache
         uses: hendrikmuhs/ccache-action@v1.2
         with: 
-          key: ${{ github.job }}-${{ matrix.os }}
-          max-size: "300M"
+          key: ${{matrix.os}}
+          #max-size: "300M"
           variant: ccache
       - name: Enable CCache
         shell: bash
         run: |
           echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
           echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
+          echo "CCACHE_UMASK=777" >> "$GITHUB_ENV"
+          echo "CCACHE_COMPRESSLEVEL=19" >> "$GITHUB_ENV"
+          echo "CCACHE_NOHASHDIR=true" >> "$GITHUB_ENV"
+          
       - name: Install Grcov
         shell: bash
         run: |
