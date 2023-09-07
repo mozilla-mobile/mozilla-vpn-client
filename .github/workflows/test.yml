@@ -12,9 +12,38 @@ on:
 # Restrict tests to the most recent commit.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: true # Cancel Tests if there is a new commit
 
 jobs:
+  get-dc-task: 
+    name: Get DecisionTask
+    runs-on: ${{matrix.os}}
+    outputs:
+      taskID: ${{ steps.getDecisionTask.outputs.taskID }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+      - name: Get Decision Task
+        id: getDecisionTask
+        shell: pwsh
+        run : |
+          while (true){
+            $(gh pr checks).Split([Environment]::NewLine) | ForEach-Object{ 
+                if($_.contains("Decision Task (pull-request)")){
+                    if($_.contains("pass")){
+                        $url = $_.Split([char]9)[-1]
+                        $task_ID += $url.Replace("https://firefox-ci-tc.services.mozilla.com/tasks/","")
+                        Write-Output $task_ID
+                        Write-Output "taskID=$task_ID" | Out-File -FilePath $env:GITHUB_OUTPUT
+                        break;
+                    }
+                }
+                
+            }
+            Write-Output "Decision Task not found, sleeping 1s"
+            Start-Sleep -Seconds 1 
+          }
+  
   unit-tests:
     name: ${{matrix.os}} Unit tests
     strategy:

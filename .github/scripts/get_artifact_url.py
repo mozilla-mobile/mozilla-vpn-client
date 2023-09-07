@@ -4,10 +4,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
+##
+#
+# Prints a link to a taskcluster artifact 
+#
+
+
+
 import argparse
-
 import requests
-
+rootURL = "https://firefox-ci-tc.services.mozilla.com"
 import taskcluster
 index = taskcluster.Index({
   'rootUrl': 'https://firefox-ci-tc.services.mozilla.com',
@@ -28,9 +34,6 @@ def main():
     parser.add_argument("--decisionTask", dest="decisionTask", action="store", help="Decision Task Task ID")
     parser.add_argument("--task", dest="taskName", action="store", help="Name Of the Task")
     parser.add_argument("--artifact", dest="artifactName", action="store", help="Name Of the Artifact")
-    parser.add_argument(
-        "-d", dest="path", action="store", help="path to save the file to"
-    )
     args = parser.parse_args()
     taskgroup=[]
     try:
@@ -38,21 +41,20 @@ def main():
     except:
         print(f"Failed to get Taskgroup for {args.decisionTask}")
         exit(1)
-    taskgroup["tasks"]
-    task = {}
-    try:
-        task = filter(lambda t: t["metadata"]["name"] == args.taskName, taskgroup)[0]
-    except:
+    tasks = taskgroup["tasks"]
+    task = 0
+    for t in tasks:
+        if t["task"]["metadata"]["name"] == args.taskName:
+            task = t
+    if task == 0:
         print(f"Failed to get task {args.taskName} in group {args.decisionTask}")
         exit(1)
     if task["status"]["state"] != "completed":
-        print(f"expected task {args.taskName} to be completed is: {task['state']}")
+        print(f"expected task {args.taskName} to be completed is: {task['status']['state']}")
         exit(1)
     runID = len(task["status"]["runs"])-1
     taskID = task["status"]["taskId"]
     queue.listArtifacts(taskID,runID)
-
-
-
+    print(f"{rootURL}/api/queue/v1/task/{taskID}/runs/{runID}/artifacts/{args.artifactName}")
 if __name__ == "__main__":
     main()
