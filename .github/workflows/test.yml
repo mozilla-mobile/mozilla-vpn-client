@@ -51,6 +51,7 @@ jobs:
           cd $RUNNER_TEMP
           curl -L https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/VS7S5JtSRyyu4D6jqoGShw/runs/0/artifacts/public%2Fbuild%2Fqt6_win.zip > windows.zip
           unzip -a windows.zip
+          rm windows.zip
           # Export that for the Build Task
           echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/QT_OUT/lib/cmake" >> "$GITHUB_ENV"
           # We're using msvc, so let's enable multiprocess
@@ -60,13 +61,12 @@ jobs:
         with: 
           key: ${{ github.job }}-${{ matrix.os }}
           max-size: "300M"
-          variant: sccache
+          variant: ccache
       - name: Enable CCache
         shell: bash
         run: |
-          echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-          echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-          echo "RUSTC_WRAPPER=sccache" >> "$GITHUB_ENV"
+          echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
+          echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> "$GITHUB_ENV"
       - name: Install Grcov
         shell: bash
         run: |
