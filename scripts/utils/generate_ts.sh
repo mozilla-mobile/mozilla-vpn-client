@@ -57,15 +57,6 @@ mkdir -p addon_ts || die
 cp build-addons/*.ts addon_ts
 
 for branch in $(git branch -r | grep origin/releases); do
-  # Temporarily skip 2.15.* branches. All translations for these versions
-  # have been removed from the l10n repository ahead of time, and we don't
-  # want to reintroduce these strings for translation.
-  # TODO: remove this check when 2.15.* branches are removed.
-  if [[ "$branch" == *"2.15"* ]]; then
-    echo "Skipping branch: $branch"
-    continue
-  fi
-
   echo "Checking out to branch $branch"
   git checkout $branch || die
 
