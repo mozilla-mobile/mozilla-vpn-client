@@ -98,7 +98,7 @@ void MozillaVPN::postAuthenticationCompleted() {}
 
 void MozillaVPN::mainWindowLoaded() {}
 
-void MozillaVPN::telemetryPolicyCompleted() {}
+void MozillaVPN::onboardingCompleted() {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 

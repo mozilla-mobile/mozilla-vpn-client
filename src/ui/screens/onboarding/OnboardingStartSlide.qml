@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 import components 0.1
 
 ColumnLayout {
@@ -70,7 +71,7 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalGetStarted
 
-        onClicked: root.nextClicked()
+        onClicked: VPN.onboardingCompleted();
     }
 
     MZLinkButton {

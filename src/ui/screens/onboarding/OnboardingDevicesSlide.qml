@@ -39,100 +39,6 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
-//Segmented Navigation Implementation
-//    MZSegmentedNavigation {
-
-//        Layout.topMargin: 25
-//        Layout.leftMargin: 16
-//        Layout.rightMargin: 16
-
-//        showDivider: false
-//        toggleWidth: 108
-
-//        segmentedToggleButtonsModel: ListModel {
-//            ListElement {
-//                segmentIconPath: "qrc:/ui/resources/android.svg"
-//                //Android icon is too detailed for how small we are presenting it here (24x24) causing it to appear poorly/grainy when behind a ColorOverlay
-//                //so we use an alternate svg with the color built in
-//                selectedSegmentIconPath: "qrc:/ui/resources/android-active.svg"
-//                segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeAndroid"
-//                segmentButtonId: "tabAndroid"
-//            }
-//            ListElement {
-//                segmentIconPath: "qrc:/ui/resources/apple.svg"
-//                //When ColorOverlay is applied to the apple icon, it "thickens" a little bit which is a somewhat jarring when the transition from unselected -> selected happens
-//                //so we use an alternate svg with the color built in
-//                selectedSegmentIconPath: "qrc:/ui/resources/apple-active.svg"
-//                segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeApple"
-//                segmentButtonId: "tabApple"
-//            }
-//        }
-
-//        //Views in the stack layout must be in the same order as items in the above list model
-//        stackContent: [
-//            Rectangle {
-//                color: MZTheme.theme.white
-
-//                anchors.centerIn: parent
-//                Layout.preferredHeight: 152
-//                Layout.preferredWidth: 152
-//                Layout.maximumHeight: 152
-//                Layout.maximumWidth: 152
-
-//                MZDropShadow {
-//                    anchors.fill: parent
-//                    source: parent
-
-//                    verticalOffset: 1
-//                    horizontalOffset: 1
-//                    color: MZTheme.colors.grey60
-//                    opacity: .1
-//                    transparentBorder: true
-//                    cached: true
-//                }
-
-//                Image {
-//                    width: 152
-//                    height: 152
-
-//                    source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
-//                    fillMode: Image.PreserveAspectFit
-//                }
-//            },
-
-//            Rectangle {
-//                color: MZTheme.theme.white
-
-//                anchors.centerIn: parent
-//                Layout.preferredHeight: 152
-//                Layout.preferredWidth: 152
-//                Layout.maximumHeight: 152
-//                Layout.maximumWidth: 152
-
-//                MZDropShadow {
-//                    anchors.fill: parent
-//                    source: parent
-
-//                    verticalOffset: 1
-//                    horizontalOffset: 1
-//                    color: MZTheme.colors.grey60
-//                    opacity: .1
-//                    transparentBorder: true
-//                    cached: true
-//                }
-
-//                Image {
-//                    width: 152
-//                    height: 152
-
-//                    source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
-//                    fillMode: Image.PreserveAspectFit
-//                }
-//            }
-//        ]
-//    }
-
-//Segmented Toggle Implementation
     RowLayout {
         Layout.topMargin: 25
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
@@ -182,6 +88,7 @@ ColumnLayout {
         Layout.topMargin: MZTheme.theme.vSpacingSmall
         currentIndex: deviceTypeToggle.selectedIndex
 
+        //Google play store QR code
         Rectangle {
             color: MZTheme.theme.white
 
@@ -207,11 +114,13 @@ ColumnLayout {
                 width: 152
                 height: 152
 
+                //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
                 fillMode: Image.PreserveAspectFit
             }
         }
 
+        //Apple app store QR code
         Rectangle {
             color: MZTheme.theme.white
 
@@ -237,6 +146,7 @@ ColumnLayout {
                 width: 152
                 height: 152
 
+                //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
                 fillMode: Image.PreserveAspectFit
             }

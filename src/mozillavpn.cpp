@@ -394,13 +394,19 @@ void MozillaVPN::maybeStateMain() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
-  if (!settingsHolder->postAuthenticationShown()) {
+  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+      if(!settingsHolder->onboardingCompleted()) {
+          setState(StateOnboarding);
+          return;
+      }
+  }
+  else if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->telemetryPolicyShown()) {
+  if (!settingsHolder->telemetryPolicyShown() && !Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     setState(StateTelemetryPolicy);
     return;
   }
@@ -896,10 +902,21 @@ void MozillaVPN::mainWindowLoaded() {
 #endif
 }
 
-void MozillaVPN::telemetryPolicyCompleted() {
-  logger.debug() << "telemetry policy completed";
-
+void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+    #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
+      logger.debug() << "onboarding completed";
+      settingsHolder->setOnboardingCompleted(true);
+      //If they turn off the new onboarding, don't make them go through old onboarding (post auth + telemetry)
+      settingsHolder->setPostAuthenticationShown(true);
+    #endif
+  }
+  else {
+      logger.debug() << "telemetry policy completed";
+  }
+
   settingsHolder->setTelemetryPolicyShown(true);
 
   // Super racy, but it could happen that we are already in update-required

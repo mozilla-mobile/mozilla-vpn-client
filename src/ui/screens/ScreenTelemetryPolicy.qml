@@ -66,7 +66,7 @@ MZFlickable {
                 radius: 5
                 onClicked: {
                     MZSettings.gleanEnabled = true;
-                    VPN.telemetryPolicyCompleted();
+                    VPN.onboardingCompleted();
                 }
             }
 

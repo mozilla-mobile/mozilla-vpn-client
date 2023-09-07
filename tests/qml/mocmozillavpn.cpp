@@ -87,7 +87,7 @@ void MozillaVPN::mainWindowLoaded() {
   TestHelper::instance()->setMainWindowLoadedCalled(true);
 }
 
-void MozillaVPN::telemetryPolicyCompleted() {}
+void MozillaVPN::onboardingCompleted() {}
 
 void MozillaVPN::startSchedulingPeriodicOperations() {}
 
