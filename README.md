@@ -35,9 +35,9 @@ Here are some useful links to start:
 * Localization happens on
   [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
 
-## Dev Setup
+## Building the Client
 
-## [Docs for building the client](./docs/dev-setup/index.md)
+Moved here -> [Dev-Setup](./docs/dev-setup/index.md)
 
 ### Pre-commit formatting hook
 
