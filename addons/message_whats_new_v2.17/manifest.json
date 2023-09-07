@@ -1,0 +1,62 @@
+{
+  "api_version": "0.1",
+  "id": "message_whats_new_v2.17",
+  "name": "What's new message",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.17.0",
+    "max_client_version": "2.17.9"
+  },
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "date": 1675040400,
+    "id": "message_whats_new_v2.17",
+    "title": "You’ve updated Mozilla VPN",
+    "subtitle": "You’re using the latest version of Mozilla VPN.",
+    "badge": "whats_new",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "This update includes minor bug fixes, UI adjustments and other performance improvements, including:"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "The ability to sign in using your Google or Apple account"
+          },
+          {
+            "id": "l_2",
+            "content": "A new “My Devices” screen that makes it easier to view and manage your devices"
+          },
+          {
+            "id": "l_3",
+            "content": "The ability to upgrade to an annual plan from within the app"
+          },
+          {
+            "id": "l_4",
+            "content": "Improved guidance for fixing VPN connection issues"
+          },
+          {
+            "id": "l_5",
+            "content": "Personalized suggestions for apps to exclude from VPN protection"
+          },
+          {
+            "id": "l_6",
+            "content": "More easily accessible help content throughout the app"
+          }
+        ]
+      },
+      {
+        "id": "c_3",
+        "type": "text",
+        "content": "Thank you for installing the latest version"
+      }
+    ]
+  }
+}
