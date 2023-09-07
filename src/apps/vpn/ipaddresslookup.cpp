@@ -90,8 +90,7 @@ void IpAddressLookup::updateIpAddress() {
             // user is not authenticated anymore.
             MozillaVPN* vpn = MozillaVPN::instance();
             if (vpn->state() == App::StateMain &&
-                vpn->connectionManager()->state() ==
-                    ConnectionManager::StateOn) {
+                MozillaVPN::instance()->controller()->isVPNActive()) {
               updateIpAddress();
             }
           });
@@ -126,7 +125,7 @@ void IpAddressLookup::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOn) {
+      !MozillaVPN::instance()->controller()->isVPNActive()) {
     reset();
     return;
   }

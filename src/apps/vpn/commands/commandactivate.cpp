@@ -40,8 +40,7 @@ int CommandActivate::run(QStringList& tokens) {
     QEventLoop loop;
     QObject::connect(
         vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
-          if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+          if (vpn.connectionManager()->state() == ConnectionManager::ConnectionStateIdle) {
             loop.exit();
           }
         });
@@ -52,14 +51,12 @@ int CommandActivate::run(QStringList& tokens) {
 
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
-    if (vpn.connectionManager()->state() != ConnectionManager::StateOff &&
-        vpn.connectionManager()->state() != ConnectionManager::StateOn) {
+    if (!MozillaVPN::instance()->controller()->isVPNActive()) {
       QObject::connect(vpn.connectionManager(),
                        &ConnectionManager::stateChanged, &vpn, [&] {
-                         if (vpn.connectionManager()->state() ==
-                                 ConnectionManager::StateOff ||
+                         if (!MozillaVPN::instance()->controller()->isVPNActive() ||
                              vpn.connectionManager()->state() ==
-                                 ConnectionManager::StateOn) {
+                                 ConnectionManager::ConnectionStateIdle) {
                            loop.exit();
                          }
                        });
@@ -67,7 +64,7 @@ int CommandActivate::run(QStringList& tokens) {
       vpn.connectionManager()->disconnect();
     }
 
-    if (vpn.connectionManager()->state() != ConnectionManager::StateOff) {
+    if (MozillaVPN::instance()->controller()->isVPNActive()) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is already active" << Qt::endl;
       return 0;
@@ -75,8 +72,7 @@ int CommandActivate::run(QStringList& tokens) {
 
     QObject::connect(
         vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
-          if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+          if (vpn.connectionManager()->state() == ConnectionManager::ConnectionStateIdle) {
             loop.exit();
           }
         });
@@ -84,7 +80,7 @@ int CommandActivate::run(QStringList& tokens) {
     loop.exec();
     vpn.connectionManager()->disconnect();
 
-    if (vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+    if (MozillaVPN::instance()->controller()->isVPNActive()) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now active" << Qt::endl;
       return 0;

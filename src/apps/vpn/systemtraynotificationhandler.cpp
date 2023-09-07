@@ -151,8 +151,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   bool isStateMain = vpn->state() == App::StateMain;
 
   m_disconnectAction->setVisible(isStateMain &&
-                                 vpn->connectionManager()->state() ==
-                                     ConnectionManager::StateOn);
+                                 MozillaVPN::instance()->controller()->isVPNActive());
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);
@@ -176,15 +175,16 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   QString statusLabel;
 
   switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
-      [[fallthrough]];
+//    case ConnectionManager::StateOn:
+//      [[fallthrough]];
     case ConnectionManager::StateSilentSwitching:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
       break;
 
-    case ConnectionManager::StateOff:
-      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
-      break;
+      //TODO: bring these back. Possibly as a if/else statement
+//    case ConnectionManager::StateOff:
+//      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
+//      break;
 
     case ConnectionManager::StateSwitching:
       [[fallthrough]];
@@ -223,8 +223,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
-                                  ConnectionManager::StateOff);
+  m_lastLocationLabel->setEnabled(!MozillaVPN::instance()->controller()->isVPNActive());
 }
 
 void SystemTrayNotificationHandler::updateIcon() {

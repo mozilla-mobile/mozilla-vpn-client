@@ -60,6 +60,8 @@ void Controller::initialize() {
 }
 
 bool Controller::isVPNActive() { return m_VPNActive; }
+void Controller::toggleVPNOff() { m_VPNActive = false; }
+void Controller::toggleVPNOn() { m_VPNActive = true; }
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&

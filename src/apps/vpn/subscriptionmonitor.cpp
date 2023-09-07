@@ -32,8 +32,7 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
   connect(MozillaVPN::instance()->connectionHealth(),
           &ConnectionHealth::stabilityChanged, this, [this]() {
             logger.debug() << "VPN connection stability has changed";
-            if (MozillaVPN::instance()->connectionManager()->state() ==
-                ConnectionManager::StateOn) {
+            if (MozillaVPN::instance()->controller()->isVPNActive()) {
               m_lastKnownStabilityState =
                   MozillaVPN::instance()->connectionHealth()->stability();
             }
@@ -41,9 +40,9 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
 
   connect(MozillaVPN::instance()->connectionManager(),
           &ConnectionManager::stateChanged, this, [this]() {
-            ConnectionManager::State state =
-                MozillaVPN::instance()->connectionManager()->state();
-            if (state == ConnectionManager::StateOff &&
+//            ConnectionManager::State state =
+//                MozillaVPN::instance()->connectionManager()->state();
+            if (!MozillaVPN::instance()->controller()->isVPNActive() &&
                 m_lastKnownStabilityState ==
                     ConnectionHealth::ConnectionStability::NoSignal) {
               logger.debug() << "User has toggled the VPN off after No Signal";

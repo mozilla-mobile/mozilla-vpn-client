@@ -120,10 +120,10 @@ int CommandStatus::run(QStringList& tokens) {
     QObject::connect(
         &connectionManager, &ConnectionManager::stateChanged,
         &connectionManager, [&] {
-          if (connectionManager.state() == ConnectionManager::StateOff ||
-              connectionManager.state() == ConnectionManager::StateOn) {
-            loop.exit();
-          }
+//          if (connectionManager.state() == ConnectionManager::StateOff ||
+//              connectionManager.state() == ConnectionManager::StateOn) {
+//            loop.exit();
+//          }
         });
     connectionManager.initialize();
     loop.exec();
@@ -134,8 +134,12 @@ int CommandStatus::run(QStringList& tokens) {
         stream << "initializing";
         break;
 
-      case ConnectionManager::StateOff:
-        stream << "off";
+//      case ConnectionManager::StateOff:
+//        stream << "off";
+//        break;
+        
+      case ConnectionManager::ConnectionStateIdle:
+        stream << "idling";
         break;
 
       case ConnectionManager::StateCheckSubscription:
@@ -150,8 +154,8 @@ int CommandStatus::run(QStringList& tokens) {
         stream << "confirming";
         break;
 
-      case ConnectionManager::StateOn:
-        [[fallthrough]];
+//      case ConnectionManager::StateOn:
+//        [[fallthrough]];
       case ConnectionManager::StateSilentSwitching:
         stream << "on";
         break;

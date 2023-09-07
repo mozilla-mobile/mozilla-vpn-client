@@ -52,14 +52,15 @@ class ConnectionManager : public QObject, public LogSerializer {
 
   enum State {
     StateInitializing,
-    StateOff,
+//    StateOff,
     StateCheckSubscription,
     StateConnecting,
     StateConfirming,
-    StateOn,
+//    StateOn,
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
+    ConnectionStateIdle,
   };
   Q_ENUM(State)
 
@@ -253,6 +254,8 @@ class ConnectionManager : public QObject, public LogSerializer {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
+  
+  Controller* m_controller = MozillaVPN::instance()->controller();
 
 };  // namespace ConnectionManager
 

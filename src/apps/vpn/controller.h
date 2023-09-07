@@ -22,6 +22,8 @@ class Controller final : public QObject, public LogSerializer {
   void initialize();
 
   bool isVPNActive();
+  void toggleVPNOff();
+  void toggleVPNOn();
 
   // LogSerializer interface
   void serializeLogs(

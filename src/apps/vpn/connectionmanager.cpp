@@ -184,16 +184,19 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
+//  Controller* controller = MozillaVPN::instance()->controller();
   Q_ASSERT(m_state == ConnectionManager::StateInitializing);
 
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
     setState(StateOff);
+    m_controller->toggleVPNOff();
     return;
   }
 
   if (processNextStep()) {
     setState(StateOff);
+    m_controller->toggleVPNOff();
     return;
   }
 
@@ -668,6 +671,7 @@ void ConnectionManager::connected(const QString& pubkey,
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
+  m_controller->toggleVPNOn();
   emit newConnectionSucceeded();
 
   // In case the Controller provided a valid timestamp that
@@ -702,6 +706,7 @@ void ConnectionManager::disconnected() {
 
   if (processNextStep()) {
     setState(StateOff);
+    m_controller->toggleVPNOff();
     return;
   }
 
@@ -712,6 +717,7 @@ void ConnectionManager::disconnected() {
   }
 
   setState(StateOff);
+  m_controller->toggleVPNOff();
   emit controllerDisconnected();
 }
 

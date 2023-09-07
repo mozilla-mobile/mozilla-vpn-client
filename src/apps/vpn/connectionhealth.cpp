@@ -74,7 +74,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->connectionManager()->state() !=
-          ConnectionManager::StateOn) {
+          ConnectionManager::ConnectionStateIdle) {
     return;
   }
 
@@ -152,26 +152,26 @@ void ConnectionHealth::connectionStateChanged() {
     startUnsettledPeriod();
   }
 
-  switch (state) {
-    case ConnectionManager::StateOn:
-      MozillaVPN::instance()->connectionManager()->getStatus(
-          [this](const QString& serverIpv4Gateway,
-                 const QString& deviceIpv4Address, uint64_t txBytes,
-                 uint64_t rxBytes) {
-            Q_UNUSED(txBytes);
-            Q_UNUSED(rxBytes);
+  if (MozillaVPN::instance()->controller()->isVPNActive())
+  {
+    MozillaVPN::instance()->connectionManager()->getStatus(
+        [this](const QString& serverIpv4Gateway,
+               const QString& deviceIpv4Address, uint64_t txBytes,
+               uint64_t rxBytes) {
+          Q_UNUSED(txBytes);
+          Q_UNUSED(rxBytes);
 
-            stop();
-            startActive(serverIpv4Gateway, deviceIpv4Address);
-          });
-      break;
-
-    case ConnectionManager::StateOff:
-      startIdle();
-      break;
-
-    default:
-      stop();
+          stop();
+          startActive(serverIpv4Gateway, deviceIpv4Address);
+        });
+  }
+  else if (!MozillaVPN::instance()->controller()->isVPNActive())
+  {
+    startIdle();
+  }
+  else
+  {
+    stop();
   }
 }
 
