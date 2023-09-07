@@ -13,6 +13,7 @@ Column {
     property alias labelText: label.text
     property alias labelWidth: label.width
     property string accessibleName: ""
+    property bool accessibleIgnored: false
     property int currentState: MZStepProgressBarDelegate.State.Incomplete
 
     signal clicked
@@ -44,6 +45,7 @@ Column {
             else state = MZTheme.theme.uiState.stateDefault
         }
 
+        Accessible.ignored: delegate.accessibleIgnored
         Accessible.name: delegate.accessibleName
 
         onClicked: delegate.clicked()
