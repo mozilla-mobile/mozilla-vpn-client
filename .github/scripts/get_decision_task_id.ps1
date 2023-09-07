@@ -1,3 +1,5 @@
+#!/usr/bin/pwsh
+
 while (1){
     $(gh pr checks $env:PR_NUMBER).Split([Environment]::NewLine) | ForEach-Object{ 
         if($_.contains("Decision Task (pull-request)")){
