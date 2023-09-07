@@ -25,6 +25,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Get Decision Task
         id: getDecisionTask
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run : |
           while (1){
