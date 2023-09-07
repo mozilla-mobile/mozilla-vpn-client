@@ -121,23 +121,14 @@ FocusScope {
                         Layout.preferredWidth: 184
 
                         fillMode: Image.PreserveAspectFit
-                        asynchronous: true
-                        smooth: true
                         source: "qrc:/ui/resources/globe.svg"
                     }
 
-                    MZHeadline {
+                    MZTextBlock {
                         Layout.topMargin: 24
                         Layout.fillWidth: true
 
-                        text: MZI18n.ServersViewRecommendedEmptyTitle
-                    }
-
-                    MZTextBlock {
-                        Layout.topMargin: 8
-                        Layout.fillWidth: true
-
-                        text: MZI18n.ServersViewRecommendedEmptyDescription
+                        text: MZI18n.ServersViewRecommendedEmptyLabel
                         horizontalAlignment: Text.AlignHCenter
                         font.pixelSize: MZTheme.theme.fontSize
                     }
