@@ -37,7 +37,7 @@ jobs:
                         $url = $_.Split([char]9)[-1]
                         $task_ID += $url.Replace("https://firefox-ci-tc.services.mozilla.com/tasks/","")
                         Write-Output $task_ID
-                        Write-Output "taskID=$task_ID" | Out-File -FilePath $env:GITHUB_OUTPUT
+                        Write-Output "taskID=$task_ID" >> $env:GITHUB_OUTPUT
                         break;
                     }
                 }
