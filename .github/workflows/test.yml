@@ -67,12 +67,12 @@ jobs:
         shell: bash
         run: |          
           pip3 install -r requirements.txt
-          cd $RUNNER_TEMP
+          cd C:/
           curl -L https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/VS7S5JtSRyyu4D6jqoGShw/runs/0/artifacts/public%2Fbuild%2Fqt6_win.zip > windows.zip
           unzip -a windows.zip
           rm windows.zip
           # Export that for the Build Task
-          echo "CMAKE_PREFIX_PATH=$RUNNER_TEMP/QT_OUT/lib/cmake" >> "$GITHUB_ENV"
+          echo "CMAKE_PREFIX_PATH=C:/QT_OUT/lib/cmake" >> "$GITHUB_ENV"
           # We're using msvc, so let's enable multiprocess
           echo "CXXFLAGS=/MP" >> "$GITHUB_ENV"
       - name: Setup CCache
