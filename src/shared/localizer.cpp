@@ -13,7 +13,7 @@
 #include <QLocale>
 #include <QTranslator>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "languagei18n.h"
@@ -188,7 +188,7 @@ void Localizer::loadLanguagesFromI18n() {
   QDir dir(ResourceLoader::instance()->loadDir(":/i18n"));
   QStringList files = dir.entryList();
   for (const QString& file : files) {
-    if (!file.startsWith(AppConstants::LOCALIZER_FILENAME_PREFIX) ||
+    if (!file.startsWith(Constants::LOCALIZER_FILENAME_PREFIX) ||
         !file.endsWith(".qm")) {
       continue;
     }
@@ -197,7 +197,7 @@ void Localizer::loadLanguagesFromI18n() {
     Q_ASSERT(parts.length() == 2);
 
     QString code =
-        parts[0].remove(0, strlen(AppConstants::LOCALIZER_FILENAME_PREFIX) +
+        parts[0].remove(0, strlen(Constants::LOCALIZER_FILENAME_PREFIX) +
                                /* the final '_': */ 1);
 
     if (Constants::inProduction() &&
@@ -370,7 +370,7 @@ bool Localizer::createTranslator(const QLocale& locale) {
   m_translators.append(translator);
   QCoreApplication::installTranslator(translator);
 
-  return translator->load(locale, AppConstants::LOCALIZER_FILENAME_PREFIX, "_",
+  return translator->load(locale, Constants::LOCALIZER_FILENAME_PREFIX, "_",
                           ":/i18n");
 }
 

@@ -8,7 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "helper.h"
 #include "localizer.h"
 #include "models/device.h"
@@ -717,13 +717,13 @@ void TestModels::recentConnectionBasic() {
   }
 
   // Let's add a few single-hop entries. We cannot reach the max value.
-  for (int i = 1; i < 2 * AppConstants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
+  for (int i = 1; i < 2 * Constants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
     MozillaVPN::instance()->serverData()->changeServer(
         QString("%1").arg('a' + i), QString("%1").arg('b' + i));
   }
 
   QCOMPARE(rcSingleHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcSingleHop->isEmpty());
 
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 1);
@@ -733,35 +733,35 @@ void TestModels::recentConnectionBasic() {
   rc->initialize();
 
   QCOMPARE(rcSingleHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcSingleHop->isEmpty());
 
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 1);
   QVERIFY(!rcMultiHop->isEmpty());
 
   // Let's add a few multi-hop entries. We cannot reach the max value.
-  for (int i = 1; i < 2 * AppConstants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
+  for (int i = 1; i < 2 * Constants::RECENT_CONNECTIONS_MAX_COUNT; ++i) {
     MozillaVPN::instance()->serverData()->changeServer(
         QString("%1").arg('a' + i), QString("%1").arg('b' + i),
         QString("%1").arg('c' + 1), QString("%1").arg('d' + 1));
   }
 
   QCOMPARE(rcSingleHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcSingleHop->isEmpty());
 
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcMultiHop->isEmpty());
 
   // Let's read from the settings again.
   rc->initialize();
   QCOMPARE(rcSingleHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcSingleHop->isEmpty());
 
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()),
-           AppConstants::RECENT_CONNECTIONS_MAX_COUNT);
+           Constants::RECENT_CONNECTIONS_MAX_COUNT);
   QVERIFY(!rcMultiHop->isEmpty());
 }
 

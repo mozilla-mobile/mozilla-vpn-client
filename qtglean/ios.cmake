@@ -103,27 +103,14 @@ target_sources(iosglean PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
-list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
+list(APPEND PINGS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
 list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings.yaml)
-list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
+list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
 list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics.yaml)
 
-get_filename_component(APPS_DIR ${CMAKE_SOURCE_DIR}/src/apps ABSOLUTE)
-file(GLOB APPS_NAMES LIST_DIRECTORIES true RELATIVE ${APPS_DIR} ${APPS_DIR}/*)
-foreach(APP ${APPS_NAMES})
-    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
-        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings_deprecated.yaml)
-    endif()
-    if(EXISTS ${APPS_DIR}/${APP}/telemetry/pings.yaml)
-        list(APPEND PINGS_LIST ${APPS_DIR}/${APP}/telemetry/pings.yaml)
-    endif()
-    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
-        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics_deprecated.yaml)
-    endif()
-    if(EXISTS ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
-        list(APPEND METRICS_LIST ${APPS_DIR}/${APP}/telemetry/metrics.yaml)
-    endif()
-endforeach()
+list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml)
+list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics_deprecated.yaml)
+list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
 
 # We execute this as a command and not a process,
 # because different from the Glean internal stuff

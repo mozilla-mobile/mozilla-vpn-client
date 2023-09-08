@@ -4,7 +4,7 @@
 
 #include <QCoreApplication>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 #endif
   {
     SettingsHolder settingsHolder;
-    AppConstants::setStaging();
+    Constants::setStaging();
   }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();

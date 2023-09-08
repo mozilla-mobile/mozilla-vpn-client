@@ -7,7 +7,7 @@
 #include <QDateTime>
 #include <QJsonObject>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "models/location.h"
 #include "models/servercity.h"
@@ -132,7 +132,7 @@ void TestServerLatency::baseCityScore() {
   ServerLatency serverLatency;
   for (const QString& pubkey : serversOnCooldown) {
     serverLatency.setCooldown(pubkey,
-                              AppConstants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+                              Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 
   // Establish an average latency of around 100ms.
