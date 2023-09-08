@@ -65,14 +65,6 @@ MZViewBase {
                 privacyOverwriteLoader.dnsProviderValue = dnsProviderFlags;
                 privacyOverwriteLoader.active = active;
             }
-
-//            Connections {
-//                target: privacyFeatureList
-//                function onSettingClicked(dnsProviderFlags, active) {
-//                    privacyOverwriteLoader.dnsProviderValue = dnsProviderFlags;
-//                    privacyOverwriteLoader.active = active;
-//                }
-//            }
         }
 
     }
