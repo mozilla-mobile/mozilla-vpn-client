@@ -8,7 +8,7 @@
 
 #include <QRandomGenerator>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "cryptosettings.h"
 #include "logger.h"
 
@@ -23,7 +23,7 @@ void CryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
   if (s_initialized) {
-    CredDeleteW(AppConstants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0);
+    CredDeleteW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0);
     s_initialized = false;
   }
 }
@@ -36,8 +36,7 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     {
       PCREDENTIALW cred;
-      if (CredReadW(AppConstants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0,
-                    &cred)) {
+      if (CredReadW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0, &cred)) {
         s_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
         logger.debug() << "Key found with length:" << s_key.length();
@@ -63,9 +62,9 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       CREDENTIALW cred;
       memset(&cred, 0, sizeof(cred));
 
-      cred.Comment = const_cast<wchar_t*>(AppConstants::WINDOWS_CRED_KEY);
+      cred.Comment = const_cast<wchar_t*>(Constants::WINDOWS_CRED_KEY);
       cred.Type = CRED_TYPE_GENERIC;
-      cred.TargetName = const_cast<wchar_t*>(AppConstants::WINDOWS_CRED_KEY);
+      cred.TargetName = const_cast<wchar_t*>(Constants::WINDOWS_CRED_KEY);
       cred.CredentialBlobSize = s_key.length();
       cred.CredentialBlob = (LPBYTE)s_key.constData();
       cred.Persist = CRED_PERSIST_ENTERPRISE;

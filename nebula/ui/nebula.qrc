@@ -1,0 +1,9 @@
+<!-- 
+  Band-aid solution to capture the legacy strings in this file.
+  Let's fix this in a less hacky way over on VPN-5193.
+ -->
+<RCC>
+    <qresource prefix="/nebula">
+        <file>components/MZSystemAlert.qml</file>
+    </qresource>
+</RCC>

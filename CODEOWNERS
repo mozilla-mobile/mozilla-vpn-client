@@ -1,8 +1,8 @@
 /addons/**/manifest.json @flodolo
 /src/shared/translations/strings.yaml @flodolo
 /src/shared/translations/extras @flodolo
-/src/apps/**/translations/strings.yaml @flodolo
-/src/apps/**/translations/extras @flodolo
+/src/translations/strings.yaml @flodolo
+/src/translations/extras @flodolo
 
 # Taskcluster / Taskgraph related files. Releng will review for best practices
 # and security. Most changes should additionally be reviewed by VPN team.

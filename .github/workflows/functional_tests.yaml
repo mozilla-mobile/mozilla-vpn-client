@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
 
 # Restrict tests to the most recent commit.
 concurrency:
@@ -130,11 +130,11 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-            chmod +x ./build/dummyvpn
-            ./build/dummyvpn -v
+          chmod +x ./build/dummyvpn
+          ./build/dummyvpn -v
 
-            chmod +x ${{github.workspace}}/grcov-build/bin/grcov
-            ${{github.workspace}}/grcov-build/bin/grcov --version
+          chmod +x ${{github.workspace}}/grcov-build/bin/grcov
+          ${{github.workspace}}/grcov-build/bin/grcov --version
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests

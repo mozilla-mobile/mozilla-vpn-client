@@ -16,7 +16,7 @@
 #include <QTextStream>
 #include <QUrl>
 
-#include "appconstants.h"
+#include "constants.h"
 #include "feature.h"
 #include "logger.h"
 #include "urlopener.h"
@@ -264,8 +264,7 @@ void LogHandler::addLog(const Log& log,
   if (!Constants::inProduction()) {
     const char* str = buffer.constData();
     if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, AppConstants::ANDROID_LOG_NAME,
-                          str);
+      __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
     }
   }
 #endif
@@ -378,7 +377,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     }
   }
 
-  QString logFileName = appDataLocation.filePath(AppConstants::LOG_FILE_NAME);
+  QString logFileName = appDataLocation.filePath(Constants::LOG_FILE_NAME);
   truncateLogFile(proofOfLock, logFileName);
 
   m_logFile = new QFile(logFileName);
@@ -505,7 +504,7 @@ bool LogHandler::writeLogsToLocation(
   QString filename;
   QDate now = QDate::currentDate();
 
-  QFileInfo logFileInfo(AppConstants::LOG_FILE_NAME);
+  QFileInfo logFileInfo(Constants::LOG_FILE_NAME);
 
   QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year() << "-"
                          << now.month() << "-" << now.day() << "."

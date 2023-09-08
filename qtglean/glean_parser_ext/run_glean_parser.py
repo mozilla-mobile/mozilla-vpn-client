@@ -107,44 +107,20 @@ if __name__ == "__main__":
 
         os.makedirs(args.outdir, exist_ok=True)
 
-        pings_files = []
-        metrics_files = []
-        for project in os.listdir(os.path.join(workspace_root, "src", "apps")):
-            telemetry_path = os.path.join(workspace_root, "src", "apps", project, "telemetry")
-            if os.path.isdir(telemetry_path):
-                pings_file = os.path.join(telemetry_path, "pings.yaml")
-                if os.path.isfile(pings_file):
-                    pings_files.append(pings_file)
+        telemetry_path = os.path.join(workspace_root, "src", "telemetry")
+        shared_telemetry_path = os.path.join(workspace_root, "src", "shared", "telemetry")
 
-                pings_file = os.path.join(telemetry_path, "pings_deprecated.yaml")
-                if os.path.isfile(pings_file):
-                    pings_files.append(pings_file)
-
-                metrics_file = os.path.join(telemetry_path, "metrics.yaml")
-                if os.path.isfile(metrics_file):
-                    metrics_files.append(metrics_file)
-
-                metrics_file = os.path.join(telemetry_path, "metrics_deprecated.yaml")
-                if os.path.isfile(metrics_file):
-                    metrics_files.append(metrics_file)
-
-        telemetry_path = os.path.join(workspace_root, "src", "shared", "telemetry")
-        if os.path.isdir(telemetry_path):
-            pings_file = os.path.join(telemetry_path, "pings.yaml")
-            if os.path.isfile(pings_file):
-                pings_files.append(pings_file)
-
-            pings_file = os.path.join(telemetry_path, "pings_deprecated.yaml")
-            if os.path.isfile(pings_file):
-                pings_files.append(pings_file)
-
-            metrics_file = os.path.join(telemetry_path, "metrics.yaml")
-            if os.path.isfile(metrics_file):
-                metrics_files.append(metrics_file)
-
-            metrics_file = os.path.join(telemetry_path, "metrics_deprecated.yaml")
-            if os.path.isfile(metrics_file):
-                metrics_files.append(metrics_file)
+        pings_files = [
+            os.path.join(telemetry_path, "pings.yaml"),
+            os.path.join(shared_telemetry_path, "pings.yaml"),
+            os.path.join(shared_telemetry_path, "pings_deprecated.yaml")
+        ]
+        metrics_files = [
+            os.path.join(telemetry_path, "metrics.yaml"),
+            os.path.join(telemetry_path, "metrics_deprecated.yaml"),
+            os.path.join(shared_telemetry_path, "metrics.yaml"),
+            os.path.join(shared_telemetry_path, "metrics_deprecated.yaml")
+        ]
 
         # Generate C++ header files
         for [ output, input ] in [

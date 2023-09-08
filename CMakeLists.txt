@@ -17,6 +17,14 @@ project("Mozilla VPN" VERSION 2.17.0 LANGUAGES C CXX
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
+# Enable testing
+include(CTest)
+add_custom_target(build_tests)
+set_target_properties(build_tests PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+        FOLDER "Tests"
+)
+
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.
@@ -87,10 +95,10 @@ endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 if(MSVC)
-    include(src/apps/vpn/cmake/msvc.cmake)
+    include(src/cmake/msvc.cmake)
 endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
-    include(src/apps/vpn/cmake/clang.cmake)
+    include(src/cmake/clang.cmake)
 endif()
 
 set(CMAKE_AUTOMOC ON)
@@ -144,20 +152,12 @@ if(NOT CMAKE_CROSSCOMPILING)
     # Extra rustlang libraries
     add_subdirectory(extension)
 
-    # Enable testing
-    include(CTest)
-    add_custom_target(build_tests)
-    set_target_properties(build_tests PROPERTIES
-        EXCLUDE_FROM_ALL TRUE
-        FOLDER "Tests"
-    )
-
     # Unit Tests
     add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
-    add_subdirectory(src/apps/auth_tests EXCLUDE_FROM_ALL)
-    add_subdirectory(src/apps/unit_tests EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
 
     # Dummy Testing Client
     add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)

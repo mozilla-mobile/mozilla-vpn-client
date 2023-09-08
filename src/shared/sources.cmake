@@ -21,6 +21,10 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
+    ${CMAKE_SOURCE_DIR}/src/constants.h
+    ${CMAKE_SOURCE_DIR}/src/constants.cpp
+    ${CMAKE_SOURCE_DIR}/src/settingslist.h
+    ${CMAKE_SOURCE_DIR}/src/featurelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons/addonapi.cpp
@@ -96,8 +100,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblocktitle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblockunorderedlist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer/composerblockunorderedlist.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/cryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shared/curve25519.cpp

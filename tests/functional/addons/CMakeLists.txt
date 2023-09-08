@@ -17,7 +17,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 add_addon_target(prod_addon
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/
-    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/apps/vpn/translations/i18n
+    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../src/translations/i18n
 )
 set_target_properties(prod_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
 

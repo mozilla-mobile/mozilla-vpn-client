@@ -1,0 +1,82 @@
+{
+  "api_version": "0.1",
+  "id": "message_update_v2.17",
+  "name": "Update to Mozilla VPN 2.17",
+  "type": "message",
+  "conditions": {
+    "max_client_version": "2.16.9"
+  },
+  "javascript": {
+    "enable": "enable.js"
+  },
+  "message": {
+    "date": 1671066000,
+    "id": "message_update_v2.17",
+    "title": "Update Mozilla VPN",
+    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.",
+    "badge": "new_update",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "This update includes minor bug fixes, UI adjustments and other performance improvements, including:"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "The ability to sign in using your Google or Apple account"
+          },
+          {
+            "id": "l_2",
+            "content": "A new “My Devices” screen that makes it easier to view and manage your devices"
+          },
+          {
+            "id": "l_3",
+            "content": "The ability to upgrade to an annual plan from within the app"
+          },
+          {
+            "id": "l_4",
+            "content": "Improved guidance for fixing VPN connection issues"
+          },
+          {
+            "id": "l_5",
+            "content": "Personalized suggestions for apps to exclude from VPN protection"
+          },
+          {
+            "id": "l_6",
+            "content": "More easily accessible help content throughout the app"
+          }
+        ]
+      },    
+      {
+        "id": "c_3",
+        "type": "button",
+        "style": "primary",
+        "content": "Update now",
+        "javascript": "update.js"
+      },
+      {
+        "id": "c_4",
+        "type": "button",
+        "style": "primary",
+        "content": "Download update",
+        "javascript": "updateWeb.js"
+      },
+      {
+        "id": "c_5",
+        "type": "button",
+        "style": "link",
+        "content": "Get help",
+        "javascript": "getHelp.js"
+      },
+      {
+        "id": "extra_1_217",
+        "type": "text",
+        "content": "Download the new Mozilla VPN"
+      }
+    ]
+  }
+}

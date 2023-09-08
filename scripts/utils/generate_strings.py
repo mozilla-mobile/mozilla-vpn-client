@@ -36,7 +36,7 @@ class UniqueKeyLoader(yaml.SafeLoader):
         return super().construct_mapping(node, deep)
 
 
-def parseTranslationStrings(project, yamlfile):
+def parseTranslationStrings(yamlfile):
     if not os.path.isfile(yamlfile):
         exit(f"Unable to find {yamlfile}")
 
@@ -58,7 +58,7 @@ def parseTranslationStrings(project, yamlfile):
 
         for category in yaml_content:
             for key in yaml_content[category]:
-                string_id = f"{project}.{category}.{key}"
+                string_id = f"vpn.{category}.{key}"
                 obj = yaml_content[category][key]
                 value = []
                 comments = []
@@ -115,7 +115,7 @@ def parseTranslationStrings(project, yamlfile):
 
 
 # Render a dictionary of strings into the i18nstrings module.
-def generateStrings(strings, project, outdir):
+def generateStrings(strings, outdir):
     os.makedirs(outdir, exist_ok=True)
     with open(os.path.join(outdir, "i18nstrings.h"), "w", encoding="utf-8") as output:
         output.write(
@@ -199,7 +199,7 @@ const char* const I18nStrings::_ids[] = {
 
         # This is done to make windows compiler happy
         if len(strings) == 0:
-            output.write(f'    "{project}.dummy.ignore",\n\n')
+            output.write(f'    "dummy.ignore",\n\n')
 
         output.write(
             """
@@ -236,21 +236,10 @@ if __name__ == "__main__":
         action="store",
         help="Output directory for generated files",
     )
-    parser.add_argument(
-        "-p",
-        "--project",
-        metavar="PROJECT",
-        type=str,
-        action="store",
-        help="The project name",
-    )
     args = parser.parse_args()
 
     if not args.source:
         exit("No source argument.")
-
-    if args.project is None:
-        exit("No project name argument.")
 
     # If no output directory was provided, use the current directory.
     if args.output is None:
@@ -259,8 +248,8 @@ if __name__ == "__main__":
     # Parse the inputs for their sweet juicy strings.
     strings = {}
     for source in args.source:
-        substrings = parseTranslationStrings(args.project, source)
+        substrings = parseTranslationStrings(source)
         strings.update(substrings)
 
     # Render the strings into generated content.
-    generateStrings(strings, args.project, args.output)
+    generateStrings(strings, args.output)
