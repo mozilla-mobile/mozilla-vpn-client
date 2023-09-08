@@ -4,7 +4,7 @@
   "name": "Update to Mozilla VPN 2.17",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.160000000.9"
+    "max_client_version": "2.16.9"
   },
   "javascript": {
     "enable": "enable.js"
