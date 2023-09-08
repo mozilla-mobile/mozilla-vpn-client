@@ -85,14 +85,6 @@ const screenHome = {
       new QmlQueryComposer('//serverListButton-label-label'),
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
-  TIPS_AND_TRICKS_POPUP_BACK:
-      new QmlQueryComposer('//tipsAndTricksIntroPopupGoBackButton'),
-  TIPS_AND_TRICKS_POPUP_CLOSE:
-      new QmlQueryComposer('//tipsAndTricksIntroPopupCloseButton'),
-  TIPS_AND_TRICKS_POPUP_DISCOVER:
-      new QmlQueryComposer('//tipsAndTricksIntroPopupDiscoverNowButton'),
-  TIPS_AND_TRICKS_POPUP_LOADER:
-      new QmlQueryComposer('//tipsAndTricksIntroPopupLoader'),
   TUTORIAL_LEAVE: new QmlQueryComposer('//tutorialLeave'),
   TUTORIAL_POPUP_PRIMARY_BUTTON:
       new QmlQueryComposer('//tutorialPopupPrimaryButton'),
