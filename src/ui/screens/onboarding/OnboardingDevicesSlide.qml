@@ -101,13 +101,16 @@ ColumnLayout {
     //Views in the stack layout must be in the same order as items in the above list model
     StackLayout {
         Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.maximumHeight: 152
+        Layout.maximumWidth: 152
+        Layout.alignment: Qt.AlignHCenter
+
         currentIndex: deviceTypeToggle.selectedIndex
 
         //Google play store QR code
         Rectangle {
             color: MZTheme.theme.white
 
-            anchors.centerIn: parent
             Layout.preferredHeight: 152
             Layout.preferredWidth: 152
             Layout.maximumHeight: 152
@@ -139,7 +142,6 @@ ColumnLayout {
         Rectangle {
             color: MZTheme.theme.white
 
-            anchors.centerIn: parent
             Layout.preferredHeight: 152
             Layout.preferredWidth: 152
             Layout.maximumHeight: 152
