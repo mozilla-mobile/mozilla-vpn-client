@@ -82,7 +82,7 @@ ColumnLayout {
                 anchors.leftMargin: undefined
                 anchors.rightMargin: undefined
 
-                Keys.onDownPressed: recentConnectionsRepeater.itemAt(index + 1) ? recentConnectionsRepeater.itemAt(index + 1).forceActiveFocus() : countriesRepeater.itemAt(0).forceActiveFocus()
+                Keys.onDownPressed: recentConnectionsRepeater.itemAt(index + 1) ? recentConnectionsRepeater.itemAt(index + 1).forceActiveFocus() : countriesListView.itemAtIndex(0).forceActiveFocus()
                 Keys.onUpPressed: recentConnectionsRepeater.itemAt(index - 1) ? recentConnectionsRepeater.itemAt(index - 1).forceActiveFocus() : serverSearchInput.forceActiveFocus()
 
                 onClicked: {
