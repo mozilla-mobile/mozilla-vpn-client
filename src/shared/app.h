@@ -50,7 +50,8 @@ class App : public QObject {
     // The user needs to accept the telemetry policy.
     StateTelemetryPolicy,
 
-    // The user was successfully authenticated and moves into the onboarding flow
+    // The user was successfully authenticated and moves into the onboarding
+    // flow
     StateOnboarding,
 
     // This is a sentinel value. Any extra state can be configured using values
