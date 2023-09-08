@@ -35,7 +35,7 @@ $env:PATH = "$PERL_PATH;$env:PATH"
 perl Configure  VC-WIN64A `
                 --release `
                 --prefix="$SSL_OUT_PATH" `
-                --openssldir="$SSL_OUT_PATH/SSL" `
+                --openssldir="C:\Windows" `
                 no-tests `
                 no-engine `
                 -DOPENSSL_NO_ENGINE
