@@ -4,6 +4,12 @@
 
 #include "accessiblenotification.h"
 
+#include "logger.h"
+
+namespace {
+Logger logger("AccessibleNotification");
+}
+
 // static
 AccessibleNotification* AccessibleNotification::instance() {
   static AccessibleNotification s_instance;
@@ -12,6 +18,8 @@ AccessibleNotification* AccessibleNotification::instance() {
 
 Q_INVOKABLE void AccessibleNotification::notify(QQuickItem* sourceItem,
                                                 const QString& notification) {
+  logger.debug() << notification;
+
   QAccessibleValueChangeEvent event(sourceItem, QAccessible::ValueChanged);
   event.setValue(notification);
   QAccessible::updateAccessibility(&event);

@@ -56,7 +56,6 @@ RowLayout {
     ]
 
     function onShowCompleted() {
-        console.log("MZAccessibleNotification " + messageText.text);
         MZAccessibleNotification.notify(messageText, messageText.text);
     }
 

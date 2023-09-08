@@ -27,7 +27,6 @@ Item {
         if (connectedStateDescription.visible)
             notificationText += (connectedStateDescription.text + ' ');
 
-        console.log("MZAccessibleNotification " + notificationText);
         MZAccessibleNotification.notify(logoTitle, notificationText);
     }
 
