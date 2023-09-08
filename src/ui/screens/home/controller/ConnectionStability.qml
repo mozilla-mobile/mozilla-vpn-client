@@ -31,7 +31,6 @@ Item {
 
         // Notify accessibility client of connection health problems
         let notificationText = stabilityLabel.text + " " + stabilityLabelInstruction.text;
-        console.log("MZAccessibleNotification " + notificationText);
         MZAccessibleNotification.notify(stabilityLabel, notificationText);
     }
 

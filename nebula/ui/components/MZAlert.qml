@@ -354,7 +354,6 @@ Rectangle {
     }
 
     function onShowCompleted() {
-        console.log("MZAccessibleNotification " + alertBox.alertText + " "  + alertBox.alertActionText);
         MZAccessibleNotification.notify(label, alertBox.alertText + " " + alertBox.alertActionText);
     }
 
