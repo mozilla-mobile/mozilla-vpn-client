@@ -13,6 +13,9 @@
 // Singleton that notifies accessibility clients, like screen readers, using
 // a string. This can be used to notify the clients of any state change, and
 // a screen reader will read the provided string.
+//
+// Currently Qt supports this only for Windows. VPN-5489 tracks the work to be
+// done for other platforms.
 class AccessibleNotification : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AccessibleNotification)
