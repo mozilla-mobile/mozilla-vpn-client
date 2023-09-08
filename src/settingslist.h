@@ -368,6 +368,17 @@ SETTING_STRINGLIST(missingApps,        // getter
                    false               // sensitive (do not log)
 )
 
+SETTING_BOOL(onboardingStarted,        // getter
+             setOnboardingStarted,     // setter
+             removeOnboardingStarted,  // remover
+             hasOnboardingStarted,     // has
+             "onboardingStarted",      // key
+             false,                    // default value
+             false,                    // user setting
+             false,                    // remove when reset
+             false                     // sensitive (do not log)
+)
+
 SETTING_BOOL(onboardingCompleted,        // getter
              setOnboardingCompleted,     // setter
              removeOnboardingCompleted,  // remover

@@ -70,6 +70,7 @@ ColumnLayout {
 
         if(views.length >= 1) stackView.push(views[0])
 
+        //Push views until we are at the index we want (currentIndex)
         for (let i = 1; i <= currentIndex; i++) {
             stackView.push(views[i])
             stepProgressBar.activeIndex++

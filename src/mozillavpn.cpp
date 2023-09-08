@@ -396,6 +396,10 @@ void MozillaVPN::maybeStateMain() {
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
+      if (!settingsHolder->onboardingStarted()) {
+        settingsHolder->setGleanEnabled(false);
+        settingsHolder->setOnboardingStarted(true);
+      }
       setState(StateOnboarding);
       return;
     }
@@ -435,9 +439,10 @@ void MozillaVPN::maybeStateMain() {
   maybeRegenerateDeviceKey();
 
   if (state() != StateUpdateRequired) {
-      //All users who get to StateMain (home screen) should never see onboarding in the future
-      settingsHolder->setOnboardingCompleted(true);
-      setState(StateMain);
+    // All users who get to StateMain (home screen) should never see onboarding
+    // in the future
+    settingsHolder->setOnboardingCompleted(true);
+    setState(StateMain);
   }
 
 #ifdef MZ_ADJUST
