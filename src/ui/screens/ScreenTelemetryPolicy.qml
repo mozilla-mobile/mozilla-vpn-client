@@ -77,7 +77,7 @@ MZFlickable {
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: {
                     MZSettings.gleanEnabled = false;
-                    VPN.telemetryPolicyCompleted();
+                    VPN.onboardingCompleted();
                 }
             }
         }
