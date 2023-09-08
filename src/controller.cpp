@@ -4,35 +4,9 @@
 
 #include "controller.h"
 
-#include "app.h"
-#include "apppermission.h"
-#include "captiveportal/captiveportal.h"
 #include "constants.h"
-#include "controllerimpl.h"
-#include "dnshelper.h"
-#include "feature.h"
-#include "frontend/navigator.h"
-#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/devicemodel.h"
-#include "models/keys.h"
-#include "models/server.h"
-#include "models/servercountrymodel.h"
-#include "mozillavpn.h"
-#include "networkrequest.h"
-#include "rfc/rfc1112.h"
-#include "rfc/rfc1918.h"
-#include "rfc/rfc4193.h"
-#include "rfc/rfc4291.h"
-#include "serveri18n.h"
-#include "serverlatency.h"
-#include "settingsholder.h"
-#include "tasks/controlleraction/taskcontrolleraction.h"
-#include "tasks/function/taskfunction.h"
-#include "tasks/heartbeat/taskheartbeat.h"
-#include "taskscheduler.h"
-#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -47,7 +21,7 @@
 #endif
 
 namespace {
-Logger logger("Connection Manager");
+Logger logger("Controller");
 }
 
 Controller::Controller() { MZ_COUNT_CTOR(Controller); }
