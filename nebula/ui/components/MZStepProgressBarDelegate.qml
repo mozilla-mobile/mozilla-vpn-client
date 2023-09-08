@@ -13,7 +13,6 @@ Column {
     property alias labelText: label.text
     property alias labelWidth: label.width
     property string accessibleName: ""
-    property bool accessibleIgnored: false
     property int currentState: MZStepProgressBarDelegate.State.Incomplete
 
     signal clicked
@@ -45,7 +44,6 @@ Column {
             else state = MZTheme.theme.uiState.stateDefault
         }
 
-        Accessible.ignored: delegate.accessibleIgnored
         Accessible.name: delegate.accessibleName
 
         onClicked: delegate.clicked()
@@ -126,5 +124,7 @@ Column {
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight
         color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.purple70 : MZTheme.theme.fontColorDark
+
+        Accessible.ignored: true
     }
 }

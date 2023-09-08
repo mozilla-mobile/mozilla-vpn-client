@@ -135,6 +135,9 @@ ColumnLayout {
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
                 fillMode: Image.PreserveAspectFit
+
+                Accessible.role: Accessible.Graphic
+                Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeAndroid
             }
         }
 
@@ -166,6 +169,9 @@ ColumnLayout {
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
                 fillMode: Image.PreserveAspectFit
+
+                Accessible.role: Accessible.Graphic
+                Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeApple
             }
         }
     }
