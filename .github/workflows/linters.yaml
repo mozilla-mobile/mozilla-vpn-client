@@ -45,10 +45,10 @@ jobs:
           python scripts/ci/check_jsonschema.py addon.json addons/*/manifest.json
 
       - name: Check for issues with clang-format
-        uses: DoozyX/clang-format-lint-action@v0.15
+        uses: DoozyX/clang-format-lint-action@v0.16.2
         with:
           source: '.'
-          clangFormatVersion: 11
+          clangFormatVersion: 16
           style: file
 
       - name: Spell check documentation files
