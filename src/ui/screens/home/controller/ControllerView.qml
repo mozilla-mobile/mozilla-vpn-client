@@ -19,6 +19,17 @@ Item {
         box.connectionInfoScreenVisible = false;
     }
 
+    function handleConnectionStateChange() {
+        // Notify accessibility client of connection state
+        let notificationText = (logoTitle.text + ' ');
+        if (logoSubtitle.visible)
+            notificationText += (logoSubtitle.text + ' ');
+        if (connectedStateDescription.visible)
+            notificationText += (connectedStateDescription.text + ' ');
+
+        MZAccessibleNotification.notify(logoTitle, notificationText);
+    }
+
     Layout.preferredHeight: 318
     Layout.fillWidth: true
     Layout.leftMargin: MZTheme.theme.listSpacing
@@ -538,6 +549,7 @@ Item {
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
+            onTextChanged: handleConnectionStateChange()
         }
 
         MZVerticalSpacer {
@@ -555,6 +567,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
             onVisibleChanged: if (visible) col.handleMultilineText()
+            onTextChanged: handleConnectionStateChange()
         }
 
         RowLayout {
@@ -562,13 +575,16 @@ Item {
 
           anchors.horizontalCenter: parent.horizontalCenter
           opacity: 0.8
+          onVisibleChanged: handleConnectionStateChange()
 
           MZInterLabel {
+            id: connectedStateDescription
             objectName: "secureAndPrivateSubtitle"
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.ignored: true
+            Accessible.role: Accessible.StaticText
+            Accessible.name: text
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.

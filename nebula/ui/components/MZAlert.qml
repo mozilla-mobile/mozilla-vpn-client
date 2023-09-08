@@ -190,6 +190,7 @@ Rectangle {
 
             Label {
                 id: label
+                Accessible.role: Accessible.StaticText
                 anchors.centerIn: parent
                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                 horizontalAlignment: Text.AlignHCenter
@@ -331,7 +332,9 @@ Rectangle {
             to: 1
             duration: 100
         }
+        ScriptAction { script: onShowCompleted(); }
     }
+
     function show() {
         if (!isLayout) {
             height = style.alertHeight;
@@ -348,6 +351,10 @@ Rectangle {
             console.log("Toastbox timer start")
             autoHideTimer.start()
         }
+    }
+
+    function onShowCompleted() {
+        MZAccessibleNotification.notify(label, alertBox.alertText + " " + alertBox.alertActionText);
     }
 
     function remove() {

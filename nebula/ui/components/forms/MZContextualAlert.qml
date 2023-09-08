@@ -51,8 +51,13 @@ RowLayout {
                     duration: 100
                 }
             }
+            ScriptAction { script: onShowCompleted(); }
         }
     ]
+
+    function onShowCompleted() {
+        MZAccessibleNotification.notify(messageText, messageText.text);
+    }
 
     MZIcon {
         id: warningIcon
@@ -73,6 +78,7 @@ RowLayout {
 
     MZTextBlock {
         id: messageText
+        Accessible.role: Accessible.StaticText
 
         color: fontColor
         text: modelData.message
