@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
@@ -54,60 +54,17 @@ MZViewBase {
                 }
             }
         }
-        Repeater {
-            id: repeater
 
-            delegate: MZCheckBoxRow {
-                objectName: modelData.objectName
+        PrivacyFeaturesList {
+            id: privacyFeatureList
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+            Layout.fillWidth: true
 
-                Layout.fillWidth: true
-                Layout.rightMargin: MZTheme.theme.windowMargin
-                labelText: modelData.settingTitle
-                subLabelText: modelData.settingDescription
-                isChecked: MZSettings.dnsProviderFlags & modelData.settingValue
-                showDivider: false
-                onClicked: {
-                    let dnsProviderFlags = MZSettings.dnsProviderFlags;
-                    dnsProviderFlags &= ~MZSettings.Custom;
-                    dnsProviderFlags &= ~MZSettings.Gateway;
-
-                    if (dnsProviderFlags & modelData.settingValue) {
-                        dnsProviderFlags &= ~modelData.settingValue;
-                    } else {
-                        dnsProviderFlags |= modelData.settingValue;
-                    }
-
-                    // We are not changing anything interesting for the privacy/dns dialog.
-                    if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
-                        MZSettings.dnsProviderFlags = dnsProviderFlags;
-                        return;
-                    }
-
-                    privacyOverwriteLoader.dnsProviderValue = dnsProviderFlags;
-                    privacyOverwriteLoader.active = true;
-                }
+            onSettingClicked: (dnsProviderFlags, active) => {
+                privacyOverwriteLoader.dnsProviderValue = dnsProviderFlags;
+                privacyOverwriteLoader.active = active;
             }
-        }
-
-        Component.onCompleted: {
-            repeater.model = [
-                {
-                    objectName: "blockAds",
-                    settingValue: MZSettings.BlockAds,
-                    settingTitle: MZI18n.SettingsPrivacyAdblockTitle,
-                    settingDescription: MZI18n.SettingsPrivacyAdblockBody,
-                }, {
-                    objectName: "blockTrackers",
-                    settingValue: MZSettings.BlockTrackers,
-                    settingTitle: MZI18n.SettingsPrivacyTrackerTitle,
-                    settingDescription: MZI18n.SettingsPrivacyTrackerBody,
-                }, {
-                    objectName: "blockMalware",
-                    settingValue: MZSettings.BlockMalware,
-                    settingTitle: MZI18n.SettingsPrivacyMalwareTitle,
-                    settingDescription: MZI18n.SettingsPrivacyMalwareBody,
-                }
-            ];
         }
     }
 

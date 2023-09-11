@@ -1,17 +1,22 @@
 <RCC>
     <qresource prefix="/ui">
+        <file>resources/android-active.svg</file>
+        <file>resources/android.svg</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/speedometer_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/animations/vpnlogo-drop_animation.json</file>
         <file>resources/animations/vpnlogo-kinetic_animation.json</file>
+        <file>resources/apple-active.svg</file>
+        <file>resources/apple.svg</file>
         <file>resources/bandwidth.svg</file>
         <file>resources/connection-error-unstable.svg</file>
         <file>resources/connection-green.svg</file>
         <file>resources/connection-info.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
+        <file>resources/data-collection.svg</file>
         <file>resources/devices.svg</file>
         <file>resources/devicesLimit.svg</file>
         <file>resources/devicesRemove.svg</file>
@@ -278,6 +283,7 @@
         <file>resources/globe.svg</file>
         <file>resources/globe-warning.svg</file>
         <file>resources/heart-check.svg</file>
+        <file>resources/launch.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated-mask1.png</file>
         <file>resources/logo-animated2.png</file>
@@ -320,6 +326,8 @@
         <file>resources/payment/unbranded.svg</file>
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
+        <file>resources/qrcodes/app-store-qrcode.png</file>
+        <file>resources/qrcodes/play-store-qrcode.png</file>
         <file>resources/quick-access.svg</file>
         <file>resources/settings/aboutUs.svg</file>
         <file>resources/settings/apppermissions.svg</file>

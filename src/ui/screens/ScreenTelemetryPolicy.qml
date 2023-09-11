@@ -66,7 +66,7 @@ MZFlickable {
                 radius: 5
                 onClicked: {
                     MZSettings.gleanEnabled = true;
-                    VPN.telemetryPolicyCompleted();
+                    VPN.onboardingCompleted();
                 }
             }
 
@@ -77,7 +77,7 @@ MZFlickable {
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: {
                     MZSettings.gleanEnabled = false;
-                    VPN.telemetryPolicyCompleted();
+                    VPN.onboardingCompleted();
                 }
             }
         }
