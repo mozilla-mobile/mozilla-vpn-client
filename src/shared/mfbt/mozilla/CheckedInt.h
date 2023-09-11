@@ -13,6 +13,7 @@
 #define mozilla_CheckedInt_h
 
 #include <stdint.h>
+
 #include <limits>
 #include <type_traits>
 
