@@ -82,7 +82,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
-            ConnectionManager* ConnectionManager = MozillaVPN::instance()->connectionManager();
+            ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
             Q_ASSERT(connectionManager);
             if (connectionManager->state() != ConnectionManager::StateInitializing) {
               // Just in case we are connecting, let's call disconnect.
@@ -226,6 +226,4 @@ void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callb
   }];
 }
 
-void IOSController::cleanupBackendLogs() {
-    [IOSLoggerImpl clearAppexLogs];
-}
+void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearAppexLogs]; }
