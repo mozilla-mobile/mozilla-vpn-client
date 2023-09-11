@@ -33,20 +33,6 @@ task-defaults:
               path: artifacts/MozillaVPN.msi
     release-artifacts:
         - unsigned.zip
-    run:
-        using: run-task
-        cwd: '{checkout}'
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows.ps1
-
-windows/opt:
-    fetches:
-        toolchain:
-            - conda-windows-x86_64
-            - qt-win
-    description: "Windows Build"
-    treeherder:
-        symbol: B
     scopes:
         by-level:
             "3":
@@ -57,7 +43,14 @@ windows/opt:
         cwd: '{checkout}'
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
-
+windows/opt:
+    fetches:
+        toolchain:
+            - conda-windows-x86_64
+            - qt-win
+    description: "Windows Build"
+    treeherder:
+        symbol: B
 
 windows/next:
     fetches:
@@ -67,13 +60,4 @@ windows/next:
     description: "Windows Build for Next Version of QT"
     treeherder:
         symbol: NEXT
-    scopes:
-        by-level:
-            "3":
-                - secrets:get:project/mozillavpn/tokens
-            default: []
-    run:
-        using: run-task
-        cwd: '{checkout}'
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows_clang_cl.ps1
+
