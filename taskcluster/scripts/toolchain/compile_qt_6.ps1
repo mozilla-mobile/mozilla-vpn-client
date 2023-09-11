@@ -50,31 +50,68 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -static  `
   -opensource  `
   -debug-and-release `
-  -no-dbus   `
-  -no-feature-qdbus  `
   -confirm-license  `
-  -strip  `
   -silent  `
-  -nomake tests  `
-  -nomake examples  `
   -make libs  `
-  -no-sql-psql  `
-  -no-sql-odbc   `
-  -qt-sqlite  `
+  -no-feature-dynamicgl `
+  -no-feature-sql-odbc `
+  -no-feature-pixeltool `
+  -no-feature-qdbus `
+  -no-feature-qtattributionsscanner `
+  -no-feature-qtdiag `
+  -no-feature-qtplugininfo `
+  -no-feature-pixeltool `
+  -no-feature-distancefieldgenerator `
+  -no-feature-designer `
+  -no-feature-assistant `
+  -no-feature-style-fusion `
+  -no-feature-style-windows `
+  -no-feature-style-windowsvista `
+  -no-feature-quickcontrols2-material `
+  -no-feature-quickcontrols2-macos `
+  -no-feature-quickcontrols2-ios `
+  -no-feature-sql-sqlite `
+  -no-feature-sql `
+  -no-feature-textodfwriter `
+  -no-feature-networklistmanager `
+  -no-feature-dbus `
   -skip qt3d  `
-  -skip webengine  `
+  -skip qtdoc `
+  -skip qtgrpc `
+  -skip qtconnectivity `
+  -skip qtquickeffectmaker `
+  -skip qtquicktimeline `
+  -skip qtwebengine  `
+  -skip qtlocation `
   -skip qtmultimedia  `
   -skip qtserialport  `
   -skip qtsensors  `
   -skip qtgamepad  `
-  -skip qtwebchannel  `
   -skip qtandroidextras  `
+  -skip qtquick3dphysics `
+  -skip qtactiveqt  `
+  -skip qtcharts  `
+  -skip qtcoap  `
+  -skip qtdatavis3d  `
+  -skip qtgrpc  `
+  -skip qtremoteobjects  `
+  -skip qtlottie  `
+  -skip qtmqtt  `
+  -skip qtopcua  `
+  -skip qtpositioning  `
+  -skip qtquick3d  `
+  -skip qtscxml  `
+  -skip qtserialbus  `
+  -skip qtserialport  `
+  -skip qtspeech  `
+  -skip qtwayland  `
+  -skip qtvirtualkeyboard  `
+  -skip qtweb `
   -feature-imageformat_png  `
   -qt-libpng  `
   -qt-zlib  `
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
-
 
 
  cmake --build . --parallel
