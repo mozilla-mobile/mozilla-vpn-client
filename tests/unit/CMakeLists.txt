@@ -42,6 +42,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/captiveportal/captiveportal.h
     ${MZ_SOURCE_DIR}/connectionhealth.cpp
     ${MZ_SOURCE_DIR}/connectionhealth.h
+    ${MZ_SOURCE_DIR}/connectionmanager.cpp
+    ${MZ_SOURCE_DIR}/connectionmanager.h
     ${MZ_SOURCE_DIR}/command.cpp
     ${MZ_SOURCE_DIR}/command.h
     ${MZ_SOURCE_DIR}/commandlineparser.cpp

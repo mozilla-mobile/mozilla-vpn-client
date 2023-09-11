@@ -102,7 +102,7 @@ void NotificationHandler::showNotification() {
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
       !(vpn->state() == App::StateInitialize &&
-        vpn->controller()->state() == Controller::StateOff)) {
+        vpn->connectionManager()->state() == ConnectionManager::StateOff)) {
     return;
   }
 
@@ -110,12 +110,12 @@ void NotificationHandler::showNotification() {
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
   QString localizedExitCityName =
-      vpn->controller()->currentServer().localizedExitCityName();
+      vpn->connectionManager()->currentServer().localizedExitCityName();
   QString localizedCountryName =
-      vpn->controller()->currentServer().localizedExitCountryName();
+      vpn->connectionManager()->currentServer().localizedExitCountryName();
 
-  switch (vpn->controller()->state()) {
-    case Controller::StateOn:
+  switch (vpn->connectionManager()->state()) {
+    case ConnectionManager::StateOn:
       if (m_switching) {
         m_switching = false;
 
@@ -125,11 +125,13 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->controller()
+            vpn->connectionManager()
                 ->currentServer()
                 .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->controller()->currentServer().localizedPreviousExitCityName();
+            vpn->connectionManager()
+                ->currentServer()
+                .localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedExitCityName)) {
@@ -163,11 +165,12 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
-          QString localizedEntryCityName =
-              vpn->controller()->currentServer().localizedEntryCityName();
+          QString localizedEntryCityName = vpn->connectionManager()
+                                               ->currentServer()
+                                               .localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->controller()->currentServer().localizedExitCityName();
+              vpn->connectionManager()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
@@ -189,7 +192,7 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case Controller::StateOff:
+    case ConnectionManager::StateOff:
       if (m_connected) {
         m_connected = false;
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
@@ -199,11 +202,12 @@ void NotificationHandler::showNotification() {
         // "VPN Disconnected"
         ServerData* serverData = vpn->serverData();
         if (serverData->multihop()) {
-          QString localizedEntryCityName =
-              vpn->controller()->currentServer().localizedEntryCityName();
+          QString localizedEntryCityName = vpn->connectionManager()
+                                               ->currentServer()
+                                               .localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->controller()->currentServer().localizedExitCityName();
+              vpn->connectionManager()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
@@ -226,12 +230,12 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case Controller::StateSilentSwitching:
+    case ConnectionManager::StateSilentSwitching:
       m_connected = true;
       m_switching = false;
       return;
 
-    case Controller::StateSwitching:
+    case ConnectionManager::StateSwitching:
       m_connected = true;
       m_switching = true;
       return;

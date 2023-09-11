@@ -33,7 +33,7 @@ DummyController::DummyController() : m_delayTimer(this) {
 DummyController::~DummyController() { MZ_COUNT_DTOR(DummyController); }
 
 void DummyController::activate(const InterfaceConfig& config,
-                               Controller::Reason reason) {
+                               ConnectionManager::Reason reason) {
   Q_UNUSED(reason);
 
   logger.debug() << "DummyController activated" << config.m_serverIpv4AddrIn;
@@ -44,7 +44,7 @@ void DummyController::activate(const InterfaceConfig& config,
   m_delayTimer.start(DUMMY_CONNECTION_DELAY_MSEC);
 }
 
-void DummyController::deactivate(Controller::Reason reason) {
+void DummyController::deactivate(ConnectionManager::Reason reason) {
   Q_UNUSED(reason);
 
   logger.debug() << "DummyController deactivated";
