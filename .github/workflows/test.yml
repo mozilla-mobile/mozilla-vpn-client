@@ -28,10 +28,9 @@ jobs:
         id: getDecisionTask
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.number }}
-        shell: pwsh
+        shell: bash
         run : |
-          ./.github/scripts/get_decision_task_id.ps1  >> $env:GITHUB_OUTPUT || true
+          ./.github/scripts/get_decision_task_id.py  >> $GITHUB_OUTPUT 
   
   unit-tests:
     name: ${{matrix.os}} Unit tests

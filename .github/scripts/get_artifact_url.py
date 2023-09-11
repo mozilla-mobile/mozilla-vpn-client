@@ -12,7 +12,7 @@
 
 
 import argparse
-import requests
+
 rootURL = "https://firefox-ci-tc.services.mozilla.com"
 import taskcluster
 index = taskcluster.Index({
