@@ -6,6 +6,7 @@
 
 #include <QCoreApplication>
 
+#include "connectionmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
@@ -31,18 +32,18 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
   connect(MozillaVPN::instance()->connectionHealth(),
           &ConnectionHealth::stabilityChanged, this, [this]() {
             logger.debug() << "VPN connection stability has changed";
-            if (MozillaVPN::instance()->controller()->state() ==
-                Controller::StateOn) {
+            if (MozillaVPN::instance()->connectionManager()->state() ==
+                ConnectionManager::StateOn) {
               m_lastKnownStabilityState =
                   MozillaVPN::instance()->connectionHealth()->stability();
             }
           });
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          [this]() {
-            Controller::State state =
-                MozillaVPN::instance()->controller()->state();
-            if (state == Controller::StateOff &&
+  connect(MozillaVPN::instance()->connectionManager(),
+          &ConnectionManager::stateChanged, this, [this]() {
+            ConnectionManager::State state =
+                MozillaVPN::instance()->connectionManager()->state();
+            if (state == ConnectionManager::StateOff &&
                 m_lastKnownStabilityState ==
                     ConnectionHealth::ConnectionStability::NoSignal) {
               logger.debug() << "User has toggled the VPN off after No Signal";

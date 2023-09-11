@@ -21,6 +21,7 @@ class CaptivePortal;
 class CaptivePortalDetection;
 class ConnectionBenchmark;
 class ConnectionHealth;
+class ConnectionManager;
 class Controller;
 class DeviceModel;
 class IpAddressLookup;
@@ -140,6 +141,7 @@ class MozillaVPN final : public App {
   ConnectionBenchmark* connectionBenchmark() const;
   ConnectionHealth* connectionHealth() const;
   Controller* controller() const;
+  ConnectionManager* connectionManager() const;
   ServerData* serverData() const;
   DeviceModel* deviceModel() const;
   IpAddressLookup* ipAddressLookup() const;

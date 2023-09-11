@@ -4,7 +4,7 @@
 
 #include "ioscontroller.h"
 #include "Mozilla-Swift.h"
-#include "controller.h"
+#include "connectionmanager.h"
 #include "feature.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -82,9 +82,9 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
-            Controller* controller = MozillaVPN::instance()->controller();
-            Q_ASSERT(controller);
-            if (controller->state() != Controller::StateInitializing) {
+            ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
+            Q_ASSERT(connectionManager);
+            if (connectionManager->state() != ConnectionManager::StateInitializing) {
               // Just in case we are connecting, let's call disconnect.
               [impl disconnect];
             }
@@ -105,7 +105,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const InterfaceConfig& config, Controller::Reason reason) {
+void IOSController::activate(const InterfaceConfig& config, ConnectionManager::Reason reason) {
   // These features are not supported on ios yet.
   Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
@@ -151,10 +151,10 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                  }];
 }
 
-void IOSController::deactivate(Controller::Reason reason) {
+void IOSController::deactivate(ConnectionManager::Reason reason) {
   logger.debug() << "IOSController deactivated";
 
-  if (reason != Controller::ReasonNone) {
+  if (reason != ConnectionManager::ReasonNone) {
     logger.debug() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;
@@ -226,6 +226,4 @@ void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callb
   }];
 }
 
-void IOSController::cleanupBackendLogs() {
-    [IOSLoggerImpl clearAppexLogs];
-}
+void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearAppexLogs]; }

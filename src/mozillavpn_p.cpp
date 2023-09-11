@@ -23,6 +23,10 @@ ConnectionHealth* MozillaVPN::connectionHealth() const {
 
 Controller* MozillaVPN::controller() const { return &m_private->m_controller; }
 
+ConnectionManager* MozillaVPN::connectionManager() const {
+  return &m_private->m_connectionManager;
+}
+
 DeviceModel* MozillaVPN::deviceModel() const {
   return &m_private->m_deviceModel;
 }

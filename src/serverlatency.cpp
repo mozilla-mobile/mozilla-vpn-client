@@ -46,7 +46,7 @@ void ServerLatency::initialize() {
   connect(vpn->serverCountryModel(), &ServerCountryModel::changed, this,
           &ServerLatency::start);
 
-  connect(vpn->controller(), &Controller::stateChanged, this,
+  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
           &ServerLatency::stateChanged);
 
   connect(&m_pingTimeout, &QTimer::timeout, this,
@@ -73,7 +73,7 @@ void ServerLatency::start() {
     return;
   }
 
-  if (vpn->controller()->state() != Controller::StateOff) {
+  if (vpn->connectionManager()->state() != ConnectionManager::StateOff) {
     // Don't attempt to refresh latency when the VPN is active, or
     // we could get misleading results.
     m_wantRefresh = true;
@@ -233,8 +233,9 @@ void ServerLatency::clear() {
 }
 
 void ServerLatency::stateChanged() {
-  Controller::State state = MozillaVPN::instance()->controller()->state();
-  if (state != Controller::StateOff) {
+  ConnectionManager::State state =
+      MozillaVPN::instance()->connectionManager()->state();
+  if (state != ConnectionManager::StateOff) {
     // If the VPN is active, then do not attempt to measure the server latency.
     stop();
   } else if (m_wantRefresh) {

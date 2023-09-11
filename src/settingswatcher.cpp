@@ -8,6 +8,7 @@
 #include <QMetaMethod>
 #include <QMetaObject>
 
+#include "connectionmanager.h"
 #include "dnshelper.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -48,16 +49,16 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
 #undef DNS_CONNECT
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          [this]() {
-            Controller::State state =
-                MozillaVPN::instance()->controller()->state();
+  connect(MozillaVPN::instance()->connectionManager(),
+          &ConnectionManager::stateChanged, this, [this]() {
+            ConnectionManager::State state =
+                MozillaVPN::instance()->connectionManager()->state();
             // m_operationRunning is set to true when the Controller is in
             // StateOn. So, if we see a change, it means that the new settings
             // values have been taken in consideration. We are ready to
             // schedule a new TaskControllerAction if needed.
-            if (state != Controller::StateOn && state != Controller::StateOff &&
-                m_operationRunning) {
+            if (state != ConnectionManager::StateOn &&
+                state != ConnectionManager::StateOff && m_operationRunning) {
               logger.debug() << "Resetting the operation running state";
               m_operationRunning = false;
             }
@@ -78,7 +79,8 @@ SettingsWatcher* SettingsWatcher::instance() {
 void SettingsWatcher::maybeServerSwitch() {
   logger.debug() << "Settings changed!";
 
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn ||
+  if (MozillaVPN::instance()->connectionManager()->state() !=
+          ConnectionManager::StateOn ||
       m_operationRunning) {
     return;
   }
@@ -88,7 +90,7 @@ void SettingsWatcher::maybeServerSwitch() {
   TaskScheduler::deleteTasks();
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eSilentSwitch,
-                               Controller::eServerCoolDownNotNeeded));
+                               ConnectionManager::eServerCoolDownNotNeeded));
 }
 
 void SettingsWatcher::operationCompleted() { m_operationRunning = false; }

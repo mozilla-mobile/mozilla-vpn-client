@@ -37,51 +37,54 @@ int CommandDeactivate::run(QStringList& tokens) {
       return 1;
     }
 
-    Controller controller;
+    ConnectionManager connectionManager;
 
     QEventLoop loop;
-    QObject::connect(&controller, &Controller::stateChanged, &vpn, [&] {
-      if (controller.state() == Controller::StateOff ||
-          controller.state() == Controller::StateOn) {
-        loop.exit();
-      }
-    });
-    controller.initialize();
+    QObject::connect(
+        &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
+          if (connectionManager.state() == ConnectionManager::StateOff ||
+              connectionManager.state() == ConnectionManager::StateOn) {
+            loop.exit();
+          }
+        });
+    connectionManager.initialize();
     loop.exec();
-    controller.disconnect();
+    connectionManager.disconnect();
 
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
-    if (controller.state() != Controller::StateOff &&
-        controller.state() != Controller::StateOn) {
-      QObject::connect(&controller, &Controller::stateChanged, &vpn, [&] {
-        if (controller.state() == Controller::StateOff ||
-            controller.state() == Controller::StateOn) {
-          loop.exit();
-        }
-      });
+    if (connectionManager.state() != ConnectionManager::StateOff &&
+        connectionManager.state() != ConnectionManager::StateOn) {
+      QObject::connect(
+          &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
+            if (connectionManager.state() == ConnectionManager::StateOff ||
+                connectionManager.state() == ConnectionManager::StateOn) {
+              loop.exit();
+            }
+          });
       loop.exec();
-      controller.disconnect();
+      connectionManager.disconnect();
     }
 
-    if (controller.state() == Controller::StateOff) {
+    if (connectionManager.state() == ConnectionManager::StateOff) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is already inactive" << Qt::endl;
       return 0;
     }
 
-    QObject::connect(&controller, &Controller::stateChanged, &vpn, [&] {
-      if (controller.state() == Controller::StateOff ||
-          controller.state() == Controller::StateOn) {
-        loop.exit();
-      }
-    });
+    QObject::connect(
+        &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
+          if (connectionManager.state() == ConnectionManager::StateOff ||
+              connectionManager.state() == ConnectionManager::StateOn) {
+            loop.exit();
+          }
+        });
 
-    controller.deactivate();
+    connectionManager.deactivate();
     loop.exec();
-    controller.disconnect();
+    connectionManager.disconnect();
 
-    if (controller.state() == Controller::StateOff) {
+    if (connectionManager.state() == ConnectionManager::StateOff) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now inactive" << Qt::endl;
       return 0;
