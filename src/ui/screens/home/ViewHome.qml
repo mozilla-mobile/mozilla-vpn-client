@@ -167,7 +167,6 @@ MZFlickable {
 
             onOpened: {
                 MZSettings.tipsAndTricksIntroShown = true
-                Sample.tipsAndTricksModalShown.record();
                 Glean.sample.tipsAndTricksModalShown.record();
             }
 

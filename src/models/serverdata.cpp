@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -201,6 +202,51 @@ void ServerData::changeServer(const QString& countryCode,
                               const QString& cityName,
                               const QString& entryCountryCode,
                               const QString& entryCityName) {
+  if (m_exitCountryCode == countryCode && m_exitCityName == cityName &&
+      m_entryCountryCode == entryCountryCode &&
+      m_entryCityName == entryCityName) {
+    logger.debug() << "No server change needed";
+    return;
+  }
+
+  if (entryCountryCode.isEmpty() && entryCityName.isEmpty()) {
+    logger.info() << "Single hop server change";
+    mozilla::glean::sample::user_changed_endpoint_geo.record(
+        mozilla::glean::sample::UserChangedEndpointGeoExtra{
+            ._server = "SingleHop",
+        });
+  } else {
+    logger.info() << "Multihop server change";
+    // If exit changed, or changing from single hop to multihop
+    // (could have same exit for single and multihop, and we'd want to record
+    // metric)
+    if (m_exitCountryCode != countryCode || m_exitCityName != cityName ||
+        (m_entryCountryCode.isEmpty() && m_entryCityName.isEmpty())) {
+      logger.info() << "Multihop exit server change";
+      mozilla::glean::sample::user_changed_endpoint_geo.record(
+          mozilla::glean::sample::UserChangedEndpointGeoExtra{
+              ._server = "MultiHopExit",
+          });
+    }
+
+    // Cannot use an if/else, as it's possible both exit and entry changed
+    if (m_entryCountryCode != entryCountryCode ||
+        m_entryCityName != entryCityName) {
+      logger.info() << "Multihop entry server change";
+      mozilla::glean::sample::user_changed_endpoint_geo.record(
+          mozilla::glean::sample::UserChangedEndpointGeoExtra{
+              ._server = "MultiHopEntry",
+          });
+    }
+  }
+
+  update(countryCode, cityName, entryCountryCode, entryCityName);
+}
+
+void ServerData::changeServerForTutorial(const QString& countryCode,
+                                         const QString& cityName,
+                                         const QString& entryCountryCode,
+                                         const QString& entryCityName) {
   if (m_exitCountryCode == countryCode && m_exitCityName == cityName &&
       m_entryCountryCode == entryCountryCode &&
       m_entryCityName == entryCityName) {

@@ -15,6 +15,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
+#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 namespace {
@@ -167,18 +168,11 @@ void Navigator::computeComponent() {
 
 void Navigator::requestScreenFromBottomBar(
     int requestedScreen, Navigator::LoadingFlags loadingFlags) {
-  QString screenStr;
-
-  if (requestedScreen <= ScreenCustom) {
-    screenStr = QVariant::fromValue(requestedScreen).toString();
-  } else {
-    screenStr = QString::number(requestedScreen);
-  }
-
   // Exists so we can add glean metric for screen changes only from bottom bar
   mozilla::glean::sample::bottom_navigation_bar_click.record(
       mozilla::glean::sample::BottomNavigationBarClickExtra{
-          ._barButton = QVariant::fromValue(requestedScreen).toString()});
+          ._barButton = QVariant::fromValue(
+              static_cast<MozillaVPN::CustomScreen>(requestedScreen))});
 
   requestScreen(requestedScreen, loadingFlags);
 }

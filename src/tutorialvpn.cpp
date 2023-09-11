@@ -62,7 +62,7 @@ class TutorialStepBeforeVpnLocationSet final : public TutorialStepBefore {
   }
 
   bool run() override {
-    MozillaVPN::instance()->serverData()->changeServer(
+    MozillaVPN::instance()->serverData()->changeServerForTutorial(
         m_exitCountryCode, m_exitCity, m_entryCountryCode, m_entryCity);
     return true;
   }
