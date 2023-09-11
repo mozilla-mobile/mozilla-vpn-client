@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
@@ -13,11 +13,13 @@ import components 0.1
 MZStepNavigation {
     id: stepNav
 
-    anchors.top: parent.top
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.bottom: parent.bottom
-    anchors.topMargin: MZTheme.theme.vSpacing
+    anchors {
+        top: parent.top
+        left: parent.left
+        right: parent.right
+        bottom: parent.bottom
+        topMargin: MZTheme.theme.vSpacing
+    }
 
     currentIndex: MZSettings.onboardingStep
     onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex

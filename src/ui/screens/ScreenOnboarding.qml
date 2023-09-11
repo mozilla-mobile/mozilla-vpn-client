@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
@@ -15,29 +15,5 @@ MZScreenBase {
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenOnboarding, getStack())
         getStack().push("qrc:/ui/screens/onboarding/ViewOnboarding.qml")
-    }
-    Connections {
-        target: MZTutorial
-        function onPlayingChanged() {
-           if (MZTutorial.playing) {
-               getStack().pop(null, StackView.Immediate)
-           }
-        }
-    }
-    Connections {
-        target: window
-
-        // TODO - This only works when we are already in ScreenHome
-        function onShowServerList() {
-
-            // Don't push another server view if it's already open
-            if (getStack().currentItem.objectName === "viewServers") { return; }
-
-            // unwind stackview to initial view
-            getStack().pop(null);
-
-            // push server view
-            getStack().push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate);
-        }
     }
 }

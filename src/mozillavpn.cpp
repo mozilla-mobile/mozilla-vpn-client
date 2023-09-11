@@ -396,6 +396,10 @@ void MozillaVPN::maybeStateMain() {
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
+      // We turn telemetry off when onboarding starts so that the user has to
+      // specifically opt in to all future telemetry *Note: This is needed
+      //because telemetry is on prior to onboarding to record metrics regarding
+      //auth
       if (!settingsHolder->onboardingStarted()) {
         settingsHolder->setGleanEnabled(false);
         settingsHolder->setOnboardingStarted(true);
@@ -409,10 +413,13 @@ void MozillaVPN::maybeStateMain() {
   }
 #endif
 
-  if (!settingsHolder->telemetryPolicyShown() &&
-      !Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    setState(StateTelemetryPolicy);
-    return;
+  // If we're not using the new onboarding, continue with the old onboarding
+  // (telemetry policy)
+  if (!Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+    if (!settingsHolder->telemetryPolicyShown()) {
+      setState(StateTelemetryPolicy);
+      return;
+    }
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
@@ -915,8 +922,8 @@ void MozillaVPN::onboardingCompleted() {
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
     logger.debug() << "onboarding completed";
-    // If new onboarding is turned off in the future, don't make them go through
-    // old onboarding (post auth + telemetry)
+    // If the new onboarding feature is turned off in the future, don't make
+    // them go through old onboarding (post auth + telemetry)
     settingsHolder->setPostAuthenticationShown(true);
 #endif
   } else {
