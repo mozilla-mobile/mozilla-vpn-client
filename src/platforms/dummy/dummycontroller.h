@@ -25,9 +25,9 @@ class DummyController final : public ControllerImpl {
   }
 
   void activate(const InterfaceConfig& config,
-                Controller::Reason reason) override;
+                ConnectionManager::Reason reason) override;
 
-  void deactivate(Controller::Reason reason) override;
+  void deactivate(ConnectionManager::Reason reason) override;
 
   void checkStatus() override;
 

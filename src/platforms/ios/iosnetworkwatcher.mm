@@ -36,12 +36,12 @@ void IOSNetworkWatcher::initialize() {
   });
   nw_path_monitor_start(m_networkMonitor);
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+  connect(MozillaVPN::instance()->connectionManager(), &ConnectionManager::stateChanged, this,
           &IOSNetworkWatcher::controllerStateChanged);
 }
 
 NetworkWatcherImpl::TransportType IOSNetworkWatcher::getTransportType() {
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (MozillaVPN::instance()->connectionManager()->state() != ConnectionManager::StateOn) {
     // If we're not in stateON, the result from the Observer is fine, as
     // the default-route-transport  is not the vpn-tunnel
     return m_currentDefaultTransport;
@@ -81,7 +81,7 @@ NetworkWatcherImpl::TransportType IOSNetworkWatcher::toTransportType(nw_path_t p
 }
 
 void IOSNetworkWatcher::controllerStateChanged() {
-  if (MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  if (MozillaVPN::instance()->connectionManager()->state() != ConnectionManager::StateOn) {
     if (m_observableConnection != nil) {
       nw_connection_cancel(m_observableConnection);
       nw_release(m_observableConnection);
@@ -96,8 +96,8 @@ void IOSNetworkWatcher::controllerStateChanged() {
   auto vpn = MozillaVPN::instance();
   // When multihop is used, we need to connect to the entry server,
   // otherwise the exit server is the target
-  auto key = vpn->controller()->currentServer().entryServerPublicKey();
-  auto serverlist = vpn->controller()->currentServer().entryServers();
+  auto key = vpn->connectionManager()->currentServer().entryServerPublicKey();
+  auto serverlist = vpn->connectionManager()->currentServer().entryServers();
   auto index = serverlist.indexOf(key);
   // No such server
   if (index == -1) {

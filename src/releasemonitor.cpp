@@ -4,6 +4,7 @@
 
 #include "releasemonitor.h"
 
+#include "connectionmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
@@ -56,7 +57,7 @@ void ReleaseMonitor::schedule() {
 
 void ReleaseMonitor::updateRequired() {
   logger.warning() << "update required";
-  MozillaVPN::instance()->controller()->updateRequired();
+  MozillaVPN::instance()->connectionManager()->updateRequired();
 }
 
 void ReleaseMonitor::updateSoon() {

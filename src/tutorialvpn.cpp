@@ -6,6 +6,7 @@
 
 #include <QJsonObject>
 
+#include "connectionmanager.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -86,14 +87,15 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
   ~TutorialStepBeforeVpnOff() { MZ_COUNT_DTOR(TutorialStepBeforeVpnOff); }
 
   bool run() override {
-    Controller* controller = MozillaVPN::instance()->controller();
-    Q_ASSERT(controller);
+    ConnectionManager* connectionManager =
+        MozillaVPN::instance()->connectionManager();
+    Q_ASSERT(connectionManager);
 
-    if (controller->state() == Controller::StateOff) {
+    if (connectionManager->state() == ConnectionManager::StateOff) {
       return true;
     }
 
-    controller->deactivate();
+    connectionManager->deactivate();
     return false;
   }
 };
