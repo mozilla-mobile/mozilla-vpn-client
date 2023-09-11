@@ -47,8 +47,8 @@ AppTracker::~AppTracker() {
   m_runningApps.clear();
 }
 
-void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
-  logger.debug() << "User created uid:" << userid << "at:" << path.path();
+void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
+  logger.debug() << "User created uid:" << userid << "at:" << xdgRuntimePath;
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
@@ -63,8 +63,8 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
     logger.warning() << "Failed to set effective UID";
   }
 
-  /* For correctness we should ask systemd for the user's runtime directory. */
-  QString busPath = "unix:path=/run/user/" + QString::number(userid) + "/bus";
+  /* Connect to the user's session bus. */
+  QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
   logger.debug() << "Connection to" << busPath;
   QDBusConnection connection =
       QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
@@ -98,8 +98,8 @@ void AppTracker::userCreated(uint userid, const QDBusObjectPath& path) {
   }
 }
 
-void AppTracker::userRemoved(uint userid, const QDBusObjectPath& path) {
-  logger.debug() << "User removed uid:" << userid << "at:" << path.path();
+void AppTracker::userRemoved(uint userid) {
+  logger.debug() << "User removed uid:" << userid;
 
   QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
 }
