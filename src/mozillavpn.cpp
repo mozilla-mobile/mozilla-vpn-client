@@ -922,6 +922,7 @@ void MozillaVPN::onboardingCompleted() {
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
     logger.debug() << "onboarding completed";
+    settingsHolder->setOnboardingCompleted(true);
     // If the new onboarding feature is turned off in the future, don't make
     // them go through old onboarding (post auth + telemetry)
     settingsHolder->setPostAuthenticationShown(true);
