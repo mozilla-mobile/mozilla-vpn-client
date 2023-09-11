@@ -81,6 +81,7 @@ theme.desktopAppWidth = 360;
 theme.tabletMinimumWidth = 600;
 theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
+theme.checkBoxRowSubLabelTopMargin = 2;
 
 theme.tutorialCardHeight = 144
 theme.guideCardHeight = 172

@@ -398,8 +398,8 @@ void MozillaVPN::maybeStateMain() {
     if (!settingsHolder->onboardingCompleted()) {
       // We turn telemetry off when onboarding starts so that the user has to
       // specifically opt in to all future telemetry *Note: This is needed
-      //because telemetry is on prior to onboarding to record metrics regarding
-      //auth
+      // because telemetry is on prior to onboarding to record metrics regarding
+      // auth
       if (!settingsHolder->onboardingStarted()) {
         settingsHolder->setGleanEnabled(false);
         settingsHolder->setOnboardingStarted(true);

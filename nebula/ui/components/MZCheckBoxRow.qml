@@ -66,7 +66,7 @@ RowLayout {
             visible: !!subLabelText.length
             wrapMode: Text.WordWrap
             verticalAlignment: label.visible ? Text.AlignTop : Text.AlignVCenter
-            Layout.topMargin: label.visible || (!label.visible && lineCount > 1) ? 0 : 2 //accounts for the topMargin of the MZCheckbox
+            Layout.topMargin: label.visible || (!label.visible && lineCount > 1) ? 0 : MZTheme.theme.checkBoxRowSubLabelTopMargin //accounts for the topMargin of the MZCheckbox
 
             MZMouseArea {
                 enabled: !label.visible
