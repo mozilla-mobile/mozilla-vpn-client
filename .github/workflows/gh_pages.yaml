@@ -31,6 +31,7 @@ jobs:
         with:
           deno-version: v1.x # Run with latest stable Deno.
       - name: Generate Dynamic Files
+        if: github.ref == 'refs/heads/main'
         run: |
          cd tools/wasm_chrome
          deno run --allow-all generate_branch_file.ts -T ${{ secrets.GITHUB_TOKEN }}
