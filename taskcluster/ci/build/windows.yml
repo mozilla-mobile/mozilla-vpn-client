@@ -9,7 +9,7 @@ task-defaults:
         kind: build
         tier: 1
         platform: windows/x86_64
-    worker-type: b-win2012
+    worker-type: b-win2022
     dependencies:
         build: build-source/vpn
     fetches:
