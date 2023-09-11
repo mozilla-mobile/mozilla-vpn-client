@@ -18,7 +18,7 @@ FocusScope {
     property real listOffset: (MZTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
     property bool showRecommendedConnections: (showRecentConnections
-        && MZFeatureList.get("recommendedServers").isSupported)
+                                               && MZFeatureList.get("recommendedServers").isSupported)
     property var currentServer
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {
@@ -46,21 +46,21 @@ FocusScope {
             const countryItem = serverListFlickable.countries.itemAt(idx);
 
             if (
-                // Country does not host current active server
-                countryItem._countryCode !== currentServer.countryCode ||
-                // Country is already above the vertical center
-                countryItem.y < serverListYCenter
-            ) {
+                    // Country does not host current active server
+                    countryItem._countryCode !== currentServer.countryCode ||
+                    // Country is already above the vertical center
+                    countryItem.y < serverListYCenter
+                    ) {
                 continue;
             }
 
             // Get distance to the current server city and scroll
             const currentCityYPosition = (countryItem.y
-                + MZTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
-                - serverListYCenter);
+                                          + MZTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
+                                          - serverListYCenter);
             const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
-                ? serverListFlickable.contentHeight - serverListFlickable.height
-                : currentCityYPosition;
+                               ? serverListFlickable.contentHeight - serverListFlickable.height
+                               : currentCityYPosition;
             serverListFlickable.contentY = destinationY;
 
             if (!countryItem.cityListVisible) {
@@ -91,153 +91,205 @@ FocusScope {
             id: vpnFlickable
 
             anchors.fill: parent
-            flickContentHeight: serverListRecommended.implicitHeight + serverListRecommended.anchors.topMargin
+            flickContentHeight: {
+                if(serverListRecommendedEmptyLoader.active) return serverListRecommendedEmptyLoader.item.implicitHeight + serverListRecommendedEmptyLoader.item.anchors.topMargin
+                else if (serverListRecommendedLoader.active) return serverListRecommendedLoader.item.implicitHeight + serverListRecommendedLoader.item.anchors.topMargin
+            }
 
-            Column {
-                id: serverListRecommended
-                objectName: "serverListRecommended"
+            Loader {
+                id: serverListRecommendedEmptyLoader
 
-                spacing: MZTheme.theme.listSpacing * 1.5
-                width: parent.width
-
-                anchors {
-                    top: parent.top
-                    topMargin: MZTheme.theme.vSpacingSmall
-                    left: parent.left
-                    right: parent.right
-                }
-
-                MZCollapsibleCard {
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    iconSrc: "qrc:/ui/resources/tip.svg"
-                    contentItem: MZTextBlock {
-                        text: MZI18n.ServersViewRecommendedCardBody
-                        textFormat: Text.StyledText
-                        Layout.fillWidth: true
-                    }
-                    title: MZI18n.ServersViewRecommendedCardTitle
-                    width: parent.width - MZTheme.theme.windowMargin * 2
-                }
-
-                // Status component
-                // TODO: Refresh server list and handle states
-                MZClickableRow {
-                    id: statusComponent
+                active: VPNRecommendedLocationModel.rowCount() === 0 && !VPNServerLatency.isActive
+                anchors.fill: parent
+                sourceComponent: ColumnLayout {
 
                     anchors {
-                        leftMargin: MZTheme.theme.windowMargin * 0.5
-                        rightMargin: MZTheme.theme.windowMargin * 0.5
-                    }
-                    accessibleName: MZI18n.ServersViewRecommendedRefreshLabel
-                    canGrowVertical: true
-                    height: statusTitle.implicitHeight + MZTheme.theme.vSpacingSmall
-                    rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
-                    opacity: 1.0
-
-                    onClicked: {
-                        VPNServerLatency.refresh();
+                        top: parent.top
+                        left: parent.left
+                        right: parent.right
+                        topMargin: 48
+                        leftMargin: 32
+                        rightMargin: 32
                     }
 
-                    RowLayout {
-                        anchors {
-                            fill: parent
-                            leftMargin: MZTheme.theme.listSpacing
-                            rightMargin: MZTheme.theme.listSpacing
-                        }
-                        spacing: MZTheme.theme.listSpacing
+                    spacing: 0
 
-                        MZIcon {
-                            source: "qrc:/nebula/resources/clock.svg"
+                    Image {
+                        Layout.alignment: Qt.AlignHCenter
 
-                            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                            Layout.topMargin: MZTheme.theme.listSpacing
-                        }
+                        Layout.preferredHeight: 184
+                        Layout.preferredWidth: 184
 
-                        MZInterLabel {
-                            id: statusTitle
+                        fillMode: Image.PreserveAspectFit
+                        source: "qrc:/ui/resources/globe.svg"
+                    }
 
-                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                            Layout.fillWidth: true
-                            Layout.preferredWidth: parent.width
-                            Layout.maximumWidth: parent.width
+                    MZTextBlock {
+                        Layout.topMargin: 24
+                        Layout.fillWidth: true
 
-                            color: MZTheme.theme.fontColor
-                            horizontalAlignment: Text.AlignLeft
-                            // TODO: Replace placeholder strings and generate
-                            // values that will be set instead of `%1`
-                            text: VPNServerLatency.isActive
-                                ? MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(Math.round(VPNServerLatency.progress * 100))
-                                : (VPNController.state === VPNController.StateOff)
-                                ? MZI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
-                                : MZI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
-                            wrapMode: Text.WordWrap
-                        }
+                        text: MZI18n.ServersViewRecommendedEmptyLabel
+                        horizontalAlignment: Text.AlignHCenter
+                        font.pixelSize: MZTheme.theme.fontSize
+                    }
 
-                        Item {
-                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                            height: MZTheme.theme.iconSize * 1.5
-                            visible: !statusComponent.rowShouldBeDisabled
-                            width: MZTheme.theme.iconSize * 1.5
-
-                            MZIcon {
-                                id: refreshIcon
-                                source: "qrc:/nebula/resources/refresh.svg"
-                                sourceSize.height: parent.height
-                                sourceSize.width: parent.width
-                            }
-
-                            MZColorOverlay {
-                                anchors.fill: parent
-
-                                color: MZTheme.colors.blue
-                                source: refreshIcon
-                            }
-                        }
+                    Item {
+                        Layout.fillHeight: true
                     }
                 }
+            }
 
-                Repeater {
-                    id: recommendedRepeater
-                    model: VPNRecommendedLocationModel
+            Loader {
+                id: serverListRecommendedLoader
 
-                    delegate: MZClickableRow {
-                        property bool isAvailable: modelData.connectionScore >= 0
-                        id: recommendedServer
+                anchors.fill: parent
 
-                        accessibleName: latencyIndicator.accessibleName.arg(modelData.localizedName)
+                active: VPNRecommendedLocationModel.rowCount() > 0 || VPNServerLatency.isActive
+                sourceComponent: Column {
+                    objectName: "serverListRecommended"
+
+                    spacing: MZTheme.theme.listSpacing * 1.5
+                    width: parent.width
+
+                    anchors {
+                        top: parent.top
+                        topMargin: MZTheme.theme.vSpacingSmall
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    MZCollapsibleCard {
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        iconSrc: "qrc:/ui/resources/tip.svg"
+                        contentItem: MZTextBlock {
+                            text: MZI18n.ServersViewRecommendedCardBody
+                            textFormat: Text.StyledText
+                            Layout.fillWidth: true
+                        }
+                        title: MZI18n.ServersViewRecommendedCardTitle
+                        width: parent.width - MZTheme.theme.windowMargin * 2
+                    }
+
+                    // Status component
+                    // TODO: Refresh server list and handle states
+                    MZClickableRow {
+                        id: statusComponent
+
+                        anchors {
+                            leftMargin: MZTheme.theme.windowMargin * 0.5
+                            rightMargin: MZTheme.theme.windowMargin * 0.5
+                        }
+                        accessibleName: MZI18n.ServersViewRecommendedRefreshLabel
+                        canGrowVertical: true
+                        height: statusTitle.implicitHeight + MZTheme.theme.vSpacingSmall
+                        rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
+                        opacity: 1.0
 
                         onClicked: {
-                            if (!isAvailable) {
-                                return;
-                            }
-                            focusScope.setSelectedServer(city.country, city.name, city.localizedName);
-                            MZSettings.recommendedServerSelected = true
+                            VPNServerLatency.refresh();
                         }
 
                         RowLayout {
-                            anchors.centerIn: parent;
-                            height: parent.height
-                            width: parent.width - MZTheme.theme.windowMargin
+                            anchors {
+                                fill: parent
+                                leftMargin: MZTheme.theme.listSpacing
+                                rightMargin: MZTheme.theme.listSpacing
+                            }
+                            spacing: MZTheme.theme.listSpacing
 
-                            ServerLabel {
-                                id: recommendedServerLabel
+                            MZIcon {
+                                source: "qrc:/nebula/resources/clock.svg"
 
-                                Layout.leftMargin: MZTheme.theme.listSpacing * 0.5
-                                fontColor: MZTheme.theme.fontColorDark
-                                narrowStyle: false
-                                serversList: [{
-                                    countryCode: city.country,
-                                    cityName: city.name,
-                                    localizedCityName: city.localizedName
-                                }]
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                                Layout.topMargin: MZTheme.theme.listSpacing
                             }
 
-                            ServerLatencyIndicator {
-                                id: latencyIndicator
+                            MZInterLabel {
+                                id: statusTitle
+
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: parent.width
+                                Layout.maximumWidth: parent.width
+
+                                color: MZTheme.theme.fontColor
+                                horizontalAlignment: Text.AlignLeft
+                                // TODO: Replace placeholder strings and generate
+                                // values that will be set instead of `%1`
+                                text: VPNServerLatency.isActive
+                                      ? MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(Math.round(VPNServerLatency.progress * 100))
+                                      : (VPNController.state === VPNController.StateOff)
+                                        ? MZI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
+                                        : MZI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
+                                wrapMode: Text.WordWrap
+                            }
+
+                            Item {
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                                score: city.connectionScore
+
+                                height: MZTheme.theme.iconSize * 1.5
+                                visible: !statusComponent.rowShouldBeDisabled
+                                width: MZTheme.theme.iconSize * 1.5
+
+                                MZIcon {
+                                    id: refreshIcon
+                                    source: "qrc:/nebula/resources/refresh.svg"
+                                    sourceSize.height: parent.height
+                                    sourceSize.width: parent.width
+                                }
+
+                                MZColorOverlay {
+                                    anchors.fill: parent
+
+                                    color: MZTheme.colors.blue
+                                    source: refreshIcon
+                                }
+                            }
+                        }
+                    }
+
+                    Repeater {
+                        id: recommendedRepeater
+                        model: VPNRecommendedLocationModel
+
+                        delegate: MZClickableRow {
+                            property bool isAvailable: modelData.connectionScore >= 0
+                            id: recommendedServer
+
+                            accessibleName: latencyIndicator.accessibleName.arg(modelData.localizedName)
+
+                            onClicked: {
+                                if (!isAvailable) {
+                                    return;
+                                }
+                                focusScope.setSelectedServer(city.country, city.name, city.localizedName);
+                                MZSettings.recommendedServerSelected = true
+                            }
+
+                            RowLayout {
+                                anchors.centerIn: parent;
+                                height: parent.height
+                                width: parent.width - MZTheme.theme.windowMargin
+
+                                ServerLabel {
+                                    id: recommendedServerLabel
+
+                                    Layout.leftMargin: MZTheme.theme.listSpacing * 0.5
+                                    fontColor: MZTheme.theme.fontColorDark
+                                    narrowStyle: false
+                                    serversList: [{
+                                            countryCode: city.country,
+                                            cityName: city.name,
+                                            localizedCityName: city.localizedName
+                                        }]
+                                }
+
+                                ServerLatencyIndicator {
+                                    id: latencyIndicator
+                                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                    score: city.connectionScore
+                                }
                             }
                         }
                     }
@@ -288,16 +340,16 @@ FocusScope {
 
                     _filterProxySource: VPNServerCountryModel
                     _filterProxyCallback: country => {
-                            const searchString = getSearchBarText();
-                            const includesSearchString = nameString => (
-                                nameString.toLowerCase().includes(searchString)
-                            );
-                            const includesName = includesSearchString(country.name);
-                            const includesLocalizedName = includesSearchString(country.localizedName);
-                            const matchesCountryCode = country.code.toLowerCase() === searchString;
+                                              const searchString = getSearchBarText();
+                                              const includesSearchString = nameString => (
+                                                  nameString.toLowerCase().includes(searchString)
+                                                  );
+                                              const includesName = includesSearchString(country.name);
+                                              const includesLocalizedName = includesSearchString(country.localizedName);
+                                              const matchesCountryCode = country.code.toLowerCase() === searchString;
 
-                            return includesName || includesLocalizedName || matchesCountryCode;
-                        }
+                                              return includesName || includesLocalizedName || matchesCountryCode;
+                                          }
                     _searchBarHasError: countriesRepeater.count === 0
                     _searchBarPlaceholderText: MZI18n.ServersViewSearchPlaceholder
 
@@ -343,10 +395,10 @@ FocusScope {
             z: 1
 
             handleTabClick: (tabButton) => {
-                if (tabButton.objectName === "tabAllServers") {
-                    scrollToActiveServer(loaderServersAll.item);
-                }
-            }
+                                if (tabButton.objectName === "tabAllServers") {
+                                    scrollToActiveServer(loaderServersAll.item);
+                                }
+                            }
 
             tabList: ListModel {
                 id: tabButtonList
@@ -386,7 +438,7 @@ FocusScope {
 
         anchors.fill: parent
         sourceComponent: showRecommendedConnections
-            ? serverTabsComponent
-            : listServersAll
+                         ? serverTabsComponent
+                         : listServersAll
     }
 }
