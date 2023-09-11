@@ -144,6 +144,8 @@ fi
 mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
 cp $WORKSPACE_ROOT/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
 
+
+
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/bin/qt-cmake \

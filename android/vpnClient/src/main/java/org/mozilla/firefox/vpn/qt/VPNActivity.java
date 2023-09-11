@@ -165,12 +165,18 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
 
 
   public void onPermissionRequest(int code, Parcel data) {
+    onNotificationPermissionRequest();
     if(code != EVENT_PERMISSION_REQURED){
       return;
     }
     Intent x = new Intent();
     x.readFromParcel(data);
     startActivityForResult(x,PERMISSION_TRANSACTION);
+  }
+  public void onNotificationPermissionRequest() {
+    String permissions[] = new String[1];
+    permissions[0] = "android.permission.POST_NOTIFICATIONS";
+    requestPermissions(permissions, 1);
   }
 
   @Override
