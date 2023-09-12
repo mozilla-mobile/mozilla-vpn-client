@@ -58,6 +58,10 @@ jobs:
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # This allows us to use conda
+        shell: bash -el {0}
     steps:
       - name: Clone repo
         uses: actions/checkout@master
@@ -72,14 +76,12 @@ jobs:
         with:
           activate-environment: vpn 
           environment-file: env.yml
-          auto-activate-base: true
       - name: Setup Android SDK
         run: |
-          conda activate vpn
+          conda info
           ./scripts/android/conda_setup_sdk.sh
       - name: Run ktlint
         working-directory: android
         run: |
-          conda activate vpn
           conda info
           ./gradlew ktlint
