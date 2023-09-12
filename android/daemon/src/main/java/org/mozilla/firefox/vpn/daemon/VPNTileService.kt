@@ -7,12 +7,12 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Parcel
 import android.os.Binder
-import android.os.IBinder
-import android.os.RemoteException
-import android.os.DeadObjectException
 import android.os.Build
+import android.os.DeadObjectException
+import android.os.IBinder
+import android.os.Parcel
+import android.os.RemoteException
 import android.service.quicksettings.Tile
 import org.json.JSONObject
 
