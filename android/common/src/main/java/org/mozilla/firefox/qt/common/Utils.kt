@@ -4,8 +4,8 @@
 
 package org.mozilla.firefox.qt.common
 import android.annotation.SuppressLint
-import android.content.Context
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import mozilla.telemetry.glean.BuildInfo
@@ -41,10 +41,14 @@ object Utils {
             false
         }
     }
+
     @SuppressLint("NewApi")
     @JvmStatic
-    fun initializeGlean(ctx: Context, isTelemetryEnabled: Boolean, channel: String,
-        gleanDebugTag: String
+    fun initializeGlean(
+        ctx: Context,
+        isTelemetryEnabled: Boolean,
+        channel: String,
+        gleanDebugTag: String,
     ) {
         if (!(gleanDebugTag.isEmpty())) {
             Log.i("VPNUtils", "Setting Glean debug tag.")
@@ -68,7 +72,7 @@ object Utils {
     fun launchPlayStore(activity: Activity) {
         val intent = Intent.makeMainSelectorActivity(
             Intent.ACTION_MAIN,
-            Intent.CATEGORY_APP_MARKET
+            Intent.CATEGORY_APP_MARKET,
         )
         activity.startActivity(intent)
     }

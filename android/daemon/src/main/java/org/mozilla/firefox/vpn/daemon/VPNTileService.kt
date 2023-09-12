@@ -7,7 +7,12 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.*
+import android.os.Parcel
+import android.os.Binder
+import android.os.IBinder
+import android.os.RemoteException
+import android.os.DeadObjectException
+import android.os.Build
 import android.service.quicksettings.Tile
 import org.json.JSONObject
 
@@ -72,7 +77,9 @@ class VPNTileService : android.service.quicksettings.TileService() {
     override fun onStartListening() {
         super.onStartListening()
         bindService(
-            Intent(this, VPNService::class.java), mServiceConnection, BIND_AUTO_CREATE
+            Intent(this, VPNService::class.java),
+            mServiceConnection,
+            BIND_AUTO_CREATE,
         )
     }
 

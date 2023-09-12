@@ -63,10 +63,13 @@ jobs:
         uses: actions/checkout@master
         with:
           fetch-depth: 1
-
-      - name: ktlint
-        uses: ScaCap/action-ktlint@master
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter
-          android: true
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Run ktlint
+        working-directory: android
+        run: ./gradlew ktlint
