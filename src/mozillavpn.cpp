@@ -397,15 +397,32 @@ void MozillaVPN::maybeStateMain() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
-  if (!settingsHolder->postAuthenticationShown()) {
+  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+    if (!settingsHolder->onboardingCompleted()) {
+      // We turn telemetry off when onboarding starts so that the user has to
+      // specifically opt in to all future telemetry *Note: This is needed
+      // because telemetry is on prior to onboarding to record metrics regarding
+      // auth
+      if (!settingsHolder->onboardingStarted()) {
+        settingsHolder->setGleanEnabled(false);
+        settingsHolder->setOnboardingStarted(true);
+      }
+      setState(StateOnboarding);
+      return;
+    }
+  } else if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
 #endif
 
-  if (!settingsHolder->telemetryPolicyShown()) {
-    setState(StateTelemetryPolicy);
-    return;
+  // If we're not using the new onboarding, continue with the old onboarding
+  // (telemetry policy)
+  if (!Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+    if (!settingsHolder->telemetryPolicyShown()) {
+      setState(StateTelemetryPolicy);
+      return;
+    }
   }
 
   if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
@@ -432,6 +449,9 @@ void MozillaVPN::maybeStateMain() {
   maybeRegenerateDeviceKey();
 
   if (state() != StateUpdateRequired) {
+    // All users who get to StateMain (home screen) should never see onboarding
+    // in the future
+    settingsHolder->setOnboardingCompleted(true);
     setState(StateMain);
   }
 
@@ -899,10 +919,22 @@ void MozillaVPN::mainWindowLoaded() {
 #endif
 }
 
-void MozillaVPN::telemetryPolicyCompleted() {
-  logger.debug() << "telemetry policy completed";
-
+void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
+    logger.debug() << "onboarding completed";
+    settingsHolder->setOnboardingCompleted(true);
+    // Mark the old onboarding expereince as completed as well, ensuring that
+    // users do not have to go through it if the new onboaring feature is turned
+    // off
+    settingsHolder->setPostAuthenticationShown(true);
+#endif
+  } else {
+    logger.debug() << "telemetry policy completed";
+  }
+
   settingsHolder->setTelemetryPolicyShown(true);
 
   // Super racy, but it could happen that we are already in update-required
@@ -1732,6 +1764,12 @@ void MozillaVPN::registerNavigatorScreens() {
         Navigator::instance()->requestPreviousScreen();
         return true;
       });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenOnboarding, Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/ui/screens/ScreenOnboarding.qml",
+      QVector<int>{App::StateOnboarding}, [](int*) -> int8_t { return 0; },
+      []() -> bool { return false; });
 
   connect(ErrorHandler::instance(), &ErrorHandler::noSubscriptionFound,
           Navigator::instance(), []() {

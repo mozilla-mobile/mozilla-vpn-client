@@ -21,11 +21,10 @@ endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
-include_directories(${MZ_SOURCE_DIR}/shared)
-include_directories(${MZ_SOURCE_DIR}/shared/glean)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/shared/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR}/glean)
+include_directories(${MZ_SOURCE_DIR}/hacl-star)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
+include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
@@ -124,17 +123,17 @@ target_sources(app_unit_tests PRIVATE
     testurlopener.cpp
     testurlopener.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
-    ${MZ_SOURCE_DIR}/shared/sentry/sentryadapter.h
-    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.cpp
-    ${MZ_SOURCE_DIR}/shared/tasks/sentry/tasksentry.h
+    ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
+    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
+    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
 )
 
 if(NOT BUILD_ADJUST_SDK_TOKEN)
     target_sources(app_unit_tests PRIVATE
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.cpp
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustfiltering.h
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.cpp
-        ${MZ_SOURCE_DIR}/shared/adjust/adjustproxypackagehandler.h
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.h
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
     )
 endif()
 

@@ -154,13 +154,7 @@ else()
     )
 endif()
 
-list(APPEND PINGS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings_deprecated.yaml)
-list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/pings.yaml)
-list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics_deprecated.yaml)
-list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/shared/telemetry/metrics.yaml)
-
 list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml)
-list(APPEND METRICS_DEP_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics_deprecated.yaml)
 list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
 
 ## Generate metrics and pings files

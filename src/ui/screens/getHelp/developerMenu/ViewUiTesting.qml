@@ -38,6 +38,8 @@ MZViewBase {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
+                Component.onCompleted: navbar.visible = false
+
                 views: [
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarDataUse"

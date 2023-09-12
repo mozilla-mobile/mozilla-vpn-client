@@ -19,7 +19,7 @@ CheckBox {
 
     Layout.preferredHeight: MZTheme.theme.checkBoxHeightWidth
     Layout.preferredWidth: MZTheme.theme.checkBoxHeightWidth
-    Layout.margins: 2
+    Layout.margins: MZTheme.theme.checkBoxRowSubLabelTopMargin
     Layout.alignment: Qt.AlignLeft | Qt.AlignTop
     Component.onCompleted: state = uiState.stateDefault
     hoverEnabled: false
@@ -47,7 +47,6 @@ CheckBox {
     Accessible.focusable: true
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
-    font.pixelSize: undefined
 
     states: [
         State {

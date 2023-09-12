@@ -5,8 +5,8 @@
 #ifndef APPTRACKER_H
 #define APPTRACKER_H
 
-#include <QDBusObjectPath>
 #include <QFileSystemWatcher>
+#include <QHash>
 #include <QString>
 
 #include "leakdetector.h"
@@ -33,8 +33,8 @@ class AppTracker final : public QObject {
   explicit AppTracker(QObject* parent = nullptr);
   ~AppTracker();
 
-  void userCreated(uint userid, const QDBusObjectPath& path);
-  void userRemoved(uint userid, const QDBusObjectPath& path);
+  void userCreated(uint userid, const QString& xdgRuntimePath);
+  void userRemoved(uint userid);
 
   QHash<QString, AppData*>::iterator begin() { return m_runningApps.begin(); }
   QHash<QString, AppData*>::iterator end() { return m_runningApps.end(); }

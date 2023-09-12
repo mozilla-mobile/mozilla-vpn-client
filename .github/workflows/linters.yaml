@@ -58,15 +58,30 @@ jobs:
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # This allows us to use conda
+        shell: bash -el {0}
     steps:
       - name: Clone repo
         uses: actions/checkout@master
         with:
           fetch-depth: 1
-
-      - name: ktlint
-        uses: ScaCap/action-ktlint@master
+      - name: Cache conda Packages
+        uses: actions/cache@v2
         with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Change reporter
-          android: true
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{hashFiles('env.yml')}}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: vpn 
+          environment-file: env.yml
+      - name: Setup Android SDK
+        run: |
+          conda info
+          ./scripts/android/conda_setup_sdk.sh
+      - name: Run ktlint
+        working-directory: android
+        run: |
+          conda info
+          ./gradlew ktlint

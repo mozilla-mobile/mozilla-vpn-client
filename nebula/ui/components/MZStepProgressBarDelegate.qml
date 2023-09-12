@@ -124,5 +124,7 @@ Column {
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight
         color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.purple70 : MZTheme.theme.fontColorDark
+
+        Accessible.ignored: true
     }
 }

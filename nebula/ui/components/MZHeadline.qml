@@ -14,7 +14,7 @@ Text {
     wrapMode: Text.WordWrap
     color: MZTheme.theme.fontColorDark
     font.family: MZTheme.theme.fontFamily
-    font.pixelSize: 22
+    font.pixelSize: MZTheme.theme.fontSizeLarge
     lineHeightMode: Text.FixedHeight
     lineHeight: 32
     Layout.alignment: Qt.AlignHCenter

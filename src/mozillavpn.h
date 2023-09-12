@@ -81,6 +81,7 @@ class MozillaVPN final : public App {
     ScreenUpdateRequired,
     ScreenViewLogs,
     ScreenRemovingDevice,
+    ScreenOnboarding,
   };
   Q_ENUM(CustomScreen);
 
@@ -114,7 +115,7 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
   Q_INVOKABLE void postAuthenticationCompleted();
-  Q_INVOKABLE void telemetryPolicyCompleted();
+  Q_INVOKABLE void onboardingCompleted();
   Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE void activate();
   Q_INVOKABLE void deactivate(bool block = false);

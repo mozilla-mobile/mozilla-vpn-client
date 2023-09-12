@@ -13,6 +13,8 @@ Item {
     property var model
     property int activeIndex: 0
 
+    signal buttonClicked(index: int)
+
     implicitHeight: delegateLayout.implicitHeight
 
     Rectangle {
@@ -70,10 +72,22 @@ Item {
                     }
                 }
 
-                onClicked: activeIndex = index
+                onClicked: {
+                    activeIndex = index
+                    buttonClicked(index)
+                }
 
-                accessibleName: currentState === MZStepProgressBarDelegate.State.Complete ? MZI18n.OnboardingProgressBarAccessibilityStepComplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
-                                                                                          : MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                accessibleName: {
+                    switch(currentState) {
+                        case MZStepProgressBarDelegate.State.Complete:
+                            return MZI18n.OnboardingProgressBarAccessibilityStepComplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                        case MZStepProgressBarDelegate.State.Active:
+                            return MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                        case MZStepProgressBarDelegate.State.Incomplete:
+                        default:
+                            return MZI18n.OnboardingProgressBarAccessibilityStepIncomplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                    }
+                }
             }
         }
     }

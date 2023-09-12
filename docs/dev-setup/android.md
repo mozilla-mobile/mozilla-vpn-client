@@ -64,6 +64,17 @@ Install with adb on device/[emulator](https://developer.android.com/studio/run/e
 
     adb install .tmp/src/android-build/build/outputs/apk/debug/<ANDROID_BUILD_ARCHITECTURE>.apk
 
+# Linting && Formatting Kotlin Code
+
+We have a gradle task setup for that. 
+```
+ conda activate android
+ cd <mozilla-vpn-client>/android/
+ ./gradlew ktlint
+ ./gradlew ktlintFormat
+``
+
+
 # Signing (optional)
 
 If you need to work with subscriptions or other play store functionality in the emulator, you will need to sign the apk.
