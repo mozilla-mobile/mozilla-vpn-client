@@ -21,11 +21,11 @@ Item {
 
     function handleConnectionStateChange() {
         // Notify accessibility client of connection state
-        let notificationText = (logoTitle.text + ' ');
+        let notificationText = (logoTitle.text + '. ');
         if (logoSubtitle.visible)
-            notificationText += (logoSubtitle.text + ' ');
+            notificationText += (logoSubtitle.text + '. ');
         if (connectedStateDescription.visible)
-            notificationText += (connectedStateDescription.text + ' ');
+            notificationText += (connectedStateDescription.text + '. ');
 
         MZAccessibleNotification.notify(logoTitle, notificationText);
     }

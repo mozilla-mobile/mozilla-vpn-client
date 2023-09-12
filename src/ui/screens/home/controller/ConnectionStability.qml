@@ -30,7 +30,7 @@ Item {
         }
 
         // Notify accessibility client of connection health problems
-        let notificationText = stabilityLabel.text + " " + stabilityLabelInstruction.text;
+        let notificationText = stabilityLabel.text + ". " + stabilityLabelInstruction.text;
         MZAccessibleNotification.notify(stabilityLabel, notificationText);
     }
 
