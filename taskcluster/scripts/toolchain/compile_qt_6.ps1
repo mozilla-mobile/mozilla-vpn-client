@@ -69,7 +69,6 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
   -no-feature-style-windowsvista `
   -no-feature-quickcontrols2-material `
   -no-feature-quickcontrols2-macos `
-  -no-feature-quickcontrols2-ios `
   -no-feature-sql-sqlite `
   -no-feature-sql `
   -no-feature-textodfwriter `
