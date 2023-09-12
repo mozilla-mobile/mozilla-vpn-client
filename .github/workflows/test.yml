@@ -30,7 +30,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run : |
-          ./.github/scripts/get_decision_task.py  >> $GITHUB_OUTPUT 
+          ./.github/scripts/get_decision_task.py --verbose
+#          ./.github/scripts/get_decision_task.py  >> $GITHUB_OUTPUT 
   
   unit-tests:
     name: ${{matrix.os}} Unit tests

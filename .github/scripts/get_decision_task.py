@@ -8,6 +8,13 @@ import requests
 import time
 import os
 
+verbose = False
+
+def maybePrint(s):
+    if not verbose:
+        return
+    print(s)
+
 # Get's a Github check with {check_name}, on a commit {ref}
 def get_run(ref,check_name,gh_token, repo="mozilla-vpn-client", OWNER="mozilla-mobile"):
     CHECKS_ENDPOINT = f"https://api.github.com/repos/{OWNER}/{repo}/commits/{ref}/check-runs?check_name={check_name}"
@@ -17,6 +24,8 @@ def get_run(ref,check_name,gh_token, repo="mozilla-vpn-client", OWNER="mozilla-m
     }
     if(gh_token):
         github_api_headers["Authorization"]=f"Bearer {gh_token}"
+    else:
+        maybePrint("Warning! No GH token")
     r = requests.get(CHECKS_ENDPOINT, headers=github_api_headers)
     return r.json()
 
@@ -26,14 +35,18 @@ def wait_for_finished_check(ref, gh_token,check_name=DEFAULT_CHECK_NAME,timeout=
         # Sleep a bit not to burn through out gh-api rate limit
         # This task is going to run probably before the decision task, 
         # so we need to wait anyway. 
+        maybePrint(f"Wait {timeout}s")
         time.sleep(int(timeout))
         run = get_run(ref,check_name=check_name,gh_token=gh_token)
         try:
             if run['total_count'] == 0:
+                maybePrint(f"Total Count is 0")
                 continue
             status = run["check_runs"][0]["status"]
             if status != "completed":
+                maybePrint(f"Not completed is: {status}")
                 continue
+            maybePrint(f"Run: {run['check_runs'][0]}")
             details_url = run["check_runs"][0]["details_url"]
             return details_url.split("/")[-1]
         except:
@@ -65,7 +78,14 @@ def main():
                         action="store", 
                         help="Timout Between api calls in seconds", 
                         default=30)
+    parser.add_argument("--verbose", 
+                        dest="verbose", 
+                        action="store_true", 
+                        help="Be chatty" )
     args = parser.parse_args()
+    global verbose 
+    verbose = bool(args.verbose)
+    maybePrint(f"Getting {args.taskName} for ref {args.ref}")
     id = wait_for_finished_check(args.ref,args.token,args.taskName,int(args.timeout))
     print(f"taskID={id}")
 if __name__ == "__main__":
