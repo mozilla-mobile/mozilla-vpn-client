@@ -62,7 +62,7 @@ for branch in $(git branch -r | grep origin/releases); do
 
   UNFLATTENED=false
 
-  # TODO: Remove this once all branches have been updated to not have the shared/ folder.
+  # TODO (VPN-5515): Remove this once all branches have been updated to not have the shared/ folder.
   EXTRA_STRINGS=
   if [ -f src/shared/translations/strings.yaml ]; then
     EXTRA_STRINGS=src/shared/translations/strings.yaml
