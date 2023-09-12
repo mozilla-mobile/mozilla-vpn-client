@@ -30,7 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run : |
-          ./.github/scripts/get_decision_task_id.py  >> $GITHUB_OUTPUT 
+          ./.github/scripts/get_decision_task.py  >> $GITHUB_OUTPUT 
   
   unit-tests:
     name: ${{matrix.os}} Unit tests
@@ -117,10 +117,10 @@ jobs:
           grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/src/apps/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
 
-          grcov $(pwd)/src/apps/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
       - name: Upload coverage for ${{matrix.os}} unit tests to Codecov
         uses: codecov/codecov-action@v3
