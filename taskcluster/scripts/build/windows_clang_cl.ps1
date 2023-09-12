@@ -54,6 +54,7 @@ foreach ($script in  $ACTIVATION_SCRIPTS)  {
 # when we run the activate.bat :shrugs: 
 # This will cause go to be missing. 
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
+gci env:* | sort-object name
 
 
 # Okay We are ready to build! 
