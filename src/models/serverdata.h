@@ -55,6 +55,10 @@ class ServerData final : public QObject {
                                 const QString& cityName,
                                 const QString& entryCountryCode = QString(),
                                 const QString& entryCityName = QString());
+  void changeServerForTutorial(const QString& countryCode,
+                               const QString& cityName,
+                               const QString& entryCountryCode = QString(),
+                               const QString& entryCityName = QString());
   bool hasServerData() const { return !m_exitCountryCode.isEmpty(); }
 
   const QList<Server> exitServers() const;

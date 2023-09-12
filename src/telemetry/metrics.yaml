@@ -1788,6 +1788,8 @@ performance:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4486
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5529#pullrequestreview-1253522353
+    send_in_pings:
+      - main
     data_sensitivity:
       - technical
     notification_emails:
@@ -1806,6 +1808,8 @@ settings:
       - https://mozilla-hub.atlassian.net/browse/VPN-4069
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
+    send_in_pings:
+      - main
     data_sensitivity:
       - interaction
     notification_emails:

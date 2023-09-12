@@ -71,6 +71,7 @@ target_compile_definitions(app_unit_tests PRIVATE MZ_DUMMY)
 target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
+    mocmozillavpn.cpp
     testaddon.cpp
     testaddon.h
     testaddonapi.cpp
@@ -121,6 +122,7 @@ target_sources(app_unit_tests PRIVATE
     testthemes.h
     testurlopener.cpp
     testurlopener.h
+    ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
