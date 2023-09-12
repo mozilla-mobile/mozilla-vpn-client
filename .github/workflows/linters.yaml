@@ -68,6 +68,11 @@ jobs:
 #          activate-environment: vpn 
 #          environment-file: env.yml
 #          auto-activate-base: false
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: temurin
       - name: Setup Android SDK
         uses: amyu/setup-android@v3
         with:
