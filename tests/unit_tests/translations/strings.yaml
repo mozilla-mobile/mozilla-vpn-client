@@ -1,1 +1,3 @@
-# nothing here
+# HACK: This is the one string that is required by the shared-sources...
+inAppMessaging:
+  dateTimeYesterday: Yesterday

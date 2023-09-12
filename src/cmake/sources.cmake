@@ -13,13 +13,12 @@ endif()
 # VPN client include paths
 set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/addons
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/composer
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/hacl-star/kremlin/minimal
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/glean
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${CMAKE_CURRENT_SOURCE_DIR}/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 

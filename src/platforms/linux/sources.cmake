@@ -7,7 +7,7 @@ pkg_check_modules(libsecret REQUIRED libsecret-1)
 target_include_directories(shared-sources INTERFACE ${libsecret_INCLUDE_DIRS})
 
 target_sources(shared-sources INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/eventlistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/eventlistener.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared/platforms/linux/linuxcryptosettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxcryptosettings.cpp
 )
