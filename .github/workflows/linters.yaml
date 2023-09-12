@@ -63,23 +63,18 @@ jobs:
         uses: actions/checkout@master
         with:
           fetch-depth: 1
-#      - uses: conda-incubator/setup-miniconda@v2
-#        with:
-#          activate-environment: vpn 
-#          environment-file: env.yml
-#          auto-activate-base: false
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          java-version: 11
-          distribution: temurin
+          activate-environment: vpn 
+          environment-file: env.yml
+          auto-activate-base: false
       - name: Setup Android SDK
-        uses: amyu/setup-android@v3
-        with:
-          ndk-version: '23.1.7779620'
-          generate-job-summary: false
+        run: |
+          conda activate vpn
+          ./scripts/android/conda_setup_sdk.sh
       - name: Run ktlint
         working-directory: android
         run: |
+          conda activate vpn
           conda info
           ./gradlew ktlint
