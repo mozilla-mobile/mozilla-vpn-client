@@ -29,12 +29,12 @@ if( ${_SUPPORTED} GREATER -1 )
 
     # Sentry support is given
     target_sources(shared-sources INTERFACE
-        shared/sentry/sentryadapter.cpp
-        shared/sentry/sentryadapter.h
-        shared/tasks/sentry/tasksentry.cpp
-        shared/tasks/sentry/tasksentry.h
-        shared/tasks/sentryconfig/tasksentryconfig.cpp
-        shared/tasks/sentryconfig/tasksentryconfig.h
+        sentry/sentryadapter.cpp
+        sentry/sentryadapter.h
+        tasks/sentry/tasksentry.cpp
+        tasks/sentry/tasksentry.h
+        tasks/sentryconfig/tasksentryconfig.cpp
+        tasks/sentryconfig/tasksentryconfig.h
     )
 
     # Configure Linking and Compile
@@ -111,4 +111,3 @@ else()
     message("Sentry supported OS -> ${SENTRY_SUPPORTED_OS}")
     message("Cannot build sentry for ${CMAKE_SYSTEM_NAME}")
 endif()
-

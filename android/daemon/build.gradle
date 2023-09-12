@@ -39,7 +39,6 @@ apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 ext.gleanNamespace = "mozilla.telemetry.glean"
 ext.gleanYamlFiles = [
     "$rootDir/../../../src/telemetry/metrics.yaml",
-    "$rootDir/../../../src/telemetry/metrics_deprecated.yaml",
     "$rootDir/../../../src/telemetry/pings.yaml"
 ]
 

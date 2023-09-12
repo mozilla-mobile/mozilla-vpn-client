@@ -24,7 +24,7 @@ print G "done."
 mkdir -p translations/generated || die
 
 printn Y "Generating strings... "
-python3 cache/generate_strings.py src/translations/strings.yaml src/shared/translations/strings.yaml -o translations/generated
+python3 cache/generate_strings.py src/translations/strings.yaml -o translations/generated
 print G "done."
 
 printn Y "Generating a dummy PRO file... "
@@ -62,6 +62,7 @@ for branch in $(git branch -r | grep origin/releases); do
 
   UNFLATTENED=false
 
+  # TODO (VPN-5515): Remove this once all branches have been updated to not have the shared/ folder.
   EXTRA_STRINGS=
   if [ -f src/shared/translations/strings.yaml ]; then
     EXTRA_STRINGS=src/shared/translations/strings.yaml

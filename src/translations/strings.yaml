@@ -874,6 +874,7 @@ inAppMessaging:
   searchBarPlaceholderText: Search messages
   emptyStateTitle: No messages
   emptyStateDescription: You’re up to date!
+  dateTimeYesterday: Yesterday
   deleteMessage:
     value: Delete message
     comment: An action to delete a message from the users inbox

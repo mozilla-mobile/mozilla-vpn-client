@@ -108,18 +108,12 @@ if __name__ == "__main__":
         os.makedirs(args.outdir, exist_ok=True)
 
         telemetry_path = os.path.join(workspace_root, "src", "telemetry")
-        shared_telemetry_path = os.path.join(workspace_root, "src", "shared", "telemetry")
 
         pings_files = [
             os.path.join(telemetry_path, "pings.yaml"),
-            os.path.join(shared_telemetry_path, "pings.yaml"),
-            os.path.join(shared_telemetry_path, "pings_deprecated.yaml")
         ]
         metrics_files = [
             os.path.join(telemetry_path, "metrics.yaml"),
-            os.path.join(telemetry_path, "metrics_deprecated.yaml"),
-            os.path.join(shared_telemetry_path, "metrics.yaml"),
-            os.path.join(shared_telemetry_path, "metrics_deprecated.yaml")
         ]
 
         # Generate C++ header files
