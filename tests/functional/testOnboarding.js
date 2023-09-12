@@ -16,6 +16,7 @@ describe('Onboarding', function() {
     await vpn.authenticateInApp();
   });
 
+  //Tests pretty much all of the new onboarding, including all slides, controls, navigation, and ensuring settings persist into StateMain
   it('Complete onboarding', async () => {
     await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
     await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
@@ -212,6 +213,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.START_AT_BOOT, 'isChecked'), 'true');
   });
   
+   //Tests restoring onboarding to current step after quitting 
   it('Quitting app during onboarding', async () => {
     await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
     await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
