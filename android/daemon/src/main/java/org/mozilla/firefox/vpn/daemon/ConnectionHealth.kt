@@ -5,13 +5,16 @@
 package org.mozilla.firefox.vpn.daemon
 
 import android.content.Context
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class ConnectionHealth(service: VPNService) {
     private val TAG = "DaemonConnectionHealth"
@@ -94,13 +97,14 @@ class ConnectionHealth(service: VPNService) {
     }
 
     private val connectionHealthTimerMSec: Long = 30000
+
     /**
      * mTaskTimer
      * Queues TaskCheckConnection on the WorkerThread every 30s
      */
     private val mTaskTimer = object : CountDownTimer(
         connectionHealthTimerMSec,
-        connectionHealthTimerMSec / 4
+        connectionHealthTimerMSec / 4,
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {

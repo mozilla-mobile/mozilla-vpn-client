@@ -53,6 +53,7 @@ class Log {
                 e(tag, "\t $it")
             }
         }
+
         // Only Prints && Loggs when in debug, noop in release.
         fun sensitive(tag: String, message: String?) {
             if (!BuildConfig.DEBUG) { return; }

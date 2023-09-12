@@ -40,18 +40,18 @@ import kotlin.collections.HashMap
 @Serializable
 data class BillingResultData(
     val code: Int,
-    val message: String
+    val message: String,
 )
 
 @Serializable
 data class MozillaSubscriptionInfo(
     val id: String,
-    val monthCount: Int
+    val monthCount: Int,
 )
 
 @Serializable
 data class MozillaSubscriptions(
-    val products: List<MozillaSubscriptionInfo>
+    val products: List<MozillaSubscriptionInfo>,
 )
 
 @Serializable
@@ -66,7 +66,7 @@ data class GooglePlaySubscriptionInfo(
 
 @Serializable
 data class GooglePlaySubscriptions(
-    val products: ArrayList<GooglePlaySubscriptionInfo>
+    val products: ArrayList<GooglePlaySubscriptionInfo>,
 )
 
 class InAppPurchase private constructor(ctx: Context) :
@@ -98,6 +98,7 @@ class InAppPurchase private constructor(ctx: Context) :
     external fun onPurchaseAcknowledged()
     external fun onPurchaseUpdated(purchaseDataJSONBlob: String)
     external fun onSkuDetailsReceived(subscriptionsDataJSONBlob: String)
+
     // Failures
     external fun onBillingNotAvailable(billingResultJSONBlob: String)
     external fun onPurchaseAcknowledgeFailed(billingResultJSONBlob: String)
@@ -161,9 +162,9 @@ class InAppPurchase private constructor(ctx: Context) :
                 Json.encodeToString(
                     BillingResultData(
                         code = -98,
-                        message = "Attempted to purchase $productToPurchase with no sku details"
-                    )
-                )
+                        message = "Attempted to purchase $productToPurchase with no sku details",
+                    ),
+                ),
             )
             return
         }
@@ -208,15 +209,15 @@ class InAppPurchase private constructor(ctx: Context) :
             Json.encodeToString(
                 BillingResultData(
                     code = -99,
-                    message = "Billing Service Disconnected"
-                )
-            )
+                    message = "Billing Service Disconnected",
+                ),
+            ),
         )
     }
 
     override fun onSkuDetailsResponse(
         billingResult: BillingResult,
-        skuDetailsList: MutableList<SkuDetails>?
+        skuDetailsList: MutableList<SkuDetails>?,
     ) {
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
             Sample.iapGQuerySkuDetailsFailed.record()
@@ -229,9 +230,9 @@ class InAppPurchase private constructor(ctx: Context) :
                 Json.encodeToString(
                     BillingResultData(
                         code = -97,
-                        message = "No sku details returned"
-                    )
-                )
+                        message = "No sku details returned",
+                    ),
+                ),
             )
             return
         }
@@ -249,7 +250,7 @@ class InAppPurchase private constructor(ctx: Context) :
 
     override fun onQueryPurchasesResponse(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>
+        purchases: MutableList<Purchase>,
     ) {
         val responseCode = billingResult.responseCode
         if (responseCode == BillingClient.BillingResponseCode.OK) {
@@ -262,7 +263,7 @@ class InAppPurchase private constructor(ctx: Context) :
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>?
+        purchases: MutableList<Purchase>?,
     ) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
@@ -275,8 +276,8 @@ class InAppPurchase private constructor(ctx: Context) :
             }
             Sample.iapGPurchasesUpdatedFailed.record(
                 Sample.IapGPurchasesUpdatedFailedExtra(
-                    reason = reason
-                )
+                    reason = reason,
+                ),
             )
             onSubscriptionFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
         }
@@ -287,7 +288,7 @@ class InAppPurchase private constructor(ctx: Context) :
             onPurchaseAcknowledged()
         } else {
             onPurchaseAcknowledgeFailed(
-                billingResultToJson(billingResult, "onAcknowledgePurchaseResponse")
+                billingResultToJson(billingResult, "onAcknowledgePurchaseResponse"),
             )
         }
     }
@@ -371,7 +372,7 @@ class InAppPurchase private constructor(ctx: Context) :
             trialDays = trialDays,
             monthlyPriceString = monthlyPriceString,
             monthlyPrice = monthlyPrice,
-            sku = sku
+            sku = sku,
         )
     }
 
@@ -382,8 +383,8 @@ class InAppPurchase private constructor(ctx: Context) :
         return Json.encodeToString(
             BillingResultData(
                 code = responseCode,
-                message = debugMessage
-            )
+                message = debugMessage,
+            ),
         )
     }
 }

@@ -333,7 +333,7 @@ class VPNService : android.net.VpnService() {
                 }
             }
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush
+                Pings.daemonsessionReasonCodes.daemonFlush,
             )
 
             Session.daemonSessionStart.set()
@@ -407,7 +407,7 @@ class VPNService : android.net.VpnService() {
         if (isSuperDooperMetricsActive) {
             Session.daemonSessionEnd.set()
             Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonEnd
+                Pings.daemonsessionReasonCodes.daemonEnd,
             )
 
             // We are rotating the UUID here as a safety measure. It is rotated
