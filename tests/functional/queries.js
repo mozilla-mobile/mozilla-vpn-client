@@ -440,6 +440,10 @@ const screenSubscriptionNeeded = {
 const screenOnboarding = {
   SCREEN: new QmlQueryComposer('//screenOnboarding'),
   ONBOARDING_VIEW: new QmlQueryComposer('//viewOnboarding'),
+  STEP_NAV_STACK_VIEW: new QmlQueryComposer('//stepNavStackView'),
+  STEP_PROG_BAR_DATA_BUTTON: new QmlQueryComposer('//progressBarRow/data'),
+  STEP_PROG_BAR_PRIVACY_BUTTON: new QmlQueryComposer('//progressBarRow/privacy'),
+  STEP_PROG_BAR_DEVICES_BUTTON: new QmlQueryComposer('//progressBarRow/devices'),
   DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
   DATA_CHECKBOX: new QmlQueryComposer('//dataCollectionCheckBox'),
   DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),

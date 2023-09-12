@@ -452,6 +452,12 @@ void MozillaVPN::maybeStateMain() {
     // All users who get to StateMain (home screen) should never see onboarding
     // in the future
     settingsHolder->setOnboardingCompleted(true);
+
+    // Resetting for the benefit of testing so that we only have to reset one
+    // setting (onboardingCompleted) manually No real affect on user since they
+    // will never see onboarding again
+    settingsHolder->setOnboardingStep(0);
+
     setState(StateMain);
   }
 
@@ -926,6 +932,12 @@ void MozillaVPN::onboardingCompleted() {
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
+
+    // Resetting for the benefit of testing so that we only have to reset one
+    // setting (onboardingCompleted) manually No real affect on user since they
+    // will never see onboarding again
+    settingsHolder->setOnboardingStep(0);
+
     // Mark the old onboarding expereince as completed as well, ensuring that
     // users do not have to go through it if the new onboaring feature is turned
     // off
