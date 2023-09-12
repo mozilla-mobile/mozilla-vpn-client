@@ -354,7 +354,7 @@ Rectangle {
     }
 
     function onShowCompleted() {
-        MZAccessibleNotification.notify(label, alertBox.alertText + " " + alertBox.alertActionText);
+        MZAccessibleNotification.notify(label, alertBox.alertText + ". " + alertBox.alertActionText);
     }
 
     function remove() {
