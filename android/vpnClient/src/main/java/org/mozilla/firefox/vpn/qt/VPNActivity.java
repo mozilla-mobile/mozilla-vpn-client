@@ -154,18 +154,17 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     bindService(new Intent(this, VPNService.class), mConnection,
             Context.BIND_AUTO_CREATE);
   }
-  // TODO: Move all ipc codes into a shared lib.
-  // this is getting out of hand. 
+  // TODO: we need to port this class to kotlin
+  // so we can use that Shared Code
+  // Editors Note: we need to port this class to kotlin
   private final int PERMISSION_TRANSACTION = 1337;
   private final int ACTION_REGISTER_LISTENER = 3;
   private final int ACTION_RESUME_ACTIVATE = 7;
+  private final int ACTION_NOTIFICATION_PROMPT_SENT = 19;
   private final int EVENT_PERMISSION_REQURED = 6;
   private final int EVENT_DISCONNECTED = 2;
 
-
-
   public void onPermissionRequest(int code, Parcel data) {
-    onNotificationPermissionRequest();
     if(code != EVENT_PERMISSION_REQURED){
       return;
     }
@@ -177,6 +176,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     String permissions[] = new String[1];
     permissions[0] = "android.permission.POST_NOTIFICATIONS";
     requestPermissions(permissions, 1);
+    dispatchParcel(ACTION_NOTIFICATION_PROMPT_SENT, "");
   }
 
   @Override
