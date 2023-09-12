@@ -13,6 +13,8 @@ import components 0.1
 MZStepNavigation {
     id: stepNav
 
+    objectName: "viewOnboarding"
+
     anchors {
         top: parent.top
         left: parent.left

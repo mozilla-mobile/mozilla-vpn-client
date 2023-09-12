@@ -11,6 +11,7 @@ import "qrc:/ui/screens/settings/privacy"
 
 ColumnLayout {
     id: root
+    objectName: "onboardingPrivacySlide"
 
     signal nextClicked()
     signal backClicked()
@@ -52,6 +53,8 @@ ColumnLayout {
     }
 
     MZButton {
+        objectName: "privacyNextButton"
+
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -63,6 +66,8 @@ ColumnLayout {
     }
 
     MZLinkButton {
+        objectName: "privacyBackButton"
+
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2

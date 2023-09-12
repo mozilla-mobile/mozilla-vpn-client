@@ -10,8 +10,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 MZScreenBase {
-
     objectName: "screenOnboarding"
+
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenOnboarding, getStack())
         getStack().push("qrc:/ui/screens/onboarding/ViewOnboarding.qml")
