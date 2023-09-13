@@ -54,7 +54,7 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
 $ErrorActionPreference = "Stop"
 
-if(QT_VERSION_MAJOR -eq "6.2" ){
+if($QT_VERSION_MAJOR -eq "6.2" ){
   # We should not chane the behavior mid release. 
   ./configure.bat `
   -static  `
