@@ -3,116 +3,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import chalk from 'chalk';
-import child_process from 'child_process';
 import {program} from 'commander';
 import fs from 'fs';
+import { fileURLToPath } from 'node:url';
+import path from 'path'; 
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
-import websocket from 'websocket';
 import WBK from 'wikibase-sdk';
 
+const I18N_SUBMODULE_PATH = '../../src/apps/vpn/translations/i18n';
 const DEFAULT_MOZILLAVPN = '../../build/src/mozillavpn';
 const LANGUAGES_OUTPUT_FILE =
     '../../src/translations/extras/languages.json';
 
 const LanguageLocalizer = {
-  get vpn() {
-    return this._vpn;
-  },
-  get client() {
-    return this._client;
-  },
 
   quit() {
-    if (this.vpn) {
-      this.vpn.kill();
-    }
 
     process.exit();
   },
 
-  async sendMessageToClient(cmd, params = '', reportError = false) {
-    let answer = await new Promise(resolve => {
-      this._waitReadCallback = resolve;
-      this.client.send(`${cmd} ${params}`.trim());
-    });
-
-    if (answer.type !== cmd) {
-      console.log(chalk.red('Something wrong is happening.'));
-      this.quit();
-    }
-
-    if (!reportError) {
-      if (answer.error) {
-        console.log(chalk.red(`Something wrong is happening: ${answer.error}`));
-        this.quit();
-      }
-    }
-
-    return answer;
-  },
-
-  execClient(path) {
-    const vpn = child_process.spawn(path, ['ui', '--testing']);
-
-    console.log(chalk.yellow('Running the client...'));
-    vpn.stderr.on('data', data => {});
-    vpn.stdout.on('data', data => {});
-    vpn.on('close', code => {
-      console.log(chalk.red(
-          'The client has been closed. I hope this is what you wanted.'));
-      this.quit();
-    });
-
-    this._vpn = vpn;
-  },
-
-  async connectToClient() {
-    // Let's wait 1 sec for the activation of the websocket.
-    await new Promise(r => setTimeout(r, 1000));
-
-    const client = await new Promise(resolve => {
-      const client = new websocket.w3cwebsocket('ws://localhost:8765/', '');
-
-      client.onopen = async () => resolve(client);
-
-      client.onclose = () => {
-        console.log(
-            chalk.yellow('The client has closed the websocket connection.'));
-        this.quit();
-      };
-
-      client.onerror = () => resolve(null);
-
-      client.onmessage = data => {
-        const json = JSON.parse(data.data);
-
-        // Ignoring logs.
-        if (json.type === 'log') return;
-
-        // Ignore notifications.
-        if (json.type === 'notification' ||
-            json.type === 'addon_load_completed')
-          return;
-
-        if (!this._waitReadCallback) {
-          console.log('Internal error?!?');
-          return;
-        }
-
-        const wr = this._waitReadCallback;
-        this._waitReadCallback = null;
-        wr(json);
-      };
-    });
-
-    if (!client) {
-      console.log('Failed to connect.');
-      process.exit();
-    }
-
-    this._client = client;
-  },
 
   retrieveJson(url) {
     return fetch(url, {
@@ -128,36 +38,41 @@ const LanguageLocalizer = {
 
   async init() {
     program.version('0.0.1')
+    program.option("-c, --check", `
+      Check only, will fail if user input would be required to generate 
+      the file.
+    `);
 
-    program.option(
-        '-p, --path <mozillavpn>',
-        `config file. Default: ${DEFAULT_MOZILLAVPN}`, DEFAULT_MOZILLAVPN);
     program.action(async () => await this.run(program.opts()));
 
     program.parseAsync(process.argv);
   },
 
   async run(options) {
-    this.execClient(options.path);
-    await this.connectToClient();
-
+    this.options = options;
+    if(options.check){
+      console.log("Running Checks Only");
+    }
     this.wbk = WBK({
       instance: 'https://www.wikidata.org',
       sparqlEndpoint: 'https://query.wikidata.org/sparql',
     })
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const submodule_path = path.resolve(__dirname, I18N_SUBMODULE_PATH)
+    const dir_entries = fs.readdirSync(submodule_path,{withFileTypes:true});
+    const language_folders = dir_entries
+                              .filter(f => f.isDirectory())
+                              .map(f=>f.name)
+                              .filter(f=>!f.startsWith("."));
 
-    const languages = await this.sendMessageToClient('languages');
-    if (!Array.isArray(languages.value) || languages.value.length === 0) {
-      console.log('No languages! Are you authenticated already?');
-      this.quit();
-    }
+    this.languages = language_folders;
 
-    this.languages = languages.value;
 
     this.oldData =
         JSON.parse(fs.readFileSync(LANGUAGES_OUTPUT_FILE).toString()) || [];
 
-    for (const language of languages.value) {
+    for (const language of this.languages) {
       await this.localizeLanguage(language);
     }
 
@@ -177,6 +92,10 @@ const LanguageLocalizer = {
   },
 
   writeData() {
+    if(this.options.check){
+      console.log(chalk.green('In check mode, skipping write'));
+      return;
+    }
     console.log(chalk.yellow('Sorting data...'));
 
     for (let language of this.newData) {
@@ -223,6 +142,11 @@ const LanguageLocalizer = {
     // Create a copy, otherwise we modify our old state
     let languageData = structuredClone(language_old_Data);
     if (!languageData) {
+      if(this.options.check){
+        console.error(`Unknown language ${language} - cannot continue`);
+        console.error(`Check out this branch and run "npm run languages:update" to update languages.json`);
+        process.exit(1);
+      }
       console.log('    Unknown language!');
       languageData = {
         wikiDataID: null,
@@ -233,6 +157,13 @@ const LanguageLocalizer = {
     } else if (!languageData.wikiDataID) {
       console.log(
           '    Language found but we do not have a valid wikiDataID. Please update the file!');
+      if(this.options.check){
+            console.log(JSON.stringify(languageData))
+            console.error(`${ languageData.languageCode } - No Wikidata ID found.`)
+            console.error(`This is likely a new language. Check this branch out and run this`)
+            console.error(`tool locally again!`)
+            process.exit(1);
+      }
       languageData.wikiDataID = null;
       languageData.currencies = {};
       languageData.languages = {};
@@ -278,7 +209,7 @@ const LanguageLocalizer = {
       }
     }
 
-    if (!languageData.IETFcode) {
+    if (!languageData.IETFcode && !this.options?.check) {
       while (true) {
         let answer = await inquirer.prompt([{
           type: 'confirm',
