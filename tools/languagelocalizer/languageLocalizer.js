@@ -11,8 +11,7 @@ import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import WBK from 'wikibase-sdk';
 
-const I18N_SUBMODULE_PATH = '../../src/apps/vpn/translations/i18n';
-const DEFAULT_MOZILLAVPN = '../../build/src/mozillavpn';
+const I18N_SUBMODULE_PATH = '/src/apps/vpn/translations/i18n';
 const LANGUAGES_OUTPUT_FILE =
     '../../src/translations/extras/languages.json';
 
