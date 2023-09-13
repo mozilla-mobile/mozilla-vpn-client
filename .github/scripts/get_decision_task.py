@@ -17,6 +17,9 @@ def maybePrint(s):
 
 # Get's a Github check with {check_name}, on a commit {ref}
 def get_run(ref,check_name,gh_token, repo="mozilla-vpn-client", OWNER="mozilla-mobile"):
+    if len(ref) == 0:
+        print("NO REF PROVIDED")
+        return
     CHECKS_ENDPOINT = f"https://api.github.com/repos/{OWNER}/{repo}/commits/{ref}/check-runs?check_name={check_name}"
     github_api_headers = {
         "Accept": "application/vnd.github+json",
@@ -31,6 +34,9 @@ def get_run(ref,check_name,gh_token, repo="mozilla-vpn-client", OWNER="mozilla-m
 
 DEFAULT_CHECK_NAME="Decision Task (pull-request)"
 def wait_for_finished_check(ref, gh_token,check_name=DEFAULT_CHECK_NAME,timeout=30):
+    if len(ref) == 0:
+        print("NO REF PROVIDED")
+        return
     while True:
         # Sleep a bit not to burn through out gh-api rate limit
         # This task is going to run probably before the decision task, 

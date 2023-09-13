@@ -28,13 +28,16 @@ jobs:
         id: getDecisionTask
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REF: ${{ github.ref }}
         shell: bash
         run : |
-          ./.github/scripts/get_decision_task.py --verbose
-#          ./.github/scripts/get_decision_task.py  >> $GITHUB_OUTPUT 
+          .github/scripts/get_decision_task.py --ref ${{ github.ref }} --verbose
+          .github/scripts/get_decision_task.py --ref ${{ github.ref }} >> $GITHUB_OUTPUT 
   
   unit-tests:
     name: ${{matrix.os}} Unit tests
+    needs:
+      - get-dc-task
     strategy:
         fail-fast: false # Don't cancel other jobs if a test fails
         matrix:
@@ -134,6 +137,8 @@ jobs:
 
   wasm-build-dummy-client:
     name: Build Wasm Dummy Client
+    needs:
+      - get-dc-task
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
@@ -247,6 +252,8 @@ jobs:
   linux-build-dummy-client:
     name: Build Linux Dummy Client
     runs-on: ubuntu-22.04
+    needs:
+      - get-dc-task
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
