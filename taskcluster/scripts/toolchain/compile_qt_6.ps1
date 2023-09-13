@@ -54,7 +54,37 @@ Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
 
 $ErrorActionPreference = "Stop"
 
-if ($Minimal){
+if(QT_VERSION_MAJOR -eq "6.2" ){
+  # We should not chane the behavior mid release. 
+  ./configure.bat `
+  -static  `
+  -opensource  `
+  -debug-and-release `
+  -no-dbus   `
+  -no-feature-qdbus  `
+  -confirm-license  `
+  -strip  `
+  -silent  `
+  -nomake tests  `
+  -nomake examples  `
+  -make libs  `
+  -no-sql-psql  `
+  -no-sql-odbc   `
+  -qt-sqlite  `
+  -skip qt3d  `
+  -skip webengine  `
+  -skip qtmultimedia  `
+  -skip qtserialport  `
+  -skip qtsensors  `
+  -skip qtgamepad  `
+  -skip qtwebchannel  `
+  -skip qtandroidextras  `
+  -feature-imageformat_png  `
+  -qt-libpng  `
+  -qt-zlib  `
+  -openssl-runtime `
+  -prefix $BUILD_PREFIX `
+} else {
   # For newer qt versions, let's trim what we dont need.
   ./configure.bat `
   -static  `
@@ -121,37 +151,7 @@ if ($Minimal){
   -qt-zlib  `
   -openssl-runtime `
   -prefix $BUILD_PREFIX `
-} else {
-  # We should not chane the behavior mid release. 
-  ./configure.bat `
-  -static  `
-  -opensource  `
-  -debug-and-release `
-  -no-dbus   `
-  -no-feature-qdbus  `
-  -confirm-license  `
-  -strip  `
-  -silent  `
-  -nomake tests  `
-  -nomake examples  `
-  -make libs  `
-  -no-sql-psql  `
-  -no-sql-odbc   `
-  -qt-sqlite  `
-  -skip qt3d  `
-  -skip webengine  `
-  -skip qtmultimedia  `
-  -skip qtserialport  `
-  -skip qtsensors  `
-  -skip qtgamepad  `
-  -skip qtwebchannel  `
-  -skip qtandroidextras  `
-  -feature-imageformat_png  `
-  -qt-libpng  `
-  -qt-zlib  `
-  -openssl-runtime `
-  -prefix $BUILD_PREFIX `
-}
+} 
 
 
 
