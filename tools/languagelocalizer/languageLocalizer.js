@@ -11,7 +11,7 @@ import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import WBK from 'wikibase-sdk';
 
-const I18N_SUBMODULE_PATH = '/src/apps/vpn/translations/i18n';
+const I18N_SUBMODULE_PATH = '../src/apps/vpn/translations/i18n';
 const LANGUAGES_OUTPUT_FILE =
     '../../src/translations/extras/languages.json';
 
@@ -59,7 +59,7 @@ const LanguageLocalizer = {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     const submodule_path = path.resolve(__dirname, I18N_SUBMODULE_PATH)
-    const dir_entries = fs.readdirSync(submodule_path,{withFileTypes:true});
+    const dir_entries = fs.readdirSync(submodule_path, {withFileTypes: true});
     const language_folders = dir_entries
                               .filter(f => f.isDirectory())
                               .map(f=>f.name)
