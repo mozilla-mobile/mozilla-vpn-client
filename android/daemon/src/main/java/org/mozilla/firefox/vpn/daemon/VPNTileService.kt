@@ -7,7 +7,6 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Binder
 import android.os.Build
 import android.os.DeadObjectException
 import android.os.IBinder
@@ -15,6 +14,7 @@ import android.os.Parcel
 import android.os.RemoteException
 import android.service.quicksettings.Tile
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.CoreBinder
 
 class VPNTileService : android.service.quicksettings.TileService() {
     enum class State {
@@ -22,18 +22,18 @@ class VPNTileService : android.service.quicksettings.TileService() {
     }
     var mState: State = State.Unknown
     var mCity = ""
-    private val mServiceBinder = object : Binder() {
+    private val mServiceBinder = object : CoreBinder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
             when (code) {
-                VPNServiceBinder.EVENTS.connected -> {
+                EVENTS.connected -> {
                     mState = State.Connected
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
                     val config = JSONObject(json)
                     mCity = config.getString("city")
                 }
-                VPNServiceBinder.EVENTS.disconnected -> mState = State.Disconnected
-                VPNServiceBinder.EVENTS.init -> {
+                EVENTS.disconnected -> mState = State.Disconnected
+                EVENTS.init -> {
                     val buffer = data.createByteArray()
                     val json = buffer?.let { String(it) }
                     val config = JSONObject(json)
@@ -43,7 +43,7 @@ class VPNTileService : android.service.quicksettings.TileService() {
                         mState = State.Unknown
                     }
                 }
-                VPNServiceBinder.EVENTS.activationError -> {
+                EVENTS.activationError -> {
                     mState = State.Error
                 }
             }
@@ -58,9 +58,9 @@ class VPNTileService : android.service.quicksettings.TileService() {
             out.writeStrongBinder(mServiceBinder)
             try {
                 // Register our IBinder Listener
-                vpnService?.transact(VPNServiceBinder.ACTIONS.registerEventListener, out, Parcel.obtain(), 0)
+                vpnService?.transact(CoreBinder.ACTIONS.registerEventListener, out, Parcel.obtain(), 0)
                 // Ask the VPN Service for the current status
-                vpnService?.transact(VPNServiceBinder.ACTIONS.getStatus, out, Parcel.obtain(), 0)
+                vpnService?.transact(CoreBinder.ACTIONS.getStatus, out, Parcel.obtain(), 0)
                 mService = vpnService
             } catch (e: DeadObjectException) {
                 mService = null
@@ -98,12 +98,12 @@ class VPNTileService : android.service.quicksettings.TileService() {
                     // while the screen is locked
                     return
                 }
-                mService?.transact(VPNServiceBinder.ACTIONS.deactivate, Parcel.obtain(), Parcel.obtain(), 0)
+                mService?.transact(CoreBinder.ACTIONS.deactivate, Parcel.obtain(), Parcel.obtain(), 0)
                 mState = State.Disconnected
             }
             State.Disconnected -> {
                 // No Need to check for secure :)
-                mService?.transact(VPNServiceBinder.ACTIONS.reactivate, Parcel.obtain(), Parcel.obtain(), 0)
+                mService?.transact(CoreBinder.ACTIONS.reactivate, Parcel.obtain(), Parcel.obtain(), 0)
                 mState = State.Connected
             }
         }

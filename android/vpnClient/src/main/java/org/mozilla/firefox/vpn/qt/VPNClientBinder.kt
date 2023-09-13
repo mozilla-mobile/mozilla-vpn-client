@@ -3,23 +3,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 package org.mozilla.firefox.vpn
-import android.os.Binder
 import android.os.Parcel
+import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.vpn.qt.VPNActivity
 
-const val permissionRequired = 6
-
-class VPNClientBinder() : Binder() {
+class VPNClientBinder() : CoreBinder() {
 
     override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
-        if (code == permissionRequired) {
-            VPNActivity.getInstance().onPermissionRequest(code, data)
-            return true
+        when (code) {
+            EVENTS.permissionRequired -> {
+                VPNActivity.getInstance().onPermissionRequest(code, data)
+                return true
+            }
+            EVENTS.requestNotificationPermission -> {
+                VPNActivity.getInstance().onNotificationPermissionRequest()
+                return true
+            }
+            else -> {
+                val buffer = data.createByteArray()
+                val stringData = buffer?.let { String(it) }
+                VPNActivity.getInstance().onServiceMessage(code, stringData)
+                return true
+            }
         }
-
-        val buffer = data.createByteArray()
-        val stringData = buffer?.let { String(it) }
-        VPNActivity.getInstance().onServiceMessage(code, stringData)
-        return true
     }
 }

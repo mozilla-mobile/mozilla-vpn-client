@@ -10,12 +10,15 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import kotlinx.serialization.Serializable
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.Prefs
 
 class NotificationUtil(ctx: Service) {
+    private val HAS_ASKED_FOR_PUSH_PERMISSION = "com.mozilla.vpnNotification.didAskForPermission"
     private val NOTIFICATION_CHANNEL_ID = "com.mozilla.vpnNotification"
     private val CONNECTED_NOTIFICATION_ID = 1337
     private val context: Service = ctx
@@ -90,19 +93,56 @@ class NotificationUtil(ctx: Service) {
         // Register the channel with the system
         mNotificationManager.createNotificationChannel(channel)
     }
+
+    /**
+     * Returns true if the permission "android.permission.POST_NOTIFICATIONS"
+     * needs to be requested before this class will be functional.
+     */
+    fun needsNotificationPermission(): Boolean {
+        // Android 13
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            Log.i("NotificationUtil", "No need to request permissionf for ${Build.VERSION.SDK_INT}")
+            // Below android 13, we will request permissions on
+            // implicit due to us being a foreground service
+            return false
+        }
+        val res = context.checkSelfPermission("android.permission.POST_NOTIFICATIONS")
+        if (res == PackageManager.PERMISSION_GRANTED) {
+            Log.i("NotificationUtil", "Permission Granted")
+            // We have the permission, all good
+            return false
+        }
+        // We would need permissions but only ask the user once.
+        val prefs = Prefs.get(context)
+        if (prefs.getBoolean(HAS_ASKED_FOR_PUSH_PERMISSION, false)) {
+            Log.i("NotificationUtil", "We already asked for push permission, not doing again")
+            return false
+        }
+        Log.i("NotificationUtil", "Need to ask for Notificaiton Permission")
+        return true
+    }
+
+    /**
+     * Should be fired once the user has been asked about their notification
+     * preference, so we will only ask once.
+     */
+    fun onNotificationPermissionPromptFired() {
+        val prefs = Prefs.get(context)
+        prefs.edit().putBoolean(HAS_ASKED_FOR_PUSH_PERMISSION, true).apply()
+    }
 }
 
-/*
- * ClientNotification
- * Message sent from the client manually.
- */
+ /*
+  * ClientNotification
+  * Message sent from the client manually.
+  */
 @Serializable
 data class ClientNotification(val header: String, val body: String)
 
-/*
- * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
- * and is provided by the controller when asking for a connection.
- */
+ /*
+  * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
+  * and is provided by the controller when asking for a connection.
+  */
 @Serializable
 data class CannedNotification(
     // Message to be shown when the Client connects

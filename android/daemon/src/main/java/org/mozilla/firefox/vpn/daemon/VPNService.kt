@@ -21,6 +21,7 @@ import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
@@ -75,7 +76,7 @@ class VPNService : android.net.VpnService() {
                 mConnectionTime = System.currentTimeMillis()
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
-                    VPNServiceBinder.EVENTS.connected,
+                    CoreBinder.EVENTS.connected,
                     JSONObject()
                         .apply {
                             put("time", mConnectionTime)
@@ -86,7 +87,7 @@ class VPNService : android.net.VpnService() {
                 return
             }
             Log.i(tag, "Dispatch Daemon State -> disconnected")
-            mBinder.dispatchEvent(VPNServiceBinder.EVENTS.disconnected, "")
+            mBinder.dispatchEvent(CoreBinder.EVENTS.disconnected, "")
             mConnectionTime = 0
         }
 
@@ -141,6 +142,9 @@ class VPNService : android.net.VpnService() {
     override fun onBind(intent: Intent?): IBinder? {
         Log.v(tag, "Got Bind request")
         init()
+        if (mNotificationHandler.needsNotificationPermission()) {
+            mBinder.dispatchEvent(CoreBinder.EVENTS.requestNotificationPermission)
+        }
         return mBinder
     }
 
@@ -235,11 +239,11 @@ class VPNService : android.net.VpnService() {
             }
         }
 
-    /*
-     * Checks if the VPN Permission is given.
-     * If the permission is given, returns true
-     * Requests permission and returns false if not.
-     */
+     /*
+      * Checks if the VPN Permission is given.
+      * If the permission is given, returns true
+      * Requests permission and returns false if not.
+      */
     fun checkPermissions(): Intent? {
         // See https://developer.android.com/guide/topics/connectivity/vpn#connect_a_service
         // Call Prepare, if we get an Intent back, we dont have the VPN Permission

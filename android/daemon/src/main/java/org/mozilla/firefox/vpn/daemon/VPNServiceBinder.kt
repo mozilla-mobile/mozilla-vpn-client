@@ -5,40 +5,24 @@
 package org.mozilla.firefox.vpn.daemon
 
 import android.content.Intent
-import android.os.Binder
 import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
+import java.util.*
 import kotlin.Exception
 
-class VPNServiceBinder(service: VPNService) : Binder() {
+class VPNServiceBinder(service: VPNService) : CoreBinder() {
 
     private val mService = service
     private val tag = "VPNServiceBinder"
 
     private val mListeners = ArrayList<IBinder>()
     private var mResumeConfig: JSONObject? = null
-
-    /** The codes this Binder does accept in [onTransact] */
-    object ACTIONS {
-        const val activate = 1
-        const val deactivate = 2
-        const val registerEventListener = 3
-        const val requestStatistic = 4
-        const val requestCleanupLog = 6
-        const val resumeActivate = 7
-        const val setNotificationText = 8
-        const val recordEvent = 10
-        const val getStatus = 13
-        const val setStartOnBoot = 15
-        const val reactivate = 16
-        const val clearStorage = 17
-        const val setGleanUploadEnabled = 18
-    }
 
     /**
      * Gets called when the VPNServiceBinder gets a request from a Client. The [code] determines
@@ -119,7 +103,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 if (!Prefs.get(mService).contains("glean_enabled")) {
                     Log.i(tag, "Requesting Glean upload enabled state. No value in storage.")
                     dispatchEvent(
-                        VPNServiceBinder.EVENTS.requestGleanUploadEnabledState,
+                        EVENTS.requestGleanUploadEnabledState,
                         "",
                         binder,
                     )
@@ -179,6 +163,10 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 mService.setGleanUploadEnabled(args.getBoolean("uploadEnabled"))
                 return true
             }
+            ACTIONS.notificationPermissionFired -> {
+                mService.mNotificationHandler.onNotificationPermissionPromptFired()
+                return true
+            }
             IBinder.LAST_CALL_TRANSACTION -> {
                 Log.e(tag, "The OS Requested to shut down the VPN")
                 this.mService.turnOff()
@@ -204,6 +192,7 @@ class VPNServiceBinder(service: VPNService) : Binder() {
         dispatchEvent(code, data, targetBinder)
     }
     fun dispatchEvent(code: Int, data: Parcel, targetBinder: IBinder? = null) {
+        Log.e("VPNServiceBinder", "Sending $code")
         targetBinder?.let {
             try {
                 it.transact(code, data, Parcel.obtain(), 0)
@@ -243,15 +232,4 @@ class VPNServiceBinder(service: VPNService) : Binder() {
                 false
             }
         }
-
-    /** The codes we Are Using in case of [dispatchEvent] */
-    object EVENTS {
-        const val init = 0
-        const val connected = 1
-        const val disconnected = 2
-        const val statisticUpdate = 3
-        const val activationError = 5
-        const val permissionRequired = 6
-        const val requestGleanUploadEnabledState = 7
-    }
 }
