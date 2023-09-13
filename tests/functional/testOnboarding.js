@@ -9,7 +9,6 @@ const setup = require('./setupVpn.js');
 
 describe('Onboarding', function() {
   beforeEach(async () => {
-    await vpn.hardReset();
     await vpn.flipFeatureOn("newOnboarding")
     assert.equal(await vpn.getSetting('onboardingStarted'), false);
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
