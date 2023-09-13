@@ -154,7 +154,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     bindService(new Intent(this, VPNService.class), mConnection,
             Context.BIND_AUTO_CREATE);
   }
-  // TODO: we need to port this class to kotlin
+  // TODO: VPN-5528 we need to port this class to kotlin
   // so we can use that Shared Code
   private final int PERMISSION_TRANSACTION = 1337;
   private final int ACTION_REGISTER_LISTENER = 3;
