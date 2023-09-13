@@ -28,11 +28,10 @@ jobs:
         id: getDecisionTask
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF: ${{ github.ref }}
         shell: bash
         run : |
-          .github/scripts/get_decision_task.py --ref ${{ github.ref }} --verbose
-          .github/scripts/get_decision_task.py --ref ${{ github.ref }} >> $GITHUB_OUTPUT 
+          .github/scripts/get_decision_task.py --ref ${{github.sha}} --verbose
+          .github/scripts/get_decision_task.py >> $GITHUB_OUTPUT 
   
   unit-tests:
     name: ${{matrix.os}} Unit tests
