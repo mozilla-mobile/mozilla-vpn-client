@@ -55,7 +55,7 @@ qt-win-next:
     dependencies:
         openssl: toolchain-openssl-win
     run:
-        script: compile_qt_6.ps1 -Minimal
+        script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
         toolchain-alias: qt-win-next
