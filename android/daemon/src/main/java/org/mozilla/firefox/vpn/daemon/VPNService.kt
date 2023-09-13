@@ -116,7 +116,6 @@ class VPNService : android.net.VpnService() {
         // is bound to this service, it will request that the main app broadcast
         // the user provided preference for this. So it should not be long until
         // the correct value is set here. See VPNServiceBinder > onTransact > ACTIONS.registerEventListener.
-        // Lol it' so broken.
         initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
     }
 

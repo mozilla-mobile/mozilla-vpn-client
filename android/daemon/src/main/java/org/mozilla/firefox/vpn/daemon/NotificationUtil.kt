@@ -118,7 +118,7 @@ class NotificationUtil(ctx: Service) {
             Log.i("NotificationUtil", "We already asked for push permission, not doing again")
             return false
         }
-        Log.e("NotificationUtil", "Need to ask for Notificaiton Permission")
+        Log.i("NotificationUtil", "Need to ask for Notificaiton Permission")
         return true
     }
 

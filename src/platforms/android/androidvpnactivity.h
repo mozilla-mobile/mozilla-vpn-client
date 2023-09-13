@@ -69,7 +69,7 @@ enum ServiceEvents {
   // When this event is received, the app should broadcast
   // the telemetry preferences to the daemon ASAP.
   EVENT_REQUEST_GLEAN_UPLOAD_ENABLED = 7,
-  // The Daemon need's the app to ask to notification
+  // The Daemon need's the app to ask for notification
   // permissions, to show the "you're connected" messages.
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
 };
