@@ -124,6 +124,13 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV LD=${ANDROID_TOOLCHAIN_ROOT_BIN}/lld)
     endif()
 
+    if(WINDOWS)
+        # Make sure that on windows we're using the same linker for our crates 
+        # as the Client
+        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS=-Clinker=${CMAKE_CXX_LINK_EXECUTABLE})
+        list(APPEND RUST_BUILD_CARGO_ENV LD=${CMAKE_CXX_LINK_EXECUTABLE})
+    endif()
+
     if(CMAKE_GENERATOR MATCHES "Ninja")
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
