@@ -156,7 +156,6 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   }
   // TODO: we need to port this class to kotlin
   // so we can use that Shared Code
-  // Editors Note: we need to port this class to kotlin
   private final int PERMISSION_TRANSACTION = 1337;
   private final int ACTION_REGISTER_LISTENER = 3;
   private final int ACTION_RESUME_ACTIVATE = 7;
