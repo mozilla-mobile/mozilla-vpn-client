@@ -50,13 +50,32 @@ MZStepNavigation {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
         },
-        OnboardingStartSlide {
-            property string labelText: "OnboardingProgressBarGetStarted"
+        //Last slide is different based on platform
+        Loader {
+            property string labelText: "OnboardingProgressBarGetStarted2"
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
 
+            //DEBUGGING - FIX BEFORE COMMITTING
+            sourceComponent: Qt.platform.os === "osx" || Qt.platform.os === "ios" ? startSlideMobile : startSlideDesktop
+        }
+    ]
+
+    Component {
+        id: startSlideDesktop
+
+        OnboardingStartSlideDesktop {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
         }
-    ]
+    }
+
+    Component {
+        id: startSlideMobile
+
+        OnboardingStartSlideMobile {
+            onNextClicked: stepNav.next()
+            onBackClicked: stepNav.back()
+        }
+    }
 }

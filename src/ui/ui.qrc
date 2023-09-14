@@ -60,7 +60,8 @@
         <file>screens/onboarding/OnboardingDataSlide.qml</file>
         <file>screens/onboarding/OnboardingDevicesSlide.qml</file>
         <file>screens/onboarding/OnboardingPrivacySlide.qml</file>
-        <file>screens/onboarding/OnboardingStartSlide.qml</file>
+        <file>screens/onboarding/OnboardingStartSlideDesktop.qml</file>
+        <file>screens/onboarding/OnboardingStartSlideMobile.qml</file>
         <file>screens/onboarding/ViewOnboarding.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>

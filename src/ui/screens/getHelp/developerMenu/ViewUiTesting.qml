@@ -200,7 +200,7 @@ MZViewBase {
 
                     },
                     ColumnLayout {
-                        property string labelText: "OnboardingProgressBarGetStarted"
+                        property string labelText: "OnboardingProgressBarGetStarted2"
                         property string iconSource: "qrc:/nebula/resources/startup.svg"
 
                         spacing: 24
