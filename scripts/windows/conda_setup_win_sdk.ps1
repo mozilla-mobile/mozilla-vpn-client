@@ -73,7 +73,7 @@ $activate = @"
 `$env:AR_x86_64_pc_windows_msvc="llvm-lib"
 `$env:LD_x86_64_pc_windows_msvc="lld-link"
 `$env:CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link `$env:CONDA_PREFIX\\xwin\\crt\\include `$env:CONDA_PREFIX\\xwin\\sdk\\include\\ucrt `$env:CONDA_PREFIX\\xwin\\sdk\\include\\um `$env:CONDA_PREFIX\\xwin\\sdk\\include\\shared"
-`$env:RUSTFLAGS="-C linker=lld-link -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\ucrt\\x86_64"
+`$env:RUSTFLAGS="-Clinker=`$env:CONDA_PREFIX/Library/bin/lld-link.exe -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\ucrt\\x86_64"
 
 # Conda/go does not ship an activate.ps1 -> therefore stuff is broken on powershell. 
 `$env:GOROOT="`$env:CONDA_PREFIX\go"
@@ -116,6 +116,7 @@ Out-File -Encoding utf8 `
          -InputObject $deactivate 
 
 
+Remove-Item ".xwin-cache" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
+
 Write-Output("You are SET! - Please re-activate your conda env to have stuff applied.")
 Set-Location $OLD_PWD
-Remove-Item ".xwin-cache" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
