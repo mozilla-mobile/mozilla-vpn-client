@@ -42,6 +42,7 @@ endif()
 
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
+add_subdirectory(xpc)
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
@@ -50,6 +51,7 @@ target_link_libraries(mozillavpn PRIVATE
     nebula
     translations
     qtglean
+    xpc
 )
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
