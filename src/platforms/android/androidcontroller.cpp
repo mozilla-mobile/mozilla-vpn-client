@@ -152,21 +152,9 @@ void AndroidController::activate(const InterfaceConfig& config,
   jServer["publicKey"] = config.m_serverPublicKey;
   jServer["port"] = (double)config.m_serverPort;
 
-  QList<IPAddress> allowedIPs;
-  QList<IPAddress> excludedIPs;
-  QJsonArray fullAllowedIPs;
+  QJsonArray jAllowedIPs;
   foreach (auto item, config.m_allowedIPAddressRanges) {
-    allowedIPs.append(IPAddress(item.toString()));
-  }
-
-  if (!config.m_serverIpv4AddrIn.isEmpty()) {
-    excludedIPs.append(IPAddress(config.m_serverIpv4AddrIn));
-  }
-  if (!config.m_serverIpv6AddrIn.isEmpty()) {
-    excludedIPs.append(IPAddress(config.m_serverIpv6AddrIn));
-  }
-  foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
-    fullAllowedIPs.append(QJsonValue(item.toString()));
+    jAllowedIPs.append(QJsonValue(item.toString()));
   }
 
   QJsonArray excludedApps;
@@ -202,7 +190,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["keys"] = jKeys;
   args["server"] = jServer;
   args["reason"] = (int)reason;
-  args["allowedIPs"] = fullAllowedIPs;
+  args["allowedIPs"] = jAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = config.m_dnsServer;
   if (fallbackServer) {
