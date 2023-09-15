@@ -11,6 +11,7 @@ import compat 0.1
 
 ColumnLayout {
     id: root
+    objectName: "onboardingDevicesSlide"
 
     signal nextClicked()
     signal backClicked()
@@ -59,6 +60,7 @@ ColumnLayout {
 
         MZSegmentedToggle {
             id: deviceTypeToggle
+            objectName: "deviceTypeToggle"
 
             Layout.preferredWidth: 108
 
@@ -129,6 +131,8 @@ ColumnLayout {
             }
 
             Image {
+                objectName: "playStoreQrCode"
+
                 width: 152
                 height: 152
 
@@ -163,6 +167,8 @@ ColumnLayout {
             }
 
             Image {
+                objectName: "appStoreQrCode"
+
                 width: 152
                 height: 152
 
@@ -182,6 +188,8 @@ ColumnLayout {
     }
 
     MZButton {
+        objectName: "devicesNextButton"
+
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -193,6 +201,8 @@ ColumnLayout {
     }
 
     MZLinkButton {
+        objectName: "devicesBackButton"
+
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2

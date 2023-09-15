@@ -65,7 +65,7 @@ ColumnLayout {
     Component.onCompleted: {
         //Fill the MZStepProgressBar model with labels and icons
         for (let i = 0; i < views.length; i++) {
-            stepProgressBarListModel.append({"labelText": views[i].labelText, "iconSource": views[i].iconSource})
+            stepProgressBarListModel.append({"labelText": views[i].labelText, "iconSource": views[i].iconSource, "objectName": views[i].objectName})
         }
 
         if(views.length >= 1) stackView.push(views[0])
@@ -107,6 +107,7 @@ ColumnLayout {
 
         StackView {
             id: stackView
+            objectName: "stepNavStackView"
 
             anchors.top: parent.top
             anchors.left: parent.left

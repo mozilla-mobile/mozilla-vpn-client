@@ -437,6 +437,37 @@ const screenSubscriptionNeeded = {
       new QmlQueryComposer('//vpnSubscriptionNeededButton'),
 };
 
+const screenOnboarding = {
+  SCREEN: new QmlQueryComposer('//screenOnboarding'),
+  ONBOARDING_VIEW: new QmlQueryComposer('//viewOnboarding'),
+  STEP_NAV_STACK_VIEW: new QmlQueryComposer('//stepNavStackView'),
+  STEP_PROG_BAR_DATA_BUTTON: new QmlQueryComposer('//progressBarRow/data'),
+  STEP_PROG_BAR_PRIVACY_BUTTON: new QmlQueryComposer('//progressBarRow/privacy'),
+  STEP_PROG_BAR_DEVICES_BUTTON: new QmlQueryComposer('//progressBarRow/devices'),
+  DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
+  DATA_CHECKBOX: new QmlQueryComposer('//dataCollectionCheckBox'),
+  DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),
+  DATA_NEXT_BUTTON: new QmlQueryComposer('//dataNextButton'),
+  PRIVACY_SLIDE: new QmlQueryComposer('//onboardingPrivacySlide'),
+  PRIVACY_NEXT_BUTTON: new QmlQueryComposer('//privacyNextButton'),
+  PRIVACY_BLOCK_ADS_CHECKBOX: new QmlQueryComposer('//blockAds//checkbox'),
+  PRIVACY_BLOCK_TRACKERS_CHECKBOX: new QmlQueryComposer('//blockTrackers//checkbox'),
+  PRIVACY_BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
+  PRIVACY_BACK_BUTTON: new QmlQueryComposer('//privacyBackButton'),
+  DEVICES_SLIDE: new QmlQueryComposer('//onboardingDevicesSlide'),
+  DEVICES_TOGGLE_BTN_ANDROID: new QmlQueryComposer('//segmentedToggleBtnLayout/tabAndroid'),
+  DEVICES_TOGGLE_BTN_IOS: new QmlQueryComposer('//segmentedToggleBtnLayout/tabApple'),
+  DEVICES_DEVICE_TYPE_TOGGLE: new QmlQueryComposer('//deviceTypeToggle'),
+  DEVICES_PLAY_STORE_QRCODE: new QmlQueryComposer('//playStoreQrCode'),
+  DEVICES_APP_STORE_QRCODE: new QmlQueryComposer('//appStoreQrCode'),
+  DEVICES_NEXT_BUTTON: new QmlQueryComposer('//devicesNextButton'),
+  DEVICES_BACK_BUTTON: new QmlQueryComposer('//devicesBackButton'),
+  START_SLIDE: new QmlQueryComposer('//onboardingStartSlide'),
+  START_START_AT_BOOT_CHECKBOX: new QmlQueryComposer('//startAtBootCheckBox//checkbox'),
+  START_NEXT_BUTTON: new QmlQueryComposer('//startNextButton'),
+  START_BACK_BUTTON: new QmlQueryComposer('//startBackButton'),
+};
+
 const navBar = {
   HOME: new QmlQueryComposer('//navigationLayout/navButton-home'),
   MESSAGES: new QmlQueryComposer('//navigationLayout/navButton-messages'),
@@ -462,6 +493,7 @@ module.exports = {
   screenMessaging,
   screenDeleteAccount,
   screenSubscriptionNeeded,
+  screenOnboarding,
   global,
   navBar,
 }

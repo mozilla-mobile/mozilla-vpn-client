@@ -5,79 +5,276 @@
 const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
-
+const setup = require('./setupVpn.js');
 
 describe('Onboarding', function() {
-  it('Navigating to and from the help menu is possible', async () => {
-    await vpn.waitForQueryAndClick(
-        queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
+  this.timeout(120000);
 
-    await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
+  beforeEach(async () => {
+    await vpn.flipFeatureOn("newOnboarding");
+    assert.equal(await vpn.getSetting('onboardingStarted'), false);
+    assert.equal(await vpn.getSetting('onboardingCompleted'), false);
+    await vpn.authenticateInApp();
   });
 
-  it('SwipeView is visible', async () => {
-    await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
+  //Tests pretty much all of the new onboarding, including all slides, controls, navigation, and ensuring settings persist into StateMain
+  it('Complete onboarding', async () => {
+    await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
+    assert.equal(await vpn.getSetting('onboardingStarted'), true);
+
+    //DATA SLIDE
+    //Do some checks on the initial state of the data slide
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
+    assert.equal(await vpn.getSetting('onboardingStep'), 0);
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getSetting('gleanEnabled'), false);
+
+    //Check data collection checkbox
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+
+    //Check privacy link
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+        return url.endsWith('/r/vpn/privacy');
+    });
+
+    //Proceed to privacy slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+
+    //PRIVACY SLIDE
+    //Do some checks on the initial state of the privacy slide
+    await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 1);
+    assert.equal(await vpn.getSetting('onboardingStep'), 1);
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
+
+    //Clicks block ads checkbox
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
+
+    //Clicks block trackers checkbox
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 6);
+
+    //Clicks block trackers checkbox
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('dnsProviderFlags'), 14);
+
+    //Test back button
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
+
+    //Ensure all selections on previous slide are saved
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+
+    //Return to privacy slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Test going back one slide via progress bar
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Proceed to devices slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+
+    //DEVICES SLIDE
+    //Do some checks on the initial state of the devices slide
+    await vpn.waitForQuery(queries.screenOnboarding.DEVICES_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 2);
+    assert.equal(await vpn.getSetting('onboardingStep'), 2);
+
+    //Switch between toggle buttons
+    console.log(await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex'))
+    if (await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex') === 0) {
+      //Starting with Android - switch to iOS and back to Android
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.DEVICES_APP_STORE_QRCODE.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.DEVICES_PLAY_STORE_QRCODE.visible());
+    }
+    else {
+      //Starting with iOS - switch to Android and back to iOS
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.DEVICES_PLAY_STORE_QRCODE.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.DEVICES_APP_STORE_QRCODE.visible());
+    }
+
+    //Test back button
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 1);
+
+    //Ensure all selections on previous slide are saved
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+
+    //Return to devices slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Test going back one slide via progress bar
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_PRIVACY_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Proceed to start slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+
+    //START SLIDE
+    //Do some checks on the initial state of the start slide
+    await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
+    assert.equal(await vpn.getSetting('onboardingStep'), 3);
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getSetting('startAtBoot'), false);
+
+    //Check start at boot checkbox
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('startAtBoot'), true);
+
+    //Test back button
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQuery(queries.screenOnboarding.DEVICES_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 2);
+
+    //Return to start slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Ensure all selections on start slide are saved
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('startAtBoot'), true);
+
+    //Test going back one slide via progress bar
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Return to start slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Test going all the way back to the first slide
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Proceed by completing onboarding
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
+    assert.equal(await vpn.getSetting('onboardingCompleted'), true);
+
+
+    //Test that changes made during onboarding persist
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
+
+    //Check privacy settings
+    await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    //Check data collection and start at boot
+    await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.DATA_COLLECTION, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.START_AT_BOOT, 'isChecked'), 'true');
   });
+  
+   //Tests restoring onboarding to current step after quitting 
+  it('Quitting app during onboarding', async () => {
+    // Skip WASM because this test does a lot of quitting and re-launching
+    if (this.ctx.wasm) {
+      return;
+    }
 
-  it('Sign up button is visible', async () => {
-    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-  });
+    await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
 
-  it('Already a subscriber button is visible', async () => {
-    await vpn.waitForQuery(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
-  });
+    //Ensure we are on the first onboarding step
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
+    assert.equal(await vpn.getSetting('onboardingStep'), 0);
 
-  it('Panel title is set correctly based on StackView currentIndex',
-     async () => {
-       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-       await vpn.setQueryProperty(
-           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 0);
-       await vpn.wait();
-       await vpn.waitForQuery(queries.screenInitialize.PANEL_TITLE.visible());
-       assert.equal(
-           await vpn.getQueryProperty(
-               queries.screenInitialize.PANEL_TITLE, 'text'), 'Mozilla VPN');
-     });
+    //Quit and relaunch the app
+    await vpn.quit();
+    await setup.startAndConnect();
 
-  it('Panel description is set correctly based on StackView currentIndex',
-     async () => {
-       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-       await vpn.setQueryProperty(
-           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 0);
-       await vpn.wait();
-       const descriptionText = await vpn.getQueryProperty(
-           queries.screenInitialize.PANEL_DESCRIPTION, 'text');
-       assert(descriptionText.includes('Firefox'));
-     });
+    //Ensure we start where we left off
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
+    assert.equal(await vpn.getSetting('onboardingStep'), 0);
 
-  it('Panel title and description are updated when SwipeView currentIndex changes',
-     async () => {
-       await vpn.waitForQuery(queries.screenInitialize.SWIPE_VIEW.visible());
-       await vpn.setQueryProperty(
-           queries.screenInitialize.SWIPE_VIEW, 'currentIndex', 2);
-       await vpn.wait();
-       assert.equal(
-           await vpn.getQueryProperty(
-               queries.screenInitialize.PANEL_TITLE.visible(), 'text'),
-           'One tap to safety');
-       const descriptionText = await vpn.getQueryProperty(
-           queries.screenInitialize.PANEL_DESCRIPTION, 'text');
-       assert(descriptionText.includes('Protecting yourself is simple'));
-     });
+    //Proceed to second onboarding step
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
-  it('Sign up button opens auth flow', async () => {
-    await vpn.waitForQueryAndClick(
-        queries.screenInitialize.SIGN_UP_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-  });
+    //Quit and relaunch the app
+    await vpn.quit();
+    await setup.startAndConnect();
 
-  it('Already a subscriber? opens auth flow', async () => {
-    await vpn.waitForQueryAndClick(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+    //Ensure we start where we left off
+    await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 1);
+    assert.equal(await vpn.getSetting('onboardingStep'), 1);
+
+    //Proceed to third onboarding step
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Quit and relaunch the app
+    await vpn.quit();
+    await setup.startAndConnect();
+
+    //Ensure we start where we left off
+    await vpn.waitForQuery(queries.screenOnboarding.DEVICES_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 2);
+    assert.equal(await vpn.getSetting('onboardingStep'), 2);
+
+    //Proceed to fourth/final onboarding step
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+
+    //Quit and relaunch the app
+    await vpn.quit();
+    await setup.startAndConnect();
+
+    //Ensure we start where we left off
+    await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
+    assert.equal(await vpn.getSetting('onboardingStep'), 3);
   });
 });

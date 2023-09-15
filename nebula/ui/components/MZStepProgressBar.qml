@@ -47,6 +47,7 @@ Item {
 
     Row {
         id: delegateLayout
+        objectName: "progressBarRow"
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -57,6 +58,8 @@ Item {
             model: progressBar.model
             delegate:  MZStepProgressBarDelegate {
                 id: progressBarDelegate
+                objectName: model.objectName
+
                 iconSource: model.iconSource
                 labelText: MZI18n[model.labelText]
                 labelWidth: progressBar.width / progressBar.model.count

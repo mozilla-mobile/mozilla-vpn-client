@@ -11,6 +11,7 @@ import components 0.1
 
 ColumnLayout {
     id: root
+    objectName: "onboardingStartSlide"
 
     signal nextClicked()
     signal backClicked()
@@ -47,6 +48,8 @@ ColumnLayout {
     }
 
     MZCheckBoxRow {
+        objectName: "startAtBootCheckBox"
+
         Layout.topMargin: MZTheme.theme.vSpacing
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
@@ -64,6 +67,8 @@ ColumnLayout {
     }
 
     MZButton {
+        objectName: "startNextButton"
+
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -75,6 +80,8 @@ ColumnLayout {
     }
 
     MZLinkButton {
+        objectName: "startBackButton"
+
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2

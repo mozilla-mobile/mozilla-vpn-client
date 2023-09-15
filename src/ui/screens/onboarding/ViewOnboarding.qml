@@ -13,6 +13,8 @@ import components 0.1
 MZStepNavigation {
     id: stepNav
 
+    objectName: "viewOnboarding"
+
     anchors {
         top: parent.top
         left: parent.left
@@ -28,12 +30,14 @@ MZStepNavigation {
         OnboardingDataSlide {
             property string labelText: "OnboardingProgressBarDataUse"
             property string iconSource: "qrc:/nebula/resources/lock.svg"
+            property string objectName: "data"
 
             onNextClicked: stepNav.next()
         },
         OnboardingPrivacySlide {
             property string labelText: "OnboardingProgressBarMorePrivacy"
             property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+            property string objectName: "privacy"
 
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
@@ -41,6 +45,7 @@ MZStepNavigation {
         OnboardingDevicesSlide {
             property string labelText: "OnboardingProgressBarAddDevices"
             property string iconSource: "qrc:/ui/resources/devices.svg"
+            property string objectName: "devices"
 
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
@@ -48,6 +53,7 @@ MZStepNavigation {
         OnboardingStartSlide {
             property string labelText: "OnboardingProgressBarGetStarted"
             property string iconSource: "qrc:/nebula/resources/startup.svg"
+            property string objectName: "start"
 
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()

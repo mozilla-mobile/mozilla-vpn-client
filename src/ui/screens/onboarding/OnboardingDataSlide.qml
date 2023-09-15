@@ -10,6 +10,7 @@ import components 0.1
 
 ColumnLayout {
     id: root
+    objectName: "onboardingDataSlide"
 
     signal nextClicked()
 
@@ -55,6 +56,8 @@ ColumnLayout {
     }
 
     MZCheckBoxRow {
+        objectName: "dataCollectionCheckBox"
+
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -75,6 +78,8 @@ ColumnLayout {
     }
 
     MZButton {
+        objectName: "dataNextButton"
+
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -93,6 +98,8 @@ ColumnLayout {
    }
 
     MZLinkButton {
+        objectName: "dataPrivacyLink"
+
         Layout.topMargin: 8
         Layout.leftMargin: 32
         Layout.rightMargin: 32
