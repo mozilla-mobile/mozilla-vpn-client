@@ -127,8 +127,8 @@ function(build_rust_archives)
     if(MSVC)
         # Make sure that on windows we're using the same linker for our crates 
         # as the Client
-        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS=-Clinker=${CMAKE_CXX_LINK_EXECUTABLE})
-        list(APPEND RUST_BUILD_CARGO_ENV LD=${CMAKE_CXX_LINK_EXECUTABLE})
+        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS=-Clinker=${CMAKE_LINKER})
+        list(APPEND RUST_BUILD_CARGO_ENV LD=${CMAKE_LINKER})
     endif()
 
     if(CMAKE_GENERATOR MATCHES "Ninja")
