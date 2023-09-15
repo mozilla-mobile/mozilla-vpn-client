@@ -454,7 +454,7 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setOnboardingCompleted(true);
 
     // Resetting for the benefit of testing so that we only have to reset one
-    // setting (onboardingCompleted) manually No real affect on user since they
+    // setting (onboardingCompleted) manually. No real affect on user since they
     // will never see onboarding again
     settingsHolder->setOnboardingStep(0);
 
@@ -934,7 +934,7 @@ void MozillaVPN::onboardingCompleted() {
     settingsHolder->setOnboardingCompleted(true);
 
     // Resetting for the benefit of testing so that we only have to reset one
-    // setting (onboardingCompleted) manually No real affect on user since they
+    // setting (onboardingCompleted) manually. No real affect on user since they
     // will never see onboarding again
     settingsHolder->setOnboardingStep(0);
 

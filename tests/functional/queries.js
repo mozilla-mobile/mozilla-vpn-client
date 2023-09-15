@@ -463,7 +463,7 @@ const screenOnboarding = {
   DEVICES_NEXT_BUTTON: new QmlQueryComposer('//devicesNextButton'),
   DEVICES_BACK_BUTTON: new QmlQueryComposer('//devicesBackButton'),
   START_SLIDE: new QmlQueryComposer('//onboardingStartSlide'),
-  START_START_AT_BOOT_CHECKBOX: new QmlQueryComposer('//startAtBootCheckBox'),
+  START_START_AT_BOOT_CHECKBOX: new QmlQueryComposer('//startAtBootCheckBox//checkbox'),
   START_NEXT_BUTTON: new QmlQueryComposer('//startNextButton'),
   START_BACK_BUTTON: new QmlQueryComposer('//startBackButton'),
 };

@@ -8,8 +8,10 @@ const vpn = require('./helper.js');
 const setup = require('./setupVpn.js');
 
 describe('Onboarding', function() {
+  this.timeout(120000);
+
   beforeEach(async () => {
-    await vpn.flipFeatureOn("newOnboarding")
+    await vpn.flipFeatureOn("newOnboarding");
     assert.equal(await vpn.getSetting('onboardingStarted'), false);
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
     await vpn.authenticateInApp();
@@ -58,7 +60,6 @@ describe('Onboarding', function() {
 
     //Clicks block ads checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
-    // await vpn.wait(2000)
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'true');
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
 
@@ -103,6 +104,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 2);
 
     //Switch between toggle buttons
+    console.log(await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex'))
     if (await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex') === 0) {
       //Starting with Android - switch to iOS and back to Android
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
@@ -149,12 +151,12 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
     assert.equal(await vpn.getSetting('onboardingStep'), 3);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'false');
     assert.equal(await vpn.getSetting('startAtBoot'), false);
 
     //Check start at boot checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test back button
@@ -168,7 +170,7 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Ensure all selections on start slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test going back one slide via progress bar
@@ -214,6 +216,11 @@ describe('Onboarding', function() {
   
    //Tests restoring onboarding to current step after quitting 
   it('Quitting app during onboarding', async () => {
+    // Skip WASM because this test does a lot of quitting and re-launching
+    if (this.ctx.wasm) {
+      return;
+    }
+
     await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
     await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
 
@@ -223,8 +230,8 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
 
     //Quit and relaunch the app
-    await vpn.quit()
-    await setup.startAndConnect()
+    await vpn.quit();
+    await setup.startAndConnect();
 
     //Ensure we start where we left off
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
@@ -236,8 +243,8 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Quit and relaunch the app
-    await vpn.quit()
-    await setup.startAndConnect()
+    await vpn.quit();
+    await setup.startAndConnect();
 
     //Ensure we start where we left off
     await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
@@ -249,8 +256,8 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Quit and relaunch the app
-    await vpn.quit()
-    await setup.startAndConnect()
+    await vpn.quit();
+    await setup.startAndConnect();
 
     //Ensure we start where we left off
     await vpn.waitForQuery(queries.screenOnboarding.DEVICES_SLIDE.visible());
@@ -262,8 +269,8 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Quit and relaunch the app
-    await vpn.quit()
-    await setup.startAndConnect()
+    await vpn.quit();
+    await setup.startAndConnect();
 
     //Ensure we start where we left off
     await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
