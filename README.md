@@ -17,6 +17,8 @@ Before you attempt to make a contribution please read the [Community
 Participation
 Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
 
+
+
 Here are some useful links to start:
 
 * [View open
