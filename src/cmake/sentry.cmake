@@ -68,6 +68,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE sentry.lib)
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
+        target_link_libraries(shared-sources INTERFACE version.lib)
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
     endif()
 
