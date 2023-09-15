@@ -187,8 +187,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhotreloader.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhotreloader.cpp
-    ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketconnection.h
-    ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketconnection.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.h
     ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorutils.cpp

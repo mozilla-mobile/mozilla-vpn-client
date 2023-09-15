@@ -9,7 +9,7 @@
 
 #include <QWebchannel>
 
-#include "inspectorwebsocketconnection.h"
+
 #include "inspectorwebchannel.h"
 #include "leakdetector.h"
 #include "logger.h"

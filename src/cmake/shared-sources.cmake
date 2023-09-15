@@ -136,8 +136,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectoritempicker.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorutils.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorutils.h
-    ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebsocketconnection.cpp
-    ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebsocketconnection.h
+    ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebchannel.cpp
+    ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebchannel.h
+    ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebsockettransport.cpp
+    ${CMAKE_SOURCE_DIR}/src//inspector/inspectorwebsockettransport.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebsocketserver.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorwebsocketserver.h
     ${CMAKE_SOURCE_DIR}/src/ipaddress.cpp
