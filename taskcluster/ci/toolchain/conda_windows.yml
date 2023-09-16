@@ -6,7 +6,7 @@ task-defaults:
     description: "Conda Pack an environment"
     worker:
         max-run-time: 14400
-    worker-type: b-win2012
+    worker-type: b-win2022
     run:
         resources:
             - requirements.txt

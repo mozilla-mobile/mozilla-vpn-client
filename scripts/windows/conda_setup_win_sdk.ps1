@@ -116,6 +116,6 @@ Out-File -Encoding utf8 `
          -InputObject $deactivate 
 
 
+Remove-Item ".xwin-cache" -Confirm -ErrorAction SilentlyContinue -Force -Recurse
 Write-Output("You are SET! - Please re-activate your conda env to have stuff applied.")
 Set-Location $OLD_PWD
-Remove-Item ".xwin-cache" -Confirm -ErrorAction SilentlyContinue -Force -Recurse

@@ -36,4 +36,4 @@ tasks:
             platform: toolchains/win
         worker:
             max-run-time: 14400
-        worker-type: b-win2012
+        worker-type: b-win2022
