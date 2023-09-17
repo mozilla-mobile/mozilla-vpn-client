@@ -9,6 +9,7 @@ qt_add_executable(dummyvpn MANUAL_FINALIZATION)
 include(ExternalProject)
 target_link_libraries(dummyvpn PRIVATE
     Qt6::Quick
+    Qt6::qmlplugin
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
@@ -35,6 +36,15 @@ target_sources(dummyvpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.h
 )
 
+# On Windows, Qt is linked statically and requires the Qt built-in plugins.
+# qmlimportscanner scans the source directory for qml resources in qrc files,
+# extracts their import statements, and generates a list of libraries that
+# supply these built-in plugins.
+# dummyvpn/qml/qt6winhack.qml contains the necessary plugin imports.
+if(WIN32)
+    target_sources(dummyvpn PRIVATE  ${CMAKE_SOURCE_DIR}/tests/dummyvpn/qml/qt6winhack.qrc)
+endif()
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Qt6 REQUIRED COMPONENTS DBus)
     target_link_libraries(dummyvpn PRIVATE Qt6::DBus)
@@ -45,6 +55,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif()
 
 target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
+
+# MZ_DUMMY is a separate platform for dummyvpn.
+# Use #ifdef _WIN32 instead of MZ_WINDOWS in dummyvpn for Windows-specific code.
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 # We should not build into the source dir
