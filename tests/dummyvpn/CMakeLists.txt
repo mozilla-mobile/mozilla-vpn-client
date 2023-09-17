@@ -9,7 +9,6 @@ qt_add_executable(dummyvpn MANUAL_FINALIZATION)
 include(ExternalProject)
 target_link_libraries(dummyvpn PRIVATE
     Qt6::Quick
-    Qt6::qmlplugin
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
