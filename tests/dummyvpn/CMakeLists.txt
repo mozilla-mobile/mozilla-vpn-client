@@ -56,7 +56,7 @@ endif()
 target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 
 # MZ_DUMMY is a separate platform for dummyvpn.
-# Use #ifdef _WIN32 instead of MZ_WINDOWS in dummyvpn for Windows-specific code.
+# Use #ifdef _WIN32 instead of MZ_WINDOWS in dummyvpn for conflicts in Windows-specific code.
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
 # We should not build into the source dir
