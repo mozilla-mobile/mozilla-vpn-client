@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Imports built-in plugins used by the VPN. qmlimportscanner extracts these
-// import statements and generates a list of libraries that supply the built-in
-// plugins to the statically linked Qt on Windows.
+// Imports built-in plugins used by VPN. qmlimportscanner extracts these
+// import statements and generates a list of libraries that supply the
+// built-in plugins to the statically linked Qt on Windows.
 
 import QtQml.Modules 2.2
 import QtQuick 2.5
