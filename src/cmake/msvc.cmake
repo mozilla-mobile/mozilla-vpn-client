@@ -5,7 +5,8 @@
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
     # We're using clang in msvc mode so we can only use 
     # msvc style compile flags
-    # We cannot use mt.exe as clang's replacement is ... not done. 
+    # We need to disable /Manifest tool as clang's implementation
+    # of mt.exe (llvm-mt) is not a complete drop in soloution. 
     set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /MANIFEST:NO")
 else()
