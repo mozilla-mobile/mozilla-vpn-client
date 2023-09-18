@@ -45,11 +45,11 @@ workers:
             implementation: docker-worker
             os: linux
             worker-type: b-linux-large-gcp
-        b-win2012:
+        b-win2022:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
             os: windows
-            worker-type: b-win2012-azure
+            worker-type: b-win2022
         b-macos:
             provisioner: 'releng-hardware'
             implementation: generic-worker

@@ -19,3 +19,5 @@ conda install -y llvm=14.0.6 llvmdev=14.0.6 lld=14.0.6
 # Cmake refuses to auto-detect llvm-mt, even though it detects clang-cl. 
 # Given they are cli-compatible, just copy it :) 
 Copy-Item $conda_folder\Library\bin\llvm-mt.exe $conda_folder\Library\bin\mt.exe
+Copy-Item $conda_folder\Library\bin\lld-link.exe $conda_folder\Library\bin\link.exe
+Copy-Item $conda_folder\Library\bin\clang-cl.exe $conda_folder\Library\bin\cl.exe

@@ -42,7 +42,7 @@ qt-win:
         toolchain-artifact: public/build/qt6_win.zip
     treeherder:
         symbol: TL(qt-win)
-    worker-type: b-win2012
+    worker-type: b-win2022
 
 qt-ios:
     description: "QT ios bundle Task"

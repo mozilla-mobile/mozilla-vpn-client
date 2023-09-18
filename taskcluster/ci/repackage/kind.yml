@@ -27,7 +27,7 @@ tasks:
         dependencies:
             signing: signing-windows/opt
         if-dependencies: [signing]
-        worker-type: b-win2012
+        worker-type: b-win2022
         worker:
             chain-of-trust: true
             max-run-time: 3600
