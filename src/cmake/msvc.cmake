@@ -12,7 +12,7 @@ else()
     # /MP -> Compile Files Paraell
     # /Zc:preprocessor -> Enable Modern Macros, needed for settingsholder
     set(CMAKE_CXX_FLAGS  "/MP /Zc:preprocessor")
-    # Enanble "edit and continue" when using msvc + debug build
+    # Enable "edit and continue" when using msvc + debug build
     set(CMAKE_CXX_FLAGS_DEBUG  "/MTd /ZI /Ob0 /Od /RTC1")
     set(CMAKE_CXX_FLAGS_DEBUG  "/MTd /ZI /Ob0 /Od /RTC1")
     set(CMAKE_MODULE_LINKER_FLAGS_DEBUG  "/debug /INCREMENTAL /LTCG:OFF")
