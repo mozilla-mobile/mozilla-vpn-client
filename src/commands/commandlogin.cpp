@@ -14,7 +14,8 @@
 #include "settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
 
-#ifdef MZ_WINDOWS
+#ifdef _WIN32  // Avoid using MZ_WINDOWS here as it conflicts with MZ_DUMMY on
+               // Windows
 #  include <windows.h>
 #else
 #  include <termios.h>
@@ -245,7 +246,8 @@ QString CommandLogin::getInput(const QString& prompt) {
 // static
 QString CommandLogin::getPassword(const QString& prompt) {
   // Disable the console echo while typing the password
-#ifdef MZ_WINDOWS
+#ifdef _WIN32  // Avoid using MZ_WINDOWS here as it conflicts with MZ_DUMMY on
+               // Windows
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
   DWORD mode;
   GetConsoleMode(hStdin, &mode);

@@ -279,7 +279,8 @@ constexpr const char* MACOS_FALLBACK_APP_ID = "org.mozilla.macos.FirefoxVPN";
 constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 #endif
 
-#if defined(MZ_WINDOWS)
+#if defined(_WIN32)  // Avoid using MZ_WINDOWS here as it conflicts with
+                     // MZ_DUMMY on Windows
 // Credential key for windows
 constexpr const wchar_t* WINDOWS_CRED_KEY = L"Mozilla VPN";
 #endif
