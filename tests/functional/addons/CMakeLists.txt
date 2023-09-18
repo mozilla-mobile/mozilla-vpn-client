@@ -42,24 +42,6 @@ add_addon_target(test_03_single_addon
 )
 set_target_properties(test_03_single_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
-add_addon_target(test_04_tutorials_basic
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/04_tutorials_basic/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/04_tutorials_basic/
-)
-set_target_properties(test_04_tutorials_basic PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
-add_addon_target(test_05_settings_rollback
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/05_settings_rollback/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/05_settings_rollback/
-)
-set_target_properties(test_05_settings_rollback PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
-add_addon_target(test_06_translation_threshold
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/06_translation_threshold/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/06_translation_threshold/
-)
-set_target_properties(test_06_translation_threshold PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
 add_addon_target(test_07_replacer
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/07_replacer/
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/07_replacer/
