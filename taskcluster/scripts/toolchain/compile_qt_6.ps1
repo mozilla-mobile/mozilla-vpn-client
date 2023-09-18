@@ -32,9 +32,13 @@ unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
-$SSL_PATH = resolve-path "$FETCHES_PATH/SSL"
-$env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-$env:OPENSSL_USE_STATIC_LIBS = "TRUE"
+
+# Setup Openssl Import
+$SSL_PATH = "$FETCHES_PATH/SSL"
+if (Test-Path -Path $SSL_PATH) {
+  $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+  $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
+}
 
 Get-ChildItem env:
 # Enter the DEV Shell
@@ -149,7 +153,6 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -feature-imageformat_png  `
   -qt-libpng  `
   -qt-zlib  `
-  -openssl-runtime `
   -prefix $BUILD_PREFIX `
 } 
 
@@ -165,7 +168,10 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
 
 Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination QT_OUT/
-Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
+
+if (Test-Path -Path $SSL_PATH) {
+  Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
+}
 
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
 zip -r "$TASK_WORKDIR/public/build/qt6_win.zip" QT_OUT

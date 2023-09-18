@@ -49,11 +49,6 @@ qt-win-next:
     fetches:
         fetch:
             - win-dev-env
-        openssl:
-            - artifact: open_ssl_win.zip
-              extract: false  # For some reason unzip exits with 1 even tho the file is okay
-    dependencies:
-        openssl: toolchain-openssl-win
     run:
         script: compile_qt_6.ps1
         resources:

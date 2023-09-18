@@ -20,6 +20,8 @@ task-defaults:
             - win-perl
             - win-sentry-cli
             - win-conda
+        toolchain:
+            - conda-windows-x86_64
         build:
             - artifact: mozillavpn-sources.tar.gz
     worker:
@@ -42,10 +44,10 @@ task-defaults:
         cwd: '{checkout}'
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
+
 windows/opt:
     fetches:
         toolchain:
-            - conda-windows-x86_64
             - qt-win
     description: "Windows Build"
     treeherder:
@@ -54,7 +56,6 @@ windows/opt:
 windows/next:
     fetches:
         toolchain:
-            - conda-windows-x86_64
             - qt-win-next
     description: "Windows Build for Next Version of QT"
     treeherder:
