@@ -44,7 +44,7 @@ def versions = [
     androidx_core: '1.9.0',
     androidx_espresso: '3.5.1',
     androidx_junit: '1.1.5',
-    androidx_lifecycle: '2.5.1',
+    androidx_lifecycle: '2.6.2',
     androidx_test: '1.5.0',
     androidx_work: '2.8.1',
     androidx_uiautomator: '2.2.0',
