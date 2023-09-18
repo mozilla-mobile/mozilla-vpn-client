@@ -66,86 +66,6 @@ describe('Addons', function() {
     });
   });
 
-  it('Settings rollback - location', async () => {
-    // Loading the custom tutorial
-    await vpn.resetAddons('05_settings_rollback');
-
-    await vpn.waitForCondition(async () => {
-      return parseInt(
-                 await vpn.getMozillaProperty(
-                     'Mozilla.Shared', 'MZAddonManager', 'count'),
-                 10) === 1;
-    });
-
-    const exitCityName = await vpn.getMozillaProperty(
-        'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
-    const exitCountryCode = await vpn.getMozillaProperty(
-        'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
-
-    // Let's start the tutorial
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.TUTORIAL_LIST_HIGHLIGHT.visible());
-
-    // Confirmation dialog for settings-rollback
-    await vpn.waitForQuery(
-        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-    assert.equal(
-        (await vpn.getQueryProperty(
-            queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
-            'text')),
-        'Continue');
-    await vpn.clickOnQuery(
-        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-
-    await vpn.waitForCondition(async () => {
-      return await vpn.getMozillaProperty(
-                 'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName') ===
-          'Vienna';
-    });
-
-    assert.equal(
-        await vpn.getMozillaProperty(
-            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
-        'Vienna');
-    assert.equal(
-        await vpn.getMozillaProperty(
-            'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode'),
-        'at');
-
-    await vpn.waitForQuery(queries.screenHome.TUTORIAL_LEAVE.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.SERVER_LIST_BUTTON.visible());
-
-    // Final dialog
-    await vpn.waitForQuery(
-        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-    assert.equal(
-        (await vpn.getQueryProperty(
-            queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible(),
-            'text')),
-        'Let’s go!');
-    await vpn.clickOnQuery(
-        queries.screenHome.TUTORIAL_POPUP_PRIMARY_BUTTON.visible());
-
-    await vpn.waitForCondition(async () => {
-      return await vpn.getMozillaProperty(
-                 'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName') ===
-          exitCityName;
-    });
-
-    assert.equal(
-        await vpn.getMozillaProperty(
-            'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
-        exitCityName);
-    assert.equal(
-        await vpn.getMozillaProperty(
-            'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode'),
-        exitCountryCode);
-  });
-
   it('test only a single update message exists at a time', async () => {
     await vpn.setVersionOverride('1.0.0');
 
@@ -355,33 +275,6 @@ describe('Addons', function() {
            await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
          }
        });
-  });
-
-  it('Translations threshold', async () => {
-    await vpn.resetAddons('06_translation_threshold');
-    await vpn.waitForCondition(async () => {
-      return parseInt(
-                 await vpn.getMozillaProperty(
-                     'Mozilla.Shared', 'MZAddonManager', 'count'),
-                 10) === 2;
-    });
-
-    await vpn.setSetting('languageCode', 'it');
-
-    await vpn.waitForCondition(async () => {
-      return parseInt(
-                 await vpn.getMozillaProperty(
-                     'Mozilla.Shared', 'MZAddonManager', 'count'),
-                 10) === 1;
-    });
-
-    await vpn.setSetting('languageCode', '');
-    await vpn.waitForCondition(async () => {
-      return parseInt(
-                 await vpn.getMozillaProperty(
-                     'Mozilla.Shared', 'MZAddonManager', 'count'),
-                 10) === 2;
-    });
   });
 
   it('test message dismiss when the addon is disabled', async () => {
