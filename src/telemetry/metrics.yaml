@@ -1616,55 +1616,6 @@ sample:
           The trigger that caused the modal to be closed (dismissed | cta)
         type: string
 
-  device_removed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A device has been removed from the user's account.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2023-12-31
-    extra_keys:
-      source:
-        description: |
-          The source of the device removal information.
-          Either 'TaskRemoveDevice' or 'PushMessage'.
-        type: string
-  # End of push messages validation metrics
-
-  speed_test_completed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Speed test was completed.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      speed:
-        description: |
-          The speed bucket that the test resulted in, or if problem occurred:
-          Slow | Medium | Fast | Cancelled | Error
-        type: string
-
   user_changed_endpoint_geo:
     type: event
     lifetime: ping

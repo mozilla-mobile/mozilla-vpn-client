@@ -104,11 +104,6 @@ void Telemetry::initialize() {
   connect(vpn, &MozillaVPN::authenticationCompleted, this,
           []() { mozilla::glean::sample::authentication_completed.record(); });
 
-  connect(vpn, &MozillaVPN::deviceRemoved, this, [](const QString& source) {
-    mozilla::glean::sample::device_removed.record(
-        mozilla::glean::sample::DeviceRemovedExtra{._source = source});
-  });
-
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
 
