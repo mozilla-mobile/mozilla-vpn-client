@@ -30,6 +30,9 @@ task-defaults:
 
 macos/pr:
     description: "Mac Build"
+    fetches:
+        fetch:
+            - qt-hotfix
     treeherder:
         symbol: BD
     run:
@@ -37,9 +40,19 @@ macos/pr:
 
 macos/opt:
     description: "Mac Build"
+    fetches:
+        fetch:
+            - qt-hotfix
     treeherder:
         symbol: B
     requires-level: 3 
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
 
+macos/next:
+    description: "Mac Build (NEXT)"
+    fetches:
+        fetch:
+            - qt-mac-next
+    treeherder:
+        symbol: NEXT

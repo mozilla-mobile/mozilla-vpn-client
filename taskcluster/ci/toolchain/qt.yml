@@ -74,3 +74,35 @@ qt-linux:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
+
+qt-linux-next:
+    description: "Linux QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball-6-5-2
+    run:
+        script: compile_qt_6_linux.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-linux
+        toolchain-artifact: public/build/qt6_linux.tar.xz
+    treeherder:
+        symbol: TL(qt-linux)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}
+
+qt-mac-next:
+    description: "Mac QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball-6-5-2
+    run:
+        script: compile_qt_6_mac.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-mac
+        toolchain-artifact: public/build/qt6_mac.zip
+    treeherder:
+        symbol: TL(qt-mac)
+    worker-type: b-macos

@@ -96,3 +96,17 @@ linux/static:
         docker-image: {in-tree: linux-qt6-build}
     run:
         command: /builds/worker/builder.sh -s
+
+linux/next:
+    description: "Linux Build (Static Qt Next)"
+    treeherder:
+        platform: linux/static
+        symbol: NEXT
+    fetches:
+        toolchain:
+            - qt-linux-next
+    worker:
+        docker-image: {in-tree: linux-qt6-build}
+    run:
+        command: /builds/worker/builder.sh -s
+
