@@ -10,7 +10,6 @@ find_program(GOLANG_BUILD_TOOL NAMES go REQUIRED)
 # for example when building in XCode. 
 set(GOLANG_GOROOT $ENV{GOROOT} CACHE STRING "Path to GOROOT variable")
 
-
 ## Build a library file from a golang project.
 function(build_go_archive OUTPUT_NAME MODULE_FILE)
     cmake_parse_arguments(GOBUILD
