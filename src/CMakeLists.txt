@@ -41,9 +41,11 @@ endif()
 
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
+add_subdirectory(inspector)
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
+    inspector
     mozillavpn-sources
     lottie
     nebula

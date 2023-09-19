@@ -226,8 +226,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/hawkauth.h
     ${MZ_SOURCE_DIR}/hkdf.cpp
     ${MZ_SOURCE_DIR}/hkdf.h
-    ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
-    ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhotreloader.h

@@ -4,7 +4,7 @@
 
 #include "inspectoritempicker.h"
 
-#include "inspectorhandler.h"
+#include "inspectorcommandhandler.h"
 
 InspectorItemPicker::InspectorItemPicker(QObject* parent)
     : ItemPicker(parent) {}

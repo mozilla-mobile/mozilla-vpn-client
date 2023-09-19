@@ -36,6 +36,7 @@ class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
 class User;
+class Inspector;
 
 class MozillaVPN final : public App {
   Q_OBJECT

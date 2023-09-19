@@ -26,7 +26,7 @@
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
-#include "inspector/inspectorhandler.h"
+#include "inspector/inspector.h"
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
 #include "leakdetector.h"
@@ -442,7 +442,6 @@ int CommandUI::run(QStringList& tokens) {
           MozillaVPN::instance()->serverData()->retranslate();
         });
 
-    InspectorHandler::initialize();
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
@@ -463,6 +462,14 @@ int CommandUI::run(QStringList& tokens) {
         Navigator::instance()->requestDeepLink(url);
       }
     }
+
+
+      
+    if (!Constants::inProduction()) {
+        // TODO: use the new setting.
+        Inspector inspector(qApp, (QQmlApplicationEngine*)QmlEngineHolder::instance()->engine());
+    }
+
 
     KeyRegenerator keyRegenerator;
     // Let's go.

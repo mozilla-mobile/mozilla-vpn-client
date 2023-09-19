@@ -7,10 +7,8 @@
 #include <QHostAddress>
 #include <QWebSocket>
 
-#include <QWebchannel>
-
-
-#include "inspectorwebchannel.h"
+#include "inspector.h"
+#include "inspectorwebsockettransport.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -20,8 +18,9 @@ Logger logger("InspectorWebSocketServer");
 
 constexpr int INSPECT_PORT = 8765;
 
-InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
-    : QWebSocketServer("", QWebSocketServer::NonSecureMode, parent) {
+InspectorWebSocketServer::InspectorWebSocketServer(Inspector* parent)
+    : QWebSocketServer("", QWebSocketServer::NonSecureMode, (QObject*)parent),
+      m_parent(parent) {
   MZ_COUNT_CTOR(InspectorWebSocketServer);
 
   logger.debug() << "Creating the inspector websocket server";
@@ -57,5 +56,6 @@ void InspectorWebSocketServer::newConnectionReceived() {
   }
 #endif
   logger.info() << "Accepting connection";
-  InspectorWebChannel::instance()->attach(child);
+  auto transport = new InspectorWebSocketTransport(child);
+  m_parent->onConnection(transport);
 }

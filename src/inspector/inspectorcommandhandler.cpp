@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "inspectorhandler.h"
+#include "inspectorcommandhandler.h"
 
 #include <QBuffer>
 #include <QJSValue>
@@ -663,20 +663,6 @@ static QList<InspectorCommand> s_commands{
 
           return QJsonObject();
         }}};
-
-// static
-void InspectorHandler::initialize() {
-#ifdef MZ_WASM
-  WasmInspector::instance();
-#else
-  if (!Constants::inProduction()) {
-    InspectorWebSocketServer* inspectWebSocketServer =
-        new InspectorWebSocketServer(qApp);
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit,
-                     inspectWebSocketServer, &InspectorWebSocketServer::close);
-  }
-#endif
-}
 
 InspectorHandler::InspectorHandler(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(InspectorHandler);
