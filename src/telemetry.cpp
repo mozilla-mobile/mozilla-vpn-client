@@ -29,7 +29,6 @@
 constexpr int CONNECTION_STABILITY_MSEC = 45000;
 
 constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60;  // 3 hours
-constexpr const uint32_t VPNSESSION_PING_TIMER_DEBUG_SEC = 120;
 
 namespace {
 Logger logger("Telemetry");
@@ -210,11 +209,7 @@ void Telemetry::initialize() {
                 AppPermission::instance()->disabledAppCount());
 
             mozilla::glean_pings::Vpnsession.submit("start");
-            m_vpnSessionPingTimer.start(
-                (SettingsHolder::instance()->vpnSessionPingTimeoutDebug()
-                     ? VPNSESSION_PING_TIMER_DEBUG_SEC
-                     : VPNSESSION_PING_TIMER_SEC) *
-                1000);
+            m_vpnSessionPingTimer.start(VPNSESSION_PING_TIMER_SEC * 1000);
           }
         }
       });

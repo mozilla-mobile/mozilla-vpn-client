@@ -122,10 +122,13 @@ void MZGlean::initialize() {
 
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toUtf8(),
-                     Constants::inProduction() ? "production" : "staging",
-                     settingsHolder->gleanDebugTagActive()
-                         ? settingsHolder->gleanDebugTag().toUtf8()
-                         : "");
+                     Constants::inProduction() ? "production" : "staging");
+
+    setLogPings(settingsHolder->gleanLogPings());
+    if (settingsHolder->gleanDebugTagActive()) {
+      setDebugViewTag(settingsHolder->gleanDebugTag());
+    }
+
 #endif
   }
 }
@@ -176,5 +179,38 @@ void MZGlean::broadcastUploadEnabledChange(bool isTelemetryEnabled) {
 void MZGlean::shutdown() {
 #if not(defined(MZ_WASM))
   glean_shutdown();
+#endif
+}
+
+// static
+void MZGlean::setDebugViewTag(QString tag) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  if (tag.isEmpty()) {
+    logger.debug() << "Removing MZGlean debug view tag";
+    settingsHolder->removeGleanDebugTag();
+    settingsHolder->setGleanDebugTagIsActive(false);
+  } else {
+    logger.debug() << "Setting MZGlean debug view tag to" << tag;
+    settingsHolder->setGleanDebugTag(tag);
+    settingsHolder->setGleanDebugTagIsActive(true);
+  }
+
+#if not(defined(MZ_WASM))
+  glean_set_debug_view_tag(tag.toUtf8());
+#endif
+}
+
+// static
+void MZGlean::setLogPings(bool flag) {
+  logger.debug() << "Setting MZGlean log pings value to" << flag;
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  settingsHolder->setGleanLogPings(flag);
+#if not(defined(MZ_WASM))
+  glean_set_log_pings(flag);
 #endif
 }

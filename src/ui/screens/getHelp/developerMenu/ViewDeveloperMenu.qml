@@ -126,61 +126,6 @@ MZViewBase {
             }
         }
 
-        MZCheckBoxRow {
-            id: checkBoxRowGleanDebugTag
-
-            Layout.fillWidth: true
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            labelText: "Glean Debug View Tag"
-            subLabelText: "Glean debug view tag for testing. Must restart app to take effect."
-            isChecked: MZSettings.gleanDebugTagActive
-            showDivider: false
-            onClicked: {
-                MZSettings.gleanDebugTagActive = !MZSettings.gleanDebugTagActive
-            }
-        }
-
-        MZTextField {
-            id: gleanDebugTagString
-
-            Layout.fillWidth: true
-            Layout.rightMargin: MZTheme.theme.windowMargin * 2
-            Layout.leftMargin: MZTheme.theme.windowMargin * 3
-
-            Layout.alignment: Qt.AlignHCenter
-            enabled: MZSettings.isGleanDebugTagActive
-            _placeholderText: "VPNTest"
-            Layout.preferredHeight: MZTheme.theme.rowHeight
-
-            PropertyAnimation on opacity {
-                duration: 200
-            }
-
-            onTextChanged: text => {
-                if (MZSettings.gleanDebugTag !== gleanDebugTagString.text) {
-                    MZSettings.gleanDebugTag = gleanDebugTagString.text;
-                }
-            }
-
-            Component.onCompleted: {
-                gleanDebugTagString.text = MZSettings.gleanDebugTag;
-            }
-        }
-
-        MZCheckBoxRow {
-            id: checkBoxRowVPNSessionPingTimeout
-
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            enabled: VPNController.state === VPNController.StateOff
-            labelText: "VPNSession ping timeout debug mode"
-            subLabelText: "Shortens the VPNSession timer ping cadence from 3 hours to 2 minutes. Requires the VPN to be off"
-            isChecked: MZSettings.vpnSessionPingTimeoutDebug
-            showDivider: false
-            onClicked: {
-                MZSettings.vpnSessionPingTimeoutDebug = !MZSettings.vpnSessionPingTimeoutDebug
-            }
-        }
-
         Rectangle {
             id: divider
             Layout.preferredHeight: 1
@@ -214,6 +159,10 @@ MZViewBase {
                 ListElement {
                     title: "UI Testing"
                     viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewUiTesting.qml"
+                }
+                ListElement {
+                    title: "Telemetry Debugging"
+                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewTelemetryDebugging.qml"
                 }
             }
 
@@ -352,4 +301,3 @@ MZViewBase {
         }
     }
 }
-

@@ -33,6 +33,9 @@ class MZGlean final : public QObject {
 
   static void initialize();
   static void shutdown();
+
+  static void setDebugViewTag(QString tag);
+  static void setLogPings(bool flag);
 };
 
 #endif  // MZGLEAN_H
