@@ -5,6 +5,12 @@
 ## Find the absolute path to the go build tool.
 find_program(GOLANG_BUILD_TOOL NAMES go REQUIRED)
 
+# Capture this during configuration and re-use that 
+# during build, as we might not have the same env variables.
+# for example when building in XCode. 
+set(GOLANG_GOROOT $ENV{GOROOT} CACHE STRING "Path to GOROOT variable")
+
+
 ## Build a library file from a golang project.
 function(build_go_archive OUTPUT_NAME MODULE_FILE)
     cmake_parse_arguments(GOBUILD
@@ -55,7 +61,7 @@ function(build_go_archive OUTPUT_NAME MODULE_FILE)
                     CGO_LDFLAGS="${GOBUILD_CGO_LDFLAGS}"
                     GOOS=${GOBUILD_GOOS}
                     GOARCH=${GOBUILD_GOARCH}
-                    GOROOT=$ENV{GOROOT}
+                    GOROOT=${GOLANG_GOROOT}
                 ${GOLANG_BUILD_TOOL} build ${GOBUILD_ARGS} -o ${ABS_OUTPUT_NAME}
     )
 endfunction(build_go_archive)
