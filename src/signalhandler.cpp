@@ -42,7 +42,7 @@ SignalHandler::SignalHandler() {
   struct sigaction sa;
   sa.sa_handler = SignalHandler::saHandler;
   sa.sa_mask = mask;
-  sa.sa_flags = 0;
+  sa.sa_flags = SA_ONSTACK;
 
   for (auto sig : quitSignals) {
     sigaction(sig, &sa, nullptr);
