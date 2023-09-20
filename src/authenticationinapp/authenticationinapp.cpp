@@ -107,7 +107,9 @@ void AuthenticationInApp::signIn() {
 }
 
 const QString& AuthenticationInApp::emailAddress() const {
-  Q_ASSERT(m_session);
+  if (!m_session){
+    return QString();
+  }
 
   logger.debug() << "Get email address";
 
@@ -115,7 +117,9 @@ const QString& AuthenticationInApp::emailAddress() const {
 }
 
 const QStringList& AuthenticationInApp::attachedClients() const {
-  Q_ASSERT(m_session);
+  if (!m_session) {
+    return QStringList();
+  }
 
   logger.debug() << "Get attached clients";
 

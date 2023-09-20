@@ -464,12 +464,45 @@ int CommandUI::run(QStringList& tokens) {
     }
 
 
-      
+    QScopedPointer<Inspector> inspector;
     if (!Constants::inProduction()) {
-        // TODO: use the new setting.
-        Inspector inspector(qApp, (QQmlApplicationEngine*)QmlEngineHolder::instance()->engine());
-    }
+      // TODO: use the new setting.
+      inspector.reset(new Inspector(
+          qApp, (QQmlApplicationEngine*)QmlEngineHolder::instance()->engine()));
 
+      // Auto Export the Mozilla.VPN Objects
+      inspector->exportQmlSingleton(QStringList({
+          "VPN",
+          "VPNCaptivePortal",
+          "VPNController",
+          "VPNUser",
+          "VPNDeviceModel",
+          "VPNRecentConnectionsModel",
+          "VPNRecommendedLocationModel",
+          "VPNSupportCategoryModel",
+          "VPNServerCountryModel",
+          "VPNSubscriptionData",
+          "VPNProfileFlow",
+          "VPNCurrentServer",
+          "VPNServerLatency",
+          "VPNConnectionHealth",
+          "VPNReleaseMonitor",
+          "VPNAppPermissions",
+          "VPNConnectionBenchmark",
+          "VPNIPAddressLookup",
+      }));
+      // Export the Mozilla.Shared Objects
+      inspector->exportQmlSingleton(
+          QStringList({"GleanPings", "Glean", "MZAddonManager", "MZAuthInApp",
+                       "MZCrashReporter", "MZErrorHandler", "MZEnv",
+                       "MZFeatureList", "MZLicenseModel", "MZLocalizer",
+                       "MZLog", "MZNavigator", "MZNavigationBarModel",
+                       "MZSettings", "MZTutorial", "MZUrlOpener", "MZUtils",
+                       "MZTheme"
+
+          }),
+          "Mozilla.Shared", 1, 0);
+    }
 
     KeyRegenerator keyRegenerator;
     // Let's go.

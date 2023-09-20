@@ -6,6 +6,7 @@
 
 #include <QHostAddress>
 #include <QWebSocket>
+#include <qapplication.h>
 
 #include "inspector.h"
 #include "inspectorwebsockettransport.h"
@@ -30,8 +31,14 @@ InspectorWebSocketServer::InspectorWebSocketServer(Inspector* parent)
     return;
   }
 
-  connect(this, &InspectorWebSocketServer::newConnection, this,
+ connect(this, &InspectorWebSocketServer::newConnection, this,
           &InspectorWebSocketServer::newConnectionReceived);
+  connect(this, &InspectorWebSocketServer::serverError,
+          [this](QWebSocketProtocol::CloseCode closeCode) {
+            logger.error() << "server error" << closeCode;
+          });
+  connect(qApp, &QCoreApplication::aboutToQuit, this,
+                   &InspectorWebSocketServer::close);
 }
 
 InspectorWebSocketServer::~InspectorWebSocketServer() {

@@ -39,6 +39,10 @@ class Inspector : public QObject {
 			registerInternals();
 		}
 
+		~Inspector() { 
+			m_server->deleteLater();
+		}
+
 		/*
 		* Look's up an object in the current QML namespace
 		* and add's that to the exported WebChannel list
@@ -49,9 +53,17 @@ class Inspector : public QObject {
             m_channel.registerObject(objName, qObj);
         }
 
+		void exportQmlSingleton(QStringList objNames,
+                                QString package = "Mozilla.VPN", int major = 1,
+                                int minor = 0){
+            for (const auto name : objNames){
+              exportQmlSingleton(name, package, major, minor);
+			}
+		}
+
 		void exportObject(QString objName, QObject* o){
             m_channel.registerObject(objName, o);
-		}
+		}           
 		
 		Q_SLOT void onConnection(
                     QWebChannelAbstractTransport* connection) {
