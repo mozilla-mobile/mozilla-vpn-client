@@ -14,6 +14,7 @@
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
+#include "xpc/xpcservice.h"
 
 namespace {
 Logger logger("MacOSDaemonServer");
@@ -42,6 +43,7 @@ int MacOSDaemonServer::run(QStringList& tokens) {
   }
 
   MacOSDaemon daemon;
+  XPCService service;
 
   DaemonLocalServer server(qApp);
   if (!server.initialize()) {

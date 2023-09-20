@@ -9,8 +9,8 @@ endif()
 
 
 add_library(xpc INTERFACE
-    XPCService.h
-    XPCService.cpp
+    xpcservice.h
+    xpcservice.cpp
     XPCCLient.h
     XPCCLient.cpp
     
