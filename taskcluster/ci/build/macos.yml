@@ -52,7 +52,7 @@ macos/opt:
 macos/next:
     description: "Mac Build (NEXT)"
     fetches:
-        fetch:
+        toolchain:
             - qt-mac-next
     treeherder:
         symbol: NEXT
