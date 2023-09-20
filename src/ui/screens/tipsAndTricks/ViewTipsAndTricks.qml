@@ -46,9 +46,9 @@ MZViewBase {
             model: guidesSections.count
 
             delegate: MZTipsAndTricksSection {
-                Layout.fillWidth: true
-
                 property var section: guidesSections.get(index)
+
+                Layout.preferredWidth: parent.width
 
                 title: section.title
                 description: section.description
