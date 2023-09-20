@@ -59,8 +59,9 @@ void ConnectionBenchmark::setConnectionSpeed() {
 
   mozilla::glean::outcome::speed_test_completed.record(
       mozilla::glean::outcome::SpeedTestCompletedExtra{
+          ._outcome = "speed_test_completed",
           ._speed = QVariant::fromValue(m_speed).toString(),
-          ._outcome = "speed_test_completed"});
+      });
 
   emit speedChanged();
   setState(StateReady);

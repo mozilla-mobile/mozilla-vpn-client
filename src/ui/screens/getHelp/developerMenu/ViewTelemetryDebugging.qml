@@ -24,7 +24,7 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.rightMargin: MZTheme.theme.windowMargin
             labelText: "Glean Log Pings"
-            subLabelText: "When this settings is turned on, pings will be logged to the console upon submission."
+            subLabelText: "When this settings is turned on, pings will be logged to the console upon submission. This will not be synced with the mobile daemon Glean instances."
             isChecked: MZSettings.gleanLogPings
             showDivider: false
             onClicked: {

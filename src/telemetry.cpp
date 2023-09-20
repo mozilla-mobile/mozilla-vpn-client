@@ -88,23 +88,23 @@ void Telemetry::initialize() {
     if (state > App::StateCustom) {
       mozilla::glean::sample::app_step.record(
           mozilla::glean::sample::AppStepExtra{
-              ._state = QVariant::fromValue(
-                            static_cast<MozillaVPN::CustomState>(state))
-                            .toString(),
+              ._action = "impression",
               ._screen = stateToTelemetryScreenName(
                   QVariant::fromValue(
                       static_cast<MozillaVPN::CustomState>(state))
                       .toString()),
-              ._action = "impression"});
+              ._state = QVariant::fromValue(
+                            static_cast<MozillaVPN::CustomState>(state))
+                            .toString()});
     } else {
       mozilla::glean::sample::app_step.record(
           mozilla::glean::sample::AppStepExtra{
-              ._state = QVariant::fromValue(static_cast<App::State>(state))
-                            .toString(),
+              ._action = "impression",
               ._screen = stateToTelemetryScreenName(
                   QVariant::fromValue(static_cast<App::State>(state))
                       .toString()),
-              ._action = "impression"});
+              ._state = QVariant::fromValue(static_cast<App::State>(state))
+                            .toString()});
     }
 
     if (state == MozillaVPN::StateDeviceLimit) {

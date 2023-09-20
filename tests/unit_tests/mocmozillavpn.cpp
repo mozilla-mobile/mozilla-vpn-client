@@ -129,5 +129,9 @@ void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 
+void MozillaVPN::gleanSetDebugViewTag(QString tag) {}
+
+void MozillaVPN::gleanSetLogPings(bool flag) {}
+
 // static
 QString MozillaVPN::appVersionForUpdate() { return "42"; }
