@@ -87,7 +87,7 @@ qt-linux-next:
         toolchain-alias: qt-linux
         toolchain-artifact: public/build/qt6_linux.tar.xz
     treeherder:
-        symbol: TL(qt-linux)
+        symbol: TL(qt-linux-next)
     worker-type: b-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
@@ -104,5 +104,5 @@ qt-mac-next:
         toolchain-alias: qt-mac
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
-        symbol: TL(qt-mac)
+        symbol: TL(qt-mac-next)
     worker-type: b-macos
