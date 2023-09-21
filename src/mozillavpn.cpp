@@ -1174,7 +1174,7 @@ void MozillaVPN::update() {
   // The windows installer will stop the client and daemon before installation
   // so it's not necessary to disable the VPN to perform an upgrade.
 #ifndef MZ_WINDOWS
-  if (m_private->m_connectionManager.state() != ConnectionManager::StateOff &&
+  if (m_private->m_connectionManager.isVPNActive() &&
       m_private->m_connectionManager.state() !=
           ConnectionManager::StateInitializing) {
     deactivate();
@@ -1202,8 +1202,7 @@ void MozillaVPN::controllerStateChanged() {
     }
   }
 
-  if (m_updating &&
-      m_private->m_connectionManager.state() == ConnectionManager::StateOff) {
+  if (m_updating && !m_private->m_connectionManager.isVPNActive()) {
     update();
   }
 
@@ -1336,7 +1335,7 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized()) {
     ConnectionManager::State st = m_private->m_connectionManager.state();
-    if (st == ConnectionManager::StateOff ||
+    if (!m_private->m_connectionManager.isVPNActive() ||
         st == ConnectionManager::StateInitializing) {
       TaskScheduler::scheduleTask(
           new TaskGetLocation(ErrorHandler::PropagateError));
@@ -1467,8 +1466,7 @@ void MozillaVPN::registerErrorHandlers() {
           return ErrorHandler::NoAlert;
         }
 
-        if (vpn->connectionManager()->state() ==
-            ConnectionManager::State::StateOff) {
+        if (!vpn->connectionManager()->isVPNActive()) {
           // We are off, so this means a request failed, not the
           // VPN. Change it to No Connection
           return ErrorHandler::NoConnectionAlert;

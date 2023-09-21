@@ -146,10 +146,9 @@ void Telemetry::initialize() {
         mozilla::glean::sample::ControllerStepExtra{
             ._state = QVariant::fromValue(state).toString()});
     // Specific events for on and off state to aid with analysis
-    if (state == ConnectionManager::StateOn) {
+    if (connectionManager->isVPNActive()) {
       mozilla::glean::sample::controller_state_on.record();
-    }
-    if (state == ConnectionManager::StateOff) {
+    } else if (!connectionManager->isVPNActive()) {
       mozilla::glean::sample::controller_state_off.record();
     }
   });
@@ -228,7 +227,7 @@ void Telemetry::initialize() {
       connectionManager, &ConnectionManager::controllerDisconnected, this,
       [this, connectionManager]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOff) {
+          if (!connectionManager->isVPNActive()) {
             mozilla::glean::session::session_end.set();
 
             mozilla::glean_pings::Vpnsession.submit("end");
@@ -252,7 +251,7 @@ void Telemetry::connectionStabilityEvent() {
 
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
-  Q_ASSERT(connectionManager->state() == ConnectionManager::StateOn);
+  Q_ASSERT(connectionManager->isVPNActive());
 
   // We use Controller->currentServer because the telemetry event should record
   // the location in use by the Controller and not MozillaVPN::serverData, which
@@ -294,12 +293,9 @@ void Telemetry::periodicStateRecorder() {
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
 
-  ConnectionManager::State connectionManagerState = connectionManager->state();
-
-  if (connectionManagerState == ConnectionManager::StateOn) {
+  if (connectionManager->isVPNActive()) {
     mozilla::glean::sample::controller_state_on.record();
-  }
-  if (connectionManagerState == ConnectionManager::StateOff) {
+  } else if (!connectionManager->isVPNActive()) {
     mozilla::glean::sample::controller_state_off.record();
   }
 }

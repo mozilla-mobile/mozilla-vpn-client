@@ -21,7 +21,9 @@ class Controller final : public QObject, public LogSerializer {
 
   void initialize();
 
-  bool isVPNActive();
+  //  bool isVPNActive();
+  //  void activateVPN();
+  //  void deactivateVPN();
 
   // LogSerializer interface
   void serializeLogs(
@@ -31,7 +33,7 @@ class Controller final : public QObject, public LogSerializer {
  public slots:
 
  private:
-  bool m_VPNActive = false;
+  //  bool m_VPNActive = false;
   bool m_initialized = false;
 };
 

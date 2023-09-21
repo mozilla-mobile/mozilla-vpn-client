@@ -33,8 +33,6 @@ void Controller::initialize() {
   m_initialized = true;
 }
 
-bool Controller::isVPNActive() { return m_VPNActive; }
-
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&
         a_callback) {

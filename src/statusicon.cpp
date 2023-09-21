@@ -93,17 +93,24 @@ const QString StatusIcon::iconString() {
     return LOGO_GENERIC;
   }
 
+  if (vpn->connectionManager()->isVPNActive()) {
+    return LOGO_GENERIC_ON;
+  } else if (!vpn->connectionManager()->isVPNActive()) {
+    m_animatedIconTimer.stop();
+    return LOGO_GENERIC_OFF;
+  }
+
   switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+    case ConnectionManager::StateIdle:
       [[fallthrough]];
     case ConnectionManager::StateSilentSwitching:
       m_animatedIconTimer.stop();
       return LOGO_GENERIC_ON;
       break;
-    case ConnectionManager::StateOff:
-      m_animatedIconTimer.stop();
-      return LOGO_GENERIC_OFF;
-      break;
+      //    case ConnectionManager::StateOff:
+      //      m_animatedIconTimer.stop();
+      //      return LOGO_GENERIC_OFF;
+      //      break;
     case ConnectionManager::StateSwitching:
       [[fallthrough]];
     case ConnectionManager::StateConnecting:

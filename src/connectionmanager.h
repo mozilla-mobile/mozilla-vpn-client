@@ -52,11 +52,12 @@ class ConnectionManager : public QObject, public LogSerializer {
 
   enum State {
     StateInitializing,
-    StateOff,
+    StateIdle,
+    //    StateOff,
+    StateOn,
     StateCheckSubscription,
     StateConnecting,
     StateConfirming,
-    StateOn,
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
@@ -70,6 +71,11 @@ class ConnectionManager : public QObject, public LogSerializer {
   };
 
  public:
+  /// @TODO should these 3 be moved back to the controller?
+  bool isVPNActive();
+  void activateVPN();
+  void deactivateVPN();
+
   qint64 time() const;
   void serverUnavailable();
   void captivePortalPresent();
@@ -254,6 +260,7 @@ class ConnectionManager : public QObject, public LogSerializer {
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
 
+  bool m_VPNActive = false;
 };  // namespace ConnectionManager
 
 #endif  // CONNECTIONMANAGER_H

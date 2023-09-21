@@ -52,8 +52,9 @@ void KeyRegenerator::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOff) {
-    logger.debug() << "Wrong state";
+      vpn->connectionManager()->isVPNActive()) {
+    logger.debug() << "Wrong state. App must be in the Main state and the VPN "
+                      "may not be active.";
     return;
   }
 
