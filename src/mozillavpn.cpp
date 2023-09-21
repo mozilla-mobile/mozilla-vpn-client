@@ -22,7 +22,6 @@
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
@@ -134,7 +133,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   connect(this, &MozillaVPN::stateChanged, [this]() {
     // If we are activating the app, let's initialize the controller and the
     // periodic tasks.
-    if (state() == StateMain) {
+    if (state() == StateMain || state() == StateOnboarding) {
       m_private->m_connectionManager.initialize();
       startSchedulingPeriodicOperations();
     } else {
@@ -396,9 +395,9 @@ void MozillaVPN::maybeStateMain() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
+
       // We turn telemetry off when onboarding starts so that the user has to
       // specifically opt in to all future telemetry *Note: This is needed
       // because telemetry is on prior to onboarding to record metrics regarding
@@ -407,6 +406,7 @@ void MozillaVPN::maybeStateMain() {
         settingsHolder->setGleanEnabled(false);
         settingsHolder->setOnboardingStarted(true);
       }
+
       setState(StateOnboarding);
       return;
     }
@@ -414,7 +414,6 @@ void MozillaVPN::maybeStateMain() {
     setState(StatePostAuthentication);
     return;
   }
-#endif
 
   // If we're not using the new onboarding, continue with the old onboarding
   // (telemetry policy)
@@ -929,7 +928,6 @@ void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
 
@@ -942,7 +940,7 @@ void MozillaVPN::onboardingCompleted() {
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
-#endif
+
   } else {
     logger.debug() << "telemetry policy completed";
   }

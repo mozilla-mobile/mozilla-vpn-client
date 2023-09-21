@@ -57,9 +57,13 @@ ColumnLayout {
         Layout.fillWidth: true
 
         width: undefined
-        text: MZI18n.GlobalGetStarted
+        text: MZI18n.OnboardingStartSlideApproveButtonLabel
 
-        onClicked: VPN.onboardingCompleted();
+        onClicked: {
+            //Not actually activating the VPN, but going through the motions of activating it
+            //so we can add the VPN configuration to the system
+            VPN.activate()
+        }
     }
 
     MZLinkButton {
@@ -72,7 +76,7 @@ ColumnLayout {
 
         implicitHeight: MZTheme.theme.rowHeight
 
-        labelText: MZI18n.OnboardingStartSlideApproveButtonLabel
+        labelText: MZI18n.GlobalGoBack
 
         onClicked: root.backClicked()
     }
