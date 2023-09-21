@@ -95,7 +95,8 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
       !(rtm->rtm_addrs & RTA_NETMASK) || (addrlist.count() < 3)) {
     return;
   }
-  // Ignore interface-scoped routes.
+  // Ignore interface-scoped routes, we want to find the default route to the
+  // internet in the global scope.
   if (rtm->rtm_flags & RTF_IFSCOPE) {
     return;
   }
@@ -160,7 +161,8 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
       !(rtm->rtm_addrs & RTA_NETMASK) || (addrlist.count() < 3)) {
     return;
   }
-  // Ignore interface-scoped routes.
+  // Ignore interface-scoped routes, we want to find the default route to the
+  // internet in the global scope.
   if (rtm->rtm_flags & RTF_IFSCOPE) {
     return;
   }
