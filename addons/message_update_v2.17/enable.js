@@ -12,7 +12,8 @@
     api.addon.setTitle(
         'message.message_update_v2.17.block.extra_1_217',
         'Download the new Mozilla VPN');
-    return api.addon.composer.remove('c_3');
+    api.addon.composer.remove('c_3');
+    return;
   }
 
   // Windows v2.10 to v2.12 do require a web-based update,
