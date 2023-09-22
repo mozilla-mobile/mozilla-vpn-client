@@ -158,6 +158,12 @@ Rectangle {
 
         onClicked: {
             if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
+                Glean.interaction.speedTestRefresh.record({
+                    screen: state == "open-error" ? "speed_test_erro" : "speed_test_result",
+                    action: "select",
+                    element_id: "refresh",
+                });
+
                 VPNConnectionBenchmark.start();
             }
         }
@@ -206,6 +212,28 @@ Rectangle {
           if (isOpen) {
             closeConnectionInfo();
           }
+       }
+    }
+
+    Connections {
+      function onStateChanged() {
+        switch (state) {
+            case "open-loading":
+                Glean.sample.speedTestResultsLoading.record({
+                    screen: "speed_test_results_loading",
+                    action: "impression",
+                });
+            case "open-ready":
+                Glean.sample.speedTestResultCompleted.record({
+                    screen: "speed_test_results_completed",
+                    action: "impression",
+                });
+            case "open-error":
+                Glean.sample.speedTestResultError.record({
+                    screen: "speed_test_error_occured",
+                    action: "impression",
+                });
+        }
        }
     }
 }

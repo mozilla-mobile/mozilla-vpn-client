@@ -476,12 +476,23 @@ Item {
         z: 1
 
         onClicked: {
-            if (!box.connectionInfoScreenVisible) {
-                Glean.sample.connectionInfoOpened.record();
-            } else if (VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning) {
-                Glean.sample.speedTestCompleted.record({ speed: "Cancelled" });
-            }
             box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
+
+            if (box.connectionInfoScreenVisible) {
+                Glean.interaction.speedTestTriggered.record({
+                    screen: "main",
+                    action: "select",
+                    element_id: "speed_test"
+                });
+            } else {
+                Glean.interaction.speedTestClosed.record({
+                    screen: VPNConnectionBenchmark.StateReady ? "speed_test_result" :
+                        VPNConnectionBenchmark.StateError ? "speed_test_error"
+                            : "speed_test_loading",
+                    action: "select",
+                    element_id: "close"
+                });
+            }
         }
 
         Image {
@@ -626,8 +637,21 @@ Item {
         objectName: "ipInfoPanel"
 
         opacity: ipInfoPanel.isOpen ? 1 : 0
+        property int previousOpacity: opacity
         visible: opacity > 0
         z: 1
+
+        onOpacityChanged: {
+            // We only want to record this event when the opacity has _just_ changed.
+            if (opacity !== previousOpacity && opacity === 1) {
+                Glean.impression.connectionInfoOpened.record({
+                    screen: "connection_info",
+                    action: "impression"
+                });
+            }
+
+            previousOpacity = opacity
+        }
 
         Connections {
             target: VPNConnectionHealth
@@ -638,6 +662,7 @@ Item {
                  }
             }
         }
+
         Connections {
             target: VPNController
             function onStateChanged() {
@@ -670,6 +695,20 @@ Item {
         z: 1
         onClicked: {
             ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
+
+            if (ipInfoPanel.isOpen) {
+                Glean.interaction.connectionInfoOpened.record({
+                    screen: "main",
+                    action: "select",
+                    element_id: "info"
+                });
+            } else {
+                Glean.interaction.connectionInfoOpened.record({
+                    screen: "connection_info",
+                    action: "select",
+                    element_id: "close"
+                });
+            }
         }
         Accessible.ignored: !visible
 

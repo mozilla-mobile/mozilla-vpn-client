@@ -58,6 +58,12 @@ ColumnLayout {
         // Try again
         text: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton
         onClicked: {
+            Glean.interaction.speedTestRefresh.record({
+                screen: "speed_test_error",
+                action: "select",
+                element_id: "try_again",
+            });
+
             VPNConnectionBenchmark.start();
         }
     }
