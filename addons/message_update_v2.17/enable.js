@@ -6,6 +6,15 @@
     api.addon.date = (api.settings.updateTime.getTime() / 1000);
   }
 
+
+  // Macos v2.16.0 requires a web-based update.
+  if (api.env.platform === 'macos' && api.env.versionString === '2.16.0') {
+    api.addon.setTitle(
+        'message.message_update_v2.17.block.extra_1_217',
+        'Download the new Mozilla VPN');
+    return api.addon.composer.remove('c_3');
+  }
+
   // Windows v2.10 to v2.12 do require a web-based update,
   // with the exception on v2.11.1.
   if (api.env.platform !== 'windows' || api.env.versionString === '2.11.1') {
@@ -41,5 +50,6 @@
   api.addon.composer.remove('c_3');
 
   api.addon.setTitle(
-    'message.message_update_v2.17.block.extra_1_217', 'Download the new Mozilla VPN')
+      'message.message_update_v2.17.block.extra_1_217',
+      'Download the new Mozilla VPN');
 })
