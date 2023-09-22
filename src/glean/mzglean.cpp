@@ -106,7 +106,7 @@ void MZGlean::initialize() {
       return;
     }
 
-#if defined(UNIT_TEST)
+#if defined(UNIT_TEST) || defined(MZ_DUMMY)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
                            gleanDirectory.absolutePath().toUtf8());
 #elif defined(MZ_IOS)

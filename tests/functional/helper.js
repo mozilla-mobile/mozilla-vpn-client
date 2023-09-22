@@ -284,6 +284,14 @@ module.exports = {
     return json.value || null;
   },
 
+  async gleanTestGetValue(metricCategory, metricName, ping) {
+    const json = await this._writeCommand(`glean_test_get_value ${metricCategory} ${metricName} ${ping}`);
+    assert(
+        json.type === 'glean_test_get_value' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || null;
+  },
+
   async getLastUrl() {
     return await this.getMozillaProperty(
         'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');
