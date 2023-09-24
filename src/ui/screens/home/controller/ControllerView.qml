@@ -703,7 +703,7 @@ Item {
                     element_id: "info"
                 });
             } else {
-                Glean.interaction.connectionInfoOpened.record({
+                Glean.interaction.connectionInfoClosed.record({
                     screen: "connection_info",
                     action: "select",
                     element_id: "close"
