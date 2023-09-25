@@ -163,7 +163,7 @@ Rectangle {
         id: connectionInfoRestartButton
         objectName: "connectionInfoRestartButton"
 
-        visible: connectionInfoContent.visible || connectionInfoError.visible
+        visible: VPNController.state === VPNController.StateOn && (connectionInfoContent.visible || connectionInfoError.visible)
 
         anchors {
             top: parent.top

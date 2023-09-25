@@ -73,6 +73,10 @@ describe('IP info', function() {
       assert.strictEqual("select", openedExtras.action);
       assert.strictEqual("info", openedExtras.element_id);
 
+      const [ { extra: connectionInfoOpenedExtras } ] = await vpn.gleanTestGetValue("impression", "connectionInfoOpened", "main")
+      assert.strictEqual("connection_info", connectionInfoOpenedExtras.screen);
+      assert.strictEqual("impression", connectionInfoOpenedExtras.action);
+
       // Close IP info panel
       await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
       assert.equal(
