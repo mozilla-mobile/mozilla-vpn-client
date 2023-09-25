@@ -57,7 +57,7 @@ MZStepNavigation {
             property string objectName: "start"
 
             //DEBUGGING - FIX BEFORE COMMITTING
-            sourceComponent: Qt.platform.os === "osx" || Qt.platform.os === "ios" ? startSlideMobile : startSlideDesktop
+            sourceComponent: Qt.platform.os === "android" || Qt.platform.os === "ios" ? startSlideMobile : startSlideDesktop
         }
     ]
 

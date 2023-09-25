@@ -271,6 +271,13 @@ class VPNService : android.net.VpnService() {
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
+
+        if(json.getBoolean("doNotConnect")) {
+            Log.i(tag, "Do not turn on the VPN")
+            mBinder.dispatchEvent(CoreBinder.EVENTS.cancelled, "")
+            return
+        }
+
         builder.establish().use { tun ->
             if (tun == null) {
                 Log.e(tag, "Activation Error: did not get a TUN handle")
