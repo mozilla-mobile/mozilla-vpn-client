@@ -251,7 +251,8 @@ void ConnectionManager::timerTimeout() {
 void ConnectionManager::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
+//  if (m_state == StateInitializing || m_state == StateOff) {
+  if (m_state == StateInitializing || !isVPNActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
