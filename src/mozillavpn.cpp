@@ -1367,10 +1367,6 @@ void MozillaVPN::registerUrlOpenerLabels() {
     return Constants::apiUrl(Constants::RedirectPrivacy);
   });
 
-  uo->registerUrlLabel("relayPremium", []() -> QString {
-    return QString("%1/premium").arg(Constants::relayUrl());
-  });
-
   // TODO: This should link to a more helpful article
   uo->registerUrlLabel("splitTunnelHelp", []() -> QString {
     return "https://support.mozilla.org/kb/"
@@ -1416,12 +1412,6 @@ void MozillaVPN::registerUrlOpenerLabels() {
                 .arg(Constants::PLATFORM_NAME)
 #endif
         ;
-  });
-
-  uo->registerUrlLabel("upgradeToBundle", []() -> QString {
-    return QString("%1/r/vpn/upgradeToPrivacyBundle")
-        .arg(Constants::inProduction() ? Constants::API_PRODUCTION_URL
-                                       : Constants::API_STAGING_URL);
   });
 }
 
