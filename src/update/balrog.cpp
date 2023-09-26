@@ -19,19 +19,11 @@
 #include "logger.h"
 #include "networkrequest.h"
 
-// Terrible hacking for Windows
-#if defined(MZ_WINDOWS)
-#  include "platforms/windows/golang-msvc-types.h"
-#  include "platforms/windows/windowsutils.h"
-#  include "windows.h"
-#endif
-
-// Import balrog C/Go library, except on windows where we need to use a DLL.
-#if !defined(MZ_WINDOWS)
+// Implemented in rust. See the `signature` folder.
 extern "C" {
-#  include "balrog-api.h"
+bool verify_balrog(const char* x5u_ptr, size_t x5u_length, const char* message, const char* signature,
+                  const char* rootHash, const char* certSubject);
 }
-#endif
 
 #if defined(MZ_WINDOWS)
 constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
@@ -46,12 +38,6 @@ constexpr const char* BALROG_CERT_SUBJECT_CN =
 
 namespace {
 Logger logger("Balrog");
-
-void balrogLogger(int level, const char* msg) {
-  Q_UNUSED(level);
-  logger.debug() << "BalrogGo:" << msg;
-}
-
 }  // namespace
 
 Balrog::Balrog(QObject* parent, bool downloadAndInstall,
@@ -188,43 +174,7 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if defined(MZ_WINDOWS)
-  typedef void BalrogSetLogger(GoUintptr func);
-  typedef GoUint8 BalrogValidate(GoString x5uData, GoString updateData,
-                                 GoString signature, GoString rootHash,
-                                 GoString leafCertSubject);
-
-  static HMODULE balrogDll = nullptr;
-  static BalrogSetLogger* balrogSetLogger = nullptr;
-  static BalrogValidate* balrogValidate = nullptr;
-
-  if (!balrogDll) {
-    balrogDll = LoadLibrary(TEXT("balrog.dll"));
-    if (!balrogDll) {
-      WindowsUtils::windowsLog("Failed to load balrog.dll");
-      return false;
-    }
-  }
-
-  if (!balrogSetLogger) {
-    balrogSetLogger =
-        (BalrogSetLogger*)GetProcAddress(balrogDll, "balrogSetLogger");
-    if (!balrogSetLogger) {
-      WindowsUtils::windowsLog("Failed to get balrogSetLogger function");
-      return false;
-    }
-  }
-
-  if (!balrogValidate) {
-    balrogValidate =
-        (BalrogValidate*)GetProcAddress(balrogDll, "balrogValidate");
-    if (!balrogValidate) {
-      WindowsUtils::windowsLog("Failed to get balrogValidate function");
-      return false;
-    }
-  }
-#endif
-
+#if 0
   balrogSetLogger((GoUintptr)balrogLogger);
 
   QByteArray x5uDataCopy = x5uData;
@@ -251,6 +201,21 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   }
 
   return true;
+#else
+  QByteArray x5uPem = QByteArray::fromBase64(x5uData);
+  bool verify = verify_balrog(x5uPem.constData(), x5uPem.length(),
+                              updateData.constData(),
+                              signatureBlob.constData(),
+                              Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT,
+                              BALROG_CERT_SUBJECT_CN);
+  if (!verify) {
+    logger.error() << "Verification failed";
+    return false;
+  } else {
+    logger.info() << "Verification succeeded";
+    return true;
+  }
+#endif
 }
 
 bool Balrog::processData(Task* task, const QByteArray& data) {

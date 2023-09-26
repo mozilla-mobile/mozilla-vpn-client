@@ -384,4 +384,11 @@ function(add_rust_library TARGET_NAME)
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+
+    ## When including multiple rust staticlibs, we often wind up with duplicate
+    ## symbols from the rust runtime. Work around it by permitting duplicates
+    ## during linking.
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_OPTIONS
+        $<$<C_COMPILER_ID:AppleClang>:-Xlink=-force:multiple>
+    )
 endfunction()
