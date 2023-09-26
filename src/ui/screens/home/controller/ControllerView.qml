@@ -259,7 +259,7 @@ Item {
         },
         State {
             name: "stateOn"
-            when: (VPNController.state === VPNController.StateOn ||
+            when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching)
 
             PropertyChanges {

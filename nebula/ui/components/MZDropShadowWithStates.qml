@@ -22,7 +22,7 @@ MZDropShadow {
             name: "on"
             when: (state === VPNController.StateConnecting ||
                    state === VPNController.StateConfirming ||
-                   state === VPNController.StateOn ||
+                   state === VPNController.StateIdle ||
                    state === VPNController.StateSilentSwitching ||
                    state === VPNController.StateSwitching ||
                    state == VPNController.StateCheckSubscription)

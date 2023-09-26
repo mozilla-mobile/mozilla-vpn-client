@@ -146,7 +146,7 @@ Rectangle {
     MZIconButton {
         id: connectionInfoRestartButton
 
-        visible: VPNController.state === VPNController.StateOn && (connectionInfoContent.visible || connectionInfoError.visible)
+        visible: VPNController.state === VPNController.StateIdle && (connectionInfoContent.visible || connectionInfoError.visible)
 
         anchors {
             top: parent.top

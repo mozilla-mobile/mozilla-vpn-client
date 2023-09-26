@@ -94,7 +94,7 @@ const QString StatusIcon::iconString() {
   }
 
   switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+    case ConnectionManager::StateIdle:
       [[fallthrough]];
     case ConnectionManager::StateSilentSwitching:
       m_animatedIconTimer.stop();
@@ -131,7 +131,7 @@ const QColor StatusIcon::indicatorColor() const {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOn) {
+      vpn->connectionManager()->state() != ConnectionManager::StateIdle) {
     return INVALID_COLOR;
   }
 
@@ -166,7 +166,7 @@ QIcon StatusIcon::drawStatusIndicator() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   // Only draw a status indicator if the VPN is connected
-  if (vpn->connectionManager()->state() == ConnectionManager::StateOn) {
+  if (vpn->connectionManager()->state() == ConnectionManager::StateIdle) {
     QPainter painter(&iconPixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);

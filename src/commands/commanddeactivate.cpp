@@ -43,7 +43,7 @@ int CommandDeactivate::run(QStringList& tokens) {
     QObject::connect(
         &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
           if (connectionManager.state() == ConnectionManager::StateOff ||
-              connectionManager.state() == ConnectionManager::StateOn) {
+              connectionManager.state() == ConnectionManager::StateIdle) {
             loop.exit();
           }
         });
@@ -54,11 +54,11 @@ int CommandDeactivate::run(QStringList& tokens) {
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
     if (connectionManager.state() != ConnectionManager::StateOff &&
-        connectionManager.state() != ConnectionManager::StateOn) {
+        connectionManager.state() != ConnectionManager::StateIdle) {
       QObject::connect(
           &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
             if (connectionManager.state() == ConnectionManager::StateOff ||
-                connectionManager.state() == ConnectionManager::StateOn) {
+                connectionManager.state() == ConnectionManager::StateIdle) {
               loop.exit();
             }
           });
@@ -75,7 +75,7 @@ int CommandDeactivate::run(QStringList& tokens) {
     QObject::connect(
         &connectionManager, &ConnectionManager::stateChanged, &vpn, [&] {
           if (connectionManager.state() == ConnectionManager::StateOff ||
-              connectionManager.state() == ConnectionManager::StateOn) {
+              connectionManager.state() == ConnectionManager::StateIdle) {
             loop.exit();
           }
         });

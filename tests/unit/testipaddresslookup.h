@@ -9,7 +9,7 @@ class TestIpAddressLookup final : public TestHelper {
 
  private slots:
   void initTestCase() {
-    TestHelper::controllerState = ConnectionManager::StateOn;
+    TestHelper::controllerState = ConnectionManager::StateIdle;
   }
   void checkIpAddressFailure();
   void checkIpAddressSucceess_data();

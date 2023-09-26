@@ -91,7 +91,7 @@ void TaskControllerAction::stateChanged() {
 
   ConnectionManager::State state = connectionManager->state();
   if (((m_action == eActivate || m_action == eSwitch) &&
-       state == ConnectionManager::StateOn) ||
+       state == ConnectionManager::StateIdle) ||
       (m_action == eDeactivate && state == ConnectionManager::StateOff)) {
     logger.debug() << "Operation completed";
     m_timer.stop();

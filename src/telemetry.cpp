@@ -136,7 +136,7 @@ void Telemetry::initialize() {
     Q_ASSERT(connectionManager);
     ConnectionManager::State state = connectionManager->state();
 
-    if (state != ConnectionManager::StateOn) {
+    if (state != ConnectionManager::StateIdle) {
       m_connectionStabilityTimer.stop();
     } else {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
@@ -146,7 +146,7 @@ void Telemetry::initialize() {
         mozilla::glean::sample::ControllerStepExtra{
             ._state = QVariant::fromValue(state).toString()});
     // Specific events for on and off state to aid with analysis
-    if (state == ConnectionManager::StateOn) {
+    if (state == ConnectionManager::StateIdle) {
       mozilla::glean::sample::controller_state_on.record();
     }
     if (state == ConnectionManager::StateOff) {
@@ -205,7 +205,7 @@ void Telemetry::initialize() {
       connectionManager, &ConnectionManager::newConnectionSucceeded, this,
       [this, connectionManager]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOn) {
+          if (connectionManager->state() == ConnectionManager::StateIdle) {
             mozilla::glean_pings::Vpnsession.submit("flush");
 
             mozilla::glean::session::session_id.generateAndSet();
@@ -252,7 +252,7 @@ void Telemetry::connectionStabilityEvent() {
 
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
-  Q_ASSERT(connectionManager->state() == ConnectionManager::StateOn);
+  Q_ASSERT(connectionManager->state() == ConnectionManager::StateIdle);
 
   // We use Controller->currentServer because the telemetry event should record
   // the location in use by the Controller and not MozillaVPN::serverData, which
@@ -296,7 +296,7 @@ void Telemetry::periodicStateRecorder() {
 
   ConnectionManager::State connectionManagerState = connectionManager->state();
 
-  if (connectionManagerState == ConnectionManager::StateOn) {
+  if (connectionManagerState == ConnectionManager::StateIdle) {
     mozilla::glean::sample::controller_state_on.record();
   }
   if (connectionManagerState == ConnectionManager::StateOff) {

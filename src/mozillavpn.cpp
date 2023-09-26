@@ -1458,7 +1458,7 @@ void MozillaVPN::registerErrorHandlers() {
       ErrorHandler::DependentConnectionError, true, []() {
         MozillaVPN* vpn = MozillaVPN::instance();
         if (vpn->connectionManager()->state() ==
-                ConnectionManager::State::StateOn ||
+                ConnectionManager::State::StateIdle ||
             vpn->connectionManager()->state() ==
                 ConnectionManager::State::StateConfirming) {
           // connection likely isn't stable yet

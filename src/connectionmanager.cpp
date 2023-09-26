@@ -150,8 +150,11 @@ void ConnectionManager::initialize() {
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
           [this]() {
+            //            m_connectedBeforeTransaction =
+            //                m_state == ConnectionManager::StateOn;
             m_connectedBeforeTransaction =
-                m_state == ConnectionManager::StateOn;
+                m_state ==
+                MozillaVPN::instance()->connectionManager()->isVPNActive();
           });
 
   connect(SettingsHolder::instance(),
@@ -200,7 +203,14 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
     return;
   }
 
-  setState(a_connected ? StateOn : StateOff);
+  //  setState(a_connected ? StateOn : StateOff);
+  if (a_connected) {
+    setState(StateIdle);
+    setState(StateIdle);
+  } else {
+    setState(StateOff);
+    deactivateVPN();
+  }
 
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
@@ -221,7 +231,7 @@ qint64 ConnectionManager::time() const {
 }
 
 void ConnectionManager::timerTimeout() {
-  Q_ASSERT(m_state == StateOn);
+  Q_ASSERT(m_state == StateIdle);
 #ifdef MZ_IOS
   // When locking an iOS device with an app in the foreground, the app's JS
   // runtime is stopped pretty quick by the system. For this VPN app, that
@@ -248,7 +258,7 @@ void ConnectionManager::quit() {
 
   m_nextStep = Quit;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
+  if (m_state == StateIdle || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
       m_state == StateCheckSubscription) {
     deactivate();
@@ -299,7 +309,7 @@ void ConnectionManager::serverUnavailable() {
 
   m_nextStep = ServerUnavailable;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
+  if (m_state == StateIdle || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
       m_state == StateConfirming || m_state == StateCheckSubscription) {
     deactivate();
@@ -317,7 +327,7 @@ void ConnectionManager::updateRequired() {
 
   m_nextStep = Update;
 
-  if (m_state == StateOn) {
+  if (m_state == StateIdle) {
     deactivate();
     return;
   }
@@ -334,7 +344,7 @@ void ConnectionManager::logout() {
 
   m_nextStep = Disconnect;
 
-  if (m_state == StateOn) {
+  if (m_state == StateIdle) {
     deactivate();
     return;
   }
@@ -611,7 +621,7 @@ bool ConnectionManager::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
-  if (m_state != StateOn) {
+  if (m_state != StateIdle) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
   }
@@ -683,7 +693,7 @@ void ConnectionManager::connected(const QString& pubkey,
 
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
-  setState(StateOn);
+  setState(StateIdle);
   emit newConnectionSucceeded();
 
   // In case the Controller provided a valid timestamp that
@@ -809,7 +819,7 @@ void ConnectionManager::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn && m_state != StateConfirming) {
+  if (m_state != StateIdle && m_state != StateConfirming) {
     callback(QString(), QString(), 0, 0);
     return;
   }
@@ -894,7 +904,7 @@ void ConnectionManager::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
+  if (m_state == StateIdle || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
       m_state == StateCheckSubscription || m_state == StateConfirming) {
     deactivate();
@@ -991,14 +1001,14 @@ bool ConnectionManager::activate(const ServerData& serverData,
 bool ConnectionManager::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  if (m_state != StateOn && m_state != StateSwitching &&
+  if (m_state != StateIdle && m_state != StateSwitching &&
       m_state != StateSilentSwitching && m_state != StateConfirming &&
       m_state != StateConnecting && m_state != StateCheckSubscription) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming ||
+  if (m_state == StateIdle || m_state == StateConfirming ||
       m_state == StateConnecting || m_state == StateCheckSubscription) {
     setState(StateDisconnecting);
   }
@@ -1013,3 +1023,9 @@ bool ConnectionManager::deactivate() {
   m_impl->deactivate(stateToReason(m_state));
   return true;
 }
+
+bool ConnectionManager::isVPNActive() { return m_VPNActive; }
+
+// Should I check m_VPNActive first? Return anything?
+void ConnectionManager::activateVPN() { m_VPNActive = true; }
+void ConnectionManager::deactivateVPN() { m_VPNActive = false; }

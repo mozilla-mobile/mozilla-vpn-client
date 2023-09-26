@@ -128,7 +128,7 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
   }
 
   ConnectionManager::State state = vpn->connectionManager()->state();
-  if (state == ConnectionManager::StateOn ||
+  if (state == ConnectionManager::StateIdle ||
       state == ConnectionManager::StateConnecting ||
       state == ConnectionManager::StateCheckSubscription ||
       state == ConnectionManager::StateSwitching ||

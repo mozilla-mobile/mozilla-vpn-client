@@ -91,7 +91,7 @@ void IpAddressLookup::updateIpAddress() {
             MozillaVPN* vpn = MozillaVPN::instance();
             if (vpn->state() == App::StateMain &&
                 vpn->connectionManager()->state() ==
-                    ConnectionManager::StateOn) {
+                    ConnectionManager::StateIdle) {
               updateIpAddress();
             }
           });
@@ -126,7 +126,7 @@ void IpAddressLookup::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOn) {
+      vpn->connectionManager()->state() != ConnectionManager::StateIdle) {
     reset();
     return;
   }

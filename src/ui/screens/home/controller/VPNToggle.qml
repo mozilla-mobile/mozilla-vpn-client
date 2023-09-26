@@ -137,7 +137,7 @@ MZButtonBase {
         },
         State {
             name: "stateOn"
-            when: (VPNController.state === VPNController.StateOn ||
+            when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching)
 
             PropertyChanges {
@@ -231,7 +231,7 @@ MZButtonBase {
         radius: height / 2
         border.color: toggleColor.focusBorder
         color: MZTheme.theme.transparent
-        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateIdle || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
 
         MZFocusOutline {
             id: vpnFocusOutline
@@ -276,7 +276,7 @@ MZButtonBase {
 
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
-               (VPNController.state === VPNController.StateOn ||
+               (VPNController.state === VPNController.StateIdle ||
                 VPNController.state === VPNController.StateSilentSwitching ||
                 VPNController.state === VPNController.StateOff ||
                 (VPNController.state === VPNController.StateConfirming &&

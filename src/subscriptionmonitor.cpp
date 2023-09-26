@@ -33,7 +33,7 @@ SubscriptionMonitor::SubscriptionMonitor(QObject* parent) : QObject(parent) {
           &ConnectionHealth::stabilityChanged, this, [this]() {
             logger.debug() << "VPN connection stability has changed";
             if (MozillaVPN::instance()->connectionManager()->state() ==
-                ConnectionManager::StateOn) {
+                ConnectionManager::StateIdle) {
               m_lastKnownStabilityState =
                   MozillaVPN::instance()->connectionHealth()->stability();
             }

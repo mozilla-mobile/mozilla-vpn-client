@@ -121,7 +121,7 @@ int CommandStatus::run(QStringList& tokens) {
         &connectionManager, &ConnectionManager::stateChanged,
         &connectionManager, [&] {
           if (connectionManager.state() == ConnectionManager::StateOff ||
-              connectionManager.state() == ConnectionManager::StateOn) {
+              connectionManager.state() == ConnectionManager::StateIdle) {
             loop.exit();
           }
         });
@@ -150,7 +150,7 @@ int CommandStatus::run(QStringList& tokens) {
         stream << "confirming";
         break;
 
-      case ConnectionManager::StateOn:
+      case ConnectionManager::StateIdle:
         [[fallthrough]];
       case ConnectionManager::StateSilentSwitching:
         stream << "on";

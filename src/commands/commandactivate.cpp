@@ -41,7 +41,8 @@ int CommandActivate::run(QStringList& tokens) {
     QObject::connect(
         vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
           if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+              vpn.connectionManager()->state() ==
+                  ConnectionManager::StateIdle) {
             loop.exit();
           }
         });
@@ -53,13 +54,13 @@ int CommandActivate::run(QStringList& tokens) {
     // If we are connecting right now, we want to wait untile the operation is
     // completed.
     if (vpn.connectionManager()->state() != ConnectionManager::StateOff &&
-        vpn.connectionManager()->state() != ConnectionManager::StateOn) {
+        vpn.connectionManager()->state() != ConnectionManager::StateIdle) {
       QObject::connect(vpn.connectionManager(),
                        &ConnectionManager::stateChanged, &vpn, [&] {
                          if (vpn.connectionManager()->state() ==
                                  ConnectionManager::StateOff ||
                              vpn.connectionManager()->state() ==
-                                 ConnectionManager::StateOn) {
+                                 ConnectionManager::StateIdle) {
                            loop.exit();
                          }
                        });
@@ -76,7 +77,8 @@ int CommandActivate::run(QStringList& tokens) {
     QObject::connect(
         vpn.connectionManager(), &ConnectionManager::stateChanged, &vpn, [&] {
           if (vpn.connectionManager()->state() == ConnectionManager::StateOff ||
-              vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+              vpn.connectionManager()->state() ==
+                  ConnectionManager::StateIdle) {
             loop.exit();
           }
         });
@@ -84,7 +86,7 @@ int CommandActivate::run(QStringList& tokens) {
     loop.exec();
     vpn.connectionManager()->disconnect();
 
-    if (vpn.connectionManager()->state() == ConnectionManager::StateOn) {
+    if (vpn.connectionManager()->state() == ConnectionManager::StateIdle) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now active" << Qt::endl;
       return 0;

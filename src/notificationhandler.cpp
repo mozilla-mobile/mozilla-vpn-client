@@ -115,7 +115,7 @@ void NotificationHandler::showNotification() {
       vpn->connectionManager()->currentServer().localizedExitCountryName();
 
   switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+    case ConnectionManager::StateIdle:
       if (m_switching) {
         m_switching = false;
 

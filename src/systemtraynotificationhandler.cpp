@@ -152,7 +152,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   m_disconnectAction->setVisible(isStateMain &&
                                  vpn->connectionManager()->state() ==
-                                     ConnectionManager::StateOn);
+                                     ConnectionManager::StateIdle);
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);
@@ -176,7 +176,7 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   QString statusLabel;
 
   switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+    case ConnectionManager::StateIdle:
       [[fallthrough]];
     case ConnectionManager::StateSilentSwitching:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);

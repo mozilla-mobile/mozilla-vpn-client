@@ -56,7 +56,7 @@ class ConnectionManager : public QObject, public LogSerializer {
     StateCheckSubscription,
     StateConnecting,
     StateConfirming,
-    StateOn,
+    StateIdle,
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
@@ -70,6 +70,11 @@ class ConnectionManager : public QObject, public LogSerializer {
   };
 
  public:
+  /// @TODO should these 3 be moved back to the controller?
+  bool isVPNActive();
+  void activateVPN();
+  void deactivateVPN();
+
   qint64 time() const;
   void serverUnavailable();
   void captivePortalPresent();
@@ -253,6 +258,8 @@ class ConnectionManager : public QObject, public LogSerializer {
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
+
+  bool m_VPNActive = false;
 
 };  // namespace ConnectionManager
 

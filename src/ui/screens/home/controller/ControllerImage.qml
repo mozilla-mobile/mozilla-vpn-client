@@ -135,7 +135,7 @@ Rectangle {
         },
         State {
             name: "stateOn"
-            when: (VPNController.state === VPNController.StateOn ||
+            when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching) &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.Stable
 
@@ -155,7 +155,7 @@ Rectangle {
         },
         State {
             name: "unstableOn"
-            when: (VPNController.state === VPNController.StateOn ||
+            when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching) &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
 
@@ -176,7 +176,7 @@ Rectangle {
         },
         State {
             name: "noSignalOn"
-            when: (VPNController.state === VPNController.StateOn ||
+            when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching) &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
 
