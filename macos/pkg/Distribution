@@ -4,7 +4,7 @@
     <background mime-type="image/png" file="background.png" alignment="left"/>
     <welcome file="welcome.html" mime-type="text/html" />
     <conclusion file="conclusion.html" mime-type="text/html" />
-    <options customize="never" allow-external-scripts="no" hostArchitectures="x86_64,arm64"/>
+    <options customize="never" allow-external-scripts="no" hostArchitectures="x86_64"/>
     <domains enable_localSystem="true" />
     <installation-check script="installCheck();"/>
     <script>
