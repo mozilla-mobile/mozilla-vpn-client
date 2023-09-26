@@ -5,17 +5,35 @@
 #ifndef XPC_CLIENT_H
 #define XPC_CLIENT_H
 
-#include <QObject>
+#include <stdio.h>
+#include <xpc/xpc.h>
 
-class XPCClient : QObject final {
+#include <QList>
+#include <QObject>
+#include <QScopeGuard>
+#include <QThread>
+#include <iostream>
+
+#include "xpcbase.h"
+
+class XPCClient : public QThread, private XPCBase {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XPCClient)
 
  public:
-  explicit XPCClient(QObject* parent) : QObject(parent) {}
-  ~XPCClient() = default;
+  XPCClient() : QThread() {}
+  ~XPCClient(){};
+
+  void run() override;
+
+  void send(const QString msg);
+
+  Q_SIGNAL void messageReceived(const QString msg);
 
  private:
+  xpc_connection_t m_serverConnection;
+
+  void handleServerEvent(xpc_object_t event);
 };
 
-#endif XPC_CLIENT_H
+#endif  // XPC_CLIENT_H

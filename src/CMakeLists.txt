@@ -51,7 +51,6 @@ target_link_libraries(mozillavpn PRIVATE
     nebula
     translations
     qtglean
-    xpc
 )
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
