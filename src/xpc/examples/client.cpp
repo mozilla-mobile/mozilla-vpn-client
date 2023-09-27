@@ -15,7 +15,9 @@ int main(int argc, char* argv[]) {
   QObject::connect(
       &client, &XPCClient::messageReceived,
       [&](const QString msg) { std::cout << msg.toLocal8Bit().constData(); });
-  client.start();
+  QObject::connect(&client, &XPCClient::onConnectionError, []() {
+    std::cout << "Error Establishing the connection";
+  }) client.start();
 
   return app.exec();
 }
