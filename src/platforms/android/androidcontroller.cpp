@@ -242,7 +242,7 @@ void AndroidController::activate(const InterfaceConfig& config,
                               ? settingsHolder->gleanDebugTag()
                               : "";
 
-  args["doNotConnect"] = MozillaVPN::instance()->state() == App::StateOnboarding;
+  args["isOnboarding"] = MozillaVPN::instance()->state() == App::StateOnboarding;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
