@@ -380,8 +380,6 @@ static QList<InspectorCommand> s_commands{
 
                        QPointF pointF = item->mapToScene(QPoint(0, 0));
                        QPoint point = pointF.toPoint();
-                       point.rx() += item->width() / 2;
-                       point.ry() += item->height() / 2;
 
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);

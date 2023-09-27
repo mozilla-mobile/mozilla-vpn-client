@@ -1189,7 +1189,7 @@ describe('User authentication', function() {
             });
         });
 
-        it.skip("cancel event is recorded", async () => {
+        it("cancel event is recorded", async () => {
             // Click the "Cancel" button
             await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
             await vpn.testLastInteractionEvent({
