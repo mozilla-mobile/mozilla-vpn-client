@@ -40,7 +40,7 @@ ColumnLayout {
     }
 
     Image {
-        Layout.topMargin: MZTheme.theme.vSpacing
+        Layout.topMargin: 48
         Layout.alignment: Qt.AlignHCenter
 
         source: "qrc:/ui/resources/link.svg"
@@ -71,7 +71,7 @@ ColumnLayout {
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: MZTheme.theme.windowMargin
+        Layout.bottomMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight

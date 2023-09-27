@@ -38,9 +38,8 @@ ColumnLayout {
    }
 
     Item {
-        Layout.minimumHeight: 24
-        Layout.fillWidth: true
         Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     Image {
@@ -50,9 +49,8 @@ ColumnLayout {
     }
 
     Item {
-        Layout.minimumHeight: 24
-        Layout.fillWidth: true
         Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     MZCheckBoxRow {
@@ -72,7 +70,6 @@ ColumnLayout {
     }
 
     Item {
-        Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.minimumHeight: 24
     }
@@ -101,12 +98,13 @@ ColumnLayout {
         objectName: "dataPrivacyLink"
 
         Layout.topMargin: 8
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
-        Layout.bottomMargin: 16
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.bottomMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
         onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
     }
+
 }

@@ -41,7 +41,7 @@ ColumnLayout {
     }
 
     PrivacyFeaturesList {
-        Layout.topMargin: 24
+        Layout.topMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? 32 : 24
         Layout.leftMargin: 32
         Layout.rightMargin: 32
         Layout.fillWidth: true
@@ -49,7 +49,6 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 20
     }
 
     MZButton {
@@ -71,7 +70,7 @@ ColumnLayout {
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: MZTheme.theme.windowMargin
+        Layout.bottomMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight

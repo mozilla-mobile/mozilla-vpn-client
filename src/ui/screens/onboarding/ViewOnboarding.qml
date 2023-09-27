@@ -12,7 +12,6 @@ import components 0.1
 
 MZStepNavigation {
     id: stepNav
-
     objectName: "viewOnboarding"
 
     anchors {
@@ -20,7 +19,7 @@ MZStepNavigation {
         left: parent.left
         right: parent.right
         bottom: parent.bottom
-        topMargin: MZTheme.theme.vSpacing
+        topMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? 36 : MZTheme.theme.vSpacing
     }
 
     currentIndex: MZSettings.onboardingStep

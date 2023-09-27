@@ -35,13 +35,13 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingDevicesSlideBody
+        text: Qt.platform.os === "android" || Qt.platform.os === "ios" ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
     }
 
     RowLayout {
-        Layout.topMargin: 25
+        Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
@@ -206,7 +206,7 @@ ColumnLayout {
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: MZTheme.theme.windowMargin
+        Layout.bottomMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight

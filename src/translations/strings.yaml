@@ -576,6 +576,7 @@ onboarding:
   privacySlideBody: Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings.
   devicesSlideHeader: Install Mozilla VPN on up to 5 devices
   devicesSlideBody: Scan this QR code using a tablet or mobile device’s camera to install the VPN on another device.
+  devicesSlideBodyMobile: Scan this QR code using a tablet or mobile device’s camera to install the VPN on another device. To install on a desktop computer, visit the Download page on the Mozilla VPN website.
   devicesSlideDeviceTypeLabel: "Select device type:"
   devicesSlideDeviceTypeAndroid: Android
   devicesSlideDeviceTypeApple: Apple
