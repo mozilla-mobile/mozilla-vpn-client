@@ -5,6 +5,9 @@
 use ring::signature;
 use std::os::raw::c_uchar;
 use x509_parser::prelude::*;
+use crate::balrog::*;
+
+pub mod balrog;
 
 #[no_mangle]
 pub extern "C" fn verify_rsa(
@@ -38,11 +41,12 @@ pub extern "C" fn verify_balrog(
     x5u_length: usize,
     input: *const c_uchar,
     signature: *const c_uchar,
+    current_time: i64,
     root_hash: &str,
     leaf_subject: &str
 ) -> bool {
     let x5u_raw = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
-    
+
     /* Parse the certificate chain. */
     let pem_chain: Vec<Pem> = match Pem::iter_from_buffer(x5u_raw)
         .collect::<Result<Vec<Pem>, PEMError>>() {
@@ -52,18 +56,19 @@ pub extern "C" fn verify_balrog(
             }
             Ok(x) => x
         };
-    let x5u_chain: Vec<X509Certificate> = match pem_chain.iter()
-        .map(|x| { x.parse_x509() })
-        .collect::<Result<Vec<X509Certificate>, _>>() {
-            Err(e) => {
-                eprintln!("{}", e);
-                return false
+    let balrog = Balrog{
+        chain: match pem_chain.iter()
+            .map(|x| { x.parse_x509() })
+            .collect::<Result<Vec<X509Certificate>, _>>() {
+                Err(e) => {
+                    eprintln!("{}", e);
+                    return false
+                }
+                Ok(x) => x
             }
-            Ok(x) => x
         };
 
-    /* Verify the certificate chain. */
-    verify_cert_chain(&x5u_chain, root_hash)
+    balrog.verify_chain(current_time, root_hash)
 
     /* TODO: Verify the leaf certificate. */
 
@@ -77,33 +82,6 @@ pub extern "C" fn verify_balrog(
      *       input
      *     )
      */
-}
-
-/* Cryptographically verify the signatures in the certificate chain. */
-fn verify_cert_chain(
-    chain: &Vec<X509Certificate>,
-    root_hash: &str
-) -> bool {
-    /* For each certificate N in the chain, check that:
-     *  1. The issuer hash in cert N matches the subject hash of cert N+1.
-     *  2. The issuer name in cert N matches the subject name of cert N+1.
-     *  3. The validity time of cert N contains the current time.
-     *  4. The cert N+1 contains a key usage extension permitting CA.
-     *  5. Extract the public key from cert N+1
-     *  6. Call X509Certificate::verify_signature with the key from step 5.
-     *
-     * For the last certificate in the chain, Repeat the same steps using
-     * the last certificate as both cert N and cert N+1. And additionally
-     * check that the subject has matches the root_hash parameter to this
-     * function.
-     *
-     * This could probably benefit from a helper function of the form
-     * fn verify_cert_sig(
-     *     subject: &X509Certificate,
-     *     issuer: &X509Certificate
-     * ) -> bool {...}
-     */
-    true
 }
 
 fn verify_leaf_cert(
@@ -251,6 +229,7 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
             VALID_CERT_CHAIN.len(),
             VALID_INPUT.as_ptr(),
             VALID_SIGNATURE.as_ptr(),
+            1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
         ));
@@ -263,8 +242,23 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
             INVALID_CERTIFICATE.len(),
             VALID_INPUT.as_ptr(),
             VALID_SIGNATURE.as_ptr(),
+            1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
         ));
     }
+
+    #[test]
+    fn test_verify_fails_if_cert_has_expired() {
+        assert!(!verify_balrog(
+            VALID_CERT_CHAIN.as_ptr(),
+            VALID_CERT_CHAIN.len(),
+            VALID_INPUT.as_ptr(),
+            VALID_SIGNATURE.as_ptr(),
+            1215559719, // July 9, 2008
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        ));
+    }
+
 }
