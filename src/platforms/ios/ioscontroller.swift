@@ -188,6 +188,9 @@ public class IOSControllerImpl : NSObject {
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
+                    if doNotConnect {
+                        requestConfigCallback()
+                    }
                     return
                 }
 
