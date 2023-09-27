@@ -47,6 +47,11 @@ describe('IP info', function() {
   });
 
   describe('ip info related telemetry tests', () => {
+    if(vpn.runningOnWasm()) {
+      // No Glean on WASM.
+      return;
+    }
+
     // Telemetry design is detailed at:
     // https://miro.com/app/board/uXjVM_QZzjA=/?share_link_id=616399368132
 

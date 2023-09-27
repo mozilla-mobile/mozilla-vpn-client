@@ -106,7 +106,9 @@ void MZGlean::initialize() {
       return;
     }
 
-#if defined(UNIT_TEST) || defined(MZ_DUMMY)
+#if defined(MZ_WASM)
+    return;
+#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
                            gleanDirectory.absolutePath().toUtf8());
 #elif defined(MZ_IOS)
@@ -116,7 +118,7 @@ void MZGlean::initialize() {
     AndroidCommons::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
-#elif not(defined(MZ_WASM))
+#else
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
 

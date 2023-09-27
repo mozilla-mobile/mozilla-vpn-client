@@ -20,6 +20,10 @@ let _lastNotification = {
 let _lastAddonLoadingCompleted = false;
 
 module.exports = {
+  runningOnWasm() {
+    return process.env['WASM'];
+  },
+
   async connect(impl, options) {
     client = impl;
     await this.waitForCondition(async () => {
