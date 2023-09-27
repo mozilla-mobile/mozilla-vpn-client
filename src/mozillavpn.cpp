@@ -395,9 +395,19 @@ void MozillaVPN::maybeStateMain() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
+  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
+             m_private->m_user.maxDevices());
+    setState(StateDeviceLimit);
+    return;
+  }
+
+  // Onboarding needs to come after device limit because on mobile users can
+  // choose to add the vpn tunnel configuration and invoke the VPN via system
+  // settings after onboarding but before removing a potential 6th device and
+  // getting to the home screen
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
-
       // We turn telemetry off when onboarding starts so that the user has to
       // specifically opt in to all future telemetry *Note: This is needed
       // because telemetry is on prior to onboarding to record metrics regarding
@@ -422,13 +432,6 @@ void MozillaVPN::maybeStateMain() {
       setState(StateTelemetryPolicy);
       return;
     }
-  }
-
-  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
-             m_private->m_user.maxDevices());
-    setState(StateDeviceLimit);
-    return;
   }
 
   if (!modelsInitialized()) {
