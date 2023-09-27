@@ -38,6 +38,21 @@ module.exports = {
       throw new Error(`Provided build directory: ${path.format(build_directory)}  doesn't exist.`)
     }
 
+    app.use((req, res, next) => {
+      // Required headers to enable the SharedArrayBuffer API,
+      // which in turn is a required API to run the WASM client.
+      //
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
+      res.setHeader('Cross-origin-Embedder-Policy', 'require-corp');
+      res.setHeader('Cross-origin-Opener-Policy','same-origin');
+
+      if (req.method === 'OPTIONS') {
+        res.sendStatus(200)
+      } else {
+        next()
+      }
+    });
+
     app.use(express.static(build_directory));
 
     await createServer(app);
@@ -57,7 +72,6 @@ module.exports = {
   get url() {
     return `http://localhost:${port}`;
   }
-
 };
 
 if (typeof require !== 'undefined' && require.main === module) {
