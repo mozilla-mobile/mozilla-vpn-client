@@ -102,11 +102,13 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventCancelled, this,
-      []() { 
+      []() {
         auto vpn = MozillaVPN::instance();
-        if(vpn->state() == App::StateOnboarding) {
-          vpn->onboardingCompleted(); 
-        }}, Qt::QueuedConnection);
+        if (vpn->state() == App::StateOnboarding) {
+          vpn->onboardingCompleted();
+        }
+      },
+      Qt::QueuedConnection);
 }
 AndroidController::~AndroidController() { MZ_COUNT_DTOR(AndroidController); }
 
@@ -242,7 +244,8 @@ void AndroidController::activate(const InterfaceConfig& config,
                               ? settingsHolder->gleanDebugTag()
                               : "";
 
-  args["isOnboarding"] = MozillaVPN::instance()->state() == App::StateOnboarding;
+  args["isOnboarding"] =
+      MozillaVPN::instance()->state() == App::StateOnboarding;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,

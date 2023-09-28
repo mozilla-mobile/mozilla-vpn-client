@@ -272,7 +272,7 @@ class VPNService : android.net.VpnService() {
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
 
-        if(json.getBoolean("isOnboarding")) {
+        if (json.getBoolean("isOnboarding")) {
             Log.i(tag, "Finishing onboarding... do not turn on the VPN after gaining permission")
             mBinder.dispatchEvent(CoreBinder.EVENTS.cancelled, "")
             return
