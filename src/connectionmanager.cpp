@@ -222,7 +222,19 @@ qint64 ConnectionManager::time() const {
 
 void ConnectionManager::timerTimeout() {
   Q_ASSERT(m_state == StateOn);
+#ifdef MZ_IOS
+  // When locking an iOS device with an app in the foreground, the app's JS
+  // runtime is stopped pretty quick by the system. For this VPN app, that
+  // caused a crash here when Qt tried to pass this emit off to QML, as QML
+  // is JS and is no longer available. This check is to prevent that crash
+  // when the device is locked.
+  if (QGuiApplication::applicationState() ==
+      Qt::ApplicationState::ApplicationActive) {
+    emit timeChanged();
+  }
+#else
   emit timeChanged();
+#endif
 }
 
 void ConnectionManager::quit() {
