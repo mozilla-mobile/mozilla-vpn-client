@@ -175,36 +175,42 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateIdle:
-      [[fallthrough]];
-    case ConnectionManager::StateSilentSwitching:
-      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
-      break;
+  if (vpn->connectionManager()->isVPNActive()) {
+    switch (vpn->connectionManager()->state()) {
+      case ConnectionManager::StateIdle:
+        [[fallthrough]];
+      case ConnectionManager::StateSilentSwitching:
+        statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
+        break;
 
-    case ConnectionManager::StateOff:
-      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
-      break;
+      case ConnectionManager::StateOff:
+        //        statusLabel =
+        //        i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
+        break;
 
-    case ConnectionManager::StateSwitching:
-      [[fallthrough]];
-    case ConnectionManager::StateConnecting:
-      [[fallthrough]];
-    case ConnectionManager::StateCheckSubscription:
-      [[fallthrough]];
-    case ConnectionManager::StateConfirming:
-      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
-      break;
+      case ConnectionManager::StateSwitching:
+        [[fallthrough]];
+      case ConnectionManager::StateConnecting:
+        [[fallthrough]];
+      case ConnectionManager::StateCheckSubscription:
+        [[fallthrough]];
+      case ConnectionManager::StateConfirming:
+        statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
+        break;
 
-    case ConnectionManager::StateDisconnecting:
-      statusLabel = i18nStrings->t(I18nStrings::SystrayStatusDisconnectingFrom);
-      break;
+      case ConnectionManager::StateDisconnecting:
+        statusLabel =
+            i18nStrings->t(I18nStrings::SystrayStatusDisconnectingFrom);
+        break;
 
-    default:
-      m_statusLabel->setVisible(false);
-      m_lastLocationLabel->setVisible(false);
-      m_separator->setVisible(false);
-      return;
+      default:
+        m_statusLabel->setVisible(false);
+        m_lastLocationLabel->setVisible(false);
+        m_separator->setVisible(false);
+        return;
+    }
+  } else {
+    statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
   }
 
   Q_ASSERT(!statusLabel.isEmpty());
@@ -223,8 +229,9 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
-                                  ConnectionManager::StateOff);
+  //  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
+  //                                  ConnectionManager::StateOff);
+  m_lastLocationLabel->setEnabled(!vpn->connectionManager()->isVPNActive());
 }
 
 void SystemTrayNotificationHandler::updateIcon() {

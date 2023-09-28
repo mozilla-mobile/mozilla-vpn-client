@@ -19,8 +19,9 @@ TaskControllerAction::TaskControllerAction(
     ConnectionManager::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
     : Task("TaskControllerAction"),
       m_action(action),
-///@TODO Determine the implications of removing this initialization. Do we need this?
-//      m_lastState(ConnectionManager::State::StateOff),
+      ///@TODO Determine the implications of removing this initialization. Do we
+      ///need this?
+      //      m_lastState(ConnectionManager::State::StateOff),
       // Let's take a copy of the current server-data to activate/switch to the
       // current locations even if the settings change in the meantime.
       m_serverData(*MozillaVPN::instance()->serverData()),
@@ -93,7 +94,8 @@ void TaskControllerAction::stateChanged() {
   ConnectionManager::State state = connectionManager->state();
   if (((m_action == eActivate || m_action == eSwitch) &&
        state == ConnectionManager::StateIdle) ||
-//      (m_action == eDeactivate && state == ConnectionManager::StateOff)) {
+      //      (m_action == eDeactivate && state == ConnectionManager::StateOff))
+      //      {
       (m_action == eDeactivate && !connectionManager->isVPNActive())) {
     logger.debug() << "Operation completed";
     m_timer.stop();

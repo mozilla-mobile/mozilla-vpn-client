@@ -149,7 +149,8 @@ void Telemetry::initialize() {
     if (state == ConnectionManager::StateIdle) {
       mozilla::glean::sample::controller_state_on.record();
     }
-    if (state == ConnectionManager::StateOff) {
+    //    if (state == ConnectionManager::StateOff) {
+    if (!vpn->connectionManager()->isVPNActive()) {
       mozilla::glean::sample::controller_state_off.record();
     }
   });
@@ -228,7 +229,9 @@ void Telemetry::initialize() {
       connectionManager, &ConnectionManager::controllerDisconnected, this,
       [this, connectionManager]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOff) {
+          //          if (connectionManager->state() ==
+          //          ConnectionManager::StateOff) {
+          if (!connectionManager->isVPNActive()) {
             mozilla::glean::session::session_end.set();
 
             mozilla::glean_pings::Vpnsession.submit("end");
@@ -299,7 +302,8 @@ void Telemetry::periodicStateRecorder() {
   if (connectionManagerState == ConnectionManager::StateIdle) {
     mozilla::glean::sample::controller_state_on.record();
   }
-  if (connectionManagerState == ConnectionManager::StateOff) {
+  //  if (connectionManagerState == ConnectionManager::StateOff) {
+  if (!vpn->connectionManager()->isVPNActive()) {
     mozilla::glean::sample::controller_state_off.record();
   }
 }

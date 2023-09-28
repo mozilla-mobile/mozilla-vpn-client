@@ -92,9 +92,8 @@ const QString StatusIcon::iconString() {
   if (vpn->state() != App::StateMain) {
     return LOGO_GENERIC;
   }
-  
-  else if (vpn->connectionManager()->isVPNActive())
-  {
+
+  else if (vpn->connectionManager()->isVPNActive()) {
     switch (vpn->connectionManager()->state()) {
       case ConnectionManager::StateIdle:
         [[fallthrough]];
@@ -105,9 +104,9 @@ const QString StatusIcon::iconString() {
         ///@TODO Remove StateOff when we're done
       case ConnectionManager::StateOff:
         [[fallthrough]];
-  //      m_animatedIconTimer.stop();
-  //      return LOGO_GENERIC_OFF;
-  //      break;
+        //      m_animatedIconTimer.stop();
+        //      return LOGO_GENERIC_OFF;
+        //      break;
       case ConnectionManager::StateSwitching:
         [[fallthrough]];
       case ConnectionManager::StateConnecting:
@@ -127,8 +126,7 @@ const QString StatusIcon::iconString() {
         return LOGO_GENERIC;
         break;
     }
-  }
-  else {
+  } else {
     // The vpn is inactive so return the off logo.
     m_animatedIconTimer.stop();
     return LOGO_GENERIC_OFF;

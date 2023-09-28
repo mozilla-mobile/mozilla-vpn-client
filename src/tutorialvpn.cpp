@@ -91,7 +91,8 @@ class TutorialStepBeforeVpnOff final : public TutorialStepBefore {
         MozillaVPN::instance()->connectionManager();
     Q_ASSERT(connectionManager);
 
-    if (connectionManager->state() == ConnectionManager::StateOff) {
+    //    if (connectionManager->state() == ConnectionManager::StateOff) {
+    if (!MozillaVPN::instance()->connectionManager()->isVPNActive()) {
       return true;
     }
 
