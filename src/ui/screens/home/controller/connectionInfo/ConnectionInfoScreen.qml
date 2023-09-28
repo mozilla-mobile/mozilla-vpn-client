@@ -126,7 +126,6 @@ Rectangle {
         }
     }
 
-
     Behavior on opacity {
         NumberAnimation {
             target: root
@@ -180,7 +179,9 @@ Rectangle {
         onClicked: {
             if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
                 Glean.interaction.speedTestRefresh.record({
-                    screen: root.state == "open-error" ? "speed_test_error" : root.state == "open-ready" ? "speed_test_result" : "unexpected",
+                    screen: root.state == "open-error"  ? "speed_test_error"
+                        : root.state == "open-ready"  ? "speed_test_result" 
+                            : "unexpected",
                     action: "select",
                     element_id: "refresh",
                 });
