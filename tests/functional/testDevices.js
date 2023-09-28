@@ -143,13 +143,6 @@ describe('Devices', function() {
       await vpn.waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
-
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
@@ -162,6 +155,13 @@ describe('Devices', function() {
 
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
+
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(
+          queries.screenPostAuthentication.BUTTON.visible());
+
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -279,13 +279,6 @@ describe('Devices', function() {
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(
         queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
@@ -410,13 +403,6 @@ describe('Devices', function() {
       await vpn.waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
-
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
 
@@ -432,6 +418,13 @@ describe('Devices', function() {
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
+
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(
+          queries.screenPostAuthentication.BUTTON.visible());
+
+      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
