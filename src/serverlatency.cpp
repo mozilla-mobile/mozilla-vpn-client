@@ -73,7 +73,8 @@ void ServerLatency::start() {
     return;
   }
 
-  if (vpn->connectionManager()->state() != ConnectionManager::StateOff) {
+  //  if (vpn->connectionManager()->state() != ConnectionManager::StateOff) {
+  if (vpn->connectionManager()->isVPNActive()) {
     // Don't attempt to refresh latency when the VPN is active, or
     // we could get misleading results.
     m_wantRefresh = true;
@@ -233,9 +234,10 @@ void ServerLatency::clear() {
 }
 
 void ServerLatency::stateChanged() {
-  ConnectionManager::State state =
-      MozillaVPN::instance()->connectionManager()->state();
-  if (state != ConnectionManager::StateOff) {
+  //  ConnectionManager::State state =
+  //      MozillaVPN::instance()->connectionManager()->state();
+  //  if (state != ConnectionManager::StateOff) {
+  if (MozillaVPN::instance()->connectionManager()->isVPNActive()) {
     // If the VPN is active, then do not attempt to measure the server latency.
     stop();
   } else if (m_wantRefresh) {
