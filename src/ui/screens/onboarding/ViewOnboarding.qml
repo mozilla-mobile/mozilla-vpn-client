@@ -55,7 +55,6 @@ MZStepNavigation {
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
 
-            //DEBUGGING - FIX BEFORE COMMITTING
             sourceComponent: Qt.platform.os === "android" || Qt.platform.os === "ios" ? startSlideMobile : startSlideDesktop
         }
     ]
