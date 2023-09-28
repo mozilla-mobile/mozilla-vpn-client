@@ -228,7 +228,7 @@ notSignedInGoogle:
 # IAP Android edge case 2
 multiFxaAccountError:
   fxaAccountErrorHeader: Problem confirming subscription
-  fxaAccountErrorText: Your subscription is linked to another Firefox Account. You may need to sign in with a different email address.
+  fxaAccountErrorText2: Your subscription is linked to another Mozilla account. You may need to sign in with a different email address.
   visitOurHelpCenter: Visit our help center to learn more about managing your subscriptions.
 
 # IAP Android edge case 3
@@ -247,11 +247,11 @@ restorePurchaseGenericPurchaseError:
 
 # IAP iOS restore expired error
 restorePurchaseExpiredError:
-  restorePurchaseExpiredErrorText: Sorry, we are unable to connect your Firefox Account to a current subscription. Please try again or contact our support team for further assistance.
+  restorePurchaseExpiredErrorText2: Sorry, we are unable to connect your Mozilla account to a current subscription. Please try again or contact our support team for further assistance.
 
 # IAP iOS restore in use error
 restorePurchaseInUseError:
-  restorePurchaseInUseErrorText: Another Firefox Account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
+  restorePurchaseInUseErrorText2: Another Mozilla account has already subscribed using this Apple ID. Please sign out and try again or contact our support team for help.
 
 purchaseWeb:
   title: Subscribe to Mozilla VPN
@@ -588,8 +588,8 @@ inAppAuth:
   emailInputPlaceholder: Enter email
   changeEmailLink: Change email
   signInButton: Sign in
-  signInSubtitle: Continue to Mozilla VPN by signing in with your Firefox account
-  reauthSignInSubtitle: To continue, please confirm with your Firefox account password.
+  signInSubtitle2: Continue to Mozilla VPN by signing in with your Mozilla account
+  reauthSignInSubtitle2: To continue, please confirm with your Mozilla account password.
   createPasswordLabel:
     value: Create password
     comment: This is a label displayed on the password creation screen.
@@ -615,8 +615,8 @@ inAppAuth:
     value: I’d like to receive product update emails from Firefox.
     comment: Checkbox label for users to opt in, when creating an account, to receive product update emails from Firefox.
   createAccountButton: Create account
-  finishAccountCreationDescription:
-    value: Finish creating your Firefox account to continue to Mozilla VPN
+  finishAccountCreationDescription2:
+    value: Finish creating your Mozilla account to continue to Mozilla VPN
     comment: User message prompting user to finish creating their account to use Mozilla VPN.
   emailVerificationDescription:
     value: Open your email and enter the verification code that was sent.
@@ -696,11 +696,10 @@ postAuthentication:
   subtitle: You can quickly access Mozilla VPN from your status bar.
 
 deleteAccount:
-  authSubheadline: To delete your VPN account, please sign in with your Firefox account password.
   authButtonLabel: Continue
-  headline: Delete Firefox account
-  subheadline:
-    value: "Your Firefox account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
+  headline2: Delete Mozilla account
+  subheadline2:
+    value: "Your Mozilla account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
     comment: "%1 is the email address that is associated with the current account"
   optionDescriptionOne:
     value: Any paid subscriptions you have will be cancelled (Except Pocket)

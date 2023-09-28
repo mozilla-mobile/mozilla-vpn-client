@@ -22,7 +22,7 @@ MZInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _headlineText: MZAuthInApp.emailAddress
-    _subtitleText: MZI18n.InAppAuthFinishAccountCreationDescription
+    _subtitleText: MZI18n.InAppAuthFinishAccountCreationDescription2
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: MZI18n.InAppAuthCreatePasswordLabel
 

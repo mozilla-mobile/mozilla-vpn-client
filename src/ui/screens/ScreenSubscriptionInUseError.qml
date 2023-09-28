@@ -19,9 +19,9 @@ MZStackView {
            // Problem confirming subscription...
            headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
-           // Another Firefox Account has already subscribed using this Apple ID.
+           // Another Mozilla account has already subscribed using this Apple ID.
            // Visit our help center below to learn more about how to manage your subscriptions.
-           errorMessage: MZI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText,
+           errorMessage: MZI18n.RestorePurchaseInUseErrorRestorePurchaseInUseErrorText2,
 
            // Sign out
            primaryButtonText: MZI18n.GlobalSignOut,

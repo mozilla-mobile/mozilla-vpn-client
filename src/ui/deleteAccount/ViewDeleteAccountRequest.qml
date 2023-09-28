@@ -46,7 +46,7 @@ MZInAppAuthenticationBase {
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();
     }
-    _headlineText: MZI18n.DeleteAccountHeadline
+    _headlineText: MZI18n.DeleteAccountHeadline2
     _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
 
     _inputs: ColumnLayout {
@@ -55,7 +55,7 @@ MZInAppAuthenticationBase {
             objectName: "accountDeletionLabel"
             color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
-            text: MZI18n.DeleteAccountSubheadline
+            text: MZI18n.DeleteAccountSubheadline2
                 .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
                     + MZAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText

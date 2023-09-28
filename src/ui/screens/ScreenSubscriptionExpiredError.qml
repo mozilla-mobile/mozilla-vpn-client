@@ -19,9 +19,9 @@ MZStackView {
            // Problem confirming subscription...
            headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 
-           // Sorry we are unable to connect your Firefox Account to a current subscription.
+           // Sorry we are unable to connect your Mozilla account to a current subscription.
            // Please try again or contact our support team for further assistance.
-           errorMessage: MZI18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText,
+           errorMessage: MZI18n.RestorePurchaseExpiredErrorRestorePurchaseExpiredErrorText2,
 
            // Try again (Error SubscriptionExpiredError only happens on iOS, so ok to point to ScreenSubscriptionNeeded)
            primaryButtonText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorButton,
