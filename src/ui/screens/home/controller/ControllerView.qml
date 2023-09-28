@@ -121,7 +121,8 @@ Item {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            // when: VPNController.state === VPNController.StateOff
+            when: !VPNController.isVPNActive
 
             PropertyChanges {
                 target: boxBackground

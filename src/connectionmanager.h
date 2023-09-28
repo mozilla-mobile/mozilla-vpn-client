@@ -134,6 +134,8 @@ class ConnectionManager : public QObject, public LogSerializer {
   Q_PROPERTY(bool silentServerSwitchingSupported READ
                  silentServerSwitchingSupported CONSTANT);
 
+  Q_PROPERTY(bool isVPNActive READ isVPNActive NOTIFY isVPNActiveChanged);
+
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
@@ -165,6 +167,8 @@ class ConnectionManager : public QObject, public LogSerializer {
   void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
+
+  void isVPNActiveChanged();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();

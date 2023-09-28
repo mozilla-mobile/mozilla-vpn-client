@@ -97,12 +97,20 @@ void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != App::StateMain &&
-      // The Disconnected notification should be triggerable
-      // on StateInitialize, in case the user was connected during a log-out
-      // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == App::StateInitialize &&
-        vpn->connectionManager()->state() == ConnectionManager::StateOff)) {
+  //  if (vpn->state() != App::StateMain &&
+  //      // The Disconnected notification should be triggerable
+  //      // on StateInitialize, in case the user was connected during a log-out
+  //      // Otherwise existing notifications showing "connected" would update
+  //      !(vpn->state() == App::StateInitialize &&
+  //        vpn->connectionManager()->state() == ConnectionManager::StateOff)) {
+  //    return;
+  //  }
+  if (!(vpn->state() == App::StateMain ||
+        // The Disconnected notification should not be triggerable
+        // on StateInitialize, except when the user was connected during a
+        // log-out
+        (vpn->state() == App::StateInitialize &&
+         vpn->connectionManager()->isVPNActive()))) {
     return;
   }
 
@@ -113,14 +121,185 @@ void NotificationHandler::showNotification() {
       vpn->connectionManager()->currentServer().localizedExitCityName();
   QString localizedCountryName =
       vpn->connectionManager()->currentServer().localizedExitCountryName();
+  //
+  //  switch (vpn->connectionManager()->state()) {
+  //    case ConnectionManager::StateIdle:
+  //      if (m_switching) {
+  //        m_switching = false;
+  //
+  //        if (!SettingsHolder::instance()->serverSwitchNotification()) {
+  //          // Dont show notification if it's turned off.
+  //          return;
+  //        }
+  //
+  //        QString localizedPreviousExitCountryName =
+  //            vpn->connectionManager()
+  //                ->currentServer()
+  //                .localizedPreviousExitCountryName();
+  //        QString localizedPreviousExitCityName =
+  //            vpn->connectionManager()
+  //                ->currentServer()
+  //                .localizedPreviousExitCityName();
+  //
+  //        if ((localizedPreviousExitCountryName == localizedCountryName) &&
+  //            (localizedPreviousExitCityName == localizedExitCityName)) {
+  //          // Don't show notifications unless the exit server changed, see:
+  //          //
+  //          https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
+  //          return;
+  //        }
+  //
+  //        // "VPN Switched Servers"
+  //        notifyInternal(
+  //            None,
+  //            I18nStrings::instance()->t(
+  //                I18nStrings::NotificationsVPNSwitchedServersTitle),
+  //            I18nStrings::instance()
+  //                ->t(I18nStrings::NotificationsVPNSwitchedServersMessage)
+  //                .arg(localizedPreviousExitCityName, localizedExitCityName),
+  //            NOTIFICATION_TIME_MSEC);
+  //
+  //        return;
+  //      }
+  //
+  //      if (!m_connected) {
+  //        m_connected = true;
+  //
+  //        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+  //          // Notifications for ConnectionChange are disabled
+  //          return;
+  //        }
+  //
+  //        // "VPN Connected"
+  //        ServerData* serverData = vpn->serverData();
+  //
+  //        if (serverData->multihop()) {
+  //          QString localizedEntryCityName = vpn->connectionManager()
+  //                                               ->currentServer()
+  //                                               .localizedEntryCityName();
+  //
+  //          QString localizedExitCityName =
+  //              vpn->connectionManager()->currentServer().localizedExitCityName();
+  //
+  //          notifyInternal(
+  //              None,
+  //              I18nStrings::instance()->t(
+  //                  I18nStrings::NotificationsVPNConnectedTitle),
+  //              I18nStrings::instance()
+  //                  ->t(I18nStrings::NotificationsVPNMultihopConnectedMessages)
+  //                  .arg(localizedExitCityName, localizedEntryCityName),
+  //              NOTIFICATION_TIME_MSEC);
+  //        } else {
+  //          notifyInternal(None,
+  //                         I18nStrings::instance()->t(
+  //                             I18nStrings::NotificationsVPNConnectedTitle),
+  //                         I18nStrings::instance()
+  //                             ->t(I18nStrings::NotificationsVPNConnectedMessages)
+  //                             .arg(localizedExitCityName),
+  //                         NOTIFICATION_TIME_MSEC);
+  //        }
+  //      }
+  //      return;
+  //
+  //    case ConnectionManager::StateOff:
+  //      if (m_connected) {
+  //        m_connected = false;
+  //        if (!SettingsHolder::instance()->connectionChangeNotification()) {
+  //          // Notifications for ConnectionChange are disabled
+  //          return;
+  //        }
+  //        // "VPN Disconnected"
+  //        ServerData* serverData = vpn->serverData();
+  //        if (serverData->multihop()) {
+  //          QString localizedEntryCityName = vpn->connectionManager()
+  //                                               ->currentServer()
+  //                                               .localizedEntryCityName();
+  //
+  //          QString localizedExitCityName =
+  //              vpn->connectionManager()->currentServer().localizedExitCityName();
+  //
+  //          notifyInternal(
+  //              None,
+  //              I18nStrings::instance()->t(
+  //                  I18nStrings::NotificationsVPNDisconnectedTitle),
+  //              I18nStrings::instance()
+  //                  ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
+  //                  .arg(localizedExitCityName, localizedEntryCityName),
+  //              NOTIFICATION_TIME_MSEC);
+  //        } else {
+  //          notifyInternal(
+  //              None,
+  //              I18nStrings::instance()->t(
+  //                  I18nStrings::NotificationsVPNDisconnectedTitle),
+  //              I18nStrings::instance()
+  //                  ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
+  //                  .arg(localizedExitCityName),
+  //              NOTIFICATION_TIME_MSEC);
+  //        }
+  //      }
+  //      return;
+  //
+  //    case ConnectionManager::StateSilentSwitching:
+  //      m_connected = true;
+  //      m_switching = false;
+  //      return;
+  //
+  //    case ConnectionManager::StateSwitching:
+  //      m_connected = true;
+  //      m_switching = true;
+  //      return;
+  //
+  //    default:
+  //      return;
+  //  }
 
-  switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateIdle:
+  if (!vpn->connectionManager()->isVPNActive()) {
+    if (m_connected) {
+      m_connected = false;
+      if (!SettingsHolder::instance()->connectionChangeNotification()) {
+        // Notifications for ConnectionChange are disabled
+        return;
+      }
+      // "VPN Disconnected"
+      ServerData* serverData = vpn->serverData();
+      if (serverData->multihop()) {
+        QString localizedEntryCityName =
+            vpn->connectionManager()->currentServer().localizedEntryCityName();
+
+        QString localizedExitCityName =
+            vpn->connectionManager()->currentServer().localizedExitCityName();
+
+        notifyInternal(
+            None,
+            I18nStrings::instance()->t(
+                I18nStrings::NotificationsVPNDisconnectedTitle),
+            I18nStrings::instance()
+                ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
+                .arg(localizedExitCityName, localizedEntryCityName),
+            NOTIFICATION_TIME_MSEC);
+      } else {
+        notifyInternal(None,
+                       I18nStrings::instance()->t(
+                           I18nStrings::NotificationsVPNDisconnectedTitle),
+                       I18nStrings::instance()
+                           ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
+                           .arg(localizedExitCityName),
+                       NOTIFICATION_TIME_MSEC);
+      }
+    }
+    return;
+  }
+
+  // Only proceed with state checks if VPN is activated
+  else if (vpn->connectionManager()->isVPNActive()) {
+    ConnectionManager::State connectionManagerState =
+        vpn->connectionManager()->state();
+    if (connectionManagerState == ConnectionManager::StateIdle) {
       if (m_switching) {
         m_switching = false;
 
         if (!SettingsHolder::instance()->serverSwitchNotification()) {
-          // Dont show notification if it's turned off.
+          // Don't show notification if it's turned off.
           return;
         }
 
@@ -135,8 +314,7 @@ void NotificationHandler::showNotification() {
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedExitCityName)) {
-          // Don't show notifications unless the exit server changed, see:
-          // https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1719
+          // Don't show notifications unless the exit server changed.
           return;
         }
 
@@ -191,57 +369,18 @@ void NotificationHandler::showNotification() {
         }
       }
       return;
-
-    case ConnectionManager::StateOff:
-      if (m_connected) {
-        m_connected = false;
-        if (!SettingsHolder::instance()->connectionChangeNotification()) {
-          // Notifications for ConnectionChange are disabled
-          return;
-        }
-        // "VPN Disconnected"
-        ServerData* serverData = vpn->serverData();
-        if (serverData->multihop()) {
-          QString localizedEntryCityName = vpn->connectionManager()
-                                               ->currentServer()
-                                               .localizedEntryCityName();
-
-          QString localizedExitCityName =
-              vpn->connectionManager()->currentServer().localizedExitCityName();
-
-          notifyInternal(
-              None,
-              I18nStrings::instance()->t(
-                  I18nStrings::NotificationsVPNDisconnectedTitle),
-              I18nStrings::instance()
-                  ->t(I18nStrings::NotificationsVPNMultihopDisconnectedMessage)
-                  .arg(localizedExitCityName, localizedEntryCityName),
-              NOTIFICATION_TIME_MSEC);
-        } else {
-          notifyInternal(
-              None,
-              I18nStrings::instance()->t(
-                  I18nStrings::NotificationsVPNDisconnectedTitle),
-              I18nStrings::instance()
-                  ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
-                  .arg(localizedExitCityName),
-              NOTIFICATION_TIME_MSEC);
-        }
-      }
-      return;
-
-    case ConnectionManager::StateSilentSwitching:
+    } else if (connectionManagerState ==
+               ConnectionManager::StateSilentSwitching) {
       m_connected = true;
       m_switching = false;
       return;
-
-    case ConnectionManager::StateSwitching:
+    } else if (connectionManagerState == ConnectionManager::StateSwitching) {
       m_connected = true;
       m_switching = true;
       return;
-
-    default:
+    } else {
       return;
+    }
   }
 
   Q_ASSERT(false);

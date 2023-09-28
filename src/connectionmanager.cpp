@@ -194,13 +194,13 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
 
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
-//    setState(StateOff);
+    //    setState(StateOff);
     deactivateVPN();
     return;
   }
 
   if (processNextStep()) {
-//    setState(StateOff);
+    //    setState(StateOff);
     deactivateVPN();
     return;
   }
@@ -244,6 +244,12 @@ void ConnectionManager::timerTimeout() {
     emit timeChanged();
   }
 #else
+
+  //  Q_ASSERT(m_state == StateIdle);
+  ///@TODO This call to activateVPN should be removed.
+  activateVPN();
+  Q_ASSERT(isVPNActive());
+  
   emit timeChanged();
 #endif
 }
@@ -251,7 +257,7 @@ void ConnectionManager::timerTimeout() {
 void ConnectionManager::quit() {
   logger.debug() << "Quitting";
 
-//  if (m_state == StateInitializing || m_state == StateOff) {
+  //  if (m_state == StateInitializing || m_state == StateOff) {
   if (m_state == StateInitializing || !isVPNActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
@@ -261,8 +267,9 @@ void ConnectionManager::quit() {
   m_nextStep = Quit;
 
   if ((m_state == StateIdle || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription) && isVPNActive()) {
+       m_state == StateSilentSwitching || m_state == StateConnecting ||
+       m_state == StateCheckSubscription) &&
+      isVPNActive()) {
     deactivate();
     return;
   }
@@ -322,11 +329,11 @@ void ConnectionManager::serverUnavailable() {
 void ConnectionManager::updateRequired() {
   logger.warning() << "Update required";
 
-//  if (m_state == StateOff) {
-//    emit readyToUpdate();
-//    return;
-//  }
-  
+  //  if (m_state == StateOff) {
+  //    emit readyToUpdate();
+  //    return;
+  //  }
+
   if (!isVPNActive()) {
     emit readyToUpdate();
     return;
@@ -334,10 +341,10 @@ void ConnectionManager::updateRequired() {
 
   m_nextStep = Update;
 
-//  if (m_state == StateIdle) {
-//    deactivate();
-//    return;
-//  }
+  //  if (m_state == StateIdle) {
+  //    deactivate();
+  //    return;
+  //  }
   if (isVPNActive()) {
     deactivate();
     return;
@@ -349,24 +356,25 @@ void ConnectionManager::logout() {
 
   MozillaVPN::instance()->logout();
 
-//  if (m_state == StateOff) {
+  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     return;
   }
 
   m_nextStep = Disconnect;
 
-//  if (m_state == StateIdle) {
+  //  if (m_state == StateIdle) {
   if ((m_state == StateIdle || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming || m_state == StateCheckSubscription) || isVPNActive()) {
+       m_state == StateSilentSwitching || m_state == StateConnecting ||
+       m_state == StateConfirming || m_state == StateCheckSubscription) ||
+      isVPNActive()) {
     deactivate();
     return;
   }
-//  if (isVPNActive()) {
-//    deactivate();
-//    return;
-//  }
+  //  if (isVPNActive()) {
+  //    deactivate();
+  //    return;
+  //  }
 }
 
 void ConnectionManager::activateInternal(
@@ -640,7 +648,7 @@ bool ConnectionManager::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
-//  if (m_state != StateIdle) {
+  //  if (m_state != StateIdle) {
   if (!isVPNActive()) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
@@ -748,7 +756,7 @@ void ConnectionManager::disconnected() {
   NextStep nextStep = m_nextStep;
 
   if (processNextStep()) {
-//    setState(StateOff);
+    //    setState(StateOff);
     deactivateVPN();
     return;
   }
@@ -759,6 +767,7 @@ void ConnectionManager::disconnected() {
     return;
   }
 
+  // Tuesday TODO
   setState(StateOff);
   deactivateVPN();
   emit controllerDisconnected();
@@ -887,7 +896,7 @@ void ConnectionManager::captivePortalPresent() {
 }
 
 void ConnectionManager::serverDataChanged() {
-//  if (m_state == StateOff) {
+  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     logger.debug() << "Server data changed but we are off";
     return;
@@ -899,7 +908,7 @@ void ConnectionManager::serverDataChanged() {
 }
 
 bool ConnectionManager::switchServers(const ServerData& serverData) {
-//  if (m_state == StateOff) {
+  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     logger.debug() << "Server data changed but we are off";
     return false;
@@ -922,7 +931,7 @@ bool ConnectionManager::switchServers(const ServerData& serverData) {
 void ConnectionManager::backendFailure() {
   logger.error() << "backend failure";
 
-//  if (m_state == StateInitializing || m_state == StateOff) {
+  //  if (m_state == StateInitializing || m_state == StateOff) {
   if (!isVPNActive() || m_state == StateInitializing) {
     emit readyToBackendFailure();
     return;
@@ -931,8 +940,9 @@ void ConnectionManager::backendFailure() {
   m_nextStep = BackendFailure;
 
   if ((m_state == StateIdle || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming) && isVPNActive()) {
+       m_state == StateSilentSwitching || m_state == StateConnecting ||
+       m_state == StateCheckSubscription || m_state == StateConfirming) &&
+      isVPNActive()) {
     deactivateVPN();
     deactivate();
     return;
@@ -953,9 +963,9 @@ QString ConnectionManager::currentServerString() const {
 bool ConnectionManager::activate(const ServerData& serverData,
                                  ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
-//  if (m_state != ConnectionManager::StateOff &&
-//      m_state != ConnectionManager::StateSwitching &&
-//      m_state != ConnectionManager::StateSilentSwitching) {
+  //  if (m_state != ConnectionManager::StateOff &&
+  //      m_state != ConnectionManager::StateSwitching &&
+  //      m_state != ConnectionManager::StateSilentSwitching) {
   if (isVPNActive()) {
     logger.debug() << "Already connected";
     return false;
@@ -967,7 +977,7 @@ bool ConnectionManager::activate(const ServerData& serverData,
   emit currentServerChanged();
 #endif
 
-//  if (m_state == ConnectionManager::StateOff) {
+  //  if (m_state == ConnectionManager::StateOff) {
   if (!isVPNActive()) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
@@ -1031,16 +1041,17 @@ bool ConnectionManager::activate(const ServerData& serverData,
 bool ConnectionManager::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-//  if (m_state != StateIdle && m_state != StateSwitching &&
-//      m_state != StateSilentSwitching && m_state != StateConfirming &&
-//      m_state != StateConnecting && m_state != StateCheckSubscription) {
+  //  if (m_state != StateIdle && m_state != StateSwitching &&
+  //      m_state != StateSilentSwitching && m_state != StateConfirming &&
+  //      m_state != StateConnecting && m_state != StateCheckSubscription) {
   if (!isVPNActive()) {
     logger.warning() << "Already disconnected";
     return false;
   }
 
   if ((m_state == StateIdle || m_state == StateConfirming ||
-      m_state == StateConnecting || m_state == StateCheckSubscription) && isVPNActive()) {
+       m_state == StateConnecting || m_state == StateCheckSubscription) &&
+      isVPNActive()) {
     setState(StateDisconnecting);
   }
 
