@@ -92,36 +92,46 @@ const QString StatusIcon::iconString() {
   if (vpn->state() != App::StateMain) {
     return LOGO_GENERIC;
   }
-
-  switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateIdle:
-      [[fallthrough]];
-    case ConnectionManager::StateSilentSwitching:
-      m_animatedIconTimer.stop();
-      return LOGO_GENERIC_ON;
-      break;
-    case ConnectionManager::StateOff:
-      m_animatedIconTimer.stop();
-      return LOGO_GENERIC_OFF;
-      break;
-    case ConnectionManager::StateSwitching:
-      [[fallthrough]];
-    case ConnectionManager::StateConnecting:
-      [[fallthrough]];
-    case ConnectionManager::StateCheckSubscription:
-      [[fallthrough]];
-    case ConnectionManager::StateConfirming:
-      [[fallthrough]];
-    case ConnectionManager::StateDisconnecting:
-      if (!m_animatedIconTimer.isActive()) {
-        activateAnimation();
-      }
-      return ANIMATED_LOGO_STEPS[m_animatedIconIndex];
-      break;
-    default:
-      m_animatedIconTimer.stop();
-      return LOGO_GENERIC;
-      break;
+  
+  else if (vpn->connectionManager()->isVPNActive())
+  {
+    switch (vpn->connectionManager()->state()) {
+      case ConnectionManager::StateIdle:
+        [[fallthrough]];
+      case ConnectionManager::StateSilentSwitching:
+        m_animatedIconTimer.stop();
+        return LOGO_GENERIC_ON;
+        break;
+        ///@TODO Remove StateOff when we're done
+      case ConnectionManager::StateOff:
+        [[fallthrough]];
+  //      m_animatedIconTimer.stop();
+  //      return LOGO_GENERIC_OFF;
+  //      break;
+      case ConnectionManager::StateSwitching:
+        [[fallthrough]];
+      case ConnectionManager::StateConnecting:
+        [[fallthrough]];
+      case ConnectionManager::StateCheckSubscription:
+        [[fallthrough]];
+      case ConnectionManager::StateConfirming:
+        [[fallthrough]];
+      case ConnectionManager::StateDisconnecting:
+        if (!m_animatedIconTimer.isActive()) {
+          activateAnimation();
+        }
+        return ANIMATED_LOGO_STEPS[m_animatedIconIndex];
+        break;
+      default:
+        m_animatedIconTimer.stop();
+        return LOGO_GENERIC;
+        break;
+    }
+  }
+  else {
+    // The vpn is inactive so return the off logo.
+    m_animatedIconTimer.stop();
+    return LOGO_GENERIC_OFF;
   }
 }
 
