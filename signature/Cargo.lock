@@ -473,9 +473,12 @@ dependencies = [
 name = "signature"
 version = "0.1.0"
 dependencies = [
+ "asn1-rs",
  "cbindgen",
+ "data-encoding",
  "ffi-support",
  "hex",
+ "oid-registry",
  "ring 0.17.2",
  "thiserror",
  "x509-parser",

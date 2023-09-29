@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+asn1-rs = { version = "0.5", features=["datetime"] }
+oid-registry = "0.6"
+data-encoding = "2.2.1"
 ffi-support = "0.4.4"
 thiserror = "1.0.2"
 hex = "0.4"

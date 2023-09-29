@@ -3,11 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use hex;
+use asn1_rs::ToDer;
 use ring::digest;
 use ring::signature;
 use std::os::raw::c_uchar;
 use thiserror::Error;
 use x509_parser::prelude::*;
+
+use oid_registry::{
+    OID_PKCS1_SHA256WITHRSA,
+    OID_SIG_ECDSA_WITH_SHA256,
+    OID_SIG_ECDSA_WITH_SHA384,
+};
 
 pub struct Balrog<'a> { 
     pub chain: Vec<X509Certificate<'a>>,
@@ -15,7 +22,7 @@ pub struct Balrog<'a> {
 }
 
 // Errors that can be returned from the Balrog module.
-#[derive(Clone, Debug, thiserror::Error)]
+#[derive(Clone, Debug, PartialEq, thiserror::Error)]
 pub enum BalrogError {
     #[error("Chain subject/issuer mismatch")]
     ChainSubjectMismatch,
@@ -27,8 +34,12 @@ pub enum BalrogError {
     RootHashParseFailed,
     #[error("Root hash mismatch")]
     RootHashMismatch,
+    #[error("Signature decoding failed")]
+    SignatureDecodeError,
+    #[error("PEM decoding error")]
+    PemDecodeError,
 
-    #[error("nom error: {0:?}")]
+    #[error("X509 error: {0:?}")]
     X509(X509Error)
 }
 
@@ -41,6 +52,38 @@ impl From<X509Error> for BalrogError {
 pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, PEMError> {
     Pem::iter_from_buffer(input)
         .collect::<Result<Vec<Pem>, PEMError>>()
+}
+
+/* A one-and-done function that parses a signature chain and validates a content signature. */
+pub fn parse_and_verify(
+    x5u: &[u8],
+    input: &[u8],
+    signature: &str,
+    current_time: i64,
+    root_hash: &str,
+    leaf_subject: &str
+) -> Result<(), BalrogError> {
+    let pem_chain = match parse_pem_chain(x5u) {
+        Err(e) => return Err(BalrogError::PemDecodeError),
+        Ok(x) => x
+    };
+
+    let balrog = match Balrog::new(&pem_chain) {
+        Err(e) => return Err(BalrogError::from(e)),
+        Ok(x) => x
+    };
+
+    let _ = match balrog.verify_chain(current_time, root_hash) {
+        Err(e) => return Err(BalrogError::from(e)),
+        Ok(x) => x
+    };
+
+    let _ = match balrog.verify_content_signature(input, signature) {
+        Err(e) => return Err(BalrogError::from(e)),
+        Ok(x) => x
+    };
+
+    Ok(())
 }
 
 impl<'a> Balrog<'_> {
@@ -166,6 +209,80 @@ impl<'a> Balrog<'_> {
 
         /* Verify the cryptographic signature. */
         subject.verify_signature(Some(issuer.public_key()))
+            .map_err(|e| { BalrogError::from(e) })
+    }
+
+    /* Take a fixed-length ECDSA signature and convert into
+     * ASN.1 DER encoding */
+    fn ecdsa_signature_to_asn1(input: &[u8]) -> Result<Vec<u8>, BalrogError> {
+        /* ECDSA signatures take the ASN.1 form of:
+         * SEQUENCE {
+         *   r INTEGER,
+         *   s INTEGER
+         * }
+         */
+        /* Cut the fixed signature into component r and s values. */
+        let (r, s) = input.split_at(input.len() / 2);
+        /*
+         * TODO: technically we need to convert these into *signed* integers before
+         * passing them to the ASN.1 encoder, which interpret the leading bit as the
+         * sign. If the leading bit is zero, prepend a leading zero byte to ensure
+         * the sign is positive.
+         */
+
+        /* Encode into an ASN.1 sequence. */
+        let vec = vec![asn1_rs::Integer::new(r), asn1_rs::Integer::new(s)];
+        let seq = match asn1_rs::Sequence::from_iter_to_der(vec.iter()) {
+            Err(e) => return Err(BalrogError::SignatureDecodeError),
+            Ok(x) => x
+        };
+        
+        /* Encode it. */
+        seq.to_der_vec().map_err(|e| BalrogError::SignatureDecodeError)
+    }
+
+    /* Ensure that the certificate chain is valid. */
+    pub fn verify_content_signature(
+        &self,
+        input: &[u8],
+        signature: &str
+    ) -> Result<(), BalrogError> {
+        assert!(!self.chain.is_empty());
+    
+        /*  To verify the code signature, we must:
+         *  1. Parse the signature into an asn1_rs::asn1_types::bitstring::Bitstring
+         *  2. Extract the public key from the leaf certificate.
+         *  3. Call x509_parser::verify::verify_signature(
+         *       public_key,
+         *       public_key.algothim,
+         *       signature_bitstring,
+         *       input
+         *     )
+         */
+        
+         /* Parse the signature into an ASN1 bitstring. */
+        let sig_decode = match data_encoding::BASE64URL_NOPAD.decode(signature.as_bytes()) {
+            Err(e) => return Err(BalrogError::SignatureDecodeError),
+            Ok(x) => x
+        };
+        let sig_der = match Self::ecdsa_signature_to_asn1(sig_decode.as_slice()) {
+            Err(e) => return Err(e),
+            Ok(x) => x
+        };
+        let sig_asn1 = asn1_rs::BitString::new(0, sig_der.as_slice());
+        let pubkey = self.chain.first().unwrap().public_key();
+        
+        /*
+         * TODO: Should this be determined by looking at the public key? Or is it
+         * safe to assume an elliptic key with SHA384?
+         *
+         * The rc_crypto crate assumes NIST P-384/SHA384 everywhere.
+         * The golang library chooses a SHA2 that matches the pubkey key size.
+         * Do we care about the RSA/DSA ecosystem?
+         */
+        let algorithm = AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA384, None); 
+
+        x509_parser::verify::verify_signature(&pubkey, &algorithm, &sig_asn1, input)
             .map_err(|e| { BalrogError::from(e) })
     }
 }

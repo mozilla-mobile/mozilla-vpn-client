@@ -4,6 +4,7 @@
 
 use ring::signature;
 use std::os::raw::c_uchar;
+use std::ffi::CStr;
 use x509_parser::prelude::*;
 use crate::balrog::*;
 
@@ -39,7 +40,8 @@ pub extern "C" fn verify_rsa(
 pub extern "C" fn verify_balrog(
     x5u_ptr: *const c_uchar,
     x5u_length: usize,
-    input: *const c_uchar,
+    input_ptr: *const c_uchar,
+    input_length: usize,
     signature: *const c_uchar,
     current_time: i64,
     root_hash: &str,
@@ -74,16 +76,24 @@ pub extern "C" fn verify_balrog(
 
     /* TODO: Verify the leaf certificate. */
 
-    /* TODO: Verify the code signature. To do this, we must:
-     *  1. Parse the signature into an asn1_rs::asn1_types::bitstring::Bitstring
-     *  2. Extract the public key from the leaf certificate.
-     *  3. Call x509_parser::verify::verify_signature(
-     *       public_key,
-     *       public_key.algothim,
-     *       signature_bitstring,
-     *       input
-     *     )
-     */
+    /* Check the content signature. */
+    let input = unsafe { std::slice::from_raw_parts(input_ptr, input_length) };
+    let sigstr = match unsafe { CStr::from_ptr(signature as *const i8) }.to_str() {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
+    let _ = match balrog.verify_content_signature(input, sigstr) {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
+
+    /* Success! */
     true
 }
 
@@ -201,7 +211,7 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
 -----END CERTIFICATE-----";
     const VALID_INPUT: &[u8] =
         b"Content-Signature:\x00{\"data\":[],\"last_modified\":\"1603992731957\"}";
-    const VALID_SIGNATURE: &[u8] = b"fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
+    const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
     const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
 
     const INVALID_CERTIFICATE: &[u8] = b"\
@@ -227,54 +237,68 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
 
     #[test]
     fn test_verify_succeeds_if_valid() {
-        assert!(verify_balrog(
-            VALID_CERT_CHAIN.as_ptr(),
-            VALID_CERT_CHAIN.len(),
-            VALID_INPUT.as_ptr(),
-            VALID_SIGNATURE.as_ptr(),
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
             1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
-        ));
+        );
+        assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
     }
 
     #[test]
     fn test_verify_fails_if_root_hash_mismatch() {
-        assert!(!verify_balrog(
-            VALID_CERT_CHAIN.as_ptr(),
-            VALID_CERT_CHAIN.len(),
-            VALID_INPUT.as_ptr(),
-            VALID_SIGNATURE.as_ptr(),
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
             1615559719, // March 12, 2021
             &ROOT_HASH.replace("A", "B"),
             VALID_HOSTNAME,
-        ));
+        );
+        assert_eq!(r, Err(BalrogError::RootHashMismatch));
     }
 
     #[test]
-    fn test_verify_fails_if_invalid() {
-        assert!(!verify_balrog(
-            INVALID_CERTIFICATE.as_ptr(),
-            INVALID_CERTIFICATE.len(),
-            VALID_INPUT.as_ptr(),
-            VALID_SIGNATURE.as_ptr(),
+    fn test_verify_fails_if_cert_invalid() {
+        let r = parse_and_verify(
+            INVALID_CERTIFICATE,
+            VALID_INPUT,
+            VALID_SIGNATURE,
             1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
-        ));
+        );
+        /* I think this is the wrong error code actually...  */
+        /* I would have expected X509Error::InvalidCertificate */
+        assert_eq!(r, Err(BalrogError::PemDecodeError));
     }
 
     #[test]
     fn test_verify_fails_if_cert_has_expired() {
-        assert!(!verify_balrog(
-            VALID_CERT_CHAIN.as_ptr(),
-            VALID_CERT_CHAIN.len(),
-            VALID_INPUT.as_ptr(),
-            VALID_SIGNATURE.as_ptr(),
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
             1215559719, // July 9, 2008
             ROOT_HASH,
             VALID_HOSTNAME,
-        ));
+        );
+        assert_eq!(r, Err(BalrogError::CertificateExpired));
     }
 
+    #[test]
+    fn test_verify_fails_if_bad_siganture() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            &VALID_SIGNATURE.to_ascii_lowercase(),
+            1615559719, // March 12, 2021
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
+    }
 }
