@@ -52,7 +52,7 @@ MZStepNavigation {
         },
         //Last slide is different based on platform
         Loader {
-            property string labelText: "OnboardingProgressBarGetStarted2"
+            property string labelText: MZUiUtils.isMobile() ? "OnboardingProgressBarConnect" : "OnboardingProgressBarStartup"
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
 

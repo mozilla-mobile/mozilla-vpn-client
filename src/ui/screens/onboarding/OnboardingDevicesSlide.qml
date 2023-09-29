@@ -36,7 +36,7 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        text: MZUiUtils.isMobile() ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody
+        text: MZUiUtils.isMobile() ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody2
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
     }

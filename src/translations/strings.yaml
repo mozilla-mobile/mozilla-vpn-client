@@ -555,9 +555,12 @@ onboarding:
   progressBarAddDevices:
     value: Devices
     comment: Label for onboarding progress bar step
-  progressBarGetStarted2:
+  progressBarStartup:
     value: Startup
-    comment: Label for onboarding progress bar step. It's the final step in the progress, and indicates that the user can now start using the app.
+    comment: Label for onboarding progress bar step. It's the final step in the desktop flow
+  progressBarConnect:
+    value: Connect
+    comment: Label for onboarding progress bar step. It's the final step in the mobile flow
   progressBarAccessibilityStepComplete:
     value: "Onboarding step “%1” (%2 of %3). Select to go back to this step."
     comment: Accessibility read out for completed steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
@@ -575,8 +578,8 @@ onboarding:
   privacySlideHeader: Get more privacy
   privacySlideBody: Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings.
   devicesSlideHeader: Install Mozilla VPN on up to 5 devices
-  devicesSlideBody: Scan this QR code using a tablet or mobile device’s camera to install the VPN on another device.
-  devicesSlideBodyMobile: Scan this QR code using a tablet or mobile device’s camera to install the VPN on another device. To install on a desktop computer, visit the Download page on the Mozilla VPN website.
+  devicesSlideBody2: To install the VPN on another tablet or mobile device, scan the QR code.
+  devicesSlideBodyMobile: To install the VPN on another tablet or mobile device, scan the QR code. To install on a desktop computer, visit the Download page on the Mozilla VPN website.
   devicesSlideDeviceTypeLabel: "Select device type:"
   devicesSlideDeviceTypeAndroid: Android
   devicesSlideDeviceTypeApple: Apple
