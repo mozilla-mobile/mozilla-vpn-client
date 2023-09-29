@@ -101,7 +101,7 @@ AndroidController::AndroidController() {
       []() { REPORTERROR(ErrorHandler::ControllerError, "controller"); },
       Qt::QueuedConnection);
   connect(
-      activity, &AndroidVPNActivity::eventCancelled, this,
+      activity, &AndroidVPNActivity::eventOnboardingCompleted, this,
       []() {
         auto vpn = MozillaVPN::instance();
         if (vpn->state() == App::StateOnboarding) {

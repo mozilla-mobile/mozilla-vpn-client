@@ -274,7 +274,7 @@ class VPNService : android.net.VpnService() {
 
         if (json.getBoolean("isOnboarding")) {
             Log.i(tag, "Finishing onboarding... do not turn on the VPN after gaining permission")
-            mBinder.dispatchEvent(CoreBinder.EVENTS.cancelled, "")
+            mBinder.dispatchEvent(CoreBinder.EVENTS.onboardingCompleted, "")
             return
         }
 

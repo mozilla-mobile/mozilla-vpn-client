@@ -162,7 +162,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   private final int ACTION_NOTIFICATION_PROMPT_SENT = 19;
   private final int EVENT_PERMISSION_REQURED = 6;
   private final int EVENT_DISCONNECTED = 2;
-  private final int EVENT_CANCELLED = 9;
+  private final int EVENT_ONBOARDING_COMPLETED = 9;
 
   public void onPermissionRequest(int code, Parcel data) {
     if(code != EVENT_PERMISSION_REQURED){
@@ -189,7 +189,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
       }else{
         // Tell the Client we've disconnected
         onServiceMessage(EVENT_DISCONNECTED,"");
-        onServiceMessage(EVENT_CANCELLED,"");
+        onServiceMessage(EVENT_ONBOARDING_COMPLETED,"");
       }
       return;
     }

@@ -72,7 +72,7 @@ enum ServiceEvents {
   // The Daemon need's the app to ask for notification
   // permissions, to show the "you're connected" messages.
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
-  EVENT_CANCELLED = 9,
+  EVENT_ONBOARDING_COMPLETED = 9,
 };
 typedef enum ServiceEvents ServiceEvents;
 
@@ -95,7 +95,7 @@ class AndroidVPNActivity : public QObject {
   void eventDisconnected(const QString& data);
   void eventStatisticUpdate(const QString& data);
   void eventActivationError(const QString& data);
-  void eventCancelled();
+  void eventOnboardingCompleted();
   void eventRequestGleanUploadEnabledState();
 
  private:
