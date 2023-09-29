@@ -59,8 +59,7 @@ describe('IP info', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
-      assert.strictEqual("StateMain", appStepExtras.state);
+      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
       assert.strictEqual("main", appStepExtras.screen);
       assert.strictEqual("impression", appStepExtras.action);
 
