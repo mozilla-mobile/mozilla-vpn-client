@@ -235,7 +235,7 @@ describe('Benchmark', function() {
     // Telemetry design is detailed at:
     // https://miro.com/app/board/uXjVM_QZzjA=/?share_link_id=616399368132
 
-    it("records events on succesful speed test", async () => {
+    it("records events on successful speed test", async () => {
       this.ctx.downloadUrlCallback = async () => {};
 
       // Activate the VPN, otherwise the speed test feature is disabled
