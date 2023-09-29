@@ -24,7 +24,7 @@ MZStackView {
             headlineText: MZI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
 
             // "Your subscription is linked to another Mozilla account....."
-            errorMessage: MZI18n.MultiFxaAccountErrorFxaAccountErrorText2,
+            errorMessage: MZI18n.MultiFxaAccountErrorMozAccountErrorText,
 
             errorMessage2:  MZI18n.MultiFxaAccountErrorVisitOurHelpCenter,
 
