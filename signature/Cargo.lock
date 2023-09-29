@@ -477,6 +477,7 @@ dependencies = [
  "ffi-support",
  "hex",
  "ring 0.17.2",
+ "thiserror",
  "x509-parser",
 ]
 

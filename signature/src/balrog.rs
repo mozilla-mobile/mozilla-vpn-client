@@ -6,11 +6,36 @@ use hex;
 use ring::digest;
 use ring::signature;
 use std::os::raw::c_uchar;
+use thiserror::Error;
 use x509_parser::prelude::*;
 
 pub struct Balrog<'a> { 
     pub chain: Vec<X509Certificate<'a>>,
     pub root_hash: Vec<u8>
+}
+
+// Errors that can be returned from the Balrog module.
+#[derive(Clone, Debug, thiserror::Error)]
+pub enum BalrogError {
+    #[error("Chain subject/issuer mismatch")]
+    ChainSubjectMismatch,
+    #[error("Certificate expired")]
+    CertificateExpired,
+    #[error("Issuer unauthorized for certificate signing")]
+    IssuerUnauthorized,
+    #[error("Root hash parse failed")]
+    RootHashParseFailed,
+    #[error("Root hash mismatch")]
+    RootHashMismatch,
+
+    #[error("nom error: {0:?}")]
+    X509(X509Error)
+}
+
+impl From<X509Error> for BalrogError {
+    fn from(e: X509Error) -> Self {
+        BalrogError::X509(e)
+    }
 }
 
 pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, PEMError> {
@@ -52,7 +77,7 @@ impl<'a> Balrog<'_> {
         &self,
         current_time: i64,
         root_hash: &str
-    ) -> bool {
+    ) -> Result<(), BalrogError> {
         assert!(!self.chain.is_empty());
         assert!(!self.root_hash.is_empty());
 
@@ -76,68 +101,71 @@ impl<'a> Balrog<'_> {
         while index+1 < self.chain.len() {
             let subject = &self.chain[index];
             let issuer = &self.chain[index+1];
-            if !Self::verify_cert_sig(subject, issuer, current_time) {
-                return false;
-            }
+            let _ = match Self::verify_cert_chain_pair(subject, issuer, current_time) {
+                Err(e) => return Err(e),
+                Ok(x) => x
+            };
             index = index+1;
         }
 
         /* Verify the root certificate. */
         let root_cert = self.chain.last().unwrap();
-        if !Self::verify_cert_sig(root_cert, root_cert, current_time) {
-            return false;
-        }
+        let _ = match Self::verify_cert_chain_pair(root_cert, root_cert, current_time) {
+            Err(e) => return Err(e),
+            Ok(x) => x
+        };
 
         let hash_stripped = root_hash.replace(":", "");
         let hash_decoded = match hex::decode(hash_stripped) {
-            Err(e) => return false,
+            Err(e) => return Err(BalrogError::RootHashParseFailed),
             Ok(x) => x
         };
-        return self.root_hash == hash_decoded;
+        if self.root_hash != hash_decoded {
+            return Err(BalrogError::RootHashMismatch);
+        }
+        
+        /* Success! */
+        Ok(())
     }
 
-    fn verify_cert_sig(
+    /* Internal helper function to check that a certificate was signed by its issuer. */
+    fn verify_cert_chain_pair(
         subject: &X509Certificate,
         issuer: &X509Certificate,
         current_time: i64,
-    ) -> bool {
+    ) -> Result<(), BalrogError> {
         /* TODO: Check the subject and issuer key hashes. */
+        /* Annoyingly, these are extensions and require some parsing. */
 
         /* Check that the subject and issuer names match. */
         if subject.issuer() != issuer.subject() {
-            return false;
+            return Err(BalrogError::ChainSubjectMismatch);
         }
 
         /* Check the certificate validitiy period. */
         let asn_timestamp = ASN1Time::from_timestamp(current_time).unwrap();
         if !subject.validity().is_valid_at(asn_timestamp) {
-            eprintln!("Subject {} certificate has expired", subject.subject());
-            return false;
+            return Err(BalrogError::CertificateExpired);
         }
         if !issuer.validity().is_valid_at(asn_timestamp) {
-            eprintln!("Issuer {} certificate has expired", subject.subject());
-            return false;
+            return Err(BalrogError::CertificateExpired);
         }
 
         /* Check that the issuer is permitted to sign certificates. */
         let ca_key_usage = match issuer.key_usage() {
-            Err(e) => {
-                eprintln!("{}", e);
-                return false;
-            }
+            Err(e) => return Err(BalrogError::from(e)),
             Ok(x) => x
         };
         let ca_key_usage = ca_key_usage.unwrap().value;
         if !ca_key_usage.key_cert_sign() {
-            eprintln!("Issuer {} is not authorized to sign certificates", issuer.subject());
-            return false;
+            return Err(BalrogError::IssuerUnauthorized);
         }
         if !issuer.is_ca() {
-            eprintln!("Issuer {} is not a certificate authority", issuer.subject());
-            return false;
+            return Err(BalrogError::IssuerUnauthorized);
         }
 
         /* Verify the cryptographic signature. */
-        subject.verify_signature(Some(issuer.public_key())).is_ok()
+        subject.verify_signature(Some(issuer.public_key()))
+            .map_err(|e| { BalrogError::from(e) })
     }
 }

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 ffi-support = "0.4.4"
+thiserror = "1.0.2"
 hex = "0.4"
 ring = "0.17.2"
 x509-parser = { version = "0.15.1", features = ["verify"] }

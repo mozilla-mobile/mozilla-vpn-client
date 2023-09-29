@@ -64,7 +64,13 @@ pub extern "C" fn verify_balrog(
         Ok(x) => x
     };
 
-    balrog.verify_chain(current_time, root_hash)
+    let _ = match balrog.verify_chain(current_time, root_hash) {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
 
     /* TODO: Verify the leaf certificate. */
 
@@ -78,6 +84,7 @@ pub extern "C" fn verify_balrog(
      *       input
      *     )
      */
+    true
 }
 
 fn verify_leaf_cert(
