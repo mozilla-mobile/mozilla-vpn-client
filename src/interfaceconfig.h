@@ -33,7 +33,7 @@ class InterfaceConfig {
   QString m_dnsServer;
   int m_serverPort = 0;
   QList<IPAddress> m_allowedIPAddressRanges;
-  QStringList m_excludedAddresses;
+//  QStringList m_excludedAddresses;
   QStringList m_vpnDisabledApps;
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   QString m_installationId;
