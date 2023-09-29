@@ -696,7 +696,6 @@ postAuthentication:
   subtitle: You can quickly access Mozilla VPN from your status bar.
 
 deleteAccount:
-  authSubheadline: To delete your VPN account, please sign in with your Mozilla account password.
   authButtonLabel: Continue
   headline2: Delete Mozilla account
   subheadline2:
