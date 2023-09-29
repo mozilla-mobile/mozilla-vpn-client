@@ -16,11 +16,6 @@
 #include <thread>
 #include <vector>
 
-namespace {
-constexpr auto C_SERVICENAME = "org.mozilla.firefox.vpn.daemon";
-constexpr auto C_DEFAULT_KEY = "daemon";
-}  // namespace
-
 XPCClient::XPCClient() : QObject() {
   // We need to constantly run 2 eventloops:
   // the apple one "CFRunLoopRunInMode" and
@@ -60,16 +55,16 @@ void XPCClient::handleServerEvent(xpc_object_t event) {
     emit onConnectionError(maybeError);
     return;
   }
-  auto message = getQStringFromXPCDict(event, C_DEFAULT_KEY);
+  auto message = getQStringFromXPCDict(event, defaultDictKey);
 
   emit messageReceived(message);
 }
 
 // private
 void XPCClient::onRunAppleEventLoop() {
-  auto h = std::hash<std::thread::id>{}(std::this_thread::get_id());
-  // qWarning() << "[XPCClient::onRunAppleEventLoop] - Thread " <<
-  // qUtf8Printable(QString::number(h));
+  // auto h = std::hash<std::thread::id>{}(std::this_thread::get_id());
+  //  qWarning() << "[XPCClient::onRunAppleEventLoop] - Thread " <<
+  //  qUtf8Printable(QString::number(h));
 
   CFRunLoopRunInMode(kCFRunLoopDefaultMode,
                      0.5,  // Run the apple event loop max 500ms
@@ -83,7 +78,7 @@ void XPCClient::onRunAppleEventLoop() {
 void XPCClient::sendInternal(const QString aMessage) {
   auto message = xpc_dictionary_create(NULL, NULL, 0);
   auto xpc_string = xpc_string_create(aMessage.toLocal8Bit().constData());
-  xpc_dictionary_set_value(message, C_DEFAULT_KEY, xpc_string);
+  xpc_dictionary_set_value(message, defaultDictKey, xpc_string);
   xpc_connection_send_message(m_serverConnection, xpc_string);
 }
 

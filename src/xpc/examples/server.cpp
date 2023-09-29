@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
   // Just echo back.
   QObject::connect(&service, &XPCService::messageReceived,
                    [&](const QString msg) { service.send(msg); });
-  service.start();
 
   return app.exec();
 }

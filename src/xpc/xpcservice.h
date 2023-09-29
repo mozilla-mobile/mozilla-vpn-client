@@ -16,28 +16,60 @@
 
 #include "xpcbase.h"
 
-class XPCService : public QThread, private XPCBase {
+class XPCService : public QObject, private XPCBase {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XPCService)
 
  public:
-  explicit XPCService();
+  /**
+   * @brief Construct a new XPCService object
+   *
+   * @param aServiceName - (optional) Name of the XPC Service to use.
+   * Note: this must be a defined name in Library/LaunchDaemons/
+   * Defaults to org.mozilla.macos.FirefoxVPN.daemon
+   * @param aSigningRequirement - (optional) The signing requirement String
+   * If empty, no requirement will be enforced.
+   * Defaults to ""
+   * https://developer.apple.com/documentation/technotes/tn3127-inside-code-signing-requirements
+   */
+  XPCService(QString aServiceName = vpnDaemonName,
+             QString aSigningRequirement = "");
   ~XPCService();
 
-  void run() override;
-  void acceptConnectionRequest(xpc_connection_t client);
+  void start();
 
-  void handleClientEvent(xpc_object_t event, xpc_connection_t client);
+  void stop();
 
   void send(const QString msg);
 
   void closeClientConnection(xpc_connection_t client);
 
  signals:
+  /**
+   * @brief Whenever a new message is received
+   * IMPORTANT: This event is dispatched by a Mach I/O thread
+   * (bypassing the QThread affinity of the obj)
+   * use Qt::QueuedConnection if you have expectations about the
+   * rx-thread.
+   *
+   * @param message - the received sting.
+   */
   void messageReceived(const QString msg);
 
  private:
+  void handleClientEvent(xpc_object_t event, xpc_connection_t client);
+
+  void acceptConnectionRequest(xpc_connection_t client);
+
+  void maybeEnforceSigningRequirement(xpc_connection_t listener);
+
+  Q_SIGNAL void runAppleEventLoop();
+  Q_SLOT void onRunAppleEventLoop();
+
+  xpc_connection_t m_listener;
   QList<xpc_connection_t> m_clients;
+  QString mSigningRequirement;
+  QString mServiceName;
 };
 
 #endif  // XPCSERVICE_H

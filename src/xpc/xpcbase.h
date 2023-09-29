@@ -8,7 +8,11 @@
 
 class XPCBase {
  protected:
-  static QString getQStringFromXPCDict(xpc_object_t event, const QString& key) {
+  static constexpr auto defaultDictKey = "org.mozilla";
+  static constexpr auto vpnDaemonName = "org.mozilla.macos.FirefoxVPN.daemon";
+
+  static QString getQStringFromXPCDict(xpc_object_t event,
+                                       const QString& key = defaultDictKey) {
     xpc_type_t type = xpc_get_type(event);
     assert(type == XPC_TYPE_DICTIONARY);
     if (type != XPC_TYPE_DICTIONARY) {
