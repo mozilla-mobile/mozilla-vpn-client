@@ -21,7 +21,7 @@ MZInAppAuthenticationBase {
                 target: authSignIn
 
                 _changeEmailLinkVisible: false
-                _subtitleText: MZI18n.InAppAuthReauthSignInSubtitle
+                _subtitleText: MZI18n.InAppAuthReauthSignInSubtitle2
             }
 
             PropertyChanges {
@@ -51,7 +51,7 @@ MZInAppAuthenticationBase {
     }
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _headlineText: MZAuthInApp.emailAddress
-    _subtitleText: MZI18n.InAppAuthSignInSubtitle
+    _subtitleText: MZI18n.InAppAuthSignInSubtitle2
     _imgSource: "qrc:/nebula/resources/avatar.svg"
     _inputLabel: MZI18n.InAppAuthPasswordInputLabel
 

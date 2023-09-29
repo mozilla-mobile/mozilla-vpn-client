@@ -23,8 +23,8 @@ MZStackView {
             // "Problem confirming subscription…"
             headlineText: MZI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
 
-            // "Your subscription is linked to another Firefox Account....."
-            errorMessage: MZI18n.MultiFxaAccountErrorFxaAccountErrorText,
+            // "Your subscription is linked to another Mozilla account....."
+            errorMessage: MZI18n.MultiFxaAccountErrorMozAccountErrorText,
 
             errorMessage2:  MZI18n.MultiFxaAccountErrorVisitOurHelpCenter,
 
