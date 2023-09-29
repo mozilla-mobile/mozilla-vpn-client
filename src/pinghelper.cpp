@@ -47,7 +47,7 @@ void PingHelper::start(const QString& serverIpv4Gateway,
   // we happen to be on one of these unlucky devices, create a DnsPingSender
   // instead.
   if (!m_pingSender->isValid()) {
-    delete m_pingSender;
+    m_pingSender->deleteLater();
     m_pingSender = new DnsPingSender(m_source, this);
   }
 
@@ -71,7 +71,7 @@ void PingHelper::stop() {
   logger.debug() << "PingHelper deactivated";
 
   if (m_pingSender) {
-    delete m_pingSender;
+    m_pingSender->deleteLater();
     m_pingSender = nullptr;
   }
 
