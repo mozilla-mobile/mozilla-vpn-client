@@ -48,25 +48,21 @@ pub extern "C" fn verify_balrog(
     let x5u_raw = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
 
     /* Parse the certificate chain. */
-    let pem_chain: Vec<Pem> = match Pem::iter_from_buffer(x5u_raw)
-        .collect::<Result<Vec<Pem>, PEMError>>() {
-            Err(e) => {
-                eprintln!("{}", e);
-                return false
-            }
-            Ok(x) => x
-        };
-    let balrog = Balrog{
-        chain: match pem_chain.iter()
-            .map(|x| { x.parse_x509() })
-            .collect::<Result<Vec<X509Certificate>, _>>() {
-                Err(e) => {
-                    eprintln!("{}", e);
-                    return false
-                }
-                Ok(x) => x
-            }
-        };
+    let pem_chain = match parse_pem_chain(x5u_raw) {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
+
+    let balrog = match Balrog::new(&pem_chain) {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
 
     balrog.verify_chain(current_time, root_hash)
 
@@ -231,6 +227,19 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
             VALID_SIGNATURE.as_ptr(),
             1615559719, // March 12, 2021
             ROOT_HASH,
+            VALID_HOSTNAME,
+        ));
+    }
+
+    #[test]
+    fn test_verify_fails_if_root_hash_mismatch() {
+        assert!(!verify_balrog(
+            VALID_CERT_CHAIN.as_ptr(),
+            VALID_CERT_CHAIN.len(),
+            VALID_INPUT.as_ptr(),
+            VALID_SIGNATURE.as_ptr(),
+            1615559719, // March 12, 2021
+            &ROOT_HASH.replace("A", "B"),
             VALID_HOSTNAME,
         ));
     }
