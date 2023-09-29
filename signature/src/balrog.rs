@@ -5,7 +5,6 @@
 use hex;
 use asn1_rs::ToDer;
 use ring::digest;
-use std::os::raw::c_uchar;
 use thiserror::Error;
 use x509_parser::prelude::*;
 
@@ -29,10 +28,14 @@ pub enum BalrogError {
     CertificateExpired,
     #[error("Issuer unauthorized for certificate signing")]
     IssuerUnauthorized,
+    #[error("Certificate unauthorized for code signing")]
+    CodeSignUnauthorized,
     #[error("Root hash parse failed")]
     RootHashParseFailed,
     #[error("Root hash mismatch")]
     RootHashMismatch,
+    #[error("Hostname mismatch")]
+    HostnameMismatch,
     #[error("Signature decoding failed")]
     SignatureDecodeError,
     #[error("PEM decoding error")]
@@ -74,6 +77,11 @@ pub fn parse_and_verify(
 
     let _ = match balrog.verify_chain(current_time, root_hash) {
         Err(e) => return Err(BalrogError::from(e)),
+        Ok(x) => x
+    };
+
+    let _ = match balrog.verify_leaf_hostname(leaf_subject) {
+        Err(e) => return Err(e),
         Ok(x) => x
     };
 
@@ -176,8 +184,9 @@ impl<'a> Balrog<'_> {
         issuer: &X509Certificate,
         current_time: i64,
     ) -> Result<(), BalrogError> {
-        /* TODO: Check the subject and issuer key hashes. */
-        /* Annoyingly, these are extensions and require some parsing. */
+        /* TODO: Check the subject and issuer key hashes? */
+        /* Annoyingly, these are extensions and require some parsing, and may not exist. */
+        /* And I guess they aren't really necessary so long as the signatures are good. */
 
         /* Check that the subject and issuer names match. */
         if subject.issuer() != issuer.subject() {
@@ -211,6 +220,40 @@ impl<'a> Balrog<'_> {
             .map_err(|e| { BalrogError::from(e) })
     }
 
+    /* Check a hostname against the leaf certificate. */
+    pub fn verify_leaf_hostname(&self, hostname: &str) -> Result<(), BalrogError> {
+        assert!(!self.chain.is_empty());
+        let leaf = self.chain.first().unwrap();
+
+        /* First check, does the hostname match one of the subject common mames? */
+        for cn in leaf.subject().iter_common_name() {
+            let name = match cn.as_str() {
+                Err(e) => return Err(BalrogError::from(e)),
+                Ok(x) => x
+            };
+            if name == hostname {
+                return Ok(());
+            }
+        }
+
+        /* Second check, does the hostname match one of the subject alternative names? */
+        let san = match leaf.subject_alternative_name() {
+            Err(e) => return Err(BalrogError::from(e)),
+            Ok(x) => x
+        };
+        if san.is_some() {
+            let as_dns_name = GeneralName::DNSName(hostname);
+            for x in san.unwrap().value.general_names.iter() {
+                if x == &as_dns_name {
+                    return Ok(());
+                }
+            }
+        }
+
+        /* Otherwise, there is no match! */
+        Err(BalrogError::HostnameMismatch)
+    }
+
     /* Take a fixed-length ECDSA signature and convert into
      * ASN.1 DER encoding */
     fn ecdsa_signature_to_asn1(input: &[u8]) -> Result<Vec<u8>, BalrogError> {
@@ -240,14 +283,27 @@ impl<'a> Balrog<'_> {
         seq.to_der_vec().map_err(|e| BalrogError::SignatureDecodeError)
     }
 
-    /* Ensure that the certificate chain is valid. */
+    /* Verify a content signature against the certificate chain. */
     pub fn verify_content_signature(
         &self,
         input: &[u8],
         signature: &str
     ) -> Result<(), BalrogError> {
         assert!(!self.chain.is_empty());
-    
+
+        /* To be authorized for code signing, every certificate in the chain needs the
+         * code signing bit in the extended key usage to be set. */
+        for x in self.chain.iter() {
+            let code_sign_ext = match x.extended_key_usage() {
+                Err(e) => false,
+                Ok(None) => false,
+                Ok(x) => x.unwrap().value.code_signing
+            };
+            if !code_sign_ext {
+                return Err(BalrogError::CodeSignUnauthorized);
+            }
+        }
+
         /*  To verify the code signature, we must:
          *  1. Parse the signature into an asn1_rs::asn1_types::bitstring::Bitstring
          *  2. Extract the public key from the leaf certificate.
@@ -259,7 +315,7 @@ impl<'a> Balrog<'_> {
          *     )
          */
         
-         /* Parse the signature into an ASN1 bitstring. */
+        /* Parse the signature into an ASN1 bitstring. */
         let sig_decode = match data_encoding::BASE64URL_NOPAD.decode(signature.as_bytes()) {
             Err(e) => return Err(BalrogError::SignatureDecodeError),
             Ok(x) => x

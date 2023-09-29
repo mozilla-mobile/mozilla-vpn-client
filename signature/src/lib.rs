@@ -265,6 +265,19 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
     }
 
     #[test]
+    fn test_verify_fails_if_hostname_mismatch() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            1615559719, // March 12, 2021
+            ROOT_HASH,
+            "example.com",
+        );
+        assert_eq!(r, Err(BalrogError::HostnameMismatch));
+    }
+
+    #[test]
     fn test_verify_fails_if_cert_has_expired() {
         let r = parse_and_verify(
             VALID_CERT_CHAIN,
