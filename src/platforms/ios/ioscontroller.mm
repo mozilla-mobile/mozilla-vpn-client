@@ -114,6 +114,14 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
+      
+    #if TARGET_OS_SIMULATOR
+      if (MozillaVPN::instance()->state() == App::StateOnboarding) {
+        logger.debug() << "Cannot activate VPN on a simulator. Completing onboarding.";
+        MozillaVPN::instance()->onboardingCompleted();
+      }
+    #endif
+      
     emit disconnected();
     return;
   }
