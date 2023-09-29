@@ -33,28 +33,6 @@ constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60;  // 3 hours
 namespace {
 Logger logger("Telemetry");
 
-/**
- * @brief Get a stringified State and return the equivalent telemetry screen
- * name.
- *
- * The state name is camelCase and has the "State" prefix,
- * while the telemetry screen identifier is snake_case and has no prefix.
- */
-QString stateToTelemetryScreenName(const QString& input) {
-  // camelCase -> snake_case
-  QString result;
-  for (int i = 0; i < input.length(); ++i) {
-    QChar currentChar = input.at(i);
-    if (i > 0 && currentChar.isUpper()) {
-      result.append('_');
-    }
-    result.append(currentChar.toLower());
-  }
-
-  // Remove "state_" prefix;
-  return result.remove(0, 6);
-}
-
 }  // namespace
 
 Telemetry::Telemetry() {
@@ -88,21 +66,12 @@ void Telemetry::initialize() {
     if (state > App::StateCustom) {
       mozilla::glean::sample::app_step.record(
           mozilla::glean::sample::AppStepExtra{
-              ._action = "impression",
-              ._screen = stateToTelemetryScreenName(
-                  QVariant::fromValue(
-                      static_cast<MozillaVPN::CustomState>(state))
-                      .toString()),
               ._state = QVariant::fromValue(
                             static_cast<MozillaVPN::CustomState>(state))
                             .toString()});
     } else {
       mozilla::glean::sample::app_step.record(
           mozilla::glean::sample::AppStepExtra{
-              ._action = "impression",
-              ._screen = stateToTelemetryScreenName(
-                  QVariant::fromValue(static_cast<App::State>(state))
-                      .toString()),
               ._state = QVariant::fromValue(static_cast<App::State>(state))
                             .toString()});
     }

@@ -242,8 +242,7 @@ describe('Benchmark', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
-      assert.strictEqual("StateMain", appStepExtras.state);
+      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main");
       assert.strictEqual("main", appStepExtras.screen);
       assert.strictEqual("impression", appStepExtras.action);
 
@@ -336,6 +335,10 @@ describe('Benchmark', function() {
       assert.strictEqual("impression", loadingEventExtra.action);
 
       // TODO (VPN-2859): Enable this part of the test.
+      // Here we are checking if the close event has the expected screen extra key.
+      // But that bug flashes the results screen when closed, so the screen extra key
+      // on the close event always has the value speed_test_result regardless which
+      // screen it was clicked from.
       //
       // Close the connection benchmark while loading
       // await vpn.waitForQueryAndClick(
@@ -360,8 +363,7 @@ describe('Benchmark', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
-      assert.strictEqual("StateMain", appStepExtras.state);
+      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
       assert.strictEqual("main", appStepExtras.screen);
       assert.strictEqual("impression", appStepExtras.action);
 
@@ -433,6 +435,10 @@ describe('Benchmark', function() {
       assert.strictEqual("impression", completedEventExtra.action);
 
       // TODO (VPN-2859): Enable this part of the test.
+      // Here we are checking if the close event has the expected screen extra key.
+      // But that bug flashes the results screen when closed, so the screen extra key
+      // on the close event always has the value speed_test_result regardless which
+      // screen it was clicked from.
       //
       // Close the connection benchmark
       // await vpn.waitForQueryAndClick(
