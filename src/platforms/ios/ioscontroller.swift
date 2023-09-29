@@ -189,7 +189,7 @@ public class IOSControllerImpl : NSObject {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
                     if isOnboarding {
-                        IOSControllerImpl.logger.error(message: "Finishing onboarding...")
+                        IOSControllerImpl.logger.info(message: "Finishing onboarding")
                         onboardingCompletedCallback()
                     }
                     return
@@ -199,7 +199,7 @@ public class IOSControllerImpl : NSObject {
                 
                 //Used to create a VPN configuration without connecting during onboarding
                 if isOnboarding {
-                    IOSControllerImpl.logger.error(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
+                    IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
                     onboardingCompletedCallback()
                     return
                 }
