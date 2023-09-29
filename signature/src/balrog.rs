@@ -5,7 +5,6 @@
 use hex;
 use asn1_rs::ToDer;
 use ring::digest;
-use ring::signature;
 use std::os::raw::c_uchar;
 use thiserror::Error;
 use x509_parser::prelude::*;

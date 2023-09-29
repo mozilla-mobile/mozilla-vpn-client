@@ -42,50 +42,38 @@ pub extern "C" fn verify_balrog(
     x5u_length: usize,
     input_ptr: *const c_uchar,
     input_length: usize,
-    signature: *const c_uchar,
-    current_time: i64,
-    root_hash: &str,
-    leaf_subject: &str
+    signature: *const i8,
+    root_hash: *const i8,
+    leaf_subject: *const i8
 ) -> bool {
-    let x5u_raw = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
-
-    /* Parse the certificate chain. */
-    let pem_chain = match parse_pem_chain(x5u_raw) {
-        Err(e) => {
-            eprintln!("{}", e);
-            return false
-        }
-        Ok(x) => x
-    };
-
-    let balrog = match Balrog::new(&pem_chain) {
-        Err(e) => {
-            eprintln!("{}", e);
-            return false
-        }
-        Ok(x) => x
-    };
-
-    let _ = match balrog.verify_chain(current_time, root_hash) {
-        Err(e) => {
-            eprintln!("{}", e);
-            return false
-        }
-        Ok(x) => x
-    };
-
-    /* TODO: Verify the leaf certificate. */
-
-    /* Check the content signature. */
+    /* Translate C/FFI arguments into Rust types. */
+    let x5u = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
     let input = unsafe { std::slice::from_raw_parts(input_ptr, input_length) };
-    let sigstr = match unsafe { CStr::from_ptr(signature as *const i8) }.to_str() {
+    let sig_str = match unsafe { CStr::from_ptr(signature) }.to_str() {
         Err(e) => {
             eprintln!("{}", e);
             return false
         }
         Ok(x) => x
     };
-    let _ = match balrog.verify_content_signature(input, sigstr) {
+    let root_hash_str = match unsafe { CStr::from_ptr(root_hash) }.to_str() {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
+    let leaf_subect_str = match unsafe { CStr::from_ptr(leaf_subject) }.to_str() {
+        Err(e) => {
+            eprintln!("{}", e);
+            return false
+        }
+        Ok(x) => x
+    };
+    let now: i64 = ASN1Time::now().timestamp();
+
+    /* Perform the content signature validation. */
+    let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subect_str) {
         Err(e) => {
             eprintln!("{}", e);
             return false
