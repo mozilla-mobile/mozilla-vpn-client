@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 MZStepNavigation {
     id: stepNav
@@ -19,7 +20,7 @@ MZStepNavigation {
         left: parent.left
         right: parent.right
         bottom: parent.bottom
-        topMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? 36 : MZTheme.theme.vSpacing
+        topMargin: MZUiUtils.isMobile() ? 36 : MZTheme.theme.vSpacing
     }
 
     currentIndex: MZSettings.onboardingStep
@@ -55,7 +56,7 @@ MZStepNavigation {
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
 
-            sourceComponent: Qt.platform.os === "android" || Qt.platform.os === "ios" ? startSlideMobile : startSlideDesktop
+            sourceComponent: MZUiUtils.isMobile() ? startSlideMobile : startSlideDesktop
         }
     ]
 

@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import components 0.1
 import "qrc:/ui/screens/settings/privacy"
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
@@ -41,7 +42,7 @@ ColumnLayout {
     }
 
     PrivacyFeaturesList {
-        Layout.topMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? 32 : 24
+        Layout.topMargin: MZUiUtils.isMobile() ? 32 : 24
         Layout.leftMargin: 32
         Layout.rightMargin: 32
         Layout.fillWidth: true
@@ -70,7 +71,7 @@ ColumnLayout {
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: Qt.platform.os === "android" || Qt.platform.os === "ios" ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
+        Layout.bottomMargin: MZUiUtils.isMobile() ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight
