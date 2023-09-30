@@ -27,6 +27,11 @@ DAEMON_PLIST=$(cat <<-EOM
                         <string>/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN</string>
                         <string>macosdaemon</string>
                 </array>
+                <key>MachServices</key>
+                <dict>
+                  <key>org.mozilla.macos.FirefoxVPN.daemon</key>
+                  <true/>
+                </dict>
                 <key>UserName</key>
                 <string>root</string>
                 <key>RunAtLoad</key>

@@ -6,15 +6,15 @@
                 <string>org.mozilla.macos.FirefoxVPN.daemon.test</string>
                 <key>ProgramArguments</key>
                 <array>
-                        <string>@SERVER_OUTPUT@</string>
+                        <string>$<TARGET_FILE:xpc_test_server></string>
                         <string>-d</string>
                 </array>
                 <key>UserName</key>
                 <string>root</string>
                 <key>RunAtLoad</key>
-                <true/>
+                <false/>
                 <key>KeepAlive</key>
-                <true/>
+                <false/>
                 <key>SoftResourceLimits</key>
                 <dict>
                         <key>NumberOfFiles</key>

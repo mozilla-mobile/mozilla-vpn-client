@@ -16,6 +16,13 @@
 
 #include "xpcbase.h"
 
+/**
+ * @brief A Class implementing simple ipc using XPC 
+ * 
+ * Note: this class spin's up a new apple event loop, you probably want to 
+ * put this into it's own thread. 
+ * 
+ */
 class XPCService : public QObject, private XPCBase {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XPCService)
@@ -36,13 +43,12 @@ class XPCService : public QObject, private XPCBase {
              QString aSigningRequirement = "");
   ~XPCService();
 
+  // Start listening for connections
   void start();
-
+  // Stop all connections and stop listening for new ones. 
   void stop();
 
   void send(const QString msg);
-
-  void closeClientConnection(xpc_connection_t client);
 
  signals:
   /**
@@ -57,14 +63,12 @@ class XPCService : public QObject, private XPCBase {
   void messageReceived(const QString msg);
 
  private:
+  void closeClientConnection(xpc_connection_t client);
   void handleClientEvent(xpc_object_t event, xpc_connection_t client);
 
   void acceptConnectionRequest(xpc_connection_t client);
 
   void maybeEnforceSigningRequirement(xpc_connection_t listener);
-
-  Q_SIGNAL void runAppleEventLoop();
-  Q_SLOT void onRunAppleEventLoop();
 
   xpc_connection_t m_listener;
   QList<xpc_connection_t> m_clients;

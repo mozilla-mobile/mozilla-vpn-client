@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   QObject::connect(&client, &XPCClient::onConnectionError, &r, &Reciever::print,
                    Qt::QueuedConnection);
   t.start();
-  client.connectService("org.mozilla.firefox.vpn.daemon");
+  client.connectService("org.mozilla.firefox.vpn.daemon.test");
   qWarning("[App] - RUN event loop ");
   return app.exec();
 }

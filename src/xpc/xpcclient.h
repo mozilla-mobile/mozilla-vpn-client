@@ -65,10 +65,6 @@ class XPCClient : public QObject, private XPCBase {
   void onConnectionError(const QString errorMsg);
 
  private:
-  Q_SIGNAL void runAppleEventLoop();
-
-  Q_SLOT void onRunAppleEventLoop();
-
   void connectServiceInternal(const QString service);
 
   xpc_connection_t m_serverConnection;

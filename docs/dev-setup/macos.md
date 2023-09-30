@@ -132,3 +132,26 @@ Once Xcode has opened the project, select the `mozillavpn` target and start the 
 
 If you're building with Xcode and want your built VPN client to connect to the VPN network you'll
 need to install a release copy of the VPN client which you can download from [here](https://www.mozilla.org/products/vpn/download/).
+
+
+
+
+
+
+## Debugging the Daemon 
+Our Daemon is a LaunchDaemon.  
+
+Replacing the daemon temp: 
+```
+launchctl stop system/org.mozilla.macos.FirefoxVPN.daemon
+launchctl debug system/org.mozilla.macos.FirefoxVPN.daemon --program <path to executeable>
+launchctl startsystem/org.mozilla.macos.FirefoxVPN.daemon
+
+```
+
+
+
+```
+root:$ launchctl debug system/org.mozilla.macos.FirefoxVPN.daemon
+
+```

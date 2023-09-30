@@ -6,6 +6,9 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <xpc/xpc.h>
+#include <QtLogging>
+#include <QObject>
+#include <QDebug>
 
 #include "leakdetector.h"
 
@@ -18,33 +21,48 @@ XPCService::XPCService(QString aServiceName, QString aSigningRequirement)
       mServiceName(aServiceName),
       mSigningRequirement(aSigningRequirement) {
   MZ_COUNT_CTOR(XPCService);
-  connect(this, &XPCService::runAppleEventLoop, this,
-          &XPCService::onRunAppleEventLoop, Qt::QueuedConnection);
 };
 
 XPCService::~XPCService() { MZ_COUNT_DTOR(XPCService); }
 
 void XPCService::start() {
+  qDebug() << "[XPC] - Starting server: " << qUtf8Printable(mServiceName);
   // Create the new xpc_service
-  xpc_connection_t listener = xpc_connection_create_mach_service(
-      qUtf8Printable(mServiceName), NULL, XPC_CONNECTION_MACH_SERVICE_LISTENER);
 
+// TODO: it seems launchctl also writes the env variable XPC_SERVICE_NAME
+// for us, that's super convinent!
+  xpc_connection_t listener = xpc_connection_create_mach_service(
+       qUtf8Printable(mServiceName), NULL, XPC_CONNECTION_MACH_SERVICE_PRIVILEGED);
+  if (Q_UNLIKELY(listener == NULL)) {
+    qDebug() << "[XPC] - Failed to create listener: ";
+    return;
+  }
   // event listener
   xpc_connection_set_event_handler(listener, ^(xpc_object_t xpc_event) {
     // New connections arrive here.
-    // Make sure that we only allow mozilla signed connections
-    // if a connection does not match the requirement's all
-    // messages it sends will be dismissed by the OS.
-    std::cout << "New XPC-Connection" << std::endl;
-    auto xpc_peer = (xpc_connection_t)xpc_event;
+    xpc_type_t type = xpc_get_type(xpc_event);
+    if (type == XPC_TYPE_ERROR) {
+      auto error = getXPCError(xpc_event);
+      qCritical() << "[XPC Error] " << qUtf8Printable(error);
+      return;
+    }
+    if( type != XPC_TYPE_CONNECTION ){
+      // This listener should not get anything but connections?
+      qWarning() << "Unexpected type: " << xpc_type_get_name(type);
+      Q_ASSERT(false);
+      return;
+    }
+    // Increase the refcount by 1 so we may keep a ref. 
+    // We release this obj on close or stop
+    auto xpc_peer = (xpc_connection_t) xpc_retain(xpc_event);
+
     maybeEnforceSigningRequirement(xpc_peer);
     acceptConnectionRequest(xpc_peer);
   });
   // Activate the connection
-  xpc_connection_resume(listener);
+  xpc_connection_activate(listener);
   m_listener = listener;
 
-  emit runAppleEventLoop();
 }
 void XPCService::stop() {
   for (const auto& client : m_clients) {
@@ -64,7 +82,7 @@ void XPCService::acceptConnectionRequest(xpc_connection_t client) {
   m_clients.append(client);
   // This start's the listening for client messages.
   xpc_connection_resume(client);
-  std::cout << "Accepted XPC-Connection" << std::endl;
+  qDebug() << "Accepted XPC-Connection";
 }
 
 void XPCService::handleClientEvent(xpc_object_t event,
@@ -73,7 +91,7 @@ void XPCService::handleClientEvent(xpc_object_t event,
   xpc_type_t type = xpc_get_type(event);
   if (type == XPC_TYPE_ERROR) {
     auto error = getXPCError(event);
-    std::cout << error.toLocal8Bit().constData();
+    qCritical() << "[XPC Error] " << qUtf8Printable(error);
     closeClientConnection(client);
     return;
   }
@@ -106,6 +124,9 @@ void XPCService::send(const QString msg) {
 };
 
 void XPCService::maybeEnforceSigningRequirement(xpc_connection_t peer) {
+  // Make sure that we only allow mozilla signed connections.
+  // if a connection does not match the requirement's all
+  // messages it sends will be dismissed by the OS.
   if (mSigningRequirement.isEmpty()) {
     return;
   }
@@ -119,16 +140,3 @@ void XPCService::maybeEnforceSigningRequirement(xpc_connection_t peer) {
   }
 };
 
-void XPCService::onRunAppleEventLoop() {
-  // auto h = std::hash<std::thread::id>{}(std::this_thread::get_id());
-  //  qWarning() << "[XPCClient::onRunAppleEventLoop] - Thread " <<
-  //  qUtf8Printable(QString::number(h));
-
-  CFRunLoopRunInMode(kCFRunLoopDefaultMode,
-                     0.5,  // Run the apple event loop max 500ms
-                     TRUE  // Return after 1 Handled event
-  );
-  // Emit the next loop run onto the
-  // Qt event loop.
-  emit runAppleEventLoop();
-}

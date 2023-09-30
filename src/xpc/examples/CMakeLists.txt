@@ -52,6 +52,8 @@ target_link_libraries(xpc_test_server PRIVATE
 set_target_properties(xpc_test_server PROPERTIES EXCLUDE_FROM_ALL TRUE)
 add_dependencies(build_examples xpc_test_server)
 
-
-set(SERVER_OUTPUT $<TARGET_FILE:xpc_test_server>)
-configure_file(example.server.plist.in example.server.plist @ONLY)
+file(GENERATE
+    OUTPUT example.server.plist
+    INPUT example.server.plist.in
+    TARGET xpc_test_server
+)
