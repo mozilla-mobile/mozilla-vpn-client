@@ -9,7 +9,8 @@
 class XPCBase {
  protected:
   static constexpr auto defaultDictKey = "org.mozilla";
-  static constexpr auto vpnDaemonName = "org.mozilla.macos.FirefoxVPN.daemon.test";
+  static constexpr auto vpnDaemonName =
+      "org.mozilla.macos.FirefoxVPN.daemon.test";
 
   static QString getQStringFromXPCDict(xpc_object_t event,
                                        const QString& key = defaultDictKey) {

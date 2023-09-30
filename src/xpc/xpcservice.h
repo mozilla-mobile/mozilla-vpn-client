@@ -17,11 +17,11 @@
 #include "xpcbase.h"
 
 /**
- * @brief A Class implementing simple ipc using XPC 
- * 
- * Note: this class spin's up a new apple event loop, you probably want to 
- * put this into it's own thread. 
- * 
+ * @brief A Class implementing simple ipc using XPC
+ *
+ * Note: this class spin's up a new apple event loop, you probably want to
+ * put this into it's own thread.
+ *
  */
 class XPCService : public QObject, private XPCBase {
   Q_OBJECT
@@ -45,7 +45,7 @@ class XPCService : public QObject, private XPCBase {
 
   // Start listening for connections
   void start();
-  // Stop all connections and stop listening for new ones. 
+  // Stop all connections and stop listening for new ones.
   void stop();
 
   void send(const QString msg);

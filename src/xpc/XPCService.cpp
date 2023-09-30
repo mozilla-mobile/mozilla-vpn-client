@@ -6,9 +6,10 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <xpc/xpc.h>
-#include <QtLogging>
-#include <QObject>
+
 #include <QDebug>
+#include <QObject>
+#include <QtLogging>
 
 #include "leakdetector.h"
 
@@ -29,10 +30,11 @@ void XPCService::start() {
   qDebug() << "[XPC] - Starting server: " << qUtf8Printable(mServiceName);
   // Create the new xpc_service
 
-// TODO: it seems launchctl also writes the env variable XPC_SERVICE_NAME
-// for us, that's super convinent!
+  // TODO: it seems launchctl also writes the env variable XPC_SERVICE_NAME
+  // for us, that's super convinent!
   xpc_connection_t listener = xpc_connection_create_mach_service(
-       qUtf8Printable(mServiceName), NULL, XPC_CONNECTION_MACH_SERVICE_PRIVILEGED);
+      qUtf8Printable(mServiceName), NULL,
+      XPC_CONNECTION_MACH_SERVICE_PRIVILEGED);
   if (Q_UNLIKELY(listener == NULL)) {
     qDebug() << "[XPC] - Failed to create listener: ";
     return;
@@ -46,15 +48,15 @@ void XPCService::start() {
       qCritical() << "[XPC Error] " << qUtf8Printable(error);
       return;
     }
-    if( type != XPC_TYPE_CONNECTION ){
+    if (type != XPC_TYPE_CONNECTION) {
       // This listener should not get anything but connections?
       qWarning() << "Unexpected type: " << xpc_type_get_name(type);
       Q_ASSERT(false);
       return;
     }
-    // Increase the refcount by 1 so we may keep a ref. 
+    // Increase the refcount by 1 so we may keep a ref.
     // We release this obj on close or stop
-    auto xpc_peer = (xpc_connection_t) xpc_retain(xpc_event);
+    auto xpc_peer = (xpc_connection_t)xpc_retain(xpc_event);
 
     maybeEnforceSigningRequirement(xpc_peer);
     acceptConnectionRequest(xpc_peer);
@@ -62,7 +64,6 @@ void XPCService::start() {
   // Activate the connection
   xpc_connection_activate(listener);
   m_listener = listener;
-
 }
 void XPCService::stop() {
   for (const auto& client : m_clients) {
@@ -139,4 +140,3 @@ void XPCService::maybeEnforceSigningRequirement(xpc_connection_t peer) {
     Q_UNUSED(res);
   }
 };
-

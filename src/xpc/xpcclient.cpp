@@ -50,7 +50,6 @@ void XPCClient::handleServerEvent(xpc_object_t event) {
   emit messageReceived(message);
 }
 
-
 void XPCClient::sendInternal(const QString aMessage) {
   auto message = xpc_dictionary_create(NULL, NULL, 0);
   auto xpc_string = xpc_string_create(aMessage.toLocal8Bit().constData());
@@ -77,9 +76,10 @@ void XPCClient::connectService(QString service) {
 
 // private
 void XPCClient::connectServiceInternal(const QString service) {
-   qWarning() << "[XPCClient]" << "Connect to: "<< qUtf8Printable(service);
-  m_serverConnection = xpc_connection_create_mach_service(
-      qUtf8Printable(service), NULL, 0);
+  qWarning() << "[XPCClient]"
+             << "Connect to: " << qUtf8Printable(service);
+  m_serverConnection =
+      xpc_connection_create_mach_service(qUtf8Printable(service), NULL, 0);
   xpc_connection_set_event_handler(m_serverConnection, ^(xpc_object_t event) {
     handleServerEvent(event);
   });
