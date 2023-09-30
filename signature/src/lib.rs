@@ -302,4 +302,12 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
         );
         assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
     }
+
+    /* TODO: We could use tests for:
+     *  - Missing code signing permissions.
+     *  - A certificate chain that doesn't chain.
+     *  - Chains of irregular length.
+     *  - Other signature algorithms.
+     *  - A PEM file that contains something other than a certificate.
+     */
 }

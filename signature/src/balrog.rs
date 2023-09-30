@@ -41,6 +41,8 @@ pub enum BalrogError {
     #[error("PEM decoding error")]
     PemDecodeError,
 
+    #[error("X509 validation failed: {0:?}")]
+    X509ValidationError(String),
     #[error("X509 error: {0:?}")]
     X509(X509Error)
 }
@@ -215,6 +217,20 @@ impl<'a> Balrog<'_> {
             return Err(BalrogError::IssuerUnauthorized);
         }
 
+        /* Check X509 certificate validation. */
+        let mut logger = VecLogger::default();
+        // structure validation status
+        let ok = X509StructureValidator
+            .chain(X509CertificateValidator)
+            .validate(subject, &mut logger);
+        if !ok {
+            let reason = match logger.errors().first() {
+                None => "Unknown error",
+                Some(s) => s
+            };
+            return Err(BalrogError::X509ValidationError(reason.to_string()));
+        }
+        
         /* Verify the cryptographic signature. */
         subject.verify_signature(Some(issuer.public_key()))
             .map_err(|e| { BalrogError::from(e) })
