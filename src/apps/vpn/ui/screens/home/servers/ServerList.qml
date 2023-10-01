@@ -288,6 +288,7 @@ FocusScope {
                     clip: true
                     height: vpnFlickable.height - searchBar.height - serverListSpacer.height - serverList.spacing
                     width: parent.width
+                    spacing: 10
                     header: (showRecentConnections && searchBar.getSearchBarText().length === 0) ? countriesListViewHeader : Item
                     footer: countriesListViewFooter
                     Component.onCompleted: {
