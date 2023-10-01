@@ -239,14 +239,16 @@ const QString ServerCountryModel::countryName(
 
 const int ServerCountryModel::indexOfCountryCode(
     const QString& countryCode) const {
-  int i = 0;
-  for (const ServerCountry& country : m_countries) {
-    if (country.code() == countryCode) {
-      return i;
-    }
-    i++;
+  auto it = std::find_if(m_countries.begin(), m_countries.end(),
+                         [&countryCode](const ServerCountry& country) {
+                           return country.code() == countryCode;
+                         });
+
+  if (it != m_countries.end()) {
+    return std::distance(m_countries.begin(), it);
+  } else {
+    return -1;
   }
-  return -1;
 }
 
 void ServerCountryModel::retranslate() {
