@@ -291,9 +291,11 @@ FocusScope {
                     spacing: 10
                     header: (showRecentConnections && searchBar.getSearchBarText().length === 0) ? countriesListViewHeader : Item
                     footer: countriesListViewFooter
-                    Component.onCompleted: {
-                        const index = VPNServerCountryModel.indexOfCountryCode(currentServer.countryCode);
-                        positionViewAtIndex(index, ListView.Beginning);
+                    onVisibleChanged: {
+                        if (visible) {
+                            const index = VPNServerCountryModel.indexOfCountryCode(currentServer.countryCode);
+                            positionViewAtIndex(index, ListView.Beginning);
+                        }
                     }
                 }
             }
