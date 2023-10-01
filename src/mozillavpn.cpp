@@ -426,10 +426,14 @@ void MozillaVPN::maybeStateMain() {
       setState(StateOnboarding);
       return;
     }
-  } else if (!settingsHolder->postAuthenticationShown()) {
+  }
+
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
+  if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
+#endif
 
   // If we're not using the new onboarding, continue with the old onboarding
   // (telemetry policy)
