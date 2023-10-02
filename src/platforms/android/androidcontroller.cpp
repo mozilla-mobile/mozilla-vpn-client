@@ -149,19 +149,6 @@ void AndroidController::activate(const InterfaceConfig& config,
   foreach (auto item, config.m_allowedIPAddressRanges) {
     allowedIPs.append(IPAddress(item.toString()));
   }
-  foreach (auto addr, config.m_excludedAddresses) {
-    excludedIPs.append(IPAddress(addr));
-  }
-  if (!config.m_serverIpv4AddrIn.isEmpty()) {
-    excludedIPs.append(IPAddress(config.m_serverIpv4AddrIn));
-  }
-  if (!config.m_serverIpv6AddrIn.isEmpty()) {
-    excludedIPs.append(IPAddress(config.m_serverIpv6AddrIn));
-  }
-  foreach (auto item, IPAddress::excludeAddresses(allowedIPs, excludedIPs)) {
-    fullAllowedIPs.append(QJsonValue(item.toString()));
-  }
-
   QJsonArray excludedApps;
   foreach (auto appID, config.m_vpnDisabledApps) {
     excludedApps.append(QJsonValue(appID));
