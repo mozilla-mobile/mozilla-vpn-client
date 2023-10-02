@@ -85,17 +85,6 @@ pub extern "C" fn verify_balrog(
     true
 }
 
-fn verify_leaf_cert(
-    leaf_cert: &X509Certificate,
-    leaf_subject: *const c_uchar
-) -> bool {
-    /* For the leaf certificate, we really just want to ensure that the
-     * subject name matches the hostname we got from Balrog, and then
-     * check that the certificate contains the code signing extension.
-     */
-    true
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -198,7 +187,7 @@ iKv8cXTONrGY0fyBDKennuX0uAca3V0Qm6v2VRp+7wG/pywWwc5n+04qgxTQPxgO
 IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
 -----END CERTIFICATE-----";
     const VALID_INPUT: &[u8] =
-        b"Content-Signature:\x00{\"data\":[],\"last_modified\":\"1603992731957\"}";
+        b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
     const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
     const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
 
@@ -317,7 +306,7 @@ wNuvFqc=
     // Fetched from: https://aus5.mozilla.org/json/1/FirefoxVPN/2.14.0/WINNT_x86_64/release-cdntest/update.json
     const PROD_SIGNATURE: &str = "znYFqdKKFgijVgUhnq5VuZxtI5Zay8MARVFr3cG1CbB9eH9slQFkE9ZjMdLzbf5OZqj2gds1OqbCm45L38e2joKD_mCAUGtajebztDdWx9Rqgmn-9vu6t-SCl6HQrzbh";
     const PROD_INPUT_DATA: &[u8] =
-        b"Content-Signature:\x00{\"version\": \"2.17.0\", \"url\": \"https://archive.mozilla.org/pub/vpn/candidates/2.17.0-candidates/build20230926170708/windows/MozillaVPN.msi\", \"required\": false, \"hashFunction\": \"sha512\", \"hashValue\": \"97fe0255e50cd33d3ed50fe94edf3d95b72950b28f9b0157b43195a6c190aaf7e34543044c14d42deabf97b84910da1fbb7f752eaf800130315c2ad5172ea45c\"}";
+        b"{\"version\": \"2.17.0\", \"url\": \"https://archive.mozilla.org/pub/vpn/candidates/2.17.0-candidates/build20230926170708/windows/MozillaVPN.msi\", \"required\": false, \"hashFunction\": \"sha512\", \"hashValue\": \"97fe0255e50cd33d3ed50fe94edf3d95b72950b28f9b0157b43195a6c190aaf7e34543044c14d42deabf97b84910da1fbb7f752eaf800130315c2ad5172ea45c\"}";
 
     #[test]
     fn test_verify_succeeds_if_valid() {

@@ -358,9 +358,13 @@ impl<'a> Balrog<'_> {
          * The golang library chooses a SHA2 that matches the pubkey key size.
          * Do we care about the RSA/DSA ecosystem?
          */
-        let algorithm = AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA384, None); 
+        let algorithm = AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA384, None);
 
-        x509_parser::verify::verify_signature(&pubkey, &algorithm, &sig_asn1, input)
+        /* Append the Content-Signature prefix. */
+        let prefix: &[u8] = b"Content-Signature:\x00";
+        let message = [prefix, input].concat();
+
+        x509_parser::verify::verify_signature(&pubkey, &algorithm, &sig_asn1, &message)
             .map_err(|e| { BalrogError::from(e) })
     }
 }
