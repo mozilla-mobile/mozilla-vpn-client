@@ -281,15 +281,22 @@ impl<'a> Balrog<'_> {
          */
         /* Cut the fixed signature into component r and s values. */
         let (r, s) = input.split_at(input.len() / 2);
-        /*
-         * TODO: technically we need to convert these into *signed* integers before
-         * passing them to the ASN.1 encoder, which interpret the leading bit as the
-         * sign. If the leading bit is zero, prepend a leading zero byte to ensure
-         * the sign is positive.
+        let mut r = r.to_vec();
+        let mut s = s.to_vec();
+
+        /* ASN.1 integers are signed, but ECDSA signature points are always unsigned.
+         * If the leading bit is zero, we must append an extra leading zero byte to
+         * ensure the sign is positive.
          */
+        if r[0] & 0x80 != 0 {
+            r.insert(0, 0x00);
+        }
+        if s[0] & 0x80 != 0 {
+            s.insert(0, 0x00);
+        }
 
         /* Encode into an ASN.1 sequence. */
-        let vec = vec![asn1_rs::Integer::new(r), asn1_rs::Integer::new(s)];
+        let vec = vec![asn1_rs::Integer::new(&r), asn1_rs::Integer::new(&s)];
         let seq = match asn1_rs::Sequence::from_iter_to_der(vec.iter()) {
             Err(e) => return Err(BalrogError::SignatureDecodeError),
             Ok(x) => x
