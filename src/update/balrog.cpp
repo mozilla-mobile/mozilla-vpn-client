@@ -20,9 +20,13 @@
 #include "networkrequest.h"
 
 // Implemented in rust. See the `signature` folder.
+// TODO: We should really generate this with cbindgen.
 extern "C" {
-bool verify_balrog(const char* x5u_ptr, size_t x5u_length, const char* message, const char* signature,
-                  const char* rootHash, const char* certSubject);
+bool verify_balrog(const char* x5u_ptr, size_t x5u_length,
+                  const char* msg_ptr, size_t message_length,
+                  const char* signature,
+                  const char* rootHash,
+                  const char* certSubject);
 }
 
 #if defined(MZ_WINDOWS)
@@ -174,37 +178,10 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-#if 0
-  balrogSetLogger((GoUintptr)balrogLogger);
 
-  QByteArray x5uDataCopy = x5uData;
-  GoString x5uDataGo{x5uDataCopy.constData(), x5uDataCopy.length()};
-
-  QByteArray signatureCopy = signatureBlob;
-  GoString signatureGo{signatureCopy.constData(), signatureCopy.length()};
-
-  QByteArray updateDataCopy = updateData;
-  GoString updateDataGo{updateDataCopy.constData(), updateDataCopy.length()};
-
-  QByteArray rootHashCopy = Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT;
-  rootHashCopy = rootHashCopy.toUpper();
-  GoString rootHashGo{rootHashCopy.constData(), rootHashCopy.length()};
-
-  QByteArray certSubjectCopy = BALROG_CERT_SUBJECT_CN;
-  GoString certSubjectGo{certSubjectCopy.constData(), certSubjectCopy.length()};
-
-  unsigned char verify = balrogValidate(x5uDataGo, updateDataGo, signatureGo,
-                                        rootHashGo, certSubjectGo);
-  if (!verify) {
-    logger.error() << "Verification failed";
-    return false;
-  }
-
-  return true;
-#else
-  QByteArray x5uPem = QByteArray::fromBase64(x5uData);
-  bool verify = verify_balrog(x5uPem.constData(), x5uPem.length(),
-                              updateData.constData(),
+  // TODO: It would be nice to print the error using logger().
+  bool verify = verify_balrog(x5uData.constData(), x5uData.length(),
+                              updateData.constData(), updateData.length(),
                               signatureBlob.constData(),
                               Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT,
                               BALROG_CERT_SUBJECT_CN);
@@ -215,7 +192,6 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
     logger.info() << "Verification succeeded";
     return true;
   }
-#endif
 }
 
 bool Balrog::processData(Task* task, const QByteArray& data) {
