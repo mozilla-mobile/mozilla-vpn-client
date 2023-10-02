@@ -189,7 +189,7 @@ public class IOSControllerImpl : NSObject {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
                     if isOnboarding {
-                        IOSControllerImpl.logger.info(message: "Finishing onboarding")
+                        IOSControllerImpl.logger.info(message: "Finishing onboarding, but saving tunnel resulted in error...")
                         onboardingCompletedCallback()
                     }
                     return
