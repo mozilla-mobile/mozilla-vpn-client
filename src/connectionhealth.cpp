@@ -184,7 +184,8 @@ void ConnectionHealth::connectionStateChanged() {
           stop();
           startActive(serverIpv4Gateway, deviceIpv4Address);
         });
-  } else if (state == ConnectionManager::StateOff) {
+    //  } else if (state == ConnectionManager::StateOff) {
+  } else if (!MozillaVPN::instance()->connectionManager()->isVPNActive()) {
     startIdle();
   } else {
     stop();

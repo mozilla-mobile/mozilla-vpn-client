@@ -183,10 +183,10 @@ void SystemTrayNotificationHandler::updateContextMenu() {
         statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
         break;
 
-      case ConnectionManager::StateOff:
+        //      case ConnectionManager::StateOff:
         //        statusLabel =
         //        i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
-        break;
+        //        break;
 
       case ConnectionManager::StateSwitching:
         [[fallthrough]];

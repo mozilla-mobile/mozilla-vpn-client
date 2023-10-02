@@ -20,7 +20,7 @@ TaskControllerAction::TaskControllerAction(
     : Task("TaskControllerAction"),
       m_action(action),
       ///@TODO Determine the implications of removing this initialization. Do we
-      ///need this?
+      /// need this?
       //      m_lastState(ConnectionManager::State::StateOff),
       // Let's take a copy of the current server-data to activate/switch to the
       // current locations even if the settings change in the meantime.

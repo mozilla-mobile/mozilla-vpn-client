@@ -120,7 +120,7 @@ int CommandStatus::run(QStringList& tokens) {
     QObject::connect(
         &connectionManager, &ConnectionManager::stateChanged,
         &connectionManager, [&] {
-          if (connectionManager.state() == ConnectionManager::StateOff ||
+          if (!connectionManager.isVPNActive() ||
               connectionManager.state() == ConnectionManager::StateIdle) {
             loop.exit();
           }

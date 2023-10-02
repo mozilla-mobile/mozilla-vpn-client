@@ -102,8 +102,8 @@ const QString StatusIcon::iconString() {
         return LOGO_GENERIC_ON;
         break;
         ///@TODO Remove StateOff when we're done
-      case ConnectionManager::StateOff:
-        [[fallthrough]];
+        //      case ConnectionManager::StateOff:
+        //        [[fallthrough]];
         //      m_animatedIconTimer.stop();
         //      return LOGO_GENERIC_OFF;
         //      break;
