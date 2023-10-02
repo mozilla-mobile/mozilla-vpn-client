@@ -974,8 +974,11 @@ bool ConnectionManager::deactivate() {
     return false;
   }
 
-  // @TODO check for captive portal on deactivation only if we were in no signal
-  if (m_portalDetected) {  /// @TODO && connectionhealth == no signal
+  // In the event user switches from one network to a different network with a
+  // captive portal, they will experience "No Signal". Upon deactivating the VPN
+  // a "Captive Portal Detected" screen will be presented to inform the user of
+  // the underlying issue.
+  if (m_portalDetected) {
     emit activationBlockedForCaptivePortal();
     Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
 
