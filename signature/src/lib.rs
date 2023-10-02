@@ -387,6 +387,7 @@ wNuvFqc=
         );
         assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
     }
+
     #[test]
     fn test_verify_prod_example() {
         let r = parse_and_verify(

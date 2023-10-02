@@ -145,9 +145,6 @@ impl<'a> Balrog<'_> {
         * the last certificate as both cert N and cert N+1. And additionally
         * check that the subject has matches the root_hash parameter to this
         * function.
-        *
-        * TODO: Do we need to run anything through the x509_parser validate
-        * module, or are these checks here sufficient?
         */
         let mut index = 0;
         while index+1 < self.chain.len() {
@@ -270,8 +267,7 @@ impl<'a> Balrog<'_> {
         Err(BalrogError::HostnameMismatch)
     }
 
-    /* Take a fixed-length ECDSA signature and convert into
-     * ASN.1 DER encoding */
+    /* Take a fixed-length ECDSA signature and convert into ASN.1 DER encoding */
     fn ecdsa_signature_to_asn1(input: &[u8]) -> Result<Vec<u8>, BalrogError> {
         /* ECDSA signatures take the ASN.1 form of:
          * SEQUENCE {
