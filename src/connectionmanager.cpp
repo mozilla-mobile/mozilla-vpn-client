@@ -245,11 +245,11 @@ void ConnectionManager::timerTimeout() {
   }
 #else
 
-  //  Q_ASSERT(m_state == StateIdle);
+  //    Q_ASSERT(m_state == StateIdle);
   ///@TODO This call to activateVPN should be removed.
-  activateVPN();
-  Q_ASSERT(isVPNActive());
-  
+  //  activateVPN();
+  //  Q_ASSERT(isVPNActive());
+
   emit timeChanged();
 #endif
 }

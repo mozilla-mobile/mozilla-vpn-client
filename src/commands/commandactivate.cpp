@@ -86,7 +86,7 @@ int CommandActivate::run(QStringList& tokens) {
 
     //    if (vpn.connectionManager()->state() != ConnectionManager::StateOff) {
     ///@TODO I don't think this alone is sufficient. We should check that the
-    ///VPN is active and we've established a tunnel.
+    /// VPN is active and we've established a tunnel.
     if (vpn.connectionManager()->isVPNActive()) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is already active" << Qt::endl;

@@ -28,7 +28,7 @@ void TestStatusIcon::basic() {
 
   // VPN is on
   MozillaVPN::instance()->setState(App::StateMain);
-  TestHelper::controllerState = ConnectionManager::StateOn;
+  TestHelper::controllerState = ConnectionManager::StateIdle;
   si.refreshNeeded();
 
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
