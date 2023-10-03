@@ -75,7 +75,7 @@ class ConnectionHealth final : public QObject {
   bool isUnsettled() const { return m_settlingTimer.isActive(); };
 
  public slots:
-  void connectionStateChanged();
+  void connectionManagerStateChanged();
   void applicationStateChanged(Qt::ApplicationState state);
 
  signals:

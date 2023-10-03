@@ -143,7 +143,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   emit stabilityChanged();
 }
 
-void ConnectionHealth::connectionStateChanged() {
+void ConnectionHealth::connectionManagerStateChanged() {
   ConnectionManager::State state =
       MozillaVPN::instance()->connectionManager()->state();
   logger.debug() << "Connection state changed to" << state;

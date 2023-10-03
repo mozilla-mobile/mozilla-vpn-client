@@ -240,7 +240,9 @@ class MozillaVPN final : public App {
 
   RemovalDeviceOption maybeRemoveCurrentDevice();
 
-  void controllerStateChanged();
+  // void controllerStateChanged();
+
+  void connectionManagerStateChanged();
 
   void maybeRegenerateDeviceKey();
 

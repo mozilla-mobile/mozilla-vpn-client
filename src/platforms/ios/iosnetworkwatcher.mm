@@ -37,7 +37,7 @@ void IOSNetworkWatcher::initialize() {
   nw_path_monitor_start(m_networkMonitor);
 
   connect(MozillaVPN::instance()->connectionManager(), &ConnectionManager::stateChanged, this,
-          &IOSNetworkWatcher::controllerStateChanged);
+          &IOSNetworkWatcher::connectionManagerStateChanged);
 }
 
 NetworkWatcherImpl::TransportType IOSNetworkWatcher::getTransportType() {
@@ -80,7 +80,7 @@ NetworkWatcherImpl::TransportType IOSNetworkWatcher::toTransportType(nw_path_t p
   return NetworkWatcherImpl::TransportType_Unknown;
 }
 
-void IOSNetworkWatcher::controllerStateChanged() {
+void IOSNetworkWatcher::connectionManagerStateChanged() {
   if (MozillaVPN::instance()->connectionManager()->state() != ConnectionManager::StateIdle) {
     if (m_observableConnection != nil) {
       nw_connection_cancel(m_observableConnection);

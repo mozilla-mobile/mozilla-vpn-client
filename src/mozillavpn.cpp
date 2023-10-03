@@ -171,8 +171,8 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
                 pingReceived);
           });
 
-  connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
-          this, &MozillaVPN::controllerStateChanged);
+  // connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
+  //         this, &MozillaVPN::controllerStateChanged);
 
   connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
@@ -185,7 +185,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
           &m_private->m_connectionHealth,
-          &ConnectionHealth::connectionStateChanged);
+          &ConnectionHealth::connectionManagerStateChanged);
 
   connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
           &m_private->m_captivePortalDetection,
@@ -1192,8 +1192,8 @@ void MozillaVPN::setUpdating(bool updating) {
   emit updatingChanged();
 }
 
-void MozillaVPN::controllerStateChanged() {
-  logger.debug() << "Controller state changed";
+void MozillaVPN::connectionManagerStateChanged() {
+  logger.debug() << "Connection Manager state changed";
 
   if (!m_controllerInitialized) {
     m_controllerInitialized = true;

@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QtTest/QtTest>
 
+#include "connectionmanager.h"
 #include "controller.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"

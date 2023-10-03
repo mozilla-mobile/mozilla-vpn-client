@@ -79,7 +79,7 @@ void MacOSMenuBar::initialize() {
   retranslate();
 };
 
-void MacOSMenuBar::controllerStateChanged() {
+void MacOSMenuBar::connectionManagerStateChanged() {
   m_aboutAction->setVisible(App::instance()->state() == App::StateMain);
 }
 

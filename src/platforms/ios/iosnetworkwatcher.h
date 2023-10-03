@@ -19,7 +19,8 @@ class IOSNetworkWatcher : public NetworkWatcherImpl {
 
  private:
   NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
-  void controllerStateChanged();
+  //   void controllerStateChanged();
+  void connectionManagerStateChanged();
 
   NetworkWatcherImpl::TransportType m_currentDefaultTransport =
       NetworkWatcherImpl::TransportType_Unknown;

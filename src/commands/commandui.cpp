@@ -410,10 +410,10 @@ int CommandUI::run(QStringList& tokens) {
     menuBar.initialize();
 
     QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
-                     &MacOSMenuBar::controllerStateChanged);
+                     &MacOSMenuBar::connectionManagerStateChanged);
 
     QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged,
-                     &menuBar, &MacOSMenuBar::controllerStateChanged);
+                     &menuBar, &MacOSMenuBar::connectionManagerStateChanged);
 
 #endif
 

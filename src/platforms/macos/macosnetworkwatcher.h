@@ -21,7 +21,8 @@ class MacOSNetworkWatcher final : public IOSNetworkWatcher {
 
   void checkInterface();
 
-  void controllerStateChanged();
+  // void controllerStateChanged();
+  void connectionManagerStateChanged();
 
  private:
   void* m_delegate = nullptr;

@@ -39,6 +39,8 @@ void ConnectionManager::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {
 
 bool ConnectionManager::deactivate() { return false; }
 
+bool ConnectionManager::deactivate() { return false; }
+
 void ConnectionManager::connected(const QString& pubkey,
                                   const QDateTime& connectionTimestamp) {
   Q_UNUSED(pubkey);

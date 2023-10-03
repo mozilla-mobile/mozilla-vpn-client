@@ -248,7 +248,7 @@ void ConnectionManager::timerTimeout() {
 
   //    Q_ASSERT(m_state == StateIdle);
   ///@TODO This call to activateVPN should be removed.
-    activateVPN();
+  activateVPN();
   //  Q_ASSERT(isVPNActive());
 
   emit timeChanged();

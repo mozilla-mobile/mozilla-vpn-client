@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "connectionmanager.h"
 #include "controller.h"
 #include "helper.h"
 #include "models/location.h"
@@ -94,7 +95,9 @@ void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
 
-void MozillaVPN::controllerStateChanged() {}
+// void MozillaVPN::controllerStateChanged() {}
+
+void MozillaVPN::connectionManagerStateChanged() {}
 
 void MozillaVPN::backendServiceRestore() {}
 
