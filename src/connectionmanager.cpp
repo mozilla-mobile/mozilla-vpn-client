@@ -208,6 +208,7 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
   //  setState(a_connected ? StateOn : StateOff);
   if (a_connected) {
     setState(StateIdle);
+    activateVPN();
   } else {
     setState(StateOff);
     deactivateVPN();

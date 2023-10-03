@@ -101,7 +101,8 @@ Rectangle {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            // when: VPNController.state === VPNController.StateOff
+            when: !VPNController.isVPNActive
 
             PropertyChanges {
                 target: insetCircle
@@ -138,6 +139,7 @@ Rectangle {
             when: (VPNController.state === VPNController.StateIdle ||
                    VPNController.state === VPNController.StateSilentSwitching) &&
                 VPNConnectionHealth.stability === VPNConnectionHealth.Stable
+            // when: VPNController.isVPNActive && VPNController.state != VPNController.StateSilentSwitching && VPNConnectionHealth.stability === VPNConnectionHealth.Stable
 
             PropertyChanges {
                 target: logo
@@ -155,9 +157,10 @@ Rectangle {
         },
         State {
             name: "unstableOn"
-            when: (VPNController.state === VPNController.StateIdle ||
-                   VPNController.state === VPNController.StateSilentSwitching) &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
+            // when: (VPNController.state === VPNController.StateIdle ||
+            //        VPNController.state === VPNController.StateSilentSwitching) &&
+            //     VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
+            when: VPNController.isVPNActive && VPNController.state != VPNController.StateSilentSwitching && VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
 
             PropertyChanges {
                 target: logo
@@ -176,9 +179,10 @@ Rectangle {
         },
         State {
             name: "noSignalOn"
-            when: (VPNController.state === VPNController.StateIdle ||
-                   VPNController.state === VPNController.StateSilentSwitching) &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
+            // when: (VPNController.state === VPNController.StateIdle ||
+            //        VPNController.state === VPNController.StateSilentSwitching) &&
+            //     VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
+            when: VPNController.isVPNActive && VPNController.state != VPNController.StateSilentSwitching && VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
 
             PropertyChanges {
                 target: logo
@@ -257,7 +261,8 @@ Rectangle {
             }
         },
         Transition {
-            to: VPNController.StateOff
+            // to: VPNController.StateOff
+            to: !VPNController.isVPNActive
 
             ParallelAnimation {
                 PropertyAnimation {

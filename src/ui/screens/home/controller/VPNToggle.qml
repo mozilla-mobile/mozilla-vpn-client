@@ -19,7 +19,7 @@ MZButtonBase {
 
     function handleClick() {
         toolTip.close();
-        if (VPNController.state !== VPNController.StateOff) {
+        if (VPNController.isVPNActive) {
             return VPN.deactivate();
         }
 
@@ -30,7 +30,7 @@ MZButtonBase {
 
     // property in MZButtonBase {}
     visualStateItem: toggle
-    state: VPNController.state
+    // state: VPNController.state
     height: 32
     width: 60
     radius: 16
@@ -66,7 +66,8 @@ MZButtonBase {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            // when: VPNController.state === VPNController.StateOff
+            when: !VPNController.isVPNActive
 
             PropertyChanges {
                 target: cursor
@@ -231,7 +232,7 @@ MZButtonBase {
         radius: height / 2
         border.color: toggleColor.focusBorder
         color: MZTheme.theme.transparent
-        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateIdle || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateIdle || VPNController.state === VPNController.StateSilentSwitching || !VPNController.isVPNActive) ? 1 : 0
 
         MZFocusOutline {
             id: vpnFocusOutline
@@ -278,7 +279,7 @@ MZButtonBase {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateIdle ||
                 VPNController.state === VPNController.StateSilentSwitching ||
-                VPNController.state === VPNController.StateOff ||
+                !VPNController.isVPNActive ||
                 (VPNController.state === VPNController.StateConfirming &&
                  (connectionRetryOverX || enableDisconnectInConfirming)));
     }
