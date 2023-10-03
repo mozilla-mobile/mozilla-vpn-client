@@ -232,7 +232,7 @@ qint64 ConnectionManager::time() const {
 }
 
 void ConnectionManager::timerTimeout() {
-  Q_ASSERT(m_state == StateIdle);
+//  Q_ASSERT(m_state == StateIdle);
 #ifdef MZ_IOS
   // When locking an iOS device with an app in the foreground, the app's JS
   // runtime is stopped pretty quick by the system. For this VPN app, that
@@ -247,7 +247,7 @@ void ConnectionManager::timerTimeout() {
 
   //    Q_ASSERT(m_state == StateIdle);
   ///@TODO This call to activateVPN should be removed.
-  //  activateVPN();
+    activateVPN();
   //  Q_ASSERT(isVPNActive());
 
   emit timeChanged();
