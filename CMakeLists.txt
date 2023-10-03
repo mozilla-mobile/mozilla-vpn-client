@@ -12,7 +12,7 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
 
-project("Mozilla VPN" VERSION 2.17.1 LANGUAGES C CXX
+project("Mozilla VPN" VERSION 2.17.2 LANGUAGES C CXX
         DESCRIPTION "Mozilla VPN"
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
