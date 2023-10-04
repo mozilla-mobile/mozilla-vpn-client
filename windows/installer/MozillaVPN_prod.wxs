@@ -77,7 +77,6 @@
         <File Id="MozillaVPNExecutable" Source="../../Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
-        <File Source="../../balrog.dll" />
         <File Source="../../tunnel.dll" />
         <File Source="../../wintun.dll" />
         <File Source="../../mullvad-split-tunnel.cat" />

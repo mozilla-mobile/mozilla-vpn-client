@@ -123,7 +123,6 @@ CMakeLists.txt.user
 #Windows
 .deps
 lib*.dll
-balrog.dll
 tunnel.dll
 tunnel.h
 *.wixobj
