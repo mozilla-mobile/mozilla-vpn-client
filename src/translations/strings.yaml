@@ -548,19 +548,19 @@ onboarding:
   panelFourSubtitle: You can set Mozilla VPN to protect you from ads, trackers, and malware. Plus, customize your protection for specific apps.
   progressBarDataUse:
     value: Data
-    comment: Label for onboarding progress bar step
+    comment: Label for onboarding progress bar step where users can select to enable data collection
   progressBarMorePrivacy:
     value: Privacy
-    comment: Label for onboarding progress bar step
+    comment: Label for onboarding progress bar step where users can select to enable various privacy settings
   progressBarAddDevices:
     value: Devices
-    comment: Label for onboarding progress bar step
+    comment: Label for onboarding progress bar step where users find out how to install Mozilla VPN on other devices
   progressBarStartup:
     value: Startup
-    comment: Label for onboarding progress bar step. It's the final step in the desktop flow
+    comment: Label for onboarding progress bar step where users can select to enable VPN startup on device boot
   progressBarConnect:
     value: Connect
-    comment: Label for onboarding progress bar step. It's the final step in the mobile flow
+    comment: Label for onboarding progress bar step where users can grant permission to create a VPN configuration with the system
   progressBarAccessibilityStepComplete:
     value: "Onboarding step “%1” (%2 of %3). Select to go back to this step."
     comment: Accessibility read out for completed steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
@@ -588,8 +588,8 @@ onboarding:
   startSlideHeader: Connect Mozilla VPN on startup
   startSlideBody: Turn on to launch the VPN whenever you start your device. We’ll automatically reconnect you to the same server location you last used.
   startSlideMobileHeader: Allow Mozilla VPN to create a VPN connection
-  startSlideMobileBody: Your mobile device will now ask you to allow us to create a VPN connection. Please allow this so that Mozilla VPN works correctly on your device.
-  startSlideApproveButtonLabel: Approve Mozilla VPN
+  startSlideMobileBody: Your mobile device will now ask you to allow Mozilla VPN to create a connection. Please allow this so that the VPN works correctly on your device.
+  startSlideAllowButtonLabel: Allow VPN connection
 
 inAppAuth:
   emailInputPlaceholder: Enter email

@@ -57,7 +57,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         width: undefined
-        text: MZI18n.OnboardingStartSlideApproveButtonLabel
+        text: MZI18n.OnboardingStartSlideAllowButtonLabel
 
         onClicked: {
             //Not actually activating the VPN, but going through the motions of activating it
