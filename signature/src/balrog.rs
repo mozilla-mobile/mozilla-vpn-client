@@ -2,14 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/* This module handles verification of an X509 certificate chain and Mozilla's
+ * content signature algorithm which is used for signing and authentication of
+ * updates.
+ *
+ * This provides methods to parse an X509 certificate chain out of a PEM file,
+ * perform certificate chain validation to ensure the code signing certificate
+ * can be trusted, and verifies a content signature against the code signing
+ * certificate.
+ *
+ * The content signature itself is a base64-encoded ECDSA signature, using the
+ * content prefixed with "Content-Signature\x00" as the input data.
+ */
+
 use hex;
 use asn1_rs::ToDer;
 use ring::digest;
-use thiserror::Error;
 use x509_parser::prelude::*;
 
 use oid_registry::{
-    OID_PKCS1_SHA256WITHRSA,
     OID_SIG_ECDSA_WITH_SHA256,
     OID_SIG_ECDSA_WITH_SHA384,
 };
@@ -68,7 +79,7 @@ pub fn parse_and_verify(
     leaf_subject: &str
 ) -> Result<(), BalrogError> {
     let pem_chain = match parse_pem_chain(x5u) {
-        Err(e) => return Err(BalrogError::PemDecodeError),
+        Err(_e) => return Err(BalrogError::PemDecodeError),
         Ok(x) => x
     };
 
@@ -134,12 +145,11 @@ impl<'a> Balrog<'_> {
         assert!(!self.root_hash.is_empty());
 
         /* For each certificate N in the chain, check that:
-        *  1. The issuer hash in cert N matches the subject hash of cert N+1.
-        *  2. The issuer name in cert N matches the subject name of cert N+1.
-        *  3. The validity time of cert N contains the current time.
-        *  4. The cert N+1 contains a key usage extension permitting CA.
-        *  5. Extract the public key from cert N+1
-        *  6. Call X509Certificate::verify_signature with the key from step 5.
+        *  1. The issuer name in cert N matches the subject name of cert N+1.
+        *  2. The validity time of cert N contains the current time.
+        *  3. The cert N+1 contains a key usage extension permitting CA.
+        *  4. Extract the public key from cert N+1
+        *  5. Call X509Certificate::verify_signature with the key from step 5.
         *
         * For the last certificate in the chain, Repeat the same steps using
         * the last certificate as both cert N and cert N+1. And additionally
@@ -166,7 +176,7 @@ impl<'a> Balrog<'_> {
 
         let hash_stripped = root_hash.replace(":", "");
         let hash_decoded = match hex::decode(hash_stripped) {
-            Err(e) => return Err(BalrogError::RootHashParseFailed),
+            Err(_e) => return Err(BalrogError::RootHashParseFailed),
             Ok(x) => x
         };
         if self.root_hash != hash_decoded {
@@ -183,10 +193,6 @@ impl<'a> Balrog<'_> {
         issuer: &X509Certificate,
         current_time: i64,
     ) -> Result<(), BalrogError> {
-        /* TODO: Check the subject and issuer key hashes? */
-        /* Annoyingly, these are extensions and require some parsing, and may not exist. */
-        /* And I guess they aren't really necessary so long as the signatures are good. */
-
         /* Check that the subject and issuer names match. */
         if subject.issuer() != issuer.subject() {
             return Err(BalrogError::ChainSubjectMismatch);
@@ -294,12 +300,12 @@ impl<'a> Balrog<'_> {
         /* Encode into an ASN.1 sequence. */
         let vec = vec![asn1_rs::Integer::new(&r), asn1_rs::Integer::new(&s)];
         let seq = match asn1_rs::Sequence::from_iter_to_der(vec.iter()) {
-            Err(e) => return Err(BalrogError::SignatureDecodeError),
+            Err(_e) => return Err(BalrogError::SignatureDecodeError),
             Ok(x) => x
         };
         
         /* Encode it. */
-        seq.to_der_vec().map_err(|e| BalrogError::SignatureDecodeError)
+        seq.to_der_vec().map_err(|_e| BalrogError::SignatureDecodeError)
     }
 
     /* Verify a content signature against the certificate chain. */
@@ -314,7 +320,7 @@ impl<'a> Balrog<'_> {
          * code signing bit in the extended key usage to be set. */
         for x in self.chain.iter() {
             let code_sign_ext = match x.extended_key_usage() {
-                Err(e) => false,
+                Err(_e) => false,
                 Ok(None) => false,
                 Ok(x) => x.unwrap().value.code_signing
             };
@@ -336,7 +342,7 @@ impl<'a> Balrog<'_> {
         
         /* Parse the signature into an ASN1 bitstring. */
         let sig_decode = match data_encoding::BASE64URL_NOPAD.decode(signature.as_bytes()) {
-            Err(e) => return Err(BalrogError::SignatureDecodeError),
+            Err(_e) => return Err(BalrogError::SignatureDecodeError),
             Ok(x) => x
         };
         let sig_der = match Self::ecdsa_signature_to_asn1(sig_decode.as_slice()) {
