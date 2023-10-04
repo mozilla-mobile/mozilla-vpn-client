@@ -28,6 +28,25 @@ const SUBSCRIPTION_DETAILS = {
   },
 };
 
+const SUBSCRIPTION_DETAILS_MONTHLY = {
+  plan: {amount: 123, currency: 'usd', interval: 'month', interval_count: 1},
+  payment: {
+    payment_provider: 'stripe',
+    payment_type: 'credit',
+    last4: '1234',
+    exp_month: 12,
+    exp_year: 2022,
+    brand: 'visa',
+  },
+  subscription: {
+    _subscription_type: 'web',
+    created: 1,
+    current_period_end: 2,
+    cancel_at_period_end: true,
+    status: 'active'
+  },
+};
+
 describe('Subscription manager', function() {
   describe('Expired subscription', function() {
     this.timeout(30000);
@@ -1387,23 +1406,20 @@ describe('Subscription view', function() {
          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
            sessionToken: 'session',
            verified: true,
-           verificationMethod: ''
+           verificationMethod: '',
          };
          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
        };
-       this.ctx.guardianSubscriptionDetailsCallback = req => {
-         this.ctx.guardianOverrideEndpoints
-             .GETs['/api/v1/vpn/subscriptionDetails']
-             .status = 200;
-
-         const SUBSCRIPTION_DETAILS_CLONE =
-             Object.assign({}, SUBSCRIPTION_DETAILS);
-         SUBSCRIPTION_DETAILS_CLONE.plan = {interval: 'month'};
-         SUBSCRIPTION_DETAILS_CLONE.type =
-             'web' this.ctx.guardianOverrideEndpoints
+       this.ctx.guardianSubscriptionDetailsCallback =
+           req => {
+             this.ctx.guardianOverrideEndpoints
                  .GETs['/api/v1/vpn/subscriptionDetails']
-                 .body = SUBSCRIPTION_DETAILS;
-       };
+                 .status = 200;
+
+             this.ctx.guardianOverrideEndpoints
+                 .GETs['/api/v1/vpn/subscriptionDetails']
+                 .body = SUBSCRIPTION_DETAILS_MONTHLY
+           };
 
        if (!(await vpn.isFeatureFlippedOn('annualUpgrade'))) {
          await vpn.flipFeatureOn('annualUpgrade');
@@ -1422,7 +1438,7 @@ describe('Subscription view', function() {
          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
            sessionToken: 'session',
            verified: true,
-           verificationMethod: ''
+           verificationMethod: '',
          };
          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
        };
@@ -1431,28 +1447,27 @@ describe('Subscription view', function() {
              .GETs['/api/v1/vpn/subscriptionDetails']
              .status = 200;
 
-         const SUBSCRIPTION_DETAILS_CLONE =
-             Object.assign({}, SUBSCRIPTION_DETAILS);
-         SUBSCRIPTION_DETAILS_CLONE.plan = {interval: 'year'};
          this.ctx.guardianOverrideEndpoints
              .GETs['/api/v1/vpn/subscriptionDetails']
              .body = SUBSCRIPTION_DETAILS;
        };
 
-       if (!(await vpn.isFeatureFlippedOn('bundleUpgrade'))) {
-         await vpn.flipFeatureOn('bundleUpgrade');
+       if (!(await vpn.isFeatureFlippedOn('annualUpgrade'))) {
+         await vpn.flipFeatureOn('annualUpgrade');
        }
 
        await clickSettingsIcon();
        await openSubscriptionManagement();
 
-       await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                  .RELAY_UPSELL_STATUS.hidden());
+       await vpn.waitForQuery(
+           queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
      });
 
   it('Hides annual upgrade UI when the "annualUpgrade" feature flag is off',
      async () => {
-       await vpn.flipFeatureOff('annualUpgrade');
+       if ((await vpn.isFeatureFlippedOn('annualUpgrade'))) {
+         await vpn.flipFeatureOff('annualUpgrade');
+       }
 
        this.ctx.fxaLoginCallback = (req) => {
          this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
@@ -1466,52 +1481,15 @@ describe('Subscription view', function() {
          this.ctx.guardianOverrideEndpoints
              .GETs['/api/v1/vpn/subscriptionDetails']
              .status = 200;
-         const SUBSCRIPTION_DETAILS_CLONE =
-             Object.assign({}, SUBSCRIPTION_DETAILS);
-         SUBSCRIPTION_DETAILS_CLONE.plan = {interval: 'month'};
-         SUBSCRIPTION_DETAILS_CLONE.type =
-             'web' this.ctx.guardianOverrideEndpoints
-                 .GETs['/api/v1/vpn/subscriptionDetails']
-                 .body = SUBSCRIPTION_DETAILS;
+         this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS;
        };
 
        await clickSettingsIcon();
        await openSubscriptionManagement();
 
        await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.RELAY_UPSELL_PLAN.hidden());
+           queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
      });
-
-
-  it('Hides annual upgrade if subscription type is not "web"', async () => {
-    await vpn.flipFeatureOn('annualUpgrade');
-
-    const SUBSCRIPTION_DETAILS_CLONE = Object.assign({}, SUBSCRIPTION_DETAILS);
-    SUBSCRIPTION_DETAILS_CLONE.subscription = {
-      _subscription_type: 'iap_apple',
-      expiry_time_millis: 2147483647,
-      auto_renewing: true,
-    };
-
-    this.ctx.fxaLoginCallback = (req) => {
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-        sessionToken: 'session',
-        verified: true,
-        verificationMethod: ''
-      };
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-    };
-    this.ctx.guardianSubscriptionDetailsCallback = req => {
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .status = 200;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .body = SUBSCRIPTION_DETAILS_CLONE;
-    };
-
-    await clickSettingsIcon();
-    await openSubscriptionManagement();
-
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.RELAY_UPSELL_STATUS.hidden());
-  });
 });
