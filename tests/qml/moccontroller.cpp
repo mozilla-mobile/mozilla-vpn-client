@@ -39,7 +39,7 @@ void ConnectionManager::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {
 
 bool ConnectionManager::deactivate() { return false; }
 
-bool ConnectionManager::deactivate() { return false; }
+bool ConnectionManager::isVPNActive() { return false; }
 
 void ConnectionManager::connected(const QString& pubkey,
                                   const QDateTime& connectionTimestamp) {
