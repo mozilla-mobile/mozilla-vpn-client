@@ -56,14 +56,6 @@ bool FeatureCallback_accountDeletion() {
 #endif
 }
 
-bool FeatureCallback_annualUpgrade() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool FeatureCallback_captivePortal() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
     defined(MZ_DUMMY) || defined(MZ_WASM)
