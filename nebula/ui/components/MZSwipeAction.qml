@@ -6,6 +6,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 Rectangle {
     id: swipeAction
@@ -16,6 +17,8 @@ Rectangle {
     color: SwipeDelegate.pressed ? Qt.darker(bgColor, 1.2) : bgColor
     height: parent.height
     width: MZTheme.theme.swipeDelegateActionWidth
+
+    onActiveFocusChanged: MZUiUtils.scrollToComponent(swipeAction)
 
     Accessible.role: Accessible.Button
     Accessible.onPressAction: SwipeDelegate.clicked()
