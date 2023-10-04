@@ -191,26 +191,26 @@ IKdcFKAt3fFrpyMhlfIKkLfmm0iDjmfmIXbDGBJw9SE=
     const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
     const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
 
-    const INVALID_CERTIFICATE: &[u8] = b"\
-    -----BEGIN CERTIFICATE-----
-    invalidCertificategIFiJLFfdxFlYwCgYIKoZIzj0EAwMwgaMxCzAJBgNVBAYT
-    AlVTMRwwGgYDVQQKExNNb3ppbGxhIENvcnBvcmF0aW9uMS8wLQYDVQQLEyZNb3pp
-    bGxhIEFNTyBQcm9kdWN0aW9uIFNpZ25pbmcgU2VydmljZTFFMEMGA1UEAww8Q29u
-    dGVudCBTaWduaW5nIEludGVybWVkaWF0ZS9lbWFpbEFkZHJlc3M9Zm94c2VjQG1v
-    emlsbGEuY29tMB4XDTIwMDYxNjE3MTYxNVoXDTIwMDkwNDE3MTYxNVowgakxCzAJ
-    BgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1Nb3VudGFp
-    biBWaWV3MRwwGgYDVQQKExNNb3ppbGxhIENvcnBvcmF0aW9uMRcwFQYDVQQLEw5D
-    bG91ZCBTZXJ2aWNlczE2MDQGA1UEAxMtcmVtb3RlLXNldHRpbmdzLmNvbnRlbnQt
-    c2lnbmF0dXJlLm1vemlsbGEub3JnMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEDmOX
-    N5IGlUqCvu6xkOKr020Eo3kY2uPdJO0ZihVUoglk1ktQPss184OajFOMKm/BJX4W
-    IsZUzQoRL8NgGfZDwBjT95Q87lhOWEWs5AU/nMXIYwDp7rpUPaUqw0QLMikdo4GD
-    MIGAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSME
-    GDAWgBSgHUoXT4zCKzVF8WPx2nBwp8744TA4BgNVHREEMTAvgi1yZW1vdGUtc2V0
-    dGluZ3MuY29udGVudC1zaWduYXR1cmUubW96aWxsYS5vcmcwCgYIKoZIzj0EAwMD
-    aQAwZgIxAJvyynyPqRmRMqf95FPH5xfcoT3jb/2LOkUifGDtjtZ338ScpT2glUK8
-    HszKVANqXQIxAIygMaeTiD9figEusmHMthBdFoIoHk31x4MHukAy+TWZ863X6/V2
-    6/ZrZMpinvalid==
-    -----END CERTIFICATE-----";
+    const INVALID_CERTIFICATE_DER: &[u8] = b"\
+-----BEGIN CERTIFICATE-----
+invalidCertificategIFiJLFfdxFlYwCgYIKoZIzj0EAwMwgaMxCzAJBgNVBAYT
+AlVTMRwwGgYDVQQKExNNb3ppbGxhIENvcnBvcmF0aW9uMS8wLQYDVQQLEyZNb3pp
+bGxhIEFNTyBQcm9kdWN0aW9uIFNpZ25pbmcgU2VydmljZTFFMEMGA1UEAww8Q29u
+dGVudCBTaWduaW5nIEludGVybWVkaWF0ZS9lbWFpbEFkZHJlc3M9Zm94c2VjQG1v
+emlsbGEuY29tMB4XDTIwMDYxNjE3MTYxNVoXDTIwMDkwNDE3MTYxNVowgakxCzAJ
+BgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1Nb3VudGFp
+biBWaWV3MRwwGgYDVQQKExNNb3ppbGxhIENvcnBvcmF0aW9uMRcwFQYDVQQLEw5D
+bG91ZCBTZXJ2aWNlczE2MDQGA1UEAxMtcmVtb3RlLXNldHRpbmdzLmNvbnRlbnQt
+c2lnbmF0dXJlLm1vemlsbGEub3JnMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEDmOX
+N5IGlUqCvu6xkOKr020Eo3kY2uPdJO0ZihVUoglk1ktQPss184OajFOMKm/BJX4W
+IsZUzQoRL8NgGfZDwBjT95Q87lhOWEWs5AU/nMXIYwDp7rpUPaUqw0QLMikdo4GD
+MIGAMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggrBgEFBQcDAzAfBgNVHSME
+GDAWgBSgHUoXT4zCKzVF8WPx2nBwp8744TA4BgNVHREEMTAvgi1yZW1vdGUtc2V0
+dGluZ3MuY29udGVudC1zaWduYXR1cmUubW96aWxsYS5vcmcwCgYIKoZIzj0EAwMD
+aQAwZgIxAJvyynyPqRmRMqf95FPH5xfcoT3jb/2LOkUifGDtjtZ338ScpT2glUK8
+HszKVANqXQIxAIygMaeTiD9figEusmHMthBdFoIoHk31x4MHukAy+TWZ863X6/V2
+6/ZrZMpinvalidxy
+-----END CERTIFICATE-----";
 
     // Fetched from: https://content-signature-2.cdn.mozilla.net/chains/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain
     const PROD_CERT_CHAIN: &[u8] = b"\
@@ -335,18 +335,71 @@ wNuvFqc=
     }
 
     #[test]
-    fn test_verify_fails_if_cert_invalid() {
+    fn test_verify_fails_if_der_invalid() {
         let r = parse_and_verify(
-            INVALID_CERTIFICATE,
+            INVALID_CERTIFICATE_DER,
             VALID_INPUT,
             VALID_SIGNATURE,
             1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        /* I think this is the wrong error code actually...  */
-        /* I would have expected X509Error::InvalidCertificate */
-        assert_eq!(r, Err(BalrogError::PemDecodeError));
+        assert!(matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}", r.unwrap_err());
+    }
+
+    #[test]
+    fn test_verify_fails_if_cert_empty() {
+        let pem: &[u8] = b"\
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----";
+
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            1615559719, // March 12, 2021
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}", r.unwrap_err());
+    }
+
+    #[test]
+    fn test_verify_fails_if_pem_empty() {
+        let pem: &[u8] = &[];
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            1615559719, // March 12, 2021
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(matches!(r, Err(BalrogError::X509(X509Error::InvalidCertificate))),
+            "Found unexpected error: {}", r.unwrap_err());
+    }
+
+    #[test]
+    fn test_verify_fails_if_pem_wrong_type() {
+        // Generated from: openssl ecparam -name secp384k1 -genkey
+        let pem: &[u8] = b"\
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDD+fvOhk1l7iyXF5OztCR0hFYSWFivpOu9MIBX9RMm7G7t+PTbQGzWQ
+Qtcp9raswDugBwYFK4EEACKhZANiAATNdZWfgxAxGgbVNBwC8TbsFgm+RNBhZnUa
+cL9WgG8LqAoCip698cJfLm7TVO4LKv8MtfA1wWm/H5M3v9jRMNg9dsDf0j4fTefd
+W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
+-----END EC PRIVATE KEY-----;";
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            1615559719, // March 12, 2021
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert_eq!(r, Err(BalrogError::X509(X509Error::InvalidCertificate)));
     }
 
     #[test]
@@ -373,6 +426,27 @@ wNuvFqc=
             VALID_HOSTNAME,
         );
         assert_eq!(r, Err(BalrogError::CertificateExpired));
+    }
+
+    #[test]
+    fn test_verify_fails_if_chain_out_of_order() {
+        // Parse the chain then swap the leaf and intermediate certs.
+        let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x
+        };
+        let leaf = pem.remove(0);
+        pem.insert(1, leaf);
+
+        let b = match Balrog::new(&pem) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x
+        };
+        let r = b.verify_chain(
+            1615559719, // March 12, 2021
+            ROOT_HASH
+        );
+        assert_eq!(r, Err(BalrogError::ChainSubjectMismatch));
     }
 
     #[test]
@@ -403,9 +477,7 @@ wNuvFqc=
 
     /* TODO: We could use tests for:
      *  - Missing code signing permissions.
-     *  - A certificate chain that doesn't chain.
      *  - Chains of irregular length.
      *  - Other signature algorithms.
-     *  - A PEM file that contains something other than a certificate.
      */
 }

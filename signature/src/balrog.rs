@@ -50,7 +50,7 @@ pub enum BalrogError {
     #[error("Signature decoding failed")]
     SignatureDecodeError,
     #[error("PEM decoding error")]
-    PemDecodeError,
+    PemDecodeError(String),
 
     #[error("X509 validation failed: {0:?}")]
     X509ValidationError(String),
@@ -61,6 +61,12 @@ pub enum BalrogError {
 impl From<X509Error> for BalrogError {
     fn from(e: X509Error) -> Self {
         BalrogError::X509(e)
+    }
+}
+
+impl From<PEMError> for BalrogError {
+    fn from(e: PEMError) -> Self {
+        BalrogError::PemDecodeError(e.to_string())
     }
 }
 
@@ -79,7 +85,7 @@ pub fn parse_and_verify(
     leaf_subject: &str
 ) -> Result<(), BalrogError> {
     let pem_chain = match parse_pem_chain(x5u) {
-        Err(_e) => return Err(BalrogError::PemDecodeError),
+        Err(e) => return Err(BalrogError::from(e)),
         Ok(x) => x
     };
 
@@ -108,6 +114,10 @@ pub fn parse_and_verify(
 
 impl<'a> Balrog<'_> {
     pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, X509Error> {
+        if list.is_empty() {
+            return Err(X509Error::InvalidCertificate);
+        }
+
         let mut parsed: Vec<X509Certificate<'a>> = Vec::new();
         let mut hash: Vec<u8> = Vec::new();
         for (i, pem) in list.iter().enumerate() {
