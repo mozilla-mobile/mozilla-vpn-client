@@ -775,10 +775,6 @@ describe('Settings', function() {
 
     await checkSetting(
         queries.screenSettings.appPreferencesView.notificationView
-            .CAPTIVE_PORTAL_ALERT,
-        'captivePortalAlert');
-    await checkSetting(
-        queries.screenSettings.appPreferencesView.notificationView
             .UNSECURE_NETWORK_ALERT,
         'unsecuredNetworkAlert');
     await checkSetting(
