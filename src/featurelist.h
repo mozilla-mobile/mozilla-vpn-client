@@ -40,6 +40,13 @@ FEATURE(alwaysPort53,          // Feature ID
         QStringList(),         // feature dependencies
         FeatureCallback_false)
 
+FEATURE(annualUpgrade,         // Feature ID
+        "Annual upgrade",      // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_annualUpgrade)
+
 FEATURE(appReview,              // Feature ID
         "App Review",           // Feature name
         FeatureCallback_false,  // Can be flipped on

@@ -1413,6 +1413,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
 #endif
         ;
   });
+
+  uo->registerUrlLabel("upgradePricing", []() -> QString {
+    return "https://www.mozilla.org/products/vpn/#pricing";
+  });
 }
 
 void MozillaVPN::errorHandled() {

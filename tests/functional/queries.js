@@ -357,6 +357,8 @@ const screenSettings = {
 
   subscriptionView: {
     ACCOUNT_DELETION: new QmlQueryComposer('//accountDeletionButton'),
+    ANNUAL_UPGRADE: new QmlQueryComposer(
+        '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
     PLAN: new QmlQueryComposer('//subscriptionItem-plan-valueText'),
     SCREEN: new QmlQueryComposer('//subscriptionManagmentView-flickable'),
     STATUS_PILL: new QmlQueryComposer('//subscriptionItem-status-pill'),
@@ -386,11 +388,6 @@ const screenSettings = {
         new QmlQueryComposer('//subscriptionUserProfile-manageAccountButton'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:
         new QmlQueryComposer('//manageSubscriptionButton'),
-
-    RELAY_UPSELL_PLAN: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-relayUpsell-layout'),
-    RELAY_UPSELL_STATUS: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-status/subscriptionItem-status-parent/subscriptionItem-status-relayUpsell-layout'),
   },
 };
 
