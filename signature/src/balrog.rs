@@ -198,7 +198,7 @@ impl<'a> Balrog<'_> {
             return Err(BalrogError::ChainSubjectMismatch);
         }
 
-        /* Check the certificate validitiy period. */
+        /* Check the certificate validity period. */
         let asn_timestamp = ASN1Time::from_timestamp(current_time).unwrap();
         if !subject.validity().is_valid_at(asn_timestamp) {
             return Err(BalrogError::CertificateExpired);

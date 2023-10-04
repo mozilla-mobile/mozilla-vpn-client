@@ -63,7 +63,7 @@ pub extern "C" fn verify_balrog(
         }
         Ok(x) => x
     };
-    let leaf_subect_str = match unsafe { CStr::from_ptr(leaf_subject) }.to_str() {
+    let leaf_subject_str = match unsafe { CStr::from_ptr(leaf_subject) }.to_str() {
         Err(e) => {
             eprintln!("{}", e);
             return false
@@ -73,7 +73,7 @@ pub extern "C" fn verify_balrog(
     let now: i64 = ASN1Time::now().timestamp();
 
     /* Perform the content signature validation. */
-    let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subect_str) {
+    let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subject_str) {
         Err(e) => {
             eprintln!("{}", e);
             return false
@@ -376,11 +376,11 @@ wNuvFqc=
     }
 
     #[test]
-    fn test_verify_fails_if_bad_siganture() {
+    fn test_verify_fails_if_bad_signature() {
         let r = parse_and_verify(
             VALID_CERT_CHAIN,
             VALID_INPUT,
-            &VALID_SIGNATURE.to_ascii_lowercase(),
+            &VALID_SIGNATURE.to_ascii_lowercase(), // altering case should modify the base64 signature without changing its length.
             1615559719, // March 12, 2021
             ROOT_HASH,
             VALID_HOSTNAME,
