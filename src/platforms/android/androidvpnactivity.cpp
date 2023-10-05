@@ -139,6 +139,9 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
       // This is completely handled in Java-Land
       // See VPNActivity.java
       break;
+    case ServiceEvents::EVENT_ONBOARDING_COMPLETED:
+      emit eventOnboardingCompleted();
+      break;
     default:
       Q_ASSERT(false);
   }

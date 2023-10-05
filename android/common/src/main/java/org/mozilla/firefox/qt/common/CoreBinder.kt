@@ -31,5 +31,6 @@ open class CoreBinder : Binder() {
         const val permissionRequired = 6
         const val requestGleanUploadEnabledState = 7
         const val requestNotificationPermission = 8
+        const val onboardingCompleted = 9
     }
 }

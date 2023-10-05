@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
@@ -38,9 +39,8 @@ ColumnLayout {
    }
 
     Item {
-        Layout.minimumHeight: 24
-        Layout.fillWidth: true
         Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     Image {
@@ -50,9 +50,8 @@ ColumnLayout {
     }
 
     Item {
-        Layout.minimumHeight: 24
-        Layout.fillWidth: true
         Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     MZCheckBoxRow {
@@ -72,7 +71,6 @@ ColumnLayout {
     }
 
     Item {
-        Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.minimumHeight: 24
     }
@@ -101,12 +99,13 @@ ColumnLayout {
         objectName: "dataPrivacyLink"
 
         Layout.topMargin: 8
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
-        Layout.bottomMargin: 16
+        Layout.leftMargin: MZTheme.theme.windowMargin * 2
+        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.bottomMargin: MZUiUtils.isMobile() ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
         onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
     }
+
 }

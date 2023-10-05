@@ -271,6 +271,13 @@ class VPNService : android.net.VpnService() {
         val builder = Builder()
         setupBuilder(wireguard_conf, builder)
         builder.setSession("mvpn0")
+
+        if (json.getBoolean("isOnboarding")) {
+            Log.i(tag, "Finishing onboarding... do not turn on the VPN after gaining permission")
+            mBinder.dispatchEvent(CoreBinder.EVENTS.onboardingCompleted, "")
+            return
+        }
+
         builder.establish().use { tun ->
             if (tun == null) {
                 Log.e(tag, "Activation Error: did not get a TUN handle")

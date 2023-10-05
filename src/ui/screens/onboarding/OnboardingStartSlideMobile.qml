@@ -6,13 +6,11 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 import components 0.1
-import "qrc:/ui/screens/settings/privacy"
-import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
-    objectName: "onboardingPrivacySlide"
 
     signal nextClicked()
     signal backClicked()
@@ -26,7 +24,7 @@ ColumnLayout {
 
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingPrivacySlideHeader
+        text: MZI18n.OnboardingStartSlideMobileHeader
         horizontalAlignment: Text.AlignLeft
     }
 
@@ -36,16 +34,16 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingPrivacySlideBody
+        text: MZI18n.OnboardingStartSlideMobileBody
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
     }
 
-    PrivacyFeaturesList {
-        Layout.topMargin: MZUiUtils.isMobile() ? 32 : 24
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
-        Layout.fillWidth: true
+    Image {
+        Layout.topMargin: 48
+        Layout.alignment: Qt.AlignHCenter
+
+        source: "qrc:/ui/resources/link.svg"
     }
 
     Item {
@@ -53,25 +51,27 @@ ColumnLayout {
     }
 
     MZButton {
-        objectName: "privacyNextButton"
 
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         width: undefined
-        text: MZI18n.GlobalNext
+        text: MZI18n.OnboardingStartSlideAllowButtonLabel
 
-        onClicked: root.nextClicked()
+        onClicked: {
+            //Not actually activating the VPN, but going through the motions of activating it
+            //so we can add the VPN configuration to the system
+            VPN.activate()
+        }
     }
 
     MZLinkButton {
-        objectName: "privacyBackButton"
 
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: MZUiUtils.isMobile() ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
+        Layout.bottomMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight

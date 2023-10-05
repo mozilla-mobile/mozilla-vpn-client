@@ -22,7 +22,6 @@
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
@@ -134,8 +133,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   connect(this, &MozillaVPN::stateChanged, [this]() {
     // If we are activating the app, let's initialize the controller and the
     // periodic tasks.
-    if (state() == StateMain) {
-      m_private->m_connectionManager.initialize();
+    // Onboarding requires the connection manager to be initialized so we can
+    // request VPN config permissions
+    if ((state() == StateMain || state() == StateOnboarding)) {
+      // Only initialize if not already initialized
+      if (m_private->m_connectionManager.state() ==
+          ConnectionManager::State::StateInitializing) {
+        m_private->m_connectionManager.initialize();
+      }
       startSchedulingPeriodicOperations();
     } else {
       stopSchedulingPeriodicOperations();
@@ -396,7 +401,17 @@ void MozillaVPN::maybeStateMain() {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
+  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
+    Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
+             m_private->m_user.maxDevices());
+    setState(StateDeviceLimit);
+    return;
+  }
+
+  // Onboarding needs to come after device limit because on mobile users can
+  // choose to add the vpn tunnel configuration and invoke the VPN via system
+  // settings after onboarding but before removing a potential 6th device and
+  // getting to the home screen
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
       // We turn telemetry off when onboarding starts so that the user has to
@@ -407,10 +422,14 @@ void MozillaVPN::maybeStateMain() {
         settingsHolder->setGleanEnabled(false);
         settingsHolder->setOnboardingStarted(true);
       }
+
       setState(StateOnboarding);
       return;
     }
-  } else if (!settingsHolder->postAuthenticationShown()) {
+  }
+
+#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
+  if (!settingsHolder->postAuthenticationShown()) {
     setState(StatePostAuthentication);
     return;
   }
@@ -423,13 +442,6 @@ void MozillaVPN::maybeStateMain() {
       setState(StateTelemetryPolicy);
       return;
     }
-  }
-
-  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    Q_ASSERT(m_private->m_deviceModel.activeDevices() ==
-             m_private->m_user.maxDevices());
-    setState(StateDeviceLimit);
-    return;
   }
 
   if (!modelsInitialized()) {
@@ -929,7 +941,6 @@ void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
 
@@ -942,7 +953,7 @@ void MozillaVPN::onboardingCompleted() {
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
-#endif
+
   } else {
     logger.debug() << "telemetry policy completed";
   }

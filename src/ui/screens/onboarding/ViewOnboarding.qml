@@ -9,10 +9,10 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 MZStepNavigation {
     id: stepNav
-
     objectName: "viewOnboarding"
 
     anchors {
@@ -20,7 +20,7 @@ MZStepNavigation {
         left: parent.left
         right: parent.right
         bottom: parent.bottom
-        topMargin: MZTheme.theme.vSpacing
+        topMargin: MZUiUtils.isMobile() ? 36 : MZTheme.theme.vSpacing
     }
 
     currentIndex: MZSettings.onboardingStep
@@ -50,13 +50,31 @@ MZStepNavigation {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
         },
-        OnboardingStartSlide {
-            property string labelText: "OnboardingProgressBarGetStarted"
+        //Last slide is different based on platform
+        Loader {
+            property string labelText: MZUiUtils.isMobile() ? "OnboardingProgressBarConnect" : "OnboardingProgressBarStartup"
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
 
+            sourceComponent: MZUiUtils.isMobile() ? startSlideMobile : startSlideDesktop
+        }
+    ]
+
+    Component {
+        id: startSlideDesktop
+
+        OnboardingStartSlideDesktop {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
         }
-    ]
+    }
+
+    Component {
+        id: startSlideMobile
+
+        OnboardingStartSlideMobile {
+            onNextClicked: stepNav.next()
+            onBackClicked: stepNav.back()
+        }
+    }
 }

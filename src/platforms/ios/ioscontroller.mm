@@ -114,6 +114,14 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
+      
+    #if TARGET_OS_SIMULATOR
+      if (MozillaVPN::instance()->state() == App::StateOnboarding) {
+        logger.debug() << "Cannot activate VPN on a simulator. Completing onboarding.";
+        MozillaVPN::instance()->onboardingCompleted();
+      }
+    #endif
+      
     emit disconnected();
     return;
   }
@@ -145,9 +153,13 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
                                      : @""
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
                   installationId:config.m_installationId.toNSString()
+                  isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
                  failureCallback:^() {
                    logger.error() << "IOSSWiftController - connection failed";
                    emit disconnected();
+                 }
+                onboardingCompletedCallback:^() {
+                    MozillaVPN::instance()->onboardingCompleted();
                  }];
 }
 

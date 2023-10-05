@@ -44,7 +44,7 @@ RoundButton {
     }
 
     Accessible.role: Accessible.Button
-    Accessible.onPressAction: handleKeyClick()
+    Accessible.onPressAction: enabled ? handleKeyClick() : function() { }
     Accessible.focusable: true
 
 

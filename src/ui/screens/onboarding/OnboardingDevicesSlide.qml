@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import components 0.1
 import compat 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
@@ -35,13 +36,13 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingDevicesSlideBody
+        text: MZUiUtils.isMobile() ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody2
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
     }
 
     RowLayout {
-        Layout.topMargin: 25
+        Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
 
@@ -207,7 +208,7 @@ ColumnLayout {
         Layout.topMargin: 16
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
-        Layout.bottomMargin: MZTheme.theme.windowMargin
+        Layout.bottomMargin: MZUiUtils.isMobile() ? MZTheme.theme.windowMargin * 2 : MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
         implicitHeight: MZTheme.theme.rowHeight

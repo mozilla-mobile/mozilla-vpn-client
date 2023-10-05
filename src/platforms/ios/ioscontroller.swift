@@ -116,7 +116,7 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, failureCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         let _ = TunnelManager.withTunnel { tunnel in
@@ -152,11 +152,11 @@ public class IOSControllerImpl : NSObject {
 
             let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, failureCallback: failureCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isOnboarding: isOnboarding, failureCallback: failureCallback, onboardingCompletedCallback: onboardingCompletedCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, failureCallback: @escaping () -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, failureCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void) {
         let _ = TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
@@ -188,10 +188,21 @@ public class IOSControllerImpl : NSObject {
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     failureCallback()
+                    if isOnboarding {
+                        IOSControllerImpl.logger.info(message: "Finishing onboarding, but saving tunnel resulted in error...")
+                        onboardingCompletedCallback()
+                    }
                     return
                 }
 
                 IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
+                
+                //Used to create a VPN configuration without connecting during onboarding
+                if isOnboarding {
+                    IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
+                    onboardingCompletedCallback()
+                    return
+                }
 
                tunnel.loadFromPreferences { error in
                     if let error = error {

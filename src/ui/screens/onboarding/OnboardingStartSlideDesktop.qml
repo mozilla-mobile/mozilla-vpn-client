@@ -40,11 +40,21 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: 24
+    }
+
     Image {
         Layout.topMargin: MZTheme.theme.vSpacing
         Layout.alignment: Qt.AlignHCenter
 
         source: "qrc:/ui/resources/launch.svg"
+    }
+
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     MZCheckBoxRow {
@@ -64,6 +74,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
+        Layout.minimumHeight: 48
     }
 
     MZButton {
