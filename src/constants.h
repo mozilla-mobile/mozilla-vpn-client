@@ -248,9 +248,9 @@ PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 PRODBETAEXPR(QString, upgradeToAnnualUrl,
              "https://www.mozilla.org/products/vpn/"
-             "#pricing?utm_medium=mozillavpn&utm_source=account",
+             "?utm_medium=mozillavpn&utm_source=account#pricing",
              "https://www-dev.allizom.org/en-US/products/vpn/"
-             "#pricing?utm_medium=mozillavpn&utm_source=account")
+             "?utm_medium=mozillavpn&utm_source=account#pricing")
 
 #undef PRODBETAEXPR
 
