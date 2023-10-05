@@ -36,8 +36,19 @@ pub extern "C" fn verify_rsa(
     }
 }
 
+/* FFI interface to verify a Mozilla content signature
+ *
+ * The following arguments are expected:
+ *  - x5u_ptr: Pointer to a PEM-encoded X509 certificate chain.
+ *  - x5u_length: Length of PEM-encoded X509 certificate chain.
+ *  - input_ptr: Data signed by the leaf certificate.
+ *  - input_length: Length of data signed by the leaf certificate.
+ *  - signature: base64-encoded content signature.
+ *  - root_hash: hex-encoded SHA256 hash expected of the root certificate.
+ *  - leaf_subject: hostname from which the content signature was received.
+ */
 #[no_mangle]
-pub extern "C" fn verify_balrog(
+pub extern "C" fn verify_content_signature(
     x5u_ptr: *const c_uchar,
     x5u_length: usize,
     input_ptr: *const c_uchar,
@@ -88,6 +99,7 @@ pub extern "C" fn verify_balrog(
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::ffi::CString;
 
     const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
     const VALID_CERT_CHAIN: &[u8] = b"\
@@ -450,7 +462,37 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
     }
 
     #[test]
-    fn test_verify_fails_if_bad_signature() {
+    fn test_verify_fails_if_bad_chain_signature() {
+        let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x
+        };
+        // An ASN.1 X509 certificate will take the form of:
+        // Certificate ::= SEQUENCE {
+        //     tbsCertificate     TBSCertificate,
+        //     signatureAlgorithm AlgorithmIdentifier,
+        //     signature          BITSTRING 
+        // }
+        //
+        // This means the signature will always reside in the trailing bytes of
+        // the DER-encoded certificate, and we should be able to corrupt it by
+        // flipping a few bits.
+        let tail = pem[1].contents.pop().unwrap();
+        pem[1].contents.push(tail ^ 0x80);
+
+        let b = match Balrog::new(&pem) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x
+        };
+        let r = b.verify_chain(
+            1615559719, // March 12, 2021
+            ROOT_HASH
+        );
+        assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
+    }
+
+    #[test]
+    fn test_verify_fails_if_bad_content_signature() {
         let r = parse_and_verify(
             VALID_CERT_CHAIN,
             VALID_INPUT,
@@ -473,6 +515,34 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             PROD_HOSTNAME
         );
         assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
+    }
+
+    #[test]
+    fn test_verify_prod_ffi() {
+        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
+        let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
+        let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
+
+        // TODO: Is there a way to mock the timestamp?
+        // Otherwise this test will mysteriously start to fail sometime
+        // in the future when the certificates start to expire.
+        let r = verify_content_signature(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            PROD_INPUT_DATA.as_ptr(),
+            PROD_INPUT_DATA.len(),
+            prod_signature_cstr,
+            prod_root_hash_cstr,
+            prod_hostname_cstr
+        );
+        assert!(r, "Verification failed via FFI");
+
+        // Retake pointers for garbage collection.
+        unsafe {
+            let _ = CString::from_raw(prod_signature_cstr);
+            let _ = CString::from_raw(prod_root_hash_cstr);
+            let _ = CString::from_raw(prod_hostname_cstr);
+        };
     }
 
     /* TODO: We could use tests for:

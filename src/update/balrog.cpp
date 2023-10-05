@@ -22,9 +22,10 @@
 // Implemented in rust. See the `signature` folder.
 // TODO: We should really generate this with cbindgen.
 extern "C" {
-bool verify_balrog(const char* x5u_ptr, size_t x5u_length, const char* msg_ptr,
-                   size_t msg_length, const char* signature,
-                   const char* rootHash, const char* certSubject);
+bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
+                              const char* msg_ptr, size_t msg_length,
+                              const char* signature, const char* rootHash,
+                              const char* certSubject);
 }
 
 #if defined(MZ_WINDOWS)
@@ -177,7 +178,7 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
   // TODO: It would be nice to print the error using logger().
-  bool verify = verify_balrog(
+  bool verify = verify_content_signature(
       x5uData.constData(), x5uData.length(), updateData.constData(),
       updateData.length(), signatureBlob.constData(),
       Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT, BALROG_CERT_SUBJECT_CN);

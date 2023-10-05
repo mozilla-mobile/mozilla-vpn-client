@@ -49,9 +49,9 @@ pub enum BalrogError {
     HostnameMismatch,
     #[error("Signature decoding failed")]
     SignatureDecodeError,
-    #[error("PEM decoding error")]
-    PemDecodeError(String),
 
+    #[error("PEM decoding error: {0:?}")]
+    PemDecodeError(String),
     #[error("X509 validation failed: {0:?}")]
     X509ValidationError(String),
     #[error("X509 error: {0:?}")]
@@ -159,12 +159,12 @@ impl<'a> Balrog<'_> {
         *  2. The validity time of cert N contains the current time.
         *  3. The cert N+1 contains a key usage extension permitting CA.
         *  4. Extract the public key from cert N+1
-        *  5. Call X509Certificate::verify_signature with the key from step 5.
+        *  5. Call X509Certificate::verify_signature with the key from step 4.
         *
-        * For the last certificate in the chain, Repeat the same steps using
-        * the last certificate as both cert N and cert N+1. And additionally
-        * check that the subject has matches the root_hash parameter to this
-        * function.
+        * For the last certificate in the chain (the root), repeat the same
+        * steps using the last certificate as both cert N and cert N+1, and
+        * check that the SHA256 of the root certificate matches the root_hash
+        * parameter to this function.
         */
         let mut index = 0;
         while index+1 < self.chain.len() {
@@ -254,7 +254,7 @@ impl<'a> Balrog<'_> {
         assert!(!self.chain.is_empty());
         let leaf = self.chain.first().unwrap();
 
-        /* First check, does the hostname match one of the subject common mames? */
+        /* First check, does the hostname match one of the subject common names? */
         for cn in leaf.subject().iter_common_name() {
             let name = match cn.as_str() {
                 Err(e) => return Err(BalrogError::from(e)),
