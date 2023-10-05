@@ -98,15 +98,17 @@ Flickable {
         }
 
         const isItemBehindNavbar = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height - MZTheme.theme.navBarHeightWithMargins
+        const isItemOffScreen = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height
         const buffer = navbar.visible && isItemBehindNavbar ? MZTheme.theme.navBarHeightWithMargins : MZTheme.theme.contentBottomMargin
         const itemHeight = Math.max(item.height, MZTheme.theme.rowHeight) + buffer
         let destinationY
 
-        //When focusing on an item behind the navbar in the downward direction, make sure it is not blocked by the navbar
-        if(navbar.visible && isItemBehindNavbar) {
-            const distanceToGetOutFromBehindNavbar = item.mapToItem(window.contentItem, 0, 0).y + item.height - (window.height - buffer)
+        //When focusing on an item either behind the navbar and/or that is partially or fully off screen in the downward direction
+        //scroll to it so that it is visible
+        if((navbar.visible && isItemBehindNavbar) || (!navbar.visible && isItemOffScreen)) {
+            const scrollDistance = item.mapToItem(window.contentItem, 0, 0).y + item.height - (window.height - buffer)
 
-            destinationY = contentY + distanceToGetOutFromBehindNavbar
+            destinationY = contentY + scrollDistance
         }
         else {
             //When focusing on an item that is off screen in the upward direction
