@@ -205,7 +205,7 @@ void ServerLatency::stop() {
   m_pingSendTotal = 0;
 
   if (m_pingSender) {
-    delete m_pingSender;
+    m_pingSender->deleteLater();
     m_pingSender = nullptr;
   }
 

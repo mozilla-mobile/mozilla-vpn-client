@@ -7,6 +7,8 @@
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <iphlpapi.h>
+#include <winternl.h>
+
 // Note: This important must come after the previous three.
 // clang-format off
 #include <IcmpAPI.h>
@@ -26,7 +28,8 @@ constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
 struct WindowsPingSenderPrivate {
   HANDLE m_handle;
   HANDLE m_event;
-  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8];
+  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8 +
+                         sizeof(IO_STATUS_BLOCK)];
 };
 
 namespace {
