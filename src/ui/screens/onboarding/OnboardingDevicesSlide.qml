@@ -47,6 +47,7 @@ ColumnLayout {
 
         MZBoldInterLabel {
             Layout.alignment: Qt.AlignVCenter
+            Layout.fillWidth: true
 
             text: MZI18n.OnboardingDevicesSlideDeviceTypeLabel
             font.pixelSize: MZTheme.theme.fontSize
