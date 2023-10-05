@@ -182,7 +182,7 @@ ColumnLayout {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
 
             onClicked: {
-                MZUrlOpener.openUrlLabel("upgradePricing");
+                MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
             }
 
             contentItem: Label {

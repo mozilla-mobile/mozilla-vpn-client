@@ -246,6 +246,12 @@ constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
 
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
+PRODBETAEXPR(QString, upgradeToAnnualUrl,
+             "https://www.mozilla.org/products/vpn/"
+             "#pricing?utm_medium=mozillavpn&utm_source=account",
+             "https://www-dev.allizom.org/en-US/products/vpn/"
+             "#pricing?utm_medium=mozillavpn&utm_source=account")
+
 #undef PRODBETAEXPR
 
 #if defined(MZ_ADJUST)
