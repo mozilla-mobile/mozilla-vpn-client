@@ -142,6 +142,9 @@ describe('Backend failure', function() {
       });
       await vpn.deactivate();
 
+    // This bit is commented out because the UI has slightly changed 
+    // with the work in VPN-5312 and as a result the Disconnecting screen doesn't show.
+    // Once the UI is tidied up, we should re-enable this.    
       // await vpn.waitForCondition(async () => {
       //   const msg = await vpn.getQueryProperty(
       //       queries.screenHome.CONTROLLER_TITLE.visible(), 'text');

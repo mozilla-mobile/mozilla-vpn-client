@@ -24,12 +24,15 @@ describe('Connectivity', function() {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
   });
 
-  it.only('Connect to VPN', async () => {
+  it('Connect to VPN', async () => {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
     await vpn.setSetting('connectionChangeNotification', 'true');
     await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
 
+    // This bit is commented out because the UI has slightly changed 
+    // with the work in VPN-5312 and as a result the Connecting screen doesn't show.
+    // Once the UI is tidied up, we should re-enable this.    
     // await vpn.waitForCondition(async () => {
     //   let connectingMsg = await vpn.getQueryProperty(
     //       queries.screenHome.CONTROLLER_TITLE, 'text');
