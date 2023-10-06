@@ -120,7 +120,7 @@ Rectangle {
         id: connectionInfoContent
 
         opacity: visible && root.state !== "closing" ? 1 : 0
-        visible: root.state === "open-ready" /*|| root.state === "closing"*/
+        visible: root.state === "open-ready"
 
         Behavior on opacity {
             NumberAnimation {
