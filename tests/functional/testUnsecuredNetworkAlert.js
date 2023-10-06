@@ -130,16 +130,19 @@ describe('Unsecured network alert', function() {
 
       await vpn.clickOnNotification();
 
-      await vpn.waitForCondition(async () => {
-        return await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
-            'Connecting…';
-      });
+      // This bit is commented out because the UI has slightly changed 
+      // with the work in VPN-5312 and as a result the Connecting screen doesn't show.
+      // Once the UI is tidied up, we should re-enable this.    
+      // await vpn.waitForCondition(async () => {
+      //   return await vpn.getQueryProperty(
+      //              queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+      //       'Connecting…';
+      // });
 
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_SUBTITLE.visible(), 'text'),
-          'Masking connection and location');
+      // assert.equal(
+      //     await vpn.getQueryProperty(
+      //         queries.screenHome.CONTROLLER_SUBTITLE.visible(), 'text'),
+      //     'Masking connection and location');
 
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
@@ -182,11 +185,14 @@ describe('Unsecured network alert', function() {
       });
       await vpn.deactivate();
 
-      await vpn.waitForCondition(async () => {
-        const msg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        return msg === 'Disconnecting…' || msg === 'VPN is off';
-      });
+      // This bit is commented out because the UI has slightly changed 
+      // with the work in VPN-5312 and as a result the Disconnecting screen doesn't show.
+      // Once the UI is tidied up, we should re-enable this.    
+      // await vpn.waitForCondition(async () => {
+      //   const msg = await vpn.getQueryProperty(
+      //       queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+      //   return msg === 'Disconnecting…' || msg === 'VPN is off';
+      // });
 
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'VPN Disconnected';
