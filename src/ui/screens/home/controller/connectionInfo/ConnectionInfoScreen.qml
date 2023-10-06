@@ -28,7 +28,7 @@ Rectangle {
             PropertyChanges {
                 target: root
                 opacity: 0
-                visible: false
+                restoreEntryValues: false
             }
             StateChangeScript {
                 script: VPNConnectionBenchmark.reset();
@@ -42,54 +42,50 @@ Rectangle {
                 target: root
                 opacity: 1
                 visible: true
+                restoreEntryValues: false
             }
         },
         State {
             name: "closing"
             when: !isOpen && isTransitioning
-
-            PropertyChanges {
-                target: root
-                opacity: 0
-                visible: true
+            StateChangeScript {
+                script: if(root.isTransitioning) root.opacity = 0
             }
         },
         State {
             name: "open-loading"
-            when: (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateInitial
-                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateReady
-                && VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateError)
+            when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateRunning
                 && isOpen
-                && !isTransitioning
 
             PropertyChanges {
                 target: root
                 opacity: 1
                 visible: true
+                restoreEntryValues: false
             }
         },
         State {
             name: "open-ready"
             when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateReady
                 && isOpen
-                && !isTransitioning
 
             PropertyChanges {
                 target: root
                 opacity: 1
                 visible: true
+                restoreEntryValues: false
             }
         },
         State {
             name: "open-error"
             when: VPNConnectionBenchmark.state === VPNConnectionBenchmark.StateError
                 && isOpen
-                && !isTransitioning
 
             PropertyChanges {
                 target: root
                 opacity: 1
                 visible: true
+                restoreEntryValues: false
             }
         }
     ]
@@ -124,7 +120,7 @@ Rectangle {
         id: connectionInfoContent
 
         opacity: visible && root.state !== "closing" ? 1 : 0
-        visible: root.state === "open-ready" || root.state === "closing"
+        visible: root.state === "open-ready"
 
         Behavior on opacity {
             NumberAnimation {
