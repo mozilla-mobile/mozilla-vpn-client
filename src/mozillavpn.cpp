@@ -171,8 +171,8 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
                 pingReceived);
           });
 
-  // connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
-  //         this, &MozillaVPN::controllerStateChanged);
+  connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
+          this, &MozillaVPN::connectionManagerStateChanged);
 
   connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
           &m_private->m_statusIcon, &StatusIcon::refreshNeeded);
