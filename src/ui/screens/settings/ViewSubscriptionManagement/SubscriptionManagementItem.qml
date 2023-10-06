@@ -167,16 +167,13 @@ ColumnLayout {
 
         MZBoldInterLabel {
             color: MZTheme.colors.purple70
-            horizontalAlignment: Text.AlignLeft
             font.pixelSize: MZTheme.theme.fontSizeSmall
             text: MZI18n.SubscriptionManagementUpgradeToAnnual // "Save 50%..."
             wrapMode: Text.WordWrap
-            lineHeight: 13
-            Layout.alignment: Qt.AlignLeft
+            lineHeight: MZTheme.theme.labelLineHeight
             Layout.fillWidth: true
-            elide: Text.ElideRight
+            Layout.alignment: Qt.AlignVCenter
         }
-
 
         MZButtonBase {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
