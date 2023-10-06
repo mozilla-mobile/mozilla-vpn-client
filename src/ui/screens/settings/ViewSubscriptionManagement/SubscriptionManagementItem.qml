@@ -175,35 +175,16 @@ ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
         }
 
-        MZButtonBase {
+        MZButton {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
-
-            onClicked: {
-                MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
-            }
-
-            contentItem: Label {
-                text: MZI18n.SubscriptionManagementUpgradeToAnnualButton // "Change plan"
-                font.family: MZTheme.theme.fontInterFamily
-                font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.theme.white
-                anchors.centerIn: parent
-                leftPadding: MZTheme.theme.windowMargin
-                rightPadding: MZTheme.theme.windowMargin
-                wrapMode: Text.WrapAnywhere
-            }
-
+            
+            onClicked: MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
+            text: MZI18n.SubscriptionManagementUpgradeToAnnualButton // "Change plan"
+            fontSize: MZTheme.theme.fontSizeSmall
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.preferredHeight: MZTheme.theme.windowMarginb * 2
-            Layout.fillWidth: true
-
-            MZUIStates {
-                colorScheme:MZTheme.theme.blueButton
-                setMargins: -3
-            }
-            MZMouseArea {
-                id: buttonMouseArea
-            }
+            Layout.preferredHeight: MZTheme.theme.windowMargin * 2
+            Layout.preferredWidth: undefined
+            Layout.maximumWidth: parent.width / 2
         }
     }
 

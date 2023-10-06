@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 
 MZButtonBase {
     property var colorScheme: MZTheme.theme.blueButton
+    property int fontSize: MZTheme.theme.fontSize
 
     id: button
 
@@ -55,7 +56,7 @@ MZButtonBase {
         elide: Text.ElideRight
         width: button.width
         font.family: MZTheme.theme.fontBoldFamily
-        font.pixelSize: MZTheme.theme.fontSize
+        font.pixelSize: fontSize
         opacity: loaderVisible ? 0 : 1
     }
 
