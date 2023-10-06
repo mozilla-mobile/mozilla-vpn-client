@@ -352,9 +352,9 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
-    await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
     if (clickOnPostAuthenticate) {
+      await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
       await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await this.clickOnQuery(
           queries.screenPostAuthentication.BUTTON.visible());

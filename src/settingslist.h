@@ -408,7 +408,7 @@ SETTING_BOOL(postAuthenticationShown,        // getter
              "postAuthenticationShown",      // key
              false,                          // default value
              true,                           // user setting
-             true,                           // remove when reset
+             false,                          // remove when reset
              false                           // sensitive (do not log)
 )
 

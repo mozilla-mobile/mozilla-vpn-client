@@ -50,6 +50,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
+        Layout.minimumHeight: 24
     }
 
     MZButton {
