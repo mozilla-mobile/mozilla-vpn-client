@@ -1303,7 +1303,8 @@ void MozillaVPN::hardReset() {
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
-  quit();
+  // Deactivate VPN and quit
+  connectionManager()->quit();
 }
 
 void MozillaVPN::requestDeleteAccount() {
