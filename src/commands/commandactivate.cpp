@@ -109,7 +109,9 @@ int CommandActivate::run(QStringList& tokens) {
     loop.exec();
     vpn.connectionManager()->disconnect();
 
-    if (vpn.connectionManager()->state() == ConnectionManager::StateIdle) {
+    //    if (vpn.connectionManager()->state() == ConnectionManager::StateIdle)
+    //    {
+    if (vpn.connectionManager()->isVPNActive()) {
       QTextStream stream(stdout);
       stream << "The VPN tunnel is now active" << Qt::endl;
       return 0;

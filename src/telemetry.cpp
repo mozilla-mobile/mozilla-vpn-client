@@ -136,7 +136,8 @@ void Telemetry::initialize() {
     Q_ASSERT(connectionManager);
     ConnectionManager::State state = connectionManager->state();
 
-    if (state != ConnectionManager::StateIdle) {
+    //    if (state != ConnectionManager::StateIdle) {
+    if (!connectionManager->isVPNActive()) {
       m_connectionStabilityTimer.stop();
     } else {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
@@ -146,7 +147,8 @@ void Telemetry::initialize() {
         mozilla::glean::sample::ControllerStepExtra{
             ._state = QVariant::fromValue(state).toString()});
     // Specific events for on and off state to aid with analysis
-    if (state == ConnectionManager::StateIdle) {
+    //    if (state == ConnectionManager::StateIdle) {
+    if (connectionManager->isVPNActive()) {
       mozilla::glean::sample::controller_state_on.record();
     }
     //    if (state == ConnectionManager::StateOff) {
@@ -206,7 +208,9 @@ void Telemetry::initialize() {
       connectionManager, &ConnectionManager::newConnectionSucceeded, this,
       [this, connectionManager]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateIdle) {
+          //          if (connectionManager->state() ==
+          //          ConnectionManager::StateIdle) {
+          if (connectionManager->isVPNActive()) {
             mozilla::glean_pings::Vpnsession.submit("flush");
 
             mozilla::glean::session::session_id.generateAndSet();
@@ -255,7 +259,8 @@ void Telemetry::connectionStabilityEvent() {
 
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
-  Q_ASSERT(connectionManager->state() == ConnectionManager::StateIdle);
+  //  Q_ASSERT(connectionManager->state() == ConnectionManager::StateIdle);
+  Q_ASSERT(connectionManager->isVPNActive());
 
   // We use Controller->currentServer because the telemetry event should record
   // the location in use by the Controller and not MozillaVPN::serverData, which
@@ -297,9 +302,11 @@ void Telemetry::periodicStateRecorder() {
   ConnectionManager* connectionManager = vpn->connectionManager();
   Q_ASSERT(connectionManager);
 
-  ConnectionManager::State connectionManagerState = connectionManager->state();
+  //  ConnectionManager::State connectionManagerState =
+  //  connectionManager->state();
 
-  if (connectionManagerState == ConnectionManager::StateIdle) {
+  //  if (connectionManagerState == ConnectionManager::StateIdle) {
+  if (vpn->connectionManager()->isVPNActive()) {
     mozilla::glean::sample::controller_state_on.record();
   }
   //  if (connectionManagerState == ConnectionManager::StateOff) {
