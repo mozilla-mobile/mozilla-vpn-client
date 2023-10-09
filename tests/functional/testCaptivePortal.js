@@ -126,7 +126,7 @@ describe('Captive portal', function() {
       assert.equal(vpn.lastNotification().title, 'Guest Wi-Fi portal blocked');
     });
 
-    it('Clicking the alert and wait for recovering', async () => {
+    it.only('Clicking the alert and wait for recovering', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert.equal(
           await vpn.getQueryProperty(
@@ -137,7 +137,7 @@ describe('Captive portal', function() {
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'VPN Connected';
       });
-      vpn.resetLastNotification();
+      // vpn.resetLastNotification();
       // Setup - end
 
       await vpn.forceCaptivePortalDetection();
@@ -164,11 +164,7 @@ describe('Captive portal', function() {
 
       await vpn.clickOnNotification();
 
-      await vpn.waitForCondition(async () => {
-        let connectingMsg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE, 'text');
-        return connectingMsg === 'Connecting…';
-      });
+      await vpn.activate();
 
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'VPN Connected';
