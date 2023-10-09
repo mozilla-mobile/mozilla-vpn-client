@@ -6,7 +6,6 @@
 
 #include "captiveportal.h"
 #include "captiveportaldetectionimpl.h"
-#include "captiveportalmonitor.h"
 #include "captiveportalnotifier.h"
 #include "connectionhealth.h"
 #include "controller.h"
@@ -39,13 +38,6 @@ void CaptivePortalDetection::initialize() {
 void CaptivePortalDetection::networkChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  // The captive portal background monitor is looking
-  // wheter a portal on the current network is gone.
-  // So it should be deactivated when the network changes.
-  // Otherwise we might show the "unblock" notification
-  // on networks that never had a portal.
-  captivePortalMonitor()->stop();
-
   ConnectionManager::State state = vpn->connectionManager()->state();
   if (state != ConnectionManager::StateOn &&
       state != ConnectionManager::StateConnecting &&
@@ -70,14 +62,11 @@ void CaptivePortalDetection::stateChanged() {
   ConnectionManager::State state = vpn->connectionManager()->state();
 
   if (state == ConnectionManager::StateOff) {
-    // We're not connected yet - start a captivePortal Monitor
+    // We're not connected yet - do not check for captive-portal
     logger.info()
         << "Not connected, starting background captive-portal Monitor";
-    captivePortalBackgroundMonitor()->start();
     return;
   }
-  logger.info() << "connecting, stopping background captive-portal Monitor";
-  captivePortalBackgroundMonitor()->stop();
 
   if ((state != ConnectionManager::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
@@ -108,10 +97,6 @@ void CaptivePortalDetection::detectCaptivePortal() {
   if (!m_active) {
     return;
   }
-  captivePortalBackgroundMonitor()->maybeCheck();
-
-  // The monitor must be off when detecting the captive portal.
-  captivePortalMonitor()->stop();
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
@@ -148,8 +133,6 @@ void CaptivePortalDetection::settingsChanged() {
   m_active = SettingsHolder::instance()->captivePortalAlert();
 
   if (!m_active) {
-    captivePortalMonitor()->stop();
-    captivePortalBackgroundMonitor()->stop();
     m_impl.reset();
   }
 }
@@ -194,7 +177,6 @@ void CaptivePortalDetection::captivePortalGone() {
   if (vpn->state() == App::StateMain &&
       vpn->connectionManager()->state() == ConnectionManager::StateOff) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
-    captivePortalMonitor()->stop();
   }
 }
 
@@ -205,7 +187,6 @@ void CaptivePortalDetection::deactivationRequired() {
 
   if (vpn->connectionManager()->state() != ConnectionManager::StateOff) {
     vpn->deactivate();
-    captivePortalMonitor()->start();
   }
 }
 
@@ -218,32 +199,6 @@ void CaptivePortalDetection::activationRequired() {
     vpn->connectionManager()->captivePortalGone();
     vpn->activate();
   }
-}
-
-CaptivePortalMonitor* CaptivePortalDetection::captivePortalMonitor() {
-  if (!m_captivePortalMonitor) {
-    m_captivePortalMonitor = new CaptivePortalMonitor(this);
-
-    connect(m_captivePortalMonitor, &CaptivePortalMonitor::online, this,
-            &CaptivePortalDetection::captivePortalGone);
-  }
-
-  return m_captivePortalMonitor;
-}
-
-CaptivePortalMonitor* CaptivePortalDetection::captivePortalBackgroundMonitor() {
-  if (!m_captivePortalBackgroundMonitor) {
-    m_captivePortalBackgroundMonitor = new CaptivePortalMonitor(this);
-
-    connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::online,
-            MozillaVPN::instance()->connectionManager(),
-            &ConnectionManager::captivePortalGone);
-    connect(m_captivePortalBackgroundMonitor, &CaptivePortalMonitor::offline,
-            MozillaVPN::instance()->connectionManager(),
-            &ConnectionManager::captivePortalPresent);
-  }
-
-  return m_captivePortalBackgroundMonitor;
 }
 
 CaptivePortalNotifier* CaptivePortalDetection::captivePortalNotifier() {
