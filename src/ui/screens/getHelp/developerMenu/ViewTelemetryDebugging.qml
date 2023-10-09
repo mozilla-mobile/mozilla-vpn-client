@@ -43,12 +43,6 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.gleanDebugTagActive = !MZSettings.gleanDebugTagActive;
-
-                if (MZSettings.gleanDebugTagActive) {
-                    VPN.gleanSetDebugViewTag(gleanDebugTagString.text)
-                } else {
-                    VPN.gleanSetDebugViewTag("")
-                }
             }
         }
 
