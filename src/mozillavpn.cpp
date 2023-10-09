@@ -187,19 +187,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
-  connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::stateChanged);
-
-  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::stateChanged);
-
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::captivePortalAlertChanged,
-          &m_private->m_captivePortalDetection,
-          &CaptivePortalDetection::settingsChanged);
-
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::createInstance();
   }
