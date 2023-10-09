@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ring = "0.16.20"
+ring = "0.17.2"
 
 [lib]
 name = "signature"
