@@ -72,9 +72,11 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
                                    const QString& deviceIpv4Address) {
   logger.debug() << "ConnectionHealth active started";
 
+//  if (serverIpv4Gateway.isEmpty() ||
+//      MozillaVPN::instance()->connectionManager()->state() !=
+//          ConnectionManager::StateIdle) {
   if (serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->connectionManager()->state() !=
-          ConnectionManager::StateIdle) {
+      !MozillaVPN::instance()->connectionManager()->isVPNActive()) {
     return;
   }
 
@@ -173,7 +175,8 @@ void ConnectionHealth::connectionManagerStateChanged() {
   //    default:
   //      stop();
   //  }
-  if (state == ConnectionManager::StateIdle) {
+//  if (state == ConnectionManager::StateIdle) {
+  if (MozillaVPN::instance()->connectionManager()->isVPNActive()) {
     MozillaVPN::instance()->connectionManager()->getStatus(
         [this](const QString& serverIpv4Gateway,
                const QString& deviceIpv4Address, uint64_t txBytes,

@@ -91,12 +91,13 @@ void TaskControllerAction::stateChanged() {
       MozillaVPN::instance()->connectionManager();
   Q_ASSERT(connectionManager);
 
-  ConnectionManager::State state = connectionManager->state();
-  if (((m_action == eActivate || m_action == eSwitch) &&
-       state == ConnectionManager::StateIdle) ||
+//  ConnectionManager::State state = connectionManager->state();
+  if (((m_action == eActivate || m_action == eSwitch) || (m_action == eDeactivate && !connectionManager->isVPNActive()))) {
+//       &&
+//       state == ConnectionManager::StateIdle) ||
       //      (m_action == eDeactivate && state == ConnectionManager::StateOff))
       //      {
-      (m_action == eDeactivate && !connectionManager->isVPNActive())) {
+//      (m_action == eDeactivate && !connectionManager->isVPNActive())) {
     logger.debug() << "Operation completed";
     m_timer.stop();
     emit completed();

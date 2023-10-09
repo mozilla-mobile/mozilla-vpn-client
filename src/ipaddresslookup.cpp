@@ -9,6 +9,7 @@
 #include <QJsonValue>
 
 #include "controller.h"
+#include "connectionmanager.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -90,8 +91,10 @@ void IpAddressLookup::updateIpAddress() {
             // user is not authenticated anymore.
             MozillaVPN* vpn = MozillaVPN::instance();
             if (vpn->state() == App::StateMain &&
-                vpn->connectionManager()->state() ==
-                    ConnectionManager::StateIdle) {
+//                vpn->connectionManager()->state() ==
+//                    ConnectionManager::StateIdle) {
+                //MozillaVPN::instance()->connectionManager()->isVPNActive()
+             vpn->connectionManager()->isVPNActive()) {
               updateIpAddress();
             }
           });
@@ -126,7 +129,8 @@ void IpAddressLookup::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateIdle) {
+//      vpn->connectionManager()->state() != ConnectionManager::StateIdle) {
+      !vpn->connectionManager()->isVPNActive()) {
     reset();
     return;
   }
