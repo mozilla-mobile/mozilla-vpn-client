@@ -21,6 +21,22 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin * 1.5
 
         MZCheckBoxRow {
+            id: captivePortalAlert
+            objectName: "settingCaptivePortalAlert"
+            visible: MZFeatureList.get("captivePortal").isSupported
+            //% "Guest Wi-Fi portal alert"
+            labelText: qsTrId("vpn.settings.guestWifiAlert")
+            //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
+            subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
+            isChecked: (MZSettings.captivePortalAlert)
+            showDivider: false
+            onClicked: {
+                MZSettings.captivePortalAlert = !MZSettings.captivePortalAlert
+            }
+            Layout.rightMargin: MZTheme.theme.windowMargin
+        }
+
+        MZCheckBoxRow {
             id: unsecuredNetworkAlert
             objectName: "settingUnsecuredNetworkAlert"
             visible: MZFeatureList.get("unsecuredNetworkNotification").isSupported
