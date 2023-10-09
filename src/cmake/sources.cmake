@@ -38,8 +38,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetectionimpl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetectionimpl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalmonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalmonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalnotifier.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalnotifier.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalrequest.cpp
