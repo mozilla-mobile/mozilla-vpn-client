@@ -30,7 +30,6 @@ MZButtonBase {
 
     // property in MZButtonBase {}
     visualStateItem: toggle
-    // state: VPNController.state
     height: 32
     width: 60
     radius: 16
@@ -66,7 +65,6 @@ MZButtonBase {
         },
         State {
             name: "stateOff"
-            // when: VPNController.state === VPNController.StateOff
             when: !VPNController.isVPNActive
 
             PropertyChanges {

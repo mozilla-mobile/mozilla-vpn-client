@@ -150,8 +150,6 @@ void ConnectionManager::initialize() {
 
   connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
           [this]() {
-            //            m_connectedBeforeTransaction =
-            //                m_state == ConnectionManager::StateOn;
             m_connectedBeforeTransaction =
                 m_state ==
                 MozillaVPN::instance()->connectionManager()->isVPNActive();
@@ -194,18 +192,15 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
 
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
-    //    setState(StateOff);
     deactivateVPN();
     return;
   }
 
   if (processNextStep()) {
-    //    setState(StateOff);
     deactivateVPN();
     return;
   }
 
-  //  setState(a_connected ? StateOn : StateOff);
   if (a_connected) {
     setState(StateIdle);
     activateVPN();
@@ -233,7 +228,6 @@ qint64 ConnectionManager::time() const {
 }
 
 void ConnectionManager::timerTimeout() {
-//  Q_ASSERT(m_state == StateIdle);
 #ifdef MZ_IOS
   // When locking an iOS device with an app in the foreground, the app's JS
   // runtime is stopped pretty quick by the system. For this VPN app, that
@@ -246,7 +240,6 @@ void ConnectionManager::timerTimeout() {
   }
 #else
 
-  //    Q_ASSERT(m_state == StateIdle);
   ///@TODO This call to activateVPN should be removed.
   activateVPN();
   //  Q_ASSERT(isVPNActive());
@@ -258,7 +251,6 @@ void ConnectionManager::timerTimeout() {
 void ConnectionManager::quit() {
   logger.debug() << "Quitting";
 
-  //  if (m_state == StateInitializing || m_state == StateOff) {
   if (m_state == StateInitializing || !isVPNActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
@@ -330,11 +322,6 @@ void ConnectionManager::serverUnavailable() {
 void ConnectionManager::updateRequired() {
   logger.warning() << "Update required";
 
-  //  if (m_state == StateOff) {
-  //    emit readyToUpdate();
-  //    return;
-  //  }
-
   if (!isVPNActive()) {
     emit readyToUpdate();
     return;
@@ -342,10 +329,6 @@ void ConnectionManager::updateRequired() {
 
   m_nextStep = Update;
 
-  //  if (m_state == StateIdle) {
-  //    deactivate();
-  //    return;
-  //  }
   if (isVPNActive()) {
     deactivate();
     return;
@@ -357,14 +340,12 @@ void ConnectionManager::logout() {
 
   MozillaVPN::instance()->logout();
 
-  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     return;
   }
 
   m_nextStep = Disconnect;
 
-  //  if (m_state == StateIdle) {
   if ((m_state == StateIdle || m_state == StateSwitching ||
        m_state == StateSilentSwitching || m_state == StateConnecting ||
        m_state == StateConfirming || m_state == StateCheckSubscription) ||
@@ -372,10 +353,6 @@ void ConnectionManager::logout() {
     deactivate();
     return;
   }
-  //  if (isVPNActive()) {
-  //    deactivate();
-  //    return;
-  //  }
 }
 
 void ConnectionManager::activateInternal(
@@ -649,7 +626,6 @@ bool ConnectionManager::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
-  //  if (m_state != StateIdle) {
   if (!isVPNActive()) {
     logger.warning() << "Cannot silent switch if not on";
     return false;
@@ -757,7 +733,6 @@ void ConnectionManager::disconnected() {
   NextStep nextStep = m_nextStep;
 
   if (processNextStep()) {
-    //    setState(StateOff);
     deactivateVPN();
     return;
   }
@@ -768,7 +743,6 @@ void ConnectionManager::disconnected() {
     return;
   }
 
-  // Tuesday TODO
   setState(StateOff);
   deactivateVPN();
   emit controllerDisconnected();
@@ -897,7 +871,6 @@ void ConnectionManager::captivePortalPresent() {
 }
 
 void ConnectionManager::serverDataChanged() {
-  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     logger.debug() << "Server data changed but we are off";
     return;
@@ -909,7 +882,6 @@ void ConnectionManager::serverDataChanged() {
 }
 
 bool ConnectionManager::switchServers(const ServerData& serverData) {
-  //  if (m_state == StateOff) {
   if (!isVPNActive()) {
     logger.debug() << "Server data changed but we are off";
     return false;
@@ -932,7 +904,6 @@ bool ConnectionManager::switchServers(const ServerData& serverData) {
 void ConnectionManager::backendFailure() {
   logger.error() << "backend failure";
 
-  //  if (m_state == StateInitializing || m_state == StateOff) {
   if (!isVPNActive() || m_state == StateInitializing) {
     emit readyToBackendFailure();
     return;
@@ -964,9 +935,6 @@ QString ConnectionManager::currentServerString() const {
 bool ConnectionManager::activate(const ServerData& serverData,
                                  ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
-  //  if (m_state != ConnectionManager::StateOff &&
-  //      m_state != ConnectionManager::StateSwitching &&
-  //      m_state != ConnectionManager::StateSilentSwitching) {
   if (isVPNActive()) {
     logger.debug() << "Already connected";
     return false;
@@ -978,7 +946,6 @@ bool ConnectionManager::activate(const ServerData& serverData,
   emit currentServerChanged();
 #endif
 
-  //  if (m_state == ConnectionManager::StateOff) {
   if (!isVPNActive()) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
@@ -1042,9 +1009,6 @@ bool ConnectionManager::activate(const ServerData& serverData,
 bool ConnectionManager::deactivate() {
   logger.debug() << "Deactivation" << m_state;
 
-  //  if (m_state != StateIdle && m_state != StateSwitching &&
-  //      m_state != StateSilentSwitching && m_state != StateConfirming &&
-  //      m_state != StateConnecting && m_state != StateCheckSubscription) {
   if (!isVPNActive()) {
     logger.warning() << "Already disconnected";
     return false;
@@ -1069,7 +1033,5 @@ bool ConnectionManager::deactivate() {
 }
 
 bool ConnectionManager::isVPNActive() { return m_VPNActive; }
-
-// Should I check m_VPNActive first? Return anything?
 void ConnectionManager::activateVPN() { m_VPNActive = true; }
 void ConnectionManager::deactivateVPN() { m_VPNActive = false; }

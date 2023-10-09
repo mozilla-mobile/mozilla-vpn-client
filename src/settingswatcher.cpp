@@ -51,17 +51,10 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
   connect(MozillaVPN::instance()->connectionManager(),
           &ConnectionManager::stateChanged, this, [this]() {
-            //            ConnectionManager::State state =
-            //                MozillaVPN::instance()->connectionManager()->state();
-            // m_operationRunning is set to true when the Controller is in
-            // StateOn. So, if we see a change, it means that the new settings
-            // values have been taken in consideration. We are ready to
+            // m_operationRunning is set to true when the Connection Manager is
+            // in StateOn. So, if we see a change, it means that the new
+            // settings values have been taken in consideration. We are ready to
             // schedule a new TaskControllerAction if needed.
-            //            if (state != ConnectionManager::StateIdle &&
-            //                state != ConnectionManager::StateOff &&
-            //                m_operationRunning) {
-            //            if (state != ConnectionManager::StateIdle &&
-            //            m_operationRunning) {
             if (!MozillaVPN::instance()->connectionManager()->isVPNActive() &&
                 m_operationRunning) {
               logger.debug() << "Resetting the operation running state";
@@ -84,9 +77,6 @@ SettingsWatcher* SettingsWatcher::instance() {
 void SettingsWatcher::maybeServerSwitch() {
   logger.debug() << "Settings changed!";
 
-  //  if (MozillaVPN::instance()->connectionManager()->state() !=
-  //          ConnectionManager::StateIdle ||
-  //      m_operationRunning) {
   if (!MozillaVPN::instance()->connectionManager()->isVPNActive() ||
       m_operationRunning) {
     return;

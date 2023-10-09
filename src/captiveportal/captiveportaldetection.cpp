@@ -46,11 +46,6 @@ void CaptivePortalDetection::networkChanged() {
   // on networks that never had a portal.
   captivePortalMonitor()->stop();
 
-  //  ConnectionManager::State state = vpn->connectionManager()->state();
-  //  if (state != ConnectionManager::StateIdle &&
-  //      state != ConnectionManager::StateConnecting &&
-  //      state != ConnectionManager::StateCheckSubscription &&
-  //      state != ConnectionManager::StateConfirming) {
   if (!vpn->connectionManager()->isVPNActive()) {
     // Network Changed but we're not connected, no need to test for captive
     // portal
@@ -69,7 +64,6 @@ void CaptivePortalDetection::stateChanged() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  //  if (state == ConnectionManager::StateOff) {
   if (!vpn->connectionManager()->isVPNActive()) {
     // We're not connected yet - start a captivePortal Monitor
     logger.info()
@@ -81,7 +75,6 @@ void CaptivePortalDetection::stateChanged() {
   captivePortalBackgroundMonitor()->stop();
 
   ConnectionManager::State state = vpn->connectionManager()->state();
-  //  if ((state != ConnectionManager::StateIdle ||
   if ((!vpn->connectionManager()->isVPNActive() ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
       state != ConnectionManager::StateConnecting &&
@@ -120,10 +113,6 @@ void CaptivePortalDetection::detectCaptivePortal() {
 
   // This method is called by the inspector too. Let's check the status of the
   // VPN.
-  //  ConnectionManager::State state = vpn->connectionManager()->state();
-  //  if (state != ConnectionManager::StateIdle &&
-  //      state != ConnectionManager::StateConnecting &&
-  //      state != ConnectionManager::StateConfirming) {
   if (!vpn->connectionManager()->isVPNActive()) {
     logger.warning() << "The VPN is not online. Ignore request.";
     return;
@@ -186,7 +175,6 @@ void CaptivePortalDetection::captivePortalDetected() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  //  if (vpn->connectionManager()->state() == ConnectionManager::StateIdle) {
   if (vpn->connectionManager()->isVPNActive()) {
     captivePortalNotifier()->notifyCaptivePortalBlock();
   }
@@ -197,8 +185,6 @@ void CaptivePortalDetection::captivePortalGone() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == App::StateMain &&
-      //      vpn->connectionManager()->state() == ConnectionManager::StateOff)
-      //      {
       !vpn->connectionManager()->isVPNActive()) {
     captivePortalNotifier()->notifyCaptivePortalUnblock();
     captivePortalMonitor()->stop();
@@ -210,7 +196,6 @@ void CaptivePortalDetection::deactivationRequired() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  //  if (vpn->connectionManager()->state() != ConnectionManager::StateOff) {
   if (vpn->connectionManager()->isVPNActive()) {
     vpn->deactivate();
     captivePortalMonitor()->start();
@@ -222,8 +207,6 @@ void CaptivePortalDetection::activationRequired() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
   if (vpn->state() == App::StateMain &&
-      //      vpn->connectionManager()->state() == ConnectionManager::StateOff)
-      //      {
       !vpn->connectionManager()->isVPNActive()) {
     vpn->connectionManager()->captivePortalGone();
     vpn->activate();

@@ -125,8 +125,6 @@ void MozillaVPN::update() {}
 
 void MozillaVPN::setUpdating(bool) {}
 
-// void MozillaVPN::controllerStateChanged() {}
-
 void MozillaVPN::connectionManagerStateChanged() {}
 
 void MozillaVPN::backendServiceRestore() {}

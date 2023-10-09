@@ -27,7 +27,6 @@ class MacOSMenuBar final : public QObject {
   QMenuBar* menuBar() const { return m_menuBar; }
 
  public slots:
-  // void controllerStateChanged();
   void connectionManagerStateChanged();
 
  private:

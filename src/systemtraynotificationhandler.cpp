@@ -150,9 +150,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   bool isStateMain = vpn->state() == App::StateMain;
 
-  //  m_disconnectAction->setVisible(isStateMain &&
-  //                                 vpn->connectionManager()->state() ==
-  //                                     ConnectionManager::StateIdle);
   m_disconnectAction->setVisible(isStateMain &&
                                  vpn->connectionManager()->isVPNActive());
 
@@ -184,12 +181,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
       case ConnectionManager::StateSilentSwitching:
         statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
         break;
-
-        //      case ConnectionManager::StateOff:
-        //        statusLabel =
-        //        i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
-        //        break;
-
       case ConnectionManager::StateSwitching:
         [[fallthrough]];
       case ConnectionManager::StateConnecting:
@@ -231,8 +222,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  //  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
-  //                                  ConnectionManager::StateOff);
   m_lastLocationLabel->setEnabled(!vpn->connectionManager()->isVPNActive());
 }
 

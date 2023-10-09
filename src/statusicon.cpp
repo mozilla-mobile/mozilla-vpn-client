@@ -101,12 +101,6 @@ const QString StatusIcon::iconString() {
         m_animatedIconTimer.stop();
         return LOGO_GENERIC_ON;
         break;
-        ///@TODO Remove StateOff when we're done
-        //      case ConnectionManager::StateOff:
-        //        [[fallthrough]];
-        //      m_animatedIconTimer.stop();
-        //      return LOGO_GENERIC_OFF;
-        //      break;
       case ConnectionManager::StateSwitching:
         [[fallthrough]];
       case ConnectionManager::StateConnecting:
@@ -139,8 +133,6 @@ const QColor StatusIcon::indicatorColor() const {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      //      vpn->connectionManager()->state() != ConnectionManager::StateIdle)
-      //      {
       !vpn->connectionManager()->isVPNActive()) {
     return INVALID_COLOR;
   }

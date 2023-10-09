@@ -121,7 +121,6 @@ Item {
         },
         State {
             name: "stateOff"
-            // when: VPNController.state === VPNController.StateOff
             when: !VPNController.isVPNActive
 
             PropertyChanges {
@@ -705,11 +704,7 @@ Item {
         radius: MZTheme.theme.cornerRadius * 2
     }
 
-    Component.onCompleted:
-    {
-        MZNavigator.addView(VPN.ScreenHome, connectionInfoScreen)
-        console.log("It sort of works?? ", VPNController.isVPNActive) 
-    } 
+    Component.onCompleted: MZNavigator.addView(VPN.ScreenHome, connectionInfoScreen)
 
     Connections {
         function onGoBack(item) {

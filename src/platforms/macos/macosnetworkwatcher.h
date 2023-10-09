@@ -21,7 +21,6 @@ class MacOSNetworkWatcher final : public IOSNetworkWatcher {
 
   void checkInterface();
 
-  // void controllerStateChanged();
   void connectionManagerStateChanged();
 
  private:

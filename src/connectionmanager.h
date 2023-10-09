@@ -70,7 +70,6 @@ class ConnectionManager : public QObject, public LogSerializer {
   };
 
  public:
-  /// @TODO should these 3 be moved back to the controller?
   bool isVPNActive();
   void activateVPN();
   void deactivateVPN();
