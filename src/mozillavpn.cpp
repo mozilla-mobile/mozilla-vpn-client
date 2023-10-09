@@ -298,6 +298,7 @@ void MozillaVPN::initialize() {
   AndroidUtils::instance();
 #endif
 
+  m_private->m_captivePortalDetection.initialize();
   m_private->m_networkWatcher.initialize();
 
   DNSHelper::maybeMigrateDNSProviderFlags();

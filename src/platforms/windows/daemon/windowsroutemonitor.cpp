@@ -67,7 +67,6 @@ WindowsRouteMonitor::WindowsRouteMonitor(QObject* parent) : QObject(parent) {
 WindowsRouteMonitor::~WindowsRouteMonitor() {
   MZ_COUNT_DTOR(WindowsRouteMonitor);
   CancelMibChangeNotify2(m_routeHandle);
-  flushExclusionRoutes();
   logger.debug() << "WindowsRouteMonitor destroyed.";
 }
 

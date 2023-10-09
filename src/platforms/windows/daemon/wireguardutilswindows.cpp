@@ -177,12 +177,6 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
-  // Clear exclustion routes for this peer.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
-  }
-
   // Disable the windows firewall for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
 
