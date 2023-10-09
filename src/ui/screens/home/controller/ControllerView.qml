@@ -476,9 +476,7 @@ Item {
         z: 1
 
         onClicked: {
-            box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
-
-            if (box.connectionInfoScreenVisible) {
+            if (!box.connectionInfoScreenVisible) {
                 Glean.interaction.speedTestTriggered.record({
                     screen: "main",
                     action: "select",
@@ -486,13 +484,16 @@ Item {
                 });
             } else {
                 Glean.interaction.speedTestClosed.record({
-                    screen: VPNConnectionBenchmark.StateReady ? "speed_test_result" :
-                        VPNConnectionBenchmark.StateError ? "speed_test_error"
-                            : "speed_test_loading",
+                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_result"
+                                : connectionInfoScreen.state == "open-error" ? "speed_test_error"
+                                    : connectionInfoScreen.state == "open-loading" ? "speed_test_loading"
+                                        : "unexpected",
                     action: "select",
                     element_id: "close"
                 });
             }
+
+            box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
         }
 
         Image {

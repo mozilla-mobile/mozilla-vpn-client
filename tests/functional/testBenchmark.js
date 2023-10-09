@@ -334,22 +334,16 @@ describe('Benchmark', function() {
       assert.strictEqual("speed_test_loading", loadingEventExtra.screen);
       assert.strictEqual("impression", loadingEventExtra.action);
 
-      // TODO (VPN-2859): Enable this part of the test.
-      // Here we are checking if the close event has the expected screen extra key.
-      // But that bug flashes the results screen when closed, so the screen extra key
-      // on the close event always has the value speed_test_result regardless which
-      // screen it was clicked from.
-      //
       // Close the connection benchmark while loading
-      // await vpn.waitForQueryAndClick(
-      //   queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
+      await vpn.waitForQueryAndClick(
+        queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      // const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
-      // assert.strictEqual(closedEventsList.length, 1);
-      // const closedEventExtra = closedEventsList[0].extra;
-      // assert.strictEqual("speed_test_loading", closedEventExtra.screen);
-      // assert.strictEqual("select", closedEventExtra.action);
-      // assert.strictEqual("close", closedEventExtra.element_id);
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
+      assert.strictEqual(closedEventsList.length, 1);
+      const closedEventExtra = closedEventsList[0].extra;
+      assert.strictEqual("speed_test_loading", closedEventExtra.screen);
+      assert.strictEqual("select", closedEventExtra.action);
+      assert.strictEqual("close", closedEventExtra.element_id);
 
       // Resolve the loading speed test, just in case.
       resolveSpeedTestResults();
@@ -434,22 +428,16 @@ describe('Benchmark', function() {
       assert.strictEqual("speed_test_error", completedEventExtra.screen);
       assert.strictEqual("impression", completedEventExtra.action);
 
-      // TODO (VPN-2859): Enable this part of the test.
-      // Here we are checking if the close event has the expected screen extra key.
-      // But that bug flashes the results screen when closed, so the screen extra key
-      // on the close event always has the value speed_test_result regardless which
-      // screen it was clicked from.
-      //
       // Close the connection benchmark
-      // await vpn.waitForQueryAndClick(
-      //   queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
+      await vpn.waitForQueryAndClick(
+        queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      // const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
-      // assert.strictEqual(closedEventsList.length, 1);
-      // const closedEventExtra = closedEventsList[0].extra;
-      // assert.strictEqual("speed_test_error", closedEventExtra.screen);
-      // assert.strictEqual("select", closedEventExtra.action);
-      // assert.strictEqual("close", closedEventExtra.element_id);
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
+      assert.strictEqual(closedEventsList.length, 1);
+      const closedEventExtra = closedEventsList[0].extra;
+      assert.strictEqual("speed_test_error", closedEventExtra.screen);
+      assert.strictEqual("select", closedEventExtra.action);
+      assert.strictEqual("close", closedEventExtra.element_id);
     });
   });
 });
