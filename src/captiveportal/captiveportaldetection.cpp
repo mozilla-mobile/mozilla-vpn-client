@@ -76,7 +76,7 @@ void CaptivePortalDetection::stateChanged() {
   if (state == ConnectionManager::StateOff) {
     // We're not connected yet - do not check for captive-portal
     logger.info()
-        << "Not connected, starting background captive-portal Monitor";
+        << "Not connected, do not check for captive-portal";
     return;
   }
 
