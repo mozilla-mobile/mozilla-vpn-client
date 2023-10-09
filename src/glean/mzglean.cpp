@@ -193,11 +193,12 @@ void MZGlean::setDebugViewTag(QString tag) {
     logger.debug() << "Removing MZGlean debug view tag";
     settingsHolder->removeGleanDebugTag();
     settingsHolder->setGleanDebugTagIsActive(false);
-  } else {
-    logger.debug() << "Setting MZGlean debug view tag to" << tag;
-    settingsHolder->setGleanDebugTag(tag);
-    settingsHolder->setGleanDebugTagIsActive(true);
+    return;
   }
+
+  logger.debug() << "Setting MZGlean debug view tag to" << tag;
+  settingsHolder->setGleanDebugTag(tag);
+  settingsHolder->setGleanDebugTagIsActive(true);
 
 #if not(defined(MZ_WASM))
   glean_set_debug_view_tag(tag.toUtf8());
