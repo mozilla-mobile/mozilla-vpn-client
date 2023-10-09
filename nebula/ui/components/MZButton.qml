@@ -11,6 +11,7 @@ import Mozilla.Shared 1.0
 MZButtonBase {
     property var colorScheme: MZTheme.theme.blueButton
     property int fontSize: MZTheme.theme.fontSize
+    property alias label: label
 
     id: button
 

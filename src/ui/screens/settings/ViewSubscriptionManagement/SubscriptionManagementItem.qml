@@ -179,12 +179,14 @@ ColumnLayout {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
             
             onClicked: MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
-            text: MZI18n.SubscriptionManagementUpgradeToAnnualButton // "Change plan"
+            text: MZI18n.SubscriptionManagementUpgradeToAnnualButton// "Change plan"
             fontSize: MZTheme.theme.fontSizeSmall
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.preferredHeight: MZTheme.theme.windowMargin * 2
-            Layout.preferredWidth: undefined
+            Layout.preferredHeight: -1
+            Layout.minimumHeight : MZTheme.theme.windowMargin * 2
+            Layout.preferredWidth: 111
             Layout.maximumWidth: parent.width / 2
+            label.wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
     }
 
