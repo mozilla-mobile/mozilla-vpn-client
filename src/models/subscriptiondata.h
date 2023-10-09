@@ -17,8 +17,6 @@ class SubscriptionData final : public QObject {
   Q_PROPERTY(quint64 createdAt MEMBER m_createdAt NOTIFY changed)
   Q_PROPERTY(quint64 expiresOn MEMBER m_expiresOn NOTIFY changed)
   Q_PROPERTY(bool isCancelled MEMBER m_isCancelled NOTIFY changed)
-  Q_PROPERTY(bool isPrivacyBundleSubscriber MEMBER m_isPrivacyBundleSubscriber
-                 NOTIFY changed)
 
   // Plan
   Q_PROPERTY(TypeBillingInterval planBillingInterval MEMBER
@@ -85,7 +83,6 @@ class SubscriptionData final : public QObject {
   quint64 m_createdAt = 0;
   quint64 m_expiresOn = 0;
   bool m_isCancelled = false;
-  bool m_isPrivacyBundleSubscriber = false;
 
   TypeBillingInterval m_planBillingInterval = BillingIntervalUnknown;
   int m_planAmount = 0;

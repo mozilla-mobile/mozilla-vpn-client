@@ -839,12 +839,12 @@ subscriptionManagement:
   manageSubscriptionButton:
     value: Manage subscription
     comment: Label for a button that will take the user to a view where they can manage their subscription.
-  upgrade:
-    value: Upgrade
-    comment: Label for a button that will take users into the upgrade to VPN / Relay bundle purchase flow.
-  addFirefoxRelay:
-    value: Add Firefox Relay
-    comment: Block of text appearing above a link to learn more about the VPN / Relay bundle offering.
+  upgradeToAnnualButton:
+    value: Change plan
+    comment: Label for a button that will open the upgrade subscription flow.
+  upgradeToAnnual:
+    value: Save 50% on an annual plan
+    comment: Block of text appearing beside a button to upgrade subscription.
   manageAccount:
     value: Manage account
 

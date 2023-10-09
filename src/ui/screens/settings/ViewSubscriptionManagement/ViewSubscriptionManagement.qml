@@ -141,22 +141,14 @@ MZViewBase {
         Glean.sample.manageSubscriptionClicked.record();
     }
 
-    // We show the bundle upgrade only supposed to be available to users that
-    // have a VPN web subscription, are located in the US or Cananada and are
-    // not already bundle subscribers.
-    function isBundleUpgradeAvailable() {
-        if (
-            !MZFeatureList.get("bundleUpgrade").isSupported ||
-            VPNSubscriptionData.type !== VPNSubscriptionData.SubscriptionWeb
-        ) {
+    function isAnnualUpgradeAvailable() {
+        // Annual upgrade UI is only shown to users with monthly subscriptions purchased via the web
+        // And only when the annualUpgrade feature flag is enabled
+        // The check for web-based subscriptions occurs on L160
+        if (!MZFeatureList.get("annualUpgrade").isSupported) {
             return false;
         }
-
-        // We use the currency as a proxy to determine if the upgrade is
-        // available to a user.
-        const bundleUpgradeWhitelist = ["USD", "CAD"];
-        return !VPNSubscriptionData.isPrivacyBundleSubscriber &&
-            bundleUpgradeWhitelist.includes(VPNSubscriptionData.planCurrency);
+        return VPNSubscriptionData.planBillingInterval ==  VPNSubscriptionData.BillingIntervalMonthly;
     }
 
     function populateListModels() {
@@ -174,7 +166,7 @@ MZViewBase {
                     VPNSubscriptionData.planCurrency,
                     VPNSubscriptionData.planAmount,
                 ),
-                type: isBundleUpgradeAvailable() ? "text-upgrade" : "text",
+                type: isAnnualUpgradeAvailable()? "text-upgrade" : "text",
             });
         }
 

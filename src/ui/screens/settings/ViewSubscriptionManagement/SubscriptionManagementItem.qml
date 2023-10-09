@@ -29,7 +29,7 @@ ColumnLayout {
                 visible: false
             }
             PropertyChanges {
-                target: relayUpsell
+                target: upgradeToAnnualSub
                 visible: false
             }
         },
@@ -45,7 +45,7 @@ ColumnLayout {
                 visible: false
             }
             PropertyChanges {
-                target: relayUpsell
+                target: upgradeToAnnualSub
                 visible: true
             }
         },
@@ -61,7 +61,7 @@ ColumnLayout {
                 visible: true
             }
             PropertyChanges {
-                target: relayUpsell
+                target: upgradeToAnnualSub
                 visible: false
             }
         },
@@ -77,7 +77,7 @@ ColumnLayout {
                 visible: false
             }
             PropertyChanges {
-                target: relayUpsell
+                target: upgradeToAnnualSub
                 visible: false
             }
         }
@@ -157,79 +157,36 @@ ColumnLayout {
     }
 
     RowLayout {
-        id: relayUpsell
-        objectName: _objectName + "-relayUpsell-layout"
+        id: upgradeToAnnualSub
+        objectName: _objectName + "-upgradeToAnnualSub-layout"
 
         visible: false
         Layout.fillWidth: true
         Layout.topMargin: MZTheme.theme.listSpacing
         Layout.bottomMargin: MZTheme.theme.windowMargin
 
-        Component.onCompleted: {
-            if (visible) {
-                Glean.sample.bundleUpsellViewed.record();
-            }
-        }
-
-        ColumnLayout {
+        MZBoldInterLabel {
+            color: MZTheme.colors.purple70
+            font.pixelSize: MZTheme.theme.fontSizeSmall
+            text: MZI18n.SubscriptionManagementUpgradeToAnnual // "Save 50%..."
+            wrapMode: Text.WordWrap
+            lineHeight: MZTheme.theme.labelLineHeight
             Layout.fillWidth: true
-
-            MZInterLabel {
-                color: MZTheme.theme.fontColorDark
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: MZTheme.theme.fontSizeSmall
-                text: MZI18n.SubscriptionManagementAddFirefoxRelay // "Add Firefox Relay"
-                wrapMode: Text.WordWrap
-                lineHeight: 13
-                Layout.alignment: Qt.AlignLeft
-                Layout.fillWidth: true
-                elide: Text.ElideRight
-            }
-
-            MZLinkButton {
-                objectName: _objectName + "-relayUpsell-learnMoreLink"
-                linkColor: MZTheme.theme.blueButton
-                fontSize: MZTheme.theme.fontSizeSmall
-                labelText: MZI18n.SplittunnelInfoLinkText // "Learn more"
-                Layout.alignment: Qt.AlignLeft
-                padding: 4
-                Layout.leftMargin: -4
-
-                onClicked: {
-                    Glean.sample.bundleUpsellLinkClicked.record();
-                    MZUrlOpener.openUrlLabel("relayPremium");
-                }
-            }
+            Layout.alignment: Qt.AlignVCenter
         }
 
-        MZButtonBase {
-            objectName: _objectName + "-relayUpsell-upgradeButton"
-
-            onClicked: {
-                Glean.sample.bundleUpsellUpgradeClicked.record();
-                MZUrlOpener.openUrlLabel("upgradeToBundle");
-            }
-
-            contentItem: Label {
-                text: MZI18n.SubscriptionManagementUpgrade // "Upgrade"
-                font.family: MZTheme.theme.fontInterFamily
-                font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.theme.white
-                anchors.centerIn: parent
-                leftPadding: MZTheme.theme.windowMargin
-                rightPadding: MZTheme.theme.windowMargin
-            }
-
+        MZButton {
+            objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
+            
+            onClicked: MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
+            text: MZI18n.SubscriptionManagementUpgradeToAnnualButton// "Change plan"
+            fontSize: MZTheme.theme.fontSizeSmall
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            Layout.preferredHeight: MZTheme.theme.windowMarginb * 2
-
-            MZUIStates {
-                colorScheme:MZTheme.theme.blueButton
-                setMargins: -3
-            }
-            MZMouseArea {
-                id: buttonMouseArea
-            }
+            Layout.preferredHeight: -1
+            Layout.minimumHeight : MZTheme.theme.windowMargin * 2
+            Layout.preferredWidth: 111
+            Layout.maximumWidth: parent.width / 2
+            label.wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
     }
 

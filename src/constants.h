@@ -244,13 +244,13 @@ PRODBETAEXPR(
 constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
-PRODBETAEXPR(const char*, relayUrl, "https://relay.firefox.com",
-             "https://stage.fxprivaterelay.nonprod.cloudops.mozgcp.net");
-
-PRODBETAEXPR(QString, privacyBundleProductId, "prod_MIex7Q079igFZJ",
-             "prod_LcfR3EzYMVJlZQ");
-
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
+
+PRODBETAEXPR(QString, upgradeToAnnualUrl,
+             "https://www.mozilla.org/products/vpn/"
+             "?utm_medium=mozillavpn&utm_source=account#pricing",
+             "https://www-dev.allizom.org/en-US/products/vpn/"
+             "?utm_medium=mozillavpn&utm_source=account#pricing")
 
 #undef PRODBETAEXPR
 
