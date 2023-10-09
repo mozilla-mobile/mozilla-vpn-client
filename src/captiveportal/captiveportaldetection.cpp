@@ -33,15 +33,17 @@ void CaptivePortalDetection::initialize() {
   const auto networkWatcher = MozillaVPN::instance()->networkWatcher();
   connect(networkWatcher, &NetworkWatcher::networkChange, this,
           &CaptivePortalDetection::networkChanged);
-  connect(&m_private->m_connectionManager, &ConnectionManager::stateChanged,
-          &m_private->m_captivePortalDetection,
+
+  connect(MozillaVPN::instance()->connectionManager(),
+          &ConnectionManager::stateChanged, this,
           &CaptivePortalDetection::stateChanged);
-  connect(&m_private->m_connectionHealth, &ConnectionHealth::stabilityChanged,
-          &m_private->m_captivePortalDetection,
+
+  connect(MozillaVPN::instance()->connectionHealth(),
+          &ConnectionHealth::stabilityChanged, this,
           &CaptivePortalDetection::stateChanged);
+
   connect(SettingsHolder::instance(),
-          &SettingsHolder::captivePortalAlertChanged,
-          &m_private->m_captivePortalDetection,
+          &SettingsHolder::captivePortalAlertChanged, this,
           &CaptivePortalDetection::settingsChanged);
 }
 
