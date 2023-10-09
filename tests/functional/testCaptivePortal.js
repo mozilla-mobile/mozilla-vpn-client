@@ -137,7 +137,7 @@ describe('Captive portal', function() {
       await vpn.waitForCondition(() => {
         return vpn.lastNotification().title === 'VPN Connected';
       });
-      // vpn.resetLastNotification();
+      vpn.resetLastNotification();
       // Setup - end
 
       await vpn.forceCaptivePortalDetection();
