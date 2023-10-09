@@ -126,7 +126,7 @@ describe('Captive portal', function() {
       assert.equal(vpn.lastNotification().title, 'Guest Wi-Fi portal blocked');
     });
 
-    it.only('Clicking the alert and wait for recovering', async () => {
+    it('Clicking the alert and wait for recovering', async () => {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert.equal(
           await vpn.getQueryProperty(
