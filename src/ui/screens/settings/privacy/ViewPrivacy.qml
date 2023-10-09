@@ -41,7 +41,7 @@ MZViewBase {
                     Accessible.name: text
                 }
                 Loader {
-                    active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
+                    active: !VPNController.silentServerSwitchingSupported && VPNController.isVPNActive
                     Layout.fillWidth: true
                     visible: active
                     sourceComponent: MZTextBlock {

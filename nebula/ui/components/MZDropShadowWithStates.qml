@@ -34,7 +34,7 @@ MZDropShadow {
         State {
             name: "off"
             when: (state === VPNController.StateDisconnecting ||
-                   state === VPNController.StateOff)
+                   !VPNController.isVPNActive)
             PropertyChanges {
                 target: dropShadow
                 opacity: .1

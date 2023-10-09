@@ -205,7 +205,6 @@ void ConnectionManager::implInitialized(bool status, bool a_connected,
     setState(StateIdle);
     activateVPN();
   } else {
-    setState(StateOff);
     deactivateVPN();
   }
 
@@ -241,7 +240,7 @@ void ConnectionManager::timerTimeout() {
 #else
 
   ///@TODO This call to activateVPN should be removed.
-  activateVPN();
+//  activateVPN();
   //  Q_ASSERT(isVPNActive());
 
   emit timeChanged();
@@ -727,6 +726,7 @@ void ConnectionManager::resetConnectedTime() {
 void ConnectionManager::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
+  deactivateVPN();
   clearConnectedTime();
   clearRetryCounter();
 
@@ -743,8 +743,11 @@ void ConnectionManager::disconnected() {
     return;
   }
 
+  ///@TODO Removing this line causes a UI issue where after connecting and
+  /// disconnecting once, the VPN gets stuck in the Disconnecting state from the previous time.
+  /// This is likely a UI bug.
   setState(StateOff);
-  deactivateVPN();
+  
   emit controllerDisconnected();
 }
 

@@ -181,7 +181,7 @@ FocusScope {
                         accessibleName: MZI18n.ServersViewRecommendedRefreshLabel
                         canGrowVertical: true
                         height: statusTitle.implicitHeight + MZTheme.theme.vSpacingSmall
-                        rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
+                        rowShouldBeDisabled: VPNController.isVPNActive || VPNServerLatency.isActive
                         opacity: 1.0
 
                         onClicked: {
@@ -217,7 +217,7 @@ FocusScope {
                                 // values that will be set instead of `%1`
                                 text: VPNServerLatency.isActive
                                       ? MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(Math.round(VPNServerLatency.progress * 100))
-                                      : (VPNController.state === VPNController.StateOff)
+                                      : (!VPNController.isVPNActive)
                                         ? MZI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
                                         : MZI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
                                 wrapMode: Text.WordWrap

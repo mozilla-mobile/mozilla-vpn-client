@@ -159,7 +159,7 @@ MZButtonBase {
         },
         State {
             name: "stateDisconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            when: VPNController.state === VPNController.StateDisconnecting || !VPNController.isVPNActive
 
             PropertyChanges {
                 target: cursor

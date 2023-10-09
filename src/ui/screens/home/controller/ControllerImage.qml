@@ -58,7 +58,7 @@ Rectangle {
         },
         State {
             name: "stateDisconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            when: VPNController.state === VPNController.StateDisconnecting || !VPNController.isVPNActive
 
             PropertyChanges {
                 target: logo
@@ -101,7 +101,6 @@ Rectangle {
         },
         State {
             name: "stateOff"
-            // when: VPNController.state === VPNController.StateOff
             when: !VPNController.isVPNActive
 
             PropertyChanges {
@@ -231,7 +230,8 @@ Rectangle {
 
         },
         Transition {
-            to: VPNController.StateDisconnecting
+            // to: VPNController.StateDisconnecting
+            to: !VPNController.isVPNActive
             ParallelAnimation {
                 PropertyAnimation {
                     target: insetCircle

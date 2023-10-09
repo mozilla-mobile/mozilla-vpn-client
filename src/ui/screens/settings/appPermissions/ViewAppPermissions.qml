@@ -34,7 +34,7 @@ MZViewBase {
             Layout.bottomMargin: 24
             Layout.fillWidth: true
 
-            active: Qt.platform.os === "linux" && VPNController.state !== VPNController.StateOff
+            active: Qt.platform.os === "linux" && VPNController.isVPNActive
             visible: active
 
             sourceComponent: MZInformationCard {
@@ -62,7 +62,7 @@ MZViewBase {
             Layout.rightMargin: MZTheme.theme.vSpacing
 
             searchBarPlaceholder: searchApps
-            enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
+            enabled: Qt.platform.os === "linux" ? !VPNController.isVPNActive : true
         }
     }
 

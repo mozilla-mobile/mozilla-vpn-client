@@ -17,7 +17,7 @@ MZFlickable {
 
     flickContentHeight: content.implicitHeight
 
-    state: (VPNController.state == VPNController.StateOff) ? "pre-activation" : "post-activation"
+    state: (VPNController.isVPNActive) ? "post-activation" : "pre-activation" 
     states: [
         State {
             name: "pre-activation"

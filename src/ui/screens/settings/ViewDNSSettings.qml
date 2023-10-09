@@ -84,7 +84,7 @@ MZViewBase {
 
         Loader {
             objectName: "DNSSettingsInformationCardLoader"
-            active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
+            active: !VPNController.silentServerSwitchingSupported && VPNController.isVPNActive
             visible: active
             Layout.alignment: Qt.AlignHCenter
             sourceComponent: MZInformationCard {
