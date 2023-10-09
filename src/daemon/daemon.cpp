@@ -205,28 +205,6 @@ bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
   return true;
 }
 
-bool Daemon::addExclusionRoute(const IPAddress& prefix) {
-  if (m_excludedAddrSet.contains(prefix)) {
-    m_excludedAddrSet[prefix]++;
-    return true;
-  }
-  if (!wgutils()->addExclusionRoute(prefix)) {
-    return false;
-  }
-  m_excludedAddrSet[prefix] = 1;
-  return true;
-}
-
-bool Daemon::delExclusionRoute(const IPAddress& prefix) {
-  Q_ASSERT(m_excludedAddrSet.contains(prefix));
-  if (m_excludedAddrSet[prefix] > 1) {
-    m_excludedAddrSet[prefix]--;
-    return true;
-  }
-  m_excludedAddrSet.remove(prefix);
-  return wgutils()->deleteExclusionRoute(prefix);
-}
-
 // static
 bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 #define GETVALUE(name, where, jsontype)                           \
@@ -388,13 +366,6 @@ bool Daemon::deactivate(bool emitSignals) {
     }
     wgutils()->deletePeer(config);
   }
-
-  // Cleanup routing for excluded addresses.
-  for (auto iterator = m_excludedAddrSet.constBegin();
-       iterator != m_excludedAddrSet.constEnd(); ++iterator) {
-    wgutils()->deleteExclusionRoute(iterator.key());
-  }
-  m_excludedAddrSet.clear();
 
   // Delete the interface
   if (!wgutils()->deleteInterface()) {

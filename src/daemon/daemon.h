@@ -83,7 +83,6 @@ class Daemon : public QObject {
     InterfaceConfig m_config;
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
-  QHash<IPAddress, int> m_excludedAddrSet;
   QTimer m_handshakeTimer;
 };
 
