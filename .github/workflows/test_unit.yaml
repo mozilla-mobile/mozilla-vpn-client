@@ -58,7 +58,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
       - name: Running QML tests
@@ -68,7 +68,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Running unit tests
@@ -79,10 +79,10 @@ jobs:
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
 
-          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for linux unit tests to Codecov
@@ -91,7 +91,7 @@ jobs:
           directory: .
           flags: linux_unit_tests
           name: codecov-poc
-          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
+          files: nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
           verbose: true
 
   macos-unit-tests:
@@ -147,7 +147,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
       - name: Running QML tests
@@ -157,7 +157,7 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Running unit tests
@@ -168,10 +168,10 @@ jobs:
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
 
-          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for macos unit tests to Codecov

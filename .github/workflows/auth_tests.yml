@@ -1,11 +1,7 @@
-name: Unit Tests
+name: Auth Tests
 on:
   # Only run on push to main or release branches.
   push:
-    branches:
-      - main
-      - "releases/**"
-  pull_request:
     branches:
       - main
       - "releases/**"
