@@ -107,6 +107,25 @@ Rectangle {
         }, transitionDuration);
     }
 
+    onStateChanged: () => {
+        if (state === "open-loading") {
+            Glean.impression.speedTestResultsLoading.record({
+                screen: "speed_test_loading",
+                action: "impression",
+            });
+        } else if (state === "open-ready") {
+            Glean.impression.speedTestResultCompleted.record({
+                screen: "speed_test_result",
+                action: "impression",
+            });
+        } else if (state === "open-error") {
+            Glean.impression.speedTestResultError.record({
+                screen: "speed_test_error",
+                action: "impression",
+            });
+        }
+    }
+
     Behavior on opacity {
         NumberAnimation {
             target: root
@@ -141,6 +160,7 @@ Rectangle {
 
     MZIconButton {
         id: connectionInfoRestartButton
+        objectName: "connectionInfoRestartButton"
 
         visible: VPNController.state === VPNController.StateOn && (connectionInfoContent.visible || connectionInfoError.visible)
 
@@ -158,6 +178,14 @@ Rectangle {
 
         onClicked: {
             if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
+                Glean.interaction.speedTestRefresh.record({
+                    screen: root.state == "open-error"  ? "speed_test_error"
+                        : root.state == "open-ready"  ? "speed_test_result" 
+                            : "unexpected",
+                    action: "select",
+                    element_id: "refresh",
+                });
+
                 VPNConnectionBenchmark.start();
             }
         }

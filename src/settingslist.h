@@ -753,17 +753,6 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    false                   // sensitive (do not log)
 )
 
-SETTING_BOOL(vpnSessionPingTimeoutDebug,        // getter
-             setVpnSessionPingTimeoutDebug,     // setter
-             removeVpnSessionPingTimeoutDebug,  // remover
-             hasVpnSessionPingTimeoutDebug,     // has
-             "vpnSessionPingTimeoutDebug",      // key
-             false,                             // default value
-             false,                             // user setting
-             false,                             // remove when reset
-             false                              // sensitive (do not log)
-)
-
 SETTING_STRING(sentryDSN,        // getter
                setSentryDSN,     // setter
                removeSentryDSN,  // remover
@@ -819,6 +808,17 @@ SETTING_STRING(gleanDebugTag,        // getter
                false,                // user setting
                true,                 // remove when reset
                false                 // sensitive (do not log)
+)
+
+SETTING_BOOL(gleanLogPings,        // getter
+             setGleanLogPings,     // setter
+             removeGleanLogPings,  // remover
+             hasGleanLogPings,     // has
+             "gleanLogPings",      // key
+             false,                // default value
+             false,                // user setting
+             true,                 // remove when reset
+             false                 // sensitive (do not log)
 )
 
 #ifdef UNIT_TEST

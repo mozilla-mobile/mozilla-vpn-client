@@ -2277,3 +2277,9 @@ void MozillaVPN::ensureApplicationIdExists() {
   }
 #endif
 }
+
+void MozillaVPN::gleanSetDebugViewTag(QString tag) {
+  MZGlean::setDebugViewTag(tag);
+}
+
+void MozillaVPN::gleanSetLogPings(bool flag) { MZGlean::setLogPings(flag); }

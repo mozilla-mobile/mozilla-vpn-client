@@ -138,17 +138,20 @@ The inspector offers a number of tools to help debug and navigate through the VP
 Mozilla analytics & telemetry solution that provides a consistent
 experience and behavior across all of Mozilla products.
 
-When the client is built in debug mode, pings will have the [app channel](app-channel) set to
-`debug`. Additionally, ping contents will be logged to the client
-logs.
-
-When the client is in staging mode, but not debug mode, pings will have the
-[app channel](app-channel) set to `staging` which allows for filtering between staging
-and production pings through the `client_info.app_channel` metric present in all pings.
+When the client is in staging mode, pings will have the [app channel](app-channel) set to
+`staging`. This allows for filtering between staging and production pings through the
+`client_info.app_channel` metric present in all pings.
 
 [app-channel]: https://mozilla.github.io/glean/book/reference/general/initializing.html?highlight=app%20channel#gleaninitializeconfiguration
 
-### Working on tickets with new Glean instrumentation
+### Debug tooling
+
+Glean provides a series of [debug APIs](debug-apis) to aid developers and testers
+in verifying Glean metrics.
+
+These APIs can be accessed through the Mozilla VPN developer menu, under "Telemetry Debugging".
+
+#### Data review
 
 If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
 Following is the recommended process along with some pointers.

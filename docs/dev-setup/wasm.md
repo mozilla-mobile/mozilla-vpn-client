@@ -10,11 +10,7 @@ Ninja build tool
 
     sudo apt install ninja-build
 
-Install [emscripten](https://emscripten.org/)
-
-Read the following pages to know more about wasm and Qt:
-- https://emscripten.org/docs/getting_started/index.html
-- https://doc.qt.io/qt-6/wasm.html
+Install [emscripten](https://emscripten.org/). The version of emscripten required will depend of the Qt version being used. Check out [Qt docs](https://doc.qt.io/qt-6/wasm.html) to figure out the required version for your environment.
 
 # Build
 

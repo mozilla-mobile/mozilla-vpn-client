@@ -27,6 +27,7 @@
         <file>screens/getHelp/developerMenu/ViewDeveloperMenu.qml</file>
         <file>screens/getHelp/developerMenu/ViewFeatureList.qml</file>
         <file>screens/getHelp/developerMenu/ViewMessages.qml</file>
+        <file>screens/getHelp/developerMenu/ViewTelemetryDebugging.qml</file>
         <file>screens/getHelp/developerMenu/ViewThemeList.qml</file>
         <file>screens/getHelp/developerMenu/ViewUiTesting.qml</file>
         <file>screens/home/controller/connectionInfo/ConnectionCheckmarkList.qml</file>

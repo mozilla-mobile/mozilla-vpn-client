@@ -5,6 +5,8 @@
 #include "inspectorhandler.h"
 
 #include <QBuffer>
+#include <QJSValue>
+#include <QJSValueIterator>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -22,6 +24,7 @@
 #include "constants.h"
 #include "feature.h"
 #include "frontend/navigator.h"
+#include "glean/generated/metrics.h"
 #include "inspectorhotreloader.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
@@ -57,6 +60,35 @@ InspectorItemPicker* s_itemPicker = nullptr;
 
 std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
 InspectorHotreloader* s_hotreloader = nullptr;
+
+QJsonValue qjsValueToQJsonValue(const QJSValue& qjsValue) {
+  if (qjsValue.isUndefined() || qjsValue.isNull()) {
+    return QJsonValue(QJsonValue::Undefined);
+  } else if (qjsValue.isBool()) {
+    return QJsonValue(qjsValue.toBool());
+  } else if (qjsValue.isNumber()) {
+    return QJsonValue(qjsValue.toNumber());
+  } else if (qjsValue.isString()) {
+    return QJsonValue(qjsValue.toString());
+  } else if (qjsValue.isArray()) {
+    QJsonArray jsonArray;
+    quint32 length = qjsValue.property("length").toUInt();
+    for (quint32 i = 0; i < length; ++i) {
+      jsonArray.append(qjsValueToQJsonValue(qjsValue.property(i)));
+    }
+    return QJsonValue(jsonArray);
+  } else if (qjsValue.isObject()) {
+    QJsonObject jsonObject;
+    QJSValueIterator it(qjsValue);
+    while (it.hasNext()) {
+      it.next();
+      jsonObject.insert(it.name(), qjsValueToQJsonValue(it.value()));
+    }
+    return QJsonValue(jsonObject);
+  }
+  // Handle other types as needed
+  return QJsonValue(QJsonValue::Undefined);
+}
 }  // namespace
 
 struct InspectorSettingCommand {
@@ -569,6 +601,37 @@ static QList<InspectorCommand> s_commands{
                        Constants::setVersionOverride(versionOverride);
                        return QJsonObject();
                      }},
+
+    InspectorCommand{
+        "glean_test_get_value", "Get value of a Glean metric", 3,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString metricCategory = QString(arguments[1]);
+          QString metricName = QString(arguments[2]);
+          QString ping = QString(arguments[3]);
+
+          // Hack: let's run the code on the QML side,
+          // because I (Bea) could not figure out a nice way
+          // to access C++ namespaces and namespace properties
+          // with runtime strings.
+          QJSEngine* engine = QmlEngineHolder::instance()->engine();
+          QJSValue function = QmlEngineHolder::instance()->engine()->evaluate(
+              QString("(Glean) => Glean.%1.%2.testGetValue(\"%3\")")
+                  .arg(metricCategory)
+                  .arg(metricName)
+                  .arg(ping));
+
+          QJSValue result = function.call(QJSValueList{
+              engine->toScriptValue(__DONOTUSE__GleanMetrics::instance())});
+
+          QJsonObject obj;
+          if (result.isError()) {
+            obj["error"] = result.toString();
+          } else {
+            obj["value"] = qjsValueToQJsonValue(result);
+          }
+
+          return obj;
+        }},
 };
 
 // static

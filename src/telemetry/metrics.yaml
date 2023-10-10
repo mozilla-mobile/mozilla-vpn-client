@@ -8,6 +8,234 @@
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
+# "impression" category events, are events where the user has just moved on to page X
+# Events under this category are recorded when a new screen is loaded
+impression:
+  speed_test_results_loading:
+    no_lint:
+      - COMMON_PREFIX
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the loading animation for the speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: &impression_extra_keys
+      screen:
+        description: The id of the screen the user is on
+        type: string
+      action:
+        description: The type of action the user has performed
+        type: string
+  speed_test_result_completed:
+    no_lint:
+      - COMMON_PREFIX
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  speed_test_result_error:
+    no_lint:
+      - COMMON_PREFIX
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  connection_info_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the connection information
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+
+# "interaction" category events represent an interaction of the user with the VPN UI
+interaction:
+  connection_info_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the button that closes
+      the connection information modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: &interaction_extra_keys
+      <<: *impression_extra_keys
+      element_id:
+        description: The id of the element the user has interacted with
+        type: string
+
+  connection_info_opened:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the button that opens
+      the connection information modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+
+  speed_test_triggered:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on the button that triggers the speed test
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+
+  speed_test_closed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on the button that closes the speed tests
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+
+  speed_test_refresh:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on the button to refresh the
+      speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+
+# "outcome" category metrics record the outcome of some user action
+outcome:
+  speed_test_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A speed test has just been completed,
+      this is a backend event and does not necessarily
+      mean the user has seen the speed test completed screen.
+      For that, there is the impression.speed_test_result_completed event.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys:
+      speed:
+        description: |
+          The speed bucket that the test resulted in, or if problem occurred:
+          Slow | Medium | Fast | Cancelled | Error
+        type: string
+      outcome: &outcome_extra_key
+        description: The outcome of a given feature
+        type: string
+
 sample:
   addon_cta_clicked:
     type: event
@@ -889,24 +1117,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  connection_info_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the connection info view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
   get_help_clicked_initialize:
     type: event
     lifetime: ping
@@ -1315,10 +1525,11 @@ sample:
     data_sensitivity:
       - technical
     notification_emails:
-      - amarchesini@mozilla.com
+      - brizental@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys:
+      <<: *impression_extra_keys
       state:
         description: |
           The name of the app state, e.g. "authenticating", "device-limit",
@@ -1560,55 +1771,6 @@ sample:
       action:
         description: |
           The trigger that caused the modal to be closed (dismissed | cta)
-        type: string
-
-  device_removed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A device has been removed from the user's account.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2023-12-31
-    extra_keys:
-      source:
-        description: |
-          The source of the device removal information.
-          Either 'TaskRemoveDevice' or 'PushMessage'.
-        type: string
-  # End of push messages validation metrics
-
-  speed_test_completed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Speed test was completed.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      speed:
-        description: |
-          The speed bucket that the test resulted in, or if problem occurred:
-          Slow | Medium | Fast | Cancelled | Error
         type: string
 
   user_changed_endpoint_geo:

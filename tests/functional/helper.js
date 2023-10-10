@@ -20,6 +20,10 @@ let _lastNotification = {
 let _lastAddonLoadingCompleted = false;
 
 module.exports = {
+  runningOnWasm() {
+    return process.env['WASM'];
+  },
+
   async connect(impl, options) {
     client = impl;
     await this.waitForCondition(async () => {
@@ -280,6 +284,14 @@ module.exports = {
     const json = await this._writeCommand('set_glean_source_tags automation');
     assert(
         json.type === 'set_glean_source_tags' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || null;
+  },
+
+  async gleanTestGetValue(metricCategory, metricName, ping) {
+    const json = await this._writeCommand(`glean_test_get_value ${metricCategory} ${metricName} ${ping}`);
+    assert(
+        json.type === 'glean_test_get_value' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value || null;
   },

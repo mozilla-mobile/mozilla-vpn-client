@@ -1,7 +1,7 @@
 {
   "scripts": {
     "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000",
-    "functionalTestWasm": "mocha --require ./tests/functional/setupWasm.js --timeout 30000",
+    "functionalTestWasm": "WASM=true mocha --require ./tests/functional/setupWasm.js --timeout 30000",
     "wasm:dev": "node tests/functional/wasm.js",
     "qml-reload": "node ./tools/qml_hot_reload/hot.js",
     "languages:check": "cd ./tools/languagelocalizer/ && node languageLocalizer.js -c",
