@@ -377,7 +377,6 @@ void ConnectionManager::activateInternal(
   exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
   exitConfig.m_serverPort = exitServer.choosePort();
   exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
-  exitConfig.m_excludedAddresses = getExcludedAddresses();
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   exitConfig.m_installationId = settingsHolder->installationId();
@@ -551,29 +550,6 @@ QList<IPAddress> ConnectionManager::getAllowedIPAddressRanges(
   QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
   list.append(IPAddress::excludeAddresses(allowedIPv6, excludeIPv6s));
 #endif
-
-  return list;
-}
-
-QStringList ConnectionManager::getExcludedAddresses() {
-  logger.debug() << "Computing the excluded IP addresses";
-
-  QStringList list;
-
-  // filtering out the captive portal endpoint
-  if (Feature::get(Feature::Feature_captivePortal)->isSupported() &&
-      SettingsHolder::instance()->captivePortalAlert()) {
-    CaptivePortal* captivePortal = MozillaVPN::instance()->captivePortal();
-
-    for (const QString& address : captivePortal->ipv4Addresses()) {
-      logger.debug() << "Filtering out the captive portal address:" << address;
-      list.append(address);
-    }
-    for (const QString& address : captivePortal->ipv6Addresses()) {
-      logger.debug() << "Filtering out the captive portal address:" << address;
-      list.append(address);
-    }
-  }
 
   return list;
 }
@@ -996,6 +972,17 @@ bool ConnectionManager::deactivate() {
       m_state != StateConnecting && m_state != StateCheckSubscription) {
     logger.warning() << "Already disconnected";
     return false;
+  }
+
+  // In the event user switches from one network to a different network with a
+  // captive portal, they will experience "No Signal". Upon deactivating the VPN
+  // a "Captive Portal Detected" screen will be presented to inform the user of
+  // the underlying issue.
+  if (m_portalDetected) {
+    emit activationBlockedForCaptivePortal();
+    Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
+
+    m_portalDetected = false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming ||

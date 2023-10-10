@@ -10,7 +10,6 @@
 #include "captiveportalrequest.h"
 
 class CaptivePortalDetectionImpl;
-class CaptivePortalMonitor;
 class CaptivePortalNotifier;
 
 class CaptivePortalDetection final : public QObject {
@@ -41,19 +40,11 @@ class CaptivePortalDetection final : public QObject {
   Q_INVOKABLE void deactivationRequired();
 
  private:
-  CaptivePortalMonitor* captivePortalMonitor();
-  CaptivePortalMonitor* captivePortalBackgroundMonitor();
-
   CaptivePortalNotifier* captivePortalNotifier();
 
  private:
   bool m_active = false;
   bool m_shouldRun = true;
-
-  // Don't use it directly. Use captivePortalMonitor().
-  CaptivePortalMonitor* m_captivePortalMonitor = nullptr;
-
-  CaptivePortalMonitor* m_captivePortalBackgroundMonitor = nullptr;
 
   // Don't use it directly. Use captivePortalNotifier().
   CaptivePortalNotifier* m_captivePortalNotifier = nullptr;

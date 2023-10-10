@@ -202,7 +202,6 @@ class ConnectionManager : public QObject, public LogSerializer {
 
   void clearConnectedTime();
   void clearRetryCounter();
-  QStringList getExcludedAddresses();
   void activateNext();
   void setState(State state);
   void resetConnectedTime();

@@ -40,12 +40,6 @@ QJsonObject InterfaceConfig::toJson() const {
   };
   json.insert("allowedIPAddressRanges", allowedIPAddesses);
 
-  QJsonArray jsExcludedAddresses;
-  for (const QString& i : m_excludedAddresses) {
-    jsExcludedAddresses.append(QJsonValue(i));
-  }
-  json.insert("excludedAddresses", jsExcludedAddresses);
-
   QJsonArray disabledApps;
   for (const QString& i : m_vpnDisabledApps) {
     disabledApps.append(QJsonValue(i));

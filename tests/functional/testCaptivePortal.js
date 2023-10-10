@@ -125,56 +125,6 @@ describe('Captive portal', function() {
       });
       assert.equal(vpn.lastNotification().title, 'Guest Wi-Fi portal blocked');
     });
-
-    it('Clicking the alert and wait for recovering', async () => {
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
-
-      await vpn.activate();
-
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'VPN Connected';
-      });
-      vpn.resetLastNotification();
-      // Setup - end
-
-      await vpn.forceCaptivePortalDetection();
-      await vpn.wait();
-
-      // Clicking on the alert should disable the vpn
-      await vpn.waitForQueryAndClick(queries.screenHome.CAP_PORTAL_BUTTON);
-
-      await vpn.waitForCondition(async () => {
-        let connectingMsg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE, 'text');
-        return connectingMsg === 'Disconnecting…' ||
-            connectingMsg === 'VPN is off';
-      });
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'VPN Disconnected';
-      });
-
-      // 'Wait for recovering'
-
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'Guest Wi-Fi portal detected';
-      });
-
-      await vpn.clickOnNotification();
-
-      await vpn.waitForCondition(async () => {
-        let connectingMsg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE, 'text');
-        return connectingMsg === 'Connecting…';
-      });
-
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'VPN Connected';
-      });
-    });
-
     it('Shows the prompt Before activation when a portal is detected before the activation',
        async () => {
          await vpn.setSetting('captivePortalAlert', 'true');
