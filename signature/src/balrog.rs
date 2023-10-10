@@ -64,6 +64,12 @@ impl From<X509Error> for BalrogError {
     }
 }
 
+impl From<asn1_rs::Err<X509Error>> for BalrogError {
+    fn from(e: asn1_rs::Err<X509Error>) -> Self {
+        BalrogError::X509(X509Error::from(e))
+    }
+}
+
 impl From<PEMError> for BalrogError {
     fn from(e: PEMError) -> Self {
         BalrogError::PemDecodeError(e.to_string())
@@ -84,51 +90,33 @@ pub fn parse_and_verify(
     root_hash: &str,
     leaf_subject: &str
 ) -> Result<(), BalrogError> {
-    let pem_chain = match parse_pem_chain(x5u) {
-        Err(e) => return Err(BalrogError::from(e)),
-        Ok(x) => x
-    };
+    /* Parse the certificate chain. */
+    let pem_chain = parse_pem_chain(x5u)?;
+    let balrog = Balrog::new(&pem_chain)?;
 
-    let balrog = match Balrog::new(&pem_chain) {
-        Err(e) => return Err(BalrogError::from(e)),
-        Ok(x) => x
-    };
+    /* Verify things. */
+    let _ = balrog.verify_chain(current_time, root_hash)?;
+    let _ = balrog.verify_leaf_hostname(leaf_subject)?;
+    let _ = balrog.verify_content_signature(input, signature)?;
 
-    let _ = match balrog.verify_chain(current_time, root_hash) {
-        Err(e) => return Err(BalrogError::from(e)),
-        Ok(x) => x
-    };
-
-    let _ = match balrog.verify_leaf_hostname(leaf_subject) {
-        Err(e) => return Err(e),
-        Ok(x) => x
-    };
-
-    let _ = match balrog.verify_content_signature(input, signature) {
-        Err(e) => return Err(BalrogError::from(e)),
-        Ok(x) => x
-    };
-
+    /* Success */
     Ok(())
 }
 
 impl<'a> Balrog<'_> {
-    pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, X509Error> {
+    pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, BalrogError> {
         if list.is_empty() {
-            return Err(X509Error::InvalidCertificate);
+            return Err(BalrogError::from(X509Error::InvalidCertificate));
         }
 
         let mut parsed: Vec<X509Certificate<'a>> = Vec::new();
         let mut hash: Vec<u8> = Vec::new();
         for (i, pem) in list.iter().enumerate() {
             if pem.label != "CERTIFICATE" {
-                return Err(X509Error::InvalidCertificate);
+                return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
 
-            let x509 = match pem.parse_x509() {
-                Err(e) => return Err(X509Error::from(e)),
-                Ok(x) => x
-            };
+            let x509 = pem.parse_x509()?;
             parsed.push(x509);
 
             /* For the final certificate, calculate its SHA256 hash. */
@@ -152,7 +140,6 @@ impl<'a> Balrog<'_> {
         root_hash: &str
     ) -> Result<(), BalrogError> {
         assert!(!self.chain.is_empty());
-        assert!(!self.root_hash.is_empty());
 
         /* For each certificate N in the chain, check that:
         *  1. The issuer name in cert N matches the subject name of cert N+1.
@@ -170,26 +157,20 @@ impl<'a> Balrog<'_> {
         while index+1 < self.chain.len() {
             let subject = &self.chain[index];
             let issuer = &self.chain[index+1];
-            let _ = match Self::verify_cert_chain_pair(subject, issuer, current_time) {
-                Err(e) => return Err(e),
-                Ok(x) => x
-            };
+            let _ = Self::verify_cert_chain_pair(subject, issuer, current_time)?;
             index = index+1;
         }
 
         /* Verify the root certificate. */
         let root_cert = self.chain.last().unwrap();
-        let _ = match Self::verify_cert_chain_pair(root_cert, root_cert, current_time) {
-            Err(e) => return Err(e),
-            Ok(x) => x
-        };
+        let _ = Self::verify_cert_chain_pair(root_cert, root_cert, current_time)?;
 
         let hash_stripped = root_hash.replace(":", "");
         let hash_decoded = match hex::decode(hash_stripped) {
             Err(_e) => return Err(BalrogError::RootHashParseFailed),
             Ok(x) => x
         };
-        if self.root_hash != hash_decoded {
+        if self.root_hash.is_empty() || (self.root_hash != hash_decoded) {
             return Err(BalrogError::RootHashMismatch);
         }
         
@@ -218,10 +199,7 @@ impl<'a> Balrog<'_> {
         }
 
         /* Check that the issuer is permitted to sign certificates. */
-        let ca_key_usage = match issuer.key_usage() {
-            Err(e) => return Err(BalrogError::from(e)),
-            Ok(x) => x
-        };
+        let ca_key_usage = issuer.key_usage()?;
         let ca_key_usage = ca_key_usage.unwrap().value;
         if !ca_key_usage.key_cert_sign() {
             return Err(BalrogError::IssuerUnauthorized);
@@ -245,8 +223,7 @@ impl<'a> Balrog<'_> {
         }
         
         /* Verify the cryptographic signature. */
-        subject.verify_signature(Some(issuer.public_key()))
-            .map_err(|e| { BalrogError::from(e) })
+        Ok(subject.verify_signature(Some(issuer.public_key()))?)
     }
 
     /* Check a hostname against the leaf certificate. */
@@ -256,20 +233,14 @@ impl<'a> Balrog<'_> {
 
         /* First check, does the hostname match one of the subject common names? */
         for cn in leaf.subject().iter_common_name() {
-            let name = match cn.as_str() {
-                Err(e) => return Err(BalrogError::from(e)),
-                Ok(x) => x
-            };
+            let name = cn.as_str()?;
             if name == hostname {
                 return Ok(());
             }
         }
 
         /* Second check, does the hostname match one of the subject alternative names? */
-        let san = match leaf.subject_alternative_name() {
-            Err(e) => return Err(BalrogError::from(e)),
-            Ok(x) => x
-        };
+        let san = leaf.subject_alternative_name()?;
         if san.is_some() {
             let as_dns_name = GeneralName::DNSName(hostname);
             for x in san.unwrap().value.general_names.iter() {
@@ -332,7 +303,7 @@ impl<'a> Balrog<'_> {
             let code_sign_ext = match x.extended_key_usage() {
                 Err(_e) => false,
                 Ok(None) => false,
-                Ok(x) => x.unwrap().value.code_signing
+                Ok(Some(x)) => x.value.code_signing
             };
             if !code_sign_ext {
                 return Err(BalrogError::CodeSignUnauthorized);
@@ -355,10 +326,7 @@ impl<'a> Balrog<'_> {
             Err(_e) => return Err(BalrogError::SignatureDecodeError),
             Ok(x) => x
         };
-        let sig_der = match Self::ecdsa_signature_to_asn1(sig_decode.as_slice()) {
-            Err(e) => return Err(e),
-            Ok(x) => x
-        };
+        let sig_der = Self::ecdsa_signature_to_asn1(sig_decode.as_slice())?;
         let sig_asn1 = asn1_rs::BitString::new(0, sig_der.as_slice());
         let pubkey = self.chain.first().unwrap().public_key();
         
@@ -376,7 +344,6 @@ impl<'a> Balrog<'_> {
         let prefix: &[u8] = b"Content-Signature:\x00";
         let message = [prefix, input].concat();
 
-        x509_parser::verify::verify_signature(&pubkey, &algorithm, &sig_asn1, &message)
-            .map_err(|e| { BalrogError::from(e) })
+        Ok(x509_parser::verify::verify_signature(&pubkey, &algorithm, &sig_asn1, &message)?)
     }
 }
