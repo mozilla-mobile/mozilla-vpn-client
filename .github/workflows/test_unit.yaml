@@ -22,7 +22,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install dependences
         run: |
@@ -51,26 +51,38 @@ jobs:
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests -j$(nproc)
 
-      - name: Running tests
+      - name: Running native messaging tests
         shell: bash
-        working-directory: ./build
+        working-directory: ./build/tests/nativemessaging
         run: |
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+      - name: Running QML tests
+        shell: bash
+        working-directory: ./build/tests/qml
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
-          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+      - name: Running unit tests
+        shell: bash
+        working-directory: ./build/tests
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --test-dir unit --output-on-failure
+          ctest --test-dir unit_tests --output-on-failure
+
+          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/tests/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
-
-          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for linux unit tests to Codecov
@@ -79,7 +91,7 @@ jobs:
           directory: .
           flags: linux_unit_tests
           name: codecov-poc
-          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
+          files: nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
           verbose: true
 
   macos-unit-tests:
@@ -90,7 +102,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install dependencies
         shell: bash
@@ -128,26 +140,38 @@ jobs:
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
           cmake --build $(pwd)/build --target build_tests
 
-      - name: Running tests
+      - name: Running native messaging tests
         shell: bash
-        working-directory: ./build
+        working-directory: ./build/tests/nativemessaging
         run: |
-          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
-          grcov $(pwd)/tests/nativemessaging/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
-          grcov $(pwd)/tests/qml/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
+      - name: Running QML tests
+        shell: bash
+        working-directory: ./build/tests/qml
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
-          grcov $(pwd)/tests/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
+      - name: Running unit tests
+        shell: bash
+        working-directory: ./build/tests
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --test-dir unit --output-on-failure
+          ctest --test-dir unit_tests --output-on-failure
+
+          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
 
-          grcov $(pwd)/tests/auth_tests/CMakeFiles/app_auth_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/auth_lcov.info
-
-          grcov $(pwd)/tests/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
+          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for macos unit tests to Codecov
@@ -167,7 +191,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install Qt
         shell: pwsh
@@ -175,7 +199,7 @@ jobs:
           Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
           Expand-Archive win.zip
           mv win\QT_OUT "C:\\MozillaVPNBuild"
-        
+
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
 
@@ -193,8 +217,24 @@ jobs:
           cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
           cmake --build ./build --target build_tests
 
-      - name: Running tests
+      - name: Running native messaging tests
         shell: bash
-        working-directory: ./build
+        working-directory: ./build/tests/nativemessaging
         run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
+
+      - name: Running QML tests
+        shell: bash
+        working-directory: ./build/tests/qml
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --output-on-failure
+
+      - name: Running unit tests
+        shell: bash
+        working-directory: ./build/tests
+        run: |
+          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
+          ctest --test-dir unit --output-on-failure
+          ctest --test-dir unit_tests --output-on-failure
