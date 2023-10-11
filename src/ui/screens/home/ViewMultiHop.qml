@@ -76,7 +76,7 @@ StackView {
 
                 objectName: "buttonSelectEntry"
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
-                descriptionText: titleText
+                descriptionText: VPNCurrentServer.localizedEntryCityName
                 contentChildren: [
                     ServerLabel {
                         id: entryLabel
@@ -110,7 +110,7 @@ StackView {
                     objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
                     titleText: MZI18n.MultiHopFeatureMultiHopExitLocationHeader
-                    descriptionText: titleText
+                    descriptionText: VPNCurrentServer.localizedExitCityName
                     contentChildren: [
 
                         ServerLabel {

@@ -178,7 +178,7 @@ FocusScope {
                             leftMargin: MZTheme.theme.windowMargin * 0.5
                             rightMargin: MZTheme.theme.windowMargin * 0.5
                         }
-                        accessibleName: MZI18n.ServersViewRecommendedRefreshLabel
+                        accessibleName: statusTitle.text + '. ' + MZI18n.ServersViewRecommendedRefreshLabel
                         canGrowVertical: true
                         height: statusTitle.implicitHeight + MZTheme.theme.vSpacingSmall
                         rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
