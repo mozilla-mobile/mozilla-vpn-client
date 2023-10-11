@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use ring::signature;
-use std::os::raw::c_uchar;
-use std::ffi::CStr;
-use x509_parser::prelude::*;
 use crate::balrog::*;
+use ring::signature;
+use std::ffi::CStr;
+use std::os::raw::c_uchar;
+use x509_parser::prelude::*;
 
 pub mod balrog;
 
@@ -55,7 +55,7 @@ pub extern "C" fn verify_content_signature(
     input_length: usize,
     signature: *const i8,
     root_hash: *const i8,
-    leaf_subject: *const i8
+    leaf_subject: *const i8,
 ) -> bool {
     /* Translate C/FFI arguments into Rust types. */
     let x5u = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
@@ -63,23 +63,23 @@ pub extern "C" fn verify_content_signature(
     let sig_str = match unsafe { CStr::from_ptr(signature) }.to_str() {
         Err(e) => {
             eprintln!("{}", e);
-            return false
+            return false;
         }
-        Ok(x) => x
+        Ok(x) => x,
     };
     let root_hash_str = match unsafe { CStr::from_ptr(root_hash) }.to_str() {
         Err(e) => {
             eprintln!("{}", e);
-            return false
+            return false;
         }
-        Ok(x) => x
+        Ok(x) => x,
     };
     let leaf_subject_str = match unsafe { CStr::from_ptr(leaf_subject) }.to_str() {
         Err(e) => {
             eprintln!("{}", e);
-            return false
+            return false;
         }
-        Ok(x) => x
+        Ok(x) => x,
     };
     let now: i64 = ASN1Time::now().timestamp();
 
@@ -87,9 +87,9 @@ pub extern "C" fn verify_content_signature(
     let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subject_str) {
         Err(e) => {
             eprintln!("{}", e);
-            return false
+            return false;
         }
-        Ok(x) => x
+        Ok(x) => x,
     };
 
     /* Success! */
@@ -101,17 +101,19 @@ mod test {
     use super::*;
     use std::ffi::CString;
 
+    // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
     const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
     const VALID_CERT_CHAIN: &[u8] = include_bytes!("../assets/valid_cert_chain.pem");
-    const VALID_INPUT: &[u8] =
-        b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
+    const VALID_INPUT: &[u8] = b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
     const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
     const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
+    const VALID_TIMESTAMP: i64 = 1615559719; // March 12, 2021
 
     const INVALID_CERTIFICATE_DER: &[u8] = include_bytes!("../assets/invalid_der_content.pem");
 
     // Fetched from: https://content-signature-2.cdn.mozilla.net/chains/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain
-    const PROD_CERT_CHAIN: &[u8] = include_bytes!("../assets/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain");
+    const PROD_CERT_CHAIN: &[u8] =
+        include_bytes!("../assets/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain");
     const PROD_ROOT_HASH: &str = "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
     const PROD_HOSTNAME: &str = "aus.content-signature.mozilla.org";
     // Fetched from: https://aus5.mozilla.org/json/1/FirefoxVPN/2.14.0/WINNT_x86_64/release-cdntest/update.json
@@ -124,7 +126,7 @@ mod test {
             VALID_CERT_CHAIN,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
@@ -137,7 +139,7 @@ mod test {
             VALID_CERT_CHAIN,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             &ROOT_HASH.replace("A", "B"),
             VALID_HOSTNAME,
         );
@@ -150,12 +152,15 @@ mod test {
             INVALID_CERTIFICATE_DER,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        assert!(matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
-            "Found unexpected error: {}", r.unwrap_err());
+        assert!(
+            matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
     }
 
     #[test]
@@ -168,12 +173,15 @@ mod test {
             pem,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        assert!(matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
-            "Found unexpected error: {}", r.unwrap_err());
+        assert!(
+            matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
     }
 
     #[test]
@@ -183,12 +191,15 @@ mod test {
             pem,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        assert!(matches!(r, Err(BalrogError::CertificateNotFound)),
-            "Found unexpected error: {}", r.unwrap_err());
+        assert!(
+            matches!(r, Err(BalrogError::CertificateNotFound)),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
     }
 
     #[test]
@@ -205,7 +216,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             pem,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
@@ -218,7 +229,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             VALID_CERT_CHAIN,
             VALID_INPUT,
             VALID_SIGNATURE,
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             "example.com",
         );
@@ -243,19 +254,16 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
         // Parse the chain then swap the leaf and intermediate certs.
         let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
             Err(e) => panic!("Found unexpected error: {}", e),
-            Ok(x) => x
+            Ok(x) => x,
         };
         let leaf = pem.remove(0);
         pem.insert(1, leaf);
 
         let b = match Balrog::new(&pem) {
             Err(e) => panic!("Found unexpected error: {}", e),
-            Ok(x) => x
+            Ok(x) => x,
         };
-        let r = b.verify_chain(
-            1615559719, // March 12, 2021
-            ROOT_HASH
-        );
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
         assert_eq!(r, Err(BalrogError::ChainSubjectMismatch));
     }
 
@@ -263,13 +271,13 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
     fn test_verify_fails_if_bad_chain_signature() {
         let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
             Err(e) => panic!("Found unexpected error: {}", e),
-            Ok(x) => x
+            Ok(x) => x,
         };
         // An ASN.1 X509 certificate will take the form of:
         // Certificate ::= SEQUENCE {
         //     tbsCertificate     TBSCertificate,
         //     signatureAlgorithm AlgorithmIdentifier,
-        //     signature          BITSTRING 
+        //     signature          BITSTRING
         // }
         //
         // This means the signature will always reside in the trailing bytes of
@@ -280,13 +288,13 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
 
         let b = match Balrog::new(&pem) {
             Err(e) => panic!("Found unexpected error: {}", e),
-            Ok(x) => x
+            Ok(x) => x,
         };
-        let r = b.verify_chain(
-            1615559719, // March 12, 2021
-            ROOT_HASH
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        assert_eq!(
+            r,
+            Err(BalrogError::from(X509Error::SignatureVerificationError))
         );
-        assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
     }
 
     #[test]
@@ -295,23 +303,26 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             VALID_CERT_CHAIN,
             VALID_INPUT,
             &VALID_SIGNATURE.to_ascii_lowercase(), // altering case should modify the base64 signature without changing its length.
-            1615559719, // March 12, 2021
+            VALID_TIMESTAMP,
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
+        assert_eq!(
+            r,
+            Err(BalrogError::from(X509Error::SignatureVerificationError))
+        );
     }
 
     #[test]
     fn test_everything_fails_without_init() {
         let b = Balrog {
             chain: Vec::new(),
-            root_hash: Vec::new()
+            root_hash: Vec::new(),
         };
-        
+
         let r = b.verify_chain(
             1615559719, // March 12, 2021
-            ROOT_HASH
+            ROOT_HASH,
         );
         assert_eq!(r, Err(BalrogError::CertificateNotFound));
 
@@ -330,7 +341,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             PROD_SIGNATURE,
             1696272799, // Oct 2, 2023 - the time when I wrote this test
             PROD_ROOT_HASH,
-            PROD_HOSTNAME
+            PROD_HOSTNAME,
         );
         assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
     }
@@ -351,7 +362,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             PROD_INPUT_DATA.len(),
             prod_signature_cstr,
             prod_root_hash_cstr,
-            prod_hostname_cstr
+            prod_hostname_cstr,
         );
         assert!(r, "Verification failed via FFI");
 
