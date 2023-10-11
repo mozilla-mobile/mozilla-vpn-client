@@ -240,8 +240,12 @@ jobs:
           ctest --test-dir unit_tests --output-on-failure
 
   rust-unit-tests:
-    runs-on: ubuntu-22.04
-    name: Run Unit tests for Rust
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: Run Unit tests for Rust (${{ matrix.os }})
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
