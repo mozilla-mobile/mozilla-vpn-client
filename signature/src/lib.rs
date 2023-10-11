@@ -3,14 +3,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 use crate::balrog::*;
+use crate::logger::*;
 use ring::signature;
 use std::ffi::CStr;
-use std::ffi::CString;
 use std::os::raw::c_uchar;
 use x509_parser::prelude::*;
 
 pub mod balrog;
+pub mod logger;
 
+/* FFI interface to verify an RSA signature
+ *
+ * The following arguments are expected:
+ *  - public_key_ptr: Pointer to a DER-encoded RSA public key.
+ *  - public_key_length: Length of DER-encoded RSA public key (in bytes).
+ *  - message_ptr: Data signed by the RSA public key.
+ *  - message_length: Length of data signed by the RSA public key (in bytes).
+ *  - message_signature_ptr: Pointer to the RSA signature to verify.
+ *  - message_signature_length: Length of the RSA signature (in bytes).
+ *  - log_fn: callback function for log messages (optional)
+ */
 #[no_mangle]
 pub extern "C" fn verify_rsa(
     public_key_ptr: *const c_uchar,
@@ -19,7 +31,10 @@ pub extern "C" fn verify_rsa(
     message_length: usize,
     message_signature_ptr: *const c_uchar,
     message_signature_length: usize,
+    log_fn: Option<extern "C" fn(*const i8)>,
 ) -> bool {
+    let logger = SignatureLogger { handler: log_fn };
+
     let public_key_str = unsafe { std::slice::from_raw_parts(public_key_ptr, public_key_length) };
     let public_key =
         signature::UnparsedPublicKey::new(&signature::RSA_PKCS1_2048_8192_SHA256, &public_key_str);
@@ -30,35 +45,10 @@ pub extern "C" fn verify_rsa(
 
     match public_key.verify(message_str, message_signature_str) {
         Err(e) => {
-            eprintln!("{}", e);
+            logger.print(&e.to_string());
             false
         }
         Ok(_) => true,
-    }
-}
-
-struct SignatureLogger {
-    handler: Option<extern "C" fn(*const i8)>,
-}
-
-impl SignatureLogger {
-    fn print(&self, msg: &str) {
-        let callback = match self.handler {
-            None => {
-                eprintln!("{}", msg);
-                return;
-            }
-            Some(x) => x,
-        };
-
-        let _ = match CString::new(msg) {
-            Err(_e) => {}
-            Ok(x) => unsafe {
-                let msg_cstr = x.into_raw();
-                callback(msg_cstr);
-                let _ = CString::from_raw(msg_cstr);
-            },
-        };
     }
 }
 
@@ -66,9 +56,9 @@ impl SignatureLogger {
  *
  * The following arguments are expected:
  *  - x5u_ptr: Pointer to a PEM-encoded X509 certificate chain.
- *  - x5u_length: Length of PEM-encoded X509 certificate chain.
+ *  - x5u_length: Length of PEM-encoded X509 certificate chain (in bytes).
  *  - input_ptr: Data signed by the leaf certificate.
- *  - input_length: Length of data signed by the leaf certificate.
+ *  - input_length: Length of data signed by the leaf certificate (in bytes).
  *  - signature: base64-encoded content signature.
  *  - root_hash: hex-encoded SHA256 hash expected of the root certificate.
  *  - leaf_subject: hostname from which the content signature was received.
@@ -85,7 +75,6 @@ pub extern "C" fn verify_content_signature(
     leaf_subject: *const i8,
     log_fn: Option<extern "C" fn(*const i8)>,
 ) -> bool {
-    /* Unwrap the logger, or fall back to a default. */
     let logger = SignatureLogger { handler: log_fn };
 
     /* Translate C/FFI arguments into Rust types. */
@@ -130,6 +119,12 @@ pub extern "C" fn verify_content_signature(
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::ffi::CString;
+
+    // An RSA signature of an addon manifest from prod.
+    const RSA_PUBLIC_KEY: &[u8] = include_bytes!("../../src/resources/public_keys/production.der");
+    const RSA_ADDON_MESSAGE: &[u8] = include_bytes!("../assets/addon_manifest.json");
+    const RSA_ADDON_SIGNATURE: &[u8] = include_bytes!("../assets/addon_signature.sig");
 
     // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
     const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
@@ -149,6 +144,77 @@ mod test {
     // Fetched from: https://aus5.mozilla.org/json/1/FirefoxVPN/2.14.0/WINNT_x86_64/release-cdntest/update.json
     const PROD_SIGNATURE: &str = "znYFqdKKFgijVgUhnq5VuZxtI5Zay8MARVFr3cG1CbB9eH9slQFkE9ZjMdLzbf5OZqj2gds1OqbCm45L38e2joKD_mCAUGtajebztDdWx9Rqgmn-9vu6t-SCl6HQrzbh";
     const PROD_INPUT_DATA: &[u8] = include_bytes!("../assets/prod_update_data.json");
+
+    #[test]
+    fn test_rsa_success() {
+        let r = verify_rsa(
+            RSA_PUBLIC_KEY.as_ptr(),
+            RSA_PUBLIC_KEY.len(),
+            RSA_ADDON_MESSAGE.as_ptr(),
+            RSA_ADDON_MESSAGE.len(),
+            RSA_ADDON_SIGNATURE.as_ptr(),
+            RSA_ADDON_SIGNATURE.len(),
+            None,
+        );
+        assert!(r, "RSA signature check failed");
+    }
+
+    #[test]
+    fn test_rsa_fails_if_addded_padding() {
+        /* Extend the message and it should fail validation. */
+        let addon_message = [RSA_ADDON_MESSAGE, b"Hello World"].concat();
+        let r = verify_rsa(
+            RSA_PUBLIC_KEY.as_ptr(),
+            RSA_PUBLIC_KEY.len(),
+            addon_message.as_ptr(),
+            addon_message.len(),
+            RSA_ADDON_SIGNATURE.as_ptr(),
+            RSA_ADDON_SIGNATURE.len(),
+            None,
+        );
+        assert!(!r, "RSA signature check failed to catch added padding");
+    }
+
+    #[test]
+    fn test_rsa_fails_if_bad_signature() {
+        /* Flip a bit in the middle of the signature. */
+        let mut bad_signature = RSA_ADDON_SIGNATURE.to_vec();
+        bad_signature[RSA_ADDON_SIGNATURE.len() / 2] ^= 0x80;
+
+        let r = verify_rsa(
+            RSA_PUBLIC_KEY.as_ptr(),
+            RSA_PUBLIC_KEY.len(),
+            RSA_ADDON_MESSAGE.as_ptr(),
+            RSA_ADDON_MESSAGE.len(),
+            bad_signature.as_ptr(),
+            bad_signature.len(),
+            None,
+        );
+        assert!(!r, "RSA signature check failed to catch a bad signature");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_rsa_ffi_logger() {
+        extern "C" fn logfn(msg: *const i8) {
+            let _ = match unsafe { CStr::from_ptr(msg) }.to_str() {
+                Err(_e) => {}
+                Ok(x) => panic!("{}", x),
+            };
+        }
+    
+        let addon_message = [RSA_ADDON_MESSAGE, b"Hello World"].concat();
+        let r = verify_rsa(
+            RSA_PUBLIC_KEY.as_ptr(),
+            RSA_PUBLIC_KEY.len(),
+            addon_message.as_ptr(),
+            addon_message.len(),
+            RSA_ADDON_SIGNATURE.as_ptr(),
+            RSA_ADDON_SIGNATURE.len(),
+            Some(logfn),
+        );
+        assert!(!r, "RSA signature check failed to catch an error");
+    }
 
     #[test]
     fn test_verify_succeeds_if_valid() {

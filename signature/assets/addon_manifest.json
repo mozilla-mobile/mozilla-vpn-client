@@ -1,0 +1,93 @@
+{
+  "api_version": "0.1",
+  "addons": [
+    {
+      "id": "guide_01_how_to_vpn",
+      "sha256": "52f1d2a135629e816462f533f0161811e0c16be1e0dc8c93abf84acb77149004"
+    },
+    {
+      "id": "guide_02_is_my_vpn_working_correctly",
+      "sha256": "265c9af30544857bd16e18410b962ca2b97c6dd3e78ccccb7e063983c6c35ae8"
+    },
+    {
+      "id": "guide_03_adding_and_removing_devices",
+      "sha256": "8324d99d12499437a26c51d346ec007d2ad26d29267c36cdea866b13d6cea071"
+    },
+    {
+      "id": "guide_05_what_is_multi_hop",
+      "sha256": "ede9e1cc8fbf11f7d9fb79c9e9e6fdaa60e17dcb4b1af870f8d1b3f6ef5b01af"
+    },
+    {
+      "id": "guide_08_privacy_features",
+      "sha256": "ae8a4f2d3a0e4147e034d1087e919ca8a9380a81783f61ec3a2a7c37aef91462"
+    },
+    {
+      "id": "guide_09_custom_dns",
+      "sha256": "ee531e730fd641b0de8e0bc80d72ae2a2548aabc0e14376eb1d15c558d6938aa"
+    },
+    {
+      "id": "guide_10_app_exclusions",
+      "sha256": "96dc46134ea7c09256a02d45ceeecc2d48ce35ff90f5917696dbbe0754410b84"
+    },
+    {
+      "id": "guide_11_recommended_servers",
+      "sha256": "cc733af6f79ec61e569faaaa4f5f7bb42004b72aad5e2c23b5c00f79104aee04"
+    },
+    {
+      "id": "guide_12_multi_account_containers",
+      "sha256": "7b9cf4610ae668bd7f4e85d1f44c9f359309e9ddc0102451074726656487ffa0"
+    },
+    {
+      "id": "message_dom",
+      "sha256": "a0fe38dc2cc03e4fda51d99bd0420d24ab5d07252bd23d3583b6224c00e6dcbb"
+    },
+    {
+      "id": "message_subscription_expiring",
+      "sha256": "b31584784d459bb362096f5d0be679f4e70a4494e4c3d799eb1d0906cfa1a806"
+    },
+    {
+      "id": "message_survey",
+      "sha256": "7dd22f0af924beb254eef57ebdfdc3c7ed32dea8f26d731e1fd65da18170a072"
+    },
+    {
+      "id": "message_survey_staging_1h",
+      "sha256": "7a13c6f11d1e880db6f3d8ff7845d3081ba12dab043890d44cd34b67d12f818e"
+    },
+    {
+      "id": "message_survey_staging_30m",
+      "sha256": "ac110ce985556f3a8ca1dae4b17588d4ea0a511d287b0a04075f8e5f33b7ea8c"
+    },
+    {
+      "id": "message_update_v2.16",
+      "sha256": "120776e67c32637b40a71258376a990e45de7f0bc86fd3d3d790cb843d522807"
+    },
+    {
+      "id": "message_whats_new_v2.15",
+      "sha256": "335677c9aaef2105971d4fc5147d72822c2f3a81faba86c881db2c9833ff1714"
+    },
+    {
+      "id": "message_whats_new_v2.16",
+      "sha256": "aa2d856359c0e44d8d1be85cf1fb1c0b666e19a734a393576813c09e5365825b"
+    },
+    {
+      "id": "tutorial_01_get_started",
+      "sha256": "d9a6b204ef18814d8bdea32bc989a74694ec7f78ce421c21d1869baa7b358992"
+    },
+    {
+      "id": "tutorial_01_get_started_recommended_locations",
+      "sha256": "dcef74f020c8505e9db14e597fe6e60ca6a821084d355a52f9e493aaadfd0493"
+    },
+    {
+      "id": "tutorial_02_connect_on_startup",
+      "sha256": "f6f4d73eda33fa1e72c85f503659a9553f731cc96b583bee15530bec5f568961"
+    },
+    {
+      "id": "tutorial_03_multi_hop",
+      "sha256": "123587d12bb42b909c62cd9c836aea8bdd41e38336ed563674fd50d3b56ea49b"
+    },
+    {
+      "id": "tutorial_04_split_tunneling3",
+      "sha256": "9d9d1b817fb72b935568b68f43c017758d7e4280e886d03b4f014147754388f9"
+    }
+  ]
+}
