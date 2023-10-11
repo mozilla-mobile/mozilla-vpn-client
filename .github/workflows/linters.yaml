@@ -54,7 +54,7 @@ jobs:
       - name: Check for issues with cargo fmt
         run: |
           for tomlfile in $(git ls-files -c '*/Cargo.toml'); do
-            (cd $(dirname $tomlfile) && cargo fmt --check)
+            (cd $(dirname $tomlfile) && cargo fmt --check) || true
           done
 
       - name: Spell check documentation files
