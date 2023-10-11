@@ -33,6 +33,8 @@ pub struct Balrog<'a> {
 // Errors that can be returned from the Balrog module.
 #[derive(Clone, Debug, PartialEq, thiserror::Error)]
 pub enum BalrogError {
+    #[error("Certificate chain not found")]
+    CertificateNotFound,
     #[error("Chain subject/issuer mismatch")]
     ChainSubjectMismatch,
     #[error("Certificate expired")]
@@ -106,7 +108,7 @@ pub fn parse_and_verify(
 impl<'a> Balrog<'_> {
     pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, BalrogError> {
         if list.is_empty() {
-            return Err(BalrogError::from(X509Error::InvalidCertificate));
+            return Err(BalrogError::CertificateNotFound);
         }
 
         let mut parsed: Vec<X509Certificate<'a>> = Vec::new();
@@ -139,7 +141,9 @@ impl<'a> Balrog<'_> {
         current_time: i64,
         root_hash: &str
     ) -> Result<(), BalrogError> {
-        assert!(!self.chain.is_empty());
+        if self.chain.is_empty() {
+            return Err(BalrogError::CertificateNotFound);
+        }
 
         /* For each certificate N in the chain, check that:
         *  1. The issuer name in cert N matches the subject name of cert N+1.
@@ -162,7 +166,10 @@ impl<'a> Balrog<'_> {
         }
 
         /* Verify the root certificate. */
-        let root_cert = self.chain.last().unwrap();
+        let root_cert = match self.chain.last() {
+            None => return Err(BalrogError::CertificateNotFound),
+            Some(x) => x
+        };
         let _ = Self::verify_cert_chain_pair(root_cert, root_cert, current_time)?;
 
         let hash_stripped = root_hash.replace(":", "");
@@ -190,7 +197,7 @@ impl<'a> Balrog<'_> {
         }
 
         /* Check the certificate validity period. */
-        let asn_timestamp = ASN1Time::from_timestamp(current_time).unwrap();
+        let asn_timestamp = ASN1Time::from_timestamp(current_time)?;
         if !subject.validity().is_valid_at(asn_timestamp) {
             return Err(BalrogError::CertificateExpired);
         }
@@ -199,8 +206,10 @@ impl<'a> Balrog<'_> {
         }
 
         /* Check that the issuer is permitted to sign certificates. */
-        let ca_key_usage = issuer.key_usage()?;
-        let ca_key_usage = ca_key_usage.unwrap().value;
+        let ca_key_usage = match issuer.key_usage()? {
+            None => return Err(BalrogError::IssuerUnauthorized),
+            Some(x) => x.value
+        };
         if !ca_key_usage.key_cert_sign() {
             return Err(BalrogError::IssuerUnauthorized);
         }
@@ -228,8 +237,10 @@ impl<'a> Balrog<'_> {
 
     /* Check a hostname against the leaf certificate. */
     pub fn verify_leaf_hostname(&self, hostname: &str) -> Result<(), BalrogError> {
-        assert!(!self.chain.is_empty());
-        let leaf = self.chain.first().unwrap();
+        let leaf = match self.chain.first() {
+            None => return Err(BalrogError::CertificateNotFound),
+            Some(x) => x
+        };
 
         /* First check, does the hostname match one of the subject common names? */
         for cn in leaf.subject().iter_common_name() {
@@ -240,15 +251,15 @@ impl<'a> Balrog<'_> {
         }
 
         /* Second check, does the hostname match one of the subject alternative names? */
-        let san = leaf.subject_alternative_name()?;
-        if san.is_some() {
-            let as_dns_name = GeneralName::DNSName(hostname);
-            for x in san.unwrap().value.general_names.iter() {
-                if x == &as_dns_name {
+        let as_dns_name = GeneralName::DNSName(hostname);
+        let _ = match leaf.subject_alternative_name()? {
+            None => {},
+            Some(x) => for san in x.value.general_names.iter() {
+                if san == &as_dns_name {
                     return Ok(());
                 }
             }
-        }
+        };
 
         /* Otherwise, there is no match! */
         Err(BalrogError::HostnameMismatch)
@@ -295,8 +306,6 @@ impl<'a> Balrog<'_> {
         input: &[u8],
         signature: &str
     ) -> Result<(), BalrogError> {
-        assert!(!self.chain.is_empty());
-
         /* To be authorized for code signing, every certificate in the chain needs the
          * code signing bit in the extended key usage to be set. */
         for x in self.chain.iter() {
@@ -309,6 +318,11 @@ impl<'a> Balrog<'_> {
                 return Err(BalrogError::CodeSignUnauthorized);
             }
         }
+
+        let leaf = match self.chain.first() {
+            None => return Err(BalrogError::CertificateNotFound),
+            Some(x) => x
+        };
 
         /*  To verify the code signature, we must:
          *  1. Parse the signature into an asn1_rs::asn1_types::bitstring::Bitstring
@@ -328,7 +342,7 @@ impl<'a> Balrog<'_> {
         };
         let sig_der = Self::ecdsa_signature_to_asn1(sig_decode.as_slice())?;
         let sig_asn1 = asn1_rs::BitString::new(0, sig_der.as_slice());
-        let pubkey = self.chain.first().unwrap().public_key();
+        let pubkey = leaf.public_key();
         
         /*
          * TODO: Should this be determined by looking at the public key? Or is it

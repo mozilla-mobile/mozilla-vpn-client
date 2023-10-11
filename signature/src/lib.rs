@@ -187,7 +187,7 @@ mod test {
             ROOT_HASH,
             VALID_HOSTNAME,
         );
-        assert!(matches!(r, Err(BalrogError::X509(X509Error::InvalidCertificate))),
+        assert!(matches!(r, Err(BalrogError::CertificateNotFound)),
             "Found unexpected error: {}", r.unwrap_err());
     }
 
@@ -300,6 +300,26 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             VALID_HOSTNAME,
         );
         assert_eq!(r, Err(BalrogError::from(X509Error::SignatureVerificationError)));
+    }
+
+    #[test]
+    fn test_everything_fails_without_init() {
+        let b = Balrog {
+            chain: Vec::new(),
+            root_hash: Vec::new()
+        };
+        
+        let r = b.verify_chain(
+            1615559719, // March 12, 2021
+            ROOT_HASH
+        );
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
+
+        let r = b.verify_leaf_hostname(VALID_HOSTNAME);
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
+
+        let r = b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE);
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
     }
 
     #[test]
