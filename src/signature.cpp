@@ -18,9 +18,8 @@
 namespace {
 Logger logger("Signature");
 
-static void signatureLogger(const char* msg) {
-  logger.debug() << msg;
-}
+static void signatureLogger(const char* msg) { logger.debug() << msg; }
+
 }  // namespace
 
 extern "C" {

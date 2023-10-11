@@ -202,7 +202,7 @@ mod test {
                 Ok(x) => panic!("{}", x),
             };
         }
-    
+
         let addon_message = [RSA_ADDON_MESSAGE, b"Hello World"].concat();
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
