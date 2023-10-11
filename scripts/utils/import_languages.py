@@ -131,6 +131,11 @@ os.makedirs(gendir, exist_ok=True)
 
 # Step 4
 title("Write the translations.completeness file...")
+# This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
+# added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denomenator is used.
+# To show up in the .xliff, there must be a complete cycle of a new string being pulled into pontoon (via the `extract new strings`
+# job being run and merged into the translation repo) and then the VPN repo merging in a new translations commit.
+# We protect against this by always loading English as a fallback language.
 with open(os.path.join(gendir, 'translations.completeness'), 'w') as file:
     for l10n_file in l10n_files:
         file.write(f'{l10n_file["locale"]}:{l10n_file["completeness"]}\n')
