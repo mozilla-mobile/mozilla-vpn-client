@@ -50,6 +50,12 @@ jobs:
           source: '.'
           clangFormatVersion: 16
           style: file
+      
+      - name: Check for issues with cargo fmt
+        run: |
+          for tomlfile in $(git ls-files -c '*/Cargo.toml'); do
+            (cd $(dirname $tomlfile) && cargo fmt --check)
+          done
 
       - name: Spell check documentation files
         run: |
