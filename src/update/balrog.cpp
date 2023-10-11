@@ -43,9 +43,7 @@ constexpr const char* BALROG_CERT_SUBJECT_CN =
 namespace {
 Logger logger("Balrog");
 
-static void balrogLogger(const char* msg) {
-  logger.debug() << msg;
-}
+static void balrogLogger(const char* msg) { logger.debug() << msg; }
 
 }  // namespace
 
