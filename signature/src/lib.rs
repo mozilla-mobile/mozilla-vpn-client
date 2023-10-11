@@ -5,6 +5,7 @@
 use crate::balrog::*;
 use ring::signature;
 use std::ffi::CStr;
+use std::ffi::CString;
 use std::os::raw::c_uchar;
 use x509_parser::prelude::*;
 
@@ -36,6 +37,31 @@ pub extern "C" fn verify_rsa(
     }
 }
 
+struct SignatureLogger {
+    handler: Option<extern "C" fn(*const i8)>,
+}
+
+impl SignatureLogger {
+    fn print(&self, msg: &str) {
+        let callback = match self.handler {
+            None => {
+                eprintln!("{}", msg);
+                return;
+            }
+            Some(x) => x,
+        };
+
+        let _ = match CString::new(msg) {
+            Err(_e) => {}
+            Ok(x) => unsafe {
+                let msg_cstr = x.into_raw();
+                callback(msg_cstr);
+                let _ = CString::from_raw(msg_cstr);
+            },
+        };
+    }
+}
+
 /* FFI interface to verify a Mozilla content signature
  *
  * The following arguments are expected:
@@ -46,6 +72,7 @@ pub extern "C" fn verify_rsa(
  *  - signature: base64-encoded content signature.
  *  - root_hash: hex-encoded SHA256 hash expected of the root certificate.
  *  - leaf_subject: hostname from which the content signature was received.
+ *  - log_fn: callback function for log messages (optional)
  */
 #[no_mangle]
 pub extern "C" fn verify_content_signature(
@@ -56,27 +83,31 @@ pub extern "C" fn verify_content_signature(
     signature: *const i8,
     root_hash: *const i8,
     leaf_subject: *const i8,
+    log_fn: Option<extern "C" fn(*const i8)>,
 ) -> bool {
+    /* Unwrap the logger, or fall back to a default. */
+    let logger = SignatureLogger { handler: log_fn };
+
     /* Translate C/FFI arguments into Rust types. */
     let x5u = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
     let input = unsafe { std::slice::from_raw_parts(input_ptr, input_length) };
     let sig_str = match unsafe { CStr::from_ptr(signature) }.to_str() {
         Err(e) => {
-            eprintln!("{}", e);
+            logger.print(&e.to_string());
             return false;
         }
         Ok(x) => x,
     };
     let root_hash_str = match unsafe { CStr::from_ptr(root_hash) }.to_str() {
         Err(e) => {
-            eprintln!("{}", e);
+            logger.print(&e.to_string());
             return false;
         }
         Ok(x) => x,
     };
     let leaf_subject_str = match unsafe { CStr::from_ptr(leaf_subject) }.to_str() {
         Err(e) => {
-            eprintln!("{}", e);
+            logger.print(&e.to_string());
             return false;
         }
         Ok(x) => x,
@@ -86,7 +117,7 @@ pub extern "C" fn verify_content_signature(
     /* Perform the content signature validation. */
     let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subject_str) {
         Err(e) => {
-            eprintln!("{}", e);
+            logger.print(&e.to_string());
             return false;
         }
         Ok(x) => x,
@@ -99,7 +130,6 @@ pub extern "C" fn verify_content_signature(
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::ffi::CString;
 
     // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
     const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
@@ -320,10 +350,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             root_hash: Vec::new(),
         };
 
-        let r = b.verify_chain(
-            1615559719, // March 12, 2021
-            ROOT_HASH,
-        );
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
         assert_eq!(r, Err(BalrogError::CertificateNotFound));
 
         let r = b.verify_leaf_hostname(VALID_HOSTNAME);
@@ -363,6 +390,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             prod_signature_cstr,
             prod_root_hash_cstr,
             prod_hostname_cstr,
+            None,
         );
         assert!(r, "Verification failed via FFI");
 
@@ -371,6 +399,40 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
             let _ = CString::from_raw(prod_signature_cstr);
             let _ = CString::from_raw(prod_root_hash_cstr);
             let _ = CString::from_raw(prod_hostname_cstr);
+        };
+    }
+
+    #[test]
+    #[should_panic(expected = "Hostname mismatch")]
+    fn test_verify_ffi_logger() {
+        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
+        let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
+        let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
+
+        extern "C" fn logfn(msg: *const i8) {
+            let _ = match unsafe { CStr::from_ptr(msg) }.to_str() {
+                Err(_e) => {}
+                Ok(x) => panic!("{}", x),
+            };
+        }
+
+        let r = verify_content_signature(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            PROD_INPUT_DATA.as_ptr(),
+            PROD_INPUT_DATA.len(),
+            prod_signature_cstr,
+            prod_root_hash_cstr,
+            invalid_hostname_cstr,
+            Some(logfn),
+        );
+        assert!(!r, "Verification failed to catch invalid hostname via FFI");
+
+        // Retake pointers for garbage collection.
+        unsafe {
+            let _ = CString::from_raw(prod_signature_cstr);
+            let _ = CString::from_raw(prod_root_hash_cstr);
+            let _ = CString::from_raw(invalid_hostname_cstr);
         };
     }
 

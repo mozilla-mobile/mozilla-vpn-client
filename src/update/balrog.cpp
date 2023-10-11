@@ -25,7 +25,8 @@ extern "C" {
 bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
                               const char* msg_ptr, size_t msg_length,
                               const char* signature, const char* rootHash,
-                              const char* certSubject);
+                              const char* certSubject,
+                              void (*logfn)(const char*));
 }
 
 #if defined(MZ_WINDOWS)
@@ -41,6 +42,11 @@ constexpr const char* BALROG_CERT_SUBJECT_CN =
 
 namespace {
 Logger logger("Balrog");
+
+static void balrogLogger(const char* msg) {
+  logger.debug() << msg;
+}
+
 }  // namespace
 
 Balrog::Balrog(QObject* parent, bool downloadAndInstall,
@@ -177,11 +183,11 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
-  // TODO: It would be nice to print the error using logger().
   bool verify = verify_content_signature(
       x5uData.constData(), x5uData.length(), updateData.constData(),
       updateData.length(), signatureBlob.constData(),
-      Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT, BALROG_CERT_SUBJECT_CN);
+      Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT, BALROG_CERT_SUBJECT_CN,
+      balrogLogger);
   if (!verify) {
     logger.error() << "Verification failed";
     return false;
