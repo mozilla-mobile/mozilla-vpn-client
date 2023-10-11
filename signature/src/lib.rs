@@ -123,7 +123,7 @@ mod test {
 
     // An RSA signature of an addon manifest from prod.
     const RSA_PUBLIC_KEY: &[u8] = include_bytes!("../../src/resources/public_keys/production.der");
-    const RSA_ADDON_MESSAGE: &[u8] = include_bytes!("../assets/addon_manifest.json");
+    const RSA_ADDON_MESSAGE_BASE64: &[u8] = include_bytes!("../assets/addon_manifest_base64.txt");
     const RSA_ADDON_SIGNATURE: &[u8] = include_bytes!("../assets/addon_signature.sig");
 
     // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
@@ -147,11 +147,15 @@ mod test {
 
     #[test]
     fn test_rsa_success() {
+        let addon_message = data_encoding::BASE64
+            .decode(RSA_ADDON_MESSAGE_BASE64)
+            .unwrap();
+
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
             RSA_PUBLIC_KEY.len(),
-            RSA_ADDON_MESSAGE.as_ptr(),
-            RSA_ADDON_MESSAGE.len(),
+            addon_message.as_ptr(),
+            addon_message.len(),
             RSA_ADDON_SIGNATURE.as_ptr(),
             RSA_ADDON_SIGNATURE.len(),
             None,
@@ -161,8 +165,12 @@ mod test {
 
     #[test]
     fn test_rsa_fails_if_addded_padding() {
-        /* Extend the message and it should fail validation. */
-        let addon_message = [RSA_ADDON_MESSAGE, b"Hello World"].concat();
+        /* Extending the message by adding padding. */
+        let mut addon_message = data_encoding::BASE64
+            .decode(RSA_ADDON_MESSAGE_BASE64)
+            .unwrap();
+        addon_message.extend_from_slice(b"Hello World");
+
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
             RSA_PUBLIC_KEY.len(),
@@ -181,11 +189,14 @@ mod test {
         let mut bad_signature = RSA_ADDON_SIGNATURE.to_vec();
         bad_signature[RSA_ADDON_SIGNATURE.len() / 2] ^= 0x80;
 
+        let addon_message = data_encoding::BASE64
+            .decode(RSA_ADDON_MESSAGE_BASE64)
+            .unwrap();
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
             RSA_PUBLIC_KEY.len(),
-            RSA_ADDON_MESSAGE.as_ptr(),
-            RSA_ADDON_MESSAGE.len(),
+            addon_message.as_ptr(),
+            addon_message.len(),
             bad_signature.as_ptr(),
             bad_signature.len(),
             None,
@@ -203,7 +214,11 @@ mod test {
             };
         }
 
-        let addon_message = [RSA_ADDON_MESSAGE, b"Hello World"].concat();
+        let mut addon_message = data_encoding::BASE64
+            .decode(RSA_ADDON_MESSAGE_BASE64)
+            .unwrap();
+        addon_message.extend_from_slice(b"Hello World");
+
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
             RSA_PUBLIC_KEY.len(),
