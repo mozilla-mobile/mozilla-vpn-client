@@ -161,9 +161,7 @@ impl<'a> Balrog<'_> {
         }
 
         /* Verify the root certificate. */
-        let Some(root_cert) = self.chain.last() else {
-            return Err(BalrogError::CertificateNotFound);
-        };
+        let root_cert = self.chain.last().unwrap();
         Self::verify_cert_chain_pair(root_cert, root_cert, current_time)?;
 
         let hash_stripped = root_hash.replace(":", "");
