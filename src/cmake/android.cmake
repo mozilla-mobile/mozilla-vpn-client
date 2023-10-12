@@ -51,6 +51,7 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${Qt6_DIR}/../../libQt6Widgets_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Xml_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Test_${ANDROID_ABI}.so
+    ${Qt6_DIR}/../../libQt6Svg_${ANDROID_ABI}.so
      ## --- END PILE OF SHAME --- ##
     
     ${OPENSSL_LIBS_DIR}/libcrypto.so
