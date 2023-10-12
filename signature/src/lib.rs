@@ -208,7 +208,7 @@ mod test {
     #[should_panic]
     fn test_rsa_ffi_logger() {
         extern "C" fn logfn(msg: *const i8) {
-            let _ = match unsafe { CStr::from_ptr(msg) }.to_str() {
+            match unsafe { CStr::from_ptr(msg) }.to_str() {
                 Err(_e) => {}
                 Ok(x) => panic!("{}", x),
             };
@@ -477,9 +477,9 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
 
         // Retake pointers for garbage collection.
         unsafe {
-            let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(prod_root_hash_cstr);
-            let _ = CString::from_raw(prod_hostname_cstr);
+            CString::from_raw(prod_signature_cstr);
+            CString::from_raw(prod_root_hash_cstr);
+            CString::from_raw(prod_hostname_cstr);
         };
     }
 
@@ -491,7 +491,7 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
 
         extern "C" fn logfn(msg: *const i8) {
-            let _ = match unsafe { CStr::from_ptr(msg) }.to_str() {
+            match unsafe { CStr::from_ptr(msg) }.to_str() {
                 Err(_e) => {}
                 Ok(x) => panic!("{}", x),
             };
@@ -511,9 +511,9 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
 
         // Retake pointers for garbage collection.
         unsafe {
-            let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(prod_root_hash_cstr);
-            let _ = CString::from_raw(invalid_hostname_cstr);
+            CString::from_raw(prod_signature_cstr);
+            CString::from_raw(prod_root_hash_cstr);
+            CString::from_raw(invalid_hostname_cstr);
         };
     }
 
