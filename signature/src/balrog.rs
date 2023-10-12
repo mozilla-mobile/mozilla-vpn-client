@@ -20,7 +20,9 @@ use hex;
 use ring::digest;
 use x509_parser::prelude::*;
 
-use oid_registry::{OID_SIG_ECDSA_WITH_SHA256, OID_SIG_ECDSA_WITH_SHA384};
+use oid_registry::{
+    OID_KEY_TYPE_EC_PUBLIC_KEY, OID_SIG_ECDSA_WITH_SHA256, OID_SIG_ECDSA_WITH_SHA384,
+};
 
 pub struct Balrog<'a> {
     pub chain: Vec<X509Certificate<'a>>,
@@ -114,14 +116,14 @@ impl<'a> Balrog<'_> {
                 return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
 
-            let x509 = pem.parse_x509()?;
+            /* Parse the X509 certificate. */
+            let (tail, x509) = X509Certificate::from_der(&pem.contents)?;
+            if !tail.is_empty() {
+                return Err(BalrogError::from(X509Error::InvalidCertificate));
+            }
             parsed.push(x509);
 
             /* For the final certificate, calculate its SHA256 hash. */
-            /* TODO: Technically, we can get more bytes in the PEM beyond the end
-             * of the ASN.1 certificate sequence, and this function will include
-             * them in the hash. This feels like an unclear edge case though.
-             */
             if i + 1 == list.len() {
                 let digest = digest::digest(&digest::SHA256, pem.contents.as_slice());
                 hash.extend_from_slice(digest.as_ref());
@@ -330,15 +332,26 @@ impl<'a> Balrog<'_> {
         let sig_asn1 = asn1_rs::BitString::new(0, sig_der.as_slice());
         let pubkey = leaf.public_key();
 
-        /*
-         * TODO: Should this be determined by looking at the public key? Or is it
-         * safe to assume an elliptic key with SHA384?
+        /* Select the signature algorithm according to the public key size.
          *
-         * The rc_crypto crate assumes NIST P-384/SHA384 everywhere.
-         * The golang library chooses a SHA2 that matches the pubkey key size.
-         * Do we care about the RSA/DSA ecosystem?
+         * Note that there exists some disagreement in the algorithm to choose
+         * here. While Firefox and Gecko assume P384/SHA384 everywhere, but we
+         * follow the implementation of the Golang library.
+         *
+         * TODO: P-521/SHA512 is supported by the Golang implementation, and
+         * would correspond to OID_SIG_ECDSA_WITH_SHA512, but x509_parser and
+         * ring::signature don't support it yet. In this case we'll go with
+         * SHA384 and hope for the best.
          */
-        let algorithm = AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA384, None);
+        if pubkey.algorithm.algorithm != OID_KEY_TYPE_EC_PUBLIC_KEY {
+            return Err(BalrogError::X509(X509Error::SignatureUnsupportedAlgorithm));
+        }
+        let keybits = pubkey.parsed()?.key_size();
+        let algorithm = if keybits <= 256 {
+            AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA256, None)
+        } else {
+            AlgorithmIdentifier::new(OID_SIG_ECDSA_WITH_SHA384, None)
+        };
 
         /* Append the Content-Signature prefix. */
         let prefix: &[u8] = b"Content-Signature:\x00";
@@ -513,6 +526,17 @@ culpa qui officia deserunt mollit anim id est laborum.";
         match Balrog::new(&pem) {
             Err(e) => assert_eq!(e, BalrogError::CertificateNotFound),
             Ok(_) => panic!("Failed to return error on empty PEM vector"),
+        }
+    }
+
+    #[test]
+    fn test_new_fails_on_trailing_data() {
+        let mut pem = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
+        pem[1].contents.push(0x00);
+
+        match Balrog::new(&pem) {
+            Err(e) => assert_eq!(e, BalrogError::X509(X509Error::InvalidCertificate)),
+            Ok(_) => panic!("Failed to return error on trailing X509 certificate data"),
         }
     }
 
