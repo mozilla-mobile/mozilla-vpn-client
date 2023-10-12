@@ -149,10 +149,6 @@ MZViewBase {
                     viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewThemeList.qml"
                 }
                 ListElement {
-                    title: "Messages - REMOVE ME"
-                    viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewMessages.qml"
-                }
-                ListElement {
                     title: "Animations playground"
                     viewQrc: "qrc:/ui/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
                 }
