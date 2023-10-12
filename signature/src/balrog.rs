@@ -75,8 +75,8 @@ impl From<PEMError> for BalrogError {
     }
 }
 
-pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, PEMError> {
-    Pem::iter_from_buffer(input).collect::<Result<Vec<Pem>, PEMError>>()
+pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, BalrogError> {
+    Ok(Pem::iter_from_buffer(input).collect::<Result<Vec<Pem>, PEMError>>()?)
 }
 
 /* A one-and-done function that parses a signature chain and validates a content signature. */
@@ -366,6 +366,14 @@ mod test {
 
     const INVALID_CERTIFICATE_DER: &[u8] = include_bytes!("../assets/invalid_der_content.pem");
 
+    const BOGUS_DATA: &str =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+culpa qui officia deserunt mollit anim id est laborum.";
+
     #[test]
     fn test_verify_succeeds_if_valid() {
         let r = parse_and_verify(
@@ -446,6 +454,68 @@ mod test {
             "Found unexpected error: {}",
             r.unwrap_err()
         );
+    }
+
+    #[test]
+    fn test_pem_ignores_bogus_data() {
+        // Data before or after any PEM block should be ignored.
+        let pem = parse_pem_chain(BOGUS_DATA.as_bytes()).unwrap();
+        assert!(pem.is_empty());
+    }
+
+    #[test]
+    fn test_pem_fails_on_bogus_content() {
+        let bogus_chain = [
+            b"-----BEGIN CERTIFICATE-----\n",
+            BOGUS_DATA.as_bytes(),
+            b"\n-----END CERTIFICATE-----",
+        ]
+        .concat();
+
+        match parse_pem_chain(&bogus_chain) {
+            Err(e) => assert!(matches!(e, BalrogError::PemDecodeError(_))),
+            Ok(_) => panic!("Failed to detect bogus PEM content."),
+        };
+    }
+
+    #[test]
+    fn test_pem_fails_on_unclosed_chain() {
+        let unclosed_chain = VALID_CERT_CHAIN.split_at(VALID_CERT_CHAIN.len() - 20).0;
+        match parse_pem_chain(unclosed_chain) {
+            Err(e) => assert!(matches!(e, BalrogError::PemDecodeError(_))),
+            Ok(_) => panic!("Failed to detect unclosed PEM content."),
+        };
+    }
+
+    #[test]
+    fn test_verify_chain_fails_on_bogus_hash() {
+        let pem = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
+        let b = Balrog::new(&pem).unwrap();
+
+        assert_eq!(
+            b.verify_chain(VALID_TIMESTAMP, BOGUS_DATA),
+            Err(BalrogError::RootHashParseFailed)
+        );
+    }
+
+    #[test]
+    fn test_verify_signature_fails_on_bogus_signature() {
+        let pem = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
+        let b = Balrog::new(&pem).unwrap();
+
+        assert_eq!(
+            b.verify_content_signature(VALID_INPUT, BOGUS_DATA),
+            Err(BalrogError::SignatureDecodeError)
+        );
+    }
+
+    #[test]
+    fn test_new_fails_if_vec_empty() {
+        let pem: Vec<Pem> = Vec::new();
+        match Balrog::new(&pem) {
+            Err(e) => assert_eq!(e, BalrogError::CertificateNotFound),
+            Ok(_) => panic!("Failed to return error on empty PEM vector"),
+        }
     }
 
     #[test]
