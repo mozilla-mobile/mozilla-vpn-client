@@ -351,3 +351,228 @@ impl<'a> Balrog<'_> {
         )?)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
+    const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
+    const VALID_CERT_CHAIN: &[u8] = include_bytes!("../assets/valid_cert_chain.pem");
+    const VALID_INPUT: &[u8] = b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
+    const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
+    const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
+    const VALID_TIMESTAMP: i64 = 1615559719; // March 12, 2021
+
+    const INVALID_CERTIFICATE_DER: &[u8] = include_bytes!("../assets/invalid_der_content.pem");
+
+    #[test]
+    fn test_verify_succeeds_if_valid() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
+    }
+
+    #[test]
+    fn test_verify_fails_if_root_hash_mismatch() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            &ROOT_HASH.replace("A", "B"),
+            VALID_HOSTNAME,
+        );
+        assert_eq!(r, Err(BalrogError::RootHashMismatch));
+    }
+
+    #[test]
+    fn test_verify_fails_if_der_invalid() {
+        let r = parse_and_verify(
+            INVALID_CERTIFICATE_DER,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(
+            matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
+    }
+
+    #[test]
+    fn test_verify_fails_if_cert_empty() {
+        let pem: &[u8] = b"\
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----";
+
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(
+            matches!(r, Err(BalrogError::X509(X509Error::Der(_)))),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
+    }
+
+    #[test]
+    fn test_verify_fails_if_pem_empty() {
+        let pem: &[u8] = &[];
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert!(
+            matches!(r, Err(BalrogError::CertificateNotFound)),
+            "Found unexpected error: {}",
+            r.unwrap_err()
+        );
+    }
+
+    #[test]
+    fn test_verify_fails_if_pem_wrong_type() {
+        // Generated from: openssl ecparam -name secp384k1 -genkey
+        let pem: &[u8] = b"\
+-----BEGIN EC PRIVATE KEY-----
+MIGkAgEBBDD+fvOhk1l7iyXF5OztCR0hFYSWFivpOu9MIBX9RMm7G7t+PTbQGzWQ
+Qtcp9raswDugBwYFK4EEACKhZANiAATNdZWfgxAxGgbVNBwC8TbsFgm+RNBhZnUa
+cL9WgG8LqAoCip698cJfLm7TVO4LKv8MtfA1wWm/H5M3v9jRMNg9dsDf0j4fTefd
+W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
+-----END EC PRIVATE KEY-----;";
+        let r = parse_and_verify(
+            pem,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert_eq!(r, Err(BalrogError::X509(X509Error::InvalidCertificate)));
+    }
+
+    #[test]
+    fn test_verify_fails_if_hostname_mismatch() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            "example.com",
+        );
+        assert_eq!(r, Err(BalrogError::HostnameMismatch));
+    }
+
+    #[test]
+    fn test_verify_fails_if_cert_has_expired() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            VALID_SIGNATURE,
+            1215559719, // July 9, 2008
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert_eq!(r, Err(BalrogError::CertificateExpired));
+    }
+
+    #[test]
+    fn test_verify_fails_if_chain_out_of_order() {
+        // Parse the chain then swap the leaf and intermediate certs.
+        let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x,
+        };
+        let leaf = pem.remove(0);
+        pem.insert(1, leaf);
+
+        let b = match Balrog::new(&pem) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x,
+        };
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        assert_eq!(r, Err(BalrogError::ChainSubjectMismatch));
+    }
+
+    #[test]
+    fn test_verify_fails_if_bad_chain_signature() {
+        let mut pem: Vec<Pem> = match parse_pem_chain(VALID_CERT_CHAIN) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x,
+        };
+        // An ASN.1 X509 certificate will take the form of:
+        // Certificate ::= SEQUENCE {
+        //     tbsCertificate     TBSCertificate,
+        //     signatureAlgorithm AlgorithmIdentifier,
+        //     signature          BITSTRING
+        // }
+        //
+        // This means the signature will always reside in the trailing bytes of
+        // the DER-encoded certificate, and we should be able to corrupt it by
+        // flipping a few bits.
+        let tail = pem[1].contents.pop().unwrap();
+        pem[1].contents.push(tail ^ 0x80);
+
+        let b = match Balrog::new(&pem) {
+            Err(e) => panic!("Found unexpected error: {}", e),
+            Ok(x) => x,
+        };
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        assert_eq!(
+            r,
+            Err(BalrogError::from(X509Error::SignatureVerificationError))
+        );
+    }
+
+    #[test]
+    fn test_verify_fails_if_bad_content_signature() {
+        let r = parse_and_verify(
+            VALID_CERT_CHAIN,
+            VALID_INPUT,
+            &VALID_SIGNATURE.to_ascii_lowercase(), // altering case should modify the base64 signature without changing its length.
+            VALID_TIMESTAMP,
+            ROOT_HASH,
+            VALID_HOSTNAME,
+        );
+        assert_eq!(
+            r,
+            Err(BalrogError::from(X509Error::SignatureVerificationError))
+        );
+    }
+
+    #[test]
+    fn test_everything_fails_without_init() {
+        let b = Balrog {
+            chain: Vec::new(),
+            root_hash: Vec::new(),
+        };
+
+        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
+
+        let r = b.verify_leaf_hostname(VALID_HOSTNAME);
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
+
+        let r = b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE);
+        assert_eq!(r, Err(BalrogError::CertificateNotFound));
+    }
+}
