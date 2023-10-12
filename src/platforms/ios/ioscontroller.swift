@@ -200,6 +200,7 @@ public class IOSControllerImpl : NSObject {
                 //Used to create a VPN configuration without connecting during onboarding
                 if isOnboarding {
                     IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
+                    failureCallback()
                     onboardingCompletedCallback()
                     return
                 }
