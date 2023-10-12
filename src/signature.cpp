@@ -24,6 +24,7 @@ static void signatureLogger(const char* msg) { logger.debug() << msg; }
 
 extern "C" {
 // Implemented in rust. See the `signature` folder.
+// TODO (VPN-5708): We should really generate this with cbindgen.
 bool verify_rsa(const char* publicKey, size_t pubKeyLen, const char* message,
                 size_t messageLen, const char* signature, size_t signatureLen,
                 void (*logfn)(const char*));

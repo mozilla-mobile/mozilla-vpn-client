@@ -20,7 +20,7 @@
 #include "networkrequest.h"
 
 // Implemented in rust. See the `signature` folder.
-// TODO: We should really generate this with cbindgen.
+// TODO (VPN-5708): We should really generate this with cbindgen.
 extern "C" {
 bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
                               const char* msg_ptr, size_t msg_length,
