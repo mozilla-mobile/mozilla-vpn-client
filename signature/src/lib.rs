@@ -296,8 +296,4 @@ mod test {
             let _ = CString::from_raw(invalid_hostname_cstr);
         };
     }
-
-    /* TODO: We could use tests for:
-     *  - Other signature algorithms.
-     */
 }

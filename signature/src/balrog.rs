@@ -375,10 +375,6 @@ mod test {
     const VALID_HOSTNAME: &str = "remote-settings.content-signature.mozilla.org";
     const VALID_TIMESTAMP: i64 = 1615559719; // March 12, 2021
 
-    const INVALID_CERTIFICATE_DER: &[u8] = include_bytes!("../assets/invalid_der_content.pem");
-
-    const MISSING_CODESIGN_CERT: &[u8] = include_bytes!("../assets/missing_codesign.pem");
-
     const BOGUS_DATA: &str =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
@@ -416,7 +412,7 @@ culpa qui officia deserunt mollit anim id est laborum.";
     #[test]
     fn test_verify_fails_if_der_invalid() {
         let r = parse_and_verify(
-            INVALID_CERTIFICATE_DER,
+            include_bytes!("../assets/invalid_der_content.pem"),
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
@@ -648,12 +644,23 @@ culpa qui officia deserunt mollit anim id est laborum.";
 
     #[test]
     fn test_verify_signature_fails_on_missing_codesign() {
-        let pem = parse_pem_chain(MISSING_CODESIGN_CERT).unwrap();
+        let pem = parse_pem_chain(include_bytes!("../assets/missing_codesign.pem")).unwrap();
         let b = Balrog::new(&pem).unwrap();
 
         assert_eq!(
             b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE),
             Err(BalrogError::CodeSignUnauthorized)
+        );
+    }
+
+    #[test]
+    fn test_verify_signature_fails_on_rsa_leaf() {
+        let pem = parse_pem_chain(include_bytes!("../assets/rsa_leaf_cert.pem")).unwrap();
+        let b = Balrog::new(&pem).unwrap();
+
+        assert_eq!(
+            b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE),
+            Err(BalrogError::X509(X509Error::SignatureUnsupportedAlgorithm))
         );
     }
 
