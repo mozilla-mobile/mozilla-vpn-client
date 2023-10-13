@@ -377,6 +377,8 @@ mod test {
 
     const INVALID_CERTIFICATE_DER: &[u8] = include_bytes!("../assets/invalid_der_content.pem");
 
+    const MISSING_CODESIGN_CERT: &[u8] = include_bytes!("../assets/missing_codesign.pem");
+
     const BOGUS_DATA: &str =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
@@ -542,14 +544,7 @@ culpa qui officia deserunt mollit anim id est laborum.";
 
     #[test]
     fn test_verify_fails_if_pem_wrong_type() {
-        // Generated from: openssl ecparam -name secp384k1 -genkey
-        let pem: &[u8] = b"\
------BEGIN EC PRIVATE KEY-----
-MIGkAgEBBDD+fvOhk1l7iyXF5OztCR0hFYSWFivpOu9MIBX9RMm7G7t+PTbQGzWQ
-Qtcp9raswDugBwYFK4EEACKhZANiAATNdZWfgxAxGgbVNBwC8TbsFgm+RNBhZnUa
-cL9WgG8LqAoCip698cJfLm7TVO4LKv8MtfA1wWm/H5M3v9jRMNg9dsDf0j4fTefd
-W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
------END EC PRIVATE KEY-----;";
+        let pem: &[u8] = include_bytes!("../assets/test_private_key.pem");
         let r = parse_and_verify(
             pem,
             VALID_INPUT,
@@ -648,6 +643,17 @@ W6AQ6dHMhqgvSiqCVn1t04dFPyqczNI=
         assert_eq!(
             r,
             Err(BalrogError::from(X509Error::SignatureVerificationError))
+        );
+    }
+
+    #[test]
+    fn test_verify_signature_fails_on_missing_codesign() {
+        let pem = parse_pem_chain(MISSING_CODESIGN_CERT).unwrap();
+        let b = Balrog::new(&pem).unwrap();
+
+        assert_eq!(
+            b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE),
+            Err(BalrogError::CodeSignUnauthorized)
         );
     }
 

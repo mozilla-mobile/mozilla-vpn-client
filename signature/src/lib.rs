@@ -298,8 +298,6 @@ mod test {
     }
 
     /* TODO: We could use tests for:
-     *  - Missing code signing permissions.
-     *  - Chains of irregular length.
      *  - Other signature algorithms.
      */
 }
