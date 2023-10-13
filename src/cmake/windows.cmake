@@ -83,22 +83,6 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 
-# Build the Balrog library as a DLL
-add_custom_target(balrogdll ALL
-    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll ${CMAKE_CURRENT_BINARY_DIR}/balrog.h
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/balrog
-    COMMAND ${CMAKE_COMMAND} -E env 
-                GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-                GOOS=windows CGO_ENABLED=1
-                CC=gcc
-                CGO_CFLAGS="-O3 -Wall -Wno-unused-function -Wno-switch -std=gnu11 -DWINVER=0x0601"
-                CGO_LDFLAGS="-Wl,--dynamicbase -Wl,--nxcompat -Wl,--export-all-symbols -Wl,--high-entropy-va"
-            go build -buildmode c-shared -buildvcs=false -ldflags="-w -s" -trimpath -v -o "${CMAKE_CURRENT_BINARY_DIR}/balrog.dll"
-)
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/go-cache)
-add_dependencies(mozillavpn balrogdll)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/balrog.dll DESTINATION .)
-
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE

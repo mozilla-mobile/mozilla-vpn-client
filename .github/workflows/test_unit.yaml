@@ -238,3 +238,19 @@ jobs:
           export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
+
+  rust-unit-tests:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: Run Unit tests for Rust (${{ matrix.os }})
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Signature library tests
+        shell: bash
+        working-directory: ./signature
+        run: cargo test -- --nocapture
