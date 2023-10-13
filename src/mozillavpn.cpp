@@ -920,9 +920,13 @@ void MozillaVPN::mainWindowLoaded() {
 void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  //Set glean based on data collection checkbox checked state
-  QObject* dataCollectionCheckbox = InspectorUtils::queryObject("//dataCollectionCheckBox");
-  settingsHolder->setGleanEnabled(dataCollectionCheckbox->property("isChecked").toBool());
+  // Set glean based on data collection checkbox checked state
+  // Extracting this property from QML seems like the best approach to avoid
+  // creating a disposable member variable or setting
+  QObject* dataCollectionCheckbox =
+      InspectorUtils::queryObject("//dataCollectionCheckBox");
+  settingsHolder->setGleanEnabled(
+      dataCollectionCheckbox->property("isChecked").toBool());
 
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     logger.debug() << "onboarding completed";
