@@ -76,7 +76,8 @@ StackView {
 
                 objectName: "buttonSelectEntry"
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
-                descriptionText: VPNCurrentServer.localizedEntryCityName
+                // The entry server may not be set in VPNCurrentServer.localizedEntryCityName if the user has just switched to the MultiHop screen, so use multiHopEntryServer
+                descriptionText: segmentedNav.multiHopEntryServer[2]
                 contentChildren: [
                     ServerLabel {
                         id: entryLabel
@@ -110,7 +111,7 @@ StackView {
                     objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
                     titleText: MZI18n.MultiHopFeatureMultiHopExitLocationHeader
-                    descriptionText: VPNCurrentServer.localizedExitCityName
+                    descriptionText: segmentedNav.multiHopExitServer[2]
                     contentChildren: [
 
                         ServerLabel {
