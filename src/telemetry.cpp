@@ -219,7 +219,8 @@ void Telemetry::initialize() {
       connectionManager, &ConnectionManager::controllerDisconnected, this,
       [this, connectionManager]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOff) {
+          if (connectionManager->state() == ConnectionManager::StateOff &&
+              SettingsHolder::instance()->onboardingCompleted()) {
             mozilla::glean::session::session_end.set();
 
             mozilla::glean_pings::Vpnsession.submit("end");

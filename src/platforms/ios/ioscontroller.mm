@@ -154,8 +154,8 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
                   installationId:config.m_installationId.toNSString()
                   isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
-                 failureCallback:^() {
-                   logger.error() << "IOSSWiftController - connection failed";
+                 disconnectCallback:^() {
+                   logger.error() << "IOSSWiftController - disconnecting";
                    emit disconnected();
                  }
                 onboardingCompletedCallback:^() {
