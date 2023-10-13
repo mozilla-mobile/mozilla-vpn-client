@@ -55,19 +55,18 @@ ColumnLayout {
     }
 
     MZCheckBoxRow {
+        id: dataCollectionCheckBox
         objectName: "dataCollectionCheckBox"
 
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
         leftMargin: 0
-        isChecked: MZSettings.gleanEnabled
+        subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
         showDivider: false
-        onClicked: {
-            MZSettings.gleanEnabled = !MZSettings.gleanEnabled
-       }
+
+        onClicked: isChecked = !isChecked
     }
 
     Item {

@@ -21,6 +21,7 @@
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
+#include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -401,15 +402,6 @@ void MozillaVPN::maybeStateMain() {
   // getting to the home screen
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
-      // We turn telemetry off when onboarding starts so that the user has to
-      // specifically opt in to all future telemetry *Note: This is needed
-      // because telemetry is on prior to onboarding to record metrics regarding
-      // auth
-      if (!settingsHolder->onboardingStarted()) {
-        settingsHolder->setGleanEnabled(false);
-        settingsHolder->setOnboardingStarted(true);
-      }
-
       setState(StateOnboarding);
       return;
     }
@@ -831,6 +823,7 @@ bool MozillaVPN::checkCurrentDevice() {
 }
 
 void MozillaVPN::logout() {
+  SettingsHolder::instance()->setOnboardingCompleted(false);
   logger.debug() << "Logout";
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
@@ -926,6 +919,10 @@ void MozillaVPN::mainWindowLoaded() {
 
 void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  //Set glean based on data collection checkbox checked state
+  QObject* dataCollectionCheckbox = InspectorUtils::queryObject("//dataCollectionCheckBox");
+  settingsHolder->setGleanEnabled(dataCollectionCheckbox->property("isChecked").toBool());
 
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     logger.debug() << "onboarding completed";
