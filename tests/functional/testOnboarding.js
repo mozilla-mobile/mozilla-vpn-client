@@ -103,7 +103,6 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 2);
 
     //Switch between toggle buttons
-    console.log(await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex'))
     if (await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex') === 0) {
       //Starting with Android - switch to iOS and back to Android
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
@@ -282,6 +281,24 @@ describe('Onboarding', function() {
   });
 
   it.only('Verify data collection checkbox and setting are decoupled', async () => {
+
+    //This function completes onboarding, and checks that the gleanEnabled setting remains enabled throughout the flow
+    async function completeOnboarding() {
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      assert.equal(await vpn.getSetting('gleanEnabled'), true);
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      assert.equal(await vpn.getSetting('gleanEnabled'), true);
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      assert.equal(await vpn.getSetting('gleanEnabled'), true);
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
+      assert.equal(await vpn.getSetting('onboardingCompleted'), true);
+    }
+
+    //Ensure we are in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
     //Ensure that the data collection checkbox and internal setting are decoupled
@@ -295,19 +312,8 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
-    //Complete onboarding, and check that the gleanEnabled setting does not change between steps until onboarding is completed
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-    assert.equal(await vpn.getSetting('onboardingCompleted'), true);
+    //Complete onboarding, and check that the gleanEnabled setting remains enabled throughout onboarding
+    await completeOnboarding();
 
     //Now that onboarding is complete, make sure the gleanEnabled setting is now disabled
     assert.equal(await vpn.getSetting('gleanEnabled'), false);
@@ -328,19 +334,8 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
-    //Complete onboarding, and check that the gleanEnabled setting does not change between steps
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-    assert.equal(await vpn.getSetting('onboardingCompleted'), true);
+    //Complete onboarding, and check that the gleanEnabled setting remains enabled throughout onboarding
+    await completeOnboarding();
 
     //Now that onboarding is complete, make sure the gleanEnabled setting is still enabled
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
