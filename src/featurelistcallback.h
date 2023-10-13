@@ -48,14 +48,6 @@ bool FeatureCallback_sentry() {
 #endif
 }
 
-bool FeatureCallback_accountDeletion() {
-#if defined(MZ_IOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 bool FeatureCallback_captivePortal() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
     defined(MZ_DUMMY) || defined(MZ_WASM)

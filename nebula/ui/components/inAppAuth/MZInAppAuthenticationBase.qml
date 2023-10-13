@@ -14,6 +14,7 @@ import components.forms 0.1
 MZFlickable {
     property var _menuButtonOnClick
     property bool _changeEmailLinkVisible: false
+    property bool _disclaimersVisible: true
     property string _viewObjectName: ""
 
     property alias _menuButtonImageSource: menuButtonImage.source
@@ -142,6 +143,7 @@ MZFlickable {
 
                 MZSubtitle {
                     id: subtitle
+                    visible: _subtitleText.length > 0
                     width: undefined
                     Layout.fillWidth: true
                 }
@@ -150,6 +152,7 @@ MZFlickable {
 
             MZBoldLabel {
                 id: inputLabel
+                visible: inputLabel.text.length > 0
             }
 
             ColumnLayout {
@@ -160,6 +163,7 @@ MZFlickable {
 
         ColumnLayout {
             id: disclaimers
+            visible: _disclaimersVisible
             Layout.maximumWidth: col.width - MZTheme.theme.vSpacing * 2
             Layout.leftMargin: MZTheme.theme.vSpacing
             Layout.rightMargin: MZTheme.theme.vSpacing
