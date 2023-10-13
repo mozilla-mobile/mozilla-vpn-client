@@ -76,7 +76,7 @@ StackView {
 
                 objectName: "buttonSelectEntry"
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
-                // The entry server may not be set in VPNCurrentServer.localizedEntryCityName if the user has just switched to the MultiHop screen, so use multiHopEntryServer
+                // If the current VPN configuration is single hop, VPNCurrentServer.localizedEntryCityName will be empty, so use multiHopEntryServer
                 descriptionText: segmentedNav.multiHopEntryServer[2]
                 contentChildren: [
                     ServerLabel {
