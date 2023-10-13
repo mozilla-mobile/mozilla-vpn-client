@@ -5,18 +5,11 @@
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import QtQuick 2.15
 
 MZLoader {
     objectName: "subscriptionInProgressWeb"
     headlineText: MZI18n.PurchaseWebInProgress2
-
-    // Hack: The Component.OnCompleted event was not working for me (Bea).
-    // So I am running this on property initialization.
-    property var _: {
-        Glean.impression.continueInBrowserScreen.record({
-            screen: telemetryScreenId,
-        });
-    }
 
     property string telemetryScreenId: "continue_in_browser"
 
@@ -36,5 +29,11 @@ MZLoader {
 
             VPNPurchase.cancelSubscription();
         }
+    }
+
+    Component.onCompleted: {
+        Glean.impression.continueInBrowserScreen.record({
+            screen: telemetryScreenId,
+        });
     }
 }

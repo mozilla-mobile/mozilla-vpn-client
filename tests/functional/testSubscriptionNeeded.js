@@ -9,7 +9,7 @@
  const { startAndConnect } = require('./setupVpn.js');
 
 describe("subscription needed tests", function() {
-  // TODO: Create tests for this screen.
+  // TODO (VPN-5711): Create tests for this screen.
 
   describe('subscription needed related telemetry tests', function() {
     if(vpn.runningOnWasm()) {

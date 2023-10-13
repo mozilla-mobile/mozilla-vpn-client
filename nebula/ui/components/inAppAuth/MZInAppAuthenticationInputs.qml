@@ -14,7 +14,7 @@ import components.forms 0.1
 ColumnLayout {
     id: base
     property string _telemetryScreenId
-    property string _buttonTelemetryId
+    property string _telemetryButtonId
     property string _inputPlaceholderText: ""
     property string _inputErrorMessage: ""
     property alias _inputMethodHints: textInput.inputMethodHints
