@@ -61,6 +61,8 @@ Item {
     MZSegmentedNavigation {
         id: segmentedNav
 
+        // If the current VPN configuration is single hop, the Entry server values of VPNCurrentServer will be empty, and multiHopEntryServer will be
+        // set to a recommended server in handleSegmentClick
         property var multiHopEntryServer: [VPNCurrentServer.entryCountryCode, VPNCurrentServer.entryCityName, VPNCurrentServer.localizedEntryCityName]
         property var multiHopExitServer: [VPNCurrentServer.exitCountryCode, VPNCurrentServer.exitCityName, VPNCurrentServer.localizedExitCityName]
 
