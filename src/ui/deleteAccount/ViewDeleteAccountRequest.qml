@@ -64,7 +64,7 @@ MZInAppAuthenticationBase {
             font.pixelSize: MZTheme.theme.fontSize
 
             Layout.fillWidth: true
-            Layout.bottomMargin: MZTheme.theme.vSpacingSmall
+            Layout.bottomMargin: MZTheme.theme.listSpacing
         }
 
         Repeater {
@@ -103,7 +103,6 @@ MZInAppAuthenticationBase {
         MZLinkButton {
             Layout.fillWidth: true
 
-            fontName: MZTheme.theme.fontFamily
             // Cancel
             labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText
             onClicked: {
