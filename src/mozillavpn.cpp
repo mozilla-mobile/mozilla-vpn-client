@@ -823,7 +823,6 @@ bool MozillaVPN::checkCurrentDevice() {
 }
 
 void MozillaVPN::logout() {
-  SettingsHolder::instance()->setOnboardingCompleted(false);
   logger.debug() << "Logout";
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
