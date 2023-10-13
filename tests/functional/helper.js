@@ -644,8 +644,11 @@ module.exports = {
     // When it's not provided the last event will be tested.
     expectedEventCount
   }, offset = 0) {
-    const events = await this.gleanTestGetValue(eventCategory, eventName, "main");
-    assert(events.length > 0);
+    let events;
+    await this.waitForCondition(async () => {
+      events = await this.gleanTestGetValue(eventCategory, eventName, "main");
+      return events.length > 0;
+    });
 
     let computedEventCount = expectedEventCount;
     if (!computedEventCount) {
