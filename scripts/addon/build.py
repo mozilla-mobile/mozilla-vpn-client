@@ -439,7 +439,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                 xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
                 xlifftool = subprocess.run(xlifftool_cmd, capture_output=True)
                 # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
-                # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denomenator is used.
+                # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.
                 # To show up in the .xliff, there must be a complete cycle of a new string being pulled into pontoon (via the `extract new strings`
                 # job being run and merged into the translation repo) and then the VPN repo merging in a new translations commit.
                 # We protect against this by always loading English as a fallback language.
