@@ -134,6 +134,7 @@ MZFlickable {
                 Loader {
                     Layout.alignment: Qt.AlignHCenter
                     active: _changeEmailLinkVisible
+                    visible: _changeEmailLinkVisible
                     sourceComponent: MZLinkButton {
                         labelText: MZI18n.InAppAuthChangeEmailLink
                         visible: _changeEmailLinkVisible
