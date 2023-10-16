@@ -40,6 +40,7 @@ MZInAppAuthenticationBase {
 
     _changeEmailLinkVisible: false
     _disclaimersVisible: false
+    _backButtonVisible: false
     _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
