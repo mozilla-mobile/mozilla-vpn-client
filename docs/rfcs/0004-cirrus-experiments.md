@@ -66,7 +66,7 @@ Cirrus uses Glean internally. Therefore it requires a Glean application id. The 
 
 Documentation of metrics and pings sent by the Cirrus service can be found at <https://github.com/mozilla/experimenter/blob/main/cirrus/server/telemetry/docs/metrics.md>.
 
-Note Cirrus also  requires a Remote Settings URL.  That will be provided by the Nimbus team and there is no action on our side required.
+> **Note** Cirrus also  requires a Remote Settings URL.  That will be provided by the Nimbus team and there is no action on our side required.
 
 #### 2\. Deploy Cirrus as a sidecar to Guardian
 
@@ -111,7 +111,7 @@ This endpoint will be changed to only accept POST requests. Requests will be exp
 }
 ```
 
-Note Throughout this document, client_id will be referred to as "experimenter id" so as not to confuse it with the Glean client_id.
+> **Note** Throughout this document, client_id will be referred to as "experimenter id" so as not to confuse it with the Glean client_id.
 
 The Cirrus reply will be added to the body of the response object, like so:
 ```
@@ -138,7 +138,7 @@ The Cirrus reply will be added to the body of the response object, like so:
 }
 ```
 
-Note This request does not need to be authenticated. It only needs to be made using HTTPS.
+> **Note** This request does not need to be authenticated. It only needs to be made using HTTPS.
 
 If "featuresOverride" conflicts with "experimentalFeatures", "experimentalFeatures" will always have higher priority.
 
@@ -162,7 +162,7 @@ Timing: The experimenter id must be set as soon as possible on the application l
 
 The /featurelist endpoint is already queried by the application  on initialization and once every hour. Other than these triggers, a feature list request will be made whenever the experiment id is set.
 
-Note The list of active features will be added to each VPN log summary, to aid in debugging branch specific bugs.
+> **Note** The list of active features will be added to each VPN log summary, to aid in debugging branch specific bugs.
 
 #### 3\. Apply features
 
@@ -199,7 +199,7 @@ EXPERIMENTAL_FEATURE(
 
 The EXPERIMENTAL_FEATURE macro, intentionally doesn't contain the field for declaring if the feature can be flipped on or off. Experimental features must always be "toggleable".
 
-Note Mozilla VPN features may or may not be "toggleable", meaning they may not be allowed to be turned on or off. Experimental features must always be toggleable, otherwise they cannot be applied dynamically. This has consequences for the implementation of the treatment itself. This needs to be considered on a case by case basis.
+> **Note** Mozilla VPN features may or may not be "toggleable", meaning they may not be allowed to be turned on or off. Experimental features must always be toggleable, otherwise they cannot be applied dynamically. This has consequences for the implementation of the treatment itself. This needs to be considered on a case by case basis.
 
 It also doesn't contain the feature callback field. Experimental features always default to false unless they have been turned on through Cirrus. 
 
@@ -219,7 +219,7 @@ MZSettings.onboardingCtaStyleExperiment.fontFamily
 
 Experimental feature settings will only have public getters. They may only be set or removed by the TaskGetFeatureList.
 
-Note In order for this setup to work, experimental features will have to be declared in a separate feature list file e.g. experimentalfeaturelist.h. This will make it possible to import the experimental features only on the settings holder module and create the settings API necessary.
+> **Note** In order for this setup to work, experimental features will have to be declared in a separate feature list file e.g. experimentalfeaturelist.h. This will make it possible to import the experimental features only on the settings holder module and create the settings API necessary.
 
 It will be the responsibility of the TaskGetFeatureList at the time of parsing the featurelist response, to set each of these settings to the received value. Turning the feature on will happen only after all settings are set.
 
