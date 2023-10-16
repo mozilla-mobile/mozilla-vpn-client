@@ -17,6 +17,26 @@ describe('Onboarding', function() {
     await vpn.authenticateInApp();
   });
 
+ async function completeOnboarding(currentStep = 0) {
+   switch(currentStep) {
+   case 0:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+   case 1:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+   case 2: 
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+   case 3:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
+    assert.equal(await vpn.getSetting('onboardingCompleted'), true);
+  default: 
+    break;
+   }
+ }
+
   //Tests pretty much all of the new onboarding, including all slides, controls, navigation, and ensuring settings persist into StateMain
   it('Complete onboarding', async () => {
     await vpn.waitForQuery(queries.screenOnboarding.SCREEN.visible());
@@ -33,7 +53,6 @@ describe('Onboarding', function() {
     //Check data collection checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Check privacy link
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
@@ -280,64 +299,72 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 3);
   });
 
-  it.only('Verify data collection checkbox and setting are decoupled', async () => {
+  //Tests that the data collection checkbox is bound to onboardingDataCollectionEnabled, and it's default state
+  it('Data collection checkbox default and binding', async () => {
+    //Ensure we are in onboarding
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //This function completes onboarding, and checks that the gleanEnabled setting remains enabled throughout the flow
-    async function completeOnboarding() {
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-      assert.equal(await vpn.getSetting('gleanEnabled'), true);
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-      assert.equal(await vpn.getSetting('gleanEnabled'), true);
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-      assert.equal(await vpn.getSetting('gleanEnabled'), true);
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-      assert.equal(await vpn.getSetting('onboardingCompleted'), true);
-    }
+    //Ensure that the data collection checkbox state is bound to onboardingDataCollectionEnabled, which defaults to false
+    //and that this checkboxes state does not affect gleanEnabled
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), false);
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
+    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+  });
+
+  //Tests completing onboarding with the data collection checkbox disabled
+  it('Complete onboarding with data collection disabled', async () => {
 
     //Ensure we are in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Ensure that the data collection checkbox and internal setting are decoupled
-    //We will finish onboarding with the data collection checkbox being unchecked
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+    //Complete onboarding and get to the home screen
+    await completeOnboarding(await vpn.getSetting('onboardingStep'));
 
-    //Complete onboarding, and check that the gleanEnabled setting remains enabled throughout onboarding
-    await completeOnboarding();
-
-    //Now that onboarding is complete, make sure the gleanEnabled setting is now disabled
+    //Ensure glean is disabled
     assert.equal(await vpn.getSetting('gleanEnabled'), false);
+  });
 
-    //Now repeat the process, but we will finish onboarding with the data collection checkbox being checked
+  //Tests completing onboarding with the data collection checkbox enabled
+  it('Complete onboarding with data collection enabled', async () => {
 
-    //Reset settings, logout, and authenticate
-    await vpn.setSetting('onboardingCompleted', false)
-    await vpn.setSetting('gleanEnabled', true);
-    await vpn.logout();
-    await vpn.authenticateInApp();
+    //Ensure we are in onboarding
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Ensure that the data collection checkbox and internal setting are decoupled
-    //We will finish onboarding with the data collection checkbox being checked
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+    //Click the data collection checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
-    //Complete onboarding, and check that the gleanEnabled setting remains enabled throughout onboarding
-    await completeOnboarding();
+    //Complete onboarding and get to the home screen
+    await completeOnboarding(await vpn.getSetting('onboardingStep'));
 
-    //Now that onboarding is complete, make sure the gleanEnabled setting is still enabled
+    //Ensure glean is disabled
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
+  });
+
+  //Tests onboardingDataCollectionEnabled setting persists across app sessions
+  it('Data collection checkbox state persists across app sessions', async () => {
+    // Skip WASM because this test involves quitting and relaunching
+    if (this.ctx.wasm) {
+      return;
+    }
+    //Ensure we are in onboarding
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+
+    //Click the data collection checkbox to set onboardingDataCollectionEnabled to true
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
+
+    //Quit and relaunch the app
+    await vpn.quit();
+    await setup.startAndConnect();
+
+    //Ensure we are still in onboarding
+    await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+
+    //Ensure onboardingDataCollectionEnabled is set to true
+    assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
   });
 });
