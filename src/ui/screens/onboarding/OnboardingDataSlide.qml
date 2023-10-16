@@ -65,8 +65,9 @@ ColumnLayout {
         leftMargin: 0
         subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
         showDivider: false
+        isChecked: MZSettings.onboardingDataCollectionEnabled
 
-        onClicked: isChecked = !isChecked
+        onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
     }
 
     Item {

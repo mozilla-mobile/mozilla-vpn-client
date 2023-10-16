@@ -919,14 +919,6 @@ void MozillaVPN::mainWindowLoaded() {
 void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  // Set glean based on data collection checkbox checked state
-  // Extracting this property from QML seems like the best approach to avoid
-  // creating a disposable member variable or setting
-  QObject* dataCollectionCheckbox =
-      InspectorUtils::queryObject("//dataCollectionCheckBox");
-  settingsHolder->setGleanEnabled(
-      dataCollectionCheckbox->property("isChecked").toBool());
-
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
@@ -936,7 +928,12 @@ void MozillaVPN::onboardingCompleted() {
     // will never see onboarding again
     settingsHolder->setOnboardingStep(0);
 
-    // Mark the old onboarding expereince as completed as well, ensuring that
+    // Toggle glean on or off at the end of onboarding, depending on what the
+    // user selected
+    settingsHolder->setGleanEnabled(
+        settingsHolder->onboardingDataCollectionEnabled());
+
+    // Mark the old onboarding experience as completed as well, ensuring that
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
