@@ -869,13 +869,6 @@ void ConnectionManager::backendFailure() {
   }
 
   m_nextStep = BackendFailure;
-
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming) {
-    deactivate();
-    return;
-  }
 }
 
 #ifdef MZ_DUMMY
