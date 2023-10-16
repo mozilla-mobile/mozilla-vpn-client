@@ -60,7 +60,6 @@ MZFlickable {
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.preferredWidth: MZTheme.theme.rowHeight
                 Layout.leftMargin: MZTheme.theme.windowMargin / 2
-                enabled: _backButtonVisible
                 visible: _backButtonVisible
 
                 MZIcon {
