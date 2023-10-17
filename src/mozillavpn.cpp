@@ -21,7 +21,6 @@
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
-#include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -923,11 +922,6 @@ void MozillaVPN::onboardingCompleted() {
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
 
-    // Resetting for the benefit of testing so that we only have to reset one
-    // setting (onboardingCompleted) manually. No real affect on user since they
-    // will never see onboarding again
-    settingsHolder->setOnboardingStep(0);
-
     // Toggle glean on or off at the end of onboarding, depending on what the
     // user selected
     settingsHolder->setGleanEnabled(
@@ -937,6 +931,12 @@ void MozillaVPN::onboardingCompleted() {
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
+
+    // Resetting for the benefit of testing so that we only have to reset one
+    // setting (onboardingCompleted) manually. No real affect on user since they
+    // *should* never see onboarding more than once
+    settingsHolder->setOnboardingStep(0);
+    settingsHolder->setOnboardingDataCollectionEnabled(false);
 
   } else {
     logger.debug() << "telemetry policy completed";
