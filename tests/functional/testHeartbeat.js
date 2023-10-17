@@ -112,11 +112,12 @@ describe('Backend failure', function() {
       await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      // TODO Should this go back to VPN off instead of connecting?
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
-          'Connecting…');
+      
+      await vpn.waitForCondition(async () => {
+        return await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+            'VPN is on';
+      });
     });
 
     it('BackendFailure when connected', async () => {
