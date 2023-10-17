@@ -49,17 +49,11 @@ describe('Backend failure', function() {
     await vpn.waitForQuery(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
 
+    // Ensure that in the event of a Guardian error during authentication,
+    // the "something went wrong" screen is displayed to the user.    
     await vpn.forceHeartbeatFailure();
     await vpn.waitForQueryAndClick(
       queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
-
-    // // TODO: without call to click on cancel this test fails because 
-    // // we get stuck on the loading spinner 
-    // // after authenticating following the changes in mozillavpn.cpp
-    // // to remove the call to backend failure in heartbeatCompleted().
-    // // Is clicking on "cancel" here okay?
-    // await vpn.waitForQueryAndClick(
-    //   queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
   });
