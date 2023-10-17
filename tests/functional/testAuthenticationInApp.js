@@ -10,7 +10,7 @@ const fxaEndpoints = require('./servers/fxa_endpoints.js')
 describe('User authentication', function() {
   this.timeout(300000);
 
-  it('Completes authentication int app', async () => {
+  it('Completes authentication in app', async () => {
     await vpn.authenticateInApp();
   });
 
@@ -631,11 +631,11 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BACK_BUTTON.visible());
+          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
 
       // Step 10: totp -> main
       await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BACK_BUTTON.visible());
+          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
       await vpn.waitForInitialView();
 
       // Step 11: main -> start -> sign-in -> unblock code -> help -> unblock
@@ -967,7 +967,7 @@ describe('User authentication', function() {
               'hasError', true));
 
       await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BACK_BUTTON.visible());
+          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
       await vpn.waitForInitialView();
 
       // Step 7: main -> sign up -> code -> error

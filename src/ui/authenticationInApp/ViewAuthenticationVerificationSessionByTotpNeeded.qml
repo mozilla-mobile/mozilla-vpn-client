@@ -42,6 +42,7 @@ MZInAppAuthenticationBase {
         Layout.preferredWidth: parent.width
 
         MZCancelButton {
+            objectName: "totpCancelButton"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 if (isReauthFlow) {
