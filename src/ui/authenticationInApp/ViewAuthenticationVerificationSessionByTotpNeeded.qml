@@ -25,6 +25,7 @@ MZInAppAuthenticationBase {
     _subtitleText: MZI18n.InAppAuthSecurityCodeSubtitle
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
     _inputLabel: MZI18n.InAppAuthSecurityCodeLabel
+    _backButtonVisible: false
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authVerificationSessionByTotpNeeded"
@@ -41,6 +42,7 @@ MZInAppAuthenticationBase {
         Layout.preferredWidth: parent.width
 
         MZCancelButton {
+            objectName: "totpCancelButton"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 if (isReauthFlow) {

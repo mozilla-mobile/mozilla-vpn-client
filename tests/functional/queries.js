@@ -196,8 +196,7 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-button'),
   AUTH_TOTP_GET_HELP_LINK:
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-getHelpLink'),
-  AUTH_TOTP_BACK_BUTTON:
-      new QmlQueryComposer('//authVerificationSessionByTotpNeeded-backButton'),
+  AUTH_TOTP_CANCEL_BUTTON: new QmlQueryComposer('//totpCancelButton'),
   AUTH_TOTP_PASTE_BUTTON: new QmlQueryComposer(
       '//authVerificationSessionByTotpNeeded-inputPasteButton'),
 

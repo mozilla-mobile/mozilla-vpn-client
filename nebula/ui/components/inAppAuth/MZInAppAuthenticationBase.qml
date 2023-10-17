@@ -15,6 +15,7 @@ MZFlickable {
     property var _menuButtonOnClick
     property bool _changeEmailLinkVisible: false
     property bool _disclaimersVisible: true
+    property bool _backButtonVisible: true
     property string _viewObjectName: ""
 
     property alias _menuButtonImageSource: menuButtonImage.source
@@ -59,6 +60,7 @@ MZFlickable {
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.preferredWidth: MZTheme.theme.rowHeight
                 Layout.leftMargin: MZTheme.theme.windowMargin / 2
+                visible: _backButtonVisible
 
                 MZIcon {
                     id: menuButtonImage
