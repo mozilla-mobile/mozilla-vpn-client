@@ -1217,7 +1217,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
   if (!success) {
-    m_private->m_connectionManager.backendFailure();
+    logger.debug() << "Heartbeat completed in Mozilla VPN but Guardian "
+                      "encountered an error";
     return;
   }
 

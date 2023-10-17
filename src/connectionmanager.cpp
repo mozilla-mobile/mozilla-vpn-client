@@ -863,15 +863,17 @@ bool ConnectionManager::switchServers(const ServerData& serverData) {
 void ConnectionManager::backendFailure() {
   logger.error() << "backend failure";
 
-  if (m_state == StateInitializing || m_state == StateOff ||
-      m_state == StateOn) {
+  if (m_state == StateInitializing || m_state == StateOff) {
     emit readyToBackendFailure();
     return;
   }
 
   m_nextStep = BackendFailure;
 
-  if (m_state == StateDisconnecting) {
+  if (m_state == StateOn || m_state == StateSwitching ||
+      m_state == StateSilentSwitching || m_state == StateConnecting ||
+      m_state == StateCheckSubscription || m_state == StateConfirming ||
+      m_state == StateDisconnecting) {
     deactivate();
     return;
   }
