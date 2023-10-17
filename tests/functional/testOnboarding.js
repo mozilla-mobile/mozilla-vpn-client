@@ -89,6 +89,8 @@ describe('Onboarding', function() {
     //Clicks block trackers checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    //dnsProviderFlags is a bitfield mapping of hex flags that can handle bitwise operations to combine multiple flags
+    //here, we combine blockAds (0x02), blockTrackers (0x04), and blockMalware (0x08) which totals to 0xE or 14 in decimal
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 14);
 
     //Test back button
