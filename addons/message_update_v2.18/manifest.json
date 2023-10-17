@@ -1,7 +1,7 @@
 {
   "api_version": "0.1",
   "id": "message_update_v2.18",
-  "name": "Update to Mozilla VPN 2.87",
+  "name": "Update to Mozilla VPN 2.18",
   "type": "message",
   "conditions": {
     "max_client_version": "2.17.9"
