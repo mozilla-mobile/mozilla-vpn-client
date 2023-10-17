@@ -4,6 +4,11 @@
 
 #include "daemonlocalserverconnection.h"
 
+#if defined(MZ_MACOS)
+#  include <sys/types.h>
+#  include <unistd.h>
+#endif
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -15,7 +20,7 @@
 
 namespace {
 Logger logger("DaemonLocalServerConnection");
-}
+}  // namespace
 
 DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
                                                          QLocalSocket* socket)
@@ -91,6 +96,10 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   QString type = typeValue.toString();
 
   logger.debug() << "Command received:" << type;
+  if (!isCallerAuthorized(type)) {
+    logger.warning() << "Caller is unauthorized. Ignoring command.";
+    return;
+  }
 
   if (type == "activate") {
     InterfaceConfig config;
@@ -145,6 +154,8 @@ void DaemonLocalServerConnection::connected(const QString& pubkey) {
 }
 
 void DaemonLocalServerConnection::disconnected() {
+  m_sessionUid = 0;
+
   QJsonObject obj;
   obj.insert("type", "disconnected");
   write(obj);
@@ -159,4 +170,61 @@ void DaemonLocalServerConnection::backendFailure() {
 void DaemonLocalServerConnection::write(const QJsonObject& obj) {
   m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
   m_socket->write("\n");
+}
+
+bool DaemonLocalServerConnection::isCallerAuthorized(const QString& command) {
+#if defined(MZ_MACOS)
+  uid_t uid;
+  gid_t gid;
+  int result = getpeereid(m_socket->socketDescriptor(), &uid, &gid);
+  if (result == -1) {
+    logger.error() << "Unable to determine if caller is authorized."
+                      "Assuming unauthorized.";
+    return false;
+  }
+
+  if (uid == 0) {
+    logger.debug() << "Command issued by root.";
+    // Case: This is root calling, root is always authorized.
+    return true;
+  }
+
+  QJsonObject status = Daemon::instance()->getStatus();
+  bool isConnected = status.value("connected").toBool();
+
+  if (isConnected) {
+    if (m_sessionUid == uid) {
+      // Case: VPN is currently active and caller is the one who activated it.
+      // Caller can access the APIs.
+      return true;
+    }
+
+    // Case: VPN is currently active and caller is **not** one who activated it.
+    // Caller **can't** access the APIs.
+    logger.error() << "Command issued by unexpected user" << uid;
+    return false;
+  }
+
+  // Case: VPN is not connected and we got a request to check the status, fine.
+  if (command == "status") {
+    return true;
+  }
+
+  // Case: VPN is not connected and we just got an activate command.
+  // Anyone can activate and we hold on to the activator's id
+  // for subsequent authorizations.
+  if (command == "activate") {
+    logger.debug() << "New session started by user" << uid;
+    m_sessionUid = uid;
+    return true;
+  }
+
+  // Case: We are not connected and this is not an activate call.
+  // Unless it's root, not one may access any APIs.
+  logger.debug() << "Unable to determine if user" << uid
+                 << "is authroized, no ongoing session.";
+  return false;
+#endif
+
+  return true;
 }
