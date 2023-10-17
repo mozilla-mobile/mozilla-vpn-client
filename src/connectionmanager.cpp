@@ -872,8 +872,7 @@ void ConnectionManager::backendFailure() {
 
   if (m_state == StateOn || m_state == StateSwitching ||
       m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming ||
-      m_state == StateDisconnecting) {
+      m_state == StateCheckSubscription || m_state == StateConfirming) {
     deactivate();
     return;
   }

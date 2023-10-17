@@ -50,14 +50,16 @@ describe('Backend failure', function() {
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
 
     await vpn.forceHeartbeatFailure();
-
-    // TODO: without call to click on cancel this test fails because 
-    // we get stuck on the loading spinner 
-    // after authenticating following the changes in mozillavpn.cpp
-    // to remove the call to backend failure in heartbeatCompleted().
-    // Is clicking on "cancel" here okay?
     await vpn.waitForQueryAndClick(
-      queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
+      queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
+
+    // // TODO: without call to click on cancel this test fails because 
+    // // we get stuck on the loading spinner 
+    // // after authenticating following the changes in mozillavpn.cpp
+    // // to remove the call to backend failure in heartbeatCompleted().
+    // // Is clicking on "cancel" here okay?
+    // await vpn.waitForQueryAndClick(
+    //   queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
   });
@@ -112,7 +114,7 @@ describe('Backend failure', function() {
       await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      
+
       await vpn.waitForCondition(async () => {
         return await vpn.getQueryProperty(
                    queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===

@@ -1216,9 +1216,10 @@ void MozillaVPN::backendServiceRestore() {
 void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
-  if (!success) {
-    logger.debug() << "Heartbeat completed in Mozilla VPN but Guardian "
-                      "encountered an error";
+  // In the event of a Guardian error during authentication,
+  // the "something went wrong" screen is displayed to the user.
+  if (!success && state() == StateAuthenticating) {
+    m_private->m_connectionManager.backendFailure();
     return;
   }
 

@@ -36,19 +36,17 @@ void TaskHeartbeat::run() {
 
             int statusCode = request->statusCode();
 
+            logger.debug() << "Guardian network request encountered an issue. "
+                              "HTTP status code: "
+                           << statusCode;
+
             // Internal server errors.
             if (statusCode >= 500 && statusCode <= 509) {
-              logger.debug()
-                  << "Internal server error from Guardian. HTTP status code: "
-                  << statusCode;
               vpn->heartbeatCompleted(false);
             }
 
-            // Request failure.
+            // Client errors.
             else if (statusCode >= 400 && statusCode <= 409) {
-              logger.debug()
-                  << "Request failure error from Guardian. HTTP status code: "
-                  << statusCode;
               vpn->heartbeatCompleted(false);
             }
 
