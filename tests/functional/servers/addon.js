@@ -6,9 +6,11 @@ const Server = require('./server.js');
 const fs = require('fs');
 const path = require('path');
 
+// If not specified, assume the test addons can be found in the 'addons' subdir
+// under the MVPN_BIN binary
 const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
                          process.env.MVPN_ADDONS_PATH : 
-                         './tests/functional/addons/generated';
+                         path.join(path.dirname(process.env.MVPN_BIN), 'addons');
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
