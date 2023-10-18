@@ -179,7 +179,8 @@ bool DaemonLocalServerConnection::isCallerAuthorized(const QString& command) {
   int result = getpeereid(m_socket->socketDescriptor(), &uid, &gid);
   if (result == -1) {
     logger.error() << "Unable to determine if caller is authorized."
-                      "Assuming unauthorized.";
+                      "Assuming unauthorized. Error:"
+                   << errno;
     return false;
   }
 
@@ -189,10 +190,8 @@ bool DaemonLocalServerConnection::isCallerAuthorized(const QString& command) {
     return true;
   }
 
-  QJsonObject status = Daemon::instance()->getStatus();
-  bool isConnected = status.value("connected").toBool();
-
-  if (isConnected) {
+  Daemon::State state = Daemon::instance()->state();
+  if (state != Daemon::Inactive) {
     if (m_sessionUid == uid) {
       // Case: VPN is currently active and caller is the one who activated it.
       // Caller can access the APIs.

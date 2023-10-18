@@ -23,12 +23,16 @@ class Daemon : public QObject {
     Switch,
   };
 
+  enum State { Activating, Active, Inactive };
+
   explicit Daemon(QObject* parent);
   ~Daemon();
 
   static Daemon* instance();
 
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
+
+  State state() { return m_state; };
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals = true);
@@ -82,6 +86,8 @@ class Daemon : public QObject {
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
+
+  State m_state = Inactive;
 };
 
 #endif  // DAEMON_H
