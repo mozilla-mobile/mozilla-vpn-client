@@ -401,15 +401,6 @@ void MozillaVPN::maybeStateMain() {
   // getting to the home screen
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
-      // We turn telemetry off when onboarding starts so that the user has to
-      // specifically opt in to all future telemetry *Note: This is needed
-      // because telemetry is on prior to onboarding to record metrics regarding
-      // auth
-      if (!settingsHolder->onboardingStarted()) {
-        settingsHolder->setGleanEnabled(false);
-        settingsHolder->setOnboardingStarted(true);
-      }
-
       setState(StateOnboarding);
       return;
     }
@@ -931,15 +922,21 @@ void MozillaVPN::onboardingCompleted() {
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
 
-    // Resetting for the benefit of testing so that we only have to reset one
-    // setting (onboardingCompleted) manually. No real affect on user since they
-    // will never see onboarding again
-    settingsHolder->setOnboardingStep(0);
+    // Toggle glean on or off at the end of onboarding, depending on what the
+    // user selected
+    settingsHolder->setGleanEnabled(
+        settingsHolder->onboardingDataCollectionEnabled());
 
-    // Mark the old onboarding expereince as completed as well, ensuring that
+    // Mark the old onboarding experience as completed as well, ensuring that
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
+
+    // Resetting for the benefit of testing so that we only have to reset one
+    // setting (onboardingCompleted) manually. No real affect on user since they
+    // *should* never see onboarding more than once
+    settingsHolder->setOnboardingStep(0);
+    settingsHolder->setOnboardingDataCollectionEnabled(false);
 
   } else {
     logger.debug() << "telemetry policy completed";
