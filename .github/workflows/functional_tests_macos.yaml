@@ -47,7 +47,7 @@ jobs:
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{github.workspace}}/qt_dist/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
-          cp ./build/cmake/src/dummyvpn build/
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
 
       - name: Compile test addons
         shell: bash
