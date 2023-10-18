@@ -29,16 +29,12 @@ void TaskHeartbeat::run() {
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this, request](QNetworkReply::NetworkError, const QByteArray&) {
-            logger.error() << "Failed to talk with the server";
+            int statusCode = request->statusCode();
+            logger.error() << "Failed to talk with the server. Status code: "
+                           << statusCode;
 
             MozillaVPN* vpn = MozillaVPN::instance();
             Q_ASSERT(vpn);
-
-            int statusCode = request->statusCode();
-
-            logger.debug() << "Guardian network request encountered an issue. "
-                              "HTTP status code: "
-                           << statusCode;
 
             // Internal server errors.
             if (statusCode >= 500 && statusCode <= 509) {

@@ -50,7 +50,7 @@ describe('Backend failure', function() {
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
 
     // Ensure that in the event of a Guardian error during authentication,
-    // the "something went wrong" screen is displayed to the user.    
+    // the "something went wrong" screen is displayed to the user.
     await vpn.forceHeartbeatFailure();
     await vpn.waitForQueryAndClick(
       queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
@@ -109,6 +109,9 @@ describe('Backend failure', function() {
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
+      // VPN should not be disconnected after a heartbeat failure. 
+      // This ensures that the VPN remains on to avoid potentially leaking traffic
+      // and leaving the user unprotected.
       await vpn.waitForCondition(async () => {
         return await vpn.getQueryProperty(
                    queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
@@ -127,6 +130,10 @@ describe('Backend failure', function() {
       await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      
+      // VPN should not be disconnected after a heartbeat failure. 
+      // This ensures that the VPN remains on to avoid potentially leaking traffic
+      // and leaving the user unprotected.
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
@@ -148,6 +155,9 @@ describe('Backend failure', function() {
 
       await vpn.forceHeartbeatFailure();
 
+      // Because the user has already initiated the deactivation of the VPN
+      // even if we encounter a heartbeat failure during the process, 
+      // we proceed with deactivation as usual.
       await vpn.waitForCondition(async () => {
         const msg = await vpn.getQueryProperty(
             queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
