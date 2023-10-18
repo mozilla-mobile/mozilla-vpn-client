@@ -256,6 +256,12 @@ void ConnectionManager::quit() {
   }
 }
 
+void ConnectionManager::deleteTunnel() {
+  if (m_impl) {
+    m_impl->deleteTunnel();
+  }
+}
+
 void ConnectionManager::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 

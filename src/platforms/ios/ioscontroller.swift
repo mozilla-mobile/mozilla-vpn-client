@@ -119,7 +119,7 @@ public class IOSControllerImpl : NSObject {
     @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, failureCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
-        let _ = TunnelManager.withTunnel { tunnel in
+        TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
             (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
 
@@ -157,7 +157,7 @@ public class IOSControllerImpl : NSObject {
     }
 
     func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, failureCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void) {
-        let _ = TunnelManager.withTunnel { tunnel in
+        TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
             proto!.disconnectOnSleep = false
@@ -237,10 +237,21 @@ public class IOSControllerImpl : NSObject {
         TunnelManager.session?.stopTunnel()
     }
 
+    @objc func removeTunnel() {
+      IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")
+      TunnelManager.withTunnel { tunnel in
+        tunnel.removeFromPreferences(completionHandler: { error in
+          if let error = error {
+            IOSControllerImpl.logger.info(message: "Error when removing tunnel \(error.localizedDescription)")
+          }
+        })
+      }
+    }
+
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
         IOSControllerImpl.logger.info(message: "Check status")
         
-        let _ = TunnelManager.withTunnel { tunnel in
+        TunnelManager.withTunnel { tunnel in
             let proto = tunnel.protocolConfiguration as? NETunnelProviderProtocol
             if proto == nil {
                 callback("", "", "")

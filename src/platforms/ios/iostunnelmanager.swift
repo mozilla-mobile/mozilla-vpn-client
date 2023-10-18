@@ -47,7 +47,7 @@ class TunnelManager {
         }
     }
     
-    static func withTunnel(_ f: (_ tunnel: NETunnelProviderManager) throws -> Any) -> Any? {
+    @discardableResult static func withTunnel(_ f: (_ tunnel: NETunnelProviderManager) throws -> Any) -> Any? {
         guard let tunnel = TunnelManager.instance.tunnel else {
             logger.error(message: "Attempted to use the VPN tunnel, but it's not available.")
             return nil

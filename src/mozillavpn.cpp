@@ -843,6 +843,8 @@ void MozillaVPN::logout() {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
+  connectionManager()->deleteTunnel();
+
   // update-required state is the only one we want to keep when logging out.
   if (state() != StateUpdateRequired) {
     setState(StateInitialize);
@@ -1290,6 +1292,7 @@ void MozillaVPN::hardReset() {
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
+  connectionManager()->deleteTunnel();
   // Deactivate VPN and quit
   connectionManager()->quit();
 }
