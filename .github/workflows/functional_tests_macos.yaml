@@ -41,22 +41,12 @@ jobs:
 
       - name: Compile test client
         shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{github.workspace}}/qt_dist/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-
-      - name: Compile test addons
-        shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons \
-            -DCMAKE_PREFIX_PATH=${{github.workspace}}/qt_dist/lib/cmake
-          cmake --build build/addons
 
       - uses: actions/upload-artifact@v3
         with:

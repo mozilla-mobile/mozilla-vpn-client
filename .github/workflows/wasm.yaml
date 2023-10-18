@@ -45,13 +45,22 @@ jobs:
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
 
-      - name: Compiling
+      - name: Compile test client
         shell: bash
         run: |
           export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
-          mkdir build
-          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake -DCMAKE_BUILD_TYPE=Release
+          mkdir -p build/cmake
+          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S $(pwd) -B build/cmake -DCMAKE_BUILD_TYPE=Release \
+            -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
+            -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64
           cmake --build build -j4
+
+      - name: Compile test addons
+        shell: bash
+        run: |
+          mkdir -p build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons
+          cmake --build build/addons
 
       - name: Generate tasklist
         id: testGen
@@ -72,8 +81,10 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: WebAssembly Build Qt6
-            path: build/wasm_build
+          name: WebAssembly Build Qt6
+          path: |
+            build/
+            !build/cmake/
 
   functionaltests:
     name: Functional tests
@@ -92,19 +103,6 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v3
-        with:
-          path: build/
-          key: ${{ github.sha }}
-
-      - name: Install Qt
-        shell: bash
-        run: |
-          python3 -m pip install aqtinstall
-          python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
-
       - name: Install dependecies
         run: |
           sudo apt install --no-upgrade firefox xvfb -y
@@ -115,12 +113,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: WebAssembly Build Qt6
-          # Destination path, WASM_BUILD_DIRECTORY
-          path: wasm_build
-
-      - name: Build addons
-        shell: bash
-        run: ./scripts/addon/generate_all_tests.py -q /opt/$QTVERSION/gcc_64/bin
+          path: build/
 
       - name: Running ${{matrix.test.name}} Tests
         id: runTests
@@ -131,5 +124,5 @@ jobs:
           command: |
             export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
-            export WASM_BUILD_DIRECTORY=$(pwd)/wasm_build
+            export WASM_BUILD_DIRECTORY=$(pwd)/build/wasm_build
             xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}

@@ -46,7 +46,6 @@ jobs:
 
       - name: Compile test client
         shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           pip3 install -r requirements.txt
 
@@ -64,7 +63,6 @@ jobs:
 
       - name: Compile test addons
         shell: bash
-        if: steps.cache-build.outputs.cache-hit != 'true'
         run: |
           mkdir -p build/addons
           cmake -S $(pwd)/tests/functional/addons -B build/addons
