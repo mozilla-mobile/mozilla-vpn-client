@@ -60,7 +60,6 @@ tasks:
     linux-build-mantic:
         symbol: I(linux-mantic)
         definition: linux-dpkg-build
-        cache: false ## Disable caching while Ubuntu/Mantic is in beta.
         args:
             DOCKER_BASE_IMAGE: ubuntu:mantic
     linux-build-fedora-fc36:
