@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 project(lottie VERSION 1.0.0 LANGUAGES CXX
         DESCRIPTION "Lightweight scalable animations: QML Wrapper library"
@@ -13,9 +13,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_FOLDER "Lottie")
-endif()
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.17)
-    cmake_policy(SET CMP0099 OLD)
 endif()
 
 add_library(lottie STATIC)

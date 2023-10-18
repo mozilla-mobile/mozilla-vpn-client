@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 project(testing_addons VERSION 1.0.0 LANGUAGES CXX
         DESCRIPTION "Mozilla VPN Addons for Functional Testing"

@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: mozilla <vpn@mozilla.com>
 Build-Depends: debhelper (>= 11.2),
                cdbs,
-               cmake (>= 3.16~),
+               cmake (>= 3.18~),
                flex,
                gcc (>=4:8.0.0~),
                g++ (>=4:8.0.0~),
