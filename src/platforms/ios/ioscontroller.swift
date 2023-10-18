@@ -195,15 +195,7 @@ public class IOSControllerImpl : NSObject {
                     return
                 }
 
-                IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
-                
-                //Used to create a VPN configuration without connecting during onboarding
-                if isOnboarding {
-                    IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
-                    disconnectCallback()
-                    onboardingCompletedCallback()
-                    return
-                }
+               IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
 
                tunnel.loadFromPreferences { error in
                     if let error = error {
@@ -212,7 +204,15 @@ public class IOSControllerImpl : NSObject {
                         return
                     }
 
-                   IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
+                    IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
+
+                    // Used to create a VPN configuration without connecting during onboarding
+                    if isOnboarding {
+                        IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
+                        disconnectCallback()
+                        onboardingCompletedCallback()
+                        return
+                    }
 
                     do {
                         if (reason == 1 /* ReasonSwitching */) {
