@@ -55,7 +55,6 @@ ColumnLayout {
     }
 
     MZCheckBoxRow {
-        id: dataCollectionCheckBox
         objectName: "dataCollectionCheckBox"
 
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
