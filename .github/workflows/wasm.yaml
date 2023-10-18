@@ -59,7 +59,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons \
+            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake
           cmake --build build/addons
 
       - name: Generate tasklist
