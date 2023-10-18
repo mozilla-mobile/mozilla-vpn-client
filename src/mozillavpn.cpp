@@ -1213,7 +1213,17 @@ void MozillaVPN::backendServiceRestore() {
 void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
-  if (!success) {
+  // In the event of a Guardian error during authentication,
+  // the "something went wrong" screen is displayed to the user.
+  // This is important because the service used for authentication is
+  // unavailable and causes an interruption in the authentication process.
+  // Alternatively if the user is already authenticated, we intentionally avoid
+  // presenting them with the "something went wrong" screen to avoid unnecessary
+  // interruptions. If the user is already authenticated, it is possible that a
+  // Guardian service may momentarily become unavailable but there is nothing
+  // for the user to do and it may not affect the connectivity at all so it is
+  // not necessary to take additional actions.
+  if (!success && state() == StateAuthenticating) {
     m_private->m_connectionManager.backendFailure();
     return;
   }

@@ -9,31 +9,26 @@ const vpn = require('./helper.js');
 describe('Backend failure', function() {
   this.timeout(300000);
 
-  async function backendFailureAndRestore() {
-    await vpn.forceHeartbeatFailure();
-    await vpn.waitForQueryAndClick(
-        queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
-  }
-
   it('Backend failure during the main view', async () => {
     await vpn.waitForInitialView();
-    await backendFailureAndRestore();
+    await vpn.forceHeartbeatFailure();
 
     await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
     await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
   });
 
-  /* TODO:
-    it('Backend failure in the help menu', async () => {
+  it('Backend failure in the help menu', async () => {
       await vpn.waitForQueryAndClick(
         queries.screenInitialize.GET_HELP_LINK.visible());
 
       await
     vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
 
-      await backendFailureAndRestore();
-    });
-  */
+    await vpn.forceHeartbeatFailure();
+
+    await
+    vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
+  });
 
   it('BackendFailure during browser authentication', async () => {
     if (this.ctx.wasm) {
@@ -54,21 +49,26 @@ describe('Backend failure', function() {
     await vpn.waitForQuery(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
 
-    await backendFailureAndRestore();
+    // Ensure that in the event of a Guardian error during authentication,
+    // the "something went wrong" screen is displayed to the user.
+    await vpn.forceHeartbeatFailure();
+    await vpn.waitForQueryAndClick(
+      queries.screenBackendFailure.HEARTBEAT_TRY_BUTTON.visible());
+
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
   });
 
   it('BackendFailure in the Post authentication view', async () => {
     await vpn.authenticateInApp();
     await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-    await backendFailureAndRestore();
+    await vpn.forceHeartbeatFailure();
     await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
   });
 
   it('BackendFailure in the Telemetry policy view', async () => {
     await vpn.authenticateInApp(true, false);
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-    await backendFailureAndRestore();
+    await vpn.forceHeartbeatFailure();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
   });
 
@@ -82,7 +82,7 @@ describe('Backend failure', function() {
               queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
 
-      await backendFailureAndRestore();
+      await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert.equal(
@@ -105,13 +105,18 @@ describe('Backend failure', function() {
               queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
           'Masking connection and location');
 
-      await backendFailureAndRestore();
+      await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
-          'VPN is off');
+
+      // VPN should not be disconnected after a heartbeat failure. 
+      // This ensures that the VPN remains on to avoid potentially leaking traffic
+      // and leaving the user unprotected.
+      await vpn.waitForCondition(async () => {
+        return await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+            'VPN is on';
+      });
     });
 
     it('BackendFailure when connected', async () => {
@@ -122,15 +127,18 @@ describe('Backend failure', function() {
             'VPN is on';
       });
 
-      await backendFailureAndRestore();
+      await vpn.forceHeartbeatFailure();
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      
+      // VPN should not be disconnected after a heartbeat failure. 
+      // This ensures that the VPN remains on to avoid potentially leaking traffic
+      // and leaving the user unprotected.
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
-          'VPN is off');
+          'VPN is on');
     });
-
 
     it('disconnecting', async () => {
       await vpn.activate();
@@ -145,13 +153,16 @@ describe('Backend failure', function() {
         return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 
-      await backendFailureAndRestore();
+      await vpn.forceHeartbeatFailure();
 
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
-          'VPN is off');
+      // Because the user has already initiated the deactivation of the VPN
+      // even if we encounter a heartbeat failure during the process, 
+      // we proceed with deactivation as usual.
+      await vpn.waitForCondition(async () => {
+        const msg = await vpn.getQueryProperty(
+            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+        return msg === 'VPN is off';
+      });
     });
   });
 });
