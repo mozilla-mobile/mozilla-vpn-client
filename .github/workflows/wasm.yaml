@@ -53,7 +53,7 @@ jobs:
           /opt/$QTVERSION/wasm_32/bin/qt-cmake -S $(pwd) -B build/cmake -DCMAKE_BUILD_TYPE=Release \
             -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
             -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64
-          cmake --build build -j4
+          cmake --build build/cmake -j4
 
       - name: Compile test addons
         shell: bash
