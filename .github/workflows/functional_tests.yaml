@@ -150,7 +150,6 @@ jobs:
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/dummyvpn
-          MVPN_ADDONS_PATH: ./build/addons
 
       - name: Generating grcov reports
         id: generateGrcov
