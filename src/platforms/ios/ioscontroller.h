@@ -23,7 +23,7 @@ class IOSController final : public ControllerImpl {
 
   void deactivate(ConnectionManager::Reason reason) override;
 
-  void deleteTunnel() override;
+  void deleteOSTunnelConfig() override;
 
   void checkStatus() override;
 

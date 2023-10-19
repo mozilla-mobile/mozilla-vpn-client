@@ -256,9 +256,9 @@ void ConnectionManager::quit() {
   }
 }
 
-void ConnectionManager::deleteTunnel() {
+void ConnectionManager::deleteOSTunnelConfig() {
   if (m_impl) {
-    m_impl->deleteTunnel();
+    m_impl->deleteOSTunnelConfig();
   }
 }
 

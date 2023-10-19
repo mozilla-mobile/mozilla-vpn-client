@@ -237,7 +237,7 @@ public class IOSControllerImpl : NSObject {
         TunnelManager.session?.stopTunnel()
     }
 
-    @objc func removeTunnel() {
+    @objc func deleteOSTunnelConfig() {
       IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")
       TunnelManager.withTunnel { tunnel in
         tunnel.removeFromPreferences(completionHandler: { error in

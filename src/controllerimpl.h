@@ -46,10 +46,10 @@ class ControllerImpl : public QObject {
   // "disconnecting" state until the "disconnected" signal is received.
   virtual void deactivate(ConnectionManager::Reason reason) = 0;
 
-  // This method is used to remove the tunnel from the operating
+  // This method is used to remove the tunnel config from the operating
   // system. This is used upon logging out and resetting, so the
   // tunnel cannot be reactivated in system settings.
-  virtual void deleteTunnel(){};
+  virtual void deleteOSTunnelConfig(){};
 
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is

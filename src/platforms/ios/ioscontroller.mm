@@ -181,7 +181,7 @@ void IOSController::deactivate(ConnectionManager::Reason reason) {
   [impl disconnect];
 }
 
-void IOSController::deleteTunnel() { [impl removeTunnel]; }
+void IOSController::deleteOSTunnelConfig() { [impl deleteOSTunnelConfig]; }
 
 void IOSController::checkStatus() {
   logger.debug() << "Checking status";
