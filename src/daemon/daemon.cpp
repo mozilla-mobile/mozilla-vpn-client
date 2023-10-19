@@ -70,9 +70,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // At the end, if the activation succeds, the `connected` signal is emitted.
   // If the activation abort's for any reason `the `activationFailure` signal is
   // emitted.
-  logger.debug() << "Activating interface";
+  logger.debug() << "Activating interface. Current state:" << m_state;
   auto emit_failure_guard = qScopeGuard([this] {
     m_state = Inactive;
+    logger.error() << "Activation failed";
     emit activationFailure();
   });
 

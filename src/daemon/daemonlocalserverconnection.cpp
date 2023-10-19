@@ -198,7 +198,7 @@ bool DaemonLocalServerConnection::isCallerAuthorized(const QString& command) {
       return true;
     }
 
-    // Case: VPN is currently active and caller is **not** one who activated it.
+    // Case: VPN is currently active and caller is **not** the one who activated it.
     // Caller **can't** access the APIs.
     logger.error() << "Command issued by unexpected user" << uid;
     return false;
