@@ -1287,12 +1287,12 @@ void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
   settingsHolder->hardReset();
+  connectionManager()->deleteTunnel();
 }
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
-  connectionManager()->deleteTunnel();
   // Deactivate VPN and quit
   connectionManager()->quit();
 }
