@@ -1,4 +1,4 @@
-name: WebAssembly
+name: WebAssembly Tests
 
 on:
   push:
