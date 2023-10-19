@@ -102,5 +102,7 @@ add_subdirectory(inAppAuth)
 set_target_properties(components PROPERTIES FOLDER "Libs")
 target_link_libraries(components PRIVATE 
     forms
+    formsplugin
     inAppAuth
+    inAppAuthplugin
 )
