@@ -938,8 +938,11 @@ bool ConnectionManager::activate(const ServerData& serverData,
 
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
-              // subscribed.
-              if (App::instance()->state() != App::StateMain) {
+              // subscribed. We can ignore this during onboarding because we are
+              // not actually turning the VPN on (only asking for VPN system
+              // config permissions)
+              if (App::instance()->state() != App::StateMain &&
+                  App::instance()->state() != App::StateOnboarding) {
                 return;
               }
 
