@@ -47,7 +47,7 @@ jobs:
             -DCMAKE_PREFIX_PATH=${{github.workspace}}/qt_dist/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/ build/addons/
+          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
 
       - uses: actions/upload-artifact@v3
         with:

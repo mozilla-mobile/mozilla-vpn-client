@@ -85,7 +85,6 @@ jobs:
           name: WebAssembly Build Qt6
           path: |
             build/
-            !build/cmake/
 
   functionaltests:
     name: Functional tests

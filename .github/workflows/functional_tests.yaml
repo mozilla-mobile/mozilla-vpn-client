@@ -60,7 +60,7 @@ jobs:
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \
               build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/ build/addons/
+          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
 
       - name: Compile test addons
         shell: bash
