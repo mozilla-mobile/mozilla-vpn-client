@@ -62,13 +62,6 @@ jobs:
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
 
-      - name: Compile test addons
-        shell: bash
-        run: |
-          mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons
-          cmake --build build/addons
-
       - uses: actions/upload-artifact@v3
         with:
           name: test-client-${{ github.sha }}
