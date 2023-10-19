@@ -54,6 +54,7 @@ jobs:
             -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
             -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64
           cmake --build build/cmake -j4
+          cp -r build/cmake/wasm_build build/wasm_build
 
       - name: Compile test addons
         shell: bash
@@ -85,6 +86,7 @@ jobs:
           name: WebAssembly Build Qt6
           path: |
             build/
+            !build/cmake/
 
   functionaltests:
     name: Functional tests
