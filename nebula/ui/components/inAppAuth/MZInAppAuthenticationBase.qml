@@ -14,6 +14,8 @@ import components.forms 0.1
 MZFlickable {
     property var _menuButtonOnClick
     property bool _changeEmailLinkVisible: false
+    property bool _disclaimersVisible: true
+    property bool _backButtonVisible: true
     property string _viewObjectName: ""
 
     property alias _menuButtonImageSource: menuButtonImage.source
@@ -58,6 +60,7 @@ MZFlickable {
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.preferredWidth: MZTheme.theme.rowHeight
                 Layout.leftMargin: MZTheme.theme.windowMargin / 2
+                visible: _backButtonVisible
 
                 MZIcon {
                     id: menuButtonImage
@@ -133,6 +136,7 @@ MZFlickable {
                 Loader {
                     Layout.alignment: Qt.AlignHCenter
                     active: _changeEmailLinkVisible
+                    visible: _changeEmailLinkVisible
                     sourceComponent: MZLinkButton {
                         labelText: MZI18n.InAppAuthChangeEmailLink
                         visible: _changeEmailLinkVisible
@@ -142,6 +146,7 @@ MZFlickable {
 
                 MZSubtitle {
                     id: subtitle
+                    visible: _subtitleText.length > 0
                     width: undefined
                     Layout.fillWidth: true
                 }
@@ -150,6 +155,7 @@ MZFlickable {
 
             MZBoldLabel {
                 id: inputLabel
+                visible: inputLabel.text.length > 0
             }
 
             ColumnLayout {
@@ -160,6 +166,7 @@ MZFlickable {
 
         ColumnLayout {
             id: disclaimers
+            visible: _disclaimersVisible
             Layout.maximumWidth: col.width - MZTheme.theme.vSpacing * 2
             Layout.leftMargin: MZTheme.theme.vSpacing
             Layout.rightMargin: MZTheme.theme.vSpacing

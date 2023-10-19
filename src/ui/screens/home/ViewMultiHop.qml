@@ -76,7 +76,8 @@ StackView {
 
                 objectName: "buttonSelectEntry"
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
-                descriptionText: titleText
+                // If the current VPN configuration is single hop, VPNCurrentServer.localizedEntryCityName will be empty, so use multiHopEntryServer
+                descriptionText: segmentedNav.multiHopEntryServer[2]
                 contentChildren: [
                     ServerLabel {
                         id: entryLabel
@@ -110,7 +111,7 @@ StackView {
                     objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
                     titleText: MZI18n.MultiHopFeatureMultiHopExitLocationHeader
-                    descriptionText: titleText
+                    descriptionText: segmentedNav.multiHopExitServer[2]
                     contentChildren: [
 
                         ServerLabel {

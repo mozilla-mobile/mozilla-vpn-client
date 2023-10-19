@@ -88,7 +88,7 @@ Item {
                             return MZI18n.OnboardingProgressBarAccessibilityStepCurrent.arg(labelText).arg(index + 1).arg(progressBar.model.count)
                         case MZStepProgressBarDelegate.State.Incomplete:
                         default:
-                            return MZI18n.OnboardingProgressBarAccessibilityStepIncomplete.arg(labelText).arg(index + 1).arg(progressBar.model.count)
+                            return MZI18n.OnboardingProgressBarAccessibilityStepIncomplete2.arg(labelText).arg(index + 1).arg(progressBar.model.count)
                     }
                 }
             }

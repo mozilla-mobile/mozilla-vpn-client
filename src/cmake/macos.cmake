@@ -89,11 +89,6 @@ execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
-add_go_library(balrog-api ../balrog/balrog-api.go
-    CGO_CFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
-    CGO_LDFLAGS -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}
-)
-target_link_libraries(mozillavpn PRIVATE balrog-api)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h

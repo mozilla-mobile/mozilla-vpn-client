@@ -45,8 +45,10 @@ RoundButton {
 
     Accessible.role: Accessible.Button
     Accessible.onPressAction: enabled ? handleKeyClick() : function() { }
-    Accessible.focusable: true
-
+    Accessible.focusable: enabled
+    // In Qt 6.2.4, Windows Accessibility's focusable property is mapped to activeFocusOnTab instead of Accessible.focusable or enabled.
+    // Use activeFocusOnTab as a workaround. The issue has been fixed in Qt 6.5.1. (See QAccessibleQuickItem::state)
+    activeFocusOnTab: enabled
 
     onActiveFocusChanged: {
         if (!activeFocus) {

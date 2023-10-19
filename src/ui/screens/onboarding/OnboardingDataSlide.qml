@@ -61,13 +61,12 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
         leftMargin: 0
-        isChecked: MZSettings.gleanEnabled
+        subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
         showDivider: false
-        onClicked: {
-            MZSettings.gleanEnabled = !MZSettings.gleanEnabled
-       }
+        isChecked: MZSettings.onboardingDataCollectionEnabled
+
+        onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
     }
 
     Item {

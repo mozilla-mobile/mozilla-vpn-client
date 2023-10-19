@@ -1,6 +1,6 @@
 (function (api) {
   // "Extra" fields are used only to get a localized string.
-  api.addon.composer.remove('extra_1_217');
+  api.addon.composer.remove('extra_1');
 
   if (('updateTime' in api.settings)) {
     api.addon.date = (api.settings.updateTime.getTime() / 1000);
@@ -10,7 +10,7 @@
   // Macos v2.16.0 requires a web-based update.
   if (api.env.platform === 'macos' && api.env.versionString === '2.16.0') {
     api.addon.setTitle(
-        'message.message_update_v2.17.block.extra_1_217',
+        'message.message_update_v2.18.block.extra_1',
         'Download the new Mozilla VPN');
     api.addon.composer.remove('c_3');
     return;
@@ -51,6 +51,6 @@
   api.addon.composer.remove('c_3');
 
   api.addon.setTitle(
-      'message.message_update_v2.17.block.extra_1_217',
+      'message.message_update_v2.18.block.extra_1',
       'Download the new Mozilla VPN');
 })

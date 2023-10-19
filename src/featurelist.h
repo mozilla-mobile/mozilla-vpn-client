@@ -17,7 +17,7 @@ FEATURE(accountDeletion,        // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_accountDeletion)
+        FeatureCallback_iosOrAndroid)
 
 FEATURE(addon,                 // Feature ID
         "Addon support",       // Feature name

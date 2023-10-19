@@ -39,6 +39,7 @@ MZInAppAuthenticationBase {
     property bool allowAccountDeletion: false
 
     _changeEmailLinkVisible: false
+    _disclaimersVisible: false
     _viewObjectName: "authDeleteAccountRequest"
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
@@ -51,6 +52,7 @@ MZInAppAuthenticationBase {
 
     _inputs: ColumnLayout {
         objectName: "accountDeletionLayout"
+        spacing: MZTheme.theme.vSpacingSmall
         MZTextBlock {
             objectName: "accountDeletionLabel"
             color: MZTheme.theme.fontColor
@@ -59,9 +61,10 @@ MZInAppAuthenticationBase {
                 .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
                     + MZAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
+            font.pixelSize: MZTheme.theme.fontSize
 
             Layout.fillWidth: true
-            Layout.bottomMargin: MZTheme.theme.vSpacing
+            Layout.bottomMargin: MZTheme.theme.listSpacing
         }
 
         Repeater {
@@ -100,10 +103,8 @@ MZInAppAuthenticationBase {
         MZLinkButton {
             Layout.fillWidth: true
 
-            fontName: MZTheme.theme.fontBoldFamily
             // Cancel
             labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText
-            linkColor: MZTheme.theme.redLinkButton
             onClicked: {
                 cancelAuthenticationFlow();
             }
