@@ -813,7 +813,7 @@ void ConnectionManager::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString&s erverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString& erverIpv4Gateway, const QString& deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
