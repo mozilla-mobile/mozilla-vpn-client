@@ -7,6 +7,7 @@ use crate::logger::*;
 use ring::signature;
 use std::ffi::CStr;
 use std::os::raw::c_uchar;
+use std::os::raw::c_char;
 use x509_parser::prelude::*;
 
 pub mod balrog;
@@ -31,7 +32,7 @@ pub extern "C" fn verify_rsa(
     message_length: usize,
     message_signature_ptr: *const c_uchar,
     message_signature_length: usize,
-    log_fn: Option<extern "C" fn(*const i8)>,
+    log_fn: Option<extern "C" fn(*const c_char)>,
 ) -> bool {
     let logger = SignatureLogger { handler: log_fn };
 
@@ -70,10 +71,10 @@ pub extern "C" fn verify_content_signature(
     x5u_length: usize,
     input_ptr: *const c_uchar,
     input_length: usize,
-    signature: *const i8,
-    root_hash: *const i8,
-    leaf_subject: *const i8,
-    log_fn: Option<extern "C" fn(*const i8)>,
+    signature: *const c_char,
+    root_hash: *const c_char,
+    leaf_subject: *const c_char,
+    log_fn: Option<extern "C" fn(*const c_char)>,
 ) -> bool {
     let logger = SignatureLogger { handler: log_fn };
 
@@ -197,7 +198,7 @@ mod test {
     #[test]
     #[should_panic]
     fn test_rsa_ffi_logger() {
-        extern "C" fn logfn(msg: *const i8) {
+        extern "C" fn logfn(msg: *const c_char) {
             match unsafe { CStr::from_ptr(msg) }.to_str() {
                 Err(_e) => {}
                 Ok(x) => panic!("{}", x),
@@ -270,7 +271,7 @@ mod test {
         let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
 
-        extern "C" fn logfn(msg: *const i8) {
+        extern "C" fn logfn(msg: *const c_char) {
             match unsafe { CStr::from_ptr(msg) }.to_str() {
                 Err(_e) => {}
                 Ok(x) => panic!("{}", x),
