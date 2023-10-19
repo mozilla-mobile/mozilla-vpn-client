@@ -1990,13 +1990,6 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "force_heartbeat_failure", "Force a heartbeat failure", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->heartbeatCompleted(false /* success */);
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
       "force_server_unavailable",
       "Timeout all servers in a city using force_server_unavailable "
       "{countryCode} "
@@ -2077,6 +2070,14 @@ void MozillaVPN::registerInspectorCommands() {
       "mockFreeTrial", "Force the UI to show 7 day trial on 1 year plan", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         s_mockFreeTrial = true;
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
+      "mockSomethingWentWrong",
+      "Force the UI to show the Something Went Wrong screen", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->connectionManager()->backendFailure();
         return QJsonObject();
       });
 
