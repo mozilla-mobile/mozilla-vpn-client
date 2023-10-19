@@ -813,7 +813,7 @@ void ConnectionManager::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
@@ -938,7 +938,9 @@ bool ConnectionManager::activate(const ServerData& serverData,
 
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
-              // subscribed.
+              // subscribed. We can ignore this during onboarding because we are
+              // not actually turning the VPN on (only asking for VPN system
+              // config permissions)
               if (App::instance()->state() != App::StateMain &&
                   App::instance()->state() != App::StateOnboarding) {
                 return;
