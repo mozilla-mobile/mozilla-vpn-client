@@ -693,6 +693,9 @@ void ConnectionManager::resetConnectedTime() {
 void ConnectionManager::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
+  m_pingCanary.stop();
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
   clearConnectedTime();
   clearRetryCounter();
 

@@ -494,12 +494,9 @@ void Addon::retranslate() {
 
   QString localeCode = Localizer::instance()->languageCodeOrSystem();
 
-  double completeness = m_translationCompleteness.value(localeCode, 0);
-  if (completeness < 1) {
-    logger.debug() << "Let's try to load another language as fallback for code"
-                   << localeCode;
-    maybeLoadLanguageFallback(localeCode);
-  }
+  logger.debug() << "Let's try to load another language as fallback for code"
+                 << localeCode;
+  maybeLoadLanguageFallback(localeCode);
 
   QLocale locale = Localizer::instance()->locale();
 

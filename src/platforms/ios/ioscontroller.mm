@@ -142,25 +142,25 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
   Q_ASSERT(settingsHolder);
 
   [impl connectWithDnsServer:config.m_dnsServer.toNSString()
-               serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
-                 serverPublicKey:config.m_serverPublicKey.toNSString()
-                serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
-                      serverPort:config.m_serverPort
-          allowedIPAddressRanges:allowedIPAddressRangesNS
-                          reason:reason
-                   gleanDebugTag:settingsHolder->gleanDebugTagActive()
-                                     ? settingsHolder->gleanDebugTag().toNSString()
-                                     : @""
+      serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
+      serverPublicKey:config.m_serverPublicKey.toNSString()
+      serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
+      serverPort:config.m_serverPort
+      allowedIPAddressRanges:allowedIPAddressRangesNS
+      reason:reason
+      gleanDebugTag:settingsHolder->gleanDebugTagActive()
+                        ? settingsHolder->gleanDebugTag().toNSString()
+                        : @""
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
-                  installationId:config.m_installationId.toNSString()
-                  isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
-                 failureCallback:^() {
-                   logger.error() << "IOSSWiftController - connection failed";
-                   emit disconnected();
-                 }
-                onboardingCompletedCallback:^() {
-                    MozillaVPN::instance()->onboardingCompleted();
-                 }];
+      installationId:config.m_installationId.toNSString()
+      isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
+      disconnectCallback:^() {
+        logger.error() << "IOSSWiftController - disconnecting";
+        emit disconnected();
+      }
+      onboardingCompletedCallback:^() {
+        MozillaVPN::instance()->onboardingCompleted();
+      }];
 }
 
 void IOSController::deactivate(ConnectionManager::Reason reason) {
