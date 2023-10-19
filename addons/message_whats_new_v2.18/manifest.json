@@ -23,16 +23,6 @@
         "content": "This update includes minor bug fixes, UI adjustments and other performance improvements, including:"
       },
       {
-        "id": "c_2",
-        "type": "ulist",
-        "content": [
-          {
-            "id": "l_2",
-            "content": "The ability to upgrade to an annual plan from within the app"
-          }
-        ]
-      },
-      {
         "id": "c_3",
         "type": "text",
         "content": "Thank you for installing the latest version!"
