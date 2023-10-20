@@ -1,7 +1,8 @@
 use std::ffi::CString;
+use std::os::raw::c_char;
 
 pub struct SignatureLogger {
-    pub handler: Option<extern "C" fn(*const i8)>,
+    pub handler: Option<extern "C" fn(*const c_char)>,
 }
 
 impl SignatureLogger {
