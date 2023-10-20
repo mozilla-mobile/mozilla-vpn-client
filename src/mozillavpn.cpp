@@ -2074,8 +2074,7 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "force_backend_failure",
-      "Force a backend failure", 0,
+      "force_backend_failure", "Force a backend failure", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->connectionManager()->backendFailure();
         return QJsonObject();
