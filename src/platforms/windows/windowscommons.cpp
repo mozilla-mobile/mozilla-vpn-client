@@ -109,6 +109,7 @@ QString WindowsCommons::getTunnelLogFilePath() {
     }
   }
 
+  logger.debug() << "Failed to find WireGuard Tunnel log file";
   return QString();
 }
 
