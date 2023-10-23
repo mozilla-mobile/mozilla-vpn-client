@@ -38,6 +38,10 @@ bool DaemonSession::start(QLocalSocket* socket) {
 }
 
 void DaemonSession::reset() {
+  if (!isActive()) {
+    return;
+  }
+
   logger.debug() << "Session reset";
   m_sessionOwner = -1;
 }
