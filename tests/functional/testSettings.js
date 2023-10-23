@@ -852,6 +852,6 @@ describe('Settings', function() {
 
     // turn on VPN
     await vpn.activateViaToggle();
-    await vpn.awaitConnectionOkay();
+    await vpn.awaitSuccessfulConnection();
   });
 });

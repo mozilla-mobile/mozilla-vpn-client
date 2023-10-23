@@ -76,11 +76,12 @@ module.exports = {
         `Command failed: ${json.error}`);
 
     if (awaitConnectionOkay) {
-      awaitConnectionOkay();
+      awaitSuccessfulConnection();
     }
   },
 
-  async awaitConnectionOkay() {
+  // Waits for VPN connection to be active and healthy.
+  async awaitSuccessfulConnection() {
     await this.waitForCondition(async () => {
       let title = await this.getQueryProperty(
           queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
@@ -193,7 +194,9 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  // This is used when hitting the "Reset and Quit" button
+  // This is used when hitting the "Reset and Quit" button. We expect empty
+  // JSON object back, so clickOnQuery would never return the `click` in json,
+  // and command would fail.
   async clickOnQueryAndAcceptAnyResults(id) {
     assert(await this.query(id), 'Clicking on an non-existing element?!?');
     const command = `click ${encodeURIComponent(id)}`;
