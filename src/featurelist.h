@@ -45,7 +45,7 @@ FEATURE(annualUpgrade,         // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_annualUpgrade)
 
 FEATURE(appReview,              // Feature ID
         "App Review",           // Feature name

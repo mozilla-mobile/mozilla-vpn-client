@@ -40,6 +40,16 @@ bool FeatureCallback_iosOrAndroid() {
 // Custom callback functions
 // -------------------------
 
+bool FeatureCallback_annualUpgrade() {
+  if (Constants::inProduction()) {
+    return false;
+  }
+  if (FeatureCallback_iosOrAndroid()) {
+    return false;
+  }
+  return true;
+}
+
 bool FeatureCallback_sentry() {
 #if defined(MZ_IOS)
   return FeatureCallback_inStaging();
