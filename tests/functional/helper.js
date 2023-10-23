@@ -198,7 +198,7 @@ module.exports = {
   // JSON object back, so clickOnQuery would never return the `click` in json,
   // and command would fail.
   async clickOnQueryAndAcceptAnyResults(id) {
-    assert(await this.query(id), 'Clicking on an non-existing element?!?');
+    assert(await this.query(id), 'Element does not exist.');
     const command = `click ${encodeURIComponent(id)}`;
 
     const json = await this._writeCommand(`click ${encodeURIComponent(id)}`);
