@@ -57,8 +57,6 @@ Daemon* Daemon::instance() {
 bool Daemon::activate(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 
-  m_state = Activating;
-
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -70,12 +68,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // At the end, if the activation succeds, the `connected` signal is emitted.
   // If the activation abort's for any reason `the `activationFailure` signal is
   // emitted.
-  logger.debug() << "Activating interface. Current state:" << m_state;
-  auto emit_failure_guard = qScopeGuard([this] {
-    m_state = Inactive;
-    logger.error() << "Activation failed";
-    emit activationFailure();
-  });
+  logger.debug() << "Activating interface.";
+  auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
   if (m_connections.contains(config.m_hopType)) {
     if (supportServerSwitching(config)) {
@@ -161,7 +155,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
     m_connections[config.m_hopType] = ConnectionState(config);
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
     emit_failure_guard.dismiss();
-    m_state = Active;
     return true;
   }
   return false;
@@ -341,8 +334,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 bool Daemon::deactivate(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
-
-  m_state = Inactive;
 
   // Deactivate the main interface.
   if (!m_connections.isEmpty()) {

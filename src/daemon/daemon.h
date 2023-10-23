@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QTimer>
 
+#include "daemonsession.h"
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
@@ -23,16 +24,12 @@ class Daemon : public QObject {
     Switch,
   };
 
-  enum State { Activating, Active, Inactive };
-
   explicit Daemon(QObject* parent);
   ~Daemon();
 
   static Daemon* instance();
 
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
-
-  State state() { return m_state; };
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals = true);
@@ -44,6 +41,8 @@ class Daemon : public QObject {
 
   QString logs();
   void cleanLogs();
+
+  DaemonSession* session() { return &m_session; }
 
  signals:
   void connected(const QString& pubkey);
@@ -57,6 +56,8 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
+
+  DaemonSession m_session;
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
@@ -86,8 +87,6 @@ class Daemon : public QObject {
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
-
-  State m_state = Inactive;
 };
 
 #endif  // DAEMON_H

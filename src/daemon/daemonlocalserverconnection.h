@@ -25,15 +25,10 @@ class DaemonLocalServerConnection final : public QObject {
   void disconnected();
   void backendFailure();
 
-  bool isCallerAuthorized(const QString& command);
-
   void write(const QJsonObject& obj);
 
  private:
   QLocalSocket* m_socket = nullptr;
-
-  int m_sessionUid = 0;
-
   QByteArray m_buffer;
 };
 
