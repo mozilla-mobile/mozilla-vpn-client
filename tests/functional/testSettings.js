@@ -5,6 +5,7 @@
 const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
+const setup = require('./setupVpn.js');
 
 describe('Settings', function() {
   this.timeout(60000);
@@ -807,5 +808,50 @@ describe('Settings', function() {
 
     await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
     await vpn.waitForInitialView();
+  });
+
+  it('Checking Developer Menu Reset and Quit', async () => {
+    // magically unlock dev menu
+    await vpn.setSetting('developerUnlock', 'true');
+
+    // navigate to Developer Menu
+    await getToGetHelpView();
+    await vpn.waitForQueryAndClick(
+        queries.screenGetHelp.DEVELOPER_MENU.visible());
+
+    // click "reset and quit" 6 times, test will fail if app quits early
+    await vpn.waitForQuery(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await vpn.scrollToQuery(
+        queries.screenDeveloperMenu.SCREEN,
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON);
+    await vpn.waitForQueryAndClick(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    // can't use waitForQueryAndClick for final click because it returns an
+    // error - as expected, we crashed the app - but that causes test to fail
+    await vpn.clickOnQueryAndAcceptAnyResults(
+        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+
+    // Confirm the app quit
+    assert.equal(setup.vpnIsInactive(), true);
+
+    // relaunch app
+    await setup.startAndConnect();
+    await vpn.setSetting('tipsAndTricksIntroShown', 'true')
+        await vpn.setSetting('localhostRequestsOnly', 'true');
+    await vpn.authenticateInApp(true, true);
+    await vpn.setGleanAutomationHeader();
+
+    // turn on VPN
+    await vpn.activateViaToggle();
+    await vpn.awaitConnectionOkay();
   });
 });

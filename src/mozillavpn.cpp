@@ -863,6 +863,8 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
+  connectionManager()->deleteOSTunnelConfig();
+
   PurchaseHandler::instance()->stopSubscription();
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     ProductsHandler::instance()->stopProductsRegistration();

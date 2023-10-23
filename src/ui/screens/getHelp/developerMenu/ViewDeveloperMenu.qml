@@ -12,6 +12,7 @@ import components 0.1
 import components.forms 0.1
 
 MZViewBase {
+    objectName: "developerScreen"
     _menuTitle: MZI18n.SettingsDevTitle
     _viewContentData: ColumnLayout {
         id: root
@@ -257,6 +258,7 @@ MZViewBase {
 
         MZButton {
             id: resetAndQuit
+            objectName: "resetAndQuitButton"
             property int clickNeeded: 5
 
             text: "Reset and Quit"
