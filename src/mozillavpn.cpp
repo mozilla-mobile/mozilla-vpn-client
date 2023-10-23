@@ -1973,6 +1973,13 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "force_backend_failure", "Force a backend failure", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->connectionManager()->backendFailure();
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "force_captive_portal_check", "Force a captive portal check", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->captivePortalDetection()->detectCaptivePortal();
@@ -2070,13 +2077,6 @@ void MozillaVPN::registerInspectorCommands() {
       "mockFreeTrial", "Force the UI to show 7 day trial on 1 year plan", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         s_mockFreeTrial = true;
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
-      "force_backend_failure", "Force a backend failure", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->connectionManager()->backendFailure();
         return QJsonObject();
       });
 
