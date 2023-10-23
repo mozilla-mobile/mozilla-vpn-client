@@ -76,7 +76,7 @@ module.exports = {
         `Command failed: ${json.error}`);
 
     if (awaitConnectionOkay) {
-      awaitSuccessfulConnection();
+      await this.awaitSuccessfulConnection();
     }
   },
 

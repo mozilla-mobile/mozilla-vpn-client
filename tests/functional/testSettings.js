@@ -845,8 +845,8 @@ describe('Settings', function() {
 
     // relaunch app
     await setup.startAndConnect();
-    await vpn.setSetting('tipsAndTricksIntroShown', 'true')
-        await vpn.setSetting('localhostRequestsOnly', 'true');
+    await vpn.setSetting('tipsAndTricksIntroShown', 'true');
+    await vpn.setSetting('localhostRequestsOnly', 'true');
     await vpn.authenticateInApp(true, true);
     await vpn.setGleanAutomationHeader();
 
