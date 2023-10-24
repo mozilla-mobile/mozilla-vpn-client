@@ -64,6 +64,8 @@ bool DaemonAccessControl::authorizeCommandForPeer(const QString& command,
 
         return false;
       }
+      
+      return true;
     } else if (command == "status") {
       // Other than "activate",
       // only "status" command is available when there is no ongoing session.
