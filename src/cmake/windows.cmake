@@ -33,8 +33,8 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonsession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonsession.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h

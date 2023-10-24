@@ -5,26 +5,32 @@
 #ifndef DAEMONSESSION_H
 #define DAEMONSESSION_H
 
+#include <QString>
+
 class QLocalSocket;
 
-class DaemonSession final {
+class DaemonAccessControl final {
  public:
-  explicit DaemonSession();
-  ~DaemonSession();
+  explicit DaemonAccessControl();
+  ~DaemonAccessControl();
 
-  bool isActive() const { return m_sessionOwner != -1; }
+  bool isSessionActive() const;
 
-  bool start(QLocalSocket* m_socket = nullptr);
-  void reset();
+  bool startSession(QLocalSocket* socket = nullptr);
+  void resetSession();
 
-  /**
-   * @brief Only the peer that started the session or a peer that has
-   * special permissions e.g. root, may modify the currently ongoing session.
-   */
-  bool isPeerAuthorized(QLocalSocket* socket = nullptr) const;
+  bool authorizeCommandForPeer(const QString& command,
+                               QLocalSocket* socket = nullptr);
 
  private:
   static int getPeerId(QLocalSocket* socket = nullptr);
+
+  /**
+   * @brief Only the peer that started the session or a peer that has
+   * special permissions e.g. root, may modify the currently ongoing
+   * session.
+   */
+  bool isPeerAuthorized(QLocalSocket* socket = nullptr) const;
 
  private:
   // The id of the user who started the currently active session.

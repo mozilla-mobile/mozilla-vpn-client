@@ -8,7 +8,7 @@
 #include <QDateTime>
 #include <QTimer>
 
-#include "daemonsession.h"
+#include "daemonaccesscontrol.h"
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
@@ -42,7 +42,7 @@ class Daemon : public QObject {
   QString logs();
   void cleanLogs();
 
-  DaemonSession* session() { return &m_session; }
+  DaemonAccessControl* accessControl() { return &m_accessControl; }
 
  signals:
   void connected(const QString& pubkey);
@@ -57,7 +57,7 @@ class Daemon : public QObject {
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
 
-  DaemonSession m_session;
+  DaemonAccessControl m_accessControl;
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {

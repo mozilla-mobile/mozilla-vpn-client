@@ -10,7 +10,7 @@
 #include <QLocalSocket>
 
 #include "daemon.h"
-#include "daemonsession.h"
+#include "daemonaccesscontrol.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -43,8 +43,8 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
   MZ_COUNT_DTOR(DaemonLocalServerConnection);
 
-  auto session = Daemon::instance()->session();
-  session->reset();
+  auto accessControl = Daemon::instance()->accessControl();
+  accessControl->resetSession();
 
   logger.debug() << "Connection released";
 }
@@ -95,23 +95,10 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   QString type = typeValue.toString();
 
   logger.debug() << "Command received:" << type;
-  auto session = Daemon::instance()->session();
-  if (!session->isActive()) {
-    if (type == "activate" && !session->start(m_socket)) {
-      logger.error() << "Unable to start new session."
-                        "Ignoring activate command.";
-      return;
-      // Other than "activate", only "status" command is available for any user.
-    } else if (type != "status") {
-      logger.error() << "Attempted to send command:" << type
-                     << "but there is no ongoing session. Ignoring.";
-      return;
-    }
-  } else {
-    if (!session->isPeerAuthorized(m_socket)) {
-      logger.warning() << "Caller is unauthorized. Ignoring command.";
-      return;
-    }
+  auto accessControl = Daemon::instance()->accessControl();
+  if (!accessControl->authorizeCommandForPeer(type, m_socket)) {
+    logger.error() << "Unable to authorize peer for command:" << type;
+    return;
   }
 
   if (type == "activate") {
@@ -130,7 +117,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "deactivate") {
-    session->reset();
+    accessControl->resetSession();
     Daemon::instance()->deactivate();
     return;
   }
