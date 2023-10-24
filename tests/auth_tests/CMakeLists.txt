@@ -29,7 +29,19 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
 qt_add_executable(app_auth_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_auth_tests)
-target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST)
+target_link_libraries(app_auth_tests PRIVATE
+    mozillavpn_environment
+    mozillavpn_feature
+    mozillavpn_hacl-star
+    mozillavpn_logging
+    mozillavpn_networking
+    mozillavpn_qmlengineholder
+    mozillavpn_settings
+    mozillavpn_taskscheduler
+    mozillavpn_theme
+    mozillavpn_utilities
+)
 
 target_link_libraries(app_auth_tests PRIVATE
     Qt6::Core

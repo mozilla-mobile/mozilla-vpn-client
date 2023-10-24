@@ -1,0 +1,42 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+add_library(mozillavpn_logging STATIC)
+
+target_sources(mozillavpn_logging INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/logger.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/loglevel.h
+)
+
+if(${MZ_PLATFORM_NAME} STREQUAL "iOS")
+    target_sources(mozillavpn_logging INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/ioslogger.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ioslogger.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/ioslogger.swift
+    )
+endif()
+
+target_include_directories(mozillavpn_logging PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_CURRENT_BINARY_DIR}/..
+)
+
+# By making this public, any target which links to this target
+# will add this directory to their include directories list.
+target_include_directories(mozillavpn_logging PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_link_libraries(mozillavpn_logging PUBLIC Qt6::Core)
+
+target_link_libraries(mozillavpn_logging PUBLIC
+    mozillavpn_settings
+    mozillavpn_environment
+    mozillavpn_feature
+    mozillavpn_utilities
+)

@@ -75,8 +75,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.h
 )

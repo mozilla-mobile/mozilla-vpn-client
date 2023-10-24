@@ -21,10 +21,6 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 
 # Shared components
 target_sources(shared-sources INTERFACE
-    ${CMAKE_SOURCE_DIR}/src/constants.h
-    ${CMAKE_SOURCE_DIR}/src/constants.cpp
-    ${CMAKE_SOURCE_DIR}/src/settingslist.h
-    ${CMAKE_SOURCE_DIR}/src/featurelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -100,18 +96,12 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.h
     ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.cpp
     ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.h
-    ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
-    ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
     ${CMAKE_SOURCE_DIR}/src/curve25519.h
-    ${CMAKE_SOURCE_DIR}/src/env.cpp
-    ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/externalophandler.cpp
     ${CMAKE_SOURCE_DIR}/src/externalophandler.h
-    ${CMAKE_SOURCE_DIR}/src/feature.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
@@ -126,10 +116,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Curve25519_51.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Poly1305_32.c
     ${CMAKE_SOURCE_DIR}/src/hawkauth.cpp
     ${CMAKE_SOURCE_DIR}/src/hawkauth.h
     ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
@@ -152,30 +138,16 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/languagei18n.cpp
     ${CMAKE_SOURCE_DIR}/src/languagei18n.h
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.h
-    ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/loghandler.h
     ${CMAKE_SOURCE_DIR}/src/models/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
-    ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/networkmanager.h
-    ${CMAKE_SOURCE_DIR}/src/networkrequest.cpp
-    ${CMAKE_SOURCE_DIR}/src/networkrequest.h
-    ${CMAKE_SOURCE_DIR}/src/qmlengineholder.cpp
-    ${CMAKE_SOURCE_DIR}/src/qmlengineholder.h
     ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
-    ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
-    ${CMAKE_SOURCE_DIR}/src/resourceloader.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.cpp
@@ -186,15 +158,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
-    ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp
     ${CMAKE_SOURCE_DIR}/src/signature.h
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.h
-    ${CMAKE_SOURCE_DIR}/src/task.h
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp
@@ -211,8 +176,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.h
     ${CMAKE_SOURCE_DIR}/src/temporarydir.cpp
     ${CMAKE_SOURCE_DIR}/src/temporarydir.h
-    ${CMAKE_SOURCE_DIR}/src/theme.cpp
-    ${CMAKE_SOURCE_DIR}/src/theme.h
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorial.cpp
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorial.h
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstep.cpp
@@ -221,12 +184,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepbefore.h
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepnext.cpp
     ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepnext.h
-    ${CMAKE_SOURCE_DIR}/src/urlopener.cpp
-    ${CMAKE_SOURCE_DIR}/src/urlopener.h
     ${CMAKE_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_SOURCE_DIR}/src/utils.h
-    ${CMAKE_SOURCE_DIR}/src/versionutils.cpp
-    ${CMAKE_SOURCE_DIR}/src/versionutils.h
 )
 
 target_sources(shared-sources INTERFACE

@@ -129,6 +129,8 @@ constexpr const char* PLATFORM_NAME =
     "android"
 #elif defined(MZ_WINDOWS)
     "windows"
+#elif defined(MZ_WASM)
+    "wasm"
 #elif defined(UNIT_TEST) || defined(MZ_DUMMY)
     "dummy"
 #else

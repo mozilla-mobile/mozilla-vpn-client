@@ -4,10 +4,7 @@
 
 #include "env.h"
 
-#include <QQuickWindow>
 #include <QTextStream>
-
-#include "qmlengineholder.h"
 
 namespace {
 
@@ -40,34 +37,6 @@ QString Env::devVersion() {
   stream << "</b>";
 
   return out;
-}
-
-// static
-QString Env::graphicsApi() {
-  QQuickWindow* window =
-      qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
-  if (!window) {
-    // In unit-tests we do not have a window.
-    return "unknown";
-  }
-
-  switch (window->rendererInterface()->graphicsApi()) {
-    case QSGRendererInterface::Software:
-      return "software";
-    case QSGRendererInterface::OpenVG:
-    case QSGRendererInterface::OpenGL:
-      return "openGL/openVG";
-    case QSGRendererInterface::Direct3D11:
-      return "Direct3D11";
-    case QSGRendererInterface::Vulkan:
-      return "Vulkan";
-    case QSGRendererInterface::Metal:
-      return "Metal";
-    case QSGRendererInterface::Unknown:
-    case QSGRendererInterface::Null:
-    default:
-      return "unknown";
-  }
 }
 
 // static

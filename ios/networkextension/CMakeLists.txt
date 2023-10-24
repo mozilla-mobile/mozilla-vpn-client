@@ -67,7 +67,7 @@ target_sources(networkextension PRIVATE
     ${WG_APPLE_SOURCE_DIR}/WireGuardKit/PrivateKey.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnel.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosglue.mm
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
+    ${CMAKE_SOURCE_DIR}/src/logging/platforms/ios/ioslogger.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmessage.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmanager.swift

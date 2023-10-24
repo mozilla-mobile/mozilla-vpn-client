@@ -9,7 +9,6 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "qmlengineholder.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
 
@@ -30,7 +29,7 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
   connect(ResourceLoader::instance(), &ResourceLoader::cacheFlushNeeded, this,
           [this]() {
             m_themes.clear();
-            initialize(QmlEngineHolder::instance()->engine());
+            initialize();
           });
 }
 
@@ -46,6 +45,12 @@ Theme* Theme::instance() {
 }
 
 void Theme::initialize(QJSEngine* engine) {
+  if (engine != m_engine) {
+    m_engine = engine;
+  }
+
+  Q_ASSERT(m_engine);
+
   m_themes.clear();
 
   QDir dir(ResourceLoader::instance()->loadDir(":/nebula/themes"));

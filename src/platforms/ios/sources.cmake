@@ -2,12 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-target_sources(shared-sources INTERFACE
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.mm
-)
-
 # Include the Adjust SDK
 if(BUILD_ADJUST_SDK_TOKEN)
     add_compile_definitions(MZ_ADJUST)

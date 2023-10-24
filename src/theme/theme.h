@@ -36,7 +36,7 @@ class Theme final : public QAbstractListModel {
   const QString& currentTheme() const { return m_currentTheme; }
   void setCurrentTheme(const QString& themeName);
 
-  void initialize(QJSEngine* engine);
+  void initialize(QJSEngine* engine = nullptr);
 
   // QAbstractListModel methods
 
@@ -68,6 +68,8 @@ class Theme final : public QAbstractListModel {
 
   QHash<QString, ThemeData*> m_themes;
   QString m_currentTheme;
+
+  QJSEngine* m_engine;
 };
 
 #endif  // THEME_H

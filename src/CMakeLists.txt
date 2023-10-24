@@ -43,6 +43,29 @@ endif()
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/environment)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/feature)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/hacl-star)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/logging)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/networking)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/settings)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/taskscheduler)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/theme)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/utilities)
+target_link_libraries(mozillavpn PRIVATE
+    mozillavpn_environment
+    mozillavpn_feature
+    mozillavpn_hacl-star
+    mozillavpn_logging
+    mozillavpn_networking
+    mozillavpn_qmlengineholder
+    mozillavpn_settings
+    mozillavpn_taskscheduler
+    mozillavpn_theme
+    mozillavpn_utilities
+)
+
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
@@ -54,10 +77,7 @@ target_link_libraries(mozillavpn PRIVATE
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
-target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
-target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
-
 
 if(NOT CMAKE_CROSSCOMPILING)
     target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)

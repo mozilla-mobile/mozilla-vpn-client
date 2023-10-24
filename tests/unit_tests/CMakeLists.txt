@@ -33,6 +33,19 @@ target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${M
 target_compile_definitions(app_unit_tests PRIVATE MZ_ADJUST)
 
 target_link_libraries(app_unit_tests PRIVATE
+    mozillavpn_environment
+    mozillavpn_feature
+    mozillavpn_hacl-star
+    mozillavpn_logging
+    mozillavpn_networking
+    mozillavpn_qmlengineholder
+    mozillavpn_settings
+    mozillavpn_taskscheduler
+    mozillavpn_theme
+    mozillavpn_utilities
+)
+
+target_link_libraries(app_unit_tests PRIVATE
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
@@ -40,7 +53,7 @@ target_link_libraries(app_unit_tests PRIVATE
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
-   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
+   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_link_libraries(app_unit_tests PRIVATE
         Qt6::NetworkAuth
     )

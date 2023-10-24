@@ -19,7 +19,6 @@ class Env final : public QObject {
 
   Q_PROPERTY(bool inProduction READ inProduction CONSTANT)
   Q_PROPERTY(QString devVersion READ devVersion CONSTANT)
-  Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
@@ -54,7 +53,6 @@ class Env final : public QObject {
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();
-  static QString graphicsApi();
 
   static bool debugMode();
   static bool stagingMode();

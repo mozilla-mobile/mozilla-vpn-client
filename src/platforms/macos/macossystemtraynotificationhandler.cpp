@@ -11,8 +11,8 @@
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "macosutils.h"
 #include "mozillavpn.h"
+#include "platforms/macos/macosutils.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
 

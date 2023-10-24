@@ -13,6 +13,7 @@
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "connectionbenchmark/connectionbenchmark.h"
@@ -20,8 +21,12 @@
 #include "connectionmanager.h"
 #include "constants.h"
 #include "controller.h"
+#include "env.h"
+#include "errorhandler.h"
 #include "feature.h"
 #include "fontloader.h"
+#include "frontend/navigationbarmodel.h"
+#include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
@@ -31,8 +36,11 @@
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "models/devicemodel.h"
+#include "models/featuremodel.h"
+#include "models/licensemodel.h"
 #include "models/recentconnections.h"
 #include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
@@ -51,7 +59,11 @@
 #include "settingsholder.h"
 #include "telemetry.h"
 #include "temporarydir.h"
+#include "theme.h"
+#include "tutorial/tutorial.h"
 #include "update/updater.h"
+#include "urlopener.h"
+#include "utils.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -93,6 +105,10 @@
 
 #ifdef MVPN_WEBEXTENSION
 #  include "server/serverhandler.h"
+#endif
+
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
 #endif
 
 #include <QApplication>
@@ -366,6 +382,47 @@ int CommandUI::run(QStringList& tokens) {
     // work for the generation of i18nstrings.h/cpp for the unit-test app.
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
                                  I18nStrings::instance());
+
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
+                                 __DONOTUSE__GleanPings::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "Glean",
+                                 __DONOTUSE__GleanMetrics::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAddonManager",
+                                 AddonManager::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",
+                                 AuthenticationInApp::instance());
+#ifdef SENTRY_ENABLED
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZCrashReporter",
+                                 SentryAdapter::instance());
+#endif
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZErrorHandler",
+                                 ErrorHandler::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZEnv",
+                                 Env::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZFeatureList",
+                                 FeatureModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",
+                                 LicenseModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLocalizer",
+                                 Localizer::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLog",
+                                 LogHandler::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZNavigator",
+                                 Navigator::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZNavigationBarModel",
+                                 NavigationBarModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
+                                 SettingsHolder::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTutorial",
+                                 Tutorial::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
+                                 UrlOpener::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
+                                 Utils::instance());
+
+    Theme::instance()->initialize(engine);
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme",
+                                 Theme::instance());
 
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);

@@ -14,12 +14,25 @@ target_link_libraries(dummyvpn PRIVATE
     Qt6::Widgets
 )
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" 
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
    AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
     target_link_libraries(dummyvpn PRIVATE
         Qt6::NetworkAuth
     )
 endif()
+
+target_link_libraries(dummyvpn PRIVATE
+    mozillavpn_environment
+    mozillavpn_feature
+    mozillavpn_hacl-star
+    mozillavpn_logging
+    mozillavpn_networking
+    mozillavpn_qmlengineholder
+    mozillavpn_settings
+    mozillavpn_taskscheduler
+    mozillavpn_theme
+    mozillavpn_utilities
+)
 
 target_link_libraries(dummyvpn PRIVATE
     shared-sources
@@ -59,8 +72,11 @@ target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 # Use #ifdef _WIN32 instead of MZ_WINDOWS in dummyvpn for conflicts in Windows-specific code.
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
-# Build the addons for functional testing.
-get_filename_component(QT6_PREFIX_PATH ${Qt6_DIR}/.. REALPATH)
+# We should not build into the source dir
+# but that is how we are currently doing things,
+# at least we no longer invoke python scripts to
+# invoke cmake.
+#  ¯\_(ツ)_/¯
 ExternalProject_Add(functional_test_addons
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/addons
