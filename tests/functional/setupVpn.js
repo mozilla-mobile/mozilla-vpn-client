@@ -46,7 +46,17 @@ async function startAndConnect() {
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
+function vpnIsInactive() {
+  try {
+    vpnProcess.kill(pid, 0);
+    return false;
+  } catch (e) {
+    return true;
+  }
+}
+
 exports.startAndConnect = startAndConnect;
+exports.vpnIsInactive = vpnIsInactive;
 
 exports.mochaHooks = {
   async beforeAll() {

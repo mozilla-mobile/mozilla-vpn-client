@@ -77,6 +77,7 @@ class ConnectionManager : public QObject, public LogSerializer {
   bool switchServers(const ServerData& serverData);
   void backendFailure();
   void updateRequired();
+  void deleteOSTunnelConfig();
 
   const ServerData& currentServer() const { return m_serverData; }
 

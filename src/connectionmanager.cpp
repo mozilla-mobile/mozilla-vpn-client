@@ -256,6 +256,12 @@ void ConnectionManager::quit() {
   }
 }
 
+void ConnectionManager::deleteOSTunnelConfig() {
+  if (m_impl) {
+    m_impl->deleteOSTunnelConfig();
+  }
+}
+
 void ConnectionManager::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 

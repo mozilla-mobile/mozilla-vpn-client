@@ -76,14 +76,19 @@ module.exports = {
         `Command failed: ${json.error}`);
 
     if (awaitConnectionOkay) {
-      await this.waitForCondition(async () => {
-        let title = await this.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        let unsettled = await this.getMozillaProperty(
-            'Mozilla.VPN', 'VPNConnectionHealth', 'unsettled');
-        return (title == 'VPN is on') && (unsettled == 'false');
-      });
+      await this.awaitSuccessfulConnection();
     }
+  },
+
+  // Waits for VPN connection to be active and healthy.
+  async awaitSuccessfulConnection() {
+    await this.waitForCondition(async () => {
+      let title = await this.getQueryProperty(
+          queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+      let unsettled = await this.getMozillaProperty(
+          'Mozilla.VPN', 'VPNConnectionHealth', 'unsettled');
+      return (title == 'VPN is on') && (unsettled == 'false');
+    });
   },
 
   async deactivate() {
@@ -187,6 +192,16 @@ module.exports = {
     assert(
         json.type === 'click' && !('error' in json),
         `Command failed: ${json.error}`);
+  },
+
+  // This is used when hitting the "Reset and Quit" button. We expect empty
+  // JSON object back, so clickOnQuery would never return the `click` in json,
+  // and command would fail.
+  async clickOnQueryAndAcceptAnyResults(id) {
+    assert(await this.query(id), 'Element does not exist.');
+    const command = `click ${encodeURIComponent(id)}`;
+
+    const json = await this._writeCommand(`click ${encodeURIComponent(id)}`);
   },
 
   async waitForQueryAndClick(id) {

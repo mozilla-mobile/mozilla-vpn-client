@@ -23,6 +23,8 @@ class IOSController final : public ControllerImpl {
 
   void deactivate(ConnectionManager::Reason reason) override;
 
+  void deleteOSTunnelConfig() override;
+
   void checkStatus() override;
 
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;

@@ -219,6 +219,7 @@ const screenGetHelp = {
   HELP_CENTER: new QmlQueryComposer('//helpCenter'),
   LINKS: new QmlQueryComposer('//getHelpLinks'),
   LOGS: new QmlQueryComposer('//viewLogs'),
+  DEVELOPER_MENU: new QmlQueryComposer('//developer'),
   STACKVIEW: new QmlQueryComposer('//getHelpStackView'),
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
 
@@ -226,6 +227,11 @@ const screenGetHelp = {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
   }
+};
+
+const screenDeveloperMenu = {
+  SCREEN: new QmlQueryComposer('//developerScreen-flickable'),
+  RESET_AND_QUIT_BUTTON: new QmlQueryComposer('//resetAndQuitButton'),
 };
 
 const appExclusionsView = {
@@ -484,6 +490,7 @@ module.exports = {
   screenTelemetry,
   screenAuthenticationInApp,
   screenAuthenticating,
+  screenDeveloperMenu,
   screenGetHelp,
   screenSettings,
   screenBackendFailure,

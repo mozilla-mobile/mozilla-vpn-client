@@ -834,6 +834,8 @@ void MozillaVPN::logout() {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
+  connectionManager()->deleteOSTunnelConfig();
+
   // update-required state is the only one we want to keep when logging out.
   if (state() != StateUpdateRequired) {
     setState(StateInitialize);
@@ -860,6 +862,8 @@ void MozillaVPN::reset(bool forceInitialState) {
   SettingsHolder::instance()->clear();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
+
+  connectionManager()->deleteOSTunnelConfig();
 
   PurchaseHandler::instance()->stopSubscription();
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
@@ -1292,6 +1296,7 @@ void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
   settingsHolder->hardReset();
+  connectionManager()->deleteOSTunnelConfig();
 }
 
 void MozillaVPN::hardResetAndQuit() {
