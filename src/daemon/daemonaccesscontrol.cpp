@@ -64,7 +64,7 @@ bool DaemonAccessControl::authorizeCommandForPeer(const QString& command,
 
         return false;
       }
-      
+
       return true;
     } else if (command == "status") {
       // Other than "activate",

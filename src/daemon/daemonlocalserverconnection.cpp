@@ -97,7 +97,8 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.debug() << "Command received:" << type;
   auto accessControl = Daemon::instance()->accessControl();
   if (!accessControl->authorizeCommandForPeer(type, m_socket)) {
-    logger.error() << "Unable to authorize command" << type << "for peer. Ignoring.";
+    logger.error() << "Unable to authorize command" << type
+                   << "for peer. Ignoring.";
     return;
   }
 
