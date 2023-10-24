@@ -1997,6 +1997,13 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "force_heartbeat_failure", "Force a heartbeat failure", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->heartbeatCompleted(false /* success */);
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "force_server_unavailable",
       "Timeout all servers in a city using force_server_unavailable "
       "{countryCode} "
