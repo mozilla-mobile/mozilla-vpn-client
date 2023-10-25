@@ -273,6 +273,7 @@ const screenSettings = {
     INFORMATION_CARD:
         new QmlQueryComposer('//privacySettingsViewInformationCard'),
 
+    MODAL_LOADER: new QmlQueryComposer('//privacyOverwriteLoader'),
     MODAL_CLOSE_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupPopupCloseButton'),
     MODAL_PRIMARY_BUTTON:
@@ -315,6 +316,7 @@ const screenSettings = {
       INFORMATION_CARD:
           new QmlQueryComposer('//DNSSettingsViewInformationCard'),
 
+      MODAL_LOADER: new QmlQueryComposer('//dnsOverwriteLoader'),
       MODAL_CLOSE_BUTTON:
           new QmlQueryComposer('//dnsOverwritePopupPopupCloseButton'),
       MODAL_PRIMARY_BUTTON:
