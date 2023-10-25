@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
 
 # Restrict tests to the most recent commit.
 concurrency:
@@ -20,14 +20,13 @@ jobs:
     runs-on: macos-latest
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
           submodules: 'recursive'
 
-      - name: Install dependencies
+      - name: Install build dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
@@ -37,14 +36,14 @@ jobs:
         shell: bash
         run: |
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
-          unzip -a -d ${{github.workspace}} qt6_mac.zip
+          unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
       - name: Compile test client
         shell: bash
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_PREFIX_PATH=${{github.workspace}}/qt_dist/lib/cmake
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
@@ -99,10 +98,10 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-            chmod +x ./build/dummyvpn
-            ./build/dummyvpn -v
+          chmod +x ./build/dummyvpn
+          ./build/dummyvpn -v
 
-      - name: Running ${{matrix.test.name}} Tests
+      - name: Running ${{ matrix.test.name }} Tests
         id: runTests
         uses: nick-invision/retry@v2
         with:
@@ -113,7 +112,7 @@ jobs:
             export HEADLESS=yes
             export TZ=Europe/London
             mkdir -p $ARTIFACT_DIR
-            npm run functionalTest --  --retries 3 ${{matrix.test.path}}
+            npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/dummyvpn
@@ -122,5 +121,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ always() }}
         with:
-          name: ${{matrix.test.name}} Logs
+          name: ${{ matrix.test.name }} Logs
           path: ${{ runner.temp }}/artifacts

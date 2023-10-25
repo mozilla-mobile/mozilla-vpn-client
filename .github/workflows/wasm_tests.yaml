@@ -1,15 +1,15 @@
 name: WebAssembly Tests
-
 on:
   push:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
 
+# Restrict tests to the most recent commit.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,20 +27,20 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-            submodules: 'true'
+          submodules: 'true'
 
-      - name: Install Qt
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Install Qt6
         shell: bash
         run: |
           python3 -m pip install aqtinstall
           # qt6.2.3 for wasm needs the desktop linux installation
           python3 -m aqt install-qt -O /opt linux desktop $QTVERSION
           python3 -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
-
-      - name: Install python dependencies
-        shell: bash
-        run: |
-          pip install -r requirements.txt
 
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
@@ -55,6 +55,13 @@ jobs:
             -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64
           cmake --build build/cmake -j4
           cp -r build/cmake/wasm_build build/wasm_build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WebAssembly Build Qt6
+          path: |
+            build/
+            !build/cmake/
 
       - name: Compile test addons
         shell: bash
@@ -80,14 +87,6 @@ jobs:
         run: |
           echo $TEST_LIST | jq
 
-      - name: Uploading
-        uses: actions/upload-artifact@v3
-        with:
-          name: WebAssembly Build Qt6
-          path: |
-            build/
-            !build/cmake/
-
   functionaltests:
     name: Functional tests
     needs:
@@ -105,19 +104,18 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install dependecies
+      - uses: actions/download-artifact@v3
+        with:
+          name: WebAssembly Build Qt6
+          path: build/
+
+      - name: Install test dependecies
         run: |
           sudo apt install --no-upgrade firefox xvfb -y
           pip3 install -r requirements.txt
           npm install
 
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: WebAssembly Build Qt6
-          path: build/
-
-      - name: Running ${{matrix.test.name}} Tests
+      - name: Running ${{ matrix.test.name }} Tests
         id: runTests
         uses: nick-invision/retry@v2
         with:
@@ -128,4 +126,4 @@ jobs:
             export HEADLESS=yes
             export WASM_BUILD_DIRECTORY=$(pwd)/build/wasm_build
             export MVPN_ADDONS_PATH=$(pwd)/build/addons
-            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{matrix.test.path}}
+            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{ matrix.test.path }}
