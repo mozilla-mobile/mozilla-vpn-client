@@ -30,8 +30,10 @@ bool DaemonAccessControl::isSessionActive() const {
   return m_sessionOwner != -1;
 }
 
-bool DaemonAccessControl::startSession(QLocalSocket* socket) {
+bool DaemonAccessControl::startSession(const QLocalSocket* socket) {
   if (isSessionActive()) {
+    logger.error() << "Unable to start new session. There is already an active "
+                      "session.";
     return false;
   }
 
@@ -47,6 +49,7 @@ bool DaemonAccessControl::startSession(QLocalSocket* socket) {
 
 void DaemonAccessControl::resetSession() {
   if (!isSessionActive()) {
+    logger.debug() << "No active session. Ignoring reset.";
     return;
   }
 
@@ -54,8 +57,8 @@ void DaemonAccessControl::resetSession() {
   m_sessionOwner = -1;
 }
 
-bool DaemonAccessControl::authorizeCommandForPeer(const QString& command,
-                                                  QLocalSocket* socket) {
+bool DaemonAccessControl::isCommandAuthorizedForPeer(
+    const QString& command, const QLocalSocket* socket) {
   if (!isSessionActive()) {
     if (command == "activate") {
       if (!startSession(socket)) {
@@ -69,6 +72,9 @@ bool DaemonAccessControl::authorizeCommandForPeer(const QString& command,
     } else if (command == "status") {
       // Other than "activate",
       // only "status" command is available when there is no ongoing session.
+      //
+      // Status may be called by the Mozilla VPN client while the VPN is turned
+      // off.
       return true;
     }
 
@@ -85,7 +91,7 @@ bool DaemonAccessControl::authorizeCommandForPeer(const QString& command,
   return true;
 }
 
-bool DaemonAccessControl::isPeerAuthorized(QLocalSocket* socket) const {
+bool DaemonAccessControl::isPeerAuthorized(const QLocalSocket* socket) const {
   if (!isSessionActive()) {
     logger.debug() << "Unable to determine if peer is authorized."
                       "Session must be started first."
@@ -111,7 +117,7 @@ bool DaemonAccessControl::isPeerAuthorized(QLocalSocket* socket) const {
 }
 
 // static
-int DaemonAccessControl::getPeerId(QLocalSocket* socket) {
+int DaemonAccessControl::getPeerId(const QLocalSocket* socket) {
 #if defined(MZ_MACOS)
   Q_ASSERT(socket);
 
