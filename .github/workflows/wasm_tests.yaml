@@ -56,13 +56,6 @@ jobs:
           cmake --build build/cmake -j4
           cp -r build/cmake/wasm_build build/wasm_build
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: WebAssembly Build Qt6
-          path: |
-            build/
-            !build/cmake/
-
       - name: Compile test addons
         shell: bash
         run: |
@@ -70,6 +63,13 @@ jobs:
           cmake -S $(pwd)/tests/functional/addons -B build/addons \
             -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake
           cmake --build build/addons
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: WebAssembly Build Qt6
+          path: |
+            build/
+            !build/cmake/
 
       - name: Generate tasklist
         id: testGen
