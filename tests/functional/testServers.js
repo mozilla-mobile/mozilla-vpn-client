@@ -92,9 +92,9 @@ describe('Server list', function() {
       if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
           'false') {
         await vpn.clickOnQuery(countryId);
+        await vpn.waitForQuery(countryId.ready());
       }
       
-      await vpn.waitForQuery(countryId.ready());
       await vpn.waitForQuery(countryId.prop('cityListVisible', true));
 
       for (let city of server.cities) {
@@ -130,6 +130,7 @@ describe('Server list', function() {
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
         // One selected
+        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
         await vpn.waitForQuery(cityId.checked());
       }
     }
