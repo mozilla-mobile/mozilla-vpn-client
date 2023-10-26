@@ -109,7 +109,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
           npm install
 
       - name: Cache grcov

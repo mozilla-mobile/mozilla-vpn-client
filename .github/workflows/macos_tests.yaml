@@ -92,7 +92,6 @@ jobs:
 
       - name: Install test dependecies
         run: |
-          pip3 install -r requirements.txt
           npm install
 
       - name: Check build

@@ -112,7 +112,6 @@ jobs:
       - name: Install test dependecies
         run: |
           sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
           npm install
 
       - name: Running ${{ matrix.test.name }} Tests
