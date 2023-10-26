@@ -262,8 +262,9 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
 
     //Proceed to second onboarding step
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.prop('currentIndex', 1));
 
     //Quit and relaunch the app
     await vpn.quit();
@@ -275,8 +276,9 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 1);
 
     //Proceed to third onboarding step
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.prop('currentIndex', 2));
 
     //Quit and relaunch the app
     await vpn.quit();
@@ -288,8 +290,9 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('onboardingStep'), 2);
 
     //Proceed to fourth/final onboarding step
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.prop('currentIndex', 3));
 
     //Quit and relaunch the app
     await vpn.quit();
