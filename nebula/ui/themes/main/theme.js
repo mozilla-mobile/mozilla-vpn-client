@@ -79,6 +79,7 @@ theme.popupMargin = 24;
 theme.desktopAppHeight = 640;
 theme.desktopAppWidth = 360;
 theme.tabletMinimumWidth = 600;
+theme.largePhoneHeight = 852
 theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
 theme.checkBoxRowSubLabelTopMargin = 2;

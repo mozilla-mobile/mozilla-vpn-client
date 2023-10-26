@@ -42,7 +42,7 @@ ColumnLayout {
     }
 
     PrivacyFeaturesList {
-        Layout.topMargin: MZUiUtils.isMobile() ? 32 : 24
+        Layout.topMargin: MZUiUtils.isMobile() ? MZTheme.theme.vSpacing * 1.5 : MZTheme.theme.vSpacing
         Layout.leftMargin: 32
         Layout.rightMargin: 32
         Layout.fillWidth: true
@@ -50,7 +50,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 24
+        Layout.minimumHeight: 16
     }
 
     MZButton {

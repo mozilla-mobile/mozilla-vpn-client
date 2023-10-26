@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
@@ -39,15 +40,21 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: 16
+    }
+
     Image {
-        Layout.topMargin: 48
         Layout.alignment: Qt.AlignHCenter
 
+        sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
         source: "qrc:/ui/resources/link.svg"
     }
 
     Item {
         Layout.fillHeight: true
+        Layout.minimumHeight: 16
     }
 
     MZButton {
