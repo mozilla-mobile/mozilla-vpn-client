@@ -93,7 +93,8 @@ describe('Server list', function() {
           'false') {
         await vpn.clickOnQuery(countryId);
       }
-
+      
+      await vpn.waitForQuery(countryId.ready());
       await vpn.waitForQuery(countryId.prop('cityListVisible', true));
 
       for (let city of server.cities) {
