@@ -1,4 +1,4 @@
-#Suggesting Apps for Split Tunneling
+Suggesting Apps for Split Tunneling
 ===================================
 
 Epic: [VPN-4412: Suggest Apps to Exclude from VPN Protection](https://mozilla-hub.atlassian.net/browse/VPN-4412)
