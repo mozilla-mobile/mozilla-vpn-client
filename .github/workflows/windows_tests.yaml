@@ -18,6 +18,9 @@ jobs:
   build_test_app:
     name: Build Test Client
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -31,13 +34,11 @@ jobs:
           environment-file: env.yml
 
       - name: Install Qt6
-        shell: bash
         run: |
-          curl https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -o qt6_win.zip
+          curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -o qt6_win.zip
           unzip -a -d ${{ github.workspace }} qt6_win.zip
 
       - name: Compile test client
-        shell: bash
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
