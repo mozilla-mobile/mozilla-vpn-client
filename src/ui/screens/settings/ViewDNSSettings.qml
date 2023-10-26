@@ -276,6 +276,7 @@ MZViewBase {
         id: dnsOverwriteLoader
 
         active: false
+        objectName: "dnsOverwriteLoader"
         sourceComponent: MZSimplePopup {
             id: dnsOverwritePopup
 
