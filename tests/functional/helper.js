@@ -302,8 +302,15 @@ module.exports = {
   },
 
   async waitForCondition(condition, waitTimeInMilliSecs = 500) {
+    // If the condition takes longer than 15 seconds, give up.
+    let active = true;
+    let timeout = setTimeout(() => { active = false }, 15000);
     while (true) {
-      if (await condition()) return;
+      if (await condition()) {
+        clearTimeout(timeout)
+        return;
+      }
+      assert(active, "Condition timed out");
       await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
     }
   },
