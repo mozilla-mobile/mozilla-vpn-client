@@ -477,19 +477,15 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                Glean.interaction.speedTestTriggered.record({
+                Glean.interaction.startSpeedTestSelected.record({
                     screen: "main",
-                    action: "select",
-                    element_id: "speed_test"
                 });
             } else {
-                Glean.interaction.speedTestClosed.record({
-                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_result"
+                Glean.interaction.closeSelected.record({
+                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_completed"
                                 : connectionInfoScreen.state == "open-error" ? "speed_test_error"
                                     : connectionInfoScreen.state == "open-loading" ? "speed_test_loading"
                                         : "unexpected",
-                    action: "select",
-                    element_id: "close"
                 });
             }
 
@@ -645,9 +641,8 @@ Item {
         onOpacityChanged: {
             // We only want to record this event when the opacity has _just_ changed.
             if (opacity !== previousOpacity && opacity === 1) {
-                Glean.impression.connectionInfoOpened.record({
+                Glean.impression.connectionInfoScreen.record({
                     screen: "connection_info",
-                    action: "impression"
                 });
             }
 
@@ -698,16 +693,12 @@ Item {
             ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
 
             if (ipInfoPanel.isOpen) {
-                Glean.interaction.connectionInfoOpened.record({
+                Glean.interaction.openConnectionInfoSelected.record({
                     screen: "main",
-                    action: "select",
-                    element_id: "info"
                 });
             } else {
-                Glean.interaction.connectionInfoClosed.record({
+                Glean.interaction.closeSelected.record({
                     screen: "connection_info",
-                    action: "select",
-                    element_id: "close"
                 });
             }
         }

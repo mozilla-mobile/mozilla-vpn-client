@@ -21,8 +21,7 @@ MZFlickable {
     anchors.right: parent.right
 
     Component.onCompleted: {
-        Glean.sample.appStep.record({
-            action: "impression",
+        Glean.impression.mainScreen.record({
             screen: "main",
         });
     }
