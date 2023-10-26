@@ -36,13 +36,13 @@ jobs:
       - name: Install Qt6
         run: |
           curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -o qt6_win.zip
-          unzip -a -d ${{ github.workspace }}/3rdparty qt6_win.zip
+          unzip -a -d 3rdparty qt6_win.zip
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/QT_OUT/lib/cmake
+            -DCMAKE_PREFIX_PATH=$(pwd)/3rdparty/QT_OUT/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
