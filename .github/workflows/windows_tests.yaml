@@ -1,0 +1,54 @@
+name: Windows Tests
+on:
+  push:
+    branches:
+      - main
+      - "releases/**"
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
+
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_test_app:
+    name: Build Test Client
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: vpn
+          environment-file: env.yml
+
+      - name: Install Qt6
+        shell: bash
+        run: |
+          curl https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -o qt6_win.zip
+          unzip -a -d ${{ github.workspace }} qt6_win.zip
+
+      - name: Compile test client
+        shell: bash
+        run: |
+          mkdir -p build/cmake
+          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+          cmake --build build/cmake -j$(nproc) --target dummyvpn
+          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
+          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-client-${{ github.sha }}
+          path: |
+            build/
+            !build/cmake/
