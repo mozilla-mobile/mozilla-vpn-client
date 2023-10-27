@@ -46,9 +46,9 @@ jobs:
           echo "Finding cargo: $(which cargo)"
 
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DPYTHON_EXECUTABLE=$CONDA_PREFIX/python.exe \
-            -DCMAKE_PREFIX_PATH=$(pwd)/3rdparty/QT_OUT/lib/cmake
+          $(pwd)/3rdparty/QT_OUT/bin/qt-cmake -S $(pwd) -B build/cmake -GNinja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DPYTHON_EXECUTABLE=$CONDA_PREFIX/python.exe
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
