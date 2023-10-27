@@ -42,13 +42,14 @@ jobs:
           unzip -q -d 3rdparty qt6_win.zip
 
       - name: Compile test client
+        shell: cmd
         run: |
-          mkdir -p build/cmake
-          cmake -S . -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/QT_OUT/lib/cmake
-          cmake --build build/cmake --target dummyvpn
-          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+          mkdir  build\cmake
+          cmake -S . -B build\cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo ^
+            -DCMAKE_PREFIX_PATH="${{ github.workspace }}\3rdparty\QT_OUT\lib\cmake"
+          cmake --build build\cmake --target dummyvpn
+          copy build\cmake\tests\dummyvpn\dummyvpn.exe build
+          xcopy /e build\cmake\tests\dummyvpn\addons build
 
       - uses: actions/upload-artifact@v3
         with:
