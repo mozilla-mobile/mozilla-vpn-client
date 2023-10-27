@@ -108,7 +108,6 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: |
-            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
             export HEADLESS=yes
             export TZ=Europe/London
             mkdir -p $ARTIFACT_DIR
