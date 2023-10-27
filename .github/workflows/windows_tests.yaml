@@ -32,10 +32,16 @@ jobs:
         run: |
           pip3 install -r requirements.txt
 
+      - name: Add msvc dev commands to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
       - name: Install Qt6
         run: |
           curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -o qt6_win.zip
-          unzip -a -d 3rdparty qt6_win.zip
+          unzip -q -d 3rdparty qt6_win.zip
 
       - name: Compile test client
         run: |
