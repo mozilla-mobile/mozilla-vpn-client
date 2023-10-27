@@ -9,7 +9,7 @@
 
 #define ADDON_PROPERTY(name, member, getter, setter, signal)            \
   Q_PROPERTY(QString name READ getter NOTIFY signal)                    \
-  QString getter() const { return member.get(); }                       \
+  Q_INVOKABLE QString getter() const { return member.get(); }           \
   Q_INVOKABLE void setter(const QString& id, const QString& fallback) { \
     member.set(id, fallback);                                           \
     emit signal();                                                      \

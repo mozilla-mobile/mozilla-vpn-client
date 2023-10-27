@@ -18,7 +18,7 @@
     "badge": "whats_new",
     "blocks": [
       {
-        "id": "c_1",
+        "id": "c_1-1",
         "type": "text",
         "content": "This update includes minor bug fixes, UI adjustments and other performance improvements."
       },
