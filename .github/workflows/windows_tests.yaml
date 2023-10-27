@@ -107,14 +107,12 @@ jobs:
         with:
           timeout_minutes: 15
           max_attempts: 3
-          command: |
-            export HEADLESS=yes
-            export TZ=Europe/London
-            mkdir -p $ARTIFACT_DIR
-            npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+          command: npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
         env:
-          ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/dummyvpn.exe
+          HEADLESS: yes
+          TZ: Europe/London
+          ARTIFACT_DIR: ${{ runner.temp }}\artifacts
+          MVPN_BIN: ${{ github.workspace }}\build\dummyvpn.exe
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3
