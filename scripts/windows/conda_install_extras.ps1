@@ -14,7 +14,7 @@ if( $conda_env.active_prefix_name -eq "base"){
 $conda_folder = $conda_env.active_prefix
 
 conda install -y m2w64-gcc=5.3.0
-conda install -y llvm=14.0.6 llvmdev=14.0.6 lld=14.0.6
+conda install -y llvm=16.0.6 llvmdev=16.0.6 lld=16.0.6
 
 # Cmake refuses to auto-detect llvm-mt, even though it detects clang-cl. 
 # Given they are cli-compatible, just copy it :) 
