@@ -40,9 +40,13 @@ jobs:
 
       - name: Compile test client
         run: |
+          conda info
+          echo "Path is: $PATH"
           echo "Finding python3: $(which python3)"
           echo "Finding golang: $(which go)"
           echo "Finding cargo: $(which cargo)"
+          echo "Listing $CONDA_PREFIX:"
+          ls $CONDA_PREFIX
 
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
