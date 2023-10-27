@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir -p build/cmake
           echo "Linkers:"
-          echo "$(which -a link)""
+          echo "$(which -a link)"
 
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -CMAKE_LINKER=$(which -a link | tail -1) \
