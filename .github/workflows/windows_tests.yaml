@@ -27,11 +27,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Setup Conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: vpn
-          environment-file: env.yml
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          pip3 install -r requirements.txt
 
       - name: Install Qt6
         run: |
@@ -40,15 +39,9 @@ jobs:
 
       - name: Compile test client
         run: |
-          conda info
-          echo "Finding python3: $(which python)"
-          echo "Finding golang: $(which go)"
-          echo "Finding cargo: $(which cargo)"
-
           mkdir -p build/cmake
-          $(pwd)/3rdparty/QT_OUT/bin/qt-cmake -S $(pwd) -B build/cmake -GNinja \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DPYTHON_EXECUTABLE=$CONDA_PREFIX/python.exe
+          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+            -DCMAKE_PREFIX_PATH=$(pwd)/3rdparty/QT_OUT/lib/cmake
           cmake --build build/cmake -j$(nproc) --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
