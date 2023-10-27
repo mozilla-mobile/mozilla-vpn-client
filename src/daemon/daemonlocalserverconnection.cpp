@@ -42,6 +42,8 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
 
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
   MZ_COUNT_DTOR(DaemonLocalServerConnection);
+
+  logger.debug() << "Connection released";
 }
 
 void DaemonLocalServerConnection::readData() {
