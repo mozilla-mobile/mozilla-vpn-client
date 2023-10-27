@@ -13,7 +13,14 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked the "X" button that closes modals
+      The user has clicked the "X" button that closes modals.
+
+      Note: When recorded from the speed test screen, the `screen`
+      extra key may have the value `unexpected`. That value is used
+      if this event is recorded while the speed test modal is closed.
+      Although that is theoretically not possible, the code path for
+      such a situation exists. Large number of this event with this
+      value for the `screen` extra key would mean a bug in the code.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5366
       - https://mozilla-hub.atlassian.net/browse/VPN-5718

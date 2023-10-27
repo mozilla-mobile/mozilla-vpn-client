@@ -485,6 +485,9 @@ Item {
                     screen: connectionInfoScreen.state == "open-ready" ? "speed_test_completed"
                                 : connectionInfoScreen.state == "open-error" ? "speed_test_error"
                                     : connectionInfoScreen.state == "open-loading" ? "speed_test_loading"
+                                        // Used in case the connection info screen state is "closed", "closing" or "opening".
+                                        // This should not happen, because the button is not available in these states...
+                                        // But it is a possible code path, so there you go.
                                         : "unexpected",
                 });
             }
