@@ -23,13 +23,23 @@ constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
 
 namespace {
 Logger logger("DaemonLocalServer");
+
+DaemonLocalServer* s_instance = nullptr;
 }  // namespace
 
 DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(DaemonLocalServer);
+
+  Q_ASSERT(!s_instance);
+  s_instance = this;
 }
 
 DaemonLocalServer::~DaemonLocalServer() { MZ_COUNT_DTOR(DaemonLocalServer); }
+
+DaemonLocalServer* DaemonLocalServer::instance() {
+  Q_ASSERT(s_instance);
+  return s_instance;
+}
 
 bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);

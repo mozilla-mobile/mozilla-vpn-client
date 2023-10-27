@@ -41,8 +41,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
     ${CMAKE_SOURCE_DIR}/src/daemon/daemon.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/daemon.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_SOURCE_DIR}/src/daemon/daemonaccesscontrol.h
     ${CMAKE_SOURCE_DIR}/src/daemon/dnsutils.h
     ${CMAKE_SOURCE_DIR}/src/daemon/iputils.h
     ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.h

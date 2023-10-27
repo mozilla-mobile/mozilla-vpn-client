@@ -11,6 +11,7 @@
 
 #include "daemon.h"
 #include "daemonaccesscontrol.h"
+#include "daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -43,8 +44,7 @@ DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
 DaemonLocalServerConnection::~DaemonLocalServerConnection() {
   MZ_COUNT_DTOR(DaemonLocalServerConnection);
 
-  auto accessControl = Daemon::instance()->accessControl();
-  accessControl->resetSession();
+  DaemonLocalServer::instance()->accessControl()->resetSession();
 
   logger.debug() << "Connection released";
 }
@@ -95,7 +95,8 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   QString type = typeValue.toString();
 
   logger.debug() << "Command received:" << type;
-  auto accessControl = Daemon::instance()->accessControl();
+
+  auto accessControl = DaemonLocalServer::instance()->accessControl();
   if (!accessControl->isCommandAuthorizedForPeer(type, m_socket)) {
     logger.error() << "Unable to authorize command" << type
                    << "for peer. Ignoring.";
