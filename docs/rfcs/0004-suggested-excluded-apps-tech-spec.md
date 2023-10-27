@@ -10,7 +10,7 @@ We're looking to create tools that prompt the user in ways that help them stay m
 
 <img src="./images/0004-01.png" height=500>
 
-This epic is for a new feature to proactively let users know when they have apps that could benefit from the split tunneling feature.
+This epic is for a new feature to proactively let users know when they have apps that could benefit from the split tunneling feature. We want this to be a notification outside the app, to engage users who rely on Mozilla VPN but rarely open the app.
 
 Assumptions & Out-of-scope
 --------------------------
