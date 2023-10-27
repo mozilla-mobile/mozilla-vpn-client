@@ -27,7 +27,7 @@ Open Questions
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
 
-Implementation (estimated 39-64 points total)
+Implementation (estimated 40-65 points total)
 ---------------------------------------------------
 
 This work is broken into four sections, with the bulk of code coming in the middle two sections. Those two sections should each be built behind their own separate feature flag, though we'd expose both parts together via Nimbus.
@@ -36,7 +36,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 
 -   (3-5 points) Answer the open questions above
 -   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GH pull requests on the client repo) w/ apps to exclude (and update the repo's readme to explain this new type of contribution). Add this doc to addons. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
-    -   Current proposal for format: Individual text files for each platform (`android.txt`, `linux.txt`, etc.) in a specific directory. Each line of the file will be a single path, or bundle ID, or whatever we end up using as an identifier. (See "Other options considered" section for why this is the current proposal.)
+    -   Current proposal for format: Individual text files for each platform (`android.txt`, `linux.txt`, etc.) in a specific directory. Each line of the file will be a single path, or bundle ID, or whatever we end up using as an identifier. (See "Other options considered" section for why this is the current proposal.) Anything after a `#` on a line is considered a comment, and is ignored.
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being snuck in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
     -   From Santiago: <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>
@@ -47,18 +47,19 @@ This work is broken into four sections, with the bulk of code coming in the midd
     -   The list of suggested app exclusions will live in the VPN client repo, and be served via addons.
 
 
-### Create daily task in app (8-12 points total)
+### Create daily task in app (9-13 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
 
 -   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature. (Create dev option to immediately pull down the new list.)
     -   This will be run by the app for desktop, and a [PeriodicWorkRequest](https://developer.android.com/reference/androidx/work/PeriodicWorkRequest) on Android. (iOS does not have split tunneling.)
         -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll
     -   Create a dev option to pull a new suggested apps list immediately.
--   (3-5 points) Is there a new app?
+-   (3-5 points) Is there one or more new apps?
     -   Check against setting - if we have ever sent a notification for this app before, don't send one (this should be done off the app's domain name or something, not marketing name - that can change)
-    -   Pop an OS-level notification (on Android, use a suggestion channel)
-    -   Add to "have sent notification" list
-    -   (Create a dev option to clear the "have sent notification" list.)
+    -   Pop an OS-level notification (on Android, use a suggestion channel). The text is intentionally generic, and makes sense if there is one new app or multiple.
+    -   Add new app(s) to "have sent notification" list
+    -   (Create a dev option to clear the "have sent notification" list. Create another dev option to immediately run the daily check job.)
+-   (1 point) Add this notification type to the settings screen that allows per-type opt out (App permissions -> Notifications)
 -   (2 points) Ensure tapping notification leads to correct screen
 
 ### Improve existing split tunnel screen (10-16 points total)
@@ -101,10 +102,10 @@ The goals for the file format:
 -   Easy to read by humans
 -   Easy for humans to add to, no matter their level of technical proficiency
 -   Easy for us to parse in the app
+-   Allowing comments in the file. While we still could structure a text file to allow comments, this became less important when the plan became "one file per platform, one app per line".
 
 Initially, there were two additional goals (no longer considerations):
 -   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant.
--   Allowing comments in the file. While we still could structure a text file to allow comments, this became less important when the plan became "one file per platform, one app per line".
 
 Other options considered included CSV, YAML, and JSON. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or JSON or CSV) would need to be structured in a specific way.
 
@@ -124,7 +125,7 @@ Security / Privacy
 
 Since all the work is being done on device, the only security concerns are ensuring we don't log any private info.
 
-The excluded apps list will likely live in the Guardian repo. There are ways to weaponize the suggested apps list to weaken privacy of key apps, but for this attack vector to be used a Mozilla staffer would need to approve the PR with the bad-faith addition to the suggested app list.
+The excluded apps list will likely live in the client repo. There are ways to weaponize the suggested apps list to weaken privacy of key apps, but for this attack vector to be used a Mozilla staffer would need to approve the PR with the bad-faith addition to the suggested app list.
 
 Rollout considerations
 ----------------------
@@ -136,6 +137,6 @@ Test Plan
 
 -   Fresh install of the app on a device that has a suggested app. Ensure that app is shown appropriately on the screen in VPN Settings. Ensure a notification suggesting its exclusion is popped at an appropriate time.
 -   Install an app on the suggested list on the device. Ensure the app is now shown appropriately on the screen in VPN settings. Ensure a notification suggesting its exclusion is popped at an appropriate time.
--   Add an app on the device to the list on the repo, wait, and ensure it is offered as an app to exclude within 24 hours.
+-   Add an app on the device to the list on the repo, wait, and ensure it is offered as an app to exclude within 24 hours. (Alternatively, use the dev menu option to immediately run the daily job.)
 -   Delete an app on the list from the device, ensure it is no longer shown on the screen in VPN settings.
 -   Test on all devices with split tunnelling, to ensure the app list works on all platforms
