@@ -8,14 +8,11 @@
 #include <QLocalServer>
 
 class DaemonLocalServer final : public QObject {
-  Q_OBJECT
   Q_DISABLE_COPY_MOVE(DaemonLocalServer)
 
  public:
   explicit DaemonLocalServer(QObject* parent);
   ~DaemonLocalServer();
-
-  static DaemonLocalServer* instance();
 
   bool initialize();
 
