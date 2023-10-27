@@ -23,6 +23,8 @@ class DaemonAccessControl final {
   explicit DaemonAccessControl();
   ~DaemonAccessControl();
 
+  static DaemonAccessControl* instance();
+
   void resetSession();
   bool isCommandAuthorizedForPeer(const QString& command,
                                   const QLocalSocket* socket);

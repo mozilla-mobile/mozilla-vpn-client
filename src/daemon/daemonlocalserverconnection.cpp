@@ -11,7 +11,6 @@
 
 #include "daemon.h"
 #include "daemonaccesscontrol.h"
-#include "daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -92,7 +91,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   logger.debug() << "Command received:" << type;
 
-  auto accessControl = DaemonLocalServer::instance()->accessControl();
+  auto accessControl = DaemonAccessControl::instance();
   if (!accessControl->isCommandAuthorizedForPeer(type, m_socket)) {
     logger.error() << "Unable to authorize command" << type
                    << "for peer. Ignoring.";

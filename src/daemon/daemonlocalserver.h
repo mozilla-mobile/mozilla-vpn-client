@@ -7,8 +7,6 @@
 
 #include <QLocalServer>
 
-#include "daemonaccesscontrol.h"
-
 class DaemonLocalServer final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DaemonLocalServer)
@@ -20,14 +18,12 @@ class DaemonLocalServer final : public QObject {
   static DaemonLocalServer* instance();
 
   bool initialize();
-  DaemonAccessControl* accessControl() { return &m_accessControl; }
 
  private:
   QString daemonPath() const;
 
  private:
   QLocalServer m_server;
-  DaemonAccessControl m_accessControl;
 };
 
 #endif  // DAEMONLOCALSERVER_H

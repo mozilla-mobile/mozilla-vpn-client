@@ -16,6 +16,8 @@
 
 namespace {
 Logger logger("DaemonAccessControl");
+
+DaemonAccessControl* s_instance = nullptr;
 }  // namespace
 
 DaemonAccessControl::DaemonAccessControl() {
@@ -24,6 +26,15 @@ DaemonAccessControl::DaemonAccessControl() {
 
 DaemonAccessControl::~DaemonAccessControl() {
   MZ_COUNT_DTOR(DaemonAccessControl);
+}
+
+// static
+DaemonAccessControl* DaemonAccessControl::instance() {
+  if (!s_instance) {
+    s_instance = new DaemonAccessControl();
+  }
+
+  return s_instance;
 }
 
 bool DaemonAccessControl::isSessionActive() const {
