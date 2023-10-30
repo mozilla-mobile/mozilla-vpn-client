@@ -422,3 +422,39 @@ impression:
       - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
+  settings_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the settings screen 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys  
+  app_exclusions_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the app exclusions screen 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

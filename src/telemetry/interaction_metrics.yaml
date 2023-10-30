@@ -762,3 +762,76 @@ interaction:
       - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
+  app_exclusions_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the button that opens
+      the app exclusions modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  clear_app_exclusions_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on Clear all to clear all App Exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  add_application_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on Add application in App Exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  search_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on the search field in app exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys

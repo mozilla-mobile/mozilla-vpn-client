@@ -886,4 +886,22 @@ describe('Settings', function() {
     await vpn.activateViaToggle();
     await vpn.awaitSuccessfulConnection();
   });
+
+  describe('telemetry in the settings menu', function () {
+
+    this.ctx.authenticationNeeded = true;
+
+    beforeEach(async () => {
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    });
+
+    it("record telemetry when user clicks on App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+});
 });
