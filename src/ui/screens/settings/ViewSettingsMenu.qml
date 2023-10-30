@@ -16,6 +16,10 @@ MZViewBase {
 
     readonly property string telemetryScreenId : "settings"
 
+    Component.onCompleted: {
+        Glean.impression.settingsScreen.record({screen:telemetryScreenId});
+    }
+
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
