@@ -911,5 +911,14 @@ describe('Settings', function() {
         var element = events[0];
         assert.equal(element.extra.screen, "settings");
     });
+
+    it("record telemetry when user clicks on search bar in app exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "searchSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
 });
 });

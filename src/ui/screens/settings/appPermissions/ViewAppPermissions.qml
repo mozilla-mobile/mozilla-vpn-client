@@ -15,6 +15,7 @@ MZViewBase {
     //% "Search apps"
     //: Search bar placeholder text
     property string searchApps: qsTrId("vpn.protectSelectedApps.searchApps")
+    readonly property string telemetryScreenId : "app_exclusions"
 
     //% "Add application"
     //: Button label
@@ -60,6 +61,7 @@ MZViewBase {
             Layout.rightMargin: MZTheme.theme.vSpacing
 
             searchBarPlaceholder: searchApps
+            onClicked: Glean.interaction.searchSelected.record({screen:telemetryScreenId});
             enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
         }
     }
