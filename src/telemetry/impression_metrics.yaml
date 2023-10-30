@@ -79,7 +79,7 @@ impression:
       - main
     description: |
       The user has just moved on to the screen that shows
-      the speed test results
+      the speed test error
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5366
       - https://mozilla-hub.atlassian.net/browse/VPN-5718
