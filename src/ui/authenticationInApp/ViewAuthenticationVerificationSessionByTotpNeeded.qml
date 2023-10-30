@@ -11,13 +11,24 @@ import components 0.1
 import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
+    id: authVerificationSessionByTotpNeeded
+
+    _telemetryScreenId: "enter_security_code"
+
     _viewObjectName: "authVerificationSessionByTotpNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
+            // No telemetry.
+            // Re-auth flow is not contemplated by the telemetry design.
+
             cancelAuthenticationFlow();
         } else {
-            VPN.cancelAuthentication();
+            Glean.interaction.cancelSelected.record({
+                screen: _telemetryScreenId,
+            });
+
+            MZAuthInApp.reset();
         }
     }
     _menuButtonAccessibleName: MZI18n.GlobalClose
@@ -30,6 +41,8 @@ MZInAppAuthenticationBase {
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authVerificationSessionByTotpNeeded"
 
+        _telemetryScreenId: authVerificationSessionByTotpNeeded._telemetryScreenId
+        _buttonTelemetryId: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === MZAuthInApp.totpCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { MZAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
@@ -42,9 +55,13 @@ MZInAppAuthenticationBase {
         Layout.preferredWidth: parent.width
 
         MZCancelButton {
-            objectName: "totpCancelButton"
+            objectName: _viewObjectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
+                Glean.interaction.cancelSelected.record({
+                    screen: _telemetryScreenId,
+                });
+
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
                 } else {
@@ -52,5 +69,11 @@ MZInAppAuthenticationBase {
                 }
             }
         }
+    }
+
+    Component.onCompleted: {
+        Glean.impression.enterSecurityCodeScreen.record({
+            screen: _telemetryScreenId,
+        });
     }
 }

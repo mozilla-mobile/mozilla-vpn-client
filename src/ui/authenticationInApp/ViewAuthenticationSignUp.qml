@@ -13,11 +13,16 @@ import components.inAppAuth 0.1
 
 
 MZInAppAuthenticationBase {
+    id: authSignUp
     _changeEmailLinkVisible: true
+    _telemetryScreenId: "create_password"
     _viewObjectName: "authSignUp"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
+        Glean.interaction.backSelected.record({
+            screen: _telemetryScreenId,
+        });
         MZAuthInApp.reset();
     }
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
@@ -28,6 +33,9 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authSignUp"
+
+        _telemetryScreenId: authSignUp._telemetryScreenId
+        _buttonTelemetryId: "createAccountSelected"
 
         function validatePassword(passwordString) {
             return MZAuthInApp.validatePasswordCommons(passwordString)
@@ -45,15 +53,30 @@ MZInAppAuthenticationBase {
 
     _disclaimers: Column {
         Layout.alignment: Qt.AlignHCenter
-        MZInAppAuthenticationLegalDisclaimer {}
+        MZInAppAuthenticationLegalDisclaimer {
+            _telemetryScreenId: _telemetryScreenId
+        }
     }
 
     _footerContent: Column {
         Layout.alignment: Qt.AlignHCenter
 
         MZCancelButton {
+            objectName: _viewObjectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: VPN.cancelAuthentication()
+            onClicked: {
+                Glean.interaction.cancelSelected.record({
+                    screen: _telemetryScreenId,
+                });
+
+                VPN.cancelAuthentication()
+            }
         }
+    }
+
+    Component.onCompleted: {
+        Glean.impression.createPasswordScreen.record({
+            screen: _telemetryScreenId,
+        });
     }
 }

@@ -634,6 +634,29 @@ module.exports = {
     return json.value;
   },
 
+  async testLastInteractionEvent (options) {
+    const {
+      eventName,
+      // When expectedEventCount is provided it will be asserted on.
+      // When it's not provided the last event will be tested.
+      expectedEventCount,
+      screen,
+    } = options;
+
+    const events = await this.gleanTestGetValue("interaction", eventName, "main");
+    assert(events.length > 0);
+
+    let computedEventCount = expectedEventCount;
+    if (!computedEventCount) {
+      computedEventCount = events.length;
+    } else {
+      assert.strictEqual(events.length, computedEventCount);
+    }
+
+    const extras = events[computedEventCount - 1].extra;
+    assert.strictEqual(screen, extras.screen);
+  },
+
   // Internal methods.
 
   _writeCommand(command) {

@@ -11,8 +11,16 @@ import components 0.1
 import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
+    id: authStart
     _viewObjectName: "authStart"
-    _menuButtonOnClick: () => { VPN.cancelAuthentication() }
+    _telemetryScreenId: "enter_email"
+    _menuButtonOnClick: () => {
+        Glean.interaction.backSelected.record({
+            screen: _telemetryScreenId,
+        });
+
+        VPN.cancelAuthentication();
+    }
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonAccessibleName:  MZI18n.GlobalGoBack
@@ -23,6 +31,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authStart"
+        _telemetryScreenId: authStart._telemetryScreenId
+        _buttonTelemetryId: "continueSelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)
         _buttonOnClicked: (inputText) => { MZAuthInApp.checkAccount(inputText); }
         _buttonText: MZI18n.GlobalContinue
@@ -42,5 +52,11 @@ MZInAppAuthenticationBase {
             text: MZI18n.InAppAuthInformationUsageDisclaimer
             Layout.fillWidth: true
         }
+    }
+
+    Component.onCompleted: {
+        Glean.impression.enterEmailScreen.record({
+            screen: _telemetryScreenId,
+        });
     }
 }

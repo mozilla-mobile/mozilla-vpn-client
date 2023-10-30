@@ -249,6 +249,11 @@ void AuthenticationInAppSession::allowUpperCaseEmailAddress() {
 void AuthenticationInAppSession::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
 
+  m_sessionType = SignIn;
+  if (shouldRecordAuthenticationFlowTelemetry()) {
+    mozilla::glean::outcome::login_started.record();
+  }
+
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningIn, this);
 
@@ -312,16 +317,30 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
               }
             }
 
+            if (!unblockCode.isEmpty() &&
+                shouldRecordAuthenticationFlowTelemetry()) {
+              mozilla::glean::outcome::two_fa_verification_failed.record(
+                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+                      ._type = "unblock_code"});
+            }
+
             logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
+          [this, unblockCode](const QByteArray& data) {
             logger.debug() << "Sign in completed:" << logger.sensitive(data);
 
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
+
+            if (!unblockCode.isEmpty() &&
+                shouldRecordAuthenticationFlowTelemetry()) {
+              mozilla::glean::outcome::two_fa_verification_succeeded.record(
+                  mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+                      ._type = "unblock_code"});
+            }
 
             signInOrUpCompleted(obj["sessionToken"].toString(),
                                 obj["verified"].toBool(),
@@ -331,6 +350,11 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
 
 void AuthenticationInAppSession::signUp() {
   logger.debug() << "Sign up";
+
+  m_sessionType = SignUp;
+  if (shouldRecordAuthenticationFlowTelemetry()) {
+    mozilla::glean::outcome::registration_started.record();
+  }
 
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningUp, this);
@@ -441,6 +465,13 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the session code" << error;
+
+            if (shouldRecordAuthenticationFlowTelemetry()) {
+              mozilla::glean::outcome::two_fa_verification_failed.record(
+                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+                      ._type = "email"});
+            }
+
             processRequestFailure(error, data);
           });
 
@@ -448,6 +479,13 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
           [this](const QByteArray& data) {
             logger.debug() << "Verification completed:"
                            << logger.sensitive(data);
+
+            if (shouldRecordAuthenticationFlowTelemetry()) {
+              mozilla::glean::outcome::two_fa_verification_succeeded.record(
+                  mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+                      ._type = "email"});
+            }
+
             finalizeSignInOrUp();
           });
 }
@@ -487,6 +525,13 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the Totp code" << error;
+
+            if (shouldRecordAuthenticationFlowTelemetry()) {
+              mozilla::glean::outcome::two_fa_verification_failed.record(
+                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+                      ._type = "totp"});
+            }
+
             processRequestFailure(error, data);
           });
 
@@ -504,8 +549,20 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
         QJsonObject obj = json.object();
         bool success = obj.value("success").toBool();
         if (success) {
+          if (shouldRecordAuthenticationFlowTelemetry()) {
+            mozilla::glean::outcome::two_fa_verification_succeeded.record(
+                mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+                    ._type = "totp"});
+          }
+
           finalizeSignInOrUp();
           return;
+        }
+
+        if (shouldRecordAuthenticationFlowTelemetry()) {
+          mozilla::glean::outcome::two_fa_verification_failed.record(
+              mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+                  ._type = "totp"});
         }
 
         AuthenticationInApp* aia = AuthenticationInApp::instance();
@@ -679,86 +736,93 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
             processRequestFailure(error, data);
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Oauth code creation completed:"
-                           << logger.sensitive(data);
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Oauth code creation completed:"
+                       << logger.sensitive(data);
 
-            QJsonDocument json = QJsonDocument::fromJson(data);
-            if (json.isNull()) {
+        QJsonDocument json = QJsonDocument::fromJson(data);
+        if (json.isNull()) {
+          emit failed(ErrorHandler::AuthenticationError);
+          return;
+        }
+
+        QJsonObject obj = json.object();
+        QJsonValue code = obj.value("code");
+        if (!code.isString()) {
+          logger.error() << "FxA Authz: code not found";
+          emit failed(ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue state = obj.value("state");
+        if (!state.isString()) {
+          logger.error() << "FxA Authz: state not found";
+          emit failed(ErrorHandler::AuthenticationError);
+          return;
+        }
+        QJsonValue redirect = obj.value("redirect");
+        if (!redirect.isString()) {
+          logger.error() << "FxA Authz: redirect not found";
+          emit failed(ErrorHandler::AuthenticationError);
+          return;
+        }
+
+        NetworkRequest* request = new NetworkRequest(m_task, 200);
+        request->requestInternal().setAttribute(
+            QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
+        request->get(redirect.toString());
+
+        connect(
+            request, &NetworkRequest::requestFailed, this,
+            [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+              QJsonDocument json = QJsonDocument::fromJson(data);
+              if (!json.isObject()) {
+                emit failed(ErrorHandler::toErrorType(error));
+                return;
+              }
+
+              QJsonObject obj = json.object();
+              QString detail = obj["detail"].toString();
+              if (detail.isEmpty()) {
+                logger.error() << "Invalid JSON: no detail value";
+                emit failed(ErrorHandler::AuthenticationError);
+                return;
+              }
+
+              logger.error() << "Authentication failed:" << detail;
               emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
+            });
 
-            QJsonObject obj = json.object();
-            QJsonValue code = obj.value("code");
-            if (!code.isString()) {
-              logger.error() << "FxA Authz: code not found";
-              emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue state = obj.value("state");
-            if (!state.isString()) {
-              logger.error() << "FxA Authz: state not found";
-              emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
-            QJsonValue redirect = obj.value("redirect");
-            if (!redirect.isString()) {
-              logger.error() << "FxA Authz: redirect not found";
-              emit failed(ErrorHandler::AuthenticationError);
-              return;
-            }
+        connect(request, &NetworkRequest::requestCompleted, this,
+                [this](const QByteArray& data) {
+                  logger.debug() << "Final redirect fetch completed:" << data;
 
-            NetworkRequest* request = new NetworkRequest(m_task, 200);
-            request->requestInternal().setAttribute(
-                QNetworkRequest::RedirectPolicyAttribute,
-                QNetworkRequest::NoLessSafeRedirectPolicy);
-            request->get(redirect.toString());
+                  QJsonDocument json = QJsonDocument::fromJson(data);
+                  if (json.isNull()) {
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
 
-            connect(request, &NetworkRequest::requestFailed, this,
-                    [this](QNetworkReply::NetworkError error,
-                           const QByteArray& data) {
-                      QJsonDocument json = QJsonDocument::fromJson(data);
-                      if (!json.isObject()) {
-                        emit failed(ErrorHandler::toErrorType(error));
-                        return;
-                      }
+                  QJsonObject obj = json.object();
+                  QJsonValue code = obj.value("code");
+                  if (!code.isString()) {
+                    logger.error() << "Code not received!";
+                    emit failed(ErrorHandler::AuthenticationError);
+                    return;
+                  }
 
-                      QJsonObject obj = json.object();
-                      QString detail = obj["detail"].toString();
-                      if (detail.isEmpty()) {
-                        logger.error() << "Invalid JSON: no detail value";
-                        emit failed(ErrorHandler::AuthenticationError);
-                        return;
-                      }
-
-                      logger.error() << "Authentication failed:" << detail;
-                      emit failed(ErrorHandler::AuthenticationError);
-                    });
-
-            connect(request, &NetworkRequest::requestCompleted, this,
-                    [this](const QByteArray& data) {
-                      logger.debug()
-                          << "Final redirect fetch completed:" << data;
-
-                      QJsonDocument json = QJsonDocument::fromJson(data);
-                      if (json.isNull()) {
-                        emit failed(ErrorHandler::AuthenticationError);
-                        return;
-                      }
-
-                      QJsonObject obj = json.object();
-                      QJsonValue code = obj.value("code");
-                      if (!code.isString()) {
-                        logger.error() << "Code not received!";
-                        emit failed(ErrorHandler::AuthenticationError);
-                        return;
-                      }
-
-                      emit completed(code.toString());
-                    });
-          });
+                  if (shouldRecordAuthenticationFlowTelemetry()) {
+                    if (m_sessionType == SignIn) {
+                      mozilla::glean::outcome::login_ended.record();
+                    } else if (m_sessionType == SignUp) {
+                      mozilla::glean::outcome::registration_completed.record();
+                    }
+                  }
+                  emit completed(code.toString());
+                });
+      });
 }
 
 void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
