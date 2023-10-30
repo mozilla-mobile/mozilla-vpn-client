@@ -69,7 +69,7 @@ MZInAppAuthenticationBase {
         id: authInputs
 
         _telemetryScreenId: authSignIn._telemetryScreenId
-        _buttonTelemetryId: "signInSelected"
+        _telemetryButtonEventName: "signInSelected"
 
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignIn && !activeInput().hasError
         _buttonOnClicked: (inputText) => {

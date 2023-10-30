@@ -35,7 +35,7 @@ MZInAppAuthenticationBase {
         objectName: "authSignUp"
 
         _telemetryScreenId: authSignUp._telemetryScreenId
-        _buttonTelemetryId: "createAccountSelected"
+        _telemetryButtonEventName: "createAccountSelected"
 
         function validatePassword(passwordString) {
             return MZAuthInApp.validatePasswordCommons(passwordString)

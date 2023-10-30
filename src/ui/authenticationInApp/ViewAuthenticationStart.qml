@@ -32,7 +32,7 @@ MZInAppAuthenticationBase {
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authStart"
         _telemetryScreenId: authStart._telemetryScreenId
-        _buttonTelemetryId: "continueSelected"
+        _telemetryButtonEventName: "continueSelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)
         _buttonOnClicked: (inputText) => { MZAuthInApp.checkAccount(inputText); }
         _buttonText: MZI18n.GlobalContinue

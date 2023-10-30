@@ -14,7 +14,7 @@ import components.forms 0.1
 ColumnLayout {
     id: base
     property string _telemetryScreenId
-    property string _telemetryButtonId
+    property string _telemetryButtonEventName
     property string _inputPlaceholderText: ""
     property string _inputErrorMessage: ""
     property alias _inputMethodHints: textInput.inputMethodHints
@@ -241,7 +241,7 @@ ColumnLayout {
                         MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionEmailCode ||
                         MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionTotpCode
         onClicked: {
-            Glean.interaction[_buttonTelemetryId].record({
+            Glean.interaction[_telemetryButtonEventName].record({
                 screen: _telemetryScreenId,
             });
 
