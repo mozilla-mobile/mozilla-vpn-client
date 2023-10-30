@@ -10,6 +10,16 @@ MZLoader {
     objectName: "subscriptionInProgressWeb"
     headlineText: MZI18n.PurchaseWebInProgress2
 
+    // Hack: The Component.OnCompleted event was not working for me (Bea).
+    // So I am running this on property initialization.
+    property var _: {
+        Glean.impression.continueInBrowserScreen.record({
+            screen: telemetryScreenId,
+        });
+    }
+
+    property string telemetryScreenId: "continue_in_browser"
+
     MZCancelButton {
         id: footerLink
         objectName: "cancelFooterLink"
@@ -20,6 +30,10 @@ MZLoader {
 
         visible: footerLinkIsVisible
         onClicked: {
+            Glean.interaction.cancelSelected.record({
+                screen: telemetryScreenId,
+            });
+
             VPNPurchase.cancelSubscription();
         }
     }

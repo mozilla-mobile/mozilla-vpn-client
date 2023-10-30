@@ -7,6 +7,12 @@ import components 0.1
 MZLoader {
     objectName: "subscriptionInProgressIAP"
 
+    property var _: {
+        Glean.impression.confirmingSubscriptionScreen.record({
+            screen: "confirming_subscription",
+        });
+    }
+
     headlineText: MZI18n.InAppAuthPleaseWait
     footerLinkIsVisible: false
 }

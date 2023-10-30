@@ -464,6 +464,21 @@ const screenSubscriptionNeeded = {
   SUBSCRIPTION_NEEDED_VIEW: new QmlQueryComposer('//vpnSubscriptionNeededView'),
   SUBSCRIPTION_NEEDED_BUTTON:
       new QmlQueryComposer('//vpnSubscriptionNeededButton'),
+  SUBSCRIPTION_NEEDED_GET_HELP:
+      new QmlQueryComposer('//vpnSubscriptionNeededGetHelp'),
+  SUBSCRIPTION_NEEDED_TERMS_OF_SERVICE:
+      new QmlQueryComposer('//vpnSubscriptionNeededTermsOfService'),
+  SUBSCRIPTION_NEEDED_PRIVACY_NOTICE:
+      new QmlQueryComposer('//vpnSubscriptionNeededPrivacyNotice'),
+  SUBSCRIPTION_NEEDED_SIGN_OUT:
+      new QmlQueryComposer('//vpnSubscriptionNeededSignOut'),
+  SUBSCRIPTION_NEEDED_RESTORE_PURCHASE:
+      new QmlQueryComposer('//vpnSubscriptionNeededRestorePurchase'),
+};
+
+const screenInBrowserSubscriptionLoading = {
+  SUBSCRIPTION_LOADING_CANCEL: new QmlQueryComposer('//cancelFooterLink'),
+  SUBSCRIPTION_LOADING_VIEW: new QmlQueryComposer('//subscriptionInProgressWeb'),
 };
 
 const screenOnboarding = {
@@ -524,6 +539,7 @@ module.exports = {
   screenMessaging,
   screenDeleteAccount,
   screenSubscriptionNeeded,
+  screenInBrowserSubscriptionLoading,
   screenOnboarding,
   global,
   navBar,
