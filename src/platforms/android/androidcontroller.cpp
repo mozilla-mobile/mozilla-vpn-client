@@ -14,6 +14,7 @@
 
 #include "androidutils.h"
 #include "androidvpnactivity.h"
+#include "connectionmanager.h"
 #include "errorhandler.h"
 #include "feature.h"
 #include "i18nstrings.h"
@@ -108,6 +109,15 @@ AndroidController::AndroidController() {
           vpn->onboardingCompleted();
           emit disconnected();
         }
+      },
+      Qt::QueuedConnection);
+  connect(
+      activity, &AndroidVPNActivity::eventAllowVpnConfigOptionSelected, this,
+      []() {
+        ConnectionManager* connectionManager =
+            MozillaVPN::instance()->connectionManager();
+        Q_ASSERT(connectionManager);
+        connectionManager->startHandshakeTimer();
       },
       Qt::QueuedConnection);
 }

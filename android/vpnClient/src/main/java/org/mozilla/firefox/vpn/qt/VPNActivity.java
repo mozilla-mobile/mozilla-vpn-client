@@ -163,6 +163,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   private final int EVENT_PERMISSION_REQURED = 6;
   private final int EVENT_DISCONNECTED = 2;
   private final int EVENT_ONBOARDING_COMPLETED = 9;
+  private final int EVENT_ALLOW_VPN_CONFIG_OPTION_SELECTED = 10;
 
   public void onPermissionRequest(int code, Parcel data) {
     if(code != EVENT_PERMISSION_REQURED){
@@ -183,6 +184,10 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if(requestCode == PERMISSION_TRANSACTION){
       // THATS US!
+
+      // User made a selection, at this point it is safe to run retries via
+      // ConnectionManager::startHandshakeTimer()      
+      onServiceMessage(EVENT_ALLOW_VPN_CONFIG_OPTION_SELECTED,"");
       if( resultCode == RESULT_OK ){
         // Prompt accepted, tell service to retry.
         dispatchParcel(ACTION_RESUME_ACTIVATE,"");

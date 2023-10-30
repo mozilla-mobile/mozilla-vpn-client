@@ -73,6 +73,7 @@ enum ServiceEvents {
   // permissions, to show the "you're connected" messages.
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
   EVENT_ONBOARDING_COMPLETED = 9,
+  EVENT_ALLOW_VPN_CONFIG_OPTION_SELECTED = 10,
 };
 typedef enum ServiceEvents ServiceEvents;
 
@@ -96,6 +97,7 @@ class AndroidVPNActivity : public QObject {
   void eventStatisticUpdate(const QString& data);
   void eventActivationError(const QString& data);
   void eventOnboardingCompleted();
+  void eventAllowVpnConfigOptionSelected();
   void eventRequestGleanUploadEnabledState();
 
  private:
