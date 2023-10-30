@@ -136,6 +136,7 @@ const screenInitialize = {
   SCREEN: new QmlQueryComposer('//initialStackView'),
   SIGN_UP_BUTTON: new QmlQueryComposer('//signUpButton'),
   SWIPE_VIEW: new QmlQueryComposer('//swipeView'),
+  SWIPE_VIEW_REPEATER: new QmlQueryComposer('//swipeViewRepeater'),
 };
 
 const screenAuthenticating = {

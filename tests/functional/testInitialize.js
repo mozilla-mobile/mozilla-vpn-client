@@ -80,4 +80,53 @@ describe('Initialize', function() {
     await vpn.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
   });
+
+  describe('initialize related telemetry tests', () => {
+    if(vpn.runningOnWasm()) {
+      // No Glean on WASM.
+      return;
+    }
+
+    const telemetryScreenId = "signup";
+
+    // Telemetry design is detailed at:
+    // https://miro.com/app/board/uXjVM0BZcnc=/?userEmail=sandrigo@mozilla.com&openComment=3458764559943493792&mid=8418131&utm_source=notification&utm_medium=email&utm_campaign=mentions&utm_content=reply-to-mention&share_link_id=496680579489
+
+    it("impression eventis recorded", async () => {
+      const signupScreenEvents = await vpn.gleanTestGetValue("impression", "signupScreen", "main");
+      assert.strictEqual(signupScreenEvents.length, 1);
+      const signupScreenExtras = signupScreenEvents[0].extra;
+      assert.strictEqual(telemetryScreenId, signupScreenExtras.screen);
+    });
+
+    it("get help event is recorded", async () => {
+      // Click on the "Get help" link
+      await vpn.waitForQueryAndClick(
+        queries.screenInitialize.GET_HELP_LINK.visible());
+      const getHelpEvents = await vpn.gleanTestGetValue("interaction", "getHelpSelected", "main");
+      assert.strictEqual(getHelpEvents.length, 1);
+      const getHelpExtras = getHelpEvents[0].extra;
+      assert.strictEqual(telemetryScreenId, getHelpExtras.screen);
+    });
+
+    it("sign up click event is recorded", async () => {
+      // Click the "Sign up" button
+      await vpn.waitForQueryAndClick(
+        queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      const signupButtonEvents = await vpn.gleanTestGetValue("interaction", "signupSelected", "main");
+      assert.strictEqual(signupButtonEvents.length, 1);
+      const signupButtonExtras = signupButtonEvents[0].extra;
+      assert.strictEqual(telemetryScreenId, signupButtonExtras.screen);
+    });
+
+    it("already a subscriber click event is recorded", async () => {
+      // Click the "Already a subscriber?" button
+      await vpn.waitForQueryAndClick(
+        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
+      const alreadyASubscriberButtonEvents = await vpn.gleanTestGetValue("interaction", "alreadyASubscriberSelected", "main");
+      assert.strictEqual(alreadyASubscriberButtonEvents.length, 1);
+      const alreadyASubscriberButtonExtras = alreadyASubscriberButtonEvents[0].extra;
+      assert.strictEqual(telemetryScreenId, alreadyASubscriberButtonExtras.screen);
+    });
+  });
 });
