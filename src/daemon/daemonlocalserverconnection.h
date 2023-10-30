@@ -29,7 +29,6 @@ class DaemonLocalServerConnection final : public QObject {
 
  private:
   QLocalSocket* m_socket = nullptr;
-
   QByteArray m_buffer;
 };
 

@@ -44,6 +44,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
@@ -174,11 +176,11 @@ foreach(LOCALE ${I18N_LOCALES})
     if(NOT I18N_CHECK_RESULT EQUAL 0)
         continue()
     endif()
-    
+
     add_custom_command(TARGET mozillavpn POST_BUILD
         COMMENT "Bundling locale ${LOCALE}"
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
-        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k LOCALE=${LOCALE} 
+        COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k LOCALE=${LOCALE}
                     -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
                     ${CMAKE_SOURCE_DIR}/src/translations/locversion.plist.in
     )
