@@ -46,6 +46,16 @@ class Controller : public QObject, public LogSerializer {
     ReasonSwitching,
     ReasonConfirming,
   };
+  /**
+   * @brief Who asked the Connection 
+   * to be Iniated? A Webextension 
+   * or a User Interaction inside the Client?
+   */
+  enum ActivationInitiator {
+    Null = 0,
+    ExtensionUser = 1,
+    ClientUser = 2,
+  };
 
  public:
   qint64 time() const;
@@ -95,6 +105,7 @@ class Controller : public QObject, public LogSerializer {
   // be emitted at the end of the operation.
   bool activate(
       const ServerData& serverData,
+      ActivationInitiator = ClientUser, 
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
   bool deactivate();
 
@@ -169,6 +180,7 @@ class Controller : public QObject, public LogSerializer {
   };
   static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+  static QList<IPAddress> getExtensionProxyAddressRanges();
 
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,
@@ -196,6 +208,7 @@ class Controller : public QObject, public LogSerializer {
   };
 
   void activateInternal(DNSPortPolicy dnsPort,
+                        std::optional<QList<IPAddress>> allowedIPList, 
                         ServerSelectionPolicy serverSelectionPolicy);
 
   void clearConnectedTime();
@@ -215,6 +228,7 @@ class Controller : public QObject, public LogSerializer {
   QDateTime m_connectedTimeInUTC;
 
   State m_state = StateInitializing;
+  ActivationInitiator m_iniator = Null;
   bool m_enableDisconnectInConfirming = false;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;

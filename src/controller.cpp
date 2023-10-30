@@ -274,14 +274,17 @@ void Controller::handshakeTimeout() {
   ++m_connectionRetry;
   emit connectionRetryChanged();
   logger.info() << "Connection attempt " << m_connectionRetry;
+  InterfaceConfig& exit_hop = m_activationQueue.last();
+  Q_ASSERT(exit_hop.m_hopType != InterfaceConfig::HopType::MultiHopEntry);
+
   if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(ForceDNSPort, RandomizeServerSelection);
+    activateInternal(ForceDNSPort,exit_hop.m_allowedIPAddressRanges, RandomizeServerSelection);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection);
+    activateInternal(DoNotForceDNSPort,exit_hop.m_allowedIPAddressRanges,  RandomizeServerSelection);
     return;
   }
 
@@ -349,7 +352,8 @@ void Controller::logout() {
 }
 
 void Controller::activateInternal(DNSPortPolicy dnsPort,
-                                  ServerSelectionPolicy serverSelectionPolicy) {
+                                  std::optional<QList<IPAddress>> allowedIPList = {}, 
+                                  ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
 
@@ -389,7 +393,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
   exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
   exitConfig.m_serverPort = exitServer.choosePort();
-  exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+  exitConfig.m_allowedIPAddressRanges = allowedIPList.value_or(getAllowedIPAddressRanges(exitServer));
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   exitConfig.m_installationId = settingsHolder->installationId();
@@ -579,6 +583,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   return list;
 }
 
+// static
+ QList<IPAddress> Controller::getExtensionProxyAddressRanges(){
+  return {
+    IPAddress{
+      QHostAddress{MULLVAD_PROXY_RANGE}, 
+      MULLVAD_PROXY_RANGE_LENGTH}
+  };
+}
+
+
 void Controller::activateNext() {
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
@@ -748,7 +762,7 @@ void Controller::disconnected() {
 
   if (nextStep == None &&
       (m_state == StateSwitching || m_state == StateSilentSwitching)) {
-    activate(m_nextServerData, m_nextServerSelectionPolicy);
+    activate(m_nextServerData, m_iniator, m_nextServerSelectionPolicy);
     return;
   }
 
@@ -757,7 +771,7 @@ void Controller::disconnected() {
   if (m_state != StateConfirming) {
     emit recordConnectionEndTelemetry();
   }
-
+  m_iniator = Null;
   setState(StateOff);
 }
 
@@ -945,6 +959,7 @@ QString Controller::currentServerString() const {
 // for now they will reside here
 
 bool Controller::activate(const ServerData& serverData,
+                          ActivationInitiator initiator, 
                           ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
   if (m_state != Controller::StateOff &&
@@ -959,6 +974,13 @@ bool Controller::activate(const ServerData& serverData,
   logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
+
+  // If the Activation is Triggered by a WebExtension, 
+  // Only Protext the Proxy Address Range.
+  std::optional<QList<IPAddress>> allowedIPList = initiator == ExtensionUser ?
+      std::optional(getExtensionProxyAddressRanges()):
+      std::nullopt;
+  m_iniator = initiator;
 
 #ifdef MZ_DUMMY
   emit currentServerChanged();
@@ -1003,7 +1025,7 @@ bool Controller::activate(const ServerData& serverData,
     request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
-            [this, serverSelectionPolicy](QNetworkReply::NetworkError error,
+            [this, serverSelectionPolicy, allowedIPList](QNetworkReply::NetworkError error,
                                           const QByteArray&) {
               logger.error() << "Account request failed" << error;
               REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
@@ -1022,16 +1044,16 @@ bool Controller::activate(const ServerData& serverData,
               setState(StateConnecting);
 
               clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+              activateInternal(DoNotForceDNSPort, allowedIPList ,serverSelectionPolicy);
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
-            [this, serverSelectionPolicy](const QByteArray& data) {
+            [this, serverSelectionPolicy, allowedIPList](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
               setState(StateConnecting);
 
               clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+              activateInternal(DoNotForceDNSPort, allowedIPList, serverSelectionPolicy);
             });
 
     connect(request, &QObject::destroyed, task, &QObject::deleteLater);
@@ -1039,7 +1061,7 @@ bool Controller::activate(const ServerData& serverData,
   }
 
   clearRetryCounter();
-  activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+  activateInternal(DoNotForceDNSPort, allowedIPList, serverSelectionPolicy);
   return true;
 }
 
