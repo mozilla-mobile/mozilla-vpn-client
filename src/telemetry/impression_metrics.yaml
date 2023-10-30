@@ -19,7 +19,7 @@ impression:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5718
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
     data_sensitivity:
       - interaction
     notification_emails:
@@ -43,7 +43,7 @@ impression:
       - https://mozilla-hub.atlassian.net/browse/VPN-5718
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
     data_sensitivity:
       - interaction
     notification_emails:
@@ -64,7 +64,7 @@ impression:
       - https://mozilla-hub.atlassian.net/browse/VPN-5718
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
     data_sensitivity:
       - interaction
     notification_emails:
@@ -85,7 +85,7 @@ impression:
       - https://mozilla-hub.atlassian.net/browse/VPN-5718
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
     data_sensitivity:
       - interaction
     notification_emails:
