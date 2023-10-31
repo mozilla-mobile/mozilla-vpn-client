@@ -13,8 +13,8 @@ target_sources(mozillavpn_networking INTERFACE
 
 if (${MZ_PLATFORM_NAME} STREQUAL "wasm")
     target_sources(mozillavpn_networking INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/wasm/wasmnetworkrequest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/wasm/wasmnetworkrequest.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.h
     )
 else()
     target_sources(mozillavpn_networking INTERFACE
