@@ -258,7 +258,6 @@ target_sources(qml_tests PRIVATE
     helper.cpp
     helper.h
     main.cpp
-    mocconstants.cpp
     moccontroller.cpp
     mocmozillavpn.cpp
 )
