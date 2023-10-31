@@ -34,5 +34,6 @@ ColumnLayout {
         //NOTE: This is not a robust way of removing html tags,
         //and should only be used for this particular case
         Accessible.name: text.replace(/<[^>]*>/g, "")
+        Accessible.ignored: !visible
     }
 }

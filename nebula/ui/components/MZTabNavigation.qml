@@ -48,6 +48,7 @@ Item {
                 objectName: tabButtonId
                 height: bar.contentHeight
                 Accessible.name: MZI18n[tabLabelStringId]
+                Accessible.ignored: !visible
 
                 onClicked: handleTabClick(btn)
 
@@ -122,6 +123,7 @@ Item {
         clip: true
         Accessible.role: Accessible.List
         Accessible.name: currentTab.Accessible.name
+        Accessible.ignored: !visible
 
         PropertyAnimation {
             id: fadeIn

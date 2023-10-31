@@ -115,7 +115,7 @@ RadioDelegate {
 
     MZRadioButtonLabel {
         id: radioButtonLabel
-        Accessible.ignored: !isRadioButtonLabelAccessible
+        Accessible.ignored: !isRadioButtonLabelAccessible || !visible
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: radioButton.right
         anchors.right: parent.right

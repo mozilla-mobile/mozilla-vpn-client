@@ -12,6 +12,9 @@ RowLayout {
     property real defaultWidth: MZTheme.theme.fontSize * 0.25
     property real narrowWidth: MZTheme.theme.fontSize * 0.05
     property var narrowCharacters: [" ", "\t", "\n", ":"]
+    property bool ignoreForAccessibility: false
+
+    Accessible.ignored: ignoreForAccessibility
 
     function formatSingle(value) {
         if (value === 0)
@@ -39,6 +42,7 @@ RowLayout {
             font.letterSpacing: 0
             font.pixelSize: MZTheme.theme.fontSize
             text: modelData
+            Accessible.ignored: ignoreForAccessibility || !visible
 
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             Layout.preferredWidth: narrowCharacters.includes(modelData) ? narrowWidth : defaultWidth

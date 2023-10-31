@@ -15,7 +15,7 @@ MZTextField {
 
     id: passwordInput
 
-    Accessible.ignored: charactersMasked
+    Accessible.ignored: charactersMasked || !visible
     Accessible.passwordEdit: charactersMasked
     // In order for screen readers to respect the `Accessible.ignored` property
     // `Accessible.role` has to be set to `EditableText`. For more infos see

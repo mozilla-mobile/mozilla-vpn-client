@@ -16,6 +16,7 @@ MZCard {
     property alias description: descriptionText.text
 
     Accessible.name: title + "," + description
+    Accessible.ignored: !visible
 
     RowLayout {
         anchors.fill: parent

@@ -20,6 +20,7 @@ Text {
     Layout.alignment: Qt.AlignHCenter
     Accessible.role: Accessible.StaticText
     Accessible.name: text
+    Accessible.ignored: !visible
 
     Component.onCompleted: {
         if (paintedWidth > MZTheme.theme.maxTextWidth) {
