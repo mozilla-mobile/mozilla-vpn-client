@@ -269,7 +269,7 @@ MZFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: MZTheme.theme.rowHeight
 
-            onClicked: {
+            preLogoutCallback: () => {
                 Glean.interaction.signOutSelected.record({
                     screen: vpnFlickable.telemetryScreenId,
                 });
