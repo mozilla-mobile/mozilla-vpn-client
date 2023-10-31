@@ -25,7 +25,11 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
 elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
     target_sources(mozillavpn_settings INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxcryptosettings.cpp)
-elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(libsecret REQUIRED libsecret-1)
+    target_include_directories(mozillavpn_settings PUBLIC ${libsecret_INCLUDE_DIRS})
+elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
     target_sources(mozillavpn_settings INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.cpp)
 endif()
