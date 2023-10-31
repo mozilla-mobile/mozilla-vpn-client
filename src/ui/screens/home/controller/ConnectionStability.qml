@@ -135,9 +135,6 @@ Item {
                 text: VPNConnectionHealth.stability
                       === VPNConnectionHealth.Unstable ? textUnstable : textNoSignal
                 horizontalAlignment: Text.AlignLeft
-
-                Accessible.role: Accessible.StaticText
-                Accessible.name: text
             }
         }
 
@@ -161,9 +158,6 @@ Item {
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()
             lineHeight: grid.flow === Grid.LeftToRight ? MZTheme.theme.controllerInterLineHeight : 10
-
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
         }
     }
 

@@ -595,8 +595,6 @@ Item {
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.

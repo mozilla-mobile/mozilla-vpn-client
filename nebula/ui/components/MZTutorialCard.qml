@@ -76,8 +76,6 @@ MZCard {
                 maximumLineCount: 2
                 wrapMode: Text.WordWrap
 
-                Accessible.role: Accessible.StaticText
-                Accessible.name: text
                 Accessible.ignored: true
             }
 

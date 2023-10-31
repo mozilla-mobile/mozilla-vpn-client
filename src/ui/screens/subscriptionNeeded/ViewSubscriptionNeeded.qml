@@ -76,7 +76,6 @@ MZFlickable {
             wrapMode: Text.WordWrap
             lineHeight: 22
 
-            Accessible.role: Accessible.StaticText
             // Prevent html tags from being read by screen readers
             Accessible.name: text.replace(/<[^>]*>/g, "")
         }

@@ -47,8 +47,6 @@ MZViewBase {
 
                     text: MZI18n.SplittunnelInfoCardDescription
                     verticalAlignment: Text.AlignVCenter
-                    Accessible.role: Accessible.StaticText
-                    Accessible.name: text
                 }
             }
         }

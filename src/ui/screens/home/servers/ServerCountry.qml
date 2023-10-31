@@ -195,7 +195,8 @@ MZClickableRow {
             //% "Cities"
             //: The title for the list of cities.
             Accessible.name: qsTrId("cities")
-
+            Accessible.ignored: !visible
+            
             Repeater {
                 id: citiesRepeater
                 model: cities

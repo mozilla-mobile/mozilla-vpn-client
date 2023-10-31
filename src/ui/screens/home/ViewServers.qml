@@ -17,6 +17,7 @@ Item {
     id: root
     objectName: "viewServers"
     Accessible.name: qsTrId("vpn.servers.selectLocation")
+    Accessible.ignored: !visible
 
     MZMenu {
         property string defaultMenuTitle: qsTrId("vpn.servers.selectLocation")
