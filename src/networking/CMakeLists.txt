@@ -7,6 +7,8 @@ add_library(mozillavpn_networking STATIC)
 target_sources(mozillavpn_networking INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/networkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/networkmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.h
 )
@@ -15,11 +17,6 @@ if (${MZ_PLATFORM_NAME} STREQUAL "wasm")
     target_sources(mozillavpn_networking INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.h
-    )
-else()
-    target_sources(mozillavpn_networking INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.h
     )
 endif()
 
