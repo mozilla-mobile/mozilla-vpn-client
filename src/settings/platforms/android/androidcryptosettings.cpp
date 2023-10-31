@@ -10,9 +10,9 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
-#include "androidcommons.h"
 #include "cryptosettings.h"
 #include "logger.h"
+#include "platforms/android/androidcommons.h"
 
 constexpr auto KEYSTORE_CLASS =
     "org/mozilla/firefox/qt/common/SettingsKeystore";

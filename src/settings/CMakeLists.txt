@@ -6,6 +6,7 @@ add_library(mozillavpn_settings STATIC)
 
 target_sources(mozillavpn_settings INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
@@ -14,13 +15,19 @@ target_sources(mozillavpn_settings INTERFACE
 if(${MZ_PLATFORM_NAME} STREQUAL "wasm")
     target_sources(mozillavpn_settings INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp)
-elseif(${MZ_PLATFORM_NAME} STREQUAL "macos" OR ${MZ_PLATFORM_NAME} STREQUAL "iOS")
+elseif(${MZ_PLATFORM_NAME} STREQUAL "macos" OR ${MZ_PLATFORM_NAME} STREQUAL "ios")
     target_sources(mozillavpn_settings INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm)
-else()
+elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
     target_sources(mozillavpn_settings INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidcryptosettings.cpp)
+elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+    target_sources(mozillavpn_settings INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxcryptosettings.cpp)
+elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+    target_sources(mozillavpn_settings INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.cpp)
 endif()
 
 target_include_directories(mozillavpn_settings PRIVATE
