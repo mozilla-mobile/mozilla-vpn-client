@@ -102,7 +102,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         //Always goes to bottom of the screen - can expose this property if we ever need a custom height
-        implicitHeight: window.height - mapToItem(window.contentItem, 0, 0).y - stepProgressBar.implicitHeight
+        implicitHeight: window.height - window.safeAreaHeightByDevice() - stepProgressBar.implicitHeight - stepNavigation.anchors.topMargin
         flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
 
         StackView {
@@ -115,5 +115,10 @@ ColumnLayout {
 
             implicitHeight: flickable.height
         }
+    }
+
+    //Fix for VPN-5663
+    Item {
+        Layout.fillHeight: true
     }
 }
