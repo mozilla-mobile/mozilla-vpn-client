@@ -78,15 +78,19 @@ do
         TRANSLATED_TEXT=$(xmlstarlet sel \
                 -N x="urn:oasis:names:tc:xliff:document:1.2" \
                 -t -m "/x:xliff/x:file/x:body/x:trans-unit$BLOCK_SELECTOR" \
-                -v "x:source" \
+                -v "concat(x:source, '\n')" -n \
                 "$XLIFF_FILE")
     else
          TRANSLATED_TEXT=$(xmlstarlet sel \
             -N x="urn:oasis:names:tc:xliff:document:1.2" \
             -t -m "/x:xliff/x:file/x:body/x:trans-unit$BLOCK_SELECTOR" \
-            -v "x:target" \
+            -v "concat(x:target, '\n')" -n \
             "$XLIFF_FILE")
     fi
+
+    # Remove the last line break.
+    TRANSLATED_TEXT_LENGTH=${#TRANSLATED_TEXT}
+    TRANSLATED_TEXT="${TRANSLATED_TEXT:0:$TRANSLATED_TEXT_LENGTH-2}"
 
     # Check if the output is not empty
     if [ -n "$TRANSLATED_TEXT" ]; then
@@ -98,7 +102,7 @@ do
         fi
 
         echo "<$LANGUAGE_CODE>" >> $RELEASE_NOTES_FILE
-        echo $TRANSLATED_TEXT >> $RELEASE_NOTES_FILE
+        echo -e $TRANSLATED_TEXT >> $RELEASE_NOTES_FILE
         echo "</$LANGUAGE_CODE>" >> $RELEASE_NOTES_FILE
     else
         echo "❌ No release note translations found for: $LANGUAGE_CODE ($ORIGINAL_LANGUAGE_CODE)"
