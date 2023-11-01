@@ -81,6 +81,7 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin * 1.5
         Layout.leftMargin: MZTheme.theme.windowMargin
         Layout.rightMargin: MZTheme.theme.windowMargin
+        Layout.preferredWidth: parent.width
 
         Loader {
             objectName: "DNSSettingsInformationCardLoader"
