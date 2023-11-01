@@ -944,7 +944,7 @@ describe('Settings', function() {
     it("record telemetry when user clicks on Add Application in App Exclusions", async () => {
         await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
 
-        //click on Clear all
+        //click on Add application
         await vpn.waitForQueryAndClick(queries.appExclusionsView.ADD_APPLICATION_BUTTON.visible());
 
         const events = await vpn.gleanTestGetValue("interaction", "addApplicationSelected", "main")
