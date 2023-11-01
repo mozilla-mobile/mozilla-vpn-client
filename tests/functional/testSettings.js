@@ -903,6 +903,14 @@ describe('Settings', function() {
         assert.equal("impression", settingsScreen.action);
     });
 
+    it("record telemetry when user goes to the App Exclusions screen", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
+
+        const events = await vpn.gleanTestGetValue("impression", "appExclusionsScreen", "main")
+        assert.equal(events.length, 1);
+        assert.equal("impression", appExclusionsScreen.action);
+    });
+
     it("record telemetry when user clicks on App Exclusions", async () => {
         await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
         const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
