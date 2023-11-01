@@ -112,11 +112,10 @@ AndroidController::AndroidController() {
       },
       Qt::QueuedConnection);
   connect(
-      activity, &AndroidVPNActivity::eventAllowVpnConfigOptionSelected, this,
+      activity, &AndroidVPNActivity::eventVpnConfigPermissionResponse, this,
       []() {
         ConnectionManager* connectionManager =
             MozillaVPN::instance()->connectionManager();
-        Q_ASSERT(connectionManager);
         connectionManager->startHandshakeTimer();
       },
       Qt::QueuedConnection);

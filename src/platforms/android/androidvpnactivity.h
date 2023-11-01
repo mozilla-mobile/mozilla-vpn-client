@@ -72,8 +72,12 @@ enum ServiceEvents {
   // The Daemon need's the app to ask for notification
   // permissions, to show the "you're connected" messages.
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
+  // Signals MozillaVPN that we have completed onboarding
   EVENT_ONBOARDING_COMPLETED = 9,
-  EVENT_ALLOW_VPN_CONFIG_OPTION_SELECTED = 10,
+  // Signals the ConnectionManager that it may now allow 
+  // activation retries now that the system vpn config modal
+  // has been responded to
+  EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 10,
 };
 typedef enum ServiceEvents ServiceEvents;
 
@@ -97,7 +101,7 @@ class AndroidVPNActivity : public QObject {
   void eventStatisticUpdate(const QString& data);
   void eventActivationError(const QString& data);
   void eventOnboardingCompleted();
-  void eventAllowVpnConfigOptionSelected();
+  void eventVpnConfigPermissionResponse();
   void eventRequestGleanUploadEnabledState();
 
  private:
