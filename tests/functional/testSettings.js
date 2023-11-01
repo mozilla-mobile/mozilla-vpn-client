@@ -928,5 +928,29 @@ describe('Settings', function() {
         var element = events[0];
         assert.equal(element.extra.screen, "app_exclusions");
     });
+
+    it("record telemetry when user clicks on Clear all in App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
+
+        //click on Clear all
+        await vpn.waitForQueryAndClick(queries.appExclusionsView.CLEAR_ALL.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "clearAppExclusionsSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
+
+    it("record telemetry when user clicks on Add Application in App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
+
+        //click on Clear all
+        await vpn.waitForQueryAndClick(queries.appExclusionsView.ADD_APPLICATION_BUTTON.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "addApplicationSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
 });
 });
