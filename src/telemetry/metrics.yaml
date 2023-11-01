@@ -193,6 +193,26 @@ sample:
           `authenticationinapp.h`.
         type: string
 
+# TODO @Gela
+  # suggested_exclusions_found:
+  #   type: event
+  #   lifetime: ping
+  #   send_in_pings:
+  #     - main
+  #   description: |
+  #     The user has received a notification about suggested apps to exclude from VPN.
+  #   bugs:
+  #     - https://mozilla-hub.atlassian.net/browse/VPN-5363
+  #   data_reviews:
+  #     - TBD
+  #   data_sensitivity:
+  #     - interaction
+  #   notification_emails:
+  #     - gela@mozilla.com
+  #     - vpn-telemetry@mozilla.com
+  #   expires: never
+  #   extra_keys: *outcome_extra_key
+
   authentication_sub_manage_step:
     type: event
     lifetime: ping

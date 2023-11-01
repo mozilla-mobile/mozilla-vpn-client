@@ -17,10 +17,16 @@ ColumnLayout {
     id: appListContainer
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
+    readonly property string telemetryScreenId : "app_exclusions"
 
     spacing: MZTheme.theme.vSpacing
 
     Layout.preferredWidth: parent.width
+        
+    Component.onCompleted: {
+        console.log("Component ready");
+        Glean.impression.appExclusionsScreen.record({screen:telemetryScreenId});
+    }
 
     MZSearchBar {
         property bool sorted: false;
@@ -33,6 +39,9 @@ ColumnLayout {
         _searchBarHasError: applist.count === 0
         _searchBarPlaceholderText: searchBarPlaceholder
         Layout.fillWidth: true
+        onClicked: {
+            Glean.interaction.searchSelected.record({screen:telemetryScreenId});
+        }
     }
 
     ColumnLayout {
@@ -61,7 +70,10 @@ ColumnLayout {
             fontSize: MZTheme.theme.fontSize
             fontName: MZTheme.theme.fontInterSemiBoldFamily
 
-            onClicked: VPNAppPermissions.protectAll();
+            onClicked: {
+                Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
+                VPNAppPermissions.protectAll();
+            }
             enabled: MZSettings.vpnDisabledApps.length > 0
             visible: applist.count > 0
         }
@@ -142,8 +154,10 @@ ColumnLayout {
             textAlignment: Text.AlignLeft
             fontSize: MZTheme.theme.fontSize
             fontName: MZTheme.theme.fontInterSemiBoldFamily
-            onClicked: VPNAppPermissions.openFilePicker()
-
+            onClicked: {
+                Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
+                VPNAppPermissions.openFilePicker()
+            }
             // Hack to horizontally align the "+" sign with the
             // column of checkboxes
             Layout.leftMargin: -1
