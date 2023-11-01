@@ -57,7 +57,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 16
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     Image {
@@ -69,7 +69,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 16
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {

@@ -104,7 +104,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 16
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     //Views in the stack layout must be in the same order as items in the above list model
@@ -193,7 +193,7 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 16
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {

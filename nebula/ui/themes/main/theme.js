@@ -87,7 +87,6 @@ theme.checkBoxRowSubLabelTopMargin = 2;
 theme.tutorialCardHeight = 144
 theme.guideCardHeight = 172
 
-theme.tutorialCardHeight = 144;
 theme.navBarHeight = 64;
 theme.navBarMaxWidth = 608;
 theme.navBarTopMargin = 48;
@@ -97,6 +96,8 @@ theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 theme.navBarIconSize = 48
 theme.navBarMaxPaddingTablet = 120
 theme.navBarMaxPadding = 48
+
+theme.onboardingMinimumVerticalSpacing = 16;
 
 theme.swipeDelegateActionWidth = 56;
 theme.badgeHorizontalPadding = 8
