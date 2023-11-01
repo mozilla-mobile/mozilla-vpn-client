@@ -78,6 +78,7 @@ class ConnectionManager : public QObject, public LogSerializer {
   void backendFailure();
   void updateRequired();
   void deleteOSTunnelConfig();
+  void startHandshakeTimer();
 
   const ServerData& currentServer() const { return m_serverData; }
 
