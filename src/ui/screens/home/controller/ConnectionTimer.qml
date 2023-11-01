@@ -14,8 +14,6 @@ RowLayout {
     property var narrowCharacters: [" ", "\t", "\n", ":"]
     property bool ignoreForAccessibility: false
 
-    Accessible.ignored: ignoreForAccessibility
-
     function formatSingle(value) {
         if (value === 0)
             return "00";
