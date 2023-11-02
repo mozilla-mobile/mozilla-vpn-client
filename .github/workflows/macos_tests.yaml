@@ -56,7 +56,7 @@ jobs:
 
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake -DDUMMY_BUILD=ON
+             -DDUMMY_BUILD=ON -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
           cmake --build build/cmake -j$(nproc)
           cp ./build/cmake/src/mozillavpn build/
           cp -r ./build/cmake/src/addons build/addons
