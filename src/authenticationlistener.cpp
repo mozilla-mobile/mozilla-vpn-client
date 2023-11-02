@@ -34,9 +34,9 @@ AuthenticationListener* AuthenticationListener::create(
 #if defined(MZ_ANDROID) or defined(MZ_IOS)
       logger.error() << "Something went totally wrong";
       Q_ASSERT(false);
-#elif defined(MZ_MACOS)
+#elif defined(MZ_MACOS) && !defined(UNIT_TEST)
       return new MacosAuthenticationListener(parent);
-#elif defined(MZ_WASM)
+#elif defined(MZ_WASM) && !defined(UNIT_TEST)
       return new WasmAuthenticationListener(parent);
 #else
       return new DesktopAuthenticationListener(parent);

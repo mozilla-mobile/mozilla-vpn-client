@@ -12,12 +12,11 @@ target_sources(mozillavpn_settings INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
 )
 
-if(${MZ_PLATFORM_NAME} STREQUAL "wasm")
+if(${MZ_PLATFORM_NAME} STREQUAL "wasm" OR ${MZ_PLATFORM_NAME} STREQUAL "dummy")
     target_sources(mozillavpn_settings INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp)
 elseif(${MZ_PLATFORM_NAME} STREQUAL "macos" OR ${MZ_PLATFORM_NAME} STREQUAL "ios")
     target_sources(mozillavpn_settings INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm)
 elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
     target_sources(mozillavpn_settings INTERFACE

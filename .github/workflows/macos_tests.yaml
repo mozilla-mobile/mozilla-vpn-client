@@ -56,10 +56,10 @@ jobs:
 
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/cmake -j$(nproc) --target dummyvpn
-          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake -DDUMMY_BUILD=ON
+          cmake --build build/cmake -j$(nproc)
+          cp ./build/cmake/src/mozillavpn build/
+          cp -r ./build/cmake/src/addons build/addons
 
       - uses: actions/upload-artifact@v3
         with:
@@ -109,8 +109,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-          chmod +x ./build/dummyvpn
-          ./build/dummyvpn -v
+          chmod +x ./build/src
+          ./build/src -v
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
@@ -126,7 +126,7 @@ jobs:
             npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/dummyvpn
+          MVPN_BIN: ./build/src
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v3

@@ -24,7 +24,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install build dependencies
         shell: bash
@@ -53,14 +53,15 @@ jobs:
           mkdir -p build/profile
           cmake -S $(pwd) -B build/cmake \
               -DCMAKE_CXX_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
-              -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile"
-          cmake --build build/cmake -j$(nproc) --target dummyvpn
+              -DCMAKE_EXE_LINKER_FLAGS="--coverage -fprofile-generate=$(pwd)/build/profile" \
+              -DDUMMY_BUILD=ON
+          cmake --build build/cmake -j$(nproc)
 
           mkdir -p build/profile
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \
-              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
-          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+              build/cmake/src/CMakeFiles/mozillavpn.dir/ build/profile/
+          cp ./build/cmake/src/mozillavpn build/
+          cp -r ./build/cmake/src/addons build/addons
 
       - uses: actions/upload-artifact@v3
         with:
@@ -122,8 +123,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-          chmod +x ./build/dummyvpn
-          ./build/dummyvpn -v
+          chmod +x ./build/src
+          ./build/src -v
 
           chmod +x ${{ github.workspace }}/grcov-build/bin/grcov
           ${{ github.workspace }}/grcov-build/bin/grcov --version
@@ -142,7 +143,7 @@ jobs:
             xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
         env:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/dummyvpn
+          MVPN_BIN: ./build/src
 
       - name: Generating grcov reports
         id: generateGrcov

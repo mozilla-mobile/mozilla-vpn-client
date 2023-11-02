@@ -76,18 +76,19 @@ ctest --test-dir build -j $(nproc) --output-on-failure
 
 ### Running the functional tests
 
-**New build required**: Functional tests require a dummy build of the application, which is not
-built by default. To build the `dummyvpn` target, in the root folder of this repository run:
+**New build required**: Functional tests require a "dummy" build of the application, which is not
+built by default. To create a "dummy" build, run:
 
 ```
-cmake --build build -j$(nproc) --target dummyvpn
+cmake -S . -B build-dummy -DDUMMY_BUILD=ON
+cmake --build build-dummy -j$(nproc)
 ```
 
-This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
+This will create an executable under `build-dummy/src/mozillavpn`. To run the functional
 tests against this build, make sure the `MVPN_BIN` environment variable is set:
 
 ```
-export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+export MVPN_BIN=$(pwd)/build-dummy/src/mozillavpn
 ```
 
 **Other dependencies**:
@@ -101,7 +102,7 @@ export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
   export PATH=$PATH:~/Qt/6.2.4/macos/bin:$PATH
   export QT_MACOS_BIN=~/Qt/6.2.4/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
-  MVPN_BIN=dummybuild/src/mozillavpn
+  MVPN_BIN=$(pwd)/build-dummy/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
   ```
 

@@ -26,20 +26,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    set(MZ_PLATFORM_NAME "linux")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    set(MZ_PLATFORM_NAME "windows")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    set(MZ_PLATFORM_NAME "macos")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
-    set(MZ_PLATFORM_NAME "android")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
-    set(MZ_PLATFORM_NAME "ios")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
-    set(MZ_PLATFORM_NAME "wasm")
-endif()
-
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
 
@@ -76,9 +62,7 @@ target_link_libraries(mozillavpn PRIVATE
 )
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
-
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
-
 if(NOT CMAKE_CROSSCOMPILING)
     target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
 endif()

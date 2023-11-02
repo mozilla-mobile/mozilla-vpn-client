@@ -52,24 +52,19 @@ NotificationHandler* NotificationHandler::create(QObject* parent) {
 
 // static
 NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
-#if defined(MZ_IOS)
+#if defined(MZ_DUMMY) || defined(UNIT_TEST)
+  return new SystemTrayNotificationHandler(parent);
+#elif defined(MZ_IOS)
   return new IOSNotificationHandler(parent);
-#endif
-
-#if defined(MZ_ANDROID)
+#elif defined(MZ_ANDROID)
   return new AndroidNotificationHandler(parent);
-#endif
-
-#if defined(MZ_LINUX)
+#elif defined(MZ_LINUX)
   if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
     return new LinuxSystemTrayNotificationHandler(parent);
   }
-#endif
-
-#if defined(MZ_MACOS)
+#elif defined(MZ_MACOS)
   return new MacosSystemTrayNotificationHandler(parent);
 #endif
-
   return new SystemTrayNotificationHandler(parent);
 }
 

@@ -53,7 +53,6 @@ Before submitting a Pull Request, please, install the clang format pre-commit ho
 
 * The default target builds the mozillavpn client
 * `build_tests` builds the unit tests
-* `dummyvpn` is needed for the functional tests
 * `pkg` to build the installer package on macOS
 
 ## Build configure flags

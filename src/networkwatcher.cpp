@@ -53,7 +53,9 @@ NetworkWatcher::~NetworkWatcher() { MZ_COUNT_DTOR(NetworkWatcher); }
 void NetworkWatcher::initialize() {
   logger.debug() << "Initialize";
 
-#if defined(MZ_WINDOWS)
+#if defined(MZ_DUMMY) || defined(UNIT_TEST)
+  m_impl = new DummyNetworkWatcher(this);
+#elif defined(MZ_WINDOWS)
   m_impl = new WindowsNetworkWatcher(this);
 #elif defined(MZ_LINUX)
   m_impl = new LinuxNetworkWatcher(this);
@@ -65,8 +67,6 @@ void NetworkWatcher::initialize() {
   m_impl = new AndroidNetworkWatcher(this);
 #elif defined(MZ_IOS)
   m_impl = new IOSNetworkWatcher(this);
-#else
-  m_impl = new DummyNetworkWatcher(this);
 #endif
 
   connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,

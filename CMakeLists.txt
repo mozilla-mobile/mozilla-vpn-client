@@ -17,6 +17,30 @@ project("Mozilla VPN" VERSION 2.19.0 LANGUAGES C CXX
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
+option(DUMMY_BUILD "Build VPN for functional tests i.e. with mocked out controller and no platform specifics" OFF)
+
+if(${DUMMY_BUILD})
+    set(MZ_PLATFORM_NAME "dummy")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    set(MZ_PLATFORM_NAME "linux")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    set(MZ_PLATFORM_NAME "windows")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    set(MZ_PLATFORM_NAME "macos")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    set(MZ_PLATFORM_NAME "android")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    set(MZ_PLATFORM_NAME "ios")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
+    set(MZ_PLATFORM_NAME "wasm")
+endif()
+
+# Add these compile definition to all targets.
+add_compile_definitions("$<$<CONFIG:Debug>:MZ_DEBUG>")
+add_compile_definitions("MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+
+message("Build for platform '${MZ_PLATFORM_NAME}'")
+
 # Enable testing
 include(CTest)
 add_custom_target(build_tests)
@@ -156,20 +180,17 @@ if(NOT CMAKE_CROSSCOMPILING)
 
     # E2E Tests
     add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
-
-    # Dummy Testing Client
-    add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
 endif()
 
 # Extra platform targets
-if(WIN32)
+if(${MZ_PLATFORM_NAME} STREQUAL "windows")
     add_subdirectory(windows/installer)
     add_subdirectory(windows/split-tunnel)
     add_subdirectory(windows/tunnel)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
-elseif(IOS)
+elseif(${MZ_PLATFORM_NAME} STREQUAL "ios")
     add_subdirectory(ios/networkextension)
     if(BUILD_ADJUST_SDK_TOKEN)
         add_subdirectory(ios/adjust)

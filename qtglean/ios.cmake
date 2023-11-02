@@ -13,10 +13,6 @@ set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
 add_library(iosglean SHARED)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
-endif()
-
 target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
@@ -113,7 +109,7 @@ list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
-    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
+    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh
         -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
