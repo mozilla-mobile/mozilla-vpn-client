@@ -47,6 +47,7 @@ CheckBox {
     Accessible.focusable: true
     Accessible.name: accessibleName
     Accessible.role: Accessible.CheckBox
+    Accessible.ignored: !visible
 
     states: [
         State {

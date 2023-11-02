@@ -44,6 +44,7 @@ RadioDelegate {
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
     Accessible.focusable: true
+    Accessible.ignored: !visible
 
     states: [
         State {

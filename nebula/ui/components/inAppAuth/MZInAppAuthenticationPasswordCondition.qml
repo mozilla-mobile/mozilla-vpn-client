@@ -35,5 +35,6 @@ RowLayout {
         Layout.fillWidth: true
         lineHeight: 1
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        Accessible.ignored: !visible
     }
 }

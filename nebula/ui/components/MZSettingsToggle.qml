@@ -162,6 +162,7 @@ CheckBox {
     Accessible.onToggleAction: clicked()
     Accessible.focusable: true
     Accessible.name: accessibleName
+    Accessible.ignored: !visible
 
     Rectangle {
         id: uiPlaceholder /* Binding loop hack-around */

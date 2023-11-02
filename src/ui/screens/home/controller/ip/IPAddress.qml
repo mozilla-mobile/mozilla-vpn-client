@@ -24,9 +24,6 @@ RowLayout {
         font.pixelSize: MZTheme.theme.fontSizeSmall
         lineHeight: MZTheme.theme.labelLineHeight * 1.25
         verticalAlignment: Text.AlignVCenter
-
-        Accessible.name: text
-        Accessible.role: Accessible.StaticText
     }
 
     MZInterLabel {
@@ -38,8 +35,6 @@ RowLayout {
         lineHeight: MZTheme.theme.labelLineHeight * 1.25
         opacity: 0.8
 
-        Accessible.name: text
-        Accessible.role: Accessible.StaticText
         Layout.maximumWidth: maxPaintedTextWidth
     }
 }

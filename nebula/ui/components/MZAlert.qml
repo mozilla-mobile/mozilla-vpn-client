@@ -191,6 +191,7 @@ Rectangle {
             Label {
                 id: label
                 Accessible.role: Accessible.StaticText
+                Accessible.ignored: !visible
                 anchors.centerIn: parent
                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                 horizontalAlignment: Text.AlignHCenter

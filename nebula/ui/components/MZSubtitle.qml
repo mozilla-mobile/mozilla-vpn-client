@@ -17,4 +17,5 @@ Text {
     lineHeight: MZTheme.theme.labelLineHeight
     Accessible.role: Accessible.StaticText
     Accessible.name: text
+    Accessible.ignored: !visible
 }

@@ -556,7 +556,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: 22
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoScreenVisible
+            Accessible.ignored: connectionInfoScreenVisible || !visible
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
@@ -594,8 +594,6 @@ Item {
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.
@@ -604,7 +602,7 @@ Item {
 
           ConnectionTimer {
             id: connectionTime
-            Accessible.ignored: true
+            ignoreForAccessibility: true
           }
         }
 
@@ -629,7 +627,7 @@ Item {
         }
         enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
-        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
+        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
     }
 
     IPInfoPanel {

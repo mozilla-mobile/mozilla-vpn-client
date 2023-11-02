@@ -17,4 +17,5 @@ Text {
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text
+    Accessible.ignored: !visible
 }

@@ -191,6 +191,7 @@ RadioDelegate {
                     color: MZTheme.colors.green90
                     font.pixelSize: MZTheme.theme.fontSizeSmallest
                     font.family: MZTheme.theme.fontInterSemiBoldFamily
+                    Accessible.ignored: !visible
                 }
             }
 

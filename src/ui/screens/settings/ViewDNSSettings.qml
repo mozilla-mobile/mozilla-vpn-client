@@ -100,8 +100,6 @@ MZViewBase {
                         Layout.fillWidth: true
                         text: MZI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
-                        Accessible.role: Accessible.StaticText
-                        Accessible.name: text
                     }
                 }
             }

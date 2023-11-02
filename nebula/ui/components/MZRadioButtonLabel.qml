@@ -12,4 +12,5 @@ Label {
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSize
     color: MZTheme.theme.fontColorDark
+    Accessible.ignored: !visible
 }

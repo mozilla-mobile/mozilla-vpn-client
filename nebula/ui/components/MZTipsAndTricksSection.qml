@@ -27,9 +27,6 @@ ColumnLayout {
         id: guideListTitle
         text: title
         wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
     }
 
     // Description
@@ -40,9 +37,6 @@ ColumnLayout {
         id: guideListDescription
         text: description
         wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
     }
 
     Loader {

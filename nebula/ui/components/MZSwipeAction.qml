@@ -22,6 +22,7 @@ Rectangle {
 
     Accessible.role: Accessible.Button
     Accessible.onPressAction: SwipeDelegate.clicked()
+    Accessible.ignored: !visible
 
     Keys.onSpacePressed: {
         SwipeDelegate.clicked()

@@ -138,6 +138,7 @@ MZButtonBase {
             font.family: fontName
             wrapMode: Text.WordWrap
             opacity: loaderVisible ? 0 : 1
+            Accessible.ignored: !visible
             Behavior on color {
                 ColorAnimation {
                     duration: 200

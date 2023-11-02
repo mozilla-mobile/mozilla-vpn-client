@@ -144,6 +144,7 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeAndroid
+                Accessible.ignored: !visible
             }
         }
 
@@ -180,6 +181,7 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeApple
+                Accessible.ignored: !visible
             }
         }
     }

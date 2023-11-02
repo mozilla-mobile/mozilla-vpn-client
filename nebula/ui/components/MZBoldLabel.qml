@@ -13,4 +13,8 @@ Label {
     font.family: MZTheme.theme.fontBoldFamily
     color: MZTheme.theme.fontColorDark
     horizontalAlignment: Qt.AlignLeft
+
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
+    Accessible.ignored: !visible
 }
