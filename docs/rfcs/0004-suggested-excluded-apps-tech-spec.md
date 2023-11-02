@@ -26,7 +26,7 @@ Open Questions
 -   Any easy ways to categorize games? (See [VPN-4433](https://mozilla-hub.atlassian.net/browse/VPN-4433).)
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
--   What is the process for adding an app to list, in light of potential security/privacy concerns when mis-adding apps?
+-   What is the process for adding an app to list, in light of potential security/privacy concerns when adding malicious apps?
 -   Some [details on deep linking](https://mozilla-hub.atlassian.net/browse/VPN-5034?focusedCommentId=785814).
 
 Implementation (estimated 37-60 points total)
@@ -62,7 +62,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 -   (2 points) Ensure tapping notification leads to correct screen
 
 ### Improve existing split tunnel screen (10-16 points total)
-[Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0 "https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0")
+[Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0)
 
 <img src="./images/0004-03.png" width=500 alt="Updated flow for existing App Exclusion screen">
 
@@ -89,7 +89,7 @@ These are important components that we are committed to delivering, but are outs
 Other options considered
 ------------------------
 
-Design and research went through several iterations, so the [designs](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0 "https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0") were set before this tech spec was written. (See [completed tickets in the epic](https://mozilla-hub.atlassian.net/browse/VPN-4412 "https://mozilla-hub.atlassian.net/browse/VPN-4412") for more background.)
+Design and research went through several iterations, so the [designs](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0) were set before this tech spec was written. (See [completed tickets in the epic](https://mozilla-hub.atlassian.net/browse/VPN-4412) for more background.)
 
 Other options considered included dynamically serving the suggested lists from addons or our repo or Guardian, each of which added complexity for hosting/validating. With the rarity of the list being updated (and lack of time-sensitivity when it does), this draft bundles the lists with the app. Hosting the list in Guardian was difficult (which is a private repo, so the list would need to be hosted elsewhere to allow public suggestions).
 
