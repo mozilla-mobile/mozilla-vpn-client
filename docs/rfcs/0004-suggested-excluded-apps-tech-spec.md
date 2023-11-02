@@ -26,6 +26,8 @@ Open Questions
 -   Any easy ways to categorize games? (See [VPN-4433](https://mozilla-hub.atlassian.net/browse/VPN-4433).)
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
+-   What is the process for adding an app to list, in light of potential security/privacy concerns when mis-adding apps?
+-   Some [details on deep linking](https://mozilla-hub.atlassian.net/browse/VPN-5034?focusedCommentId=785814).
 
 Implementation (estimated 37-60 points total)
 ---------------------------------------------------
