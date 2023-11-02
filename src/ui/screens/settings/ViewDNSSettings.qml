@@ -20,6 +20,9 @@ MZViewBase {
     property bool customDNS: false
     property bool privacyDialogNeeded: true
     property bool dnsSelectionChanged: false
+    readonly property string telemetryScreenId : "dns_settings"
+
+    Component.onCompleted: Glean.impression.dnsSettingsScreen.record({screen:telemetryScreenId})
 
     function applyFrontendChanges(settingValue) {
         if (settingValue === MZSettings.Gateway) {
