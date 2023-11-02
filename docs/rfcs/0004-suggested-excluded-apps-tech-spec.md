@@ -37,20 +37,20 @@ This work is broken into four sections, with the bulk of code coming in the midd
 ### Prerequisites (18-31 points total)
 
 -   (3-5 points) Answer the open questions above
--   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GH pull requests on the client repo) w/ apps to exclude (and update the repo's readme to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
+-   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
     -   Current proposal for format: Individual text files for each platform (`android.txt`, `linux.txt`, etc.) in a specific directory. Each line of the file will be a single path, or bundle ID, or whatever we end up using as an identifier. (See "Other options considered" section for why this is the current proposal.) Anything after a `#` on a line is considered a comment, and is ignored.
-    -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being snuck in. And erring on the side of not including any.
+    -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
     -   From Santiago: <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>
     -   Santiago list for Android: <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
--   (8-13 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): Currently, our navigation code allows us to switch tabs, but does not permit moving to a deeper screen - so we can move a user to the settings screen, but can't move them into a menu or submenu within the screen (like App Exclusions). We need deep linking to be able to open the notification where we want.
+-   (8-13 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): Currently, our navigation code allows us to switch tabs, but does not permit moving to a deeper screen - so we can move a user to the settings screen, but can't move them into a child menu or child's child menu within the screen (like App Exclusions). We need deep linking to be able to open the notification where we want.
 -   (2-5 points) Create initial list of recommended app exclusions
 
 ### Create daily task in app (9-13 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
 
 -   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature. (Create dev option to immediately pull down the new list.)
-    -   This will be run by the app for desktop, and a [PeriodicWorkRequest](https://developer.android.com/reference/androidx/work/PeriodicWorkRequest) on Android. (iOS does not have split tunneling.)
+    -   This will be run by the app for desktop, and a [PeriodicWorkRequest](https://developer.android.com/reference/androidx/work/PeriodicWorkRequest) on Android. (iOS does not have split tunnel.)
         -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll
     -   Create a dev option to pull a new suggested apps list immediately.
 -   (3-5 points) Is there one or more new apps?
@@ -70,7 +70,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
     -   Update the "have seen these apps" settings list with all suggested apps that are on the system. (This means that if a new app is seen on the Settings screen before the daily job runs and we send a notification, we never send a notification. This was confirmed by Santiago.)
 -   (1-2 points) Add recommended section (only if 1 more more apps on the system are suggested) - pull any apps in the "have seen them" list
 -   (1 point) Sort recommended section
--   (1 point) Sort unrecommended section
+-   (1 point) Sort "others" section
 -   (1-2 points) Update sort when something is added or removed
 -   (1-2 points) Ensure search works, shows one section, is alphabetically sorted
 -   (2-5 points) Ensure accessibility is up to date
@@ -124,7 +124,7 @@ Since all the work is being done on device, the only security concerns are ensur
 
 The excluded apps list will likely live in the client repo. There are ways to weaponize the suggested apps list to weaken privacy of key apps, but for this attack vector to be used a Mozilla staffer would need to approve the PR with the bad-faith addition to the suggested app list.
 
-Rollout considerations
+Considerations for roll out
 ----------------------
 
 While the reworked app exclusion page will affect all platforms that support split tunneling, notifications will only be shown to users who have already allowed our app to send them. On mobile, we show the "approve notifications" screen immediately upon launching the app for the first time, which likely depresses approval rates. We may want to re-consider how we show this as part of onboarding.
@@ -136,4 +136,4 @@ Test Plan
 -   Install an app on the suggested list on the device. Ensure the app is now shown appropriately on the screen in VPN settings. Ensure a notification suggesting its exclusion is popped at an appropriate time.
 -   Add an app on the device to the list on the repo, wait, and ensure it is offered as an app to exclude within 24 hours. (Alternatively, use the dev menu option to immediately run the daily job.)
 -   Delete an app on the list from the device, ensure it is no longer shown on the screen in VPN settings.
--   Test on all devices with split tunnelling, to ensure the app list works on all platforms
+-   Test on all devices with split tunneling, to ensure the app list works on all platforms
