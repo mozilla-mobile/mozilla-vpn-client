@@ -114,6 +114,9 @@ if __name__ == "__main__":
         ]
         metrics_files = [
             os.path.join(telemetry_path, "metrics.yaml"),
+            os.path.join(telemetry_path, "interaction_metrics.yaml"),
+            os.path.join(telemetry_path, "impression_metrics.yaml"),
+            os.path.join(telemetry_path, "outcome_metrics.yaml"),
         ]
 
         # Generate C++ header files

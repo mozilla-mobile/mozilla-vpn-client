@@ -109,19 +109,16 @@ Rectangle {
 
     onStateChanged: () => {
         if (state === "open-loading") {
-            Glean.impression.speedTestResultsLoading.record({
+            Glean.impression.speedTestLoadingScreen.record({
                 screen: "speed_test_loading",
-                action: "impression",
             });
         } else if (state === "open-ready") {
-            Glean.impression.speedTestResultCompleted.record({
-                screen: "speed_test_result",
-                action: "impression",
+            Glean.impression.speedTestCompletedScreen.record({
+                screen: "speed_test_completed",
             });
         } else if (state === "open-error") {
-            Glean.impression.speedTestResultError.record({
+            Glean.impression.speedTestErrorScreen.record({
                 screen: "speed_test_error",
-                action: "impression",
             });
         }
     }
@@ -178,12 +175,10 @@ Rectangle {
 
         onClicked: {
             if (VPNConnectionBenchmark.state !== VPNConnectionBenchmark.StateRunning) {
-                Glean.interaction.speedTestRefresh.record({
+                Glean.interaction.refreshSelected.record({
                     screen: root.state == "open-error"  ? "speed_test_error"
-                        : root.state == "open-ready"  ? "speed_test_result" 
+                        : root.state == "open-ready"  ? "speed_test_completed"
                             : "unexpected",
-                    action: "select",
-                    element_id: "refresh",
                 });
 
                 VPNConnectionBenchmark.start();

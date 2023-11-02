@@ -1,0 +1,312 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+# "impression" category events, are events where the user has just moved on to page X
+# Events under this category are recorded when a new screen is loaded
+impression:
+  main_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the main screen
+      i.e. the screen with the VPN toggle button.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5718
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: &impression_extra_keys
+      screen:
+        description: The id of the screen the user is on
+        type: string
+  speed_test_loading_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the loading animation for the speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+      - https://mozilla-hub.atlassian.net/browse/VPN-5718
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  speed_test_completed_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the speed test results
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+      - https://mozilla-hub.atlassian.net/browse/VPN-5718
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  speed_test_error_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the speed test error
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+      - https://mozilla-hub.atlassian.net/browse/VPN-5718
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  connection_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just moved on to the screen that shows
+      the connection information
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  signup_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Sign up" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  enter_email_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Enter email" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  create_password_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Create password" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  enter_verification_code_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the screen to enter email verification code.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  enter_password_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Enter password" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  enter_security_code_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the screen to enter a TOTP security code.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  subscription_needed_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Subscription needed" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  confirming_subscription_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Confirming subscription" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
+  continue_in_browser_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Continue in browser" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen where the interaction happened
+        type: string
