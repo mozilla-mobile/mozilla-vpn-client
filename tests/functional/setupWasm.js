@@ -33,30 +33,32 @@ const fs = require("fs")
 const stdout = path.join(tmpdir(), "stdout.txt")
 
 let driver;
-
-async function startAndConnect() {
-  await driver.get(process.env['MZ_WASM_URL']);
-  await vpn.connect(vpnWasm, { url: process.env['MZ_WASM_URL'], driver });
-}
+let url;
 
 exports.mochaHooks = {
   async beforeAll() {
-    await wasm.start(false);
+    if (process.env['MZ_WASM_URL']) {
+      url = process.env['MZ_WASM_URL'];
+    } else {
+      await wasm.start(false);
+      url = wasm.url;
+    }
+
     await guardian.start(false);
     await fxaServer.start(guardian.url, false);
     await addonServer.start(false);
     await networkBenchmark.start(false);
     await captivePortalServer.start(false);
 
-    const u = new URL(`${wasm.url}/test.html`);
+    const u = new URL(`${url}/test.html`);
     u.searchParams.set('guardian', guardian.url);
     u.searchParams.set('fxa', fxaServer.url);
     u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
     u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
       'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
+    url = u.toString()
 
-    process.env['MZ_WASM_URL'] = u.toString();
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
     const prefs = new logging.Preferences()
@@ -107,7 +109,8 @@ exports.mochaHooks = {
     networkBenchmark.overrideEndpoints =
       this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
-    await startAndConnect();
+    await driver.get(url);
+    await vpn.connect(vpnWasm, { url, driver });
     await vpn.setGleanAutomationHeader();
     await vpn.setSetting('tipsAndTricksIntroShown', 'true')
 
