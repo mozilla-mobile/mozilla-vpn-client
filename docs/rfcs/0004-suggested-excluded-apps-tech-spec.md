@@ -27,15 +27,15 @@ Open Questions
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
 
-Implementation (estimated 40-65 points total)
+Implementation (estimated 37-60 points total)
 ---------------------------------------------------
 
 This work is broken into four sections, with the bulk of code coming in the middle two sections. Those two sections should each be built behind their own separate feature flag, though we'd expose both parts together via Nimbus.
 
-### Prerequisites (21-36 points total)
+### Prerequisites (18-31 points total)
 
 -   (3-5 points) Answer the open questions above
--   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GH pull requests on the client repo) w/ apps to exclude (and update the repo's readme to explain this new type of contribution). Add this doc to addons. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
+-   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GH pull requests on the client repo) w/ apps to exclude (and update the repo's readme to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
     -   Current proposal for format: Individual text files for each platform (`android.txt`, `linux.txt`, etc.) in a specific directory. Each line of the file will be a single path, or bundle ID, or whatever we end up using as an identifier. (See "Other options considered" section for why this is the current proposal.) Anything after a `#` on a line is considered a comment, and is ignored.
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being snuck in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
@@ -43,9 +43,6 @@ This work is broken into four sections, with the bulk of code coming in the midd
     -   Santiago list for Android: <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
 -   (8-13 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): Currently, our navigation code allows us to switch tabs, but does not permit moving to a deeper screen - so we can move a user to the settings screen, but can't move them into a menu or submenu within the screen (like App Exclusions). We need deep linking to be able to open the notification where we want.
 -   (2-5 points) Create initial list of recommended app exclusions
--   (3-5 points) Create a task for checking for getting suggested app exclusions, ensure this is well tested
-    -   The list of suggested app exclusions will live in the VPN client repo, and be served via addons.
-
 
 ### Create daily task in app (9-13 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
@@ -92,9 +89,7 @@ Other options considered
 
 Design and research went through several iterations, so the [designs](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0 "https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0") were set before this tech spec was written. (See [completed tickets in the epic](https://mozilla-hub.atlassian.net/browse/VPN-4412 "https://mozilla-hub.atlassian.net/browse/VPN-4412") for more background.)
 
-Other options considered included a fixed list of apps to suggest, which could only be updated when the app updates.
-
-We considered hosting the list in Guardian (which is a private repo, so the list would need to be hosted elsewhere to allow public suggestions) and in the client repo outside of addons (requiring a new app release to update the list).
+Other options considered included dynamically serving the suggested lists from addons or our repo or Guardian, each of which added complexity for hosting/validating. With the rarity of the list being updated (and lack of time-sensitivity when it does), this draft bundles the lists with the app. Hosting the list in Guardian was difficult (which is a private repo, so the list would need to be hosted elsewhere to allow public suggestions).
 
 ### Other options considered for suggested app files
 
@@ -104,7 +99,7 @@ The goals for the file format:
 -   Easy for us to parse in the app
 -   Allowing comments in the file. While we still could structure a text file to allow comments, this became less important when the plan became "one file per platform, one app per line".
 
-Initially, there were two additional goals (no longer considerations):
+Initially, there was one additional goal (no longer consideration):
 -   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant.
 
 Other options considered included CSV, YAML, and JSON. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or JSON or CSV) would need to be structured in a specific way.
