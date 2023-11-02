@@ -38,25 +38,10 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
    }
 
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
-    Image {
-        Layout.alignment: Qt.AlignHCenter
-
-        source: "qrc:/ui/resources/data-collection.svg"
-    }
-
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
     MZCheckBoxRow {
         objectName: "dataCollectionCheckBox"
 
+        Layout.topMargin: MZUiUtils.isMobile() ? MZTheme.theme.vSpacing * 1.5 : MZTheme.theme.vSpacing
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
@@ -71,7 +56,19 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 24
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
+    }
+
+    Image {
+        Layout.alignment: Qt.AlignHCenter
+
+        source: "qrc:/ui/resources/data-collection.svg"
+        sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
+    }
+
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {
@@ -106,5 +103,4 @@ ColumnLayout {
         labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
         onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
     }
-
 }
