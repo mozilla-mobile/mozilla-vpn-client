@@ -1372,8 +1372,11 @@ describe('User authentication', function() {
             });
 
             // First a failing outcome
-            const failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
-            assert.strictEqual(failedOutcomeEvent.length, 1);
+            let failedOutcomeEvent;
+            await vpn.waitForCondition(async () => {
+                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+                return failedOutcomeEvent.length == 1;
+            });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
             assert.strictEqual("unblock_code", failedOutcomeExtras.type);
 
@@ -1651,8 +1654,11 @@ describe('User authentication', function() {
             });
 
             // First a failing outcome
-            const failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
-            assert.strictEqual(failedOutcomeEvent.length, 1);
+            let failedOutcomeEvent;
+            await vpn.waitForCondition(async () => {
+                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+                return failedOutcomeEvent.length == 1;
+            });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
             assert.strictEqual("email", failedOutcomeExtras.type);
 
@@ -1796,8 +1802,11 @@ describe('User authentication', function() {
             });
 
             // First a failing outcome
-            const failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
-            assert.strictEqual(failedOutcomeEvent.length, 1);
+            let failedOutcomeEvent;
+            await vpn.waitForCondition(async () => {
+                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+                return failedOutcomeEvent.length == 1;
+            });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
             assert.strictEqual("totp", failedOutcomeExtras.type);
 
