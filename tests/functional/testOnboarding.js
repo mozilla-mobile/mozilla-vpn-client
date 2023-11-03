@@ -25,14 +25,14 @@ describe('Onboarding', function() {
    case 1:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   case 2: 
+   case 2:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
    case 3:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
     assert.equal(await vpn.getSetting('onboardingCompleted'), true);
-  default: 
+  default:
     break;
    }
  }
@@ -47,12 +47,12 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Check data collection checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
 
     //Check privacy link
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
@@ -100,7 +100,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
 
     //Ensure all selections on previous slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
 
     //Return to privacy slide
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
@@ -236,8 +236,8 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
   });
-  
-   //Tests restoring onboarding to current step after quitting 
+
+  // Tests restoring onboarding to current step after quitting
   it('Quitting app during onboarding', async () => {
     // Skip WASM because this test does a lot of quitting and re-launching
     if (this.ctx.wasm) {
@@ -311,7 +311,7 @@ describe('Onboarding', function() {
 
     //Ensure that the data collection checkbox state is bound to onboardingDataCollectionEnabled, which defaults to false
     //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), false);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
@@ -330,7 +330,7 @@ describe('Onboarding', function() {
     //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled when clicked
     //and that this checkboxes state does not affect gleanEnabled
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
@@ -361,12 +361,12 @@ describe('Onboarding', function() {
 
     //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled upon relaunch
     //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Ensure the data collection checkbox is checked and onboardingDataCollectionEnabled is set to true
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
   });
 });

@@ -132,7 +132,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   enter_email_screen:
     type: event
@@ -154,7 +154,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   create_password_screen:
     type: event
@@ -176,7 +176,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   enter_verification_code_screen:
     type: event
@@ -198,7 +198,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   enter_password_screen:
     type: event
@@ -220,7 +220,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   enter_security_code_screen:
     type: event
@@ -242,7 +242,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   subscription_needed_screen:
     type: event
@@ -264,7 +264,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   confirming_subscription_screen:
     type: event
@@ -286,7 +286,7 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
         type: string
   continue_in_browser_screen:
     type: event
@@ -308,5 +308,27 @@ impression:
     extra_keys:
       screen:
         description: |
-          The screen where the interaction happened
+          The screen the user has just entered
+        type: string
+  enter_unblock_code_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has entered the "Enter unblock code" screen.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: |
+          The screen the user has just entered
         type: string

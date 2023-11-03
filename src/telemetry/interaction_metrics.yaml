@@ -144,7 +144,7 @@ interaction:
         description: |
           The screen where the interaction happened
         type: string
-  already_a_subscriber:
+  already_a_subscriber_selected:
     type: event
     lifetime: ping
     send_in_pings:

@@ -172,9 +172,6 @@ void Telemetry::initialize() {
                     ._sku = productIdentifier});
           });
 
-  connect(purchaseHandler, &PurchaseHandler::restoreSubscriptionStarted, this,
-          []() { mozilla::glean::sample::iap_restore_sub_started.record(); });
-
   connect(MozillaVPN::instance(), &MozillaVPN::logSubscriptionCompleted, this,
           []() {
             mozilla::glean::sample::iap_subscription_completed.record(
@@ -186,13 +183,6 @@ void Telemetry::initialize() {
     mozilla::glean::sample::iap_subscription_failed.record(
         mozilla::glean::sample::IapSubscriptionFailedExtra{
             ._error = "failed",
-            ._sku = PurchaseHandler::instance()->currentSKU()});
-  });
-
-  connect(purchaseHandler, &PurchaseHandler::subscriptionCanceled, this, []() {
-    mozilla::glean::sample::iap_subscription_failed.record(
-        mozilla::glean::sample::IapSubscriptionFailedExtra{
-            ._error = "canceled",
             ._sku = PurchaseHandler::instance()->currentSKU()});
   });
 

@@ -87,6 +87,11 @@ outcome:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
     expires: never
+    extra_keys:
+      type:
+        description: |
+          The type of 2FA verification: either unblock_code, totp or email.
+        type: string
   two_fa_verification_succeeded:
     type: event
     lifetime: ping
@@ -104,6 +109,11 @@ outcome:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
     expires: never
+    extra_keys:
+      type:
+        description: |
+          The type of 2FA verification: either unblock_code, totp or email.
+        type: string
   login_ended:
     type: event
     lifetime: ping
