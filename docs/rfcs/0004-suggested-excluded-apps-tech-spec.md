@@ -107,7 +107,7 @@ The goals for the file format:
 Initially, there was one additional goal (no longer consideration):
 -   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant.
 
-Other options considered included CSV, YAML, and JSON. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or JSON or CSV) would need to be structured in a specific way.
+Other options considered included CSV, YAML, and JSON. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or CSV) would need to be structured in a specific way. While we already have a JSON parser that we've custom wrote that could be used for this validation, a simple list is better than JSON for the first two goals of the file format.
 
 Ultimately, the multiple text files seemed simpler (and thus easier to build) - there aren't the same parsing concerns and it's easy for contributors.
 
