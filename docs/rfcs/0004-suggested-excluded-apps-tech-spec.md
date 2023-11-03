@@ -29,7 +29,7 @@ Open Questions
 -   What is the process for adding an app to list, in light of potential security/privacy concerns when adding malicious apps?
 -   Some [details on deep linking](https://mozilla-hub.atlassian.net/browse/VPN-5034?focusedCommentId=785814).
 
-Implementation (estimated 37-60 points total)
+Implementation (estimated 39-62 points total)
 ---------------------------------------------------
 
 This work is broken into four sections, with the bulk of code coming in the middle two sections. Those two sections should each be built behind their own separate feature flag, though we'd expose both parts together via Nimbus.
@@ -46,20 +46,23 @@ This work is broken into four sections, with the bulk of code coming in the midd
 -   (8-13 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): Currently, our navigation code allows us to switch tabs, but does not permit moving to a deeper screen - so we can move a user to the settings screen, but can't move them into a child menu or child's child menu within the screen (like App Exclusions). We need deep linking to be able to open the notification where we want.
 -   (2-5 points) Create initial list of recommended app exclusions
 
-### Create daily task in app (9-13 points total)
+### Create daily task in app (11-15 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
 
--   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature. (Create dev option to immediately pull down the new list.)
+-   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
     -   This will be run by the app for desktop, and a [PeriodicWorkRequest](https://developer.android.com/reference/androidx/work/PeriodicWorkRequest) on Android. (iOS does not have split tunnel.)
-        -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll
-    -   Create a dev option to pull a new suggested apps list immediately.
+        -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll immediately run the task.
+        -   We're not concerned if the user's clock shifts. The vast majority of these daily checks will not result in any notification to the user (except in the rare case that the user consistently adds new apps daily that happen to be on the suggested list). The worst case scenario would be that a user gets two notifications in a 24 hour period. This isn't the planned user interaction, but given the low likelihood (neither clock changes nor the installation of new suggested apps is a common event) it's not worth building a system that considers this.
 -   (3-5 points) Is there one or more new apps?
     -   Check against setting - if we have ever sent a notification for this app before, don't send one (this should be done off the app's domain name or something, not marketing name - that can change)
     -   Pop an OS-level notification (on Android, use a suggestion channel). The text is intentionally generic, and makes sense if there is one new app or multiple.
     -   Add new app(s) to "have sent notification" list
-    -   (Create a dev option to clear the "have sent notification" list. Create another dev option to immediately run the daily check job.)
 -   (1 point) Add this notification type to the settings screen that allows per-type opt out (App permissions -> Notifications)
 -   (2 points) Ensure tapping notification leads to correct screen
+-   (2 points) Add 3 dev menu options:
+    - Pull a new suggested apps list immediately
+    - Clear the "have sent notification" list.
+    - Immediately run the daily check job.
 
 ### Improve existing split tunnel screen (10-16 points total)
 [Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0)
@@ -67,11 +70,11 @@ This work is broken into four sections, with the bulk of code coming in the midd
 <img src="./images/0004-03.png" width=500 alt="Updated flow for existing App Exclusion screen">
 
 -   (2 points) Run the task on the launch of screen
-    -   Update the "have seen these apps" settings list with all suggested apps that are on the system. (This means that if a new app is seen on the Settings screen before the daily job runs and we send a notification, we never send a notification. This was confirmed by Santiago.)
--   (1-2 points) Add recommended section (only if 1 more more apps on the system are suggested) - pull any apps in the "have seen them" list
--   (1 point) Sort recommended section
--   (1 point) Sort "others" section
--   (1-2 points) Update sort when something is added or removed
+    -   Update the "have seen these apps" settings list with all suggested apps. (If a new suggested app is install and the Settings screen is opened by a user before the daily job runs to send a notification, we thus never send a notification. This behavior was confirmed by Santiago.)
+-   (1-2 points) Add recommended section (only if 1 more more apps on the system are suggested). Since we've just updated the settings list of recommended apps on the system (in prior bullet point), use this settings list - if any system app we discover also appears on that list, it goes in the recommended section.
+-   (1 point) Sort recommended section - selected ones at top alphabetically, then the reset alphabetically
+-   (1 point) Sort "others" section - selected ones at top alphabetically, then the reset alphabetically
+-   (1-2 points) Update sort when something is checked or unchecked. The list dynamically updates when a user is on it.
 -   (1-2 points) Ensure search works, shows one section, is alphabetically sorted
 -   (2-5 points) Ensure accessibility is up to date
 -   (1 point) Add metrics for how many suggested (and non-suggested) apps are excluded\
