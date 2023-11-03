@@ -29,6 +29,8 @@ jobs:
       - name: Install build dependencies
         shell: bash
         run: |
+          export PATH=$PATH:~/Library/Frameworks/Python.framework/Versions/3.12/bin
+
           python3 -m pip install pip --upgrade
           python3 -m pip install -r requirements.txt
           brew install ninja
