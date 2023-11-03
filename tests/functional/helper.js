@@ -311,6 +311,14 @@ module.exports = {
     return json.value || null;
   },
 
+  async gleanTestReset() {
+    const json = await this._writeCommand(`glean_test_reset`);
+    assert(
+        json.type === 'glean_test_reset' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || null;
+  },
+
   async getLastUrl() {
     return await this.getMozillaProperty(
         'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');

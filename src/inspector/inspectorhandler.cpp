@@ -33,6 +33,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/featuremodel.h"
+#include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -630,7 +631,12 @@ static QList<InspectorCommand> s_commands{
 
           return obj;
         }},
-};
+
+    InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MZGlean::initialize();
+                       return QJsonObject();
+                     }}};
 
 // static
 void InspectorHandler::initialize() {

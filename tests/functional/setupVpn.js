@@ -148,6 +148,7 @@ exports.mochaHooks = {
       }
 
       await startAndConnect();
+      await vpn.gleanTestReset();
       await vpn.reset();
       await vpn.setSetting('tipsAndTricksIntroShown', 'true')
     }

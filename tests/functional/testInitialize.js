@@ -92,7 +92,8 @@ describe('Initialize', function() {
     // Telemetry design is detailed at:
     // https://miro.com/app/board/uXjVM0BZcnc=/?userEmail=sandrigo@mozilla.com&openComment=3458764559943493792&mid=8418131&utm_source=notification&utm_medium=email&utm_campaign=mentions&utm_content=reply-to-mention&share_link_id=496680579489
 
-    it("impression eventis recorded", async () => {
+    it("impression event is recorded", async () => {
+      await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       const signupScreenEvents = await vpn.gleanTestGetValue("impression", "signupScreen", "main");
       assert.strictEqual(signupScreenEvents.length, 1);
       const signupScreenExtras = signupScreenEvents[0].extra;
