@@ -11,10 +11,10 @@
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
-#include "../linuxdependencies.h"
 #include "dbustypeslinux.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/linux/linuxutils.h"
 
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
@@ -34,7 +34,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  s_cgroupMount = LinuxDependencies::findCgroup2Path();
+  s_cgroupMount = LinuxUtils::findCgroup2Path();
 }
 
 AppTracker::~AppTracker() {

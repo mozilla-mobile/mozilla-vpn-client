@@ -35,6 +35,14 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsutils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsutils.h
     )
+elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+    target_sources(mozillavpn_utilities INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxutils.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxutils.h
+    )
+
+    find_package(Qt6 REQUIRED COMPONENTS DBus)
+    target_link_libraries(mozillavpn_utilities PRIVATE Qt6::DBus)
 elseif(${MZ_PLATFORM_NAME} STREQUAL "ios")
     target_sources(mozillavpn_utilities INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h
