@@ -821,6 +821,17 @@ SETTING_BOOL(gleanLogPings,        // getter
              false                 // sensitive (do not log)
 )
 
+SETTING_BOOL(shortTimerSessionPing,        // getter
+             setShortTimerSessionPing,     // setter
+             removeShortTimerSessionPing,  // remover
+             hasShortTimerSessionPing,     // has
+             "shortTimerSessionPing",      // key
+             false,                        // default value
+             false,                        // user setting
+             true,                         // remove when reset
+             false                         // sensitive (do not log)
+)
+
 #ifdef UNIT_TEST
 SETTING_BOOL(addonApiSetting,        // getter
              setAddonApiSetting,     // setter

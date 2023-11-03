@@ -230,6 +230,8 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["gleanDebugTag"] = settingsHolder->gleanDebugTagActive()
                               ? settingsHolder->gleanDebugTag()
                               : "";
+  args["isUsingShortTimerSessionPing"] =
+      settingsHolder->shortTimerSessionPing();
 
   args["isOnboarding"] =
       MozillaVPN::instance()->state() == App::StateOnboarding;

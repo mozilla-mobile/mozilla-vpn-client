@@ -72,6 +72,20 @@ MZViewBase {
             }
         }
 
+        MZCheckBoxRow {
+            id: checkBoxRowShortSessionTimer
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText: "3 minute timers for session pings"
+            subLabelText: "Session pings typically send every 3 hours when a session is active. This shortens the period to 3 minutes. Will take effect on subsequent VPN activation."
+            isChecked: MZSettings.shortTimerSessionPing
+            showDivider: false
+            onClicked: {
+                MZSettings.shortTimerSessionPing = !MZSettings.shortTimerSessionPing
+            }
+        }
+
         Rectangle {
             id: divider
             Layout.preferredHeight: 1
