@@ -85,12 +85,6 @@ void MZGlean::initialize() {
     }
 
     QDir gleanDirectory(rootAppFolder());
-#if defined(UNIT_TEST)
-    logger.debug() << "Cleaning Glean directory for testing";
-    // Clean the directory so test state doesn't leak
-    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1800901
-    gleanDirectory.removeRecursively();
-#endif
 
     if (!gleanDirectory.exists(GLEAN_DATA_DIRECTORY) &&
         !gleanDirectory.mkpath(GLEAN_DATA_DIRECTORY)) {
