@@ -64,7 +64,7 @@ Perform periodic checks cycling through all the Connection Manager probes.
   - Wait until Connection Health stability goes back to Stable or Unstable
   - Restart the sequence of ConnectionManager checks
 
-![Diagram to explain how Controller, ConnectionManager and ConnectioHealth states interact](CM_diagram.png)
+![Diagram to explain how Controller, ConnectionManager and ConnectioHealth states interact](./CM_diagram.png)
 
 ## Metrics and Measurements
 
