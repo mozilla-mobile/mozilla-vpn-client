@@ -45,7 +45,7 @@ class LocalSocketController final : public ControllerImpl {
   void readData();
   void parseCommand(const QByteArray& command);
 
-  void write(const QJsonObject& json);
+  void write(const QJsonObject& json, const QString& expect = QString());
 
  private:
   enum {
@@ -62,7 +62,10 @@ class LocalSocketController final : public ControllerImpl {
   std::function<void(const QString&)> m_logCallback = nullptr;
 
   QTimer m_initializingTimer;
-  uint32_t m_initializingRetry = 0;
+  uint32_t m_initializingInterval;
+
+  QTimer m_messageTimeout;
+  QString m_messageExpected;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

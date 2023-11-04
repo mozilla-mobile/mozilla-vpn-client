@@ -13,6 +13,7 @@
 #include <QJsonValue>
 #include <QStandardPaths>
 
+#include "constants.h"
 #include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -22,11 +23,9 @@
 #include "models/server.h"
 #include "settingsholder.h"
 
-// How many times do we try to reconnect.
-constexpr int MAX_CONNECTION_RETRY = 10;
-
 // How long do we wait between one try and the next one.
-constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
+constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;
+constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;
 
 namespace {
 Logger logger("LocalSocketController");
@@ -45,9 +44,15 @@ LocalSocketController::LocalSocketController() {
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
 
+  m_initializingInterval = CONNECTION_RETRY_INITIAL_MSEC;
   m_initializingTimer.setSingleShot(true);
   connect(&m_initializingTimer, &QTimer::timeout, this,
           &LocalSocketController::initializeInternal);
+
+  m_messageTimeout.setSingleShot(true);
+  connect(&m_messageTimeout, &QTimer::timeout, this, [&] {
+    this->errorOccurred(QLocalSocket::SocketTimeoutError);
+  });
 }
 
 LocalSocketController::~LocalSocketController() {
@@ -56,26 +61,20 @@ LocalSocketController::~LocalSocketController() {
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
-  logger.error() << "Error occurred:" << error;
+  logger.error() << "Error occurred:" << m_socket->errorString();
 
-  if (m_daemonState == eInitializing) {
-    if (m_initializingRetry++ < MAX_CONNECTION_RETRY) {
-      m_initializingTimer.start(CONNECTION_RETRY_TIMER_MSEC);
-      return;
-    }
-
-    emit initialized(false, false, QDateTime());
+  if (m_daemonState != eInitializing) {
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    emit disconnected();
   }
 
-  REPORTERROR(ErrorHandler::ControllerError, "controller");
-  disconnectInternal();
+  m_initializingTimer.start(m_initializingInterval);
 }
 
 void LocalSocketController::disconnectInternal() {
   // We're still eReady as the Deamon is alive
   // and can make a new connection.
   m_daemonState = eReady;
-  m_initializingRetry = 0;
   m_initializingTimer.stop();
   emit disconnected();
 }
@@ -87,12 +86,17 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(keys);
 
   Q_ASSERT(m_daemonState == eUnknown);
-  m_initializingRetry = 0;
 
   initializeInternal();
 }
 
 void LocalSocketController::initializeInternal() {
+  // Perform an exponential backoff.
+  if (m_daemonState != eInitializing) {
+    m_initializingInterval = CONNECTION_RETRY_INITIAL_MSEC;
+  } else if (m_initializingInterval < CONNECTION_RETRY_MAXIMUM_MSEC) {
+    m_initializingInterval *= 2;
+  }
   m_daemonState = eInitializing;
 
 #ifdef MZ_WINDOWS
@@ -152,7 +156,7 @@ void LocalSocketController::checkStatus() {
 
     QJsonObject json;
     json.insert("type", "status");
-    write(json);
+    write(json, "status");
   }
 }
 
@@ -239,6 +243,10 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   QString type = typeValue.toString();
 
   logger.debug() << "Parse command:" << type;
+  if (!m_messageExpected.isEmpty() && (m_messageExpected == type)) {
+    m_messageExpected.clear();
+    m_messageTimeout.stop();
+  }
 
   if (m_daemonState == eInitializing && type == "status") {
     m_daemonState = eReady;
@@ -343,9 +351,17 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   logger.warning() << "Invalid command received:" << command;
 }
 
-void LocalSocketController::write(const QJsonObject& json) {
+void LocalSocketController::write(const QJsonObject& json,
+                                  const QString& expect) {
+  QByteArray payload = QJsonDocument(json).toJson(QJsonDocument::Compact);
+  payload.append('\n');
+
+  if (!expect.isEmpty()) {
+    m_messageExpected = expect;
+    m_messageTimeout.start(CONNECTION_RETRY_INITIAL_MSEC);
+  }
+
   Q_ASSERT(m_socket);
-  m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
-  m_socket->write("\n");
+  m_socket->write(payload);
   m_socket->flush();
 }
