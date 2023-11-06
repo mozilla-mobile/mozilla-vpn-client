@@ -33,17 +33,14 @@ jobs:
           bash miniconda.sh -b -p $HOME/miniconda
           source "$HOME/miniconda/etc/profile.d/conda.sh"
           hash -r
-          conda config --set always_yes yes --set changeps1 no
-          conda update -q conda
+          ${HOME}/miniconda/bin/config --set always_yes yes --set changeps1 no
           # Useful for debugging any issues with conda
-          conda info -a
-          conda init bash
+          ${HOME}/miniconda/bin/info -a
+          ${HOME}/miniconda/bin/init bash
           source ~/.bashrc
-          conda env create -f env.yml
-          conda activate vpn
 
           ./scripts/macos/conda_install_extras.sh
-          conda env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          ${HOME}/miniconda/bin/env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
           brew install ninja
 
@@ -56,6 +53,9 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
+          ${HOME}/miniconda/bin/env create -f env.yml
+          ${HOME}/miniconda/bin/activate vpn
+
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
