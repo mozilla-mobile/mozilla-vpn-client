@@ -46,8 +46,7 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
-          ${HOME}/miniconda/bin/env create -f env.yml
-          ${HOME}/miniconda/bin/activate vpn
+          ${HOME}/miniconda/bin/activate
 
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \

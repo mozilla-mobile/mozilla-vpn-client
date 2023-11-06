@@ -139,8 +139,7 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
-          ${HOME}/miniconda/bin/env create -f env.yml
-          ${HOME}/miniconda/bin/activate vpn
+          ${HOME}/miniconda/bin/activate
 
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
