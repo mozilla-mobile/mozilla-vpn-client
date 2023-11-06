@@ -26,7 +26,6 @@ Open Questions
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
 -   What is the process for adding an app to list, in light of potential security/privacy concerns when adding malicious apps?
--   Do we care what time of day we send the notification? If so, what time of day should we send them?
 
 Implementation (estimated 36-57 points total)
 ---------------------------------------------------
@@ -48,9 +47,9 @@ This work is broken into four sections, with the bulk of code coming in the midd
 ### Create daily task in app (11-15 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
 
--   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
+-   (3-5 points) Daily task at noon (local) to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
     -   This will be run by the app for desktop, and in the daemon on Android. (iOS does not have split tunnel.)
-        -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll immediately run the task.
+        -   After running the job, we will create timer for noon the following day to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if the deadline has passed we'll immediately run the task.
         -   We're not concerned if the user's clock shifts. The vast majority of these daily checks will not result in any notification to the user (except in the rare case that the user consistently adds new apps daily that happen to be on the suggested list). The worst case scenario would be that a user gets two notifications in a 24 hour period. This isn't the planned user interaction, but given the low likelihood (neither clock changes nor the installation of new suggested apps is a common event) it's not worth building a system that considers this.
 -   (3-5 points) Is there one or more new apps?
     -   Check against setting - if we have ever sent a notification for this app before, don't send one (this should be done off the app's domain name or something, not marketing name - that can change)
