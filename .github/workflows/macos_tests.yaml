@@ -31,9 +31,13 @@ jobs:
         run: |
           wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
           bash miniconda.sh -b -p $HOME/miniconda
-
+          ${HOME}/miniconda/bin/activate
+          conda env create --force -f env.yml
+          conda activate VPN
           ./scripts/macos/conda_install_extras.sh
-          ${HOME}/miniconda/bin/env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          conda info
+
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
           brew install ninja
 
@@ -46,8 +50,6 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
-          ${HOME}/miniconda/bin/activate
-
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
