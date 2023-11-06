@@ -34,6 +34,17 @@ conda-android-arm64:
             QT_VERSION: "6.2.4"
             ANDROID_ARCH: "android_arm64_v8a"
 
+conda-android-arm64-next:
+    run:
+        toolchain-alias: conda-android-arm64
+    treeherder:
+        symbol: TL(conda-android-arm64)
+    worker-type: b-linux
+    worker:
+        env:
+            QT_VERSION: "6.6.0"
+            ANDROID_ARCH: "android_arm64_v8a"
+
 conda-android-armeabi-v7a:
     run:
         toolchain-alias: conda-android-armeabi-v7a
