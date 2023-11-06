@@ -112,11 +112,11 @@ jobs:
           ${HOME}/miniconda/bin/activate
 
           ${HOME}/miniconda/bin/conda env create --force -f env.yml
-          ${HOME}/miniconda/bin/conda activate vpn
+          ${HOME}/miniconda/bin/activate vpn
           ./scripts/macos/conda_install_extras.sh
           ${HOME}/miniconda/bin/conda info
 
-          ${HOME}/miniconda/bin/env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 
           brew install ninja
 
