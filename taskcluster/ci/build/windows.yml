@@ -48,7 +48,7 @@ task-defaults:
 windows/opt:
     fetches:
         toolchain:
-            - qt-win
+            - qt-windows-x86_64-6.6.0
     description: "Windows Build"
     treeherder:
         symbol: B
@@ -56,7 +56,7 @@ windows/opt:
 windows/next:
     fetches:
         toolchain:
-            - qt-win-next
+            - qt-windows-x86_64-6.6.0
     description: "Windows Build for Next Version of QT"
     treeherder:
         symbol: NEXT
