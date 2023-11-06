@@ -25,7 +25,7 @@ android-qt-next/debug:
             symbol: NEXT
         fetches:
             toolchain: 
-                - conda-android-arm64-next
+                - conda-android-arm64-6.6.0
         requires-level: 1
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
@@ -40,7 +40,7 @@ android-arm64/debug:
             platform: android/arm64-v8a
         fetches:
             toolchain: 
-                - conda-android-arm64
+                - conda-android-arm64-6.2.4
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
@@ -53,7 +53,7 @@ android-x64/debug:
             platform: android/x86_64
         fetches:
             toolchain: 
-                    - conda-android-x86_64
+                    - conda-android-x86_64-6.2.4
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         release-artifacts:
@@ -72,7 +72,7 @@ android-arm64/release:
                 default: []
         fetches:
             toolchain: 
-                    - conda-android-arm64
+                    - conda-android-arm64-6.2.4
         treeherder:
             symbol: B
             platform: android/arm64-v8a
@@ -89,7 +89,7 @@ android-armv7/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-armeabi-v7a
+                    - conda-android-armv7-6.2.4
         treeherder:
             symbol: B
             platform: android/armv7
@@ -107,7 +107,7 @@ android-x86/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-x86
+                    - conda-android-x86-6.2.4
         treeherder:
             symbol: B
             platform: android/x86
@@ -124,7 +124,7 @@ android-x64/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-x86_64
+                    - conda-android-x86_64-6.2.4
         treeherder:
             symbol: B
             platform: android/x86_64

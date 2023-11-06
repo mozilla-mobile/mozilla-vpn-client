@@ -6,12 +6,14 @@ task-defaults:
     description: "Conda Pack an environment"
     worker:
         env:
-            QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_arm64_v8a"
+            QT_VERSION: "filled-by-transform: conda.py"
+            ANDROID_ARCH: "filled-by-transform: conda.py"
         max-run-time: 14400
         docker-image: {in-tree: conda-base}
     worker-type: b-linux
-
+    treeherder:
+        symbol: "filled-by-transform: conda.py"
+        platform: "filled-by-transform: conda.py"
     run:
         script: conda_pack_android.sh
         resources:
@@ -20,60 +22,16 @@ task-defaults:
             - scripts/android/conda_trim.sh
             - android_sdk.txt
             - requirements.txt
-        toolchain-alias: conda-android-arm64
+        toolchain-alias: "filled-by-transform: conda.py"
         toolchain-artifact: public/build/conda-android.tar.gz
 
-conda-android-arm64:
-    run:
-        toolchain-alias: conda-android-arm64
-    treeherder:
-        symbol: TL(conda-android-arm64)
-    worker-type: b-linux
-    worker:
-        env:
-            QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_arm64_v8a"
+# Note: for auto inflate to work 
+# Tasks need to follow the naming scheme 
+# conda-android-<android-arch>-<QT-Version>
+# see transforms/conda.py
 
-conda-android-arm64-next:
-    run:
-        toolchain-alias: conda-android-arm64
-    treeherder:
-        symbol: TL(conda-android-arm64)
-    worker-type: b-linux
-    worker:
-        env:
-            QT_VERSION: "6.6.0"
-            ANDROID_ARCH: "android_arm64_v8a"
-
-conda-android-armeabi-v7a:
-    run:
-        toolchain-alias: conda-android-armeabi-v7a
-    treeherder:
-        symbol: TL(conda-android-armeabi-v7a)
-    worker-type: b-linux
-    worker:
-        env:
-            QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_armv7"
-
-conda-android-x86:
-    run:
-        toolchain-alias: conda-android-x86
-    treeherder:
-        symbol: TL(conda-android-x86)
-    worker-type: b-linux
-    worker:
-        env:
-            QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_x86"
-
-conda-android-x86_64:
-    run:
-        toolchain-alias: conda-android-x86_64
-    treeherder:
-        symbol: TL(conda-android-x86_64)
-    worker-type: b-linux
-    worker:
-        env:
-            QT_VERSION: "6.2.4"
-            ANDROID_ARCH: "android_x86_64"
+conda-android-arm64-6.6.0: {}
+conda-android-arm64-6.2.4: {}
+conda-android-armv7-6.2.4: {}
+conda-android-x86-6.2.4: {}
+conda-android-x86_64-6.2.4: {}

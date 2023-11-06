@@ -9,6 +9,7 @@ kind-dependencies:
     - toolchain-openssl
 
 transforms:
+    - mozillavpn_taskgraph.transforms.conda:transforms
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
