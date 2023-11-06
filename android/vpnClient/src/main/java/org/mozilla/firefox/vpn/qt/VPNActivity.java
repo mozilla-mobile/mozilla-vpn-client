@@ -8,22 +8,44 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
+import android.util.Log;
 
 public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   @Override
-  public void onCreate(Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {    
+    TypedValue attr = new TypedValue();
+    getTheme().resolveAttribute(android.R.attr.windowBackground, attr, true);
+
+    Log.e("basti", String.valueOf(attr.data));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Log.e("basti", String.valueOf(attr.isColorType()));
+    }
+
+
+    if (attr.type >= TypedValue.TYPE_FIRST_COLOR_INT && attr.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+      getWindow().setBackgroundDrawable(new ColorDrawable(attr.data));
+      Log.e("basti", "Set color drawable");
+    } else {
+      getWindow().setBackgroundDrawable(getResources().getDrawable(attr.resourceId));
+      Log.e("basti", "Set resource drawable");
+    }
+
+
+
     super.onCreate(savedInstanceState);
     instance = this;
   }
@@ -201,4 +223,11 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     }
     super.onActivityResult(requestCode, resultCode, data);
   }
+
+  @Override
+  protected void onDestroy (){
+    unbindService(mConnection);
+    super.onDestroy();
+  }
+
 }
