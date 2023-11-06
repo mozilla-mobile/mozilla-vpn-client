@@ -54,6 +54,7 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
+          conda env create -f env.yml
           conda activate vpn
 
           mkdir -p build/cmake
