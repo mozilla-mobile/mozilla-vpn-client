@@ -48,7 +48,7 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
-          # conda activate vpn
+          activate vpn
           conda info --envs
           which python
           which python3
