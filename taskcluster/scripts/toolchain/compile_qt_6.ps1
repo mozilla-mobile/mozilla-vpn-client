@@ -85,6 +85,10 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -prefix $BUILD_PREFIX `
 } else {
   # For newer qt versions, let's trim what we dont need.
+  # See for general config: https://github.com/qt/qtbase/blob/dev/config_help.txt
+  # For detailed feature flags, run the configuration, then check the CMakeLists.txt
+  # Variables with FEATURE_XYZ can be switched off using -no-feature
+  # Whole folders can be skipped using -skip <folder>
   ./configure.bat `
   -static  `
   -opensource  `
@@ -92,6 +96,8 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -confirm-license  `
   -silent  `
   -make libs  `
+  -nomake tests  `
+  -nomake examples  `
   -no-feature-dynamicgl `
   -no-feature-sql-odbc `
   -no-feature-pixeltool `
