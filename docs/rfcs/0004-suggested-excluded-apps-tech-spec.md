@@ -22,19 +22,18 @@ Open Questions
 --------------
 
 -   What do we use to canonically track apps we may want to exclude? Is there a bundle ID? The name of app (fragile)? Something else? Do we use different IDs across platforms?
--   How hard would these checks be to run in Android daemon or PeriodicWorkRequest? (If substantially harder, Santiago open to doing it in Android app - which reduces how often it runs, as the app must be open in order for it to run.) On desktop platforms, the app is always active when the VPN is active. This is not true on mobile, which is why this is considered separately.
 -   Any easy ways to categorize games? (See [VPN-4433](https://mozilla-hub.atlassian.net/browse/VPN-4433).)
 -   How will we decide which apps are initially on the suggested list?
 -   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
 -   What is the process for adding an app to list, in light of potential security/privacy concerns when adding malicious apps?
--   Some [details on deep linking](https://mozilla-hub.atlassian.net/browse/VPN-5034?focusedCommentId=785814).
+-   Do we care what time of day we send the notification? If so, what time of day should we send them?
 
-Implementation (estimated 39-62 points total)
+Implementation (estimated 36-57 points total)
 ---------------------------------------------------
 
 This work is broken into four sections, with the bulk of code coming in the middle two sections. Those two sections should each be built behind their own separate feature flag, though we'd expose both parts together via Nimbus.
 
-### Prerequisites (18-31 points total)
+### Prerequisites (15-26 points total)
 
 -   (3-5 points) Answer the open questions above
 -   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
@@ -43,14 +42,14 @@ This work is broken into four sections, with the bulk of code coming in the midd
         -   This statement (or something similar) should be added to the top of the file in a comment.
     -   From Santiago: <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>
     -   Santiago list for Android: <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
--   (8-13 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): Currently, our navigation code allows us to switch tabs, but does not permit moving to a deeper screen - so we can move a user to the settings screen, but can't move them into a child menu or child's child menu within the screen (like App Exclusions). We need deep linking to be able to open the notification where we want.
+-   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
 -   (2-5 points) Create initial list of recommended app exclusions
 
 ### Create daily task in app (11-15 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
 
 -   (3-5 points) Daily task to check for suggested apps that are installed on the device (after one week from first install), halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
-    -   This will be run by the app for desktop, and a [PeriodicWorkRequest](https://developer.android.com/reference/androidx/work/PeriodicWorkRequest) on Android. (iOS does not have split tunnel.)
+    -   This will be run by the app for desktop, and in the daemon on Android. (iOS does not have split tunnel.)
         -   After running the job, we will create a 24 hour countdown timer to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if more than 24 hours have passed we'll immediately run the task.
         -   We're not concerned if the user's clock shifts. The vast majority of these daily checks will not result in any notification to the user (except in the rare case that the user consistently adds new apps daily that happen to be on the suggested list). The worst case scenario would be that a user gets two notifications in a 24 hour period. This isn't the planned user interaction, but given the low likelihood (neither clock changes nor the installation of new suggested apps is a common event) it's not worth building a system that considers this.
 -   (3-5 points) Is there one or more new apps?
