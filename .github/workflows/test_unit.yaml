@@ -144,6 +144,8 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
+          ${HOME}/miniconda/bin/activate vpn
+
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
