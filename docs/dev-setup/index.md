@@ -86,7 +86,6 @@ team used for Xcode certificates. This defaults to `43AQ936H96` if not set. (Mac
 # Useful scripts
 
 * `./scripts/utils/bake_shaders.sh`: if you want to change the shaders
-* `./scripts/addon/generate_all_tests.py`: compiles the testing addons, needed for functional tests
 
 # Troubleshooting
 

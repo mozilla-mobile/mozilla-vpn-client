@@ -59,15 +59,12 @@ target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 # Use #ifdef _WIN32 instead of MZ_WINDOWS in dummyvpn for conflicts in Windows-specific code.
 target_compile_definitions(dummyvpn PRIVATE MZ_DUMMY)
 
-# We should not build into the source dir
-# but that is how we are currently doing things, 
-# at least we no longer invoke python scripts to 
-# invoke cmake. 
-#  ¯\_(ツ)_/¯
+# Build the addons for functional testing.
+get_filename_component(QT6_PREFIX_PATH ${Qt6_DIR}/.. REALPATH)
 ExternalProject_Add(functional_test_addons
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons
-    BINARY_DIR ${CMAKE_SOURCE_DIR}/tests/functional/addons/generated
-    CMAKE_CACHE_ARGS -DQt6_DIR:PATH=${Qt6_DIR} -DQt6QmlTools_DIR:PATH=${Qt6QmlTools_DIR} -DQt6CoreTools_DIR:PATH=${Qt6CoreTools_DIR}
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/addons
+    CMAKE_CACHE_ARGS -DCMAKE_PREFIX_PATH:PATH=${QT6_PREFIX_PATH}
     INSTALL_COMMAND ""
 )
 add_dependencies(dummyvpn functional_test_addons)

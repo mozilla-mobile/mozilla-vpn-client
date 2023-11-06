@@ -22,6 +22,7 @@ MZClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
     property var cityList: cityListVisible ? cityLoader.item : cityLoader
+    property var busy: cityListVisible ? scrollAnimation.running : false
 
     Component.onCompleted:{
        cityLoader.active = cityListVisible

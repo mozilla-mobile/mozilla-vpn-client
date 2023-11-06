@@ -25,6 +25,7 @@ class AddonApi final : public QQmlPropertyMap {
 
   Q_INVOKABLE void connectSignal(QObject* obj, const QString& signalName,
                                  const QJSValue& callback);
+  Q_INVOKABLE void log(const QString& message);
 
   /**
    * @brief callback executed when a new AddonApi is created. Use it to add

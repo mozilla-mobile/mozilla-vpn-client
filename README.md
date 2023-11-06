@@ -93,7 +93,6 @@ export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
 **Other dependencies**:
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
-* Compile the testing addons: `./scripts/addon/generate_all_tests.py`
 * Make a .env file and place it in the root folder for the repo. It should include:
  * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note above.)
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)

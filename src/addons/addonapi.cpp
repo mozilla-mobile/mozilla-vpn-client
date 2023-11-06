@@ -92,6 +92,8 @@ void AddonApi::initialize() {
   }
 }
 
+void AddonApi::log(const QString& message) { logger.debug() << message; }
+
 void AddonApi::connectSignal(QObject* obj, const QString& signalName,
                              const QJSValue& callback) {
   if (!obj) {

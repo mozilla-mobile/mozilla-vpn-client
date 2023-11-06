@@ -10,12 +10,13 @@
 #include <QLocalSocket>
 
 #include "daemon.h"
+#include "daemonaccesscontrol.h"
 #include "leakdetector.h"
 #include "logger.h"
 
 namespace {
 Logger logger("DaemonLocalServerConnection");
-}
+}  // namespace
 
 DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
                                                          QLocalSocket* socket)
@@ -92,6 +93,13 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   logger.debug() << "Command received:" << type;
 
+  auto accessControl = DaemonAccessControl::instance();
+  if (!accessControl->isCommandAuthorizedForPeer(type, m_socket)) {
+    logger.error() << "Unable to authorize command" << type
+                   << "for peer. Ignoring.";
+    return;
+  }
+
   if (type == "activate") {
     InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
@@ -108,6 +116,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "deactivate") {
+    accessControl->resetSession();
     Daemon::instance()->deactivate();
     return;
   }
