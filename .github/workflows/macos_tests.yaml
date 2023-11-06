@@ -18,6 +18,9 @@ jobs:
   build_test_app:
     name: Build Test Client
     runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash -el {0}
     outputs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
@@ -33,22 +36,18 @@ jobs:
           activate-environment: vpn
 
       - name: Install build dependencies
-        shell: bash
         run: |
           ./scripts/macos/conda_install_extras.sh
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
       - name: Install Qt6
-        shell: bash
         run: |
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
       - name: Compile test client
-        shell: bash
         run: |
-          activate vpn
           conda info --envs
           which python
           which python3
@@ -71,7 +70,6 @@ jobs:
 
       - name: Generate tasklist
         id: testGen
-        shell: bash
         run: |
           echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
@@ -79,7 +77,6 @@ jobs:
           done | jq -s -c >> $GITHUB_OUTPUT
 
       - name: Check tests
-        shell: bash
         env:
           TEST_LIST: ${{ steps.testGen.outputs.tests }}
         run: |
