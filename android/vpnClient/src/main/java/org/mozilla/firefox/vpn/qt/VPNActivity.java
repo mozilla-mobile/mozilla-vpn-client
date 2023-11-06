@@ -27,23 +27,6 @@ import org.mozilla.firefox.vpn.daemon.VPNService;
 public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
-    TypedValue attr = new TypedValue();
-    getTheme().resolveAttribute(android.R.attr.windowBackground, attr, true);
-
-    Log.e("basti", String.valueOf(attr.data));
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      Log.e("basti", String.valueOf(attr.isColorType()));
-    }
-
-    if (attr.type >= TypedValue.TYPE_FIRST_COLOR_INT
-        && attr.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-      getWindow().setBackgroundDrawable(new ColorDrawable(attr.data));
-      Log.e("basti", "Set color drawable");
-    } else {
-      getWindow().setBackgroundDrawable(getResources().getDrawable(attr.resourceId));
-      Log.e("basti", "Set resource drawable");
-    }
-
     super.onCreate(savedInstanceState);
     instance = this;
   }
