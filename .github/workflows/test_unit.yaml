@@ -107,7 +107,20 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pip3 install -r requirements.txt
+          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+          bash miniconda.sh -b -p $HOME/miniconda
+          source "$HOME/miniconda/etc/profile.d/conda.sh"
+          hash -r
+          conda config --set always_yes yes --set changeps1 no
+          conda update -q conda
+          # Useful for debugging any issues with conda
+          conda info -a
+          conda init bash
+          source ~/.bashrc
+
+          ./scripts/macos/conda_install_extras.sh
+          conda env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
           brew install ninja
 
       - name: Install Qt6
@@ -134,6 +147,9 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
+          conda env create -f env.yml
+          conda activate vpn
+
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
