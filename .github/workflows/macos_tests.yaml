@@ -52,6 +52,7 @@ jobs:
         shell: bash
         run: |
           ${HOME}/miniconda/bin/activate vpn
+          ${HOME}/miniconda/bin/conda env list
 
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \

@@ -145,12 +145,15 @@ jobs:
         shell: bash
         run: |
           ${HOME}/miniconda/bin/activate vpn
+          ${HOME}/miniconda/bin/conda env list
+          which python3
+          which python
 
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
             -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage \
-            -DPYTHON_EXECUTABLE=${HOME}/miniconda/base/envs/vpn/bin/python
+            -DPYTHON_EXECUTABLE=${HOME}/miniconda/base/envs/vpn/bin/python3
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
