@@ -110,12 +110,11 @@ jobs:
           wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
           bash miniconda.sh -b -p $HOME/miniconda
           ${HOME}/miniconda/bin/activate
-          export PATH=$PATH:${HOME}/miniconda/bin
 
-          conda env create --force -f env.yml
-          conda activate VPN
+          ${HOME}/miniconda/bin/conda env create --force -f env.yml
+          ${HOME}/miniconda/bin/conda activate VPN
           ./scripts/macos/conda_install_extras.sh
-          conda info
+          ${HOME}/miniconda/bin/conda info
 
           ./scripts/macos/conda_install_extras.sh
           ${HOME}/miniconda/bin/env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
