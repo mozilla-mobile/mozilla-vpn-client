@@ -712,3 +712,71 @@ interaction:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
+  approve_mozilla_vpn_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has clicked get started in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  data_use_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has clicked the data step navigation button in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  more_privacy_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has clicked the privacy step navigation button in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  add_devices_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has clicked the devices step navigation button in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys

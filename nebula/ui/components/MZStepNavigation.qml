@@ -35,6 +35,8 @@ ColumnLayout {
     property int currentIndex: 0
     property int progressBarHorizontalMargins: 44
 
+    signal progressBarButtonClicked(previousIndex: int, currentIndex: int)
+
     function next() {
         if (stepProgressBar.activeIndex + 1 < stepProgressBar.model.count) {
             stackView.push(views[stepProgressBar.activeIndex + 1])
@@ -51,8 +53,16 @@ ColumnLayout {
         }
     }
 
-    function onButtonClicked() {
+    function onProgressBarButtonClicked() {
+        if(currentIndex === stepProgressBar.activeIndex) return
+
+        //currentIndex holds the index we are navigating from
+        //stepProgressBar.activeIndex holds the index we are navigating to
+        progressBarButtonClicked(currentIndex, stepProgressBar.activeIndex)
+
+        let previousIndex = currentIndex
         let temp = currentIndex
+
         for (let i = 0; i < currentIndex - stepProgressBar.activeIndex; i++) {
             temp--
             stackView.pop()
@@ -92,7 +102,7 @@ ColumnLayout {
 
         Connections {
             target: stepProgressBar
-            function onButtonClicked(index) { stepNavigation.onButtonClicked() }
+            function onButtonClicked(index) { stepNavigation.onProgressBarButtonClicked() }
         }
     }
 

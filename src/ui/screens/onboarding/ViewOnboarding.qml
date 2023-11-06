@@ -15,6 +15,7 @@ MZStepNavigation {
     id: stepNav
     objectName: "viewOnboarding"
 
+    //Must be kept in sync with 'views' order (order of progress bar)
     enum Slide {
         Data,
         Privacy,
@@ -32,6 +33,7 @@ MZStepNavigation {
 
     currentIndex: MZSettings.onboardingStep
     onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex
+    onProgressBarButtonClicked: (previousIndex, currentIndex) => recordProgressBarButtonInteractionTelemetry(previousIndex, currentIndex)
 
     Component.onCompleted: recordImpressionTelemetry()
 
@@ -97,7 +99,7 @@ MZStepNavigation {
 
     Connections {
         target: MZSettings
-        onOnboardingStepChanged: recordImpressionTelemetry()
+        function onOnboardingStepChanged() { recordImpressionTelemetry() }
     }
 
     function recordImpressionTelemetry() {
@@ -120,14 +122,39 @@ MZStepNavigation {
         case ViewOnboarding.Slide.Start:
             if(MZUiUtils.isMobile()) {
                 Glean.impression.networkPermissionsScreen.record({
-                    screen: startSlide.telemetryScreenId,
+                    screen: startSlide.item.telemetryScreenId,
                 });
             }
             else {
                 Glean.impression.connectOnStartupScreen.record({
-                    screen: dataSlide.telemetryScreenId,
+                    screen: startSlide.item.telemetryScreenId,
                 });
             }
+            break
+        default:
+            break
+        }
+    }
+
+    function recordProgressBarButtonInteractionTelemetry(previousIndex: int, currentIndex) {
+        //Last (Start) slide uses a loader, so if we are clicking a progress bar button from that slide, we need to get the telemetryScreenId from that loaders item
+        const telemetryScreenId = (previousIndex === ViewOnboarding.Slide.Start ? views[previousIndex].item.telemetryScreenId : views[previousIndex].telemetryScreenId)
+
+        switch (currentIndex) {
+        case ViewOnboarding.Slide.Data:
+            Glean.interaction.dataUseSelected.record({
+                screen: telemetryScreenId,
+            });
+            break
+        case ViewOnboarding.Slide.Privacy:
+            Glean.interaction.morePrivacySelected.record({
+                screen: telemetryScreenId,
+            });
+            break
+        case ViewOnboarding.Slide.Devices:
+            Glean.interaction.addDevicesSelected.record({
+                screen: telemetryScreenId,
+            });
             break
         default:
             break
