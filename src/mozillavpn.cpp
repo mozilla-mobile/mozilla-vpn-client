@@ -930,6 +930,8 @@ void MozillaVPN::onboardingCompleted() {
     logger.debug() << "onboarding completed";
     settingsHolder->setOnboardingCompleted(true);
 
+    mozilla::glean::outcome::onboarding_completed.record();
+
     // Toggle glean on or off at the end of onboarding, depending on what the
     // user selected
     settingsHolder->setGleanEnabled(

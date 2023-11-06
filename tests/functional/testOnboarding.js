@@ -416,6 +416,18 @@ describe('Onboarding', function() {
     assert.equal(onboardingStartedEvents.length, 0);
   });
 
+  it('Onboarding completed event is recorded', async () => {
+    //Make sure data collection is enabled so our metrics don't get deleted after we complete onboarding
+    await vpn.setSetting('onboardingDataCollectionEnabled', true);
+
+    await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
+
+    await completeOnboarding()
+
+    let onboardingCompletedEvents = await vpn.gleanTestGetValue("outcome", "onboardingCompleted", "main");
+    assert.equal(onboardingCompletedEvents.length, 1);
+  });
+
   it('Data slide events are recorded', async () => {
     await vpn.gleanTestReset();
 
@@ -622,7 +634,7 @@ describe('Onboarding', function() {
 
   });
 
-  it.only('Progress bar button events are recorded', async () => {
+  it('Progress bar button events are recorded', async () => {
     await vpn.gleanTestReset();
 
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());

@@ -198,3 +198,19 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
     expires: never
+  onboarding_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has just completed the onboarding experience
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+    expires: never
