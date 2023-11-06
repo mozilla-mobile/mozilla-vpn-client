@@ -9,6 +9,11 @@ import Mozilla.Shared 1.0
 import components 0.1
 
 ColumnLayout {
+    id: root
+
+    property bool recordTelemetry: false
+    property string telemetryScreenId
+
     signal settingClicked(dnsProviderFlags: int, active: bool)
 
     spacing: MZTheme.theme.vSpacingSmall
@@ -58,10 +63,54 @@ ColumnLayout {
                 // We are not changing anything interesting for the privacy/dns dialog.
                 if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
                     MZSettings.dnsProviderFlags = dnsProviderFlags;
+                    if(root.recordTelemetry) recordTelemetry()
                     return;
                 }
 
                 settingClicked(dnsProviderFlags, true)
+            }
+
+            function recordTelemetry() {
+                switch (modelData.settingValue) {
+                case MZSettings.BlockAds:
+                    if (MZSettings.dnsProviderFlags & modelData.settingValue) {
+                        Glean.interaction.blockAdsEnabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    else {
+                        Glean.interaction.blockAdsDisabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    break
+                case MZSettings.BlockTrackers:
+                    if (MZSettings.dnsProviderFlags & modelData.settingValue) {
+                        Glean.interaction.blockTrackersEnabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    else {
+                        Glean.interaction.blockTrackersDisabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    break
+                case MZSettings.BlockMalware:
+                    if (MZSettings.dnsProviderFlags & modelData.settingValue) {
+                        Glean.interaction.blockMalwareEnabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    else {
+                        Glean.interaction.blockMalwareDisabled.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
+                    break
+                default:
+                    break
+                }
             }
         }
     }

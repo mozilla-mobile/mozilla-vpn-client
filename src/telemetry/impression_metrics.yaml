@@ -332,3 +332,88 @@ impression:
         description: |
           The screen the user has just entered
         type: string
+  data_collection_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the "data collection" onboarding slide.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  get_more_privacy_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the "get more privacy" onboarding slide.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  install_on_5_devices_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the "install on 5 devices" onboarding slide.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  connect_on_startup_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the "connect on startup" onboarding slide.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  network_permissions_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the "grant network permissions" onboarding slide.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

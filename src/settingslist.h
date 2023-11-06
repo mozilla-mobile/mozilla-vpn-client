@@ -390,6 +390,17 @@ SETTING_BOOL(onboardingDataCollectionEnabled,        // getter
              false                                   // sensitive (do not log)
 )
 
+SETTING_BOOL(onboardingStarted,        // getter
+             setOnboardingStarted,     // setter
+             removeOnboardingStarted,  // remover
+             hasOnboardingStarted,     // has
+             "onboardingStarted",      // key
+             false,                    // default value
+             false,                    // user setting
+             false,                    // remove when reset
+             false                     // sensitive (do not log)
+)
+
 SETTING_INT(onboardingStep,        // getter
             setOnboardingStep,     // setter
             removeOnboardingStep,  // remover

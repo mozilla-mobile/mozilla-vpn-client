@@ -14,6 +14,8 @@ ColumnLayout {
     id: root
     objectName: "onboardingDevicesSlide"
 
+    property string telemetryScreenId: "install_on_5_devices"
+
     signal nextClicked()
     signal backClicked()
 
@@ -82,6 +84,23 @@ ColumnLayout {
                     selectedSegmentIconPath: "qrc:/ui/resources/apple-active.svg"
                     segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeApple"
                     segmentButtonId: "tabApple"
+                }
+            }
+
+            handleSegmentClick: () => {
+                switch (selectedIndex) {
+                    case 0:
+                        Glean.interaction.showAndroidQrSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+                        break
+                    case 1:
+                        Glean.interaction.showIosQrSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+                        break
+                    default:
+                        break
                 }
             }
 
@@ -208,7 +227,13 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalNext
 
-        onClicked: root.nextClicked()
+        onClicked: {
+            Glean.interaction.continueSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.nextClicked()
+        }
     }
 
     MZLinkButton {
@@ -224,6 +249,12 @@ ColumnLayout {
 
         labelText: MZI18n.GlobalGoBack
 
-        onClicked: root.backClicked()
+        onClicked: {
+            Glean.interaction.goBackSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.backClicked()
+        }
     }
 }

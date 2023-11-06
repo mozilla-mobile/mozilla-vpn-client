@@ -13,6 +13,8 @@ ColumnLayout {
     id: root
     objectName: "onboardingDataSlide"
 
+    property string telemetryScreenId: "data_collection"
+
     signal nextClicked()
 
     spacing: 0
@@ -51,7 +53,20 @@ ColumnLayout {
         showDivider: false
         isChecked: MZSettings.onboardingDataCollectionEnabled
 
-        onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
+        onClicked: {
+            MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
+
+            if (MZSettings.onboardingDataCollectionEnabled) {
+                Glean.interaction.dataCollectionEnabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+            else {
+                Glean.interaction.dataCollectionDisabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+        }
     }
 
     Item {
@@ -78,7 +93,13 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
         text: MZI18n.GlobalNext
-        onClicked: root.nextClicked()
+        onClicked: {
+            Glean.interaction.continueSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.nextClicked()
+        }
     }
 
     MZInterLabel {
@@ -101,6 +122,12 @@ ColumnLayout {
         Layout.fillWidth: true
 
         labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
-        onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
+        onClicked: {
+            Glean.interaction.privacyNoticeSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            MZUrlOpener.openUrlLabel("privacyNotice")
+        }
     }
 }

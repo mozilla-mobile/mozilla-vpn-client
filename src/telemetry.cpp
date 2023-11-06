@@ -93,6 +93,12 @@ void Telemetry::initialize() {
               ._error = "alrady-subscribed",
           });
     }
+
+    if (state == App::StateOnboarding) {
+      if(!SettingsHolder::instance()->onboardingStarted()) {
+        mozilla::glean::outcome::onboarding_started.record();
+      }
+    }
   });
 
   connect(vpn, &MozillaVPN::authenticationStarted, this,

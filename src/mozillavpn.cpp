@@ -402,6 +402,7 @@ void MozillaVPN::maybeStateMain() {
   if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
     if (!settingsHolder->onboardingCompleted()) {
       setState(StateOnboarding);
+      settingsHolder->setOnboardingStarted(true);
       return;
     }
   }
@@ -443,12 +444,15 @@ void MozillaVPN::maybeStateMain() {
     // in the future
     settingsHolder->setOnboardingCompleted(true);
 
+    setState(StateMain);
+
     // Resetting for the benefit of testing so that we only have to reset one
     // setting (onboardingCompleted) manually. No real affect on user since they
-    // will never see onboarding again
+    // *should* never see onboarding more than once
+    // Reset specifically after going into StateMain so setting onboardingStep
+    // back to 0 doesn't re-record the first slides impression telemetry
     settingsHolder->setOnboardingStep(0);
-
-    setState(StateMain);
+    settingsHolder->setOnboardingDataCollectionEnabled(false);
   }
 
 #ifdef MZ_ADJUST
@@ -935,12 +939,6 @@ void MozillaVPN::onboardingCompleted() {
     // users do not have to go through it if the new onboaring feature is turned
     // off
     settingsHolder->setPostAuthenticationShown(true);
-
-    // Resetting for the benefit of testing so that we only have to reset one
-    // setting (onboardingCompleted) manually. No real affect on user since they
-    // *should* never see onboarding more than once
-    settingsHolder->setOnboardingStep(0);
-    settingsHolder->setOnboardingDataCollectionEnabled(false);
 
   } else {
     logger.debug() << "telemetry policy completed";

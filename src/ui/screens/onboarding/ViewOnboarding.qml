@@ -15,6 +15,13 @@ MZStepNavigation {
     id: stepNav
     objectName: "viewOnboarding"
 
+    enum Slide {
+        Data,
+        Privacy,
+        Devices,
+        Start
+    }
+
     anchors {
         top: parent.top
         left: parent.left
@@ -26,8 +33,12 @@ MZStepNavigation {
     currentIndex: MZSettings.onboardingStep
     onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex
 
+    Component.onCompleted: recordImpressionTelemetry()
+
     views: [
         OnboardingDataSlide {
+            id: dataSlide
+
             property string labelText: "OnboardingProgressBarDataUse"
             property string iconSource: "qrc:/nebula/resources/lock.svg"
             property string objectName: "data"
@@ -35,6 +46,8 @@ MZStepNavigation {
             onNextClicked: stepNav.next()
         },
         OnboardingPrivacySlide {
+            id: privacySlide
+
             property string labelText: "OnboardingProgressBarMorePrivacy"
             property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
             property string objectName: "privacy"
@@ -43,6 +56,8 @@ MZStepNavigation {
             onBackClicked: stepNav.back()
         },
         OnboardingDevicesSlide {
+            id: devicesSlide
+
             property string labelText: "OnboardingProgressBarAddDevices"
             property string iconSource: "qrc:/ui/resources/devices.svg"
             property string objectName: "devices"
@@ -52,6 +67,8 @@ MZStepNavigation {
         },
         //Last slide is different based on platform
         Loader {
+            id: startSlide
+
             property string labelText: MZUiUtils.isMobile() ? "OnboardingProgressBarConnect" : "OnboardingProgressBarStartup"
             property string iconSource: "qrc:/nebula/resources/startup.svg"
             property string objectName: "start"
@@ -75,6 +92,45 @@ MZStepNavigation {
         OnboardingStartSlideMobile {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
+        }
+    }
+
+    Connections {
+        target: MZSettings
+        onOnboardingStepChanged: recordImpressionTelemetry()
+    }
+
+    function recordImpressionTelemetry() {
+        switch (MZSettings.onboardingStep) {
+        case ViewOnboarding.Slide.Data:
+            Glean.impression.dataCollectionScreen.record({
+                screen: dataSlide.telemetryScreenId,
+            });
+            break
+        case ViewOnboarding.Slide.Privacy:
+            Glean.impression.getMorePrivacyScreen.record({
+                screen: privacySlide.telemetryScreenId,
+            });
+            break
+        case ViewOnboarding.Slide.Devices:
+            Glean.impression.installOn5DevicesScreen.record({
+                screen: devicesSlide.telemetryScreenId,
+            });
+            break
+        case ViewOnboarding.Slide.Start:
+            if(MZUiUtils.isMobile()) {
+                Glean.impression.networkPermissionsScreen.record({
+                    screen: startSlide.telemetryScreenId,
+                });
+            }
+            else {
+                Glean.impression.connectOnStartupScreen.record({
+                    screen: dataSlide.telemetryScreenId,
+                });
+            }
+            break
+        default:
+            break
         }
     }
 }

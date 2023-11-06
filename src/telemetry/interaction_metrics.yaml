@@ -194,7 +194,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The "Continue" button was clicked in one of the auth screens.
+      A "Continue" button was clicked
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5251
     data_reviews:
@@ -210,6 +210,23 @@ interaction:
         description: |
           The screen where the interaction happened
         type: string
+  go_back_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A "go back" button was clicked
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
   change_email_selected:
     type: event
     lifetime: ping
@@ -474,3 +491,224 @@ interaction:
         description: |
           The screen where the interaction happened
         type: string
+  data_collection_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has checked the data collection checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  data_collection_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has unchecked the data collection checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_ads_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has checked the block ads checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_ads_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has unchecked the block ads checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_trackers_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has checked the block trackers checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_trackers_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has unchecked the block trackers checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_malware_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has checked the block malware checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  block_malware_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has unchecked the block malware checkbox
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  show_android_qr_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has selected the android segment of the devices toggle in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  show_ios_qr_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has selected the android segment of the devices toggle in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  connect_on_startup_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has enabled connect on startup
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  connect_on_startup_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has disabled connect on startup
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  get_started_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has clicked get started in onboarding
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
