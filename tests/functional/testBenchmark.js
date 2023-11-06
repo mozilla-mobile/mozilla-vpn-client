@@ -242,31 +242,27 @@ describe('Benchmark', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main");
+      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("impression", "mainScreen", "main");
       assert.strictEqual("main", appStepExtras.screen);
-      assert.strictEqual("impression", appStepExtras.action);
 
       // Start the connection benchmark.
       await vpn.waitForQueryAndClick(
           queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      const triggeredEventsList = await vpn.gleanTestGetValue("interaction", "speedTestTriggered", "main")
+      const triggeredEventsList = await vpn.gleanTestGetValue("interaction", "startSpeedTestSelected", "main")
       assert.strictEqual(triggeredEventsList.length, 1);
       const triggeredEventExtra = triggeredEventsList[0].extra;
       assert.strictEqual("main", triggeredEventExtra.screen);
-      assert.strictEqual("select", triggeredEventExtra.action);
-      assert.strictEqual("speed_test", triggeredEventExtra.element_id);
 
       // Connection benchmark results loaded succesfully
       let completedEventsList;
       await vpn.waitForCondition(async () => {
-        completedEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultCompleted", "main")
+        completedEventsList = await vpn.gleanTestGetValue("impression", "speedTestCompletedScreen", "main")
         return completedEventsList.length == 1;
       });
 
       let completedEventExtra = completedEventsList[0].extra;
-      assert.strictEqual("speed_test_result", completedEventExtra.screen);
-      assert.strictEqual("impression", completedEventExtra.action);
+      assert.strictEqual("speed_test_completed", completedEventExtra.screen);
 
       const outcomeEventsList = await vpn.gleanTestGetValue("outcome", "speedTestCompleted", "main")
       assert.strictEqual(outcomeEventsList.length, 1);
@@ -278,34 +274,29 @@ describe('Benchmark', function() {
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_RESTART.visible());
 
-      const refreshEventsList = await vpn.gleanTestGetValue("interaction", "speedTestRefresh", "main")
+      const refreshEventsList = await vpn.gleanTestGetValue("interaction", "refreshSelected", "main")
       assert.strictEqual(refreshEventsList.length, 1);
       const refreshEventExtra = refreshEventsList[0].extra;
-      assert.strictEqual("speed_test_result", refreshEventExtra.screen);
-      assert.strictEqual("select", refreshEventExtra.action);
-      assert.strictEqual("refresh", refreshEventExtra.element_id);
+      assert.strictEqual("speed_test_completed", refreshEventExtra.screen);
 
       // Connection benchmark results loaded succesfully again
       await vpn.waitForCondition(async () => {
-        completedEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultCompleted", "main")
+        completedEventsList = await vpn.gleanTestGetValue("impression", "speedTestCompletedScreen", "main")
         // Now the list has two events, the first one and the new one
         return completedEventsList.length == 2;
       });
 
       completedEventExtra = completedEventsList[1].extra;
-      assert.strictEqual("speed_test_result", completedEventExtra.screen);
-      assert.strictEqual("impression", completedEventExtra.action);
+      assert.strictEqual("speed_test_completed", completedEventExtra.screen);
 
       // Close the connection benchmark
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "closeSelected", "main")
       assert.strictEqual(closedEventsList.length, 1);
       const closedEventExtra = closedEventsList[0].extra;
-      assert.strictEqual("speed_test_result", closedEventExtra.screen);
-      assert.strictEqual("select", closedEventExtra.action);
-      assert.strictEqual("close", closedEventExtra.element_id);
+      assert.strictEqual("speed_test_completed", closedEventExtra.screen);
     });
 
     it("records events while loading speed test", async () => {
@@ -326,24 +317,21 @@ describe('Benchmark', function() {
       // Connection benchmark results are loading
       let loadingEventsList;
       await vpn.waitForCondition(async () => {
-        loadingEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultsLoading", "main")
+        loadingEventsList = await vpn.gleanTestGetValue("impression", "speedTestLoadingScreen", "main")
         return loadingEventsList.length == 1;
       });
 
       let loadingEventExtra = loadingEventsList[0].extra;
       assert.strictEqual("speed_test_loading", loadingEventExtra.screen);
-      assert.strictEqual("impression", loadingEventExtra.action);
 
       // Close the connection benchmark while loading
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "closeSelected", "main")
       assert.strictEqual(closedEventsList.length, 1);
       const closedEventExtra = closedEventsList[0].extra;
       assert.strictEqual("speed_test_loading", closedEventExtra.screen);
-      assert.strictEqual("select", closedEventExtra.action);
-      assert.strictEqual("close", closedEventExtra.element_id);
 
       // Resolve the loading speed test, just in case.
       resolveSpeedTestResults();
@@ -357,87 +345,75 @@ describe('Benchmark', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
+      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("impression", "mainScreen", "main")
       assert.strictEqual("main", appStepExtras.screen);
-      assert.strictEqual("impression", appStepExtras.action);
 
       // Start the connection benchmark.
       await vpn.waitForQueryAndClick(
           queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      const triggeredEventsList = await vpn.gleanTestGetValue("interaction", "speedTestTriggered", "main")
+      const triggeredEventsList = await vpn.gleanTestGetValue("interaction", "startSpeedTestSelected", "main")
       assert.strictEqual(triggeredEventsList.length, 1);
       const triggeredEventExtra = triggeredEventsList[0].extra;
       assert.strictEqual("main", triggeredEventExtra.screen);
-      assert.strictEqual("select", triggeredEventExtra.action);
-      assert.strictEqual("speed_test", triggeredEventExtra.element_id);
 
       // Connection benchmark results errorred
       let erroredEventsList;
       await vpn.waitForCondition(async () => {
-        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultError", "main")
+        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestErrorScreen", "main")
         return erroredEventsList.length == 1;
       });
 
       let completedEventExtra = erroredEventsList[0].extra;
       assert.strictEqual("speed_test_error", completedEventExtra.screen);
-      assert.strictEqual("impression", completedEventExtra.action);
 
       // Refresh the test
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_RESTART.visible());
 
-      const refreshEventsList = await vpn.gleanTestGetValue("interaction", "speedTestRefresh", "main")
+      const refreshEventsList = await vpn.gleanTestGetValue("interaction", "refreshSelected", "main")
       assert.strictEqual(refreshEventsList.length, 1);
       const refreshEventExtra = refreshEventsList[0].extra;
       assert.strictEqual("speed_test_error", refreshEventExtra.screen);
-      assert.strictEqual("select", refreshEventExtra.action);
-      assert.strictEqual("refresh", refreshEventExtra.element_id);
 
       // Connection benchmark results errored again
       await vpn.waitForCondition(async () => {
-        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultError", "main")
+        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestErrorScreen", "main")
         // Now the list has two events, the first one and the new one
         return erroredEventsList.length == 2;
       });
 
       completedEventExtra = erroredEventsList[1].extra;
       assert.strictEqual("speed_test_error", completedEventExtra.screen);
-      assert.strictEqual("impression", completedEventExtra.action);
 
       // Refresh the test, but this time through the "Try Again" button
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_RETRY.visible());
 
-      const tryAgainEventsList = await vpn.gleanTestGetValue("interaction", "speedTestRefresh", "main")
+      const tryAgainEventsList = await vpn.gleanTestGetValue("interaction", "refreshSelected", "main")
       // Execting two events, since this is the same as the refreshEvent
       assert.strictEqual(tryAgainEventsList.length, 2);
       const tryAgainEventExtra = tryAgainEventsList[1].extra;
       assert.strictEqual("speed_test_error", tryAgainEventExtra.screen);
-      assert.strictEqual("select", tryAgainEventExtra.action);
-      assert.strictEqual("try_again", tryAgainEventExtra.element_id);
 
       // Connection benchmark results errored again
       await vpn.waitForCondition(async () => {
-        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestResultError", "main")
+        erroredEventsList = await vpn.gleanTestGetValue("impression", "speedTestErrorScreen", "main")
         // Now the list has three events, the first one and the new one
         return erroredEventsList.length == 3;
       });
 
       completedEventExtra = erroredEventsList[2].extra;
       assert.strictEqual("speed_test_error", completedEventExtra.screen);
-      assert.strictEqual("impression", completedEventExtra.action);
 
       // Close the connection benchmark
       await vpn.waitForQueryAndClick(
         queries.screenHome.CONNECTION_INFO_TOGGLE.visible());
 
-      const closedEventsList = await vpn.gleanTestGetValue("interaction", "speedTestClosed", "main")
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "closeSelected", "main")
       assert.strictEqual(closedEventsList.length, 1);
       const closedEventExtra = closedEventsList[0].extra;
       assert.strictEqual("speed_test_error", closedEventExtra.screen);
-      assert.strictEqual("select", closedEventExtra.action);
-      assert.strictEqual("close", closedEventExtra.element_id);
     });
   });
 });

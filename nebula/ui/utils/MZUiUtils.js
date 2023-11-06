@@ -11,3 +11,7 @@ function scrollToComponent(root) {
 function isMobile() {
     return Qt.platform.os === "android" || Qt.platform.os === "ios"
 }
+
+function isLargePhone() {
+    return window.height > MZTheme.theme.largePhoneHeight
+}

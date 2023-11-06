@@ -59,9 +59,8 @@ describe('IP info', function() {
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       await vpn.activate(true);
 
-      const [ _, { extra: appStepExtras } ] = await vpn.gleanTestGetValue("sample", "appStep", "main")
+      const [ { extra: appStepExtras } ] = await vpn.gleanTestGetValue("impression", "mainScreen", "main")
       assert.strictEqual("main", appStepExtras.screen);
-      assert.strictEqual("impression", appStepExtras.action);
 
       // Open IP info panel
       await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
@@ -70,16 +69,13 @@ describe('IP info', function() {
           await vpn.getQueryProperty(
               queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
 
-      const openedEventsList = await vpn.gleanTestGetValue("interaction", "connectionInfoOpened", "main")
+      const openedEventsList = await vpn.gleanTestGetValue("interaction", "openConnectionInfoSelected", "main")
       assert.strictEqual(openedEventsList.length, 1);
       const openedExtras = openedEventsList[0].extra;
       assert.strictEqual("main", openedExtras.screen);
-      assert.strictEqual("select", openedExtras.action);
-      assert.strictEqual("info", openedExtras.element_id);
 
-      const [ { extra: connectionInfoOpenedExtras } ] = await vpn.gleanTestGetValue("impression", "connectionInfoOpened", "main")
+      const [ { extra: connectionInfoOpenedExtras } ] = await vpn.gleanTestGetValue("impression", "connectionInfoScreen", "main")
       assert.strictEqual("connection_info", connectionInfoOpenedExtras.screen);
-      assert.strictEqual("impression", connectionInfoOpenedExtras.action);
 
       // Close IP info panel
       await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
@@ -87,12 +83,10 @@ describe('IP info', function() {
           await vpn.getQueryProperty(
               queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'false');
 
-      const closedEventsList = await vpn.gleanTestGetValue("interaction", "connectionInfoClosed", "main")
+      const closedEventsList = await vpn.gleanTestGetValue("interaction", "closeSelected", "main")
       assert.strictEqual(closedEventsList.length, 1);
       const closedExtras = closedEventsList[0].extra;
       assert.strictEqual("connection_info", closedExtras.screen);
-      assert.strictEqual("select", closedExtras.action);
-      assert.strictEqual("close", closedExtras.element_id);
     });
   })
 });

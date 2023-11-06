@@ -136,6 +136,7 @@ const screenInitialize = {
   SCREEN: new QmlQueryComposer('//initialStackView'),
   SIGN_UP_BUTTON: new QmlQueryComposer('//signUpButton'),
   SWIPE_VIEW: new QmlQueryComposer('//swipeView'),
+  SWIPE_VIEW_REPEATER: new QmlQueryComposer('//swipeViewRepeater'),
 };
 
 const screenAuthenticating = {
@@ -152,11 +153,15 @@ const screenTelemetry = {
 };
 
 const screenAuthenticationInApp = {
+  AUTH_TERMS_OF_SERVICE: new QmlQueryComposer('//termsOfService'),
+  AUTH_PRIVACY_NOTICE: new QmlQueryComposer('//privacyPolicy'),
+
   AUTH_START_TEXT_INPUT: new QmlQueryComposer('//authStart-textInput'),
   AUTH_START_BUTTON: new QmlQueryComposer('//authStart-button'),
   AUTH_START_BACK_BUTTON: new QmlQueryComposer('//authStart-backButton'),
   AUTH_START_GET_HELP_LINK: new QmlQueryComposer('//authStart-getHelpLink'),
 
+  AUTH_SIGNIN_SCREEN: new QmlQueryComposer('//authSignIn'),
   AUTH_SIGNIN_PASSWORD_INPUT:
       new QmlQueryComposer('//authSignIn-passwordInput'),
   AUTH_SIGNIN_BUTTON: new QmlQueryComposer('//authSignIn-button'),
@@ -164,6 +169,12 @@ const screenAuthenticationInApp = {
   AUTH_SIGNIN_BACK_BUTTON: new QmlQueryComposer('//authSignIn-backButton'),
   AUTH_SIGNIN_PASSWORD_PASTE_BUTTON:
       new QmlQueryComposer('//authSignIn-inputPasteButton'),
+  AUTH_SIGNIN_CANCEL_BUTTON:
+      new QmlQueryComposer('//authSignIn-cancel'),
+  AUTH_SIGNIN_CHANGE_EMAIL_BUTTON:
+      new QmlQueryComposer('//authSignIn-changeEmail'),
+  AUTH_SIGNIN_FORGOT_PASSWORD_BUTTON:
+      new QmlQueryComposer('//authSignIn-forgotPassword'),
 
   AUTH_SIGNUP_PASSWORD_INPUT:
       new QmlQueryComposer('//authSignUp-passwordInput'),
@@ -178,6 +189,9 @@ const screenAuthenticationInApp = {
   AUTH_SIGNUP_BACK_BUTTON: new QmlQueryComposer('//authSignUp-backButton'),
   AUTH_SIGNUP_PASSWORD_PASTE_BUTTON:
       new QmlQueryComposer('//authSignUp-inputPasteButton'),
+  AUTH_SIGNUP_CANCEL_BUTTON:
+      new QmlQueryComposer('//authSignUp-cancel'),
+  AUTH_SIGNUP_BACK_BUTTON: new QmlQueryComposer('//authSignUp-backButton'),
 
   AUTH_EMAILVER_TEXT_INPUT:
       new QmlQueryComposer('//authVerificationSessionByEmailNeeded-textInput'),
@@ -189,6 +203,10 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authVerificationSessionByEmailNeeded-backButton'),
   AUTH_EMAILVER_PASTE_BUTTON: new QmlQueryComposer(
       '//authVerificationSessionByEmailNeeded-inputPasteButton'),
+  AUTH_EMAILVER_CANCEL_BUTTON:
+      new QmlQueryComposer('//authVerificationSessionByEmailNeeded-cancel'),
+  AUTH_EMAILVER_RESEND_CODE_BUTTON:
+      new QmlQueryComposer('//authVerificationSessionByEmailNeeded-resendCode'),
 
   AUTH_TOTP_TEXT_INPUT:
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-textInput'),
@@ -196,9 +214,10 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-button'),
   AUTH_TOTP_GET_HELP_LINK:
       new QmlQueryComposer('//authVerificationSessionByTotpNeeded-getHelpLink'),
-  AUTH_TOTP_CANCEL_BUTTON: new QmlQueryComposer('//totpCancelButton'),
   AUTH_TOTP_PASTE_BUTTON: new QmlQueryComposer(
       '//authVerificationSessionByTotpNeeded-inputPasteButton'),
+  AUTH_TOTP_CANCEL_BUTTON:
+      new QmlQueryComposer('//authVerificationSessionByTotpNeeded-cancel'),
 
   AUTH_UNBLOCKCODE_TEXT_INPUT:
       new QmlQueryComposer('//authUnblockCodeNeeded-textInput'),
@@ -210,6 +229,10 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authUnblockCodeNeeded-backButton'),
   AUTH_UNBLOCKCODE_PASTE_BUTTON:
       new QmlQueryComposer('//authUnblockCodeNeeded-inputPasteButton'),
+  AUTH_UNBLOCKCODE_CANCEL_BUTTON:
+      new QmlQueryComposer('//authUnblockCodeNeeded-cancel'),
+  AUTH_UNBLOCKCODE_RESEND_CODE_BUTTON:
+      new QmlQueryComposer('//authUnblockCodeNeeded-resendCode'),
 
   AUTH_ERROR_POPUP_BUTTON: new QmlQueryComposer('//authErrorPopup-button'),
 };
@@ -441,6 +464,21 @@ const screenSubscriptionNeeded = {
   SUBSCRIPTION_NEEDED_VIEW: new QmlQueryComposer('//vpnSubscriptionNeededView'),
   SUBSCRIPTION_NEEDED_BUTTON:
       new QmlQueryComposer('//vpnSubscriptionNeededButton'),
+  SUBSCRIPTION_NEEDED_GET_HELP:
+      new QmlQueryComposer('//vpnSubscriptionNeededGetHelp'),
+  SUBSCRIPTION_NEEDED_TERMS_OF_SERVICE:
+      new QmlQueryComposer('//vpnSubscriptionNeededTermsOfService'),
+  SUBSCRIPTION_NEEDED_PRIVACY_NOTICE:
+      new QmlQueryComposer('//vpnSubscriptionNeededPrivacyNotice'),
+  SUBSCRIPTION_NEEDED_SIGN_OUT:
+      new QmlQueryComposer('//vpnSubscriptionNeededSignOut'),
+  SUBSCRIPTION_NEEDED_RESTORE_PURCHASE:
+      new QmlQueryComposer('//vpnSubscriptionNeededRestorePurchase'),
+};
+
+const screenInBrowserSubscriptionLoading = {
+  SUBSCRIPTION_LOADING_CANCEL: new QmlQueryComposer('//cancelFooterLink'),
+  SUBSCRIPTION_LOADING_VIEW: new QmlQueryComposer('//subscriptionInProgressWeb'),
 };
 
 const screenOnboarding = {
@@ -451,7 +489,8 @@ const screenOnboarding = {
   STEP_PROG_BAR_PRIVACY_BUTTON: new QmlQueryComposer('//progressBarRow/privacy'),
   STEP_PROG_BAR_DEVICES_BUTTON: new QmlQueryComposer('//progressBarRow/devices'),
   DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
-  DATA_CHECKBOX: new QmlQueryComposer('//dataCollectionCheckBox'),
+  DATA_CHECKBOX_ROW: new QmlQueryComposer('//dataCollectionCheckBox'),
+  DATA_CHECKBOX: new QmlQueryComposer('//dataCollectionCheckBox/checkbox'),
   DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),
   DATA_NEXT_BUTTON: new QmlQueryComposer('//dataNextButton'),
   PRIVACY_SLIDE: new QmlQueryComposer('//onboardingPrivacySlide'),
@@ -500,6 +539,7 @@ module.exports = {
   screenMessaging,
   screenDeleteAccount,
   screenSubscriptionNeeded,
+  screenInBrowserSubscriptionLoading,
   screenOnboarding,
   global,
   navBar,

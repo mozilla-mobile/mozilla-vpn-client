@@ -40,23 +40,6 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
-    Image {
-        Layout.topMargin: MZTheme.theme.vSpacing
-        Layout.alignment: Qt.AlignHCenter
-
-        source: "qrc:/ui/resources/launch.svg"
-    }
-
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
     MZCheckBoxRow {
         objectName: "startAtBootCheckBox"
 
@@ -74,7 +57,19 @@ ColumnLayout {
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 48
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
+    }
+
+    Image {
+        Layout.alignment: Qt.AlignHCenter
+
+        sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
+        source: "qrc:/ui/resources/launch.svg"
+    }
+
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {

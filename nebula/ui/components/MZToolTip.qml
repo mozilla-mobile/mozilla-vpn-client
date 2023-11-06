@@ -51,6 +51,7 @@ ToolTip {
         color: MZTheme.theme.fontColorDark
         z: 1
         wrapMode: Text.WordWrap
+        Accessible.ignored: !visible
     }
 
     background: Rectangle {

@@ -262,6 +262,10 @@ void ConnectionManager::deleteOSTunnelConfig() {
   }
 }
 
+void ConnectionManager::startHandshakeTimer() {
+  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
+}
+
 void ConnectionManager::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
@@ -571,7 +575,14 @@ void ConnectionManager::activateNext() {
   const InterfaceConfig& config = m_activationQueue.first();
 
   logger.debug() << "Activating peer" << logger.keys(config.m_serverPublicKey);
-  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
+
+// Mobile platforms will begin handshake timer once we know the VPN
+// configuration has been set with the system (to avoid persistently
+// re-triggering the system prompt - VPN-5532)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS) || defined(MZ_MACOS)
+  startHandshakeTimer();
+#endif
+
   m_impl->activate(config, stateToReason(m_state));
 
   // Move to the confirming state if we are awaiting any connection handshakes.

@@ -102,11 +102,18 @@ ColumnLayout {
         }
     }
 
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
+    }
+
     //Views in the stack layout must be in the same order as items in the above list model
     StackLayout {
-        Layout.topMargin: MZTheme.theme.vSpacingSmall
-        Layout.maximumHeight: 152
-        Layout.maximumWidth: 152
+        id: qrcodeStack
+        readonly property int qrcodeSize: MZUiUtils.isLargePhone() ? 208 : 152
+
+        Layout.maximumHeight: qrcodeSize
+        Layout.maximumWidth: qrcodeSize
         Layout.alignment: Qt.AlignHCenter
 
         currentIndex: deviceTypeToggle.selectedIndex
@@ -115,10 +122,10 @@ ColumnLayout {
         Rectangle {
             color: MZTheme.theme.white
 
-            Layout.preferredHeight: 152
-            Layout.preferredWidth: 152
-            Layout.maximumHeight: 152
-            Layout.maximumWidth: 152
+            Layout.preferredHeight: qrcodeStack.qrcodeSize
+            Layout.preferredWidth: qrcodeStack.qrcodeSize
+            Layout.maximumHeight: qrcodeStack.qrcodeSize
+            Layout.maximumWidth: qrcodeStack.qrcodeSize
 
             MZDropShadow {
                 anchors.fill: parent
@@ -135,8 +142,8 @@ ColumnLayout {
             Image {
                 objectName: "playStoreQrCode"
 
-                width: 152
-                height: 152
+                height: qrcodeStack.qrcodeSize
+                width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
@@ -144,6 +151,7 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeAndroid
+                Accessible.ignored: !visible
             }
         }
 
@@ -151,10 +159,10 @@ ColumnLayout {
         Rectangle {
             color: MZTheme.theme.white
 
-            Layout.preferredHeight: 152
-            Layout.preferredWidth: 152
-            Layout.maximumHeight: 152
-            Layout.maximumWidth: 152
+            Layout.preferredHeight: qrcodeStack.qrcodeSize
+            Layout.preferredWidth: qrcodeStack.qrcodeSize
+            Layout.maximumHeight: qrcodeStack.qrcodeSize
+            Layout.maximumWidth: qrcodeStack.qrcodeSize
 
             MZDropShadow {
                 anchors.fill: parent
@@ -171,8 +179,8 @@ ColumnLayout {
             Image {
                 objectName: "appStoreQrCode"
 
-                width: 152
-                height: 152
+                height: qrcodeStack.qrcodeSize
+                width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
@@ -180,13 +188,14 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeApple
+                Accessible.ignored: !visible
             }
         }
     }
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 32
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {

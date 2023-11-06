@@ -50,7 +50,7 @@ Item {
         anchors.leftMargin: MZTheme.theme.windowMargin / 2
 
         accessibleName: _menuIconButtonSource.includes("close") ? MZI18n.GlobalClose : MZI18n.GlobalGoBack
-        Accessible.ignored: accessibleIgnored
+        Accessible.ignored: accessibleIgnored || !visible
         height: MZTheme.theme.rowHeight
         width: MZTheme.theme.rowHeight
         enabled: !btnDisabled
@@ -74,7 +74,7 @@ Item {
 
         visible: text !== ""
         elide: Text.ElideRight
-        Accessible.ignored: accessibleIgnored
+        Accessible.ignored: accessibleIgnored || !visible
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 

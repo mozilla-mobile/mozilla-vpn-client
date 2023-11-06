@@ -22,6 +22,7 @@ TextField {
     Accessible.name: centeredPlaceholderText.text
     Accessible.description:  centeredPlaceholderText.text
     Accessible.focused: textField.focus
+    Accessible.ignored: !visible
     Layout.alignment: Qt.AlignVCenter
     Layout.preferredHeight: MZTheme.theme.rowHeight
 

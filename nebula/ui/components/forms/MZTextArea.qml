@@ -152,6 +152,7 @@ Item {
         color: MZTheme.theme.fontColor
         font.pixelSize: MZTheme.theme.fontSizeSmall
         text: textArea.length + " / " + textArea.maxCharacterCount
+        Accessible.ignored: !visible
     }
 
 }

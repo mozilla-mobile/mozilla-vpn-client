@@ -52,35 +52,6 @@ void AuthenticationInApp::setState(State state,
                                    AuthenticationInAppSession* session) {
   m_state = state;
   emit stateChanged();
-
-  Q_ASSERT(session);
-  QString stateAsString = QVariant::fromValue(state).toString();
-  switch (session->type()) {
-    case AuthenticationInAppSession::TypeDefault:
-      logger.debug() << "TypeDefault";
-      mozilla::glean::sample::authentication_inapp_step.record(
-          mozilla::glean::sample::AuthenticationInappStepExtra{
-              ._state = stateAsString});
-
-      break;
-    case AuthenticationInAppSession::TypeAccountDeletion:
-      logger.debug() << "TypeAccountDeletion";
-      mozilla::glean::sample::authentication_acnt_del_step.record(
-          mozilla::glean::sample::AuthenticationAcntDelStepExtra{
-              ._state = stateAsString});
-
-      break;
-    case AuthenticationInAppSession::TypeSubscriptionManagement:
-      logger.debug() << "TypeSubscriptionManagement";
-      mozilla::glean::sample::authentication_sub_manage_step.record(
-          mozilla::glean::sample::AuthenticationSubManageStepExtra{
-              ._state = stateAsString});
-
-      break;
-    default:
-      logger.error()
-          << "Glean samples and Auth-in-app session types are out of sync";
-  }
 }
 
 void AuthenticationInApp::registerSession(AuthenticationInAppSession* session) {

@@ -47,6 +47,7 @@ RadioDelegate {
     Accessible.name: accessibleName
     Accessible.onPressAction: clicked()
     Accessible.focusable: true
+    Accessible.ignored: !visible
 
     states: [
         State {
@@ -115,7 +116,7 @@ RadioDelegate {
 
     MZRadioButtonLabel {
         id: radioButtonLabel
-        Accessible.ignored: !isRadioButtonLabelAccessible
+        Accessible.ignored: !isRadioButtonLabelAccessible || !visible
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: radioButton.right
         anchors.right: parent.right

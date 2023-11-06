@@ -160,6 +160,10 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
       }
       onboardingCompletedCallback:^() {
         MozillaVPN::instance()->onboardingCompleted();
+      }
+      vpnConfigPermissionResponseCallback:^() {
+        ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
+        connectionManager->startHandshakeTimer();
       }];
 }
 

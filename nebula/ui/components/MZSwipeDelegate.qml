@@ -28,6 +28,7 @@ SwipeDelegate {
     hoverEnabled: true
     activeFocusOnTab: !blockClose
     implicitHeight: contentLoader.item.implicitHeight
+    Accessible.ignored: !visible
 
     background: Rectangle {
         color: MZTheme.theme.bgColor

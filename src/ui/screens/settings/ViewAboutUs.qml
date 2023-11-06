@@ -44,7 +44,6 @@ MZViewBase {
             }
             MZBoldLabel {
                 text: MZI18n.AboutUsReleaseVersion
-                Accessible.role: Accessible.StaticText
             }
             MZClickableRow {
                 property int marginOffset: MZTheme.theme.windowMargin / 2

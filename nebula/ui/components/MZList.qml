@@ -11,6 +11,7 @@ ListView {
     height:contentHeight
     Accessible.role: Accessible.List
     Accessible.name: listName
+    Accessible.ignored: !visible
     activeFocusOnTab: true
     interactive: false // disable scrolling on list since the entire window is scrollable
     boundsBehavior: Flickable.StopAtBounds

@@ -81,6 +81,7 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin * 1.5
         Layout.leftMargin: MZTheme.theme.windowMargin
         Layout.rightMargin: MZTheme.theme.windowMargin
+        Layout.preferredWidth: parent.width
 
         Loader {
             objectName: "DNSSettingsInformationCardLoader"
@@ -99,8 +100,6 @@ MZViewBase {
                         Layout.fillWidth: true
                         text: MZI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
-                        Accessible.role: Accessible.StaticText
-                        Accessible.name: text
                     }
                 }
             }

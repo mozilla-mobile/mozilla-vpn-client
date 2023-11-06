@@ -56,6 +56,7 @@ MZButtonBase {
                 font.family: MZTheme.theme.fontInterFamily
                 lineHeight: 18
                 lineHeightMode: Text.FixedHeight
+                Accessible.ignored: !visible
             }
 
         }

@@ -59,6 +59,7 @@ MZButtonBase {
         font.family: MZTheme.theme.fontBoldFamily
         font.pixelSize: fontSize
         opacity: loaderVisible ? 0 : 1
+        Accessible.ignored: !visible
     }
 
 }
