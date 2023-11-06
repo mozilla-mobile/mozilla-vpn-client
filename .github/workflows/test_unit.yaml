@@ -149,7 +149,8 @@ jobs:
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
-            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage \
+            -DPYTHON_EXECUTABLE=${HOME}/miniconda/base/envs/vpn/bin/python
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
