@@ -117,6 +117,8 @@ jobs:
           conda info -a
           conda init bash
           source ~/.bashrc
+          conda env create -f env.yml
+          conda activate vpn
 
           ./scripts/macos/conda_install_extras.sh
           conda env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
@@ -147,9 +149,6 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
-          conda env create -f env.yml
-          conda activate vpn
-
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
