@@ -29,10 +29,20 @@ jobs:
       - name: Install build dependencies
         shell: bash
         run: |
-          export PATH=$PATH:~/Library/Frameworks/Python.framework/Versions/3.12/bin
+          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+          bash miniconda.sh -b -p $HOME/miniconda
+          source "$HOME/miniconda/etc/profile.d/conda.sh"
+          hash -r
+          conda config --set always_yes yes --set changeps1 no
+          conda update -q conda
+          # Useful for debugging any issues with conda
+          conda info -a
+          conda init bash
+          source ~/.bashrc
 
-          python3 -m pip install pip --upgrade
-          python3 -m pip install -r requirements.txt
+          ./scripts/macos/conda_install_extras.sh
+          conda env config vars set SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
           brew install ninja
 
       - name: Install Qt6
@@ -44,6 +54,8 @@ jobs:
       - name: Compile test client
         shell: bash
         run: |
+          conda activate vpn
+
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
