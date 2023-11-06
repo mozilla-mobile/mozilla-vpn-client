@@ -104,20 +104,15 @@ jobs:
         with:
           submodules: "recursive"
 
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: vpn
+
       - name: Install dependencies
         shell: bash
         run: |
-          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
-          bash miniconda.sh -b -p $HOME/miniconda
-          ${HOME}/miniconda/bin/activate
-
-          ${HOME}/miniconda/bin/conda env create --force -f env.yml
-          ${HOME}/miniconda/bin/activate vpn
           ./scripts/macos/conda_install_extras.sh
-          ${HOME}/miniconda/bin/conda info
-
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-
           brew install ninja
 
       - name: Install Qt6
@@ -144,11 +139,6 @@ jobs:
       - name: Building tests
         shell: bash
         run: |
-          ${HOME}/miniconda/bin/activate vpn
-          ${HOME}/miniconda/bin/conda env list
-          which python3
-          which python
-
           export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja \
