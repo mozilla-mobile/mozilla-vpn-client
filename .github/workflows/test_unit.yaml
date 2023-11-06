@@ -107,6 +107,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
+          environment-file: env.yml
           activate-environment: vpn
 
       - name: Install dependencies
