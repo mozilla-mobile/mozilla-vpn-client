@@ -182,11 +182,9 @@ canvas {
 .canvas-bg {
 	box-shadow: var(--boxShadow);
 	border-radius: 2rem;
-	overflow: hidden;
 	background-color: rgba(14, 13, 26, 0.05);
-	min-width: 400px;
-	height: 70vh;
-	max-height: 760px;
+	width: fit-content;
+	height: fit-content;
 }
 
 .wasm-loaded .canvas-bg {
