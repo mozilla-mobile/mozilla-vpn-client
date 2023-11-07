@@ -6,7 +6,9 @@
 
 #include <mntent.h>
 
-#include <QDBusInterface>
+#ifdef UNIT_TEST
+#  include <QDBusInterface>
+#endif
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -74,6 +76,7 @@ QString LinuxUtils::findCgroup2Path() {
 
 // static
 QString LinuxUtils::gnomeShellVersion() {
+#ifdef UNIT_TEST
   QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
                        "org.gnome.Shell");
   if (!iface.isValid()) {
@@ -85,6 +88,9 @@ QString LinuxUtils::gnomeShellVersion() {
     return QString();
   }
   return shellVersion.toString();
+#endif
+
+  return "";
 }
 
 // static

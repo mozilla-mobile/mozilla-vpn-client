@@ -35,8 +35,6 @@ target_sources(mozillavpn PRIVATE
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/daemon)
 target_link_libraries(mozillavpn PRIVATE mozillavpn_daemon)
 
-add_definitions(-DPROTOCOL_VERSION=\"1\")
-
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 add_go_library(netfilter ${CMAKE_SOURCE_DIR}/linux/netfilter/netfilter.go)
 target_link_libraries(mozillavpn PRIVATE netfilter)

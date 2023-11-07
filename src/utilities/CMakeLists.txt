@@ -48,7 +48,7 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxutils.h
     )
 
-    target_link_libraries(mozillavpn_utilities PRIVATE mozillavpn_daemon)
+    target_link_libraries(mozillavpn_utilities PUBLIC mozillavpn_daemon)
 elseif(${MZ_PLATFORM_NAME} STREQUAL "ios")
     target_sources(mozillavpn_utilities INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h
