@@ -428,6 +428,40 @@ describe('Onboarding', function() {
     assert.equal(onboardingCompletedEvents.length, 1);
   });
 
+  it.only('Onboarding slide impression events are recorded', async () => {
+    //Verify that dataCollectionScreen event is recorded
+    const dataCollectionScreenEvents = await vpn.gleanTestGetValue("impression", "dataCollectionScreen", "main");
+    assert.equal(dataCollectionScreenEvents.length, 1);
+    const dataCollectionScreenEventsExtras = dataCollectionScreenEvents[0].extra;
+    assert.equal(dataScreenTelemetryId, dataCollectionScreenEventsExtras.screen);
+
+    await advanceToSlide(1)
+
+    //Verify that getMorePrivacyScreen event is recorded
+    const getMorePrivacyScreenEvents = await vpn.gleanTestGetValue("impression", "getMorePrivacyScreen", "main");
+    assert.equal(getMorePrivacyScreenEvents.length, 1);
+    const getMorePrivacyScreenEventsExtras = getMorePrivacyScreenEvents[0].extra;
+    assert.equal(privacyScreenTelemetryId, getMorePrivacyScreenEventsExtras.screen);
+
+    await advanceToSlide(2)
+
+    //Verify that installOn5DevicesScreen event is recorded
+    const installOn5DevicesScreenEvents = await vpn.gleanTestGetValue("impression", "installOn5DevicesScreen", "main");
+    assert.equal(installOn5DevicesScreenEvents.length, 1);
+    const installOn5DevicesScreenEventsExtras = installOn5DevicesScreenEvents[0].extra;
+    assert.equal(devicesScreenTelemetryId, installOn5DevicesScreenEventsExtras.screen);
+
+    await advanceToSlide(3)
+
+    //Verify that connectOnStartupScreen event is recorded
+    const connectOnStartupScreenEvents = await vpn.gleanTestGetValue("impression", "connectOnStartupScreen", "main");
+    assert.equal(connectOnStartupScreenEvents.length, 1);
+    const connectOnStartupScreenEventsExtras = connectOnStartupScreenEvents[0].extra;
+    assert.equal(startScreenTelemetryId, connectOnStartupScreenEventsExtras.screen);
+
+  });
+
+
   it('Data slide events are recorded', async () => {
     await vpn.gleanTestReset();
 
