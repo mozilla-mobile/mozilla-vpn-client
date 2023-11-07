@@ -77,7 +77,7 @@ MZViewBase {
 
             Layout.fillWidth: true
             Layout.rightMargin: MZTheme.theme.windowMargin
-            labelText: "3 minute timers for session pings"
+            labelText: "3 minute timers for vpnsession and daemonsession pings"
             subLabelText: "Session pings typically send every 3 hours when a session is active. This shortens the period to 3 minutes. Will take effect on subsequent VPN activation."
             isChecked: MZSettings.shortTimerSessionPing
             showDivider: false
