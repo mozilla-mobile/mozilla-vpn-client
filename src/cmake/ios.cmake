@@ -87,9 +87,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
 
-## Hack: IOSUtils needs QtGui internals...
-target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
-
 # iOS platform source files
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.cpp

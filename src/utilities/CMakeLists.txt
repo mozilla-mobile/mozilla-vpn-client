@@ -49,7 +49,12 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "ios")
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.mm
     )
 
-    target_link_libraries(mozillavpn_utilities PUBLIC mozillavpn_theme)
+    ## Hack: IOSUtils needs QtGui internals...
+    target_include_directories(mozillavpn_utilities PUBLIC ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+    target_link_libraries(mozillavpn_utilities PUBLIC
+        mozillavpn_theme
+        mozillavpn_qmlengineholder
+    )
 endif()
 
 target_include_directories(mozillavpn_utilities PRIVATE
