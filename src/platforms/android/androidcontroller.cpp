@@ -114,12 +114,12 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventVpnConfigPermissionResponse, this,
-      [](const QString& parcelBody) {
+      [](bool granted) {
         ConnectionManager* connectionManager =
             MozillaVPN::instance()->connectionManager();
         connectionManager->startHandshakeTimer();
 
-        parcelBody == "granted"
+        granted
             ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
             : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       },
