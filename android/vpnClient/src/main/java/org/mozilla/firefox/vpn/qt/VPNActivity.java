@@ -188,7 +188,14 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
       // At this point, the user has made a selection on the system config permission modal to either allow or not allow
       // the vpn configuration to be created, so it is safe to run activation retries via ConnectionManager::startHandshakeTimer()
       // without the possibility or re-prompting (flickering) the modal while it is currently being displayed  
-      onServiceMessage(EVENT_VPN_CONFIG_PERMISSION_RESPONSE,"");
+      String result;
+      if(resultCode == RESULT_OK) {
+        result = "granted";
+      }
+      else {
+        result = "denied";
+      }
+      onServiceMessage(EVENT_VPN_CONFIG_PERMISSION_RESPONSE,result);
       if( resultCode == RESULT_OK ){
         // Prompt accepted, tell service to retry.
         dispatchParcel(ACTION_RESUME_ACTIVATE,"");

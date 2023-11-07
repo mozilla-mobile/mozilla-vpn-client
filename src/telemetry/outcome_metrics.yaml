@@ -214,3 +214,35 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
     expires: never
+  onboarding_ntwrk_perm_granted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has allowed the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+    expires: never
+  onboarding_ntwrk_perm_denied:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has denied the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+    expires: never
