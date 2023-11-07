@@ -718,7 +718,7 @@ interaction:
     send_in_pings:
         - main
     description: |
-        The user has clicked get started in onboarding
+        The user has clicked approve mozilla vpn in onboarding
     bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:

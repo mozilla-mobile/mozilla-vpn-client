@@ -338,7 +338,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has viewed the "data collection" onboarding slide.
+      The user has viewed the data collection onboarding slide.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -355,7 +355,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has viewed the "get more privacy" onboarding slide.
+      The user has viewed the get more privacy onboarding slide.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -372,7 +372,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has viewed the "install on 5 devices" onboarding slide.
+      The user has viewed the install on 5 devices onboarding slide.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -389,7 +389,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has viewed the "connect on startup" onboarding slide.
+      The user has viewed the connect on startup onboarding slide.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -406,7 +406,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has viewed the "grant network permissions" onboarding slide.
+      The user has viewed the grant network permissions onboarding slide.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
