@@ -119,6 +119,7 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -no-feature-textodfwriter `
   -no-feature-networklistmanager `
   -no-feature-dbus `
+  -skip qtgraphs `
   -skip qt3d  `
   -skip qtdoc `
   -skip qtgrpc `

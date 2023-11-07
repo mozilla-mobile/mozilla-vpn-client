@@ -48,7 +48,7 @@ task-defaults:
 windows/opt:
     fetches:
         toolchain:
-            - qt-windows-x86_64-6.6.0
+            - qt-windows-x86_64-6.2.4
     description: "Windows Build"
     treeherder:
         symbol: B
