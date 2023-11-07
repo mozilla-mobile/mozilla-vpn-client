@@ -197,6 +197,7 @@ outcome:
         - interaction
     notification_emails:
         - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
     expires: never
   onboarding_completed:
     type: event
@@ -213,6 +214,7 @@ outcome:
         - interaction
     notification_emails:
         - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
     expires: never
   onboarding_ntwrk_perm_granted:
     type: event
@@ -229,6 +231,7 @@ outcome:
         - interaction
     notification_emails:
         - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
     expires: never
   onboarding_ntwrk_perm_denied:
     type: event
@@ -245,4 +248,5 @@ outcome:
         - interaction
     notification_emails:
         - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
     expires: never

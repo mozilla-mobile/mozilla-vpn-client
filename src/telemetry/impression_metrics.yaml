@@ -347,6 +347,7 @@ impression:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
   get_more_privacy_screen:
@@ -364,6 +365,7 @@ impression:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
   install_on_5_devices_screen:
@@ -381,6 +383,7 @@ impression:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
   connect_on_startup_screen:
@@ -398,6 +401,7 @@ impression:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
   network_permissions_screen:
@@ -415,5 +419,6 @@ impression:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
