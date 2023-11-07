@@ -24,8 +24,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y aspell aspell-en $(./scripts/linux/getdeps.py -b linux/debian/control)
-          pip3 install -r requirements.txt
-
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install -r requirements.txt
       - name: Importing translation files
         shell: bash
         run: |

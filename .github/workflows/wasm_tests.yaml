@@ -109,11 +109,13 @@ jobs:
         with:
           name: WebAssembly Build Qt6
           path: build/
-
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install -r requirements.txt
       - name: Install test dependecies
         run: |
           sudo apt install --no-upgrade firefox xvfb -y
-          pip3 install -r requirements.txt
           npm install
 
       - name: Running ${{ matrix.test.name }} Tests
