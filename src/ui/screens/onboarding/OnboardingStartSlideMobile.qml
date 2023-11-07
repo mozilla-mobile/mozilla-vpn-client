@@ -13,8 +13,6 @@ import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 ColumnLayout {
     id: root
 
-    property string telemetryScreenId: "network_permissions"
-
     signal nextClicked()
     signal backClicked()
 
