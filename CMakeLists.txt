@@ -39,7 +39,7 @@ endif()
 add_compile_definitions("$<$<CONFIG:Debug>:MZ_DEBUG>")
 add_compile_definitions("MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
-message("Build for platform '${MZ_PLATFORM_NAME}'")
+message("Building for platform '${MZ_PLATFORM_NAME}'")
 
 # Enable testing
 include(CTest)
