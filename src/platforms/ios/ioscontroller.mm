@@ -165,8 +165,9 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
       vpnConfigPermissionResponseCallback:^(BOOL granted) {
         ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
         connectionManager->startHandshakeTimer();
-      
-        granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record() :  mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
+
+        granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
+                : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       }];
 }
 

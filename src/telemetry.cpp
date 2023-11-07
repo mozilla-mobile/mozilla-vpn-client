@@ -95,7 +95,7 @@ void Telemetry::initialize() {
     }
 
     if (state == App::StateOnboarding) {
-      if(!SettingsHolder::instance()->onboardingStarted()) {
+      if (!SettingsHolder::instance()->onboardingStarted()) {
         mozilla::glean::outcome::onboarding_started.record();
       }
     }

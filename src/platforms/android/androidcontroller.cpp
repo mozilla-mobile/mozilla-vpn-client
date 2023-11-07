@@ -119,8 +119,9 @@ AndroidController::AndroidController() {
             MozillaVPN::instance()->connectionManager();
         connectionManager->startHandshakeTimer();
 
-        parcelBody == "granted" ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record() :  mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
-
+        parcelBody == "granted"
+            ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
+            : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       },
       Qt::QueuedConnection);
 }
