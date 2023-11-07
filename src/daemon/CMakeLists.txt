@@ -136,7 +136,7 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
     )
 
     find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(mozillavpn_daemon PRIVATE Qt6::DBus)
+    target_link_libraries(mozillavpn_daemon PUBLIC Qt6::DBus)
 
     add_definitions(-DPROTOCOL_VERSION=\"1\")
     set(DBUS_GENERATED_SOURCES)
