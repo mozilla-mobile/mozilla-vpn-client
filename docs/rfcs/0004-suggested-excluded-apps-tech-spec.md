@@ -36,7 +36,20 @@ This work is broken into four sections, with the bulk of code coming in the midd
 
 -   (3-5 points) Answer the open questions above
 -   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
-    -   Current proposal for format: Individual text files for each platform (`android.txt`, `linux.txt`, etc.) in a specific directory. Each line of the file will be a single path, or bundle ID, or whatever we end up using as an identifier. (See "Other options considered" section for why this is the current proposal.) Anything after a `#` on a line is considered a comment, and is ignored.
+    - The document format will be a single JSON file for all platforms. Within each platform there will be an array of IDs for the suggested apps. These will each be an array, and we'll only look at the first item in the array - if a second string exists in the array will be considered comments (as JSON doesn't have the concept of comments). (This is preferred to keys/values for binary/comments compactness/legibility.)
+    ```
+    {
+        "android":
+            [
+                ["my.app.identifier", "an optional comment"],
+                ["my.other.app.identifier"]
+            ],
+        "linux":
+            [
+                ["whatever.identifier.linux.uses", "comments are still optional"]
+            ]
+    }
+```
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
     -   From Santiago: <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>
@@ -105,9 +118,9 @@ The goals for the file format:
 Initially, there was one additional goal (no longer consideration):
 -   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant.
 
-Other options considered included CSV, YAML, and JSON. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or CSV) would need to be structured in a specific way. While we already have a JSON parser that we've custom wrote that could be used for this validation, a simple list is better than JSON for the first two goals of the file format.
+Other options considered included CSV, YAML, and plain text files. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or CSV) would need to be structured in a specific way. 
 
-Ultimately, the multiple text files seemed simpler (and thus easier to build) - there aren't the same parsing concerns and it's easy for contributors.
+Ultimately, JSON version seemed simpler (and thus easier to build) - there aren't the same parsing concerns and it's easy for contributors.
 
 Metrics
 -------
