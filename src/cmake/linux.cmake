@@ -70,10 +70,10 @@ install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/64x64/mozillavpn.png
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
-install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
+install(FILES ${CMAKE_SOURCE_DIR}/src/daemon/platforms/linux/org.mozilla.vpn.conf
     DESTINATION /usr/share/dbus-1/system.d)
 
-configure_file(${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.dbus.service.in
+configure_file(${CMAKE_SOURCE_DIR}/src/daemon/platforms/linux/org.mozilla.vpn.dbus.service.in
     ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
     DESTINATION /usr/share/dbus-1/system-services)
