@@ -516,7 +516,9 @@ interaction:
     send_in_pings:
         - main
     description: |
-        The user has unchecked the data collection checkbox
+        The user has unchecked the data collection checkbox. 
+        If in onboarding (denoted by screen:data_collection), 
+        this does not actually disable data collection until onboarding is completed
     bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
