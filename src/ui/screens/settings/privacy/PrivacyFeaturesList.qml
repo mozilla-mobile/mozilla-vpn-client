@@ -11,7 +11,7 @@ import components 0.1
 ColumnLayout {
     id: root
 
-    property bool recordTelemetry: false
+    property bool isOnboarding: false
     property string telemetryScreenId
 
     signal settingClicked(dnsProviderFlags: int, active: bool)
@@ -63,7 +63,7 @@ ColumnLayout {
                 // We are not changing anything interesting for the privacy/dns dialog.
                 if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
                     MZSettings.dnsProviderFlags = dnsProviderFlags;
-                    if(root.recordTelemetry) recordTelemetry()
+                    if(root.isOnboarding) recordTelemetry()
                     return;
                 }
 

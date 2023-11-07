@@ -555,8 +555,6 @@ describe('Onboarding', function() {
     });
 
     it('Data slide events are recorded', async () => {
-      await vpn.gleanTestReset();
-
       await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
       //Verify that dataCollectionEnabled event is recorded
@@ -579,6 +577,8 @@ describe('Onboarding', function() {
       assert.equal(privacyNoticeSelectedEvents.length, 1);
       const privacyNoticeSelectedEventsExtras = privacyNoticeSelectedEvents[0].extra;
       assert.equal(dataScreenTelemetryId, privacyNoticeSelectedEventsExtras.screen);
+
+      await vpn.gleanTestReset();
 
       //Verify that continueSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());

@@ -49,7 +49,7 @@ ColumnLayout {
         Layout.rightMargin: 32
         Layout.fillWidth: true
 
-        recordTelemetry: true
+        isOnboarding: true
         telemetryScreenId: root.telemetryScreenId
     }
 
