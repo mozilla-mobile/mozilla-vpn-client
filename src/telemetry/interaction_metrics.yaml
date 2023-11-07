@@ -735,7 +735,7 @@ interaction:
     send_in_pings:
         - main
     description: |
-        The user has clicked the data step navigation button in onboarding
+        The user has clicked the data step progress bar button in onboarding
     bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -752,7 +752,7 @@ interaction:
     send_in_pings:
         - main
     description: |
-        The user has clicked the privacy step navigation button in onboarding
+        The user has clicked the privacy step progress bar button in onboarding
     bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
@@ -769,7 +769,7 @@ interaction:
     send_in_pings:
         - main
     description: |
-        The user has clicked the devices step navigation button in onboarding
+        The user has clicked the devices step progress bar button in onboarding
     bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
