@@ -2,9 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-find_package(Qt6 REQUIRED COMPONENTS DBus)
-target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
 pkg_check_modules(libcap REQUIRED IMPORTED_TARGET libcap)
@@ -35,42 +32,10 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.h
 )
 
-# Linux daemon source files
-target_sources(mozillavpn PRIVATE
-    ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
-    ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/daemon.cpp
-    ${CMAKE_SOURCE_DIR}/src/daemon/daemon.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/dnsutils.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/iputils.h
-    ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbustypeslinux.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dnsutilslinux.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dnsutilslinux.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxdaemon.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/pidtracker.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/pidtracker.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
-)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/daemon)
+target_link_libraries(mozillavpn PRIVATE mozillavpn_daemon)
 
 add_definitions(-DPROTOCOL_VERSION=\"1\")
-
-set(DBUS_GENERATED_SOURCES)
-qt_add_dbus_interface(DBUS_GENERATED_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.dbus.xml dbus_interface)
-qt_add_dbus_adaptor(DBUS_GENERATED_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.dbus.xml
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
-    ""
-    dbus_adaptor)
-target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 add_go_library(netfilter ${CMAKE_SOURCE_DIR}/linux/netfilter/netfilter.go)

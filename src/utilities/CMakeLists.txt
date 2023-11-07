@@ -15,6 +15,13 @@ target_sources(mozillavpn_utilities INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.h
 )
 
+if(UNIX)
+    target_sources(mozillavpn_utilities INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/signalhandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/signalhandler.h
+    )
+endif()
+
 if(${MZ_PLATFORM_NAME} STREQUAL "android")
     target_sources(mozillavpn_utilities INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidcommons.cpp
@@ -41,8 +48,7 @@ elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxutils.h
     )
 
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(mozillavpn_utilities PRIVATE Qt6::DBus)
+    target_link_libraries(mozillavpn_utilities PRIVATE mozillavpn_daemon)
 elseif(${MZ_PLATFORM_NAME} STREQUAL "ios")
     target_sources(mozillavpn_utilities INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h

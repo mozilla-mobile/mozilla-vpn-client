@@ -38,31 +38,8 @@ target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.cpp
@@ -94,66 +71,16 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )
 
-# Build the Wireguard Go tunnel
-file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
-set(WIREGUARD_GO_ENV
-    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-    CC=${CMAKE_C_COMPILER}
-    CXX=${CMAKE_CXX_COMPILER}
-    GOROOT=${GOLANG_GOROOT}
-    GOOS=darwin
-    CGO_ENABLED=1
-    GO111MODULE=on
-    CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
-    CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
-)
-
-if(CMAKE_OSX_ARCHITECTURES)
-    foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
-        string(REPLACE "x86_64" "amd64" GOARCH ${OSXARCH})
-        add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
-            COMMENT "Building wireguard-go for ${OSXARCH}"
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-            DEPENDS
-                ${WIREGUARD_GO_DEPS}
-                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
-                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-            COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV} GOARCH=${GOARCH}
-                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
-                        -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
-        )
-        list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
-    endforeach()
-
-    add_custom_target(build_wireguard_go
-        COMMENT "Building wireguard-go"
-        DEPENDS ${WG_GO_ARCH_BUILDS}
-        COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
-    )
-else()
-    # This only builds for the host architecture.
-    add_custom_target(build_wireguard_go
-        COMMENT "Building wireguard-go"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-        DEPENDS
-            ${WIREGUARD_GO_DEPS}
-            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
-            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-        COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV}
-                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
-                    -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-    )
-endif()
-add_dependencies(mozillavpn build_wireguard_go)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/daemon)
+target_link_libraries(mozillavpn PRIVATE mozillavpn_daemon)
 osx_bundle_files(mozillavpn
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+    FILES ${CMAKE_BINARY_DIR}/src/daemon/wireguard-go
     DESTINATION Resources/utils
 )
 
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)
-osx_bundle_files(mozillavpn FILES
+osx_bundle_files(mozillavpn mozillavpn FILES
     $<TARGET_FILE:mozillavpnnp>
     ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
     DESTINATION Resources/utils

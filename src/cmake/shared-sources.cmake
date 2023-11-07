@@ -193,14 +193,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc
 )
 
-# Signal handling for unix platforms
-if(UNIX)
-     target_sources(shared-sources INTERFACE
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.cpp
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.h
-     )
-endif()
-
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
      target_sources(shared-sources INTERFACE

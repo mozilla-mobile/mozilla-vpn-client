@@ -27,43 +27,12 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
      ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsfirewall.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsfirewall.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowssplittunnel.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowssplittunnel.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.cpp
@@ -84,6 +53,9 @@ else()
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/daemon)
+target_link_libraries(mozillavpn PRIVATE mozillavpn_daemon)
 
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)

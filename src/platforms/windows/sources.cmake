@@ -5,4 +5,8 @@
 target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/windowsdaemonserver.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/windowsdaemonserver.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/windowsdaemontunnel.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/windowsdaemontunnel.h
 )

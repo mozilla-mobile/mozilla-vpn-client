@@ -27,7 +27,7 @@ function(osx_bundle_files TARGET)
         "DESTINATION"
         "FILES"
         ${ARGN})
-    
+
     if(NOT BUNDLE_DESTINATION)
         set(BUNDLE_DESTINATION Resources)
     endif()
