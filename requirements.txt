@@ -8,9 +8,9 @@ appdirs==1.4.4 \
     --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
     --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
     # via glean-parser
-aqtinstall==3.1.7 \
-    --hash=sha256:101ffb2e164a367912d4e05c2edd141761c4ea78641368990e7bd55d966b968c \
-    --hash=sha256:f3b4f09dffe913520817c52f29415f5e720da51a1e48f91ecd1d9a376d5e0aac
+aqtinstall==3.1.8 \
+    --hash=sha256:3edd509c20b2d9d05e8b766cf84bf4460e8ce64a0868c1a09fa78a8030978be2 \
+    --hash=sha256:877779978dde0a5dcaffbe16f3d95eb0aa17eebbfa29a2ac053dfe0e949adaa9
     # via -r requirements.in
 attrs==23.1.0 \
     --hash=sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04 \
