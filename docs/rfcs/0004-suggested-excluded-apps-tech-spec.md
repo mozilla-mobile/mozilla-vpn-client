@@ -88,7 +88,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 -   (1-2 points) Update sort when something is checked or unchecked. The list dynamically updates when a user is on it.
 -   (1-2 points) Ensure search works, shows one section, is alphabetically sorted
 -   (2-5 points) Ensure accessibility is up to date
--   (1 point) Add metrics for how many suggested (and non-suggested) apps are excluded\
+-   (1 point) Add metrics for how many suggested (and non-suggested) apps are excluded
 
 ### Day 2
 
