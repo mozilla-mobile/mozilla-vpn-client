@@ -3,11 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 ## Download and extract wintun.dll and friends.
-file(DOWNLOAD https://www.wintun.net/builds/wintun-0.12.zip
-    ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun.zip
-    EXPECTED_HASH SHA256=eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df)
 
-file(ARCHIVE_EXTRACT INPUT ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.deps)
+set(WINTUN_FOLDER $ENV{WINTUN_FOLDER} CACHE STRING "Path to Extracted Wintun Folder")
+
+if(NOT WINTUN_FOLDER)
+    message("Downloading Wintun, as WINTUN_FOLDER is unset")
+    file(DOWNLOAD https://www.wintun.net/builds/wintun-0.12.zip
+        ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun.zip
+        EXPECTED_HASH SHA256=eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df
+    )
+    file(ARCHIVE_EXTRACT INPUT ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.deps)
+
+    set(WINTUN_FOLDER ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun) 
+endif()
 
 ## Build the tunnel DLL
 add_custom_target(tunneldll ALL
@@ -25,6 +33,6 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_D
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/tunnel.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/.deps/wintun/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
+    ${WINTUN_FOLDER}/bin/${CMAKE_SYSTEM_PROCESSOR}/wintun.dll
     DESTINATION .
 )
