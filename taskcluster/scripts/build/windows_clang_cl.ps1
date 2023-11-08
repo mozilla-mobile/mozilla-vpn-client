@@ -80,6 +80,7 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
         -DCMAKE_BUILD_TYPE=Release `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
+        -DWINTUN_FOLDER="$FETCHES_PATH\wintun" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
 }
 cmake --build $BUILD_DIR

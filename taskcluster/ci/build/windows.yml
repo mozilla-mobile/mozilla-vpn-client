@@ -20,6 +20,7 @@ task-defaults:
             - win-perl
             - win-sentry-cli
             - win-conda
+            - wintun
         build:
             - artifact: mozillavpn-sources.tar.gz
         toolchain:
