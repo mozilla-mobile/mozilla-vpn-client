@@ -35,7 +35,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 ### Prerequisites (15-26 points total)
 
 -   (3-5 points) Answer the open questions above
--   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). These docs will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
+-   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). This JSON doc will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
     - The document format will be a single JSON file for all platforms. Within each platform there will be an array of IDs for the suggested apps. These will each be an array, and we'll only look at the first item in the array - if a second string exists in the array will be considered comments (as JSON doesn't have the concept of comments). (This is preferred to keys/values for binary/comments compactness/legibility.)
     ```
     {
@@ -49,11 +49,11 @@ This work is broken into four sections, with the bulk of code coming in the midd
                 ["whatever.identifier.linux.uses", "comments are still optional"]
             ]
     }
-```
+    ```
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
-    -   From Santiago: <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>
-    -   Santiago list for Android: <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
+        -   The precise methods to determine whether an app belongs on the list is currently an open question, and one that will be decided separately.
+    -   From Santiago (this is a reminder to review these later): <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>, for Android <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
 -   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
 -   (2-5 points) Create initial list of recommended app exclusions
 
@@ -64,7 +64,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
     -   This will be run by the app for desktop, and in the daemon on Android. (iOS does not have split tunnel.)
         -   After running the job, we will create timer for noon the following day to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if the deadline has passed we'll immediately run the task.
         -   We're not concerned if the user's clock shifts. The vast majority of these daily checks will not result in any notification to the user (except in the rare case that the user consistently adds new apps daily that happen to be on the suggested list). The worst case scenario would be that a user gets two notifications in a 24 hour period. This isn't the planned user interaction, but given the low likelihood (neither clock changes nor the installation of new suggested apps is a common event) it's not worth building a system that considers this.
--   (3-5 points) Is there one or more new apps?
+-   (3-5 points) Is there one or more new apps? (This could be due to the user installing a new app which is on the suggested list, or a the suggested list being updated with an app the user already has installed.)
     -   Check against setting - if we have ever sent a notification for this app before, don't send one (this should be done off the app's domain name or something, not marketing name - that can change)
     -   Pop an OS-level notification (on Android, use a suggestion channel). The text is intentionally generic, and makes sense if there is one new app or multiple.
     -   Add new app(s) to "have sent notification" list
@@ -100,12 +100,18 @@ These are important components that we are committed to delivering, but are outs
     -   Create a metric for when the daily job was successful, and another one for when it fails.
     -   A metric should be recorded when the notification is sent
 
+Rolling back the JSON file
+---------------------
+If we mis-add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file.
+
+[This section will be written after Monday's meeting, as it greatly depends on where the document is served from.]
+
 Other options considered
 ------------------------
 
 Design and research went through several iterations, so the [designs](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0) were set before this tech spec was written. (See [completed tickets in the epic](https://mozilla-hub.atlassian.net/browse/VPN-4412) for more background.)
 
-Other options considered included dynamically serving the suggested lists from addons or our repo or Guardian, each of which added complexity for hosting/validating. With the rarity of the list being updated (and lack of time-sensitivity when it does), this draft bundles the lists with the app. Hosting the list in Guardian was difficult (which is a private repo, so the list would need to be hosted elsewhere to allow public suggestions).
+Other options considered included dynamically serving the suggested lists from addons or our repo or Guardian, each of which added complexity for hosting and validating the format. With the rarity of the list being updated (and lack of time-sensitivity when it does), this draft bundles the lists with the app. Hosting the list in Guardian was difficult (which is a private repo, so the list would need to be hosted elsewhere to allow public suggestions).
 
 ### Other options considered for suggested app files
 
@@ -113,10 +119,10 @@ The goals for the file format:
 -   Easy to read by humans
 -   Easy for humans to add to, no matter their level of technical proficiency
 -   Easy for us to parse in the app
--   Allowing comments in the file. While we still could structure a text file to allow comments, this became less important when the plan became "one file per platform, one app per line".
+-   Allowing comments in the file.
 
 Initially, there was one additional goal (no longer consideration):
--   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant.
+-   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant. (However, if one file per platform seems more streamlined, it's still acceptable.)
 
 Other options considered included CSV, YAML, and plain text files. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or CSV) would need to be structured in a specific way. 
 
