@@ -1,0 +1,35 @@
+{
+  "api_version": "0.1",
+  "id": "message_fpn_trial_subscription_expiring",
+  "name": "FPN trial subscription expiring",
+  "type": "message",
+  "conditions": {
+    "javascript": "isFpnTrial.js"
+  },
+  "message": {
+    "id": "message_fpn_trial_subscription_expiring",
+    "date": 1699470000,
+    "title": "Don’t lose your protection – get 20% off an annual plan",
+    "subtitle": "We hope you’ve been enjoying your 6-month free trial of Mozilla VPN. Your free trial is coming to an end on November 15, 2023.",
+    "badge": "warning",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Want to keep protecting your privacy online? Look for a coupon code to get 20% off an annual plan, coming to your inbox Nov 15th."
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "Thanks for using Mozilla VPN!"
+      },
+      {
+        "id": "c_3",
+        "type": "button",
+        "style": "link",
+        "content": "Get help",
+        "javascript": "getHelp.js"
+      }
+    ]
+  }
+}
