@@ -6,6 +6,7 @@
 #include "Mozilla-Swift.h"
 #include "connectionmanager.h"
 #include "feature.h"
+#include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -161,9 +162,12 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
       onboardingCompletedCallback:^() {
         MozillaVPN::instance()->onboardingCompleted();
       }
-      vpnConfigPermissionResponseCallback:^() {
+      vpnConfigPermissionResponseCallback:^(BOOL granted) {
         ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
         connectionManager->startHandshakeTimer();
+
+        granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
+                : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       }];
 }
 

@@ -8,10 +8,13 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
     objectName: "onboardingStartSlide"
+
+    property string telemetryScreenId: "connect_on_startup"
 
     signal nextClicked()
     signal backClicked()
@@ -52,7 +55,20 @@ ColumnLayout {
         leftMargin: 0
         isChecked: MZSettings.startAtBoot
         showDivider: false
-        onClicked: MZSettings.startAtBoot = !MZSettings.startAtBoot
+        onClicked: {
+            MZSettings.startAtBoot = !MZSettings.startAtBoot
+
+            if (MZSettings.startAtBoot) {
+                Glean.interaction.connectOnStartupEnabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+            else {
+                Glean.interaction.connectOnStartupDisabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+        }
     }
 
     Item {
@@ -82,7 +98,13 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalGetStarted
 
-        onClicked: VPN.onboardingCompleted();
+        onClicked: {
+            Glean.interaction.getStartedSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            VPN.onboardingCompleted();
+        }
     }
 
     MZLinkButton {
@@ -98,6 +120,12 @@ ColumnLayout {
 
         labelText: MZI18n.GlobalGoBack
 
-        onClicked: root.backClicked()
+        onClicked: {
+            Glean.interaction.goBackSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.backClicked()
+        }
     }
 }
