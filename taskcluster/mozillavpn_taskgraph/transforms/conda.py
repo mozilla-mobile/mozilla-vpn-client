@@ -11,7 +11,7 @@ transforms = TransformSequence()
 
 ARCH_MAP = {
     "arm64":"android_arm64_v8a",
-    "armv7": "armeabi-v7a",
+    "armv7": "android_armv7",
     "x86":"android_x86",
     "x86_64":"android_x86_64"
 }
