@@ -82,7 +82,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 
 -   (2 points) Run the task on the launch of screen
     -   Update the "have seen these apps" settings list with all suggested apps. (If a new suggested app is install and the Settings screen is opened by a user before the daily job runs to send a notification, we thus never send a notification. This behavior was confirmed by Santiago.)
--   (1-2 points) Add recommended section (only if 1 more more apps on the system are suggested). Since we've just updated the settings list of recommended apps on the system (in prior bullet point), use this settings list - if any system app we discover also appears on that list, it goes in the recommended section.
+-   (1-2 points) Add recommended section (only if 1 or more apps on the system are suggested). Since we've just updated the settings list of recommended apps on the system (in prior bullet point), use this settings list - if any system app we discover also appears on that list, it goes in the recommended section.
 -   (1 point) Sort recommended section - selected ones at top alphabetically, then the reset alphabetically
 -   (1 point) Sort "others" section - selected ones at top alphabetically, then the reset alphabetically
 -   (1-2 points) Update sort when something is checked or unchecked. The list dynamically updates when a user is on it.
