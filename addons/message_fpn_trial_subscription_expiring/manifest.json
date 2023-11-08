@@ -2,6 +2,7 @@
   "api_version": "0.1",
   "id": "message_fpn_trial_subscription_expiring",
   "name": "FPN trial subscription expiring",
+  "translatable": false,
   "type": "message",
   "conditions": {
     "javascript": "isFpnTrial.js"
