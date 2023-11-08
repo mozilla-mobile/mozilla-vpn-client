@@ -54,8 +54,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxdaemon.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/pidtracker.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/pidtracker.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
 )

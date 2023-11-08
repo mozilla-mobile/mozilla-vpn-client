@@ -11,7 +11,6 @@
 #include "daemon/daemon.h"
 #include "dnsutilslinux.h"
 #include "iputilslinux.h"
-#include "pidtracker.h"
 #include "wireguardutilslinux.h"
 
 class DbusAdaptor;
