@@ -68,9 +68,12 @@ LINUX="
 "
 
 MACOS="
+  -skip qtwayland  \
   -appstore-compliant \
   -no-feature-qdbus \
   -no-dbus \
+  -feature-texthtmlparser \ 
+  -feature-xml \
   -- \
   -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
 "
@@ -97,16 +100,84 @@ bash ./configure \
   -silent \
   -nomake tests \
   -make libs \
-  -sql-sqlite \
-  -skip qt3d \
-  -skip webengine \
-  -skip qtmultimedia \
-  -skip qtserialport \
-  -skip qtsensors \
-  -skip qtgamepad \
-  -skip qtwebchannel \
-  -skip qtandroidextras \
+  -no-feature-dynamicgl \
+  -no-feature-sql-odbc \
+  -no-feature-pixeltool \
+  -no-feature-qdbus \
+  -no-feature-qtattributionsscanner \
+  -no-feature-qtdiag \
+  -no-feature-qtplugininfo \
+  -no-feature-pixeltool \
+  -no-feature-distancefieldgenerator \
+  -no-feature-designer \
+  -no-feature-assistant \
+  -no-feature-style-fusion \
+  -no-feature-style-windows \
+  -no-feature-style-windowsvista \
+  -no-feature-quickcontrols2-material \
+  -no-feature-quickcontrols2-macos \
+  -no-feature-quickcontrols2-imagine \
+  -no-feature-quickcontrols2-ios \
+  -no-feature-quickcontrols2-universal \
+  -no-feature-quicktemplates2-calendar \
+  -no-feature-quicktemplates2-hover \
+  -no-feature-quicktemplates2-multitouch \
+  -no-feature-qml-xml-http-request \
+  -no-feature-qml-network \
+  -no-feature-tiff \
+  -no-feature-webp \
+  -no-feature-cups \
+  -no-feature-style-fusion \
+  -no-feature-style-mac \
+  -no-feature-style-windows \
+  -no-feature-textmarkdownwriter \
+  -no-feature-cssparser \
+  -no-feature-qmake \
+  -no-feature-itemmodeltester \
+  -no-feature-quick-sprite \
+  -no-feature-quick-tableview \
+  -no-feature-quick-treeview \
+  -no-feature-sql-sqlite \
+  -no-feature-sql \
+  -no-feature-textodfwriter \
+  -no-feature-networklistmanager \
+  -no-feature-dbus \
+  -no-feature-widgets \
+  -no-feature-xml \
+  -skip qt3d  \
+  -skip qtdoc \
+  -skip qtgrpc \
+  -skip qtconnectivity \
+  -skip qtquickeffectmaker \
+  -skip qtquicktimeline \
+  -skip qtwebengine  \
+  -skip qtlocation \
+  -skip qtmultimedia  \
+  -skip qtserialport  \
+  -skip qtsensors  \
+  -skip qtgamepad  \
+  -skip qtgraphs \
+  -skip qtandroidextras  \
+  -skip qtquick3dphysics \
+  -skip qtactiveqt  \
+  -skip qtcharts  \
+  -skip qtcoap  \
+  -skip qtdatavis3d  \
+  -skip qtgrpc  \
+  -skip qtremoteobjects  \
+  -skip qtlottie  \
+  -skip qtmqtt  \
+  -skip qtopcua  \
+  -skip qtpositioning  \
+  -skip qtquick3d  \
+  -skip qtscxml  \
+  -skip qtserialbus  \
+  -skip qtserialport  \
+  -skip qtspeech  \
+  -skip qtvirtualkeyboard  \
+  -skip qtweb \
   -feature-imageformat_png \
+  -feature-optimize_full \
   -qt-doubleconversion \
   -qt-libpng \
   -qt-zlib \
