@@ -240,5 +240,4 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     });
   });
-
 });
