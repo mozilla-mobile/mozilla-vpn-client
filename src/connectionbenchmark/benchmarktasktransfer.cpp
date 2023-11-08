@@ -43,7 +43,7 @@ void BenchmarkTaskTransfer::handleState(BenchmarkTask::State state) {
 
   if (state == BenchmarkTask::StateActive) {
 #if defined(MZ_DUMMY) || defined(MZ_ANDROID) || defined(MZ_WASM)
-#  if QT_VERSION >= 0x060500 && defined(MZ_ANDROID)
+#  if QT_VERSION >= 0x060800 && defined(MZ_ANDROID)
 #    error Check if QT added support for QDnsLookup::lookup() on Android
 #  endif
 

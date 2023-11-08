@@ -201,4 +201,10 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     }
     super.onActivityResult(requestCode, resultCode, data);
   }
+
+  @Override
+  protected void onDestroy() {
+    unbindService(mConnection);
+    super.onDestroy();
+  }
 }

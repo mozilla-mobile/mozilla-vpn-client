@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 BASE_PREFIX=$(conda info --base)
 if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
@@ -29,7 +30,12 @@ export QT_DIR=$CONDA_PREFIX/Qt
 # QT_Host Tools
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 # QT Android Tools
-python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all 
+if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all; then
+    echo "Whoops something went wrong. "
+    echo "If no pri was found make sure your ANDROID_ARCH is one of:"
+    python -m aqt list-qt $HOST android --arch $QT_VERSION
+    exit 1
+fi
 
 echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
 
