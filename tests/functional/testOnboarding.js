@@ -403,7 +403,6 @@ describe('Onboarding', function() {
     const devicesScreenTelemetryId = "install_on_5_devices";
     const startScreenTelemetryId = "connect_on_startup";
 
-
     it('Onboarding started event is recorded', async () => {
       await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
       let onboardingStartedEvents = await vpn.gleanTestGetValue("outcome", "onboardingStarted", "main");
@@ -578,6 +577,8 @@ describe('Onboarding', function() {
       const privacyNoticeSelectedEventsExtras = privacyNoticeSelectedEvents[0].extra;
       assert.equal(dataScreenTelemetryId, privacyNoticeSelectedEventsExtras.screen);
 
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
       await vpn.gleanTestReset();
 
       //Verify that continueSelected event is recorded
@@ -643,6 +644,9 @@ describe('Onboarding', function() {
       assert.equal(privacyScreenTelemetryId, goBackSelectedEventsExtras.screen);
 
       await advanceToSlide(1)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
       await vpn.gleanTestReset();
 
       //Verify that continueSelected event is recorded
@@ -700,6 +704,9 @@ describe('Onboarding', function() {
       assert.equal(devicesScreenTelemetryId, goBackSelectedEventsExtras.screen);
 
       await advanceToSlide(2)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
       await vpn.gleanTestReset();
 
       //Verify that continueSelected event is recorded
@@ -737,6 +744,9 @@ describe('Onboarding', function() {
       assert.equal(startScreenTelemetryId, goBackSelectedEventsExtras.screen);
 
       await advanceToSlide(3)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
       await vpn.gleanTestReset();
 
       //For the next test we need data collection enabled due to a race condition between recording

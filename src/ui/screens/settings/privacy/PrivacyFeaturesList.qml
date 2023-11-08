@@ -63,14 +63,14 @@ ColumnLayout {
                 // We are not changing anything interesting for the privacy/dns dialog.
                 if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
                     MZSettings.dnsProviderFlags = dnsProviderFlags;
-                    if(root.isOnboarding) recordTelemetry()
+                    if(root.isOnboarding) recordOnboardingTelemetry()
                     return;
                 }
 
                 settingClicked(dnsProviderFlags, true)
             }
 
-            function recordTelemetry() {
+            function recordOnboardingTelemetry() {
                 switch (modelData.settingValue) {
                 case MZSettings.BlockAds:
                     if (MZSettings.dnsProviderFlags & modelData.settingValue) {
