@@ -5,14 +5,15 @@
   "translatable": false,
   "type": "message",
   "conditions": {
-    "javascript": "isFpnTrial.js"
+    "javascript": "isFpnTrial.js",
+    "locales": [ "en" ]
   },
   "message": {
     "id": "message_fpn_trial_subscription_expiring",
-    "date": 1699470000,
+    "date": 1699473600,
     "title": "Don’t lose your protection – get 20% off an annual plan",
     "subtitle": "We hope you’ve been enjoying your 6-month free trial of Mozilla VPN. Your free trial is coming to an end on November 15, 2023.",
-    "badge": "warning",
+    "badge": "new_update",
     "blocks": [
       {
         "id": "c_1",
