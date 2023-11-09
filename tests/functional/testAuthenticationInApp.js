@@ -668,7 +668,7 @@ describe('User authentication', function() {
             const endedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "loginEnded", "main");
             assert.strictEqual(endedOutcomeEvent.length, 1);
 
-            // Make sure no 2fa outcome event was recorded
+            // Make sure no 2fa outcome event was NOT recorded
             const unwantedEvents = [
                 ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main")),
                 ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main"))
