@@ -129,7 +129,6 @@ sequenceDiagram
     MAC->>NM: connectNative(extensionID)
     NM->>NM: checkIsValid(extensionID)
     NM->>VPN: connect TCP
-    destroy NM
     NM->>MAC: status: vpn-client-up
     Note right of NM: Bridge is now a transparent relay
     MAC->>VPN: get-status
@@ -137,9 +136,7 @@ sequenceDiagram
     MAC->>VPN: activate
     VPN->>MAC: status: connected=true
     MAC->>VPN: get-servers
-    destroy VPN
     VPN->>MAC: serverlist[ "mullad-1", "mullvad-2"]
-    create participant Firefox
     MAC->>Firefox: Set Proxy for Container 001 to "socks5://mullvad-1"
 
 ```
