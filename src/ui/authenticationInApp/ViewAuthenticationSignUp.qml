@@ -44,6 +44,10 @@ MZInAppAuthenticationBase {
         }
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignUp && validatePassword(activeInput().text)
         _buttonOnClicked: (inputText) => {
+                              // This check protects against a bug in VoiceOver.
+                              if !validatePassword(inputText) {
+                                return;
+                              }
                               MZAuthInApp.setPassword(inputText);
                               MZAuthInApp.signUp();
                           }
