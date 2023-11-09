@@ -61,7 +61,7 @@ LocalSocketController::~LocalSocketController() {
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
-  logger.error() << "Error occurred:" << m_socket->errorString();
+  logger.error() << "Error occurred:" << error;
 
   if (m_daemonState != eInitializing) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
@@ -109,6 +109,7 @@ void LocalSocketController::initializeInternal() {
 #endif
 
   logger.debug() << "Connecting to:" << path;
+  m_socket->disconnectFromServer();
   m_socket->connectToServer(path);
 }
 
