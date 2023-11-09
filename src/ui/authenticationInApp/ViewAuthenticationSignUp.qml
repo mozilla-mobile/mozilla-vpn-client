@@ -54,7 +54,7 @@ MZInAppAuthenticationBase {
     _disclaimers: Column {
         Layout.alignment: Qt.AlignHCenter
         MZInAppAuthenticationLegalDisclaimer {
-            _telemetryScreenId: _telemetryScreenId
+            _telemetryScreenId: authSignUp._telemetryScreenId
         }
     }
 
