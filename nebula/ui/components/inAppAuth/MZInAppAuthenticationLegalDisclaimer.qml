@@ -34,8 +34,6 @@ ColumnLayout {
 
             Glean.interaction.privacyNoticeSelected.record({
                 screen: _telemetryScreenId,
-                action: "select",
-                element_id: "privacy_notice",
             });
 
             MZUrlOpener.openUrlLabel("privacyNotice");

@@ -84,7 +84,13 @@ MZInAppAuthenticationBase {
         id: disclaimersLoader
 
         Layout.alignment: Qt.AlignHCenter
-        source: "qrc:/nebula/components/inAppAuth/MZInAppAuthenticationLegalDisclaimer.qml"
+
+        Component.onCompleted: {
+            disclaimersLoader.setSource(
+                "qrc:/nebula/components/inAppAuth/MZInAppAuthenticationLegalDisclaimer.qml",
+                { "_telemetryScreenId": authSignIn._telemetryScreenId }
+            );
+        }
     }
 
     _footerContent: Column {
