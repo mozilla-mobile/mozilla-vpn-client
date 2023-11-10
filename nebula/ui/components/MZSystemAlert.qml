@@ -72,13 +72,7 @@ MZAlert {
                     target: alertBox
                     //% "Background service error"
                     alertText: qsTrId("vpn.alert.backendServiceError")
-                    //% "Restore"
-                    //: Restore a service in case of error.
-                    alertActionText: qsTrId("vpn.alert.restore")
                     visible: true
-                    onActionPressed: ()=>{
-                        VPN.backendServiceRestore();
-                    }
                 }
             },
             State {
