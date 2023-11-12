@@ -21,13 +21,15 @@ Item {
 
     function handleConnectionStateChange() {
         // Notify accessibility client of connection state
-        let notificationText = (logoTitle.text + '. ');
-        if (logoSubtitle.visible)
-            notificationText += (logoSubtitle.text + '. ');
-        if (connectedStateDescription.visible)
-            notificationText += (connectedStateDescription.text + '. ');
+        if (!logoTitle.Accessible.ignored) {
+            let notificationText = (logoTitle.text + '. ');
+            if (logoSubtitle.visible)
+                notificationText += (logoSubtitle.text + '. ');
+            if (connectedStateDescription.visible)
+                notificationText += (connectedStateDescription.text + '. ');
 
-        MZAccessibleNotification.notify(logoTitle, notificationText);
+            MZAccessibleNotification.notify(logoTitle, notificationText);
+        }
     }
 
     Layout.preferredHeight: 318

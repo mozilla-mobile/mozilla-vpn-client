@@ -70,7 +70,7 @@ MZViewBase {
         ColumnLayout {
             spacing: 0
             visible: searchBar.isEmpty
-
+            
             MZRadioDelegate {
                 id: systemLanguageRadioButton
                 objectName: "systemLanguageRadioButton"
@@ -109,7 +109,7 @@ MZViewBase {
                 Layout.leftMargin: 18.5
                 Layout.rightMargin: 18.5
 
-                color: "#E7E7E7"
+                color: MZTheme.theme.input.highlight
             }
         }
 

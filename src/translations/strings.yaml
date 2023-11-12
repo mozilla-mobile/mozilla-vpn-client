@@ -737,6 +737,9 @@ accessibility:
       - Used by screen readers to denote that a particular item is currently selected.
       - For example, given a segmented control with 2 items, where the first item is currently selected. We want the screen reader to read out "Selected, <item name>".
       - The %1 represents the name of the selected item.
+  selected:
+    value: "Selected"
+    comment: Used by screen reader to indicate that a user action selected an item.
 
 freeTrials:
   startYourFreeTrial:
