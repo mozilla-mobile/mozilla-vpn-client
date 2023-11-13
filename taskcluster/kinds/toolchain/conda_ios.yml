@@ -21,6 +21,8 @@ task-defaults:
             - scripts/macos/conda_setup_qt.sh
 
 conda-ios-x86_64-6.2.4:
+        treeherder:
+            symbol: "conda-ios-6.2"
         worker:
             env:
                 QT_VERSION: "6.2.4"
@@ -29,6 +31,8 @@ conda-ios-x86_64-6.2.4:
             toolchain-artifact: public/build/conda-ios.tar.gz
 
 conda-ios-x86_64-6.6.0:
+        treeherder:
+            symbol: "conda-ios-6.6"
         worker:
             env:
                 QT_VERSION: "6.6.0"
