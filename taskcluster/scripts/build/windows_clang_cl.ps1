@@ -31,7 +31,7 @@ $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 # Extract the sources
 $SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
 $SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
-tar -xzvf --dereference (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
+tar -xzvfh (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
