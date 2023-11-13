@@ -21,11 +21,13 @@ This proposal describes Connection Manager behavior during activation. Subsequen
 
 ## Proposed Solution
 
-We will introduce a new object, the Connection Manager, which will be responsible for managing all probes. These probes are stored as distinct states within an enumeration class, `ConnectionManager::State`. The Connection Manager will sequentially cycle through each of these states in a systematic order, only proceeding to the next state if the current probe is successful.
+We will introduce a new object, the Connection Manager, which will be responsible for managing all probes. These probes are stored as distinct states within an enumeration class, `ConnectionManager::State`. The Connection Manager will sequentially cycle through each of these states in a systematic order, only proceeding to the next state if the current probe is successful. 
 
 In the event of a probe failure, the Connection Manager will emit a signal to the frontend. This will trigger a modal to be displayed to the user, providing an explanation of the issue and suggesting potential solutions. Upon encountering a failed probe, the progression through the remaining probes is immediately halted. Once the issue has been resolved, the cycle of probes commences anew. If there are no ongoing probes, the Connection Manager will enter an Idle state.
 
 The Connection Health, an existing component of our codebase, is tasked with sending periodic pings and determining the stability of the VPN based on the responses received (see `ConnectionHealth::healthCheckup()`). It classifies the VPN stability as `Stable`, `Unstable` (some missing responses), or `NoSignal` (no responses received). When the VPN experiences issues with network connectivity or server availability, it naturally transitions into the No Signal state and, ideally, recovers once the issue is resolved. We can leverage this logic to recover from a probe failure within the Connection Manager.
+
+> For specific details about how these failures are handled and communicated with the user, please refer to this [Figma document](https://www.figma.com/file/GZKigVZbnCisMJNU3Hc9xM/Connection-error-messaging?type=design&node-id=26-215&mode=design&t=kfYnUKuXQ9nsGDRR-0).
 
 ## Implementation Plan
 
