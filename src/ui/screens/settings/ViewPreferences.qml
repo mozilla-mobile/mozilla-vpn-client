@@ -67,17 +67,7 @@ MZViewBase {
             labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             subLabelText: MZI18n.SettingsDataCollectionDescription
             isChecked: MZSettings.gleanEnabled
-            onClicked: {
-                MZSettings.gleanEnabled = !MZSettings.gleanEnabled
-                if (MZSettings.gleanEnabled)
-                {
-                    Glean.interaction.dataCollectionEnabled.record({screen:telemetryScreenId})
-                }
-                else
-                {
-                    Glean.interaction.dataCollectionDisabled.record({screen:telemetryScreenId})
-                }
-           }
+            onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
         }
 
         Column {
