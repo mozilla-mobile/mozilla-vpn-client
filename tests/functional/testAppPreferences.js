@@ -39,7 +39,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
   }
-  
+
   describe('telemetry in the settings menu', function () {
     this.ctx.authenticationNeeded = true;
 
@@ -206,7 +206,6 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "app_preferences");
     });
 
-    // @TODO extra is undefined here
     it("record telemetry when user opens DNS settings in App preferences", async () => {
         await vpn.waitForQueryAndClick(
             queries.screenSettings.APP_PREFERENCES.visible());
