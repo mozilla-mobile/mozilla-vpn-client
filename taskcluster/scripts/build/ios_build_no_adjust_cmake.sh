@@ -46,6 +46,16 @@ print G "done."
 
 print Y "Configuring the build..."
 QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
+
+
+if [ -d ${TASK_HOME}/build ]; then
+    echo "Found old build-folder, wierd!"
+    echo "Removing it..."
+    rm -r ${TASK_HOME}/build
+fi
+ mkdir ${TASK_HOME}/build
+
+
 mkdir ${TASK_HOME}/build
 
 $MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
@@ -55,8 +65,6 @@ $MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${TASK_HOME}/build -
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
-  -DSENTRY_DSN="dummy" \
-  -DSENTRY_ENVELOPE_ENDPOINT="dummy" \
   -DCMAKE_BUILD_TYPE=Release
 
 print Y "Building the client..."
