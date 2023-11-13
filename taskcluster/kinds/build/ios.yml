@@ -25,4 +25,4 @@ ios/debug/cmake:
         using: run-task
         use-caches: false
         cwd: '{checkout}'
-        command: ./taskcluster/scripts/build/ios_build_no_adjust_cmake.sh
+        command: ./taskcluster/scripts/build/ios_build_debug.sh
