@@ -356,7 +356,7 @@ multidict==6.0.4 \
     --hash=sha256:fc35cb4676846ef752816d5be2193a1e8367b4c1397b74a565a9d0389c433a1d \
     --hash=sha256:ff959bee35038c4624250473988b24f846cbeb2c6639de3602c073f10410ceba
     # via
-    #   -r taskcluster/scripts/requirements.in
+    #   -r scripts/requirements.in
     #   aiohttp
     #   yarl
 python-dateutil==2.8.2 \
@@ -377,10 +377,10 @@ slugid==2.0.0 \
     --hash=sha256:a950d98b72691178bdd4d6c52743c4a2aa039207cf7a97d71060a111ff9ba297 \
     --hash=sha256:aec8b0e01c4ad32e38e12d609eab3ec912fd129aaf6b2ded0199b56a5f8fd67c
     # via taskcluster
-taskcluster==56.0.3 \
-    --hash=sha256:973cdac4327967e76e3ef5aac756f1898b592285d889ed00325575cb12633340 \
-    --hash=sha256:e9d8a08309f5ed83ea1850b3f71afca5227689f38896457a351f08b29f8bf42b
-    # via -r taskcluster/scripts/requirements.in
+taskcluster==57.1.0 \
+    --hash=sha256:4731c10ce07d3f2f98930a9c3b2d9f6f06fe954f5ace1ab6990d9f9e68f693cb \
+    --hash=sha256:90e332bcfc9b4121c5d101ffa1ecd553cc0c3881abd672e8ac620ae494b30083
+    # via -r scripts/requirements.in
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
     --hash=sha256:b25e122ecec249c4299ac7b20b08db76e3e2025bdaeb699a9d444556de5fd367 \
@@ -466,5 +466,5 @@ yarl==1.9.2 \
     --hash=sha256:f4e2d08f07a3d7d3e12549052eb5ad3eab1c349c53ac51c209a0e5991bbada78 \
     --hash=sha256:f7a3d8146575e08c29ed1cd287068e6d02f1c7bdff8970db96683b9591b86ee7
     # via
-    #   -r taskcluster/scripts/requirements.in
+    #   -r scripts/requirements.in
     #   aiohttp
