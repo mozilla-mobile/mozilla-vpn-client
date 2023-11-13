@@ -49,7 +49,7 @@ QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
 
 
 if [ -d ${TASK_HOME}/build ]; then
-    echo "Found old build-folder, wierd!"
+    echo "Found old build-folder, weird!"
     echo "Removing it..."
     rm -r ${TASK_HOME}/build
 fi
