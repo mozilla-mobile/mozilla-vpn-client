@@ -15,13 +15,13 @@ Rectangle {
     objectName: "navigationBar"
 
     height: MZTheme.theme.navBarHeight
-    width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
+    width: Math.min(MZTheme.theme.desktopAppWidth - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
     radius: height / 2
     color: MZTheme.theme.ink
 
     anchors {
         horizontalCenter: parent.horizontalCenter
-        bottom: parent.bottom
+        bottom: navLoader.bottom
         bottomMargin: MZTheme.theme.navBarBottomMargin
     }
 
@@ -60,7 +60,7 @@ Rectangle {
         anchors.leftMargin: {
             let minNumberOfIcons = 3
             let paddingFactor = 8 //How much we decrease horizontal margins by for each new icon added (for non-tablets)
-            window.width < MZTheme.theme.tabletMinimumWidth ? MZTheme.theme.navBarMaxPadding - (paddingFactor * (MZNavigationBarModel.count - minNumberOfIcons)) : MZTheme.theme.navBarMaxPaddingTablet
+            MZTheme.theme.desktopAppWidth < MZTheme.theme.tabletMinimumWidth ? MZTheme.theme.navBarMaxPadding - (paddingFactor * (MZNavigationBarModel.count - minNumberOfIcons)) : MZTheme.theme.navBarMaxPaddingTablet
         }
         anchors.rightMargin: anchors.leftMargin
         anchors.bottomMargin: MZTheme.theme.vSpacingSmall / 2

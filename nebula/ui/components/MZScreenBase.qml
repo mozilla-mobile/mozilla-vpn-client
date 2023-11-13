@@ -17,7 +17,8 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: window.color
+        color: MZTheme.theme.bgColor
+        radius: 8
     }
 
     ColumnLayout {

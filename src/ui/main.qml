@@ -10,6 +10,7 @@ import QtQuick.Window 2.12
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import compat 0.1   
 
 Window {
     id: window
@@ -78,7 +79,7 @@ Window {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: MZTheme.theme.bgColor
+    color: MZTheme.theme.ink
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -132,14 +133,48 @@ Window {
         anchors.top: parent.top
     }
 
-    MZNavigatorLoader {
-      objectName: "screenLoader"
-      anchors {
-          top: iosSafeAreaTopMargin.bottom
-          left: parent.left
-          right: parent.right
-          bottom: parent.bottom
-      }
+    Item {
+        // TODO 
+        // Set height/width values based on whether
+        // whether the device is a tablet or something else 
+        width:  MZTheme.theme.desktopAppWidth
+        height: MZTheme.theme.desktopAppHeight
+
+        anchors.centerIn: parent
+
+        MZDropShadow {
+            source: dropShadowVector
+            anchors.fill: parent
+            horizontalOffset: 1
+            verticalOffset: 1
+            radius: 25
+            color: "black"
+            spread: 0
+            transparentBorder: true
+            cached: true
+        }
+
+        Rectangle {
+            id: dropShadowVector
+            anchors.fill: parent
+            visible: false
+            radius: 8
+        }
+
+        Rectangle {
+            // TODO: maybe an unnecessary rectangle depending on 
+            // where and how we set corner radius changes (if at all)
+            anchors.fill: parent
+            clip: true
+            radius: dropShadowVector.radius
+            color: MZTheme.theme.bgColor
+
+            MZNavigatorLoader {
+                objectName: "screenLoader"
+                anchors.fill: parent
+
+            }
+        }
     }
 
     Connections {
