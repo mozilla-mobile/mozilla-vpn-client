@@ -24,7 +24,6 @@ ColumnLayout {
     Layout.preferredWidth: parent.width
         
     Component.onCompleted: {
-        console.log("Component ready");
         Glean.impression.appExclusionsScreen.record({screen:telemetryScreenId});
     }
 

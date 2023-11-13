@@ -69,4 +69,55 @@ describe('Settings', function() {
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
   });
+
+  describe('telemetry in App Exclusions', function () {
+
+    this.ctx.authenticationNeeded = true;
+
+    beforeEach(async () => {
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    });
+
+    it("record telemetry when user clicks on App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on search bar in app exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "searchSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
+
+    it("record telemetry when user clicks on Clear all in App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
+
+        //click on Clear all
+        await vpn.waitForQueryAndClick(queries.appExclusionsView.CLEAR_ALL.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "clearAppExclusionsSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
+
+    it("record telemetry when user clicks on Add Application in App Exclusions", async () => {
+        await vpn.waitForQueryAndClick(queries.navBar.APP_EXCLUSIONS.visible());
+
+        //click on Add application
+        await vpn.waitForQueryAndClick(queries.appExclusionsView.ADD_APPLICATION_BUTTON.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "addApplicationSelected", "main")
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "app_exclusions");
+    });
+});
 });
