@@ -4,7 +4,6 @@
     - [@strseb](https://github.com/strseb)
     - [@lesleyjanenorton](https://github.com/lesleyjanenorton)
     - [@oskirby](https://github.com/oskirby)
-    - [Santiago]()
 - RFC PR: -
 - Implementation GitHub issue: -
 
@@ -13,12 +12,11 @@
 # Problem Statement
 
 
-| ![](https://github.com/mozilla-mobile/mozilla-vpn-client/assets/9611612/aa8331cf-f0cb-489b-a7e2-293bce422551) | VPNs currently allow you to select the country through which you want your traffic to emerge to the Internet and users use this to express a variety of geolocation preferences. These controls are not flexible enough - users typically can select a single location through which all traffic should go through. |
-|---|---|
+![](https://github.com/mozilla-mobile/mozilla-vpn-client/assets/9611612/aa8331cf-f0cb-489b-a7e2-293bce422551) 
 
-The Current plan is to write a new Web-Extension that extends on top of the API the VPN-Client offers to Multi Account Container. 
+VPNs currently allow you to select the country through which you want your traffic to emerge to the Internet and users use this to express a variety of geolocation preferences. These controls are not flexible enough - users can only select a single location through which all traffic should go through. 
 
-The vision is, for this integration giving users the options to:
+Therefore we want to propose a new Web-Extension that extends on top of the VPN+MAC API, giving users the options to:
  - Enable The VPN only for Firefox 
  - Disable The VPN only for Firefox 
  - Exclude a Page from VPN protection
@@ -38,10 +36,9 @@ For this feature to be enabled, a Firefox user on the desktop needs to have the 
 
 
 ### Networking
-Using the [proxy api](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy) a network extension can decide where each network request should be proxied to. So from a network request perspective, we only have 4 possible routes to take. 
+Using the [proxy api](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/proxy) a network extension can decide which proxy each network request should use. So from a network request perspective, there are only 4 possible cases to implement:
 
-
-| x               | Device VPN is On | Device VPN is OFF |
+| StateNr               | Device VPN is On | Device VPN is OFF |
 |-----------------|------------------|-------------------|
 | Page VPN is On  | 1                | 2                 |
 | Page VPN is Off | 3                | 4                 |
@@ -50,11 +47,13 @@ In the following sections, we will explain what changes we need inside the clien
 
 
 #### State 1: Device VPN is On & Page VPN is On
-In this State the Extension can simply set the Proxy for those network requests to `null` to use the user's active server, or if a custom exit location is set, to the `socks5` proxy of that endpoint. No changes are needed, this is how MAC works. 
+In this State the Extension can simply set the Proxy for those network requests to `null` to use the user's active server.
+If a custom exit location is set it must set it to the `socks5` proxy of that endpoint. No changes are needed on the Client as this is how MAC uses the current API. 
 
 
 #### State 2: Device VPN is OFF & Page VPN is On
-Currently, the VPN has the following states:
+
+Simplified, the VPN has the following states:
 ```cpp
   enum State {
     StateOff, // Noting protected
@@ -63,10 +62,9 @@ Currently, the VPN has the following states:
   };
 ```
 An extension can send `{"t":"activate"}` to the VPN to turn on whole-device protection. 
-
-We would introduce a new state `StateOnPartial` that will be activated on a call of an extension to `{"t":"activate"}` instead. It is similar to `StateOn` with the following properties: 
+For this case, we propose to introduce a new state `StateOnPartial` that will be activated on a call of an extension to `{"t":"activate"}` instead. It is similar to `StateOn` with the following properties: 
 - The `allowedIp` for this activation is set to `10.124.0.0/20` so that only the Mullvad Exit Proxies are accessible on the VPN Network Device. Therefore, all other traffic will not use the VPN. 
-- The DNS server is set to any Mullvad Server, so that the mullvad proxies are resolvable. 
+- A Mullvad DNS server will be set, so that the Mullvad proxies are resolvable. If a custom DNS is set, we need to set a Mullvad DNS as 2nd DNS server.
 - The Client UI does not show an activation. (or a new special UI state)
 > Q: Do we need a new UI state ? or like a "firefox is using the vpn?" 
 - If the Client activates, it will attempt to switch to `StateOn` and protect the whole device.
@@ -78,7 +76,7 @@ The extension must then set the proxy to the `socks5` URL of the current `exitSe
 
 If the full device is protected and the VPN integration is enabled, we will utilize a Socks5 Proxy running on localhost that will make sure its outgoing traffic utilizes the non-vpn default route. 
 
-For that, we will create an external binary that 
+For that, we will create an external binary that:
 - opens a socks5 proxy locally on a random port
 - generates a username and password for this session
 - prints the port, username, password to STDOUT so that the parent process may gather that info. 
