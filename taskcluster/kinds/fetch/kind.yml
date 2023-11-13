@@ -34,20 +34,6 @@ tasks:
             size: 158837368
         #artifact-prefix: vpn/win-perl
         fetch-alias: win-perl
-    win-rustup:
-        description: Rustup for Windows v1.25.2
-        fetch:
-            type: static-url
-            url: https://static.rust-lang.org/rustup/archive/1.25.2/x86_64-pc-windows-msvc/rustup-init.exe
-            sha256: f7ddacce04969a59f7080a64c466b936d7c2ae661b4fda44be8fe54aac0972ec
-            size: 9996288
-    win-go:
-        description: go1.18.8
-        fetch:
-            type: static-url
-            url: https://go.dev/dl/go1.18.8.windows-amd64.zip
-            sha256: 980788761e75ed33ffc4f2a7a3ff07cd90949bd023eb1a8d855ef0b5de9cbcba
-            size: 155201453
     win-sentry-cli:
         description: Sentry-Cli.exe
         fetch: 
