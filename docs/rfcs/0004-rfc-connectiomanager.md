@@ -7,15 +7,17 @@
 
 ## Summary
 
-Propose a new `ConnectionManager` component which handles all connectivity related checks once during VPN activation (`Controller::StateConnecting`) and then periodically once the VPN is already activated (`Controller::StateOn`); the controller will continue to exist as is, communicating with the frontend as the backend goes through various states such as `connecting` and `confirming` to reflect those to the user.
+The existing `ConnectionManager` component will handle all connectivity related checks once during VPN activation (`Controller::StateConnecting`) and then periodically once the VPN is already activated (`Controller::StateOn`); the controller will be the entity which manages the controller states that the client goes through such as `connecting` and `confirming` as we activate and deactivate the VPN to reflect those to the user what is happening behind the scene.
 
 ## Motivation
 
-At present, the handling of VPN connectivity lacks standardization and consistency. There are instances when the VPN goes into No Signal due to a variety of connectivity-related issues, such as the network connection failing or the server location becoming unavailable. In these situations, users are often left without a clear explanation of what went wrong or guidance on how to troubleshoot and resolve the issue. They may encounter a background error message or lose signal without further information.
+At present, the handling of VPN connectivity lacks consistency for users. There are instances when the VPN goes into No Signal due to a variety of connectivity-related issues, such as the network connection failing or the server location becoming unavailable. In these situations, users are often left without a clear explanation of what went wrong or guidance on how to troubleshoot and resolve the issue. They may encounter a background error message or lose signal without further information.
 
 The objective with the Connection Manager is to address these issues by running probes on all potential causes and presenting the user with an appropriate modal detailing the root cause of their problem. This approach aims to enhance the user's understanding of the issue and provide them with actionable steps to rectify it.
 
-To avoid further complicating the already complex logic of the controller, this document proposes encapsulating this new functionality within the Connection Manager. This object will interact with both the controller and connection health, serving as a dedicated entity for managing and improving VPN connectivity. This approach ensures a more streamlined and efficient handling of VPN connectivity issues, ultimately enhancing the user experience.
+To avoid further complicating the already complex logic of the controller, this document proposes encapsulating this new functionality within the Connection Manager. This object will interact with both the controller and connection health, serving as a dedicated entity for identifying connection problems and correctly communicating status changes to the UI, ultimately enhancing the user experience.
+
+This proposal describes Connection Manager behavior during activation. Subsequent proposal(s) will address the behavior of the Connection Manager during the lifespan of a connection.
 
 ## Proposed Solution
 
@@ -29,11 +31,11 @@ The Connection Health, an existing component of our codebase, is tasked with sen
 
 ```c++
 enum ConnectionManagerStates {
-  InternetProbe,
-  Firewall,
-  ServerProbe,
-  CheckSubscription,
-  Idle,
+  StateInternetProbe,
+  StateFirewall,
+  StateServerProbe,
+  StateCheckSubscription,
+  StateIdle,
 }
 ```
 ### Upon VPN Activation (`StateOff` to `StateConnecting`)
@@ -55,7 +57,7 @@ Perform periodic checks cycling through all the Connection Manager probes.
 - If all probes pass:
   - Do nothing. VPN stays on and stable
 
-> Note: The second scenario where a check fails when the VPN is already active still needs some more thinking. There will likely be a follow up design doc on how we will approach that later on.
+> Note: The second scenario where a check fails when the VPN is already active still needs some more thinking. There will be a follow up design doc on how we will approach that later on.
 
 ### How to recover after a failed probe
 - If VPN is not in `StateOn` yet:
@@ -64,7 +66,7 @@ Perform periodic checks cycling through all the Connection Manager probes.
   - Wait until Connection Health stability goes back to Stable or Unstable
   - Restart the sequence of ConnectionManager checks
 
-![Diagram to explain how Controller, Connection Manager and Connection Health states interact](./CM_diagram.png)
+![Diagram to explain how Controller, Connection Manager and Connection Health states interact](./images/CM_diagram.png)
 
 ## Metrics and Measurements
 
