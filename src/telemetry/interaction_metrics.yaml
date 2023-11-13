@@ -773,7 +773,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
-      - TBD
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
     data_sensitivity:
       - interaction
     notification_emails:
@@ -791,7 +791,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
-      - TBD
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
     data_sensitivity:
       - interaction
     notification_emails:
@@ -809,7 +809,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
-      - TBD
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
     data_sensitivity:
       - interaction
     notification_emails:
@@ -827,7 +827,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
-      - TBD
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
     data_sensitivity:
       - interaction
     notification_emails:
