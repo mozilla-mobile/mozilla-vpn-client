@@ -2281,6 +2281,8 @@ void MozillaVPN::registerExternalOperations() {
         new TaskControllerAction(TaskControllerAction::eDeactivate));
   });
 
+  eoh->registerExternalOperation(ExternalOpHandler::OpCloseEvent, []() {});
+
   eoh->registerExternalOperation(OpNotificationClicked, []() {});
 
   eoh->registerExternalOperation(
