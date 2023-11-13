@@ -53,10 +53,9 @@ if [ -d ${TASK_HOME}/build ]; then
     echo "Removing it..."
     rm -r ${TASK_HOME}/build
 fi
- mkdir ${TASK_HOME}/build
-
-
 mkdir ${TASK_HOME}/build
+
+
 
 $MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
   -DQT_HOST_PATH="$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/macos" \

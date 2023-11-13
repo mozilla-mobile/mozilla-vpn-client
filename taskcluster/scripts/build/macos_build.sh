@@ -96,7 +96,7 @@ if [ -d ${TASK_HOME}/build ]; then
     echo "Removing it..."
     rm -r ${TASK_HOME}/build
 fi
- mkdir ${TASK_HOME}/build
+mkdir ${TASK_HOME}/build
 
 cmake -S . -B ${TASK_HOME}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
