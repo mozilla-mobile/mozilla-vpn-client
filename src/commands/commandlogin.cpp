@@ -164,6 +164,9 @@ int CommandLogin::run(QStringList& tokens) {
             switch (error) {
               case AuthenticationInApp::ErrorAccountAlreadyExists:
                 [[fallthrough]];
+              case AuthenticationInApp::ErrorAccountHasNoPassword:
+                stream << "This Mozilla account has no password." << Qt::endl;
+                break;
               case AuthenticationInApp::ErrorUnknownAccount:
                 stream << "Unknown account" << Qt::endl;
                 break;

@@ -88,7 +88,7 @@ describe('User authentication', function() {
       // Step 5: start -> sign-in -> help -> sign-in
       this.ctx.fxaStatusCallback = (req) => {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].body = {
-          exists: true
+          exists: true, hasPassword: true
         }
       };
       await vpn.setQueryProperty(
