@@ -39,7 +39,7 @@ class VPNService : android.net.VpnService() {
     private var mCityname = ""
     private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private var mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
-    private val mMetricsTimer: CountDownTimer  = object : CountDownTimer(
+    private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
         if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec else mBackgroundPingTimerMSec,
         if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec / 4 else mBackgroundPingTimerMSec / 4,
     ) {
