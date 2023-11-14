@@ -239,8 +239,3 @@ void AddonMessage::setDate(qint64 date) {
   m_date = date;
   emit dateChanged();
 }
-
-void AddonMessage::setIsRead(int messageStatus) {
-  m_status = static_cast<MessageStatus>(messageStatus);
-  emit statusChanged(m_status);
-}

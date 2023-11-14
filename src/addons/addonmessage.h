@@ -32,7 +32,7 @@ class AddonMessage final : public Addon {
                  retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
-  Q_PROPERTY(bool isRead READ isRead WRITE setIsRead NOTIFY statusChanged)
+  Q_PROPERTY(bool isRead READ isRead NOTIFY statusChanged)
   Q_PROPERTY(qint64 date MEMBER m_date WRITE setDate NOTIFY dateChanged)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
@@ -65,7 +65,6 @@ class AddonMessage final : public Addon {
 
   void setBadge(Badge badge);
   void setDate(qint64 date);
-  void setIsRead(int messageStatus);
 
   bool isRead() const { return m_status == MessageStatus::Read; }
 
