@@ -106,8 +106,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
-    ${CMAKE_SOURCE_DIR}/src/externalophandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/externalophandler.h
     ${CMAKE_SOURCE_DIR}/src/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp

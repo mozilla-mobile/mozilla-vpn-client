@@ -12,7 +12,6 @@
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
-#include "externalophandler.h"
 #include "feature.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
@@ -219,8 +218,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   registerInspectorCommands();
 
   registerAddonApis();
-
-  registerExternalOperations();
 
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
@@ -2224,31 +2221,6 @@ void MozillaVPN::registerAddonApis() {
       addonApi->insert("vpn", QVariant::fromValue(value));
     }
   });
-}
-
-// static
-void MozillaVPN::registerExternalOperations() {
-  ExternalOpHandler* eoh = ExternalOpHandler::instance();
-
-  eoh->registerExternalOperation(
-      OpAbout, []() { MozillaVPN::instance()->requestAbout(); });
-
-  eoh->registerExternalOperation(OpActivate, []() {
-    TaskScheduler::deleteTasks();
-    TaskScheduler::scheduleTask(
-        new TaskControllerAction(TaskControllerAction::eActivate));
-  });
-
-  eoh->registerExternalOperation(OpDeactivate, []() {
-    TaskScheduler::deleteTasks();
-    TaskScheduler::scheduleTask(
-        new TaskControllerAction(TaskControllerAction::eDeactivate));
-  });
-
-  eoh->registerExternalOperation(OpNotificationClicked, []() {});
-
-  eoh->registerExternalOperation(
-      OpQuit, []() { MozillaVPN::instance()->connectionManager()->quit(); });
 }
 
 void MozillaVPN::ensureApplicationIdExists() {

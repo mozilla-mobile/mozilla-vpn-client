@@ -11,7 +11,6 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -79,14 +78,12 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel = m_menu->addAction("");
   m_statusLabel->setEnabled(false);
 
-  m_lastLocationLabel = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpActivate);
-  });
+  m_lastLocationLabel =
+      m_menu->addAction("", []() { MozillaVPN::instance()->activate(); });
   m_lastLocationLabel->setEnabled(false);
 
-  m_disconnectAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpDeactivate);
-  });
+  m_disconnectAction =
+      m_menu->addAction("", []() { MozillaVPN::instance()->deactivate(); });
 
   m_separator = m_menu->addSeparator();
 
@@ -95,9 +92,8 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 
   m_menu->addSeparator();
 
-  m_quitAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpQuit);
-  });
+  m_quitAction = m_menu->addAction(
+      "", []() { MozillaVPN::instance()->connectionManager()->quit(); });
 }
 
 void SystemTrayNotificationHandler::setStatusMenu() {

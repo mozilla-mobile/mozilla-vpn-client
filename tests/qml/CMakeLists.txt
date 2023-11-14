@@ -160,8 +160,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
-    ${MZ_SOURCE_DIR}/externalophandler.cpp
-    ${MZ_SOURCE_DIR}/externalophandler.h
     ${MZ_SOURCE_DIR}/feature.cpp
     ${MZ_SOURCE_DIR}/feature.h
     ${MZ_SOURCE_DIR}/filterproxymodel.cpp
