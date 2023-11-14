@@ -123,7 +123,7 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
   cfDictSetStringList(dnsConfig, kSCPropNetDNSServerAddresses, list);
   cfDictSetString(dnsConfig, kSCPropNetDNSDomainName, "lan");
 
-  // Take a snapshot of the DNS services, and start a watchdog process to restore it.
+  // Take a snapshot of the DNS services, and start a process to restore it.
   if (m_dnsSnapshotPid < 0) {
     if (!takeDnsSnapshot()) {
       return false;
@@ -246,7 +246,7 @@ bool DnsUtilsMacos::takeDnsSnapshot(void) {
   }
   CFRelease(netServices);
 
-  // Fork the process. The parent/daemon continues to live on doing daemon stuff.
+  // Fork the process. The parent/daemon continues on doing daemon stuff.
   int pid = fork();
   if (pid < 0) {
     logger.error() << "Failed to start DNS restoration watchdog";
@@ -264,9 +264,9 @@ bool DnsUtilsMacos::takeDnsSnapshot(void) {
   sigaddset(&set, SIGINT);
   sigaddset(&set, SIGTERM);
   sigaddset(&set, SIGHUP);
-  signal(SIGINT, [](int s){ Q_UNUSED(s); });
-  signal(SIGTERM, [](int s){ Q_UNUSED(s); });
-  signal(SIGHUP, [](int s){ Q_UNUSED(s); });
+  signal(SIGINT, [](int s) { Q_UNUSED(s); });
+  signal(SIGTERM, [](int s) { Q_UNUSED(s); });
+  signal(SIGHUP, [](int s) { Q_UNUSED(s); });
   if (sigwait(&set, &sig) != 0) {
     // Something went horribly wrong.
     exit(errno);
@@ -277,9 +277,9 @@ bool DnsUtilsMacos::takeDnsSnapshot(void) {
   }
 
   // Restore the snapshot of the DNS configuration.
-  SCDynamicStoreRef store = SCDynamicStoreCreate(kCFAllocatorSystemDefault,
-                                                 CFSTR("mozillavpn-restorer"),
-                                                 nullptr, nullptr);
+  SCDynamicStoreRef store =
+      SCDynamicStoreCreate(kCFAllocatorSystemDefault,
+                           CFSTR("mozillavpn-restorer"), nullptr, nullptr);
 
   for (const QString& uuid : snapshot.keys()) {
     CFStringRef path = CFStringCreateWithFormat(

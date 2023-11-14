@@ -50,9 +50,8 @@ LocalSocketController::LocalSocketController() {
           &LocalSocketController::initializeInternal);
 
   m_messageTimeout.setSingleShot(true);
-  connect(&m_messageTimeout, &QTimer::timeout, this, [&] {
-    this->errorOccurred(QLocalSocket::SocketTimeoutError);
-  });
+  connect(&m_messageTimeout, &QTimer::timeout, this,
+          [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
 }
 
 LocalSocketController::~LocalSocketController() {
