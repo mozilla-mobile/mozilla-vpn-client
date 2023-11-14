@@ -24,12 +24,9 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 
 
 # Setup Openssl Import
-$SSL_PATH = "$FETCHES_PATH/QT_OUT/SSL"
-if (Test-Path -Path $SSL_PATH) {
-    $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-    $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
-
+$SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
+$env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+$env:OPENSSL_USE_STATIC_LIBS = "TRUE"
 
 # Extract the sources
 $SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
@@ -57,7 +54,6 @@ foreach ($script in  $ACTIVATION_SCRIPTS)  {
 # when we run the activate.bat :shrugs: 
 # This will cause go to be missing. 
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
-gci env:* | sort-object name
 
 
 # Okay We are ready to build! 
