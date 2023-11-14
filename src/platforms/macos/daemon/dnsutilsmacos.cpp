@@ -111,14 +111,6 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
                                     const QList<QHostAddress>& resolvers) {
   Q_UNUSED(ifname);
 
-  // Get the list of current network services.
-  CFArrayRef netServices = SCDynamicStoreCopyKeyList(
-      m_scStore, CFSTR("Setup:/Network/Service/[0-9A-F-]+"));
-  if (netServices == nullptr) {
-    return false;
-  }
-  auto serviceGuard = qScopeGuard([&] { CFRelease(netServices); });
-
   // Prepare the DNS configuration.
   CFMutableDictionaryRef dnsConfig = CFDictionaryCreateMutable(
       kCFAllocatorSystemDefault, 0, &kCFCopyStringDictionaryKeyCallBacks,
@@ -131,14 +123,28 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
   cfDictSetStringList(dnsConfig, kSCPropNetDNSServerAddresses, list);
   cfDictSetString(dnsConfig, kSCPropNetDNSDomainName, "lan");
 
-  // Backup each network service's DNS config, and replace it with ours.
+  // Take a snapshot of the DNS services, and start a watchdog process to restore it.
+  if (m_dnsSnapshotPid < 0) {
+    if (!takeDnsSnapshot()) {
+      return false;
+    }
+  }
+
+  // Get the list of current network services.
+  CFArrayRef netServices = SCDynamicStoreCopyKeyList(
+      m_scStore, CFSTR("Setup:/Network/Service/[0-9A-F-]+"));
+  if (netServices == nullptr) {
+    return false;
+  }
+  auto serviceGuard = qScopeGuard([&] { CFRelease(netServices); });
+
+  // Configure each network service to use our DNS.
   for (CFIndex i = 0; i < CFArrayGetCount(netServices); i++) {
     QString service = cfParseString(CFArrayGetValueAtIndex(netServices, i));
     QString uuid = service.section('/', 3, 3);
     if (uuid.isEmpty()) {
       continue;
     }
-    backupService(uuid);
 
     logger.debug() << "Setting DNS config for" << uuid;
     CFStringRef dnsPath = CFStringCreateWithFormat(
@@ -150,41 +156,36 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
     SCDynamicStoreSetValue(m_scStore, dnsPath, dnsConfig);
     CFRelease(dnsPath);
   }
+
   return true;
 }
 
 bool DnsUtilsMacos::restoreResolvers() {
-  for (const QString& uuid : m_prevServices.keys()) {
-    CFStringRef path = CFStringCreateWithFormat(
-        kCFAllocatorSystemDefault, nullptr,
-        CFSTR("Setup:/Network/Service/%s/DNS"), qPrintable(uuid));
-
-    logger.debug() << "Restoring DNS config for" << uuid;
-    const DnsBackup& backup = m_prevServices[uuid];
-    if (backup.isValid()) {
-      CFMutableDictionaryRef config;
-      config = CFDictionaryCreateMutable(kCFAllocatorSystemDefault, 0,
-                                         &kCFCopyStringDictionaryKeyCallBacks,
-                                         &kCFTypeDictionaryValueCallBacks);
-
-      cfDictSetString(config, kSCPropNetDNSDomainName, backup.m_domain);
-      cfDictSetStringList(config, kSCPropNetDNSSearchDomains, backup.m_search);
-      cfDictSetStringList(config, kSCPropNetDNSServerAddresses,
-                          backup.m_servers);
-      cfDictSetStringList(config, kSCPropNetDNSSortList, backup.m_sortlist);
-      SCDynamicStoreSetValue(m_scStore, path, config);
-      CFRelease(config);
-    } else {
-      SCDynamicStoreRemoveValue(m_scStore, path);
-    }
-    CFRelease(path);
+  if (m_dnsSnapshotPid < 0) {
+    logger.debug() << "No DNS resolvers to restore";
+    return false;
   }
 
-  m_prevServices.clear();
+  // Kill the DNS watchdog to restore the resolver configuration.
+  auto guard = qScopeGuard([&] { m_dnsSnapshotPid = -1; });
+  if (kill(m_dnsSnapshotPid, SIGINT) < 0) {
+    logger.debug() << "Failed to signal DNS restorer";
+    return false;
+  }
+
+  // Wait for the process to exit, and gather it's status.
+  int status = 0;
+  if (waitpid(m_dnsSnapshotPid, &status, 0) < 0) {
+    logger.debug() << "Failed to receive child status";
+  } else if (!WIFEXITED(status)) {
+    logger.error() << "Failed to terminate DNS restorer";
+  } else {
+    logger.info() << "DNS restorer completed:" << strerror(WEXITSTATUS(status));
+  }
   return true;
 }
 
-void DnsUtilsMacos::backupService(const QString& uuid) {
+DnsUtilsMacos::DnsBackup DnsUtilsMacos::backupService(const QString& uuid) {
   DnsBackup backup;
   CFStringRef path = CFStringCreateWithFormat(
       kCFAllocatorSystemDefault, nullptr,
@@ -219,5 +220,93 @@ void DnsUtilsMacos::backupService(const QString& uuid) {
     }
   }
 
-  m_prevServices[uuid] = backup;
+  return backup;
+}
+
+// Fork a child process to handle restoration of the DNS configuration.
+// This ensures that we always cleanup after ourselves, even if the
+// daemon happens to crash.
+bool DnsUtilsMacos::takeDnsSnapshot(void) {
+  // Get the list of current network services.
+  CFArrayRef netServices = SCDynamicStoreCopyKeyList(
+      m_scStore, CFSTR("Setup:/Network/Service/[0-9A-F-]+"));
+  if (netServices == nullptr) {
+    return false;
+  }
+
+  // Take a snapshot of the DNS configuration.
+  QMap<QString, DnsBackup> snapshot;
+  for (CFIndex i = 0; i < CFArrayGetCount(netServices); i++) {
+    QString service = cfParseString(CFArrayGetValueAtIndex(netServices, i));
+    QString uuid = service.section('/', 3, 3);
+    if (uuid.isEmpty()) {
+      continue;
+    }
+    snapshot[uuid] = backupService(uuid);
+  }
+  CFRelease(netServices);
+
+  // Fork the process. The parent/daemon continues to live on doing daemon stuff.
+  int pid = fork();
+  if (pid < 0) {
+    logger.error() << "Failed to start DNS restoration watchdog";
+    return false;
+  }
+  if (pid > 0) {
+    m_dnsSnapshotPid = pid;
+    return true;
+  }
+
+  // If we get here, we are the child. Do nothing until the interface goes down.
+  int sig;
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGINT);
+  sigaddset(&set, SIGTERM);
+  sigaddset(&set, SIGHUP);
+  signal(SIGINT, [](int s){ Q_UNUSED(s); });
+  signal(SIGTERM, [](int s){ Q_UNUSED(s); });
+  signal(SIGHUP, [](int s){ Q_UNUSED(s); });
+  if (sigwait(&set, &sig) != 0) {
+    // Something went horribly wrong.
+    exit(errno);
+  }
+  // If we receive a SIGHUP, then exit without restoring anything.
+  if (sig == SIGHUP) {
+    exit(0);
+  }
+
+  // Restore the snapshot of the DNS configuration.
+  SCDynamicStoreRef store = SCDynamicStoreCreate(kCFAllocatorSystemDefault,
+                                                 CFSTR("mozillavpn-restorer"),
+                                                 nullptr, nullptr);
+
+  for (const QString& uuid : snapshot.keys()) {
+    CFStringRef path = CFStringCreateWithFormat(
+        kCFAllocatorSystemDefault, nullptr,
+        CFSTR("Setup:/Network/Service/%s/DNS"), qPrintable(uuid));
+
+    const DnsBackup& entry = snapshot[uuid];
+    if (entry.isValid()) {
+      CFMutableDictionaryRef config;
+      config = CFDictionaryCreateMutable(kCFAllocatorSystemDefault, 0,
+                                         &kCFCopyStringDictionaryKeyCallBacks,
+                                         &kCFTypeDictionaryValueCallBacks);
+
+      cfDictSetString(config, kSCPropNetDNSDomainName, entry.m_domain);
+      cfDictSetStringList(config, kSCPropNetDNSSearchDomains, entry.m_search);
+      cfDictSetStringList(config, kSCPropNetDNSServerAddresses,
+                          entry.m_servers);
+      cfDictSetStringList(config, kSCPropNetDNSSortList, entry.m_sortlist);
+      SCDynamicStoreSetValue(store, path, config);
+      CFRelease(config);
+    } else {
+      SCDynamicStoreRemoveValue(store, path);
+    }
+    CFRelease(path);
+  }
+
+  // Job is done.
+  exit(0);
+  return false;
 }

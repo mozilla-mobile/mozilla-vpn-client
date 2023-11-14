@@ -26,10 +26,6 @@ class DnsUtilsMacos final : public DnsUtils {
   bool restoreResolvers() override;
 
  private:
-  void backupResolvers();
-  void backupService(const QString& uuid);
-
- private:
   class DnsBackup {
    public:
     DnsBackup() {}
@@ -45,7 +41,11 @@ class DnsUtilsMacos final : public DnsUtils {
   };
 
   SCDynamicStoreRef m_scStore = nullptr;
-  QMap<QString, DnsBackup> m_prevServices;
+  int m_dnsSnapshotPid = -1;
+
+ private:
+  bool takeDnsSnapshot(void);
+  DnsBackup backupService(const QString& uuid);
 };
 
 #endif  // DNSUTILSMACOS_H
