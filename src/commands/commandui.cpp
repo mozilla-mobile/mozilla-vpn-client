@@ -51,7 +51,6 @@
 #include "settingsholder.h"
 #include "telemetry.h"
 #include "temporarydir.h"
-#include "theme.h"
 #include "update/updater.h"
 
 #ifdef MZ_DEBUG
