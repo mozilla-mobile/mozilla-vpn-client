@@ -21,10 +21,10 @@ task-defaults:
             - win-sentry-cli
             - win-conda
             - wintun
-        toolchain:
-            - conda-windows-x86_64
         build:
             - artifact: mozillavpn-sources.tar.gz
+        toolchain:
+            - qt-win
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -35,6 +35,19 @@ task-defaults:
               path: artifacts/MozillaVPN.msi
     release-artifacts:
         - unsigned.zip
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows.ps1
+
+windows/opt:
+    fetches:
+        toolchain:
+            - conda-windows-x86_64
+    description: "Windows Build"
+    treeherder:
+        symbol: B
     scopes:
         by-level:
             "3":
@@ -45,20 +58,3 @@ task-defaults:
         cwd: '{checkout}'
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
-
-windows/opt:
-    fetches:
-        toolchain:
-            - qt-windows-x86_64-6.2.4
-    description: "Windows Build"
-    treeherder:
-        symbol: B
-
-windows/next:
-    fetches:
-        toolchain:
-            - qt-windows-x86_64-6.6.0
-    description: "Windows Build for Next Version of QT"
-    treeherder:
-        symbol: NEXT
-
