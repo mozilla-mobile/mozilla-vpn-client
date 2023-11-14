@@ -23,4 +23,5 @@ property object with the following properties:
 | subtitle_comment | An optional comment to describe the meaning of the subtitle | String | No |
 | date | The date the message was received (using seconds since epoch time) | Number | No |
 | badge | A label used to tag a message (options: `warning`, `critical`, `new_update`, `whats_new`, `survey` ) | String | No |
+| notify | Should we notify the user about this message via system notifications | Boolean | No |
 | blocks | An array of graphical blocks that compose the user interface of the message's contents (see more info [here](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/guides#block-object)) | Array of Block objects | Yes | 

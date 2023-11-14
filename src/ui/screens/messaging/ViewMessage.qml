@@ -101,6 +101,8 @@ MZViewBase {
                             return badgeInfo.whatsNewBadge
                         case MZAddonMessage.Survey:
                             return badgeInfo.surveyBadge
+                        case MZAddonMessage.Subscription:
+                            return badgeInfo.subscriptionBadge
                         }
                     }
 
@@ -125,6 +127,10 @@ MZViewBase {
                         };
                         property var surveyBadge: {
                             'badgeText': MZI18n.InAppMessagingSurveyBadge,
+                            'badgeTheme': MZTheme.theme.blueBadge
+                        };
+                        property var subscriptionBadge: {
+                            'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
                             'badgeTheme': MZTheme.theme.blueBadge
                         };
                     }

@@ -61,6 +61,9 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
+  //if "notify" is not specified in the manifest, default to true
+  message->m_shouldNotify = messageObj["notify"].toBool(true);
+
   message->setBadge(messageObj["badge"].toString());
 
   guard.dismiss();
@@ -220,6 +223,8 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = WhatsNew;
   } else if (badge == "survey") {
     m_badge = Survey;
+  } else if (badge == "subscription") {
+    m_badge = Subscription;
   } else {
     logger.error() << "Unsupported badge type" << badge;
   }
@@ -233,4 +238,9 @@ void AddonMessage::setBadge(Badge badge) {
 void AddonMessage::setDate(qint64 date) {
   m_date = date;
   emit dateChanged();
+}
+
+void AddonMessage::setIsRead(int messageStatus) {
+  m_status = static_cast<MessageStatus>(messageStatus);
+  emit statusChanged(m_status);
 }

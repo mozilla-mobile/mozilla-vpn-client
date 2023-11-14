@@ -33,6 +33,8 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/featuremodel.h"
+#include "models/subscriptiondata.h"
+#include "mozillavpn.h"
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
@@ -635,6 +637,34 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        MZGlean::initialize();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{"set_subscription_start_date", "Changes the start date of the subscription", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       qint64 newCreatedAtTimestamp = arguments[1].toLongLong();
+
+                       //get sub data json from settings
+                       QByteArray subscriptionData = SettingsHolder::instance()->subscriptionData();
+                       QJsonDocument doc = QJsonDocument::fromJson(subscriptionData);
+                       QJsonObject obj = doc.object();
+
+                       QJsonObject subObj = obj["subscription"].toObject();
+                       qlonglong createdAt = subObj["created"].toVariant().toLongLong() * 1000;
+                       Q_UNUSED(createdAt);
+
+                       //modify createdAt date
+                       createdAt = newCreatedAtTimestamp;
+                       subObj["created"] = createdAt;
+                       obj["subscription"] = subObj;
+                       doc.setObject(obj);
+                       subscriptionData = doc.toJson();
+
+                       //call fromJson with the modified json
+                       if (!MozillaVPN::instance()->subscriptionData()->fromJson(subscriptionData)) {
+                         logger.error() << "Failed to parse the Subscription JSON data";
+                       }
+
                        return QJsonObject();
                      }}};
 

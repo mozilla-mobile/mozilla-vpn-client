@@ -50,7 +50,7 @@ bool SubscriptionData::fromSettings() {
 
   logger.debug() << "Reading the subscription data from settings";
 
-  const QByteArray& json = settingsHolder->devices();
+  const QByteArray& json = settingsHolder->subscriptionData();
   if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }
