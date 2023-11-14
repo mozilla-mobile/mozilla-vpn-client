@@ -492,44 +492,6 @@ interaction:
         description: |
           The screen where the interaction happened
         type: string
-  data_collection_enabled:
-    type: event
-    lifetime: ping
-    send_in_pings:
-        - main
-    description: |
-        The user has checked the data collection checkbox
-    bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
-    data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
-    data_sensitivity:
-        - interaction
-    notification_emails:
-      - vpn-telemetry@mozilla.com
-      - mlichtenstein@mozilla.com
-    expires: never
-    extra_keys: *interaction_extra_keys
-  data_collection_disabled:
-    type: event
-    lifetime: ping
-    send_in_pings:
-        - main
-    description: |
-        The user has unchecked the data collection checkbox. 
-        If in onboarding (denoted by screen:data_collection), 
-        this does not actually disable data collection until onboarding is completed
-    bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
-    data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
-    data_sensitivity:
-        - interaction
-    notification_emails:
-      - vpn-telemetry@mozilla.com
-      - mlichtenstein@mozilla.com
-    expires: never
-    extra_keys: *interaction_extra_keys
   block_ads_enabled:
     type: event
     lifetime: ping
