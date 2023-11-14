@@ -297,15 +297,12 @@
         <file>resources/logo-dns-privacy.svg</file>
         <file>resources/logo-dns-settings.svg</file>
         <file>resources/logo-dock.png</file>
-        <file>resources/logo-error.svg</file>
         <file>resources/logo-generic.png</file>
         <file>resources/logo-generic-mask.png</file>
         <file>resources/logo-generic-mask-off.png</file>
         <file>resources/logo-generic-mask-on.png</file>
         <file>resources/logo-generic-off.png</file>
         <file>resources/logo-sparkles.svg</file>
-        <file>resources/logo-success.svg</file>
-        <file>resources/logo-warning.svg</file>
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
         <file>resources/magic-purple.svg</file>
