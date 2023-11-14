@@ -89,6 +89,8 @@ target_sources(app_unit_tests PRIVATE
     testcheckedint.h
     testcomposer.cpp
     testcomposer.h
+    testdaemonaccesscontrol.cpp
+    testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
     testfeature.cpp
@@ -111,20 +113,18 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testtasksentry.cpp
-    testtasksentry.h
     testsettings.cpp
     testsettings.h
     testtasks.cpp
     testtasks.h
+    testtasksentry.cpp
+    testtasksentry.h
     testtemporarydir.cpp
     testtemporarydir.h
     testthemes.cpp
     testthemes.h
     testurlopener.cpp
     testurlopener.h
-    testdaemonaccesscontrol.cpp
-    testdaemonaccesscontrol.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

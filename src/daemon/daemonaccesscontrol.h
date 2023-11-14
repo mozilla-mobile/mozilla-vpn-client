@@ -30,7 +30,7 @@ class DaemonAccessControl final {
                                   const QLocalSocket* socket);
 
 #ifdef UNIT_TEST
-  static inline void setPeerId(int peerId) { s_mockPeerId = peerId; }
+  static inline void setMockPeerId(int peerId) { s_mockPeerId = peerId; }
 #endif
 
  private:

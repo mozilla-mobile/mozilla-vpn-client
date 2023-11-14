@@ -13,24 +13,23 @@ class TestDaemonAccessControl final : public TestHelper {
    * * "status" command is allowed for any peer when inactive
    * * "activate" command is allowed for any peer when inactive
    * * commands other than "activate" or "status" are not allowed
-   * is allowed for any peer when inactive.
    *
    */
-  void testInactiveCommands();
+  void testCommandsWhenInactive();
 
   /**
    * root i.e. peerId = 0 is always authorized regardles of session
    * owner.
    *
    */
-  void testRootOpenAccess();
+  void testCommandsWhenPeerIsRoot();
   /**
    * Other than root, only the session owner may change the current
    * session.
    *
    */
-  void testActiveAuthorizedPeer();
-  void testActiveUnauthorizedPeer();
+  void testAuthorizedPeerWhenActive();
+  void testUnauthorizedPeerWhenActive();
 
   /**
    * When a session is reset the access control returns to the inactive
