@@ -9,9 +9,9 @@ target_sources(shared-sources INTERFACE
 )
 
 # Include the Adjust SDK
-if(BUILD_ADJUST_SDK_TOKEN)
+if(MVPN_IOS_ADJUST_TOKEN)
     add_compile_definitions(MZ_ADJUST)
-    target_compile_options(shared-sources INTERFACE -DADJUST_SDK_TOKEN=${BUILD_ADJUST_SDK_TOKEN})
+    target_compile_options(shared-sources INTERFACE -DADJUST_SDK_TOKEN=${MVPN_IOS_ADJUST_TOKEN})
     target_sources(shared-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.h
