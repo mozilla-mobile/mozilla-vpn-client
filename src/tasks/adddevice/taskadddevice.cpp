@@ -53,8 +53,6 @@ void TaskAddDevice::run() {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
-  MozillaVPN::instance()->setJournalPublicAndPrivateKeys(publicKey, privateKey);
-
   NetworkRequest* request = new NetworkRequest(this, 201);
   request->auth(App::authorizationHeader());
   request->post(Constants::apiUrl(Constants::Device),
@@ -77,7 +75,6 @@ void TaskAddDevice::run() {
             Q_ASSERT(vpn);
 
             vpn->deviceAdded(m_deviceName, publicKey, privateKey);
-            vpn->resetJournalPublicAndPrivateKeys();
             emit completed();
           });
 }

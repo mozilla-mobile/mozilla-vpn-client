@@ -153,9 +153,6 @@ void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
 
-void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
-                                                const QString&) {}
-void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
 void MozillaVPN::scheduleRefreshDataTasks() {}

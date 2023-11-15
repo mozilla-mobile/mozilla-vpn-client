@@ -602,23 +602,6 @@ void MozillaVPN::completeActivation() {
   TaskScheduler::scheduleTask(new TaskFunction([this]() { maybeStateMain(); }));
 }
 
-void MozillaVPN::setJournalPublicAndPrivateKeys(const QString& publicKey,
-                                                const QString& privateKey) {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  settingsHolder->setPrivateKeyJournal(privateKey);
-  settingsHolder->setPublicKeyJournal(publicKey);
-}
-
-void MozillaVPN::resetJournalPublicAndPrivateKeys() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  settingsHolder->setPrivateKeyJournal(QString());
-  settingsHolder->setPublicKeyJournal(QString());
-}
-
 void MozillaVPN::deviceAdded(const QString& deviceName,
                              const QString& publicKey,
                              const QString& privateKey) {
@@ -801,24 +784,8 @@ bool MozillaVPN::checkCurrentDevice() {
     return true;
   }
 
-  if (settingsHolder->privateKeyJournal().isEmpty() ||
-      settingsHolder->publicKeyJournal().isEmpty()) {
-    logger.error() << "The current device has not been found";
-    settingsHolder->clear();
-    return false;
-  }
-
-  keys()->storeKeys(settingsHolder->privateKeyJournal(),
-                    settingsHolder->publicKeyJournal());
-  if (!m_private->m_deviceModel.hasCurrentDevice(keys())) {
-    logger.error() << "The current device has not been found (journal keys)";
-    settingsHolder->clear();
-    return false;
-  }
-
   settingsHolder->setPrivateKey(settingsHolder->privateKey());
   settingsHolder->setPublicKey(settingsHolder->publicKey());
-  resetJournalPublicAndPrivateKeys();
   return true;
 }
 

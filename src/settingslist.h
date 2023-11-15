@@ -445,17 +445,6 @@ SETTING_STRING(privateKey,        // getter
                true               // sensitive (do not log)
 )
 
-SETTING_STRING(privateKeyJournal,        // getter
-               setPrivateKeyJournal,     // setter
-               removePrivateKeyJournal,  // remover
-               hasPrivateKeyJournal,     // has
-               "privateKeyJournal",      // key
-               "",                       // default value
-               false,                    // user setting
-               true,                     // remove when reset
-               true                      // sensitive (do not log)
-)
-
 SETTING_STRING(publicKey,        // getter
                setPublicKey,     // setter
                removePublicKey,  // remover
@@ -465,17 +454,6 @@ SETTING_STRING(publicKey,        // getter
                false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
-)
-
-SETTING_STRING(publicKeyJournal,        // getter
-               setPublicKeyJournal,     // setter
-               removePublicKeyJournal,  // remover
-               hasPublicKeyJournal,     // has
-               "publicKeyJournal",      // key
-               "",                      // default value
-               false,                   // user setting
-               true,                    // remove when reset
-               true                     // sensitive (do not log)
 )
 
 SETTING_BYTEARRAY(recentConnections,        // getter
@@ -785,19 +763,6 @@ SETTING_STRING(sentryEndpoint,        // getter
                true,                  // remove when reset
                true                   // sensitive (do not log)
 )
-
-#if defined(MZ_IOS)
-SETTING_STRINGLIST(subscriptionTransactions,        // getter
-                   setSubscriptionTransactions,     // setter
-                   removeSubscriptionTransactions,  // remover
-                   hasSubscriptionTransactions,     // has
-                   "subscriptionTransactions",      // key
-                   QStringList(),                   // efault value
-                   false,                           // user setting
-                   false,                           // remove when reset
-                   true                             // sensitive (do not log)
-)
-#endif
 
 SETTING_BOOL(gleanDebugTagActive,        // getter
              setGleanDebugTagIsActive,   // setter

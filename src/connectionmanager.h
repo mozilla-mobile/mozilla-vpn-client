@@ -246,7 +246,6 @@ class ConnectionManager : public QObject, public LogSerializer {
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
-  bool m_connectedBeforeTransaction = false;
 
   ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
 

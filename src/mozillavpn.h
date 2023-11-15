@@ -172,10 +172,6 @@ class MozillaVPN final : public App {
   void removeDevice(const QString& publicKey, const QString& source);
   void deviceRemovalCompleted(const QString& publicKey);
 
-  void setJournalPublicAndPrivateKeys(const QString& publicKey,
-                                      const QString& privateKey);
-  void resetJournalPublicAndPrivateKeys();
-
   void serversFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
