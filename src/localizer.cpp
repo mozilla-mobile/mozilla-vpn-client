@@ -326,9 +326,6 @@ void Localizer::settingsChanged() {
   mozilla::glean::settings::using_system_language.set(code.isEmpty());
 
   m_code = code;
-
-  beginResetModel();
-  endResetModel();
 }
 
 bool Localizer::loadLanguage(const QString& requestedLocalCode) {
