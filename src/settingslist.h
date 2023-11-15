@@ -764,6 +764,19 @@ SETTING_STRING(sentryEndpoint,        // getter
                true                   // sensitive (do not log)
 )
 
+#if defined(MZ_IOS)
+SETTING_STRINGLIST(subscriptionTransactions,        // getter
+                   setSubscriptionTransactions,     // setter
+                   removeSubscriptionTransactions,  // remover
+                   hasSubscriptionTransactions,     // has
+                   "subscriptionTransactions",      // key
+                   QStringList(),                   // efault value
+                   false,                           // user setting
+                   false,                           // remove when reset
+                   true                             // sensitive (do not log)
+)
+#endif
+
 SETTING_BOOL(gleanDebugTagActive,        // getter
              setGleanDebugTagIsActive,   // setter
              removeGleanDebugTagActive,  // remover
