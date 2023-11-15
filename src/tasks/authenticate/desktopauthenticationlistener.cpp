@@ -66,6 +66,8 @@ void DesktopAuthenticationListener::start(Task* task,
 
   QUrlQuery query(url.query());
   query.addQueryItem("port", QString::number(m_server->port()));
+  query.addQueryItem("utm_medium", "vpn-client");
+  query.addQueryItem("utm_source", "desktop-signup-flow");
   url.setQuery(query);
 
   UrlOpener::instance()->openUrl(url);
