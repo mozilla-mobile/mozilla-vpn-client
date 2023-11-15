@@ -47,8 +47,6 @@
 #  include "platforms/wasm/wasminspector.h"
 #else
 #  include <QCoreApplication>
-
-#  include "inspectorwebsocketserver.h"
 #endif
 
 namespace {

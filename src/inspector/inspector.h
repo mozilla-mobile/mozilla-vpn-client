@@ -32,7 +32,7 @@ class Inspector : public QObject {
         Inspector(QApplication* parent_app, 
 			QQmlApplicationEngine* engine)
 		: QObject(parent_app), 
-			m_hotReloader(engine) {
+			m_hotReloader(this,engine) {
 			m_app = parent_app;
 			m_engine = engine;
             m_server = InspectorServer::Factory::create(this);
@@ -73,7 +73,7 @@ class Inspector : public QObject {
 private:
 
 		void registerInternals(){
-                   // m_channel.registerObject("hotReloader", &m_hotReloader);
+                    m_channel.registerObject("inspector_hotReloader", &m_hotReloader);
                     m_channel.registerObject("app", m_app);
                                         m_channel.registerObject(
                                             "inspector_graph",

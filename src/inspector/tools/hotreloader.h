@@ -12,20 +12,16 @@
 namespace InspectorTools {
 
 /**
-* Hotreloader intercepts all load's
-* for a QmlEngine inject's overwrites added 
-* at runtine. 
-* Can Signal to loaders that a reload is required. 
-*/
+ * Hotreloader intercepts all load's
+ * for a QmlEngine inject's overwrites added
+ * at runtine.
+ * Can Signal to loaders that a reload is required.
+ */
 
-class Hotreloader : public QQmlAbstractUrlInterceptor {
+class Hotreloader : public QObject {
+  Q_OBJECT
  public:
-  Hotreloader(QQmlEngine* target);
-
-  // Callback for QT.
-  QUrl intercept(const QUrl& url,
-                 QQmlAbstractUrlInterceptor::DataType type) override;
-
+  Hotreloader(QObject* parent, QQmlEngine* target);
   /**
    * @brief Announces a qml replacement path is available
    * Will redirect all requests that match path.filename
@@ -35,12 +31,12 @@ class Hotreloader : public QQmlAbstractUrlInterceptor {
    *
    * @param path - The Replacement Path
    */
-  void annonceReplacedFile(const QUrl& path);
+  Q_INVOKABLE void annonceReplacedFile(const QUrl& path);
 
   // Removes all injected paths
   // Reload's the current screen with the internal
   // Components
-  void resetAllFiles();
+  Q_INVOKABLE void resetAllFiles();
 
   /**
    * @brief Announces a qml replacement path is available
@@ -49,20 +45,29 @@ class Hotreloader : public QQmlAbstractUrlInterceptor {
    *
    * @param path - The Replacement Path
    */
-  void fetchAndAnnounce(const QUrl& path);
+  Q_INVOKABLE void fetchAndAnnounce(const QUrl& path);
 
   /**
    * @brief Closes and re-opens the QML window
    * forcing a refresh of all components.
    *
    */
-  void reloadWindow();
+  Q_INVOKABLE void reloadWindow();
 
  private:
   QQmlEngine* m_target = nullptr;
-  QMap<QString, QUrl> m_announced_files;
   QString m_qml_folder;
-};
+  QMap<QString, QUrl> m_announced_files;
 
+  class HotReloadInterceptor : public QQmlAbstractUrlInterceptor {
+   public:
+    HotReloadInterceptor(Hotreloader* parent) : m_parent(parent) {}
+    QPointer<Hotreloader> m_parent;
+    // Callback for QT.
+    QUrl intercept(const QUrl& url,
+                   QQmlAbstractUrlInterceptor::DataType type) override;
+  };
+  HotReloadInterceptor m_intercecptor;
+};
+}  // namespace InspectorTools
 #endif  // MOZILLA_VPN_INSPECTORHOTRELOADER_H
-}

@@ -14,7 +14,7 @@ namespace InspectorServer {
 class Factory {
  public:
   /**
-   * @brief Factory function that creates a InspectorServer appropriate 
+   * @brief Factory function that creates a InspectorServer, that is appropriate 
    * for the current platform
    * 
    * Returns nullptr if it's not possible to construct a server. 

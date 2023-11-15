@@ -24,9 +24,9 @@ Logger logger("QMLHotReload");
 
 namespace InspectorTools {
 
-Hotreloader::Hotreloader(QQmlEngine* target)
-    : m_target(target) {
-  m_target->addUrlInterceptor(this);
+Hotreloader::Hotreloader(QObject* parent, QQmlEngine* target)
+    : QObject(parent), m_target(target), m_intercecptor(this) {
+  m_target->addUrlInterceptor(&m_intercecptor);
   new NavigatorReloader(qApp);
   QDir dataDir(
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
@@ -43,17 +43,6 @@ Hotreloader::Hotreloader(QQmlEngine* target)
       dir.removeRecursively();
     }
   });
-}
-
-QUrl Hotreloader::intercept(
-    const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) {
-  logger.debug() << "Requested: " << url.fileName();
-  if (m_announced_files.contains(url.fileName())) {
-    logger.debug() << "Redirect! : "
-                   << m_announced_files[url.fileName()].toString();
-    return m_announced_files[url.fileName()];
-  }
-  return url;
 }
 
 void Hotreloader::annonceReplacedFile(const QUrl& path) {
@@ -164,5 +153,21 @@ void Hotreloader::reloadWindow() {
     }
   }
 }
+
+QUrl Hotreloader::HotReloadInterceptor::intercept(
+    const QUrl& url,
+                            QQmlAbstractUrlInterceptor::DataType type) {
+  if (m_parent.isNull()) {
+    return url;
+  }
+  logger.debug() << "Requested: " << url.fileName();
+  if (m_parent->m_announced_files.contains(url.fileName())) {
+    logger.debug() << "Redirect! : "
+                   << m_parent->m_announced_files[url.fileName()].toString();
+    return m_parent->m_announced_files[url.fileName()];
+  }
+  return url;
+}
+
 
 }  // namespace InspectorTools
