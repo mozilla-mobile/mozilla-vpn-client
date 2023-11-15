@@ -129,7 +129,11 @@ bool DaemonAccessControl::isPeerAuthorized(const QLocalSocket* socket) const {
 
 // static
 int DaemonAccessControl::getPeerId(const QLocalSocket* socket) {
-#if defined(MZ_MACOS)
+#ifdef UNIT_TEST
+  return s_mockPeerId;
+#endif
+
+#ifdef MZ_MACOS
   Q_ASSERT(socket);
 
   uid_t uid = -1;
