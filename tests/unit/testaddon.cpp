@@ -12,7 +12,6 @@
 #include "addons/addonmessage.h"
 #include "addons/addonproperty.h"
 #include "addons/addonpropertylist.h"
-#include "addons/addontutorial.h"
 #include "addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "addons/conditionwatchers/addonconditionwatchergroup.h"
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
@@ -31,7 +30,6 @@
 #include "qtglean.h"
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
-#include "tutorial/tutorial.h"
 
 void TestAddon::init() {
   m_settingsHolder = new SettingsHolder();

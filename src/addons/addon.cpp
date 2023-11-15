@@ -16,7 +16,6 @@
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addonreplacer.h"
-#include "addontutorial.h"
 #include "conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherjavascript.h"
@@ -359,10 +358,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   if (type == "i18n") {
     addon = new AddonI18n(parent, manifestFileName, id, name);
-  }
-
-  else if (type == "tutorial") {
-    addon = AddonTutorial::create(parent, manifestFileName, id, name, obj);
   }
 
   else if (type == "guide") {

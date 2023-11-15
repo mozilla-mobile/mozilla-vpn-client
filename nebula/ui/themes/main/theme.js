@@ -50,7 +50,6 @@ theme.overlayBackground = '#4D000000';
 theme.checkBoxWarning = '#C45A27';
 
 theme.guideCardImageBgColor = "#50134B"
-theme.tutorialCardImageBgColor = "#321C64"
 
 theme.fontColor = '#6D6D6E';
 theme.fontColorDark = '#3D3D3D';
@@ -84,7 +83,6 @@ theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
 theme.checkBoxRowSubLabelTopMargin = 2;
 
-theme.tutorialCardHeight = 144
 theme.guideCardHeight = 172
 
 theme.navBarHeight = 64;

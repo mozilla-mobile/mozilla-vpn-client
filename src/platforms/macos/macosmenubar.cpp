@@ -6,7 +6,6 @@
 
 #include "connectionmanager.h"
 #include "controller.h"
-#include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -62,9 +61,8 @@ void MacOSMenuBar::initialize() {
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!
-  m_aboutAction = fileMenu->addAction("about.vpn", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpAbout);
-  });
+  m_aboutAction = fileMenu->addAction(
+      "about.vpn", []() { MozillaVPN::instance()->requestAbout(); });
   m_aboutAction->setMenuRole(QAction::AboutRole);
   m_aboutAction->setVisible(vpn->state() == App::StateMain);
 

@@ -9,7 +9,6 @@
 #include "app.h"
 #include "constants.h"
 #include "controller.h"
-#include "externalophandler.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -359,11 +358,6 @@ void NotificationHandler::messageClickHandle() {
 
   if (m_lastMessage == None) {
     logger.warning() << "Random message clicked received";
-    return;
-  }
-
-  if (!ExternalOpHandler::instance()->request(
-          MozillaVPN::OpNotificationClicked)) {
     return;
   }
 

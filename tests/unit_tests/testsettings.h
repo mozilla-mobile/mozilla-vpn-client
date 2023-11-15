@@ -8,9 +8,5 @@ class TestSettings final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void transactionErrors();
-  void transactionCommit();
-  void transactionRollback();
-  void transactionRollbackStartup();
   void sensitiveLogging();
 };

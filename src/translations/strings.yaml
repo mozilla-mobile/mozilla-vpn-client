@@ -158,7 +158,7 @@ splittunnel:
     comment:
       - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
   infoLinkText: Learn more
-  infoCardDescription: 
+  infoCardDescription:
     value: VPN must be off to edit App exclusions
     comment: Displays inside the information card at the top of the app exclusions screen when the VPN is on
 
@@ -261,13 +261,13 @@ purchaseWeb:
   inProgress2: Please continue subscribing in your browser…
 
 purchase:
-  subscriptionOption: 
+  subscriptionOption:
     value: "%1-month plan: %2"
     comment: "%1 is replaced by the subscription duration in months. %2 is replaced by the total subscription cost."
   percentSaved:
     value: Save %1%
     comment: Appears on the in-app purchase view beside a subscription plan. "%1" is replaced by the percentage amount saved when selecting that plan
-  subscribeNow: 
+  subscribeNow:
     value: Subscribe now
     comment: Button label
 
@@ -356,7 +356,7 @@ settings:
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
-  appExclusionClearAllApps: 
+  appExclusionClearAllApps:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
 
@@ -376,9 +376,9 @@ aboutUs:
     comment: Accessible name for a button. %1 is the version number of the VPN client.
   privacyNotice: Privacy notice
   termsOfService: Terms of service
-  releaseVersion: 
+  releaseVersion:
     value: Release version
-    comment:  "Refers to the installed version. For example: 'Release Version: 1.23'"
+    comment: "Refers to the installed version. For example: 'Release Version: 1.23'"
 
 AndroidNotifications:
   GeneralNotifications:
@@ -397,13 +397,13 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
-  dataCollectionAndUse: 
+  dataCollectionAndUse:
     value: Data collection and use
     comment: Headline of telemetry policy view and checkbox label
-  doNotAllow: 
+  doNotAllow:
     value: Don’t allow
     comment: Button label
-  allow: 
+  allow:
     value: Allow on this device
     comment: Button label
   learnMore: Learn more about what data Mozilla collects and how it’s used.
@@ -500,7 +500,6 @@ connectionInfo:
   connectionInformation:
     value: Connection information
     comment: Accessible label for the button that shows the IP info panel when clicked.
-  
 
 crashreporter:
   mainTitle:
@@ -697,7 +696,7 @@ inAppAuth:
   pleaseWait:
     value: Please wait…
     comment: Headline on loading screen
-  
+
 postAuthentication:
   headline: Quick access
   subtitle: You can quickly access Mozilla VPN from your status bar.
@@ -750,19 +749,12 @@ tipsAndTricks:
   quickTipsDescription: Let us help you get the most out of Mozilla VPN
   advancedTipsTitle: Advanced tips
   advancedTipsDescription: Let us help you learn more about Mozilla VPN
-  tutorialsTitle: Getting started
-  tutorialsDescription: Learn the basics of Mozilla VPN
-  moreTutorialsTitle: More tutorials
-  moreTutorialsDescription2: Learn how to use Mozilla VPN’s advanced features
   quickTipsGuideViewTitle: Quick tip
   advancedTipsGuideViewTitle: Advanced tip
   introModalDescription: Here’s a great list of useful tips and tricks to get the best out of your Mozilla VPN experience. Check it out now or find it anytime in the settings.
   tabTitleAll:
     value: All
     comment: Tab title for the general tab of the Tips & Tricks panels
-  tabTitleTutorials:
-    value: Tutorials
-    comment: Tab title for the tab of the Tips & Tricks panels that only shows tutorials
   tabTitleTips:
     value: Tips
     comment: Tab title for the tab of the Tips & Tricks panels that only shows guides
@@ -860,20 +852,6 @@ paymentMethods:
   unionpay: UnionPay
   visa: Visa
 
-tutorialPopup:
-  tutorialCompleteHeadline: Well done!
-  tutorialCompletePrimaryButtonLabel: Let’s go!
-  tutorialFinishedSecondaryButtonLabel: Dismiss
-  leaveTutorialButton: Leave tutorial
-
-  tutorialLeaveHeadline: Leave tutorial?
-  tutorialLeaveSubtitle: Looks like you haven’t finished the tutorial quite yet. Would you like to continue and finish now or quit and come back later?
-  tutorialLeavePrimaryButtonLabel: Resume tutorial
-
-  tutorialWarningTitle: Continue tutorial?
-  tutorialWarningDescription: By continuing this tutorial, you will be changing your VPN settings. These settings will revert to their original state upon completion or quitting of the tutorial.
-
-
 inAppMessaging:
   menuTitle: Messages
   editButton: Edit
@@ -904,7 +882,7 @@ devices:
   countLabel:
     value: "%1 out of %2 devices added"
     comment: Label at the top of the "My devices" setting screen indicating the number of devices registered to the users account (1st arg) vs the max limit of devices available for their account (2nd arg)
-  limitTitle: 
+  limitTitle:
     value: Device not added
     comment: Title of the "device limit" view stating that the device has not yet been added to the list of active devices (because we are at the device limit)
   limitDescription2:
@@ -937,7 +915,7 @@ devices:
   removePopupPrimaryButtonLabel:
     value: Remove
     comment: Label for the primary button for the Remove Device poup
-  menuTitle: 
+  menuTitle:
     value: My devices
     comment: Title for the menu bar when viewing the devices or device limit pages
 
@@ -981,10 +959,10 @@ global:
   copy:
     value: Copy
     comment: Accessible button label
-  clear: 
+  clear:
     value: Clear
     comment: Accessible label for clear button
-  next: 
+  next:
     value: Next
     comment: Label for button used to proceed
   getStarted:
@@ -997,11 +975,11 @@ getHelp:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
   linkTitle: Get help
-  developerOptions: 
+  developerOptions:
     value: Developer options
     comment: Button label
 
-product: 
+product:
   name: Mozilla VPN
   description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
 

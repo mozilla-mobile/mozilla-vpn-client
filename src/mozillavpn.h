@@ -13,7 +13,6 @@
 #include "app.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
-#include "externalophandler.h"
 #include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;
@@ -84,15 +83,6 @@ class MozillaVPN final : public App {
     ScreenOnboarding,
   };
   Q_ENUM(CustomScreen);
-
-  enum CustomExternalOperations {
-    OpAbout = ExternalOpHandler::OpCustom + 1,
-    OpActivate,
-    OpDeactivate,
-    OpNotificationClicked,
-    OpQuit,
-  };
-  Q_ENUM(CustomExternalOperations);
 
  private:
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
@@ -171,10 +161,6 @@ class MozillaVPN final : public App {
 
   void removeDevice(const QString& publicKey, const QString& source);
   void deviceRemovalCompleted(const QString& publicKey);
-
-  void setJournalPublicAndPrivateKeys(const QString& publicKey,
-                                      const QString& privateKey);
-  void resetJournalPublicAndPrivateKeys();
 
   void serversFetched(const QByteArray& serverData);
 
@@ -266,8 +252,6 @@ class MozillaVPN final : public App {
   static void registerNavigationBarButtons();
 
   static void registerAddonApis();
-
-  static void registerExternalOperations();
 
  signals:
   void deviceRemoving(const QString& publicKey);

@@ -41,8 +41,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/addonpropertylist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonreplacer.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addonreplacer.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addontutorial.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addontutorial.h
     ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcher.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcher.h
     ${CMAKE_SOURCE_DIR}/src/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
@@ -108,8 +106,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
-    ${CMAKE_SOURCE_DIR}/src/externalophandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/externalophandler.h
     ${CMAKE_SOURCE_DIR}/src/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
@@ -213,14 +209,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/temporarydir.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp
     ${CMAKE_SOURCE_DIR}/src/theme.h
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorial.cpp
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorial.h
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstep.cpp
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstep.h
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepbefore.cpp
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepbefore.h
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepnext.cpp
-    ${CMAKE_SOURCE_DIR}/src/tutorial/tutorialstepnext.h
     ${CMAKE_SOURCE_DIR}/src/urlopener.cpp
     ${CMAKE_SOURCE_DIR}/src/urlopener.h
     ${CMAKE_SOURCE_DIR}/src/utils.cpp

@@ -243,20 +243,6 @@ void ServerData::changeServer(const QString& countryCode,
   update(countryCode, cityName, entryCountryCode, entryCityName);
 }
 
-void ServerData::changeServerForTutorial(const QString& countryCode,
-                                         const QString& cityName,
-                                         const QString& entryCountryCode,
-                                         const QString& entryCityName) {
-  if (m_exitCountryCode == countryCode && m_exitCityName == cityName &&
-      m_entryCountryCode == entryCountryCode &&
-      m_entryCityName == entryCityName) {
-    logger.debug() << "No server change needed";
-    return;
-  }
-
-  update(countryCode, cityName, entryCountryCode, entryCityName);
-}
-
 void ServerData::forget() {
   Q_ASSERT(m_initialized);
 

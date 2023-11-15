@@ -23,7 +23,6 @@
 #include "models/licensemodel.h"
 #include "settingsholder.h"
 #include "theme.h"
-#include "tutorial/tutorial.h"
 #include "urlopener.h"
 #include "utils.h"
 
@@ -72,8 +71,6 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                NavigationBarModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTutorial",
-                               Tutorial::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",

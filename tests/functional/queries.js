@@ -87,12 +87,6 @@ const screenHome = {
       new QmlQueryComposer('//serverListButton-label-label'),
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
-  TUTORIAL_LEAVE: new QmlQueryComposer('//tutorialLeave'),
-  TUTORIAL_POPUP_PRIMARY_BUTTON:
-      new QmlQueryComposer('//tutorialPopupPrimaryButton'),
-  TUTORIAL_POPUP_SECONDARY_BUTTON:
-      new QmlQueryComposer('//tutorialPopupSecondaryButton'),
-  TUTORIAL_UI: new QmlQueryComposer('//tutorialUiRoot'),
 
   serverListView: {
     generateCountryId: (serverCode) => {
@@ -279,8 +273,6 @@ const screenSettings = {
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
   TIPS_AND_TRICKS: new QmlQueryComposer('//settingsTipsAndTricks'),
-  TUTORIAL_LIST_HIGHLIGHT: new QmlQueryComposer(
-      '//tutorialsSectionAll/tipsAndTricksSetionLoader//highlightedTutorial'),
   USER_PROFILE:
       new QmlQueryComposer('//settingsUserProfile-manageAccountButton'),
   USER_PROFILE_DISPLAY_NAME:

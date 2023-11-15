@@ -165,7 +165,6 @@ target_sources(app_unit_tests PRIVATE
     guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
-    tutorials/tutorials.qrc
     resourceloader/resourceloader.qrc
 )
 

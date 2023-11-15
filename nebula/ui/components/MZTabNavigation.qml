@@ -85,7 +85,7 @@ Item {
                         border.width: MZTheme.theme.focusBorderWidth
                         border.color: MZTheme.theme.fontColor
                         color: MZTheme.theme.transparent
-                        visible: MZTutorial.playing && btn.activeFocus
+                        visible: btn.activeFocus
                         radius: 4
                     }
 

@@ -33,7 +33,6 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
-#include "tutorial/tutorial.h"
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -148,24 +147,6 @@ void ConnectionManager::initialize() {
     logger.info() << "Canary Ping Succeeded";
   });
 
-  connect(SettingsHolder::instance(), &SettingsHolder::transactionBegan, this,
-          [this]() {
-            m_connectedBeforeTransaction =
-                m_state == ConnectionManager::StateOn;
-          });
-
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::transactionAboutToRollBack, this, [this]() {
-            if (!m_connectedBeforeTransaction)
-              MozillaVPN::instance()->deactivate();
-          });
-
-  connect(SettingsHolder::instance(), &SettingsHolder::transactionRolledBack,
-          this, [this]() {
-            if (m_connectedBeforeTransaction)
-              MozillaVPN::instance()->activate();
-          });
-
   MozillaVPN* vpn = MozillaVPN::instance();
 
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
@@ -176,9 +157,6 @@ void ConnectionManager::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &ConnectionManager::cleanupBackendLogs);
-
-  connect(this, &ConnectionManager::readyToServerUnavailable,
-          Tutorial::instance(), &Tutorial::stop);
 }
 
 void ConnectionManager::implInitialized(bool status, bool a_connected,
