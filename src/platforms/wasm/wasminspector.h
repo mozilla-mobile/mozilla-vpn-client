@@ -5,9 +5,9 @@
 #ifndef WASMINSPECTOR_H
 #define WASMINSPECTOR_H
 
-#include "inspector/inspectorhandler.h"
+#include "inspector/DevCmdHandler.h"
 
-class WasmInspector final : public InspectorHandler {
+class WasmInspector final : public DevCmdHandler {
   Q_DISABLE_COPY_MOVE(WasmInspector)
 
  public:

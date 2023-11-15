@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef INSPECTORHANDLER_H
-#define INSPECTORHANDLER_H
+#ifndef DEVCMD_HANDLER_H
+#define DEVCMD_HANDLER_H
 
 #include <QByteArray>
 #include <QObject>
@@ -12,9 +12,11 @@ class QNetworkReply;
 class QUrl;
 class QQuickItem;
 
-class InspectorHandler : public QObject {
+namespace InspectorTools {
+
+class DevCmdHandler : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(InspectorHandler)
+  Q_DISABLE_COPY_MOVE(DevCmdHandler)
 
  public:
   static void initialize();
@@ -33,19 +35,19 @@ class InspectorHandler : public QObject {
   static void registerCommand(
       const QString& commandName, const QString& commandDescription,
       int32_t arguments,
-      std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>&&
+      std::function<QJsonObject(DevCmdHandler*, const QList<QByteArray>&)>&&
           callback);
   // Unregister a Command
   static void unregisterCommand(const QString& commandName);
 
  protected:
-  explicit InspectorHandler(QObject* parent);
-  virtual ~InspectorHandler();
+  explicit DevCmdHandler(QObject* parent);
+  virtual ~DevCmdHandler();
 
  private:
   void addonLoadCompleted();
   void logEntryAdded(const QByteArray& log);
   void networkRequestFinished(QNetworkReply* reply);
 };
-
-#endif  // INSPECTORHANDLER_H
+}  // namespace InspectorTools
+#endif  // DEVCMD_HANDLER_H

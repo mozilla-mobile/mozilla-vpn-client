@@ -33,8 +33,6 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/featuremodel.h"
-#include "models/subscriptiondata.h"
-#include "mozillavpn.h"
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
@@ -638,31 +636,12 @@ static QList<InspectorCommand> s_commands{
                      [](DevCmdHandler*, const QList<QByteArray>&) {
                        MZGlean::initialize();
                        return QJsonObject();
-                     }},
+                     }}
+    */
+};
 
-    InspectorCommand{
-        "set_subscription_start_date",
-        "Changes the start date of the subscription", 1,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          qint64 newCreatedAtTimestamp = arguments[1].toLongLong();
 
-          // get sub data json from settings
-          QByteArray subscriptionData =
-              SettingsHolder::instance()->subscriptionData();
-          QJsonDocument doc = QJsonDocument::fromJson(subscriptionData);
-          QJsonObject obj = doc.object();
-          QJsonObject subObj = obj["subscription"].toObject();
-
-          // modify createdAt date
-          qlonglong createdAt = newCreatedAtTimestamp;
-          subObj["created"] = createdAt;
-          obj["subscription"] = subObj;
-          doc.setObject(obj);
-          subscriptionData = doc.toJson();
-          SettingsHolder::instance()->setSubscriptionData(subscriptionData);
-
-          return QJsonObject();
-        }}};
+namespace InspectorTools {
 
 DevCmdHandler::DevCmdHandler(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(DevCmdHandler);
@@ -883,9 +862,9 @@ void DevCmdHandler::registerCommand(
                                      std::move(callback)});
 }
 
-void DevCmdHandler::unregisterCommand(const QString& commandName) { 
-   Q_UNUSED(commandName);
-   //TODO: Implement.
-   
+void DevCmdHandler::unregisterCommand(const QString& commandName) {
+  Q_UNUSED(commandName);
+  // TODO: Implement.
 }
 
+}  // namespace InspectorTools

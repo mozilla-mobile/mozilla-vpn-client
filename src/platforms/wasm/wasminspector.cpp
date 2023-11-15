@@ -44,7 +44,7 @@ WasmInspector* WasmInspector::instance() {
   return s_inspector;
 }
 
-WasmInspector::WasmInspector(QObject* parent) : InspectorHandler(parent) {
+WasmInspector::WasmInspector(QObject* parent) : DevCmdHandler(parent) {
   MZ_COUNT_CTOR(WasmInspector);
 }
 

@@ -10,6 +10,6 @@ InspectorItemPicker::InspectorItemPicker(QObject* parent)
     : ItemPicker(parent) {}
 
 bool InspectorItemPicker::itemPicked(const QList<QQuickItem*>& list) {
-  InspectorHandler::itemsPicked(list);
+  DevCmdHandler::itemsPicked(list);
   return true;
 }
