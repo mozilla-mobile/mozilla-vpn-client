@@ -167,8 +167,8 @@ Rectangle {
             topMargin: MZTheme.theme.windowMargin / 2
             rightMargin: MZTheme.theme.windowMargin / 2
         }
-        // TODO: Replace with localized string
-        accessibleName: "Restart speed test"
+
+        accessibleName: MZI18n.ConnectionInfoRestartSpeedTest
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible
         z: 1

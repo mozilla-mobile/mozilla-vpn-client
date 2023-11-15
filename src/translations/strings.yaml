@@ -500,6 +500,9 @@ connectionInfo:
   connectionInformation:
     value: Connection information
     comment: Accessible label for the button that shows the IP info panel when clicked.
+  restartSpeedTest:
+    value: Restart speed test
+    comment: Accessible label for the button to restart the speed test upon its completion.
 
 crashreporter:
   mainTitle:

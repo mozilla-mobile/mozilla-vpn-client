@@ -23,6 +23,7 @@ ColumnLayout {
         text: titleText
         Layout.leftMargin: MZTheme.theme.windowMargin
         opacity: disableRowWhen ?  .7 : 1
+        Accessible.ignored: disableRowWhen || !visible
 
         Behavior on opacity {
             PropertyAnimation {

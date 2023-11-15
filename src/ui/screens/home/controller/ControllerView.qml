@@ -471,7 +471,7 @@ Item {
             topMargin: MZTheme.theme.windowMargin / 2
         }
         accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoStartSpeedTest
-        Accessible.ignored: !visible
+        Accessible.ignored: !enabled || !visible
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && !ipInfoPanel.isOpen
         opacity: visible ? 1 : 0
@@ -558,7 +558,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: 22
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoScreenVisible || !visible
+            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
@@ -596,6 +596,7 @@ Item {
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
+            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.
