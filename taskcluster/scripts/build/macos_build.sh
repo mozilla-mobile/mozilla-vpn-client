@@ -91,6 +91,11 @@ then
 fi
 
 print Y "Configuring the build..."
+if [ -d ${TASK_HOME}/build ]; then
+    echo "Found old build-folder, weird!"
+    echo "Removing it..."
+    rm -r ${TASK_HOME}/build
+fi
 mkdir ${TASK_HOME}/build
 
 cmake -S . -B ${TASK_HOME}/build -GNinja \

@@ -53,20 +53,7 @@ ColumnLayout {
         showDivider: false
         isChecked: MZSettings.onboardingDataCollectionEnabled
 
-        onClicked: {
-            MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
-
-            if (MZSettings.onboardingDataCollectionEnabled) {
-                Glean.interaction.dataCollectionEnabled.record({
-                    screen: root.telemetryScreenId,
-                });
-            }
-            else {
-                Glean.interaction.dataCollectionDisabled.record({
-                    screen: root.telemetryScreenId,
-                });
-            }
-        }
+        onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
     }
 
     Item {

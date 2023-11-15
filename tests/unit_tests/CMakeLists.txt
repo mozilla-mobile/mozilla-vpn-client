@@ -37,6 +37,7 @@ target_link_libraries(app_unit_tests PRIVATE
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
+    Qt6::Network
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
@@ -88,6 +89,8 @@ target_sources(app_unit_tests PRIVATE
     testcheckedint.h
     testcomposer.cpp
     testcomposer.h
+    testdaemonaccesscontrol.cpp
+    testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
     testfeature.cpp
@@ -110,12 +113,12 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testtasksentry.cpp
-    testtasksentry.h
     testsettings.cpp
     testsettings.h
     testtasks.cpp
     testtasks.h
+    testtasksentry.cpp
+    testtasksentry.h
     testtemporarydir.cpp
     testtemporarydir.h
     testthemes.cpp
@@ -126,6 +129,8 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
+    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
+    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
 )
 
 if(NOT BUILD_ADJUST_SDK_TOKEN)

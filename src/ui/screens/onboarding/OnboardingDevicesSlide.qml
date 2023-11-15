@@ -133,6 +133,8 @@ ColumnLayout {
 
         Layout.maximumHeight: qrcodeSize
         Layout.maximumWidth: qrcodeSize
+        Layout.minimumHeight: qrcodeSize
+        Layout.minimumWidth: qrcodeSize
         Layout.alignment: Qt.AlignHCenter
 
         currentIndex: deviceTypeToggle.selectedIndex
