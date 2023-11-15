@@ -648,10 +648,8 @@ static QList<InspectorCommand> s_commands{
                        QByteArray subscriptionData = SettingsHolder::instance()->subscriptionData();
                        QJsonDocument doc = QJsonDocument::fromJson(subscriptionData);
                        QJsonObject obj = doc.object();
-
                        QJsonObject subObj = obj["subscription"].toObject();
                        qlonglong createdAt = subObj["created"].toVariant().toLongLong() * 1000;
-                       Q_UNUSED(createdAt);
 
                        //modify createdAt date
                        createdAt = newCreatedAtTimestamp;

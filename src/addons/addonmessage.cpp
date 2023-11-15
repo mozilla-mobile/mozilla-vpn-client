@@ -238,4 +238,6 @@ void AddonMessage::setBadge(Badge badge) {
 void AddonMessage::setDate(qint64 date) {
   m_date = date;
   emit dateChanged();
+  //Notifies formattedDate that the date has been changed
+  emit retranslationCompleted();
 }

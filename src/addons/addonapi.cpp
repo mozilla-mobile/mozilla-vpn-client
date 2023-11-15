@@ -92,6 +92,34 @@ void AddonApi::initialize() {
   }
 }
 
+void AddonApi::setTimeout(int interval, const QJSValue& callback) {
+
+ if (!callback.isCallable()) {
+    logger.debug() << "No callback received";
+    return;
+  }
+
+  //Creates a timer for `interval` msec before executing `callback`
+  QTimer* timer = new QTimer(this);
+  timer->setSingleShot(true);
+  timer->setInterval(interval);
+  m_timers.insert(m_addon->id(), timer);
+
+  connect((m_timers.value(m_addon->id())), &QTimer::timeout, this, [callback](){
+    callback.call();
+  });
+
+  timer->start();
+}
+
+void AddonApi::clearTimers() {
+  //Clear all timers for a specific addon
+  QString addonId = m_addon->id();
+  if (m_timers.contains(addonId)) {
+    m_timers.remove(addonId);
+  }
+}
+
 void AddonApi::log(const QString& message) { logger.debug() << message; }
 
 void AddonApi::connectSignal(QObject* obj, const QString& signalName,
