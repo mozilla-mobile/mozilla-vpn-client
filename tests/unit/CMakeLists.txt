@@ -226,14 +226,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/hawkauth.h
     ${MZ_SOURCE_DIR}/hkdf.cpp
     ${MZ_SOURCE_DIR}/hkdf.h
-    ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
-    ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.cpp
-    ${MZ_SOURCE_DIR}/inspector/inspectorhotreloader.h
-    ${MZ_SOURCE_DIR}/inspector/inspectorhotreloader.cpp
-    ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.h
-    ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.cpp
-    ${MZ_SOURCE_DIR}/inspector/inspectorutils.cpp
-    ${MZ_SOURCE_DIR}/inspector/inspectorutils.h
     ${MZ_SOURCE_DIR}/ipaddress.cpp
     ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp

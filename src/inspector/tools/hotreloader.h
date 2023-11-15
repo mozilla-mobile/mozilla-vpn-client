@@ -9,9 +9,18 @@
 #include <QQmlAbstractUrlInterceptor>
 #include <QQmlEngine>
 
-class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
+namespace InspectorTools {
+
+/**
+* Hotreloader intercepts all load's
+* for a QmlEngine inject's overwrites added 
+* at runtine. 
+* Can Signal to loaders that a reload is required. 
+*/
+
+class Hotreloader : public QQmlAbstractUrlInterceptor {
  public:
-  InspectorHotreloader(QQmlEngine* target);
+  Hotreloader(QQmlEngine* target);
 
   // Callback for QT.
   QUrl intercept(const QUrl& url,
@@ -56,3 +65,4 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
 };
 
 #endif  // MOZILLA_VPN_INSPECTORHOTRELOADER_H
+}

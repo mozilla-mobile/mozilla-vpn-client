@@ -6,8 +6,6 @@ target_sources(inspector INTERFACE
     inspector.h
     inspectorcommandhandler.cpp
     inspectorcommandhandler.h
-    inspectorhotreloader.cpp
-    inspectorhotreloader.h
     inspectorserver.h
     inspectorserver.cpp
     inspectoritempicker.cpp
@@ -18,4 +16,11 @@ target_sources(inspector INTERFACE
     inspectorwebsockettransport.h
     inspectorwebsocketserver.cpp
     inspectorwebsocketserver.h
+
+    tools/qquickinspector.cpp
+    tools/qquickinspector.h
+    tools/qqitemwrapper.h
+    tools/qqitemwrapper.cpp
+    tools/hotreloader.cpp
+    tools/hotreloader.h
 )

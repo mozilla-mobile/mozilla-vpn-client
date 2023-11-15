@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "inspectorhotreloader.h"
+#include "hotreloader.h"
 
 #include <QDir>
 #include <QFile>
@@ -22,7 +22,9 @@ namespace {
 Logger logger("QMLHotReload");
 }
 
-InspectorHotreloader::InspectorHotreloader(QQmlEngine* target)
+namespace InspectorTools {
+
+Hotreloader::Hotreloader(QQmlEngine* target)
     : m_target(target) {
   m_target->addUrlInterceptor(this);
   new NavigatorReloader(qApp);
@@ -43,7 +45,7 @@ InspectorHotreloader::InspectorHotreloader(QQmlEngine* target)
   });
 }
 
-QUrl InspectorHotreloader::intercept(
+QUrl Hotreloader::intercept(
     const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) {
   logger.debug() << "Requested: " << url.fileName();
   if (m_announced_files.contains(url.fileName())) {
@@ -54,7 +56,7 @@ QUrl InspectorHotreloader::intercept(
   return url;
 }
 
-void InspectorHotreloader::annonceReplacedFile(const QUrl& path) {
+void Hotreloader::annonceReplacedFile(const QUrl& path) {
   logger.debug() << "Announced redirect! : " << path.fileName() << " as ->"
                  << path.toString();
 
@@ -75,7 +77,7 @@ void InspectorHotreloader::annonceReplacedFile(const QUrl& path) {
   fetchAndAnnounce(path);
 }
 
-void InspectorHotreloader::fetchAndAnnounce(const QUrl& path) {
+void Hotreloader::fetchAndAnnounce(const QUrl& path) {
   if (path.scheme() != "http") {
     logger.error() << "Unexpected File Scheme in: " << path.toString();
     return;
@@ -114,7 +116,7 @@ void InspectorHotreloader::fetchAndAnnounce(const QUrl& path) {
       });
 }
 
-void InspectorHotreloader::resetAllFiles() {
+void Hotreloader::resetAllFiles() {
   logger.debug() << "Resetting hot reloaded files";
 
   QDir dir(m_qml_folder);
@@ -127,7 +129,7 @@ void InspectorHotreloader::resetAllFiles() {
   Navigator::instance()->reloadCurrentScreen();
 }
 
-void InspectorHotreloader::reloadWindow() {
+void Hotreloader::reloadWindow() {
   auto engineHolder = QmlEngineHolder::instance();
   QQmlApplicationEngine* engine =
       static_cast<QQmlApplicationEngine*>(engineHolder->engine());
@@ -162,3 +164,5 @@ void InspectorHotreloader::reloadWindow() {
     }
   }
 }
+
+}  // namespace InspectorTools

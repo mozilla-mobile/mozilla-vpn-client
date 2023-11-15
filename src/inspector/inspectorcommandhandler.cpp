@@ -25,7 +25,7 @@
 #include "feature.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
-#include "inspectorhotreloader.h"
+#include "tools/hotreloader.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
 #include "leakdetector.h"
@@ -62,7 +62,7 @@ bool s_pickedItemsSet = false;
 InspectorItemPicker* s_itemPicker = nullptr;
 
 std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
-InspectorHotreloader* s_hotreloader = nullptr;
+InspectorTools::Hotreloader* s_hotreloader = nullptr;
 
 QJsonValue qjsValueToQJsonValue(const QJSValue& qjsValue) {
   if (qjsValue.isUndefined() || qjsValue.isNull()) {
@@ -115,6 +115,8 @@ struct InspectorCommand {
 };
 
 static QList<InspectorCommand> s_commands{
+
+    /*
     InspectorCommand{"help", "The help menu", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
@@ -180,7 +182,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"live_reload", "Live reload file X", 1,
                      [](InspectorHandler*, const QList<QByteArray>& args) {
                        if (s_hotreloader == nullptr) {
-                         s_hotreloader = new InspectorHotreloader(
+                         s_hotreloader = new Hotreloader(
                              QmlEngineHolder::instance()->engine());
                        }
                        auto url = QUrl(args.at(1));
@@ -190,7 +192,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"reload_window", "Reload the whole window", 0,
                      [](InspectorHandler*, const QList<QByteArray>& args) {
                        if (s_hotreloader == nullptr) {
-                         s_hotreloader = new InspectorHotreloader(
+                         s_hotreloader = new Hotreloader(
                              QmlEngineHolder::instance()->engine());
                        }
                        s_hotreloader->reloadWindow();
@@ -883,8 +885,9 @@ void InspectorHandler::registerCommand(
                                      std::move(callback)});
 }
 
-// static
-void InspectorHandler::setConstructorCallback(
-    std::function<void(InspectorHandler* inspectorHandler)>&& callback) {
-  s_constructorCallback = std::move(callback);
+void InspectorHandler::unregisterCommand(const QString& commandName) { 
+   Q_UNUSED(commandName);
+   //TODO: Implement.
+   
 }
+

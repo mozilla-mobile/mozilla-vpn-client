@@ -13,7 +13,7 @@
 #include "dnshelper.h"
 #include "feature.h"
 #include "frontend/navigationbarmodel.h"
-#include "frontend/navigator.h"
+#include "frontend/navigator.h" 
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"

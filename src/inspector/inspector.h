@@ -17,9 +17,9 @@
 #include <QWebSocket>
 
 
-#include "inspectorhotreloader.h"
+#include "tools/hotreloader.h"
+#include "tools/qquickinspector.h"
 #include "inspectorserver.h"
-
 
 /**
  * @brief Service that allow's other Clients to debug it. 
@@ -75,6 +75,9 @@ private:
 		void registerInternals(){
                    // m_channel.registerObject("hotReloader", &m_hotReloader);
                     m_channel.registerObject("app", m_app);
+                                        m_channel.registerObject(
+                                            "inspector_graph",
+                        new InspectorTools::QQuickInspector(this, m_engine));
 		}
 
 
@@ -82,7 +85,7 @@ private:
 		QPointer<QQmlApplicationEngine> m_engine;
         QPointer<QObject> m_server;
 
-		InspectorHotreloader m_hotReloader;
+		InspectorTools::Hotreloader m_hotReloader;
         QWebChannel m_channel;
 };
 #endif

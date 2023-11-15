@@ -28,13 +28,6 @@ class InspectorHandler : public QObject {
   virtual void send(const QByteArray& buffer) = 0;
 
   /**
-   * @brief Set a constructor callback to inform the caller about this new
-   * inspector handler.
-   */
-  static void setConstructorCallback(
-      std::function<void(InspectorHandler* inspectorHandler)>&& callback);
-
-  /**
    * @brief Register a new command.
    */
   static void registerCommand(
@@ -42,6 +35,8 @@ class InspectorHandler : public QObject {
       int32_t arguments,
       std::function<QJsonObject(InspectorHandler*, const QList<QByteArray>&)>&&
           callback);
+  // Unregister a Command
+  static void unregisterCommand(const QString& commandName);
 
  protected:
   explicit InspectorHandler(QObject* parent);

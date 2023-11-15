@@ -453,19 +453,9 @@ int CommandUI::run(QStringList& tokens) {
                      &ServerHandler::close);
 #endif
 
-    // If there happen to be navigation URLs, send them to the navigator class.
-    for (const QString& value : tokens) {
-      QUrl url(value);
-      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
-        logger.error() << "Invalid link:" << value;
-      } else {
-        Navigator::instance()->requestDeepLink(url);
-      }
-    }
-
 
     QScopedPointer<Inspector> inspector;
-    if (!Constants::inProduction()) {
+    if (MZ_FORCE_INSPECOR  || !Constants::inProduction()) {
       // TODO: use the new setting.
       inspector.reset(new Inspector(
           qApp, (QQmlApplicationEngine*)QmlEngineHolder::instance()->engine()));
