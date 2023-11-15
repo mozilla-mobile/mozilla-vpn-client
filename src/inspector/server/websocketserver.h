@@ -5,12 +5,12 @@
 #ifndef INSPECTORWEBSOCKETSERVER_H
 #define INSPECTORWEBSOCKETSERVER_H
 
-#include <inspector/inspectorserver.h>
-
 #include <QWebSocketServer>
-
 class Inspector;
-class InspectorWebSocketServer final :public QWebSocketServer{
+namespace InspectorServer {
+
+
+class InspectorWebSocketServer final : public QWebSocketServer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(InspectorWebSocketServer)
 
@@ -18,11 +18,12 @@ class InspectorWebSocketServer final :public QWebSocketServer{
   explicit InspectorWebSocketServer(Inspector* parent);
   ~InspectorWebSocketServer();
 
-
  private:
   void newConnectionReceived();
 
   Inspector* m_parent = nullptr;
 };
+
+}  // namespace InspectorServer
 
 #endif  // INSPECTORWEBSOCKETSERVER_H

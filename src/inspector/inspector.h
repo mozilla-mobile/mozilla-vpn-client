@@ -19,7 +19,7 @@
 
 #include "tools/hotreloader.h"
 #include "tools/qquickinspector.h"
-#include "inspectorserver.h"
+#include "server/factory.h"
 
 /**
  * @brief Service that allow's other Clients to debug it. 
@@ -35,7 +35,7 @@ class Inspector : public QObject {
 			m_hotReloader(engine) {
 			m_app = parent_app;
 			m_engine = engine;
-            m_server = InspectorServerFactory::create(this);
+            m_server = InspectorServer::Factory::create(this);
 			registerInternals();
 		}
 

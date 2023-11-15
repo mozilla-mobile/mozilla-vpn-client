@@ -4,10 +4,14 @@
 #ifndef MOZILLA_VPN_INSPECTORWEBCHANNELTRANSPORT_H
 #define MOZILLA_VPN_INSPECTORWEBCHANNELTRANSPORT_H
 
+
+
 #include <QObject>
 #include <QWebChannelAbstractTransport>
 #include <QWebSocket>
 
+
+namespace InspectorServer {
 class InspectorWebSocketTransport : public QWebChannelAbstractTransport {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(InspectorWebSocketTransport)
@@ -21,5 +25,7 @@ class InspectorWebSocketTransport : public QWebChannelAbstractTransport {
  private:
   QWebSocket* m_connection;
 };
+
+}  // namespace InspectorServer
 
 #endif  // MOZILLA_VPN_INSPECTORWEBCHANNELTRANSPORT_H

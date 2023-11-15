@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "inspectorwebsocketserver.h"
+#include "websocketserver.h"
 
 #include <QHostAddress>
 #include <QWebSocket>
 #include <qapplication.h>
 
-#include "inspector.h"
-#include "inspectorwebsockettransport.h"
+#include "../inspector.h"
+#include "websockettransport.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -17,6 +17,7 @@ namespace {
 Logger logger("InspectorWebSocketServer");
 }
 
+namespace InspectorServer {
 constexpr int INSPECT_PORT = 8765;
 
 InspectorWebSocketServer::InspectorWebSocketServer(Inspector* parent)
@@ -31,14 +32,14 @@ InspectorWebSocketServer::InspectorWebSocketServer(Inspector* parent)
     return;
   }
 
- connect(this, &InspectorWebSocketServer::newConnection, this,
+  connect(this, &InspectorWebSocketServer::newConnection, this,
           &InspectorWebSocketServer::newConnectionReceived);
   connect(this, &InspectorWebSocketServer::serverError,
           [this](QWebSocketProtocol::CloseCode closeCode) {
             logger.error() << "server error" << closeCode;
           });
   connect(qApp, &QCoreApplication::aboutToQuit, this,
-                   &InspectorWebSocketServer::close);
+          &InspectorWebSocketServer::close);
 }
 
 InspectorWebSocketServer::~InspectorWebSocketServer() {
@@ -66,3 +67,5 @@ void InspectorWebSocketServer::newConnectionReceived() {
   auto transport = new InspectorWebSocketTransport(child);
   m_parent->onConnection(transport);
 }
+
+}  // namespace InspectorServer

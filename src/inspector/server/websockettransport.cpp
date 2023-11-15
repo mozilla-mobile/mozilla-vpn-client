@@ -2,11 +2,13 @@
 // Created by Basti on 14/07/2023.
 //
 
-#include "inspectorwebsockettransport.h"
+#include "websockettransport.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 
+
+namespace InspectorServer {
 InspectorWebSocketTransport::InspectorWebSocketTransport(QWebSocket* connection)
     : QWebChannelAbstractTransport(connection) {
   m_connection = connection;
@@ -49,3 +51,5 @@ void InspectorWebSocketTransport::sendMessage(const QJsonObject& message) {
   }
   m_connection->sendTextMessage(json_bytes);
 }
+
+}  // namespace InspectorServer

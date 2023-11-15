@@ -6,10 +6,12 @@
 #  define INSPECTORSERVER_H
 
 #include <QObject>
-
-
 class Inspector;
-class InspectorServerFactory {
+
+namespace InspectorServer {
+
+
+class Factory {
  public:
   /**
    * @brief Factory function that creates a InspectorServer appropriate 
@@ -23,6 +25,7 @@ class InspectorServerFactory {
   static QObject* create(Inspector* parent);
 };
 
+}
 
 
 #endif
