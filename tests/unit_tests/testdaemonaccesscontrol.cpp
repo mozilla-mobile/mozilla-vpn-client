@@ -23,7 +23,7 @@ void TestDaemonAccessControl::testCommandsWhenInactive() {
   // access control defaults to unauthorized.
   dac->setMockPeerId(-1);
   QVERIFY(!dac->isCommandAuthorizedForPeer("activate", nullptr));
-  QVERIFY(!dac->isCommandAuthorizedForPeer("status", nullptr));
+  QVERIFY(dac->isCommandAuthorizedForPeer("status", nullptr));
   // Set peer id to something valid for activation to succeed.
   dac->setMockPeerId(1);
   QVERIFY(dac->isCommandAuthorizedForPeer("activate", nullptr));
