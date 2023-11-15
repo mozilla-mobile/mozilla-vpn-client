@@ -69,12 +69,9 @@ MZTextBlock 0.1 MZTextBlock.qml
 MZTimer 0.1 MZTimer.qml
 MZToggleCard 0.1 MZToggleCard.qml
 MZToolTip 0.1 MZToolTip.qml
-MZTutorialCard 0.1 MZTutorialCard.qml
-MZTutorialPopups 0.1 MZTutorialPopups.qml
 MZUIStates 0.1 MZUIStates.qml
 MZUserProfile 0.1 MZUserProfile.qml
 MZVerticalSpacer 0.1 MZVerticalSpacer.qml
 MZViewBase 0.1 MZViewBase.qml
 MZGuideList 0.1 MZGuideList.qml
-MZTutorialList 0.1 MZTutorialList.qml
 MZTipsAndTricksSection 0.1 MZTipsAndTricksSection.qml

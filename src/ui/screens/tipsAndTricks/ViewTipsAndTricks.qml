@@ -53,15 +53,12 @@ MZViewBase {
                 title: section.title
                 description: section.description
 
-                type: "guides"
                 customFilter: section.filter
             }
         }
     }
 
-
     Component.onCompleted: {
         Glean.sample.tipsAndTricksViewOpened.record();
     }
 }
-

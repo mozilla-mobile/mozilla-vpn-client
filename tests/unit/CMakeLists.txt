@@ -142,8 +142,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/addonpropertylist.h
     ${MZ_SOURCE_DIR}/addons/addonreplacer.cpp
     ${MZ_SOURCE_DIR}/addons/addonreplacer.h
-    ${MZ_SOURCE_DIR}/addons/addontutorial.cpp
-    ${MZ_SOURCE_DIR}/addons/addontutorial.h
     ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
     ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
     ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
@@ -303,14 +301,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
-    ${MZ_SOURCE_DIR}/tutorial/tutorial.cpp
-    ${MZ_SOURCE_DIR}/tutorial/tutorial.h
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstep.cpp
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstep.h
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstepbefore.cpp
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstepbefore.h
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstepnext.cpp
-    ${MZ_SOURCE_DIR}/tutorial/tutorialstepnext.h
     ${MZ_SOURCE_DIR}/urlopener.cpp
     ${MZ_SOURCE_DIR}/urlopener.h
     ${MZ_SOURCE_DIR}/utils.cpp

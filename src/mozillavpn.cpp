@@ -61,7 +61,6 @@
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
 #include "telemetry.h"
-#include "tutorialvpn.h"
 #include "update/updater.h"
 #include "urlopener.h"
 #include "versionutils.h"
@@ -220,8 +219,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   registerInspectorCommands();
 
   registerAddonApis();
-
-  TutorialVPN::registerTutorialSteps();
 
   registerExternalOperations();
 

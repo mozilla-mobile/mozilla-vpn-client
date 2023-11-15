@@ -1,7 +1,7 @@
 # Add-ons
 
 The add-on system is the basic component for dynamic contents for the Mozilla VPN client.
-Guides, tutorials, surveys, messages are all add-ons and they are dynamically loaded from a trusted source (archive.mozilla.org).
+Guides and messages are add-ons and they are dynamically loaded from a trusted source (archive.mozilla.org).
 
 ## Add-on index and the signature verification
 
@@ -26,11 +26,11 @@ least a manifest.json file. The properties of this JSON file are:
 | id | The ID of the add-on. It must match the file name | String | Yes |
 | name | The name of the add-on | String | Yes |
 | api_version | The version of the add-on framework | String | Yes |
-| type | One of the supported types (message, guide, tutorial, ...) | String | Yes |
+| type | One of the supported types (message, guide, ...) | String | Yes |
 | conditions | List of conditions to meet | Array of Condition objects | No |
 | state | Object describing the state of the addon | Collection of state objects | No |
 
-Based on the add-on type, extra properties can be in added. See the [tutorial](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/tutorials.md),
+Based on the add-on type, extra properties can be in added. See the
 [guide](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/guides.md), [message](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/message.md), and [replacer](https://github.com/mozilla-mobile/mozilla-vpn-client/blob/main/docs/replacer.md) documentation.
 
 ## State Object

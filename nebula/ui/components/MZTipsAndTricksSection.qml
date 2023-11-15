@@ -14,7 +14,6 @@ ColumnLayout {
     property string title
     property string description
 
-    property string type
     property var customFilter
 
     property alias list: tipsAndTricksListLoader.item
@@ -49,7 +48,7 @@ ColumnLayout {
     }
 
     Component.onCompleted: {
-        const source = type === "tutorials" ? "MZTutorialList.qml" : "MZGuideList.qml";
+        const source = "MZGuideList.qml";
         const options = { customFilter };
         tipsAndTricksListLoader.setSource(source, options)
     }

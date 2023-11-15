@@ -68,14 +68,11 @@ qt_add_qml_module(components
          MZTimer.qml
          MZToggleCard.qml
          MZToolTip.qml
-         MZTutorialCard.qml
          MZUIStates.qml
          MZVerticalSpacer.qml
          MZSegmentedToggle.qml
          MZSegmentedNavigation.qml
          MZUserProfile.qml
-         MZTutorialPopups.qml
-         MZTutorialList.qml
          MZGuideList.qml
          MZTipsAndTricksSection.qml
          MZScreenBase.qml
@@ -100,7 +97,7 @@ add_subdirectory(inAppAuth)
 
 
 set_target_properties(components PROPERTIES FOLDER "Libs")
-target_link_libraries(components PRIVATE 
+target_link_libraries(components PRIVATE
     forms
     formsplugin
     inAppAuth
