@@ -61,7 +61,7 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
-  //if "notify" is not specified in the manifest, default to true
+  // if "notify" is not specified in the manifest, default to true
   message->m_shouldNotify = messageObj["notify"].toBool(true);
 
   message->setBadge(messageObj["badge"].toString());
@@ -238,6 +238,6 @@ void AddonMessage::setBadge(Badge badge) {
 void AddonMessage::setDate(qint64 date) {
   m_date = date;
   emit dateChanged();
-  //Notifies formattedDate that the date has been changed
+  // Notifies formattedDate that the date has been changed
   emit retranslationCompleted();
 }

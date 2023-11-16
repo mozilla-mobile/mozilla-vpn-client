@@ -38,7 +38,15 @@ class AddonMessage final : public Addon {
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
   Q_PROPERTY(Badge badge MEMBER m_badge WRITE setBadge NOTIFY badgeChanged)
 
-  enum Badge { None, Warning, Critical, NewUpdate, WhatsNew, Survey, Subscription };
+  enum Badge {
+    None,
+    Warning,
+    Critical,
+    NewUpdate,
+    WhatsNew,
+    Survey,
+    Subscription
+  };
   Q_ENUM(Badge)
 
   static Addon* create(QObject* parent, const QString& manifestFileName,
