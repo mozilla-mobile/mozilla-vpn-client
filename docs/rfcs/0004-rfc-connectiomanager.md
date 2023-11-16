@@ -19,7 +19,7 @@ To avoid further complicating the already complex logic of the controller, this 
 
 ## Proposed Solution
 
-The Connection Diagnostics will be responsible for managing all probes. These probes are stored as distinct states within an enumeration class, `ConnectionDiagnostics::State`. The Connection Diagnostics will sequentially cycle through each of these states in a systematic order, only proceeding to the next state if the current probe is successful. 
+The Connection Diagnostics will be responsible for managing all probes. These probes are stored as distinct states within an enumeration class, `ConnectionDiagnostics::State`. The Connection Diagnostics will sequentially cycle through each of these states in a systematic order, only proceeding to the next state if the current probe is successful. If all probes pass but VPN stability is still `NoSignal`, then we would not present any modals to the user, but the controller will continue to show "No Signal" as we do currently.
 
 In the event of a probe failure, the Connection Diagnostics will emit a signal to the frontend. This will trigger a modal to be displayed to the user, providing an explanation of the issue and suggesting potential solutions. Upon encountering a failed probe, the progression through the remaining probes is immediately halted and the Connection Diagnostics will enter the Idle state.
 
@@ -60,6 +60,13 @@ If the VPN is already active and Connection Health stability goes into no signal
   - Stop subsequent Connection Diagnostics probes from running
   - emit a signal to the frontend communicating which probe failed
 
+- If a probe fails but the issues resolves on its own and Connection Health stability goes back to `Stable` while the modal is up:
+  - Automatically close the modal that was shown as a result of a failed probe
+  - Connection Diagnostics will go into `StateIdle`
+
+- If all probes pass but the stability is still `NoSignal`:
+  - Something else has gone wrong and are not able to determine the cause. VPN continues to stay in No Signal but we will not show any further modals to the user
+  - This will be recorded in the logs for debugging purposes
 > Note: In both phase 1 and phase 2 if user tries to interrupt connecting or deactivate the VPN during a connection diagnostics check, we will cancel the ongoing checks and proceed with deactivation. The connection diagnostics will no longer perform any checks until the users attempts to reactivate the VPN.
 
 ![Diagram to explain how Controller, Connection Diagnostics and Connection Health states interact](./images/CM_diagram.png)
