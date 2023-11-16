@@ -90,6 +90,8 @@ void AddonApi::initialize() {
   if (s_constructorCallback) {
     s_constructorCallback(this);
   }
+
+  m_timer.setSingleShot(true);
 }
 
 void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
@@ -99,26 +101,11 @@ void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
   }
 
   // Creates a timer for `interval` msec before executing `callback`
-  QTimer* timer = new QTimer(this);
-  timer->setSingleShot(true);
-  timer->setInterval(interval);
-  m_timers.insert(m_addon->id(), timer);
+  m_timer.setInterval(interval);
 
-  connect((m_timers.value(m_addon->id())), &QTimer::timeout, this,
-          [callback]() { callback.call(); });
+  connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });
 
-  timer->start();
-}
-
-void AddonApi::clearTimedCallbacks() {
-  // Stop and delete all timers for a specific addon
-  QString addonId = m_addon->id();
-  if (m_timers.contains(addonId)) {
-    QTimer* timer = m_timers.value(addonId);
-    timer->stop();
-    delete timer;
-    m_timers.remove(addonId);
-  }
+  m_timer.start();
 }
 
 void AddonApi::log(const QString& message) { logger.debug() << message; }
