@@ -171,7 +171,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/pkg)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
-    if(MVPN_IOS_ADJUST_TOKEN)
+    if(DEFINED ENV{MVPN_IOS_ADJUST_TOKEN})
         add_subdirectory(ios/adjust)
     endif()
 
