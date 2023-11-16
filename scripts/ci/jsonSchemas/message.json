@@ -33,11 +33,11 @@
       "description": "The type of this message"
     },
     "notify": {
-      "type": "string",
+      "type": "boolean",
       "description": "Determines whether we trigger a system notification. Default: true"
     },
     "blocks": {
-      "type": "boolean",
+      "type": "array",
       "description": "The list of text blocks",
       "items": {
         "$ref": "composer_block.json"
