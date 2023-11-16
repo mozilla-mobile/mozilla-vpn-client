@@ -92,7 +92,7 @@ void AddonApi::initialize() {
   }
 }
 
-void AddonApi::setTimeout(int interval, const QJSValue& callback) {
+void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
   if (!callback.isCallable()) {
     logger.debug() << "No callback received";
     return;
@@ -110,10 +110,13 @@ void AddonApi::setTimeout(int interval, const QJSValue& callback) {
   timer->start();
 }
 
-void AddonApi::clearTimers() {
-  // Clear all timers for a specific addon
+void AddonApi::clearTimedCallbacks() {
+  // Stop and delete all timers for a specific addon
   QString addonId = m_addon->id();
   if (m_timers.contains(addonId)) {
+    QTimer* timer = m_timers.value(addonId);
+    timer->stop();
+    delete timer;
     m_timers.remove(addonId);
   }
 }

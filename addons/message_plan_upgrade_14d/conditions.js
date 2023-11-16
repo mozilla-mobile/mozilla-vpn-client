@@ -27,14 +27,14 @@
     if (isMonthlyWebPlan) {
       //Less than 14 days into the subscription, don't show message
       if (now < fourteenDaysAfterSubscriptionStarted) {
-        api.clearTimers()
-        api.setTimeout(fourteenDaysAfterSubscriptionStarted - now, () => computeCondition());
+        api.clearTimedCallbacks()
+        api.setTimedCallback(fourteenDaysAfterSubscriptionStarted - now, () => computeCondition());
         condition.disable()
       }
       //Between 14 and 87 days into the subscription, show message
       else if (now >= fourteenDaysAfterSubscriptionStarted && now < eightySevenDaysAfterSubscriptionStarted) {
-        api.clearTimers()
-        api.setTimeout(eightySevenDaysAfterSubscriptionStarted - now, () => computeCondition())
+        api.clearTimedCallbacks()
+        api.setTimedCallback(eightySevenDaysAfterSubscriptionStarted - now, () => computeCondition())
         api.addon.date = fourteenDaysAfterSubscriptionStarted / 1000
         condition.enable()
       }

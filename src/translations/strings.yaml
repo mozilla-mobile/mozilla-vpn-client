@@ -901,7 +901,7 @@ inAppMessaging:
     comment: A badge shown in a message signifying that this message contains a survey
   subscriptionBadge:
     value: Subscription
-    comment: A badge shown in a message signifying that this message contains information about the users subscription
+    comment: A badge shown in a message signifying that this message contains information about the user's subscription
 
 devices:
   countLabel:

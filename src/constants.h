@@ -171,7 +171,7 @@ constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
 CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
 
 // in milliseconds, how often we should fetch the server list, the account and
-// so on.
+// so on. 60 minuts on prod, 5 minutes on stage
 CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 300000, 0)
 
 // how often we check the captive portal when the VPN is on.
