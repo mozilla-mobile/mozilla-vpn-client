@@ -39,7 +39,7 @@ void AddonApi::initialize() {
     QQmlEngine::setObjectOwnership(m_addon, QQmlEngine::CppOwnership);
 
     QJSValue value = engine->newQObject(m_addon);
-    value.setPrototype(engine->newQMetaObject(&Addon::staticMetaObject));
+    value.setPrototype(engine->newQMetaObject(m_addon->metaObject()));
 
     insert("addon", QVariant::fromValue(value));
   }

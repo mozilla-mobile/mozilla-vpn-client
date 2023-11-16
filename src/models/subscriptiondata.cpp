@@ -56,6 +56,7 @@ bool SubscriptionData::fromSettings() {
   }
 
   m_rawJson = json;
+  emit changed();
   return true;
 }
 

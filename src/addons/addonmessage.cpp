@@ -107,6 +107,12 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
 
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
   QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
+
+  //We are going from dismissed, to some other status, so re-enable the message
+  if (m_status == MessageStatus::Dismissed) {
+    enable();
+  }
+
   m_status = newStatus;
   emit statusChanged(m_status);
 
@@ -128,6 +134,9 @@ void AddonMessage::dismiss() {
 }
 
 void AddonMessage::markAsRead() { updateMessageStatus(MessageStatus::Read); }
+
+//Marks messaged as un-read and un-dimissed
+void AddonMessage::resetMessage() { updateMessageStatus(MessageStatus::Received); }
 
 bool AddonMessage::containsSearchString(const QString& query) const {
   if (query.isEmpty()) {

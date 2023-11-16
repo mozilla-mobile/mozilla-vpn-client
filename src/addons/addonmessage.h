@@ -69,6 +69,7 @@ class AddonMessage final : public Addon {
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void markAsRead();
+  Q_INVOKABLE void resetMessage();
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
   void setBadge(Badge badge);
