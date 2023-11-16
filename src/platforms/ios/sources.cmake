@@ -11,7 +11,6 @@ target_sources(shared-sources INTERFACE
 # Include the Adjust SDK
 if(DEFINED ENV{MVPN_IOS_ADJUST_TOKEN})
     target_compile_definitions(mozillavpn PUBLIC MZ_ADJUST)
-    target_compile_options(shared-sources INTERFACE -DADJUST_SDK_TOKEN=$ENV{MVPN_IOS_ADJUST_TOKEN})
     target_sources(shared-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.h
