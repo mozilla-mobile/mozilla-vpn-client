@@ -20,6 +20,7 @@ task-defaults:
             - win-perl
             - win-sentry-cli
             - win-conda
+            - wintun
         toolchain:
             - conda-windows-x86_64
         build:

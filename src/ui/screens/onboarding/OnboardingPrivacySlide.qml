@@ -14,6 +14,8 @@ ColumnLayout {
     id: root
     objectName: "onboardingPrivacySlide"
 
+    property string telemetryScreenId: "get_more_privacy"
+
     signal nextClicked()
     signal backClicked()
 
@@ -46,6 +48,9 @@ ColumnLayout {
         Layout.leftMargin: 32
         Layout.rightMargin: 32
         Layout.fillWidth: true
+
+        isOnboarding: true
+        telemetryScreenId: root.telemetryScreenId
     }
 
     Item {
@@ -63,7 +68,13 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalNext
 
-        onClicked: root.nextClicked()
+        onClicked: {
+            Glean.interaction.continueSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.nextClicked()
+        }
     }
 
     MZLinkButton {
@@ -79,6 +90,12 @@ ColumnLayout {
 
         labelText: MZI18n.GlobalGoBack
 
-        onClicked: root.backClicked()
+        onClicked: {
+            Glean.interaction.goBackSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.backClicked()
+        }
     }
 }

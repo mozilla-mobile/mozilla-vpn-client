@@ -101,7 +101,7 @@ class AndroidVPNActivity : public QObject {
   void eventStatisticUpdate(const QString& data);
   void eventActivationError(const QString& data);
   void eventOnboardingCompleted();
-  void eventVpnConfigPermissionResponse();
+  void eventVpnConfigPermissionResponse(bool granted);
   void eventRequestGleanUploadEnabledState();
 
  private:

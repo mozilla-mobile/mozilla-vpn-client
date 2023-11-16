@@ -182,3 +182,71 @@ outcome:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
     expires: never
+  onboarding_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has just started the onboarding experience for the first time
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has just completed the onboarding experience
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_ntwrk_perm_granted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has allowed the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_ntwrk_perm_denied:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has denied the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
