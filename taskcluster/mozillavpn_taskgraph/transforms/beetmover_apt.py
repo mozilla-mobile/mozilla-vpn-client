@@ -34,7 +34,9 @@ def get_gcs_sources(dependent_task):
     for artifact in release_artifacts:
         assert  artifact["name"].startswith("public/build/")
         artifact_name = artifact["name"].replace("public/build/","")
-        gcs_paths.append(gcs_path_prefix+artifact_name)
+        # Make sure when we concat paths's not have double slashes
+        bucket_path = (gcs_path_prefix+artifact_name).replace("//","/")
+        gcs_paths.append(bucket_path)
     return gcs_paths
 
 
