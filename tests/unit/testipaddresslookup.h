@@ -8,14 +8,12 @@ class TestIpAddressLookup final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void initTestCase() {
-    TestHelper::controllerState = ConnectionManager::StateOn;
-  }
+  void initTestCase() { TestHelper::controllerState = Controller::StateOn; }
   void checkIpAddressFailure();
   void checkIpAddressSucceess_data();
   void checkIpAddressSucceess();
 
   void cleanupTestCase() {
-    TestHelper::controllerState = ConnectionManager::StateInitializing;
+    TestHelper::controllerState = Controller::StateInitializing;
   }
 };

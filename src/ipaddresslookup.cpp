@@ -35,7 +35,7 @@ void IpAddressLookup::initialize() {
 
   connect(vpn, &MozillaVPN::stateChanged, this, &IpAddressLookup::stateChanged);
 
-  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &IpAddressLookup::stateChanged);
 }
 
@@ -79,7 +79,7 @@ void IpAddressLookup::updateIpAddress() {
         // and not the MozillaVPN::serverData() which could be changed in the
         // meantime, because of a server-switch request.
         if (country != MozillaVPN::instance()
-                           ->connectionManager()
+                           ->controller()
                            ->currentServer()
                            .exitCountryCode()) {
           // In case the country-we're reported in does not match the
@@ -90,8 +90,7 @@ void IpAddressLookup::updateIpAddress() {
             // user is not authenticated anymore.
             MozillaVPN* vpn = MozillaVPN::instance();
             if (vpn->state() == App::StateMain &&
-                vpn->connectionManager()->state() ==
-                    ConnectionManager::StateOn) {
+                vpn->controller()->state() == Controller::StateOn) {
               updateIpAddress();
             }
           });
@@ -126,7 +125,7 @@ void IpAddressLookup::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOn) {
+      vpn->controller()->state() != Controller::StateOn) {
     reset();
     return;
   }

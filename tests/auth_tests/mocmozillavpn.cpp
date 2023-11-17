@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "controller.h"
-// #include "helper.h"
 #include "models/location.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
@@ -33,8 +32,6 @@ MozillaVPN::~MozillaVPN() {}
 ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
 Controller* MozillaVPN::controller() const { return nullptr; }
-
-ConnectionManager* MozillaVPN::connectionManager() const { return nullptr; }
 
 SubscriptionData* MozillaVPN::subscriptionData() const { return nullptr; }
 

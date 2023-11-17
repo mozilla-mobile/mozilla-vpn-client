@@ -14,8 +14,7 @@
 #include "settingsholder.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
-ConnectionManager::State TestHelper::controllerState =
-    ConnectionManager::StateInitializing;
+Controller::State TestHelper::controllerState = Controller::StateInitializing;
 QVector<QObject*> TestHelper::testList;
 TestHelper::SystemNotification TestHelper::lastSystemNotification;
 

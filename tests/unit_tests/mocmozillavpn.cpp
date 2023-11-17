@@ -34,8 +34,6 @@ ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
 Controller* MozillaVPN::controller() const { return nullptr; }
 
-ConnectionManager* MozillaVPN::connectionManager() const { return nullptr; }
-
 SubscriptionData* MozillaVPN::subscriptionData() const { return nullptr; }
 
 ServerCountryModel* MozillaVPN::serverCountryModel() const { return nullptr; }

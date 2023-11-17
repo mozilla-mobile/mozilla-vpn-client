@@ -4,7 +4,6 @@
 
 #include "keyregenerator.h"
 
-#include "connectionmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "feature.h"
@@ -28,7 +27,7 @@ KeyRegenerator::KeyRegenerator() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &KeyRegenerator::stateChanged);
-  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &KeyRegenerator::stateChanged);
   connect(&m_timer, &QTimer::timeout, this, &KeyRegenerator::stateChanged);
   connect(Feature::get(Feature::Feature_keyRegeneration),
@@ -52,7 +51,7 @@ void KeyRegenerator::stateChanged() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   if (vpn->state() != App::StateMain ||
-      vpn->connectionManager()->state() != ConnectionManager::StateOff) {
+      vpn->controller()->state() != Controller::StateOff) {
     logger.debug() << "Wrong state";
     return;
   }
