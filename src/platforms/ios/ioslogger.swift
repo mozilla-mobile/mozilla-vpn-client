@@ -6,15 +6,31 @@ import Foundation
 import os.log
 import OSLog
 
+extension OSLogType {
+    func toString() -> String {
+        switch self {
+        case .info:
+            return "Info"
+        case .debug:
+            return "Debug"
+        case .error:
+            return "Error"
+        default:
+            return "Unknown"
+        }
+    }
+}
+
 public class IOSLoggerImpl : NSObject {
     private let log: OSLog
-    
+    private let tag: String
+
     private lazy var dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
         return dateFormatter
     }()
-    
+
     private static let logger = IOSLoggerImpl(tag: "IOSLoggerImpl")
     private static var appexLogFileURL: URL? {
         get {
@@ -23,12 +39,14 @@ public class IOSLoggerImpl : NSObject {
             ) else {
                 return nil
             }
-            
+
             return containerURL.appendingPathComponent(Constants.networkExtensionLogFileName, isDirectory: false)
         }
     }
 
     @objc init(tag: String) {
+
+        self.tag = tag
         self.log = OSLog(
             subsystem: Bundle.main.bundleIdentifier!,
             category: tag
@@ -48,13 +66,13 @@ public class IOSLoggerImpl : NSObject {
     }
 
     func log(_ message: String, type: OSLogType) {
-        os_log("%{public}@", log: self.log, type: type, message)
-        
+        NSLog("(\(tag)) \(type.toString()): \(message)")
+
         if (Bundle.main.bundlePath.hasSuffix(".appex")) {
             let currentDate = Date()
             let formattedDateString = dateFormatter.string(from: currentDate)
 
-            if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
+            if let data = "[\(formattedDateString)] (\(tag)) \(type.toString()): \(message)\n".data(using: .utf8) {
                 let _ = IOSLoggerImpl.withAppexLogFile { logFileHandle in
                     logFileHandle.seekToEndOfFile()
                     logFileHandle.write(data)
@@ -62,7 +80,7 @@ public class IOSLoggerImpl : NSObject {
             }
         }
     }
-    
+
     @objc static func getAppexLogs(callback: @escaping (String) -> Void) {
         withAppexLogFile { logFileHandle in
             if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
@@ -70,20 +88,20 @@ public class IOSLoggerImpl : NSObject {
             }
         }
     }
-    
+
     @objc static func clearAppexLogs() {
         withAppexLogFile { logFileHandle in
             logFileHandle.truncateFile(atOffset: 0)
         }
     }
-    
+
     private static func withAppexLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
         guard let appexLogFileURL = IOSLoggerImpl.appexLogFileURL else {
             logger.error(message: "IMPOSSIBLE: No known app extension log file.")
             return
         }
 
-        
+
         do {
             if !FileManager.default.fileExists(atPath: appexLogFileURL.path) {
                 // Create an empty file
@@ -94,7 +112,7 @@ public class IOSLoggerImpl : NSObject {
                     return
                 }
             }
-            
+
             let fileHandle = try FileHandle(forUpdating: appexLogFileURL)
             try f(fileHandle)
             fileHandle.closeFile()
@@ -115,4 +133,3 @@ func wg_log(_ type: OSLogType, staticMessage: StaticString) {
 func wg_log(_ type: OSLogType, message: String) {
     wireguardLogger.log(message, type: type)
 }
-

@@ -8,6 +8,7 @@ import IOSGlean
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
+    private let networkMonitor = IOSNetworkMonitor()
 
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
@@ -57,6 +58,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
+        networkMonitor.start();
+        
         // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
         if let gleanDebugTag = gleanDebugTag {
             logger.info(message: "Setting Glean debug tag for Network Extension.")
@@ -136,6 +139,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         logger.info(message: "Stopping tunnel")
+        networkMonitor.stop();
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
