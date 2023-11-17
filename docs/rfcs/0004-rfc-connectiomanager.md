@@ -33,6 +33,7 @@ The Connection Health, an existing component of our codebase, is tasked with sen
 enum ConnectionDiagnosticsStates {
   StateProbingInternet,
   StateCheckingFirewall,
+  StateCheckingCaptivePortal,
   StateProbingServerLocation,
   StateCheckingSubscription,
   StateIdle,
@@ -67,6 +68,7 @@ If the VPN is already active and Connection Health stability goes into no signal
 - If all probes pass but the stability is still `NoSignal`:
   - Something else has gone wrong and are not able to determine the cause. VPN continues to stay in No Signal but we will not show any further modals to the user
   - This will be recorded in the logs for debugging purposes
+
 > Note: In both phase 1 and phase 2 if user tries to interrupt connecting or deactivate the VPN during a connection diagnostics check, we will cancel the ongoing checks and proceed with deactivation. The connection diagnostics will no longer perform any checks until the users attempts to reactivate the VPN.
 
 ![Diagram to explain how Controller, Connection Diagnostics and Connection Health states interact](./images/CM_diagram.png)
