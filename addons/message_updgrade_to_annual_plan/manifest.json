@@ -1,13 +1,13 @@
 {
   "api_version": "0.1",
-  "id": "message_plan_upgrade_14days",
-  "name": "Upgrade to annual plan 14days",
+  "id": "message_updgrade_to_annual_plan",
+  "name": "Upgrade to annual plan",
   "type": "message",
   "conditions": {
     "javascript": "conditions.js"
   },
   "message": {
-    "id": "message_plan_upgrade_14days",
+    "id": "message_updgrade_to_annual_plan",
     "title": "Save 50% when you switch to an annual plan",
     "subtitle": "Get the same protection, for half the price.",
     "badge": "subscription",
