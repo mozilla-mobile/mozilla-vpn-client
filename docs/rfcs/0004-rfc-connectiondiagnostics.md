@@ -73,7 +73,7 @@ If the VPN is already active and Connection Health stability goes into no signal
 
 > Note: In both phase 1 and phase 2 if user tries to interrupt connecting or deactivate the VPN during a connection diagnostics check, we will cancel the ongoing checks and proceed with deactivation. The connection diagnostics will no longer perform any checks until the users attempts to reactivate the VPN.
 
-![Diagram to explain how Controller, Connection Diagnostics and Connection Health states interact](./images/CM_diagram.png)
+![Diagram to explain how Controller, Connection Diagnostics and Connection Health states interact](./images/ConnectionDiagnosticsDiagram.png)
 
 ## Metrics and Measurements
 
