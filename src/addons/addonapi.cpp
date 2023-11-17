@@ -100,12 +100,12 @@ void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
     return;
   }
 
-  // Creates a timer for `interval` msec before executing `callback`
-  m_timer.setInterval(interval);
+  //disconnect a potential previous timer
+  QObject::disconnect(&m_timer, nullptr, nullptr, nullptr);
 
   connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });
 
-  m_timer.start();
+  m_timer.start(interval);
 }
 
 void AddonApi::log(const QString& message) { logger.debug() << message; }
