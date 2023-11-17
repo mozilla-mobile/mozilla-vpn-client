@@ -7,7 +7,7 @@
 
 ## Summary
 
-The existing `ConnectionManager` class will be renamed to `ConnectionDiagnostics` and will be responsible for handling all connectivity related checks once during VPN activation (`Controller::StateConnecting`) and then periodically once the VPN is already activated (`Controller::StateOn`); the controller will be the entity which manages the controller states that the client goes through such as `connecting` and `confirming` as we activate and deactivate the VPN to reflect those to the user what is happening behind the scene.
+The existing `ConnectionManager` class will be renamed `ConnectionDiagnostics` and will be responsible for handling all connectivity related checks once during VPN activation (`Controller::StateConnecting`) and then periodically once the VPN is already activated (`Controller::StateOn`); the controller will be the entity which manages the controller states the client goes through such as `connecting` and `confirming`.
 
 ## Motivation
 
@@ -21,7 +21,7 @@ To avoid further complicating the already complex logic of the controller, this 
 
 The Connection Diagnostics will be responsible for managing all probes. These probes are stored as distinct states within an enumeration class, `ConnectionDiagnostics::State`. The Connection Diagnostics will sequentially cycle through each of these states in a systematic order, only proceeding to the next state if the current probe is successful. If all probes pass but VPN stability is still `NoSignal`, then we would not present any modals to the user, but the controller will continue to show "No Signal" as we do currently.
 
-In the event of a probe failure, the Connection Diagnostics will emit a signal to the frontend. This will trigger a modal to be displayed to the user, providing an explanation of the issue and suggesting potential solutions. Upon encountering a failed probe, the progression through the remaining probes is immediately halted and the Connection Diagnostics will enter the Idle state.
+In the event of a probe failure, the Connection Diagnostics will emit a signal. The frontend will listen to that signal and display a modal to the user providing an explanation of the issue and suggesting potential solutions. Upon encountering a failed probe, the progression through the remaining probes is immediately halted and the Connection Diagnostics will enter the Idle state.
 
 The Connection Health, an existing component of our codebase, is tasked with sending periodic pings and determining the stability of the VPN based on the responses received (see `ConnectionHealth::healthCheckup()`). It classifies the VPN stability as `Stable`, `Unstable` (some missing responses), or `NoSignal` (no responses received). When the VPN experiences issues with network connectivity or server availability, it naturally transitions into the No Signal state and, ideally, recovers once the issue is resolved. We can leverage this logic to recover from a probe failure within the Connection Diagnostics.
 
@@ -45,7 +45,7 @@ Perform a single cycle going through all the Connection Diagnostics probes.
 - If a probe fails:
   - Set Controller to `StateOff`
   - Stop subsequent probes from running
-  - emit a signal to the frontend communicating which probe failed
+  - emit a signal communicating which probe failed
   - VPN will remain in `StateOff`
   - Connection Diagnostics will go into `StateIdle`
 - If all probes pass:
@@ -56,17 +56,17 @@ Perform a single cycle going through all the Connection Diagnostics probes.
 If the VPN is already active and Connection Health stability goes into no signal, initiate a diagnostics cycle to perform a set of checks to identify the underlying cause.
 
 - If a probe fails:
-  - Controller continues to stay in `StateOn`. We will __never__ toggle the VPN off without the user explicitly doing so themselves
+  - Controller remains in `StateOn`. We will __never__ toggle the VPN off without the user explicitly doing so themselves
   - We will __not__ manipulate the Connection Health stability based on Connection Diagnostics probes
   - Stop subsequent Connection Diagnostics probes from running
-  - emit a signal to the frontend communicating which probe failed
+  - emit a signal communicating which probe failed
 
-- If a probe fails but the issues resolves on its own and Connection Health stability goes back to `Stable` while the modal is up:
+- If a probe fails but the issue resolves on its own and Connection Health stability goes back to `Stable` while the modal is up:
   - Automatically close the modal that was shown as a result of a failed probe
   - Connection Diagnostics will go into `StateIdle`
 
 - If all probes pass but the stability is still `NoSignal`:
-  - Something else has gone wrong and are not able to determine the cause. VPN continues to stay in No Signal but we will not show any further modals to the user
+  - Something else has gone wrong and we are not able to determine the cause. VPN continues to stay in No Signal but we will not show any further modals to the user
   - This will be recorded in the logs for debugging purposes
 
 > Note: In both phase 1 and phase 2 if user tries to interrupt connecting or deactivate the VPN during a connection diagnostics check, we will cancel the ongoing checks and proceed with deactivation. The connection diagnostics will no longer perform any checks until the users attempts to reactivate the VPN.
