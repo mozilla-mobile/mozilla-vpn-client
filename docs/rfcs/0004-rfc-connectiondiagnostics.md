@@ -69,7 +69,7 @@ If the VPN is already active and Connection Health stability goes into no signal
   - Something else has gone wrong and we are not able to determine the cause. VPN continues to stay in No Signal but we will not show any further modals to the user
   - This will be recorded in the logs for debugging purposes
 
-> Note: ConnectionDiagnostics states above are sorted in the order they will be run during a diagnostics cycle.
+> Note: The ConnectionDiagnostics states above are sorted in the order they will be run during a diagnostics cycle.
 
 > Note: In both phase 1 and phase 2 if user tries to interrupt connecting or deactivate the VPN during a connection diagnostics check, we will cancel the ongoing checks and proceed with deactivation. The connection diagnostics will no longer perform any checks until the users attempts to reactivate the VPN.
 
