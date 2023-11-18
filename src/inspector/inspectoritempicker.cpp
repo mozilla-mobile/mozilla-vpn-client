@@ -4,12 +4,12 @@
 
 #include "inspectoritempicker.h"
 
-#include "inspectorcommandhandler.h"
+#include "tools/inspectorcommandhandler.h"
 
 InspectorItemPicker::InspectorItemPicker(QObject* parent)
     : ItemPicker(parent) {}
 
 bool InspectorItemPicker::itemPicked(const QList<QQuickItem*>& list) {
-  DevCmdHandler::itemsPicked(list);
+  InspectorTools::DevCmdHandler::itemsPicked(list);
   return true;
 }

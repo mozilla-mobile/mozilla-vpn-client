@@ -24,10 +24,10 @@
 #include "constants.h"
 #include "feature.h"
 #include "frontend/navigator.h"
-#include "glean/generated/metrics.h"
-#include "tools/hotreloader.h"
-#include "inspectoritempicker.h"
-#include "inspectorutils.h"
+#include "hotreloader.h"
+#include "../inspectoritempicker.h"
+#include "qquickinspector.h"
+#include "../inspector.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -57,7 +57,8 @@ bool s_pickedItemsSet = false;
 
 InspectorItemPicker* s_itemPicker = nullptr;
 
-std::function<void(DevCmdHandler* DevCmdHandler)> s_constructorCallback;
+std::function<void(InspectorTools::DevCmdHandler* DevCmdHandler)>
+    s_constructorCallback;
 InspectorTools::Hotreloader* s_hotreloader = nullptr;
 
 QJsonValue qjsValueToQJsonValue(const QJSValue& qjsValue) {
@@ -90,6 +91,9 @@ QJsonValue qjsValueToQJsonValue(const QJSValue& qjsValue) {
 }
 }  // namespace
 
+
+namespace InspectorTools { 
+
 struct InspectorSettingCommand {
   QString m_settingName;
 
@@ -111,8 +115,6 @@ struct InspectorCommand {
 };
 
 static QList<InspectorCommand> s_commands{
-
-    /*
     InspectorCommand{"help", "The help menu", 0,
                      [](DevCmdHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
@@ -176,20 +178,29 @@ static QList<InspectorCommand> s_commands{
                      }},
 
     InspectorCommand{"live_reload", "Live reload file X", 1,
-                     [](DevCmdHandler*, const QList<QByteArray>& args) {
+                     [](DevCmdHandler* cli, const QList<QByteArray>& args) {
                        if (s_hotreloader == nullptr) {
-                         s_hotreloader = new Hotreloader(
-                             QmlEngineHolder::instance()->engine());
+                         Inspector* inspector =
+                             qobject_cast<Inspector*>(cli->parent());
+                         if(inspector == nullptr){
+                           return QJsonObject();
+                         }
+                         s_hotreloader = inspector->getHotReloader();
+                 
                        }
                        auto url = QUrl(args.at(1));
                        s_hotreloader->annonceReplacedFile(url);
                        return QJsonObject();
                      }},
     InspectorCommand{"reload_window", "Reload the whole window", 0,
-                     [](DevCmdHandler*, const QList<QByteArray>& args) {
+                     [](DevCmdHandler* cli, const QList<QByteArray>& args) {
                        if (s_hotreloader == nullptr) {
-                         s_hotreloader = new Hotreloader(
-                             QmlEngineHolder::instance()->engine());
+                         Inspector* inspector =
+                             qobject_cast<Inspector*>(cli->parent());
+                         if (inspector == nullptr) {
+                           return QJsonObject();
+                         }
+                         s_hotreloader = inspector->getHotReloader();
                        }
                        s_hotreloader->reloadWindow();
                        return QJsonObject();
@@ -231,8 +242,11 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"query", "Query the tree", 1,
                      [](DevCmdHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
+                       QQmlApplicationEngine* engine =
+                           qobject_cast<QQmlApplicationEngine*>(
+                               QmlEngineHolder::instance()->engine());
                        obj["value"] =
-                           !!InspectorUtils::queryObject(arguments[1]);
+                           !!QQuickInspector::queryObject(arguments[1], engine);
                        return obj;
                      }},
 
@@ -240,8 +254,9 @@ static QList<InspectorCommand> s_commands{
         "query_property", "Retrieve a property value from an object", 2,
         [](DevCmdHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
-
-          QObject* item = InspectorUtils::queryObject(arguments[1]);
+          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+              QmlEngineHolder::instance()->engine());
+          QObject* item = QQuickInspector::queryObject(arguments[1],engine);
           if (!item) {
             obj["error"] = "Object not found";
             return obj;
@@ -261,8 +276,9 @@ static QList<InspectorCommand> s_commands{
         "set_query_property", "Set a property value to an object", 3,
         [](DevCmdHandler*, const QList<QByteArray>& arguments) {
           QJsonObject obj;
-
-          QObject* item = InspectorUtils::queryObject(arguments[1]);
+          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+              QmlEngineHolder::instance()->engine());
+          QObject* item = QQuickInspector::queryObject(arguments[1], engine);
           if (!item) {
             obj["error"] = "Object not found";
             return obj;
@@ -353,9 +369,11 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"click", "Click on an object", 1,
                      [](DevCmdHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-
+                       QQmlApplicationEngine* engine =
+                           qobject_cast<QQmlApplicationEngine*>(
+                               QmlEngineHolder::instance()->engine());
                        QObject* qmlobj =
-                           InspectorUtils::queryObject(arguments[1]);
+                           QQuickInspector::queryObject(arguments[1], engine);
                        if (!qmlobj) {
                          logger.error() << "Did not find object to click on";
                          obj["error"] = "Object not found";
@@ -619,9 +637,7 @@ static QList<InspectorCommand> s_commands{
                   .arg(metricName)
                   .arg(ping));
 
-          QJSValue result = function.call(QJSValueList{
-              engine->toScriptValue(__DONOTUSE__GleanMetrics::instance())});
-
+          QJSValue result; // TODO: I broke it, now remove it. 
           QJsonObject obj;
           if (result.isError()) {
             obj["error"] = result.toString();
@@ -637,11 +653,8 @@ static QList<InspectorCommand> s_commands{
                        MZGlean::initialize();
                        return QJsonObject();
                      }}
-    */
+
 };
-
-
-namespace InspectorTools {
 
 DevCmdHandler::DevCmdHandler(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(DevCmdHandler);
@@ -652,10 +665,6 @@ DevCmdHandler::DevCmdHandler(QObject* parent) : QObject(parent) {
   connect(NetworkManager::instance()->networkAccessManager(),
           &QNetworkAccessManager::finished, this,
           &DevCmdHandler::networkRequestFinished);
-
-  if (s_constructorCallback) {
-    s_constructorCallback(this);
-  }
 }
 
 DevCmdHandler::~DevCmdHandler() { MZ_COUNT_DTOR(DevCmdHandler); }

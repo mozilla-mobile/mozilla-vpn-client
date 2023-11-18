@@ -45,7 +45,7 @@ add_subdirectory(inspector)
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
-    inspector
+    #inspector
     mozillavpn-sources
     lottie
     nebula

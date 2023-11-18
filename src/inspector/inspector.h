@@ -17,6 +17,7 @@
 #include <QWebSocket>
 
 
+#include "tools/inspectorcommandhandler.h"
 #include "tools/hotreloader.h"
 #include "tools/qquickinspector.h"
 #include "server/factory.h"
@@ -32,7 +33,7 @@ class Inspector : public QObject {
         Inspector(QApplication* parent_app, 
 			QQmlApplicationEngine* engine)
 		: QObject(parent_app), 
-			m_hotReloader(this,engine) {
+			m_hotReloader(this,engine), m_cli(this) {
 			m_app = parent_app;
 			m_engine = engine;
             m_server = InspectorServer::Factory::create(this);
@@ -70,7 +71,16 @@ class Inspector : public QObject {
 					m_channel.connectTo(connection);
         };
 
-private:
+
+		QPointer<InspectorTools::Hotreloader> getHotReloader() {
+                                        return &m_hotReloader;
+        }
+        QPointer<InspectorTools::DevCmdHandler> getCommandHolder() {
+                                        return &m_cli;
+        }
+
+
+       private:
 
 		void registerInternals(){
                     m_channel.registerObject("inspector_hotReloader", &m_hotReloader);
@@ -86,6 +96,7 @@ private:
         QPointer<QObject> m_server;
 
 		InspectorTools::Hotreloader m_hotReloader;
+        InspectorTools::DevCmdHandler m_cli; 
         QWebChannel m_channel;
 };
 #endif

@@ -9,8 +9,7 @@
 #include <QQuickItem>
 
 #include "addons/addontutorial.h"
-#include "addons/conditionwatchers/addonconditionwatcher.h"
-#include "inspector/inspectorutils.h"
+#include "addons/conditionwatchers/addonconditionwatcher.h" 
 #include "leakdetector.h"
 #include "logger.h"
 #include "tutorial.h"

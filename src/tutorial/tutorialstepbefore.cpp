@@ -10,7 +10,6 @@
 #include <QMetaMethod>
 
 #include "addons/addontutorial.h"
-#include "inspector/inspectorutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 

@@ -19,15 +19,24 @@ class DevCmdHandler : public QObject {
   Q_DISABLE_COPY_MOVE(DevCmdHandler)
 
  public:
-  static void initialize();
+  explicit DevCmdHandler(QObject* parent);
+  ~DevCmdHandler();
 
   static QString getObjectClass(const QObject* target);
   static QJsonObject getViewTree();
   static QJsonObject serialize(QQuickItem* item);
   static void itemsPicked(const QList<QQuickItem*>& objects);
 
-  void recv(const QByteArray& buffer);
-  virtual void send(const QByteArray& buffer) = 0;
+  /**
+  * Must be called when there is an incoming command. 
+  */
+  Q_INVOKABLE void recv(const QByteArray& buffer);
+
+  void send(const QByteArray& buffer) { emit onSend(buffer);}
+  /**
+  * Emitted when there is outGoing Data.
+  */
+  Q_SIGNAL void onSend(const QByteArray& buffer);
 
   /**
    * @brief Register a new command.
@@ -40,9 +49,6 @@ class DevCmdHandler : public QObject {
   // Unregister a Command
   static void unregisterCommand(const QString& commandName);
 
- protected:
-  explicit DevCmdHandler(QObject* parent);
-  virtual ~DevCmdHandler();
 
  private:
   void addonLoadCompleted();

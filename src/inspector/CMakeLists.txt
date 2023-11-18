@@ -1,21 +1,18 @@
 
-add_library(inspector INTERFACE)
+#add_library(inspector INTERFACE)
 
-target_sources(inspector INTERFACE
+target_sources(mozillavpn-sources INTERFACE
     inspector.cpp
     inspector.h
-    inspectorcommandhandler.cpp
-    inspectorcommandhandler.h
     inspectoritempicker.cpp
     inspectoritempicker.h
-    inspectorutils.cpp
-    inspectorutils.h
-
 
     tools/qquickinspector.cpp
     tools/qquickinspector.h
     tools/qqitemwrapper.h
     tools/qqitemwrapper.cpp
+    tools/inspectorcommandhandler.cpp
+    tools/inspectorcommandhandler.h
     tools/hotreloader.cpp
     tools/hotreloader.h
 

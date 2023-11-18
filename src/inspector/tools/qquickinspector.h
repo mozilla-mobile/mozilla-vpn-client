@@ -27,11 +27,40 @@ class QQuickInspector : public QObject {
     // Returns all Elements, wrapped in QQItemwrappers 
   Q_INVOKABLE QList<QQItemWrapper*> queryAllElements();
 
+
+  Q_INVOKABLE QQItemWrapper* findByObjectName(const QString& name) {
+    QQuickItem* item =
+        qobject_cast<QQuickItem*>(findByObjectName(name, m_engine));
+    return QQItemWrapper::from(item);
+  }
+  Q_INVOKABLE QQItemWrapper* queryObject(const QString& path) {
+    QQuickItem* item = qobject_cast<QQuickItem*>(queryObject(path, m_engine));
+    return QQItemWrapper::from(item);
+  }
+
+  /**
+  * Queries one Element's in the Provided {engine}
+  * by the ObjectName. 
+  * 
+  * The query may provide nested objectnames "<parentObjectName>/<childObjectName>"
+  * for more Complex Queries. 
+  * 
+  * Please use queryObject to construct complex queries. 
+  **/
+  static QObject* findByObjectName(const QString& name,
+                             QQmlApplicationEngine* engine);
+
+  /**
+  * Queries one Element matching the QMLPath {path}
+  * See QMLPath.h for more info 
+  */
+  static QObject* queryObject(const QString& path,
+                              QQmlApplicationEngine* engine);
+
  private:
   QPointer<QQmlApplicationEngine> m_engine;
 };
 
 }  // namespace InspectorTools
-   // namespace InspectorTools
 
 #endif
