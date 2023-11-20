@@ -6,20 +6,22 @@
     - [@oskirby](https://github.com/oskirby)
 - RFC PR: -
 - Implementation GitHub issue: -
+- [Design @Figma](https://www.figma.com/file/s13B7zs27cadZXUyvxobgW/Better-Together-Explorations?type=design&node-id=259-4830&mode=design&t=4BmtgXMzjnubd9gc-0)
 
 -----
-
-# Problem Statement
+# Firefox + VPN Better together
+## Problem Statement
 
 
 ![](https://github.com/mozilla-mobile/mozilla-vpn-client/assets/9611612/aa8331cf-f0cb-489b-a7e2-293bce422551) 
 
-VPNs currently allow you to select the country through which you want your traffic to emerge to the Internet and users use this to express a variety of geolocation preferences. These controls are not flexible enough - users can only select a single location through which all traffic should go through. 
+VPNs currently allow you to select a City through which you want your traffic to emerge to the Internet and users use this to express a variety of geolocation preferences. These controls are not flexible enough - users can only select a single location through which all traffic should go through. 
 
 Therefore we want to propose a new Web-Extension that extends on top of the VPN+MAC API, giving users the options to:
- - Enable The VPN only for Firefox 
- - Disable The VPN only for Firefox 
- - Exclude a Page from VPN protection
+- Enable the VPN only on Firefox 
+ - Disable the VPN only on Firefox 
+ - Exclude a Firefox tab from VPN protection  
+ - Specify an exit location on a tab  
  - Specify an Exit Location a Page.
 
 We already have integrated into Firefox with [Multi Account Containers](https://github.com/mozilla/multi-account-containers) which allows users to specify an exit location for a container. 
@@ -56,19 +58,19 @@ If a custom exit location is set it must set it to the `socks5` proxy of that en
 Simplified, the VPN has the following states:
 ```cpp
   enum State {
-    StateOff, // Noting protected
+    StateOff, // Nothing protected
     StateOn, // Whole device protected
     (...) // unrelated intermediate states
   };
 ```
-An extension can send `{"t":"activate"}` to the VPN to turn on whole-device protection. 
-For this case, we propose to introduce a new state `StateOnPartial` that will be activated on a call of an extension to `{"t":"activate"}` instead. It is similar to `StateOn` with the following properties: 
-- The `allowedIp` for this activation is set to `10.124.0.0/20` so that only the Mullvad Exit Proxies are accessible on the VPN Network Device. Therefore, all other traffic will not use the VPN. 
+An extension can send an `ExtensionMessage<activate>` to the VPN to turn on whole-device protection. 
+For this case, we propose to introduce a new state `StateOnPartial` that will be activated on a call of an extension to `ExtensionMessage<activate>` instead. It is similar to `StateOn` with the following properties: 
+- The `allowedIPAddressRanges` for this activation is set to `10.124.0.0/20` so that only the Mullvad Exit Proxies are accessible on the VPN Network Device. Therefore, all other traffic will not use the VPN. 
 - A Mullvad DNS server will be set, so that the Mullvad proxies are resolvable. If a custom DNS is set, we need to set a Mullvad DNS as 2nd DNS server.
 - The Client UI does not show an activation. (or a new special UI state)
 > Q: Do we need a new UI state ? or like a "firefox is using the vpn?" 
 - If the Client activates, it will attempt to switch to `StateOn` and protect the whole device.
-- An Extension may request `{"t":"deactivate"}` only if the client is in `StateOnPartial` and it was the activator. The Client will then go to `StateOff`.
+- An Extension may request `ExtensionMessage<deactivate>` only if the client is in `StateOnPartial` and it was the activator. The Client will then go to `StateOff`.
 
 The extension must then set the proxy to the `socks5` URL of the current `exitServer` OR, if a custom exit location is set, to the `socks5` proxy of that endpoint.
 
@@ -110,6 +112,7 @@ Instead of reporting all excluded apps in `disabled_apps`, we will limit the res
 
 ### Refresher MAC+VPN
 MAC allows users to associate websites with containers. The VPN integration allows selecting a location from the VPN server list as the exit location for each container. It Requires Mozilla VPN to be installed and active to work. 
+It is only supported on Desktop plattforms, as NativeMessaging is not available on Mobile. 
 
 
 For the MAC + VPN we have three actors: 
