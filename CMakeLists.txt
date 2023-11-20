@@ -114,6 +114,7 @@ find_package(Qt6 COMPONENTS
     QuickTest
     Test
     WebSockets
+    Widgets
     Xml
     Svg
 )

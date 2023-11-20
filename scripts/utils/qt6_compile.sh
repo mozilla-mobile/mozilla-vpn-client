@@ -142,7 +142,6 @@ bash ./configure \
   -no-feature-textodfwriter \
   -no-feature-networklistmanager \
   -no-feature-dbus \
-  -no-feature-widgets \
   -no-feature-xml \
   -skip qt3d  \
   -skip qtdoc \
