@@ -15,9 +15,6 @@ will yield `dist/index.html`
 
 # Running standalone
 
-
-
-
 You can also run the inspector stand-alone, for coding convenience. This also leaves the debug info in place:
 
 ```
