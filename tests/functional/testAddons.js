@@ -305,4 +305,61 @@ describe('Addons', function() {
     await vpn.waitForQueryAndClick(
         queries.screenMessaging.messageItem('message_disabled').visible());
   });
+
+  describe('test message_upgrade_to_annual_plan addon condition', async () => {
+    const testCases = [
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 2, false,
+        '13 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 14, true,
+        '14 days after subscription created'
+      ],
+    ];
+
+
+    const getNextTestCase = testCases[Symbol.iterator]();
+    function setNextSubscriptionStarted(ctx) {
+      const mockDetails = {...SubscriptionDetails};
+      const nextTestCase = getNextTestCase.next().value;
+
+      if (nextTestCase) {
+        const [createdAt] = nextTestCase;
+        // We are faking a Stripe subscription, so this value is expected to be
+        // in seconds.
+        mockDetails.subscription.created = createdAt() / 1000;
+        mockDetails.subscription._subscription_type = "web";
+        mockDetails.plan.interval = "month";
+
+        ctx.guardianSubscriptionDetailsCallback = () => {
+          ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+              .status = 200;
+          ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
+              .body = mockDetails;
+        };
+      }
+    }
+
+    // We call this once before all tests to set up the first test,
+    // we can't use beforeEach because that is executed after the guardian
+    // endpoints are overriden.
+    //
+    // We need to setup for the next test before it even starts for the
+    // overrides to apply.
+    setNextSubscriptionStarted(this.ctx);
+    afterEach(() => setNextSubscriptionStarted(this.ctx));
+
+    testCases.forEach(([_1, shouldBeAvailable, testCase]) => {
+      it.only(`message display is correct when subscription started at ${testCase}`, async () => {
+        //change to prod when released
+        await vpn.resetAddons('09_message_upgrade_to_annual_plan');
+        // Check if the message is there or not.
+        const loadedMessages = await vpn.messages();
+        if (shouldBeAvailable) await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
+        assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
+
+      });
+    });
+  });
 });

@@ -100,7 +100,7 @@ void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
     return;
   }
 
-  //disconnect a potential previous timer
+  // disconnect a potential previous timer
   QObject::disconnect(&m_timer, nullptr, nullptr, nullptr);
 
   connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });

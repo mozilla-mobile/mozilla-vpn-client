@@ -1,18 +1,16 @@
 (function(api, condition) {  
   //Show this message after 14 days, and resurface after 87 days 
 
-  //This will run (meaning subscription data changes) when: 
-  //1) on app launch for signed in users when there subscription data is loaded into memory from settings
-  //2) when TaskaGetSubscriptionDetails returns something different than what is loaded from setting 
-  //   (often from signing in/out but can be any change in the subscription)
+  //This will run when TaskaGetSubscriptionDetails returns something different than what is loaded from setting 
+  //(often from signing in/out but can be any change in the subscription)
   api.connectSignal(api.subscriptionData, 'changed', () => computeCondition());
 
-  //This is for running clients that receive this addon while the client is launched and signed in
+  //This will run on app launch for signed in users when there subscription data is loaded into memory from settings
+  api.connectSignal(api.subscriptionData, 'initialized', () => computeCondition());
+
+  //This is for already running clients that receive this addon while the client is launched and signed in
   //(Because these users may not see a change in subscriptionData for a long time)
-  //This ensures that the subscriptionData object has valid data before evaluating the condition
-  if (api.subscriptionData.createdAt > 0) {
-      computeCondition()
-  }
+  computeCondition()
 
   function isMonthlyWebPlan() {
     return api.subscriptionData.type === api.subscriptionData.SubscriptionWeb &&
@@ -20,6 +18,9 @@
   }
 
   function computeCondition() {
+    //subscriptionData not initalized - return
+    if (api.subscriptionData.createdAt <= 0) return
+
     let now = Date.now()
     let fourteenDaysAfterSubscriptionStarted = api.subscriptionData.createdAt + 1000 * 60 * 60 * 24 * 14
     let eightySevenDaysAfterSubscriptionStarted = api.subscriptionData.createdAt + 1000 * 60 * 60 * 24 * 87
