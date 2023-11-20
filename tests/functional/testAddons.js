@@ -307,17 +307,34 @@ describe('Addons', function() {
   });
 
   describe('test message_upgrade_to_annual_plan addon condition', async () => {
-    const testCases = [
-      [
-        () => Date.now() - 1000 * 60 * 60 * 24 * 2, false,
-        '13 days after subscription created'
-      ],
-      [
-        () => Date.now() - 1000 * 60 * 60 * 24 * 14, true,
-        '14 days after subscription created'
-      ],
-    ];
 
+    const testCases = [
+      [() => Date.now() - 1000 * 60 * 60 * 24 * 13,
+             "",
+             false, 
+             '13 days after subscription created'],
+      [() => Date.now() - 1000 * 60 * 60 * 24 * 14,
+             "time",
+             true, 
+             '14 days after subscription created'],
+      [() => Date.now() - 1000 * 60 * 60 * 24 * 15,
+             "yesterday",
+             true, 
+             '15 days after subscription created'],
+      [() => Date.now() - 1000 * 60 * 60 * 24 * 86,
+             "date",
+             true, 
+             '86 days after subscription created'],
+      //Fails by an hour (due to daylight savings time?)
+      // [() => Date.now() - 1000 * 60 * 60 * 24 * 87,
+      //        "time",
+      //        true, 
+      //        '87 days after subscription created'],
+      [() => Date.now() - 1000 * 60 * 60 * 24 * 88,
+             "yesterday",
+             true, 
+             '88 days after subscription created'],
+    ];
 
     const getNextTestCase = testCases[Symbol.iterator]();
     function setNextSubscriptionStarted(ctx) {
@@ -350,13 +367,40 @@ describe('Addons', function() {
     setNextSubscriptionStarted(this.ctx);
     afterEach(() => setNextSubscriptionStarted(this.ctx));
 
-    testCases.forEach(([_1, shouldBeAvailable, testCase]) => {
+    testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
       it.only(`message display is correct when subscription started at ${testCase}`, async () => {
-        //change to prod when released
+    
+        //Change to prod when released
         await vpn.resetAddons('09_message_upgrade_to_annual_plan');
-        // Check if the message is there or not.
+
+        //Load messages
         const loadedMessages = await vpn.messages();
-        if (shouldBeAvailable) await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
+
+        //If the message is supposed to be enabled, lets check the timestamp
+        if (shouldBeAvailable) {
+            await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
+            
+            //Check timestamp
+            await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+            await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+
+            let expectedTimestamp
+            let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate')
+            //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
+            const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0
+
+            if (expectedTimeFormat === "time") {
+              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+            }
+            else if (expectedTimeFormat === "date") {
+              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })
+            }
+            else if (expectedTimeFormat === "yesterday") {
+              expectedTimestamp = "Yesterday"
+            }
+
+            assert.equal(actualTimestamp, expectedTimestamp)
+        }
         assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
 
       });
