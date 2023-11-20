@@ -39,12 +39,15 @@ void AdjustHandler::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
+// If this works, definitely need a comment.
+#ifdef MZ_ADJUST
   if (settingsHolder->firstExecution() &&
       !settingsHolder->hasAdjustActivatable()) {
     // We want to activate Adjust only for new users.
     logger.debug() << "First execution detected. Let's make adjust activatable";
     settingsHolder->setAdjustActivatable(true);
   }
+#endif
 
   App* app = App::instance();
 
@@ -62,11 +65,13 @@ void AdjustHandler::initialize() {
     return;
   }
 
+#ifdef MZ_ADJUST
   if (!settingsHolder->adjustActivatable()) {
     // This is a pre-adjustSDK user. We don't want to activate the tracking.
     logger.debug() << "Adjust is not activatable. Bail out";
     return;
   }
+#endif
 
   QObject::connect(settingsHolder, &SettingsHolder::gleanEnabledChanged, []() {
     if (!SettingsHolder::instance()->gleanEnabled()) {
@@ -114,10 +119,12 @@ void AdjustHandler::trackEvent(const QString& event) {
     return;
   }
 
+#ifdef MZ_ADJUST
   if (!SettingsHolder::instance()->adjustActivatable()) {
     logger.debug() << "Adjust is not activatable. Bail out";
     return;
   }
+#endif
 
 #ifdef MZ_ANDROID
   QJniObject javaMessage = QJniObject::fromString(event);
