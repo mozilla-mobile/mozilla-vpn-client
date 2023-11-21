@@ -99,7 +99,7 @@ These are important components that we are committed to delivering, but are outs
 
 Rolling back the JSON file
 ---------------------
-If we mis-add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file.
+If we mistakenly add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file.
 
 [This section will be written after Monday's meeting, as it greatly depends on where the document is served from.]
 
