@@ -17,6 +17,12 @@ class AuthenticationInAppSession final : public QObject {
   Q_DISABLE_COPY_MOVE(AuthenticationInAppSession)
 
  public:
+  enum SessionType {
+    SignIn,
+    SignUp,
+    Undefined,
+  };
+
   enum TypeAuthentication {
     // Initial authentication
     TypeDefault,
@@ -75,11 +81,16 @@ class AuthenticationInAppSession final : public QObject {
 
   QByteArray generateAuthPw() const;
 
-  void accountChecked(bool exists);
+  void accountChecked(bool exists, bool hasPassword);
   void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
                            const QString& verificationMethod);
   void unblockCodeNeeded();
   void finalizeSignInOrUp();
+
+  bool shouldRecordAuthenticationFlowTelemetry() {
+    // AuthFlow telemetry only applies to TypeDefault.
+    return m_typeAuthentication == TypeDefault;
+  }
 
 #ifdef UNIT_TEST
   void createTotpCodes();
@@ -89,6 +100,7 @@ class AuthenticationInAppSession final : public QObject {
   Task* m_task = nullptr;
 
   TypeAuthentication m_typeAuthentication = TypeDefault;
+  SessionType m_sessionType = Undefined;
 
   struct {
     QString m_clientId;

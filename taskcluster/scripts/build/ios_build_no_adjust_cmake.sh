@@ -46,29 +46,37 @@ print G "done."
 
 print Y "Configuring the build..."
 QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
-mkdir ${MOZ_FETCHES_DIR}/build
 
-$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${MOZ_FETCHES_DIR}/build -GXcode \
+
+if [ -d ${TASK_HOME}/build ]; then
+    echo "Found old build-folder, weird!"
+    echo "Removing it..."
+    rm -r ${TASK_HOME}/build
+fi
+mkdir ${TASK_HOME}/build
+
+
+
+$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
   -DQT_HOST_PATH="$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/macos" \
   -DCMAKE_PREFIX_PATH=$MOZ_FETCHES_DIR/qt_ios/lib/cmake \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
-  -DSENTRY_DSN="dummy" \
-  -DSENTRY_ENVELOPE_ENDPOINT="dummy" \
   -DCMAKE_BUILD_TYPE=Release
 
 print Y "Building the client..."
-cmake --build ${MOZ_FETCHES_DIR}/build --config Release || die
+cmake --build ${TASK_HOME}/build --config Release || die
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
-cp -r ${MOZ_FETCHES_DIR}/build/src/Release-iphoneos/* tmp || die
+cp -r ${TASK_HOME}/build/src/Release-iphoneos/* tmp || die
 
 print Y "Compressing the build artifacts..."
 tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
 rm -rf tmp || die
+rm -rf ${TASK_HOME}/build || die
 
 # Check for unintended writes to the source directory.
 print G "Ensuring the source dir is clean:"

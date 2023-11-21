@@ -9,6 +9,7 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 
 ## Activate conda
 
+    conda env create -f env.yml
     conda activate vpn
 
 See [here](./index.md#conda) for conda environment instructions.

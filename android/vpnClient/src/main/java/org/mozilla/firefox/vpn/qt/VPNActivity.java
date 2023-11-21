@@ -163,6 +163,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   private final int EVENT_PERMISSION_REQURED = 6;
   private final int EVENT_DISCONNECTED = 2;
   private final int EVENT_ONBOARDING_COMPLETED = 9;
+  private final int EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 10;
 
   public void onPermissionRequest(int code, Parcel data) {
     if(code != EVENT_PERMISSION_REQURED){
@@ -183,6 +184,18 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     if(requestCode == PERMISSION_TRANSACTION){
       // THATS US!
+
+      // At this point, the user has made a selection on the system config permission modal to either allow or not allow
+      // the vpn configuration to be created, so it is safe to run activation retries via ConnectionManager::startHandshakeTimer()
+      // without the possibility or re-prompting (flickering) the modal while it is currently being displayed  
+      String result;
+      if(resultCode == RESULT_OK) {
+        result = "granted";
+      }
+      else {
+        result = "denied";
+      }
+      onServiceMessage(EVENT_VPN_CONFIG_PERMISSION_RESPONSE,result);
       if( resultCode == RESULT_OK ){
         // Prompt accepted, tell service to retry.
         dispatchParcel(ACTION_RESUME_ACTIVATE,"");
@@ -194,5 +207,11 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
       return;
     }
     super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  protected void onDestroy() {
+    unbindService(mConnection);
+    super.onDestroy();
   }
 }

@@ -37,8 +37,6 @@ MZViewBase {
                     width: undefined
                     text: MZI18n.SettingsDnsSettingsWarning
                     verticalAlignment: Text.AlignVCenter
-                    Accessible.role: Accessible.StaticText
-                    Accessible.name: text
                 }
                 Loader {
                     active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
@@ -48,8 +46,6 @@ MZViewBase {
                         width: parent.width
                         text: MZI18n.SettingsDnsSettingsDisconnectWarning
                         verticalAlignment: Text.AlignVCenter
-                        Accessible.role: Accessible.StaticText
-                        Accessible.name: text
                     }
                 }
             }

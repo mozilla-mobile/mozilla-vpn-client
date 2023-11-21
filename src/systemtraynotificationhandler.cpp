@@ -11,7 +11,6 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "externalophandler.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -45,7 +44,7 @@ void SystemTrayNotificationHandler::initialize() {
   connect(vpn->serverData(), &ServerData::changed, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
-  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &SystemTrayNotificationHandler::updateContextMenu);
 
   connect(vpn->statusIcon(), &StatusIcon::iconUpdateNeeded, this,
@@ -79,14 +78,12 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_statusLabel = m_menu->addAction("");
   m_statusLabel->setEnabled(false);
 
-  m_lastLocationLabel = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpActivate);
-  });
+  m_lastLocationLabel =
+      m_menu->addAction("", []() { MozillaVPN::instance()->activate(); });
   m_lastLocationLabel->setEnabled(false);
 
-  m_disconnectAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpDeactivate);
-  });
+  m_disconnectAction =
+      m_menu->addAction("", []() { MozillaVPN::instance()->deactivate(); });
 
   m_separator = m_menu->addSeparator();
 
@@ -95,9 +92,8 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 
   m_menu->addSeparator();
 
-  m_quitAction = m_menu->addAction("", []() {
-    (void)ExternalOpHandler::instance()->request(MozillaVPN::OpQuit);
-  });
+  m_quitAction = m_menu->addAction(
+      "", []() { MozillaVPN::instance()->controller()->quit(); });
 }
 
 void SystemTrayNotificationHandler::setStatusMenu() {
@@ -150,9 +146,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   bool isStateMain = vpn->state() == App::StateMain;
 
-  m_disconnectAction->setVisible(isStateMain &&
-                                 vpn->connectionManager()->state() ==
-                                     ConnectionManager::StateOn);
+  m_disconnectAction->setVisible(isStateMain && vpn->controller()->state() ==
+                                                    Controller::StateOn);
 
   m_statusLabel->setVisible(isStateMain);
   m_lastLocationLabel->setVisible(isStateMain);
@@ -175,28 +170,28 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
   QString statusLabel;
 
-  switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+  switch (vpn->controller()->state()) {
+    case Controller::StateOn:
       [[fallthrough]];
-    case ConnectionManager::StateSilentSwitching:
+    case Controller::StateSilentSwitching:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectedTo);
       break;
 
-    case ConnectionManager::StateOff:
+    case Controller::StateOff:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectTo);
       break;
 
-    case ConnectionManager::StateSwitching:
+    case Controller::StateSwitching:
       [[fallthrough]];
-    case ConnectionManager::StateConnecting:
+    case Controller::StateConnecting:
       [[fallthrough]];
-    case ConnectionManager::StateCheckSubscription:
+    case Controller::StateCheckSubscription:
       [[fallthrough]];
-    case ConnectionManager::StateConfirming:
+    case Controller::StateConfirming:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
       break;
 
-    case ConnectionManager::StateDisconnecting:
+    case Controller::StateDisconnecting:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusDisconnectingFrom);
       break;
 
@@ -223,8 +218,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
   m_lastLocationLabel->setText(
       i18nStrings->t(I18nStrings::SystrayLocation2)
           .arg(localizedCountryName, localizedCityName));
-  m_lastLocationLabel->setEnabled(vpn->connectionManager()->state() ==
-                                  ConnectionManager::StateOff);
+  m_lastLocationLabel->setEnabled(vpn->controller()->state() ==
+                                  Controller::StateOff);
 }
 
 void SystemTrayNotificationHandler::updateIcon() {

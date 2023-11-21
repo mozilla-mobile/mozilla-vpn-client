@@ -69,7 +69,7 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 }
 
 void LinuxController::activate(const InterfaceConfig& config,
-                               ConnectionManager::Reason reason) {
+                               Controller::Reason reason) {
   Q_UNUSED(reason);
 
   connect(m_dbus->activate(config), &QDBusPendingCallWatcher::finished, this,
@@ -78,10 +78,10 @@ void LinuxController::activate(const InterfaceConfig& config,
   logger.debug() << "LinuxController activated";
 }
 
-void LinuxController::deactivate(ConnectionManager::Reason reason) {
+void LinuxController::deactivate(Controller::Reason reason) {
   logger.debug() << "LinuxController deactivated";
 
-  if (reason == ConnectionManager::ReasonSwitching) {
+  if (reason == Controller::ReasonSwitching) {
     logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;

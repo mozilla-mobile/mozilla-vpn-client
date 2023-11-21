@@ -390,6 +390,17 @@ SETTING_BOOL(onboardingDataCollectionEnabled,        // getter
              false                                   // sensitive (do not log)
 )
 
+SETTING_BOOL(onboardingStarted,        // getter
+             setOnboardingStarted,     // setter
+             removeOnboardingStarted,  // remover
+             hasOnboardingStarted,     // has
+             "onboardingStarted",      // key
+             false,                    // default value
+             false,                    // user setting
+             false,                    // remove when reset
+             false                     // sensitive (do not log)
+)
+
 SETTING_INT(onboardingStep,        // getter
             setOnboardingStep,     // setter
             removeOnboardingStep,  // remover
@@ -434,17 +445,6 @@ SETTING_STRING(privateKey,        // getter
                true               // sensitive (do not log)
 )
 
-SETTING_STRING(privateKeyJournal,        // getter
-               setPrivateKeyJournal,     // setter
-               removePrivateKeyJournal,  // remover
-               hasPrivateKeyJournal,     // has
-               "privateKeyJournal",      // key
-               "",                       // default value
-               false,                    // user setting
-               true,                     // remove when reset
-               true                      // sensitive (do not log)
-)
-
 SETTING_STRING(publicKey,        // getter
                setPublicKey,     // setter
                removePublicKey,  // remover
@@ -454,17 +454,6 @@ SETTING_STRING(publicKey,        // getter
                false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
-)
-
-SETTING_STRING(publicKeyJournal,        // getter
-               setPublicKeyJournal,     // setter
-               removePublicKeyJournal,  // remover
-               hasPublicKeyJournal,     // has
-               "publicKeyJournal",      // key
-               "",                      // default value
-               false,                   // user setting
-               true,                    // remove when reset
-               true                     // sensitive (do not log)
 )
 
 SETTING_BYTEARRAY(recentConnections,        // getter
@@ -819,6 +808,17 @@ SETTING_BOOL(gleanLogPings,        // getter
              false,                // user setting
              true,                 // remove when reset
              false                 // sensitive (do not log)
+)
+
+SETTING_BOOL(shortTimerSessionPing,        // getter
+             setShortTimerSessionPing,     // setter
+             removeShortTimerSessionPing,  // remover
+             hasShortTimerSessionPing,     // has
+             "shortTimerSessionPing",      // key
+             false,                        // default value
+             false,                        // user setting
+             true,                         // remove when reset
+             false                         // sensitive (do not log)
 )
 
 #ifdef UNIT_TEST

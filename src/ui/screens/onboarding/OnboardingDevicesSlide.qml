@@ -14,6 +14,8 @@ ColumnLayout {
     id: root
     objectName: "onboardingDevicesSlide"
 
+    property string telemetryScreenId: "install_on_5_devices"
+
     signal nextClicked()
     signal backClicked()
 
@@ -85,6 +87,23 @@ ColumnLayout {
                 }
             }
 
+            handleSegmentClick: () => {
+                switch (selectedIndex) {
+                    case 0:
+                        Glean.interaction.showAndroidQrSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+                        break
+                    case 1:
+                        Glean.interaction.showIosQrSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+                        break
+                    default:
+                        break
+                }
+            }
+
             Component.onCompleted: {
                 switch(Qt.platform.os) {
                     case "osx":
@@ -102,11 +121,20 @@ ColumnLayout {
         }
     }
 
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
+    }
+
     //Views in the stack layout must be in the same order as items in the above list model
     StackLayout {
-        Layout.topMargin: MZTheme.theme.vSpacingSmall
-        Layout.maximumHeight: 152
-        Layout.maximumWidth: 152
+        id: qrcodeStack
+        readonly property int qrcodeSize: MZUiUtils.isLargePhone() ? 208 : 152
+
+        Layout.maximumHeight: qrcodeSize
+        Layout.maximumWidth: qrcodeSize
+        Layout.minimumHeight: qrcodeSize
+        Layout.minimumWidth: qrcodeSize
         Layout.alignment: Qt.AlignHCenter
 
         currentIndex: deviceTypeToggle.selectedIndex
@@ -115,10 +143,10 @@ ColumnLayout {
         Rectangle {
             color: MZTheme.theme.white
 
-            Layout.preferredHeight: 152
-            Layout.preferredWidth: 152
-            Layout.maximumHeight: 152
-            Layout.maximumWidth: 152
+            Layout.preferredHeight: qrcodeStack.qrcodeSize
+            Layout.preferredWidth: qrcodeStack.qrcodeSize
+            Layout.maximumHeight: qrcodeStack.qrcodeSize
+            Layout.maximumWidth: qrcodeStack.qrcodeSize
 
             MZDropShadow {
                 anchors.fill: parent
@@ -135,8 +163,8 @@ ColumnLayout {
             Image {
                 objectName: "playStoreQrCode"
 
-                width: 152
-                height: 152
+                height: qrcodeStack.qrcodeSize
+                width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
@@ -144,6 +172,7 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeAndroid
+                Accessible.ignored: !visible
             }
         }
 
@@ -151,10 +180,10 @@ ColumnLayout {
         Rectangle {
             color: MZTheme.theme.white
 
-            Layout.preferredHeight: 152
-            Layout.preferredWidth: 152
-            Layout.maximumHeight: 152
-            Layout.maximumWidth: 152
+            Layout.preferredHeight: qrcodeStack.qrcodeSize
+            Layout.preferredWidth: qrcodeStack.qrcodeSize
+            Layout.maximumHeight: qrcodeStack.qrcodeSize
+            Layout.maximumWidth: qrcodeStack.qrcodeSize
 
             MZDropShadow {
                 anchors.fill: parent
@@ -171,8 +200,8 @@ ColumnLayout {
             Image {
                 objectName: "appStoreQrCode"
 
-                width: 152
-                height: 152
+                height: qrcodeStack.qrcodeSize
+                width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
                 source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
@@ -180,13 +209,14 @@ ColumnLayout {
 
                 Accessible.role: Accessible.Graphic
                 Accessible.name: MZI18n.OnboardingDevicesSlideQRCodeApple
+                Accessible.ignored: !visible
             }
         }
     }
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 32
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {
@@ -199,7 +229,13 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalNext
 
-        onClicked: root.nextClicked()
+        onClicked: {
+            Glean.interaction.continueSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.nextClicked()
+        }
     }
 
     MZLinkButton {
@@ -215,6 +251,12 @@ ColumnLayout {
 
         labelText: MZI18n.GlobalGoBack
 
-        onClicked: root.backClicked()
+        onClicked: {
+            Glean.interaction.goBackSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.backClicked()
+        }
     }
 }

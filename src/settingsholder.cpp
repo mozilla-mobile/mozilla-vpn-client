@@ -44,45 +44,6 @@ SettingsHolder::SettingsHolder()
                  Constants::SETTINGS_APP_NAME) {
   MZ_COUNT_CTOR(SettingsHolder);
 
-  // The location changes after the initialization of the app. Let's store the
-  // journal file-name in the CTOR to avoid race-conditions.
-  m_settingsJournalFileName =
-      QDir(
-#ifdef MZ_WASM
-          // https://wiki.qt.io/Qt_for_WebAssembly#Files_and_local_file_system_access
-          "/"
-#elif defined(UNIT_TEST)
-          QStandardPaths::writableLocation(QStandardPaths::TempLocation)
-#else
-          QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-#endif
-          )
-          .filePath(
-              QString("%1.moz-journal").arg(m_settings.organizationName()));
-
-  if (QFile::exists(m_settingsJournalFileName)) {
-    QString journalSettingFile(m_settingsJournalFileName);
-    logger.info() << "journal file exists" << journalSettingFile;
-
-    {
-      QSettings journalSettings(journalSettingFile, MozFormat);
-      for (const QString& key : journalSettings.allKeys()) {
-        m_settings.setValue(key, journalSettings.value(key));
-      }
-    }
-
-    if (!QFile::remove(journalSettingFile)) {
-      logger.warning() << "Unable to remove the journal settings file"
-                       << journalSettingFile;
-    }
-
-#ifdef UNIT_TEST
-    m_recoverFromJournal = true;
-#endif
-
-    logger.info() << "Recovering completed";
-  }
-
   Q_ASSERT(!s_instance);
   s_instance = this;
 
@@ -166,8 +127,6 @@ void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
   }                                                                        \
   void SettingsHolder::setter(const type& value) {                         \
     if (!has() || getter() != value) {                                     \
-      maybeSaveInTransaction(key, getter(), value, #getter "Changed",      \
-                             userSettings);                                \
       m_settings.setValue(key, value);                                     \
       emit getter##Changed();                                              \
     }                                                                      \
@@ -217,96 +176,6 @@ void SettingsHolder::setAddonSetting(const AddonSettingQuery& query,
   if (m_settings.value(key).toString() != value) {
     m_settings.setValue(key, value);
     emit addonSettingsChanged();
-  }
-}
-
-bool SettingsHolder::beginTransaction() {
-  if (m_settingsJournal) {
-    logger.warning() << "Nested transactions are not supported";
-    return false;
-  }
-
-  sync();
-
-  if (!QFile::copy(m_settings.fileName(), m_settingsJournalFileName)) {
-    logger.warning() << "Unable to generate a setting journal file"
-                     << m_settingsJournalFileName;
-    return false;
-  }
-
-  m_settingsJournal =
-      new QSettings(m_settingsJournalFileName, m_settings.format(), this);
-
-  emit transactionBegan();
-  return true;
-}
-
-bool SettingsHolder::commitTransaction() {
-  if (!m_settingsJournal) {
-    logger.warning() << "We are not in a transaction";
-    return false;
-  }
-
-  return finalizeTransaction();
-}
-
-bool SettingsHolder::rollbackTransaction() {
-  if (!m_settingsJournal) {
-    logger.warning() << "We are not in a transaction";
-    return false;
-  }
-
-  emit transactionAboutToRollBack();
-
-  QMap<QString, QPair<const char*, QVariant>> transactionChanges(
-      m_transactionChanges);
-
-  auto guard = qScopeGuard([&] { emit transactionRolledBack(); });
-
-  if (!finalizeTransaction()) {
-    return false;
-  }
-
-  QMapIterator<QString, QPair<const char*, QVariant>> i(transactionChanges);
-  while (i.hasNext()) {
-    i.next();
-    m_settings.setValue(i.key(), i.value().second);
-    QMetaObject::invokeMethod(this, i.value().first, Qt::DirectConnection);
-  }
-
-  return true;
-}
-
-bool SettingsHolder::finalizeTransaction() {
-  m_transactionChanges.clear();
-  delete m_settingsJournal;
-  m_settingsJournal = nullptr;
-
-  if (!QFile::remove(m_settingsJournalFileName)) {
-    logger.warning() << "Unable to remove the setting journal file"
-                     << m_settingsJournalFileName;
-    return false;
-  }
-
-  return true;
-}
-
-void SettingsHolder::maybeSaveInTransaction(const QString& key,
-                                            const QVariant& oldValue,
-                                            const QVariant& newValue,
-                                            const char* signalName,
-                                            bool userSettings) {
-  if (!m_settingsJournal) {
-    return;
-  }
-
-  if (!userSettings) {
-    m_settingsJournal->setValue(key, newValue);
-    return;
-  }
-
-  if (!m_transactionChanges.contains(key)) {
-    m_transactionChanges.insert(key, {signalName, oldValue});
   }
 }
 

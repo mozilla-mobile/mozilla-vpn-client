@@ -56,7 +56,8 @@ RowLayout {
     ]
 
     function onShowCompleted() {
-        MZAccessibleNotification.notify(messageText, messageText.text);
+        if (!messageText.Accessible.ignored)
+            MZAccessibleNotification.notify(messageText, messageText.text);
     }
 
     MZIcon {

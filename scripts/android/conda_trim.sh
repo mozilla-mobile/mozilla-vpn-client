@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 BASE_PREFIX=$(conda info --base)
 if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then

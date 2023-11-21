@@ -17,22 +17,44 @@ describe('Onboarding', function() {
     await vpn.authenticateInApp();
   });
 
- async function completeOnboarding(currentStep = 0) {
-   switch(currentStep) {
+ async function completeOnboarding() {
+   await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+   switch(await vpn.getSetting('onboardingStep')) {
    case 0:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
    case 1:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   case 2: 
+   case 2:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
    case 3:
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
     await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
     assert.equal(await vpn.getSetting('onboardingCompleted'), true);
-  default: 
+  default:
+    break;
+   }
+ }
+
+  async function advanceToSlide(slide) {
+   await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+   const currentSlide = await vpn.getSetting('onboardingStep')
+   switch(currentSlide) {
+   case 0:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    if (await vpn.getSetting('onboardingStep') === slide) break;
+   case 1:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    if (await vpn.getSetting('onboardingStep') === slide) break;
+   case 2:
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    if (await vpn.getSetting('onboardingStep') === slide) break;
+  default:
     break;
    }
  }
@@ -47,12 +69,12 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Check data collection checkbox
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
 
     //Check privacy link
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
@@ -100,7 +122,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
 
     //Ensure all selections on previous slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
 
     //Return to privacy slide
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
@@ -123,16 +145,16 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 2);
     assert.equal(await vpn.getSetting('onboardingStep'), 2);
 
-    //Switch between toggle buttons
+    //Switch between toggle buttons based on users platform
     if (await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex') === 0) {
-      //Starting with Android - switch to iOS and back to Android
+      //[Android, Windows, Linux] Starting with Android - switch to iOS and back to Android
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
       await vpn.waitForQuery(queries.screenOnboarding.DEVICES_APP_STORE_QRCODE.visible());
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
       await vpn.waitForQuery(queries.screenOnboarding.DEVICES_PLAY_STORE_QRCODE.visible());
     }
     else {
-      //Starting with iOS - switch to Android and back to iOS
+      //[iOS, macOS] Starting with iOS - switch to Android and back to iOS
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
       await vpn.waitForQuery(queries.screenOnboarding.DEVICES_PLAY_STORE_QRCODE.visible());
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
@@ -236,8 +258,8 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
   });
-  
-   //Tests restoring onboarding to current step after quitting 
+
+  // Tests restoring onboarding to current step after quitting
   it('Quitting app during onboarding', async () => {
     // Skip WASM because this test does a lot of quitting and re-launching
     if (this.ctx.wasm) {
@@ -311,12 +333,12 @@ describe('Onboarding', function() {
 
     //Ensure that the data collection checkbox state is bound to onboardingDataCollectionEnabled, which defaults to false
     //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), false);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Complete onboarding and get to the home screen
-    await completeOnboarding(await vpn.getSetting('onboardingStep'));
+    await completeOnboarding();
 
     //Ensure glean is disabled
     assert.equal(await vpn.getSetting('gleanEnabled'), false);
@@ -330,12 +352,12 @@ describe('Onboarding', function() {
     //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled when clicked
     //and that this checkboxes state does not affect gleanEnabled
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Complete onboarding and get to the home screen
-    await completeOnboarding(await vpn.getSetting('onboardingStep'));
+    await completeOnboarding();
 
     //Ensure glean is enabled
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
@@ -361,12 +383,380 @@ describe('Onboarding', function() {
 
     //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled upon relaunch
     //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Ensure the data collection checkbox is checked and onboardingDataCollectionEnabled is set to true
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
   });
+
+  describe('initialize onboarding telemetry tests', () => {
+    // No Glean on WASM.
+    if(vpn.runningOnWasm()) {
+      return;
+    }
+
+    const dataScreenTelemetryId = "data_collection";
+    const privacyScreenTelemetryId = "get_more_privacy";
+    const devicesScreenTelemetryId = "install_on_5_devices";
+    const startScreenTelemetryId = "connect_on_startup";
+
+    it('Onboarding started event is recorded', async () => {
+      await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
+      let onboardingStartedEvents = await vpn.gleanTestGetValue("outcome", "onboardingStarted", "main");
+      assert.equal(onboardingStartedEvents.length, 1);
+
+      //Quit and relaunch the app
+      await vpn.quit();
+      await setup.startAndConnect();
+
+      //Ensure the event is only recorded the first time it is shown (glean store is reset on re-launch)
+      onboardingStartedEvents = await vpn.gleanTestGetValue("outcome", "onboardingStarted", "main");
+      assert.equal(onboardingStartedEvents.length, 0);
+    });
+
+    it('Onboarding completed event is recorded', async () => {
+      //Make sure data collection is enabled so our metrics don't get deleted after we complete onboarding
+      await vpn.setSetting('onboardingDataCollectionEnabled', true);
+
+      await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
+
+      await completeOnboarding()
+
+      let onboardingCompletedEvents = await vpn.gleanTestGetValue("outcome", "onboardingCompleted", "main");
+      assert.equal(onboardingCompletedEvents.length, 1);
+    });
+
+    it('Onboarding slide impression events are recorded', async () => {
+      //Verify that dataCollectionScreen event is recorded
+      const dataCollectionScreenEvents = await vpn.gleanTestGetValue("impression", "dataCollectionScreen", "main");
+      assert.equal(dataCollectionScreenEvents.length, 1);
+      const dataCollectionScreenEventsExtras = dataCollectionScreenEvents[0].extra;
+      assert.equal(dataScreenTelemetryId, dataCollectionScreenEventsExtras.screen);
+
+      await advanceToSlide(1)
+
+      //Verify that getMorePrivacyScreen event is recorded
+      const getMorePrivacyScreenEvents = await vpn.gleanTestGetValue("impression", "getMorePrivacyScreen", "main");
+      assert.equal(getMorePrivacyScreenEvents.length, 1);
+      const getMorePrivacyScreenEventsExtras = getMorePrivacyScreenEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, getMorePrivacyScreenEventsExtras.screen);
+
+      await advanceToSlide(2)
+
+      //Verify that installOn5DevicesScreen event is recorded
+      const installOn5DevicesScreenEvents = await vpn.gleanTestGetValue("impression", "installOn5DevicesScreen", "main");
+      assert.equal(installOn5DevicesScreenEvents.length, 1);
+      const installOn5DevicesScreenEventsExtras = installOn5DevicesScreenEvents[0].extra;
+      assert.equal(devicesScreenTelemetryId, installOn5DevicesScreenEventsExtras.screen);
+
+      await advanceToSlide(3)
+
+      //Verify that connectOnStartupScreen event is recorded
+      const connectOnStartupScreenEvents = await vpn.gleanTestGetValue("impression", "connectOnStartupScreen", "main");
+      assert.equal(connectOnStartupScreenEvents.length, 1);
+      const connectOnStartupScreenEventsExtras = connectOnStartupScreenEvents[0].extra;
+      assert.equal(startScreenTelemetryId, connectOnStartupScreenEventsExtras.screen);
+    });
+
+    it('Progress bar button events are recorded', async () => {
+      //We call these more than once throughout the test, lets keep track of the aggregate and avoid resetting glean
+      let dataUseSelectedEventCounter = 0
+      let morePrivacySelectedEventCounter = 0
+
+      await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+
+      //Ensure telemetry is not generated by clicking on the current step
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+      let dataUseSelectedEvents = await vpn.gleanTestGetValue("interaction", "dataUseSelected", "main");
+      assert.equal(dataUseSelectedEvents.length, 0);
+
+
+      //Advance to privacy slide
+      await advanceToSlide(1)
+
+      //Ensure telemetry is not generated by clicking on the current step
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_PRIVACY_BUTTON.visible());
+      let morePrivacySelectedEvents = await vpn.gleanTestGetValue("interaction", "morePrivacySelected", "main");
+      assert.equal(morePrivacySelectedEvents.length, 0);
+
+      //Ensure dataUseSelected event is recorded from the privacy screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+      dataUseSelectedEventCounter++
+      dataUseSelectedEvents = await vpn.gleanTestGetValue("interaction", "dataUseSelected", "main");
+      assert.equal(dataUseSelectedEvents.length, dataUseSelectedEventCounter);
+      let dataUseSelectedEventsExtras = dataUseSelectedEvents[dataUseSelectedEventCounter - 1].extra;
+      assert.equal(privacyScreenTelemetryId, dataUseSelectedEventsExtras.screen);
+
+
+      //Advance to devices slide
+      await advanceToSlide(2)
+
+      //Ensure telemetry is not generated by clicking on the current step
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
+      let addDevicesSelectedEvents = await vpn.gleanTestGetValue("interaction", "addDevicesSelected", "main");
+      assert.equal(addDevicesSelectedEvents.length, 0);
+
+      //Ensure morePrivacySelected event is recorded from the devices screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_PRIVACY_BUTTON.visible());
+      morePrivacySelectedEventCounter++
+      morePrivacySelectedEvents = await vpn.gleanTestGetValue("interaction", "morePrivacySelected", "main");
+      assert.equal(morePrivacySelectedEvents.length, morePrivacySelectedEventCounter);
+      let morePrivacySelectedEventsExtras = morePrivacySelectedEvents[morePrivacySelectedEventCounter - 1].extra;
+      assert.equal(devicesScreenTelemetryId, morePrivacySelectedEventsExtras.screen);
+
+      await advanceToSlide(2)
+
+      //Ensure dataUseSelected event is recorded from the devices screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+      dataUseSelectedEventCounter++
+      dataUseSelectedEvents = await vpn.gleanTestGetValue("interaction", "dataUseSelected", "main");
+      assert.equal(dataUseSelectedEvents.length, dataUseSelectedEventCounter);
+      dataUseSelectedEventsExtras = dataUseSelectedEvents[dataUseSelectedEventCounter - 1].extra;
+      assert.equal(devicesScreenTelemetryId, dataUseSelectedEventsExtras.screen);
+
+
+      //Advance to start slide
+      await advanceToSlide(3)
+
+      //Start slide progress bar button does not have telemetry (because it never does anything)
+      //so we don't need to ensure it doesn't generate telemetry
+
+      //Ensure addDevicesSelected event is recorded from the start screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
+      addDevicesSelectedEvents = await vpn.gleanTestGetValue("interaction", "addDevicesSelected", "main");
+      assert.equal(addDevicesSelectedEvents.length, 1);
+      let addDevicesSelectedEventsExtras = addDevicesSelectedEvents[0].extra;
+      assert.equal(startScreenTelemetryId, addDevicesSelectedEventsExtras.screen);
+
+      await advanceToSlide(3)
+
+      //Ensure morePrivacySelected event is recorded from the start screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_PRIVACY_BUTTON.visible());
+      morePrivacySelectedEventCounter++
+      morePrivacySelectedEvents = await vpn.gleanTestGetValue("interaction", "morePrivacySelected", "main");
+      assert.equal(morePrivacySelectedEvents.length, morePrivacySelectedEventCounter);
+      morePrivacySelectedEventsExtras = morePrivacySelectedEvents[morePrivacySelectedEventCounter - 1].extra;
+      assert.equal(startScreenTelemetryId, morePrivacySelectedEventsExtras.screen);
+
+      await advanceToSlide(3)
+
+      //Ensure dataUseSelected event is recorded from the start screen
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DATA_BUTTON.visible());
+      dataUseSelectedEventCounter++
+      dataUseSelectedEvents = await vpn.gleanTestGetValue("interaction", "dataUseSelected", "main");
+      assert.equal(dataUseSelectedEvents.length, dataUseSelectedEventCounter);
+      dataUseSelectedEventsExtras = dataUseSelectedEvents[dataUseSelectedEventCounter - 1].extra;
+      assert.equal(startScreenTelemetryId, dataUseSelectedEventsExtras.screen);
+
+    });
+
+    it('Data slide events are recorded', async () => {
+      await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
+
+      //Verify that privacyNoticedSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
+      const privacyNoticeSelectedEvents = await vpn.gleanTestGetValue("interaction", "privacyNoticeSelected", "main");
+      assert.equal(privacyNoticeSelectedEvents.length, 1);
+      const privacyNoticeSelectedEventsExtras = privacyNoticeSelectedEvents[0].extra;
+      assert.equal(dataScreenTelemetryId, privacyNoticeSelectedEventsExtras.screen);
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
+      await vpn.gleanTestReset();
+
+      //Verify that continueSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      assert.equal(continueSelectedEvents.length, 1);
+      const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
+      assert.equal(dataScreenTelemetryId, continueSelectedEventsExtras.screen);
+    });
+
+    it('Privacy slide events are recorded', async () => {
+      await advanceToSlide(1);
+
+      await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
+
+      //Verify that blockAdsEnabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
+      const blockAdsEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockAdsEnabled", "main");
+      assert.equal(blockAdsEnabledEvents.length, 1);
+      const blockAdsEnabledEventsExtras = blockAdsEnabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockAdsEnabledEventsExtras.screen);
+
+      //Verify that blockAdsDisabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
+      const blockAdsDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockAdsDisabled", "main");
+      assert.equal(blockAdsDisabledEvents.length, 1);
+      const blockAdsDisabledEventsExtras = blockAdsDisabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockAdsDisabledEventsExtras.screen);
+
+      //Verify that blockTrackersEnabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
+      const blockTrackersEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersEnabled", "main");
+      assert.equal(blockTrackersEnabledEvents.length, 1);
+      const blockTrackersEnabledEventsExtras = blockTrackersEnabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockTrackersEnabledEventsExtras.screen);
+
+      //Verify that blockTrackersDisabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
+      const blockTrackersDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersDisabled", "main");
+      assert.equal(blockTrackersDisabledEvents.length, 1);
+      const blockTrackersDisabledEventsExtras = blockTrackersDisabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockTrackersDisabledEventsExtras.screen);
+
+      //Verify that blockMalwareEnabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
+      const blockMalwareEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareEnabled", "main");
+      assert.equal(blockMalwareEnabledEvents.length, 1);
+      const blockMalwareEnabledEventsExtras = blockMalwareEnabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockMalwareEnabledEventsExtras.screen);
+
+      //Verify that blockMalwareDisabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
+      const blockMalwareDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareDisabled", "main");
+      assert.equal(blockMalwareDisabledEvents.length, 1);
+      const blockMalwareDisabledEventsExtras = blockMalwareDisabledEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, blockMalwareDisabledEventsExtras.screen);
+
+      //Verify that goBackSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BACK_BUTTON.visible());
+      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      assert.equal(goBackSelectedEvents.length, 1);
+      const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, goBackSelectedEventsExtras.screen);
+
+      await advanceToSlide(1)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
+      await vpn.gleanTestReset();
+
+      //Verify that continueSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      assert.equal(continueSelectedEvents.length, 1);
+      const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
+      assert.equal(privacyScreenTelemetryId, continueSelectedEventsExtras.screen);
+    });
+
+    it('Devices slide events are recorded', async () => {
+      await advanceToSlide(2);
+
+      await vpn.waitForQuery(queries.screenOnboarding.DEVICES_SLIDE.visible());
+
+      if (await vpn.getQueryProperty(queries.screenOnboarding.DEVICES_DEVICE_TYPE_TOGGLE.visible(), 'selectedIndex') == 0) {
+        //[Android, Windows, Linux] Starting with Android - switch to iOS and back to Android
+        //Verify that showIosQrSelected event is recorded
+        await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
+        const showIosQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showIosQrSelected", "main");
+        assert.equal(showIosQrSelectedEvents.length, 1);
+        const showIosQrSelectedEventsExtras = showIosQrSelectedEvents[0].extra;
+        assert.equal(devicesScreenTelemetryId, showIosQrSelectedEventsExtras.screen);
+
+        //Verify that showAndroidQrSelected event is recorded
+        await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
+        const showAndroidQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showAndroidQrSelected", "main");
+        assert.equal(showAndroidQrSelectedEvents.length, 1);
+        const showAndroidQrSelectedEventsExtras = showAndroidQrSelectedEvents[0].extra;
+        assert.equal(devicesScreenTelemetryId, showAndroidQrSelectedEventsExtras.screen);
+
+      }
+      else {
+        //[iOS, macOS] Starting with iOS - switch to Android and back to iOS
+        //Verify that showAndroidQrSelected event is recorded
+        await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
+        const showAndroidQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showAndroidQrSelected", "main");
+        assert.equal(showAndroidQrSelectedEvents.length, 1);
+        const showAndroidQrSelectedEventsExtras = showAndroidQrSelectedEvents[0].extra;
+        assert.equal(devicesScreenTelemetryId, showAndroidQrSelectedEventsExtras.screen);
+
+        //Verify that showIosQrSelected event is recorded
+        await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
+        const showIosQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showIosQrSelected", "main");
+        assert.equal(showIosQrSelectedEvents.length, 1);
+        const showIosQrSelectedEventsExtras = showIosQrSelectedEvents[0].extra;
+        assert.equal(devicesScreenTelemetryId, showIosQrSelectedEventsExtras.screen);
+      }
+
+      //Verify that goBackSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_BACK_BUTTON.visible());
+      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      assert.equal(goBackSelectedEvents.length, 1);
+      const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
+      assert.equal(devicesScreenTelemetryId, goBackSelectedEventsExtras.screen);
+
+      await advanceToSlide(2)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
+      await vpn.gleanTestReset();
+
+      //Verify that continueSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      assert.equal(continueSelectedEvents.length, 1);
+      const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
+      assert.equal(devicesScreenTelemetryId, continueSelectedEventsExtras.screen);
+    });
+
+    it('Desktop start slide events are recorded', async () => {
+      await advanceToSlide(3);
+
+      await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
+
+      //Verify that connectOnStartupEnabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
+      const connectOnStartupEnabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupEnabled", "main");
+      assert.equal(connectOnStartupEnabledEvents.length, 1);
+      const connectOnStartupEnabledEventsExtras = connectOnStartupEnabledEvents[0].extra;
+      assert.equal(startScreenTelemetryId, connectOnStartupEnabledEventsExtras.screen);
+
+      //Verify that connectOnStartupDisabled event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
+      const connectOnStartupDisabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupDisabled", "main");
+      assert.equal(connectOnStartupDisabledEvents.length, 1);
+      const connectOnStartupDisabledEventsExtras = connectOnStartupDisabledEvents[0].extra;
+      assert.equal(startScreenTelemetryId, connectOnStartupDisabledEventsExtras.screen);
+
+      //Verify that goBackSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_BACK_BUTTON.visible());
+      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      assert.equal(goBackSelectedEvents.length, 1);
+      const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
+      assert.equal(startScreenTelemetryId, goBackSelectedEventsExtras.screen);
+
+      await advanceToSlide(3)
+
+      //Used to wipe previous continueSelected events that were recorded
+      //during authentication before testing in onboarding
+      await vpn.gleanTestReset();
+
+      //For the next test we need data collection enabled due to a race condition between recording
+      //the getStartedSelected event and data collection being disabled at onboarding completion
+      await vpn.setSetting('onboardingDataCollectionEnabled', true)
+
+      //Verify that getStartedSelected event is recorded
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+      const getStartedSelectedEvents = await vpn.gleanTestGetValue("interaction", "getStartedSelected", "main");
+      assert.equal(getStartedSelectedEvents.length, 1);
+      const getStartedSelectedEventsExtras = getStartedSelectedEvents[0].extra;
+      assert.equal(startScreenTelemetryId, getStartedSelectedEventsExtras.screen);
+    });
+
+    //TODO (VPN-4784, VPN-4783): This cannot be tested until we are able to run
+    //functional tests in mobile. This slide and its telemetry are mobile-only
+    it.skip('Mobile start slide events are recorded')
+
+    //TODO (VPN-4784, VPN-4783): This cannot be tested until we are able to run
+    //functional tests in mobile. This slide and its telemetry are mobile-only
+    it.skip('Mobile network permission granted event is recorded')
+
+    //TODO (VPN-4784, VPN-4783): This cannot be tested until we are able to run
+    //functional tests in mobile. This slide and its telemetry are mobile-only
+    it.skip('Mobile network permission denied event is recorded')
+    });
 });

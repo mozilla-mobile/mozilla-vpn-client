@@ -71,6 +71,13 @@ tasks:
             sha256: d4517212c8ac44fd8b5ccc2d4d9f38c2dd924c77a81c2be92c3a72e70dd3e907
             artifact-name: miniconda_installer.exe
             size: 55780192
+    wintun:
+        description: Wintun Driver
+        fetch: 
+            type: static-url 
+            url: https://www.wintun.net/builds/wintun-0.12.zip
+            sha256: eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df
+            size: 1192872
     macos-miniconda:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:

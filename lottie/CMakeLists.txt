@@ -49,6 +49,12 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/lib/lottie/lottie.mjs.cmake
 )
 
+# We have no Test infra to run test's on android 
+# so no need to spend time to run them VPN-4780
+if(ANDROID)
+    return()
+endif()
+
 ## Include self-tests, unless we are being included in another project.
 enable_testing()
 add_subdirectory(tests/unit EXCLUDE_FROM_ALL)

@@ -38,9 +38,10 @@ class VPNService : android.net.VpnService() {
     val mConnectionHealth = ConnectionHealth(this)
     private var mCityname = ""
     private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
+    private var mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
     private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
-        mBackgroundPingTimerMSec,
-        mBackgroundPingTimerMSec / 4,
+        if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec else mBackgroundPingTimerMSec,
+        if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec / 4 else mBackgroundPingTimerMSec / 4,
     ) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
@@ -57,6 +58,11 @@ class VPNService : android.net.VpnService() {
     private val isSuperDooperMetricsActive: Boolean
         get() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
+        }
+
+    private val isUsingShortTimerSessionPing: Boolean
+        get() {
+            return this.mConfig?.optBoolean("isUsingShortTimerSessionPing", false) ?: false
         }
 
     private val gleanDebugTag: String?

@@ -29,6 +29,10 @@ class DaemonAccessControl final {
   bool isCommandAuthorizedForPeer(const QString& command,
                                   const QLocalSocket* socket);
 
+#ifdef UNIT_TEST
+  static inline void setMockPeerId(int peerId) { s_mockPeerId = peerId; }
+#endif
+
  private:
   bool isSessionActive() const;
   bool startSession(const QLocalSocket* socket);
@@ -47,6 +51,10 @@ class DaemonAccessControl final {
   //
   // A value of -1 means there is currently no ongoing session.
   int m_sessionOwner = -1;
+
+#ifdef UNIT_TEST
+  int static inline s_mockPeerId = -1;
+#endif
 };
 
 #endif  // DAEMONSESSION_H

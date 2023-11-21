@@ -28,7 +28,7 @@ MZButtonBase {
     opacity: rowShouldBeDisabled ? 0.7 : 1
     enabled: !rowShouldBeDisabled
 
-    Accessible.ignored: rowShouldBeDisabled
+    Accessible.ignored: rowShouldBeDisabled || !visible
     Accessible.name: accessibleName
 
     Behavior on opacity {

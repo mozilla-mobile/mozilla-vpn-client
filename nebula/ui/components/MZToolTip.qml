@@ -11,7 +11,7 @@ import compat 0.1
 ToolTip {
     id: toolTip
 
-    visible: mouseArea.containsMouse || (parent.activeFocus && !tutorialUI.visible)
+    visible: mouseArea.containsMouse
     onVisibleChanged: if (visible) fadeDown.start()
     leftMargin: MZTheme.theme.windowMargin * 1.5
     rightMargin: MZTheme.theme.windowMargin * 1.5
@@ -51,6 +51,7 @@ ToolTip {
         color: MZTheme.theme.fontColorDark
         z: 1
         wrapMode: Text.WordWrap
+        Accessible.ignored: !visible
     }
 
     background: Rectangle {

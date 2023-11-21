@@ -74,13 +74,13 @@ StackView {
                     menu.title =  titleText;
                 }
 
-                objectName: "buttonSelectEntry"
                 titleText: MZI18n.MultiHopFeatureMultiHopEntryLocationHeader
                 // If the current VPN configuration is single hop, VPNCurrentServer.localizedEntryCityName will be empty, so use multiHopEntryServer
                 descriptionText: segmentedNav.multiHopEntryServer[2]
                 contentChildren: [
                     ServerLabel {
                         id: entryLabel
+                        objectName: "buttonSelectEntry"
 
                         serversList: [
                             // Multi-hop TODO : What to do when there is no entry server.
@@ -108,7 +108,6 @@ StackView {
                         menu.title = titleText;
                     }
 
-                    objectName: "buttonSelectExit"
                     btnObjectName: "buttonSelectExit-btn"
                     titleText: MZI18n.MultiHopFeatureMultiHopExitLocationHeader
                     descriptionText: segmentedNav.multiHopExitServer[2]
@@ -116,6 +115,8 @@ StackView {
 
                         ServerLabel {
                             id: exitLabel
+                            objectName: "buttonSelectExit"
+
                             serversList: [
 
                                 {

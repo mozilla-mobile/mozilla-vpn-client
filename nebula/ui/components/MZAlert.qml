@@ -191,6 +191,7 @@ Rectangle {
             Label {
                 id: label
                 Accessible.role: Accessible.StaticText
+                Accessible.ignored: !visible
                 anchors.centerIn: parent
                 text: alertBox.alertText + " " + "<b><u>" + alertBox.alertActionText + "</b></u>"
                 horizontalAlignment: Text.AlignHCenter
@@ -354,7 +355,8 @@ Rectangle {
     }
 
     function onShowCompleted() {
-        MZAccessibleNotification.notify(label, alertBox.alertText + ". " + alertBox.alertActionText);
+        if (!label.Accessible.ignored)
+            MZAccessibleNotification.notify(label, alertBox.alertText + ". " + alertBox.alertActionText);
     }
 
     function remove() {

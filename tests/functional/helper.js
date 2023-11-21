@@ -311,6 +311,14 @@ module.exports = {
     return json.value || null;
   },
 
+  async gleanTestReset() {
+    const json = await this._writeCommand(`glean_test_reset`);
+    assert(
+        json.type === 'glean_test_reset' && !('error' in json),
+        `Command failed: ${json.error}`);
+    return json.value || null;
+  },
+
   async getLastUrl() {
     return await this.getMozillaProperty(
         'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');
@@ -632,6 +640,43 @@ module.exports = {
         json.type === 'force_connection_health' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
+  },
+
+  // By default gets the last recorded event.
+  // `offset` can be used to change that, it adds the offset from the last.
+  // So, for example, if we want the next to last event we give it an `offset` of 1.
+  async getOneEventOfType({
+    eventCategory,
+    eventName,
+    // When expectedEventCount is provided it will be asserted on.
+    // When it's not provided the last event will be tested.
+    expectedEventCount
+  }, offset = 0) {
+    let events;
+    await this.waitForCondition(async () => {
+      events = await this.gleanTestGetValue(eventCategory, eventName, "main");
+      return events.length > 0;
+    });
+
+    let computedEventCount = expectedEventCount;
+    if (!computedEventCount) {
+      computedEventCount = events.length;
+    } else {
+      assert.strictEqual(events.length, computedEventCount);
+    }
+
+    return events[computedEventCount - (1 + offset)];
+  },
+
+  async testLastInteractionEvent (options) {
+    const defaults = { eventCategory: "interaction", action: "select" };
+    const optionsWithDefaults = { ...defaults, ...options };
+
+    const lastEvent = await this.getOneEventOfType(optionsWithDefaults);
+
+    const { screen } = optionsWithDefaults;
+
+    assert.strictEqual(screen, lastEvent.extra.screen);
   },
 
   // Internal methods.

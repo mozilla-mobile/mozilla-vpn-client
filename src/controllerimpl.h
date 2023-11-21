@@ -8,7 +8,7 @@
 #include <QObject>
 #include <functional>
 
-#include "connectionmanager.h"
+#include "controller.h"
 
 class Keys;
 class Device;
@@ -40,11 +40,11 @@ class ControllerImpl : public QObject {
   // state terminates when the "connected" (or the "disconnected") signal is
   // received.
   virtual void activate(const InterfaceConfig& config,
-                        ConnectionManager::Reason Reason) = 0;
+                        Controller::Reason Reason) = 0;
 
   // This method terminates the VPN tunnel. The VPN client is in
   // "disconnecting" state until the "disconnected" signal is received.
-  virtual void deactivate(ConnectionManager::Reason reason) = 0;
+  virtual void deactivate(Controller::Reason reason) = 0;
 
   // This method is used to remove the tunnel config from the operating
   // system. This is used upon logging out and resetting, so the

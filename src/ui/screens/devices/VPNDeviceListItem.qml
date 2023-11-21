@@ -22,6 +22,7 @@ MZSwipeDelegate {
     //: Example: "deviceName deviceDescription"
     Accessible.name: qsTrId("vpn.devices.deviceAccessibleName").arg(name).arg(deviceSubtitle())
     Accessible.role: Accessible.ListItem
+    Accessible.ignored: !visible
 
     function deviceSubtitle() {
         if (currentOne) {

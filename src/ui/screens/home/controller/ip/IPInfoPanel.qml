@@ -33,8 +33,6 @@ Rectangle {
             text: MZI18n.ConnectionInfoMetricsTitle
             wrapMode: Text.WordWrap
 
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
             Layout.bottomMargin: MZTheme.theme.listSpacing * 1.5
             Layout.fillWidth: true
         }

@@ -48,6 +48,7 @@ Item {
                 objectName: tabButtonId
                 height: bar.contentHeight
                 Accessible.name: MZI18n[tabLabelStringId]
+                Accessible.ignored: !visible
 
                 onClicked: handleTabClick(btn)
 
@@ -77,16 +78,6 @@ Item {
                     color: btn.checked ? MZTheme.colors.purple70 : btn.hovered || btn.activeFocus ? MZTheme.colors.grey50 : MZTheme.colors.grey40
                     // Accessibility provided by btn's Accessible properties
                     Accessible.ignored: true
-
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        border.width: MZTheme.theme.focusBorderWidth
-                        border.color: MZTheme.theme.fontColor
-                        color: MZTheme.theme.transparent
-                        visible: MZTutorial.playing && btn.activeFocus
-                        radius: 4
-                    }
 
                     Behavior on color {
                         PropertyAnimation {
@@ -122,6 +113,7 @@ Item {
         clip: true
         Accessible.role: Accessible.List
         Accessible.name: currentTab.Accessible.name
+        Accessible.ignored: !visible
 
         PropertyAnimation {
             id: fadeIn

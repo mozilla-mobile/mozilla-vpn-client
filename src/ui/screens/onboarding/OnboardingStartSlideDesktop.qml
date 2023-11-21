@@ -8,10 +8,13 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {
     id: root
     objectName: "onboardingStartSlide"
+
+    property string telemetryScreenId: "connect_on_startup"
 
     signal nextClicked()
     signal backClicked()
@@ -40,23 +43,6 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
-    Image {
-        Layout.topMargin: MZTheme.theme.vSpacing
-        Layout.alignment: Qt.AlignHCenter
-
-        source: "qrc:/ui/resources/launch.svg"
-    }
-
-    Item {
-        Layout.fillHeight: true
-        Layout.minimumHeight: 24
-    }
-
     MZCheckBoxRow {
         objectName: "startAtBootCheckBox"
 
@@ -69,12 +55,37 @@ ColumnLayout {
         leftMargin: 0
         isChecked: MZSettings.startAtBoot
         showDivider: false
-        onClicked: MZSettings.startAtBoot = !MZSettings.startAtBoot
+        onClicked: {
+            MZSettings.startAtBoot = !MZSettings.startAtBoot
+
+            if (MZSettings.startAtBoot) {
+                Glean.interaction.connectOnStartupEnabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+            else {
+                Glean.interaction.connectOnStartupDisabled.record({
+                    screen: root.telemetryScreenId,
+                });
+            }
+        }
     }
 
     Item {
         Layout.fillHeight: true
-        Layout.minimumHeight: 48
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
+    }
+
+    Image {
+        Layout.alignment: Qt.AlignHCenter
+
+        sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
+        source: "qrc:/ui/resources/launch.svg"
+    }
+
+    Item {
+        Layout.fillHeight: true
+        Layout.minimumHeight: MZTheme.theme.onboardingMinimumVerticalSpacing
     }
 
     MZButton {
@@ -87,7 +98,13 @@ ColumnLayout {
         width: undefined
         text: MZI18n.GlobalGetStarted
 
-        onClicked: VPN.onboardingCompleted();
+        onClicked: {
+            Glean.interaction.getStartedSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            VPN.onboardingCompleted();
+        }
     }
 
     MZLinkButton {
@@ -103,6 +120,12 @@ ColumnLayout {
 
         labelText: MZI18n.GlobalGoBack
 
-        onClicked: root.backClicked()
+        onClicked: {
+            Glean.interaction.goBackSelected.record({
+                screen: root.telemetryScreenId,
+            });
+
+            root.backClicked()
+        }
     }
 }

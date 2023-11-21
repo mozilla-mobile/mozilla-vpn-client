@@ -28,18 +28,18 @@ void TestStatusIcon::basic() {
 
   // VPN is on
   MozillaVPN::instance()->setState(App::StateMain);
-  TestHelper::controllerState = ConnectionManager::StateOn;
+  TestHelper::controllerState = Controller::StateOn;
   si.refreshNeeded();
 
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-on.png");
 
   // VPN is off
-  TestHelper::controllerState = ConnectionManager::StateOff;
+  TestHelper::controllerState = Controller::StateOff;
   si.refreshNeeded();
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask-off.png");
 
   // VPN is switching
-  TestHelper::controllerState = ConnectionManager::StateSwitching;
+  TestHelper::controllerState = Controller::StateSwitching;
 
   int i = 0;
   QEventLoop loop;

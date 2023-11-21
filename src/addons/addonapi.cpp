@@ -39,7 +39,7 @@ void AddonApi::initialize() {
     QQmlEngine::setObjectOwnership(m_addon, QQmlEngine::CppOwnership);
 
     QJSValue value = engine->newQObject(m_addon);
-    value.setPrototype(engine->newQMetaObject(&Addon::staticMetaObject));
+    value.setPrototype(engine->newQMetaObject(m_addon->metaObject()));
 
     insert("addon", QVariant::fromValue(value));
   }
@@ -90,6 +90,26 @@ void AddonApi::initialize() {
   if (s_constructorCallback) {
     s_constructorCallback(this);
   }
+
+  m_timer.setSingleShot(true);
+}
+
+void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
+  if (!callback.isCallable()) {
+    logger.debug() << "No callback received";
+    return;
+  }
+
+  // disconnect a potential previous timer
+  if (m_timer.isActive()) {
+    logger.warning() << "Disconnecting timer for addon: " << m_addon->id();
+
+    QObject::disconnect(&m_timer, nullptr, nullptr, nullptr);
+  }
+
+  connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });
+
+  m_timer.start(interval);
 }
 
 void AddonApi::log(const QString& message) { logger.debug() << message; }

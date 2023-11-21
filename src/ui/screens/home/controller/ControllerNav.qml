@@ -23,6 +23,7 @@ ColumnLayout {
         text: titleText
         Layout.leftMargin: MZTheme.theme.windowMargin
         opacity: disableRowWhen ?  .7 : 1
+        Accessible.ignored: disableRowWhen || !visible
 
         Behavior on opacity {
             PropertyAnimation {
@@ -35,7 +36,7 @@ ColumnLayout {
         id: btn
 
         accessibleName: titleText + ": " + descriptionText
-        Accessible.ignored: rowShouldBeDisabled
+        Accessible.ignored: rowShouldBeDisabled || !visible
         activeFocusOnTab: true
         anchors.left: undefined
         anchors.right: undefined

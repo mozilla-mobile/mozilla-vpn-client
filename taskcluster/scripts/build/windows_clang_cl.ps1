@@ -24,9 +24,12 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm
 
 
 # Setup Openssl Import
-$SSL_PATH = resolve-path "$FETCHES_PATH/QT_OUT/SSL"
-$env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-$env:OPENSSL_USE_STATIC_LIBS = "TRUE"
+$SSL_PATH = "$FETCHES_PATH/QT_OUT/SSL"
+if (Test-Path -Path $SSL_PATH) {
+    $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+    $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
+}
+
 
 # Extract the sources
 $SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
@@ -54,40 +57,25 @@ foreach ($script in  $ACTIVATION_SCRIPTS)  {
 # when we run the activate.bat :shrugs: 
 # This will cause go to be missing. 
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
+gci env:* | sort-object name
 
 
 # Okay We are ready to build! 
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
-if ($env:MOZ_SCM_LEVEL -eq "3") {
-    # Only on a release build we have access to those secrects.
-    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
-    $SENTRY_ENVELOPE_ENDPOINT = Get-Content sentry_envelope_endpoint
-    $SENTRY_DSN = Get-Content sentry_dsn
-    #
-    cmake -S $SOURCE_DIR -B $BUILD_DIR `
-        -GNinja -DCMAKE_BUILD_TYPE=Release `
-        -DSENTRY_DSN="$SENTRY_DSN" -DSENTRY_ENVELOPE_ENDPOINT="$SENTRY_ENVELOPE_ENDPOINT" `
-        -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
-        -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
-        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
-} else {
-    # Do the generic build
-    cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
+# Do the generic build
+cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DCMAKE_BUILD_TYPE=Release `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
+        -DWINTUN_FOLDER="$FETCHES_PATH\wintun" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
-}
+
 cmake --build $BUILD_DIR
 
 ## Building the MSI Installer.
-
 cmake --build $BUILD_DIR --target msi
-
 
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
@@ -101,6 +89,7 @@ Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 if ($env:MOZ_SCM_LEVEL -eq "3") {
+    python3  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
     sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
     # This will ask sentry to scan all files in there and upload
     # missing debug info, for symbolification

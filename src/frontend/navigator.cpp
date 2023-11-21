@@ -9,7 +9,6 @@
 
 #include "app.h"
 #include "errorhandler.h"
-#include "externalophandler.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
@@ -307,12 +306,6 @@ void Navigator::removeItem(QObject* item) {
 
 bool Navigator::eventHandled() {
   logger.debug() << "Close event handled";
-
-  if (!ExternalOpHandler::instance()->request(
-          ExternalOpHandler::OpCloseEvent)) {
-    // Something is blocking the close event handler
-    return true;
-  }
 
 #if defined(MZ_ANDROID) || defined(MZ_WASM)
   if (m_screenHistory.isEmpty()) {

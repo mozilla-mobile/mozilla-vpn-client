@@ -123,7 +123,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     find_package(Qt6 COMPONENTS
         NetworkAuth
-        Sql
     )
 endif()
 

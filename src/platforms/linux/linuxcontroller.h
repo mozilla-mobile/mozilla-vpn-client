@@ -23,9 +23,9 @@ class LinuxController final : public ControllerImpl {
   void initialize(const Device* device, const Keys* keys) override;
 
   void activate(const InterfaceConfig& config,
-                ConnectionManager::Reason reason) override;
+                Controller::Reason reason) override;
 
-  void deactivate(ConnectionManager::Reason reason) override;
+  void deactivate(Controller::Reason reason) override;
 
   void checkStatus() override;
 

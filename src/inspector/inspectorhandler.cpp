@@ -33,6 +33,9 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "models/featuremodel.h"
+#include "models/subscriptiondata.h"
+#include "mozillavpn.h"
+#include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -380,8 +383,6 @@ static QList<InspectorCommand> s_commands{
 
                        QPointF pointF = item->mapToScene(QPoint(0, 0));
                        QPoint point = pointF.toPoint();
-                       point.rx() += item->width() / 2;
-                       point.ry() += item->height() / 2;
 
                        QTest::mouseClick(item->window(), Qt::LeftButton,
                                          Qt::NoModifier, point);
@@ -632,7 +633,36 @@ static QList<InspectorCommand> s_commands{
 
           return obj;
         }},
-};
+
+    InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,
+                     [](InspectorHandler*, const QList<QByteArray>&) {
+                       MZGlean::initialize();
+                       return QJsonObject();
+                     }},
+
+    InspectorCommand{
+        "set_subscription_start_date",
+        "Changes the start date of the subscription", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          qint64 newCreatedAtTimestamp = arguments[1].toLongLong();
+
+          // get sub data json from settings
+          QByteArray subscriptionData =
+              SettingsHolder::instance()->subscriptionData();
+          QJsonDocument doc = QJsonDocument::fromJson(subscriptionData);
+          QJsonObject obj = doc.object();
+          QJsonObject subObj = obj["subscription"].toObject();
+
+          // modify createdAt date
+          qlonglong createdAt = newCreatedAtTimestamp;
+          subObj["created"] = createdAt;
+          obj["subscription"] = subObj;
+          doc.setObject(obj);
+          subscriptionData = doc.toJson();
+          SettingsHolder::instance()->setSubscriptionData(subscriptionData);
+
+          return QJsonObject();
+        }}};
 
 // static
 void InspectorHandler::initialize() {

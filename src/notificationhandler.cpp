@@ -9,7 +9,6 @@
 #include "app.h"
 #include "constants.h"
 #include "controller.h"
-#include "externalophandler.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -102,7 +101,7 @@ void NotificationHandler::showNotification() {
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
       !(vpn->state() == App::StateInitialize &&
-        vpn->connectionManager()->state() == ConnectionManager::StateOff)) {
+        vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
 
@@ -110,12 +109,12 @@ void NotificationHandler::showNotification() {
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
   QString localizedExitCityName =
-      vpn->connectionManager()->currentServer().localizedExitCityName();
+      vpn->controller()->currentServer().localizedExitCityName();
   QString localizedCountryName =
-      vpn->connectionManager()->currentServer().localizedExitCountryName();
+      vpn->controller()->currentServer().localizedExitCountryName();
 
-  switch (vpn->connectionManager()->state()) {
-    case ConnectionManager::StateOn:
+  switch (vpn->controller()->state()) {
+    case Controller::StateOn:
       if (m_switching) {
         m_switching = false;
 
@@ -125,13 +124,11 @@ void NotificationHandler::showNotification() {
         }
 
         QString localizedPreviousExitCountryName =
-            vpn->connectionManager()
+            vpn->controller()
                 ->currentServer()
                 .localizedPreviousExitCountryName();
         QString localizedPreviousExitCityName =
-            vpn->connectionManager()
-                ->currentServer()
-                .localizedPreviousExitCityName();
+            vpn->controller()->currentServer().localizedPreviousExitCityName();
 
         if ((localizedPreviousExitCountryName == localizedCountryName) &&
             (localizedPreviousExitCityName == localizedExitCityName)) {
@@ -165,12 +162,11 @@ void NotificationHandler::showNotification() {
         ServerData* serverData = vpn->serverData();
 
         if (serverData->multihop()) {
-          QString localizedEntryCityName = vpn->connectionManager()
-                                               ->currentServer()
-                                               .localizedEntryCityName();
+          QString localizedEntryCityName =
+              vpn->controller()->currentServer().localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->connectionManager()->currentServer().localizedExitCityName();
+              vpn->controller()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
@@ -192,7 +188,7 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case ConnectionManager::StateOff:
+    case Controller::StateOff:
       if (m_connected) {
         m_connected = false;
         if (!SettingsHolder::instance()->connectionChangeNotification()) {
@@ -202,12 +198,11 @@ void NotificationHandler::showNotification() {
         // "VPN Disconnected"
         ServerData* serverData = vpn->serverData();
         if (serverData->multihop()) {
-          QString localizedEntryCityName = vpn->connectionManager()
-                                               ->currentServer()
-                                               .localizedEntryCityName();
+          QString localizedEntryCityName =
+              vpn->controller()->currentServer().localizedEntryCityName();
 
           QString localizedExitCityName =
-              vpn->connectionManager()->currentServer().localizedExitCityName();
+              vpn->controller()->currentServer().localizedExitCityName();
 
           notifyInternal(
               None,
@@ -230,12 +225,12 @@ void NotificationHandler::showNotification() {
       }
       return;
 
-    case ConnectionManager::StateSilentSwitching:
+    case Controller::StateSilentSwitching:
       m_connected = true;
       m_switching = false;
       return;
 
-    case ConnectionManager::StateSwitching:
+    case Controller::StateSwitching:
       m_connected = true;
       m_switching = true;
       return;
@@ -362,11 +357,6 @@ void NotificationHandler::messageClickHandle() {
     return;
   }
 
-  if (!ExternalOpHandler::instance()->request(
-          MozillaVPN::OpNotificationClicked)) {
-    return;
-  }
-
   emit notificationClicked(m_lastMessage);
   m_lastMessage = None;
 }
@@ -376,7 +366,7 @@ void NotificationHandler::addonCreated(Addon* addon) {
     return;
   }
 
-  if (addon->enabled()) {
+  if (addon->enabled() && qobject_cast<AddonMessage*>(addon)->shouldNotify()) {
     maybeAddonNotification(addon);
   }
 

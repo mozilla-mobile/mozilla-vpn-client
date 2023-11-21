@@ -14,7 +14,6 @@ ColumnLayout {
     property string title
     property string description
 
-    property string type
     property var customFilter
 
     property alias list: tipsAndTricksListLoader.item
@@ -27,9 +26,6 @@ ColumnLayout {
         id: guideListTitle
         text: title
         wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
     }
 
     // Description
@@ -40,9 +36,6 @@ ColumnLayout {
         id: guideListDescription
         text: description
         wrapMode: Text.WordWrap
-
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
     }
 
     Loader {
@@ -55,7 +48,7 @@ ColumnLayout {
     }
 
     Component.onCompleted: {
-        const source = type === "tutorials" ? "MZTutorialList.qml" : "MZGuideList.qml";
+        const source = "MZGuideList.qml";
         const options = { customFilter };
         tipsAndTricksListLoader.setSource(source, options)
     }

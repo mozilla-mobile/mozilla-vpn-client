@@ -142,6 +142,9 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
     case ServiceEvents::EVENT_ONBOARDING_COMPLETED:
       emit eventOnboardingCompleted();
       break;
+    case ServiceEvents::EVENT_VPN_CONFIG_PERMISSION_RESPONSE:
+      emit eventVpnConfigPermissionResponse(data == "granted");
+      break;
     default:
       Q_ASSERT(false);
   }

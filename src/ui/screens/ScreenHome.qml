@@ -10,20 +10,12 @@ import Mozilla.VPN 1.0
 import components 0.1
 
 MZScreenBase {
-
     objectName: "screenHome"
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenHome, getStack())
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")
     }
-    Connections {
-        target: MZTutorial
-        function onPlayingChanged() {
-           if (MZTutorial.playing) {
-               getStack().pop(null, StackView.Immediate)
-           }
-        }
-    }
+
     Connections {
         target: window
 

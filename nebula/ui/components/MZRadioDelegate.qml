@@ -12,7 +12,7 @@ RadioDelegate {
 
     property bool isHoverable: true
     property var radioButtonLabelText
-    property string accessibleName
+    property string accessibleName: ""
     property bool isRadioButtonLabelAccessible: true
     property var uiState: MZTheme.theme.uiState
     readonly property int labelX: radioButton.anchors.margins + radioButton.implicitWidth + radioButtonLabel.anchors.leftMargin
@@ -44,9 +44,25 @@ RadioDelegate {
             radioControl.clicked();
     }
 
+    function handleAccessiblePressAction() {
+        let prevAccessibleName = radioControl.Accessible.name;
+
+        clicked();
+
+        // Currently, Qt doesn't have built-in accessibility support for screen readers to announce the selection of a radio button through
+        // PressAction. A workaround on Windows is to manually raise the "Selected" state as an Accessible Notification.
+        // Don't do this if the selection also changes focus, as the screen reader will read the newly focused control. Also, don't do this
+        // if the selection changes the Accessible Name, as the screen reader will read the new name and state, making the extra "Selected"
+        // notification redundant.
+        if (radioControl.checked && !radioControl.Accessible.ignored 
+                && radioControl.activeFocus && radioControl.Accessible.name === prevAccessibleName)
+            MZAccessibleNotification.notify(radioControl, MZI18n.AccessibilitySelected);
+    }
+
     Accessible.name: accessibleName
-    Accessible.onPressAction: clicked()
+    Accessible.onPressAction: handleAccessiblePressAction()
     Accessible.focusable: true
+    Accessible.ignored: !visible
 
     states: [
         State {
@@ -115,7 +131,7 @@ RadioDelegate {
 
     MZRadioButtonLabel {
         id: radioButtonLabel
-        Accessible.ignored: !isRadioButtonLabelAccessible
+        Accessible.ignored: !isRadioButtonLabelAccessible || !visible
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: radioButton.right
         anchors.right: parent.right

@@ -18,8 +18,8 @@
 	--textColorLight: #686869;
 }
 
-html, 
-body { 
+html,
+body {
 	padding: 0;
 	margin : 0;
 	overflow-x: hidden;
@@ -155,8 +155,8 @@ rect {
 	display: flex;
 }
 
-canvas { 
-	cursor: default; 
+canvas {
+	cursor: default;
 	z-index: 999;
 	width: 100%;
 }
@@ -173,19 +173,18 @@ canvas {
 	height: 100%;
 }
 
+/* Keep this in sync with Desktop app height and width from theme.js */
 #qmlcanvas {
-	height: 68vh;
-	max-height: 700px;
+	width: 360px;
+	height: 640px;
 }
 
 .canvas-bg {
 	box-shadow: var(--boxShadow);
 	border-radius: 2rem;
-	overflow: hidden;
 	background-color: rgba(14, 13, 26, 0.05);
-	min-width: 400px;
-	height: 70vh;
-	max-height: 760px;
+	width: fit-content;
+	height: fit-content;
 }
 
 .wasm-loaded .canvas-bg {
@@ -196,7 +195,7 @@ canvas {
 canvas {
 	opacity: 0;
 	background-color: #FFFFFF;
-	cursor: default; 
+	cursor: default;
 	z-index: 999;
 	width: 100%;
 	transition: opacity 0.3s ease;
@@ -326,7 +325,7 @@ canvas {
 
 }
 
-.controller, 
+.controller,
 .websocket-controller {
 	display: flex;
 	justify-content: center;
@@ -439,7 +438,7 @@ input:focus {
 	.controller {
 		min-width: 300px;
 	}
-	
+
 	.subhead {
 		max-width: 100%;
 	}

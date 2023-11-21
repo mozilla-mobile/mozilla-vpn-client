@@ -83,8 +83,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionmanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.cpp
@@ -203,8 +201,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tutorialvpn.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tutorialvpn.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/versionapi.cpp

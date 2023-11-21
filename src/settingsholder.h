@@ -46,16 +46,6 @@ class SettingsHolder final : public QObject, public LogSerializer {
   };
   Q_ENUM(DNSProviderFlags)
 
-  // These 3 methods can be used to store/restore/rollback settings.
-  Q_INVOKABLE bool beginTransaction();
-  Q_INVOKABLE bool commitTransaction();
-  Q_INVOKABLE bool rollbackTransaction();
-
-#ifdef UNIT_TEST
-  bool inTransaction() const { return m_settingsJournal; }
-  bool recoveredFromJournal() const { return m_recoverFromJournal; }
-#endif
-
   // Don't use this directly!
   QVariant rawSetting(const QString& key) const;
 
@@ -102,35 +92,20 @@ class SettingsHolder final : public QObject, public LogSerializer {
  private:
   explicit SettingsHolder(QObject* parent);
 
-  bool finalizeTransaction();
-
-  void maybeSaveInTransaction(const QString& key, const QVariant& oldValue,
-                              const QVariant& newValue, const char* signalName,
-                              bool userSettings);
-
   // Addon specific
 
   static QString getAddonSettingKey(const AddonSettingQuery& query);
 
  signals:
   void addonSettingsChanged();
-  void inTransactionChanged();
-  void transactionBegan();
-  void transactionAboutToRollBack();
-  void transactionRolledBack();
 
  private:
   QSettings m_settings;
-  QString m_settingsJournalFileName;
 
   bool m_firstExecution = false;
 
-  QSettings* m_settingsJournal = nullptr;
-  QMap<QString, QPair<const char*, QVariant>> m_transactionChanges;
-
 #ifdef UNIT_TEST
   bool m_doNotClearOnDTOR = false;
-  bool m_recoverFromJournal = false;
 #endif
 };
 

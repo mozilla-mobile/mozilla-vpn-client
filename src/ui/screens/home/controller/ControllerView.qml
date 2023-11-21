@@ -21,13 +21,15 @@ Item {
 
     function handleConnectionStateChange() {
         // Notify accessibility client of connection state
-        let notificationText = (logoTitle.text + '. ');
-        if (logoSubtitle.visible)
-            notificationText += (logoSubtitle.text + '. ');
-        if (connectedStateDescription.visible)
-            notificationText += (connectedStateDescription.text + '. ');
+        if (!logoTitle.Accessible.ignored) {
+            let notificationText = (logoTitle.text + '. ');
+            if (logoSubtitle.visible)
+                notificationText += (logoSubtitle.text + '. ');
+            if (connectedStateDescription.visible)
+                notificationText += (connectedStateDescription.text + '. ');
 
-        MZAccessibleNotification.notify(logoTitle, notificationText);
+            MZAccessibleNotification.notify(logoTitle, notificationText);
+        }
     }
 
     Layout.preferredHeight: 318
@@ -286,7 +288,7 @@ Item {
 
             PropertyChanges {
                 target: connectionInfoToggleButton
-                visible: true
+                visible: !ipInfoPanel.isOpen
             }
 
             PropertyChanges {
@@ -469,7 +471,7 @@ Item {
             topMargin: MZTheme.theme.windowMargin / 2
         }
         accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoStartSpeedTest
-        Accessible.ignored: !visible
+        Accessible.ignored: !enabled || !visible
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && !ipInfoPanel.isOpen
         opacity: visible ? 1 : 0
@@ -477,19 +479,18 @@ Item {
 
         onClicked: {
             if (!box.connectionInfoScreenVisible) {
-                Glean.interaction.speedTestTriggered.record({
+                Glean.interaction.startSpeedTestSelected.record({
                     screen: "main",
-                    action: "select",
-                    element_id: "speed_test"
                 });
             } else {
-                Glean.interaction.speedTestClosed.record({
-                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_result"
+                Glean.interaction.closeSelected.record({
+                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_completed"
                                 : connectionInfoScreen.state == "open-error" ? "speed_test_error"
                                     : connectionInfoScreen.state == "open-loading" ? "speed_test_loading"
+                                        // Used in case the connection info screen state is "closed", "closing" or "opening".
+                                        // This should not happen, because the button is not available in these states...
+                                        // But it is a possible code path, so there you go.
                                         : "unexpected",
-                    action: "select",
-                    element_id: "close"
                 });
             }
 
@@ -507,6 +508,66 @@ Item {
                 : "qrc:/ui/resources/bandwidth.svg"
             sourceSize.height: iconSize
             sourceSize.width: iconSize
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
+    }
+
+    MZIconButton {
+        id: ipInfoToggleButton
+        objectName: "ipInfoToggleButton"
+
+        property var connectionInfoCloseText: MZI18n.GlobalClose
+
+        anchors {
+            right: parent.right
+            rightMargin: MZTheme.theme.windowMargin / 2
+            top: parent.top
+            topMargin: MZTheme.theme.windowMargin / 2
+        }
+        accessibleName: ipInfoPanel.isOpen
+            ? connectionInfoCloseText
+            : MZI18n.ConnectionInfoConnectionInformation
+        Accessible.ignored: !enabled || !visible
+        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
+        opacity: visible ? 1 : 0
+        visible: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching)
+            && !connectionInfoScreen.isOpen
+            && !connectionInfoScreen.isTransitioning
+        z: 1
+        onClicked: {
+            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
+
+            if (ipInfoPanel.isOpen) {
+                Glean.interaction.openConnectionInfoSelected.record({
+                    screen: "main",
+                });
+            } else {
+                Glean.interaction.closeSelected.record({
+                    screen: "connection_info",
+                });
+            }
+        }
+
+        Image {
+            property int iconSize: ipInfoPanel.isOpen
+                ? MZTheme.theme.iconSize
+                : MZTheme.theme.iconSize * 1.5
+
+            anchors.centerIn: ipInfoToggleButton
+            source: ipInfoPanel.isOpen
+                ? "qrc:/nebula/resources/close-white.svg"
+                : "qrc:/ui/resources/connection-info.svg"
+            sourceSize {
+                height: iconSize
+                width: iconSize
+            }
+            opacity: parent.enabled ? 1 : .6
         }
 
         Behavior on opacity {
@@ -557,7 +618,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: 22
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoScreenVisible
+            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
             Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
@@ -595,8 +656,7 @@ Item {
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text
+            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.
@@ -605,7 +665,7 @@ Item {
 
           ConnectionTimer {
             id: connectionTime
-            Accessible.ignored: true
+            ignoreForAccessibility: true
           }
         }
 
@@ -630,7 +690,7 @@ Item {
         }
         enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
-        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen
+        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
     }
 
     IPInfoPanel {
@@ -640,14 +700,12 @@ Item {
         opacity: ipInfoPanel.isOpen ? 1 : 0
         property int previousOpacity: opacity
         visible: opacity > 0
-        z: 1
 
         onOpacityChanged: {
             // We only want to record this event when the opacity has _just_ changed.
             if (opacity !== previousOpacity && opacity === 1) {
-                Glean.impression.connectionInfoOpened.record({
+                Glean.impression.connectionInfoScreen.record({
                     screen: "connection_info",
-                    action: "impression"
                 });
             }
 
@@ -668,70 +726,6 @@ Item {
             target: VPNController
             function onStateChanged() {
                 ipInfoPanel.isOpen = false
-            }
-        }
-    }
-
-    MZIconButton {
-        id: ipInfoToggleButton
-        objectName: "ipInfoToggleButton"
-
-        property var connectionInfoCloseText: MZI18n.GlobalClose
-
-        anchors {
-            right: parent.right
-            rightMargin: MZTheme.theme.windowMargin / 2
-            top: parent.top
-            topMargin: MZTheme.theme.windowMargin / 2
-        }
-        accessibleName: ipInfoPanel.isOpen
-            ? connectionInfoCloseText
-            : MZI18n.ConnectionInfoConnectionInformation
-        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
-        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
-        opacity: visible ? 1 : 0
-        visible: connectionInfoToggleButton.visible
-            && !connectionInfoScreen.isOpen
-            && !connectionInfoScreen.isTransitioning
-        z: 1
-        onClicked: {
-            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
-
-            if (ipInfoPanel.isOpen) {
-                Glean.interaction.connectionInfoOpened.record({
-                    screen: "main",
-                    action: "select",
-                    element_id: "info"
-                });
-            } else {
-                Glean.interaction.connectionInfoClosed.record({
-                    screen: "connection_info",
-                    action: "select",
-                    element_id: "close"
-                });
-            }
-        }
-        Accessible.ignored: !visible
-
-        Image {
-            property int iconSize: ipInfoPanel.isOpen
-                ? MZTheme.theme.iconSize
-                : MZTheme.theme.iconSize * 1.5
-
-            anchors.centerIn: ipInfoToggleButton
-            source: ipInfoPanel.isOpen
-                ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/ui/resources/connection-info.svg"
-            sourceSize {
-                height: iconSize
-                width: iconSize
-            }
-            opacity: parent.enabled ? 1 : .6
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
             }
         }
     }

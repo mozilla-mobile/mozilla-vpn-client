@@ -50,7 +50,6 @@ theme.overlayBackground = '#4D000000';
 theme.checkBoxWarning = '#C45A27';
 
 theme.guideCardImageBgColor = "#50134B"
-theme.tutorialCardImageBgColor = "#321C64"
 
 theme.fontColor = '#6D6D6E';
 theme.fontColorDark = '#3D3D3D';
@@ -79,14 +78,13 @@ theme.popupMargin = 24;
 theme.desktopAppHeight = 640;
 theme.desktopAppWidth = 360;
 theme.tabletMinimumWidth = 600;
+theme.largePhoneHeight = 852
 theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
 theme.checkBoxRowSubLabelTopMargin = 2;
 
-theme.tutorialCardHeight = 144
 theme.guideCardHeight = 172
 
-theme.tutorialCardHeight = 144;
 theme.navBarHeight = 64;
 theme.navBarMaxWidth = 608;
 theme.navBarTopMargin = 48;
@@ -96,6 +94,8 @@ theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 theme.navBarIconSize = 48
 theme.navBarMaxPaddingTablet = 120
 theme.navBarMaxPadding = 48
+
+theme.onboardingMinimumVerticalSpacing = 16;
 
 theme.swipeDelegateActionWidth = 56;
 theme.badgeHorizontalPadding = 8

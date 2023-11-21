@@ -35,10 +35,6 @@ ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
 Controller* MozillaVPN::controller() const { return new Controller(); }
 
-ConnectionManager* MozillaVPN::connectionManager() const {
-  return new ConnectionManager();
-}
-
 DeviceModel* MozillaVPN::deviceModel() const { return nullptr; }
 
 Keys* MozillaVPN::keys() const { return nullptr; }
@@ -153,9 +149,6 @@ void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::updateViewShown() {}
 
-void MozillaVPN::setJournalPublicAndPrivateKeys(const QString&,
-                                                const QString&) {}
-void MozillaVPN::resetJournalPublicAndPrivateKeys() {}
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
 void MozillaVPN::scheduleRefreshDataTasks() {}

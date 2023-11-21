@@ -1,0 +1,252 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+# "outcome" category metrics record the outcome of some user action
+outcome:
+  speed_test_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      A speed test has just been completed,
+      this is a backend event and does not necessarily
+      mean the user has seen the speed test completed screen.
+      For that, there is the impression.speed_test_result_completed event.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5366
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys:
+      speed:
+        description: |
+          The speed bucket that the test resulted in, or if problem occurred:
+          Slow | Medium | Fast | Cancelled | Error
+        type: string
+      outcome: &outcome_extra_key
+        description: The outcome of a given feature
+        type: string
+  login_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the login process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  registration_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has started the registration process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  two_fa_verification_failed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just failed the 2FA process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      type:
+        description: |
+          The type of 2FA verification: either unblock_code, totp or email.
+        type: string
+  two_fa_verification_succeeded:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just succeeded in the 2FA process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+    extra_keys:
+      type:
+        description: |
+          The type of 2FA verification: either unblock_code, totp or email.
+        type: string
+  login_ended:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just completed the login process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  registration_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just completed the registration process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  subscription_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just started the subscription process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  subscription_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just completed the subscription process.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5251
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8411#issuecomment-1783192931
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  onboarding_started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has just started the onboarding experience for the first time
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_completed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has just completed the onboarding experience
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_ntwrk_perm_granted:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has allowed the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never
+  onboarding_ntwrk_perm_denied:
+    type: event
+    lifetime: ping
+    send_in_pings:
+        - main
+    description: |
+        The user has denied the VPN configuration to be created on the system
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+    data_reviews:
+        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+    data_sensitivity:
+        - interaction
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - mlichtenstein@mozilla.com
+    expires: never

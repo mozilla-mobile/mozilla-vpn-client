@@ -15,6 +15,7 @@ MZCard {
     property alias title: textTitle.text
 
     Accessible.name: title
+    Accessible.ignored: !visible
 
     ColumnLayout {
         id: layout

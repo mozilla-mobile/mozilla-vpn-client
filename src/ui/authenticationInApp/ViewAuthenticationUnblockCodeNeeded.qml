@@ -12,12 +12,22 @@ import components.forms 0.1
 import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
+    id: authUnblockCodeNeeded
+
+    _telemetryScreenId: "enter_unblock_code"
     _viewObjectName: "authUnblockCodeNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
+            // No telemetry.
+            // Re-auth flow is not contemplated by the telemetry design.
+
             cancelAuthenticationFlow();
         } else {
+            Glean.interaction.closeSelected.record({
+                screen: _telemetryScreenId,
+            });
+
             MZAuthInApp.reset();
         }
     }
@@ -28,6 +38,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authUnblockCodeNeeded"
+        _telemetryScreenId: authUnblockCodeNeeded._telemetryScreenId
+        _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === MZAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { MZAuthInApp.verifyUnblockCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
@@ -40,17 +52,27 @@ MZInAppAuthenticationBase {
         spacing: MZTheme.theme.windowMargin
 
         MZLinkButton {
+            objectName: _viewObjectName + "-resendCode"
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
+                 Glean.interaction.resendCodeSelected.record({
+                    screen: _telemetryScreenId,
+                });
+
                 MZAuthInApp.resendUnblockCodeEmail();
                 MZErrorHandler.requestAlert(MZErrorHandler.AuthCodeSentAlert);
-            
+
             }
         }
         MZCancelButton {
+            objectName: _viewObjectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
+                Glean.interaction.cancelSelected.record({
+                    screen: _telemetryScreenId,
+                });
+
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
                 } else {
@@ -58,5 +80,11 @@ MZInAppAuthenticationBase {
                 }
             }
         }
+    }
+
+    Component.onCompleted: {
+        Glean.impression.enterUnblockCodeScreen.record({
+            screen: _telemetryScreenId,
+        });
     }
 }

@@ -16,7 +16,6 @@
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addonreplacer.h"
-#include "addontutorial.h"
 #include "conditionwatchers/addonconditionwatcherfeaturesenabled.h"
 #include "conditionwatchers/addonconditionwatchergroup.h"
 #include "conditionwatchers/addonconditionwatcherjavascript.h"
@@ -361,10 +360,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     addon = new AddonI18n(parent, manifestFileName, id, name);
   }
 
-  else if (type == "tutorial") {
-    addon = AddonTutorial::create(parent, manifestFileName, id, name, obj);
-  }
-
   else if (type == "guide") {
     addon = AddonGuide::create(parent, manifestFileName, id, name, obj);
   }
@@ -494,14 +489,15 @@ void Addon::retranslate() {
 
   QString localeCode = Localizer::instance()->languageCodeOrSystem();
 
-  logger.debug() << "Let's try to load another language as fallback for code"
-                 << localeCode;
+  logger.debug() << "Let's try to load another language for" << id()
+                 << "as fallback for code" << localeCode;
   maybeLoadLanguageFallback(localeCode);
 
   QLocale locale = Localizer::instance()->locale();
 
   if (!createTranslator(locale)) {
-    logger.error() << "Loading the locale failed - code:" << localeCode;
+    logger.error() << "Loading the locale failed for" << id()
+                   << " - code:" << localeCode;
   }
 
   emit retranslationCompleted();
@@ -668,7 +664,8 @@ void Addon::maybeLoadLanguageFallback(const QString& code) {
   // First fallback, English where we are 100% sure we have all the
   // translations. If something goes totally wrong, we use English strings.
   if (!createTranslator(QLocale("en"))) {
-    logger.warning() << "Loading the fallback locale failed - code: en";
+    logger.warning() << "Loading the fallback locale failed for" << id()
+                     << "- code: en";
   }
 
   for (const QString& fallbackCode :
