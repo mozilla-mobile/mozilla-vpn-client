@@ -8,7 +8,7 @@ Context / Problem Statement
 
 We're looking to create tools that prompt the user in ways that help them stay more secure. Split tunneling (called 'App Exclusion' to users) is a feature that can reduce the need to turn off the VPN entirely by excluding traffic in specific apps from the VPN tunnel, but many users don't know about it. The current feature is in settings, and provides an alphabetical checklist of installed apps:
 
-<img src="./images/0004-01.png" height=500>
+<img src="./images/0005-01.png" height=500>
 
 This epic is for a new feature to proactively let users know when they have apps that could benefit from the split tunneling feature. We want this to be a notification outside the app, to engage users who rely on Mozilla VPN but rarely open the app.
 
@@ -48,14 +48,14 @@ This work is broken into four sections, with the bulk of code coming in the midd
     }
     ```
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
-        -   This statement (or something similar) should be added to the top of the file in a comment.
+        -   This statement (or something similar) should be added to the top of the file. This will be in some JSON value that serves as a comment.
         -   The precise methods to determine whether an app belongs on the list is described in the [epic](https://mozilla-hub.atlassian.net/browse/VPN-4412).
     -   From Santiago (this is a reminder to review these later): <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>, for Android <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
 -   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
 -   (2-5 points) Create initial list of recommended app exclusions, from work done by Product.
 
 ### Create daily task in app (11-15 points total)
-<img src="./images/0004-02.png" width=800 alt="New daily task">
+<img src="./images/0005-02.png" width=800 alt="New daily task">
 
 -   (3-5 points) Daily task at noon (local) to check for suggested apps that are installed on the device (after one week from first install) and not already excluded, halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
     -   This will be run by the app for desktop, and in the daemon on Android. (iOS does not have split tunnel.)
@@ -75,10 +75,10 @@ This work is broken into four sections, with the bulk of code coming in the midd
 ### Improve existing split tunnel screen (10-16 points total)
 [Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0)
 
-<img src="./images/0004-03.png" width=500 alt="Updated flow for existing App Exclusion screen">
+<img src="./images/0005-03.png" width=500 alt="Updated flow for existing App Exclusion screen">
 
 -   (2 points) Run the task on the launch of screen
-    -   Update the "have seen these apps" settings list with all suggested apps. (If a new suggested app is install and the Settings screen is opened by a user before the daily job runs to send a notification, we thus never send a notification. This behavior was confirmed by Santiago.)
+    -   Update the "have seen these apps" settings list with all suggested apps. (If a new suggested app is installed and the Settings screen is opened by a user before the daily job runs to send a notification, we thus never send a notification. This behavior was confirmed by Santiago.)
 -   (1-2 points) Add recommended section (only if 1 or more apps on the system are suggested). Since we've just updated the settings list of recommended apps on the system (in prior bullet point), use this settings list - if any system app we discover also appears on that list, it goes in the recommended section.
 -   (1 point) Sort recommended section - selected ones at top alphabetically, then the reset alphabetically
 -   (1 point) Sort "others" section - selected ones at top alphabetically, then the reset alphabetically
@@ -99,9 +99,7 @@ These are important components that we are committed to delivering, but are outs
 
 Rolling back the JSON file
 ---------------------
-If we mistakenly add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file.
-
-[This section will be written after Monday's meeting, as it greatly depends on where the document is served from.]
+If we mistakenly add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file. This will be done by turning off the feature entirely. This is a large hammer, and it's likely better to have more granular control over turning off specific apps. However, with the current launch planned for a small handful of well-known apps, the risk of reversion is low. We may want to change how this reversion works in the future, but for the current risk of reversion this simple feature on/off is appropriate.
 
 Other options considered
 ------------------------
