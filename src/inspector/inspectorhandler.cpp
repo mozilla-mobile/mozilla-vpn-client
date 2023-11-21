@@ -659,12 +659,7 @@ static QList<InspectorCommand> s_commands{
           obj["subscription"] = subObj;
           doc.setObject(obj);
           subscriptionData = doc.toJson();
-
-          // update subscription data with new createdAt timestamp
-          if (!MozillaVPN::instance()->subscriptionData()->fromJson(
-                  subscriptionData)) {
-            logger.error() << "Failed to parse the Subscription JSON data";
-          }
+          SettingsHolder::instance()->setSubscriptionData(subscriptionData);
 
           return QJsonObject();
         }}};

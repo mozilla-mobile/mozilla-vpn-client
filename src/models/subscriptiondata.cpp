@@ -23,7 +23,12 @@ namespace {
 Logger logger("SubscriptionData");
 }  // namespace
 
-SubscriptionData::SubscriptionData() { MZ_COUNT_CTOR(SubscriptionData); }
+SubscriptionData::SubscriptionData() {
+  MZ_COUNT_CTOR(SubscriptionData);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::subscriptionDataChanged, this,
+          &SubscriptionData::fromSettings);
+}
 
 SubscriptionData::~SubscriptionData() { MZ_COUNT_DTOR(SubscriptionData); }
 
