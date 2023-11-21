@@ -7,72 +7,61 @@
 #include "mozillavpn.h"
 #include "pinghelper.h"
 
-ConnectionManager::ConnectionManager() {}
-
-ConnectionManager::~ConnectionManager() = default;
-
 Controller::Controller() {}
 
 Controller::~Controller() = default;
 
-void ConnectionManager::initialize() {}
+void Controller::initialize() {}
 
-void ConnectionManager::implInitialized(bool, bool, const QDateTime&) {}
+void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-bool ConnectionManager::activate(const ServerData&, ServerSelectionPolicy) {
+bool Controller::activate(const ServerData&, ServerSelectionPolicy) {
   return false;
 }
 
-bool ConnectionManager::switchServers(const ServerData& serverData) {
+bool Controller::switchServers(const ServerData& serverData) { return false; }
+
+bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
   return false;
 }
 
-bool ConnectionManager::silentSwitchServers(
-    ServerCoolDownPolicyForSilentSwitch) {
-  return false;
-}
+bool Controller::silentServerSwitchingSupported() const { return false; }
 
-bool ConnectionManager::silentServerSwitchingSupported() const { return false; }
+void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {}
 
-void ConnectionManager::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {
-}
+bool Controller::deactivate() { return false; }
 
-bool ConnectionManager::deactivate() { return false; }
-
-void ConnectionManager::connected(const QString& pubkey,
-                                  const QDateTime& connectionTimestamp) {
+void Controller::connected(const QString& pubkey,
+                           const QDateTime& connectionTimestamp) {
   Q_UNUSED(pubkey);
   Q_UNUSED(connectionTimestamp);
 }
 
-void ConnectionManager::disconnected() {}
+void Controller::disconnected() {}
 
-void ConnectionManager::timerTimeout() {}
+void Controller::timerTimeout() {}
 
-void ConnectionManager::logout() {}
+void Controller::logout() {}
 
-bool ConnectionManager::processNextStep() { return false; }
+bool Controller::processNextStep() { return false; }
 
-void ConnectionManager::setState(State) {}
+void Controller::setState(State) {}
 
-qint64 ConnectionManager::time() const { return 42; }
+qint64 Controller::time() const { return 42; }
 
-void ConnectionManager::statusUpdated(const QString&, const QString&, uint64_t,
-                                      uint64_t) {}
+void Controller::statusUpdated(const QString&, const QString&, uint64_t,
+                               uint64_t) {}
 
-QList<IPAddress> ConnectionManager::getAllowedIPAddressRanges(
-    const Server& server) {
+QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
   Q_UNUSED(server);
   return QList<IPAddress>();
 }
 
-ConnectionManager::State ConnectionManager::state() const {
-  return ConnectionManager::StateOff;
-}
+Controller::State Controller::state() const { return Controller::StateOff; }
 
-void ConnectionManager::updateRequired() {}
+void Controller::updateRequired() {}
 
-void ConnectionManager::getStatus(
+void Controller::getStatus(
     std::function<void(const QString& serverIpv4Gateway,
                        const QString& deviceIpv4Address, uint64_t txBytes,
                        uint64_t rxBytes)>&& a_callback) {
@@ -83,22 +72,19 @@ void ConnectionManager::getStatus(
   callback("127.0.0.1", "127.0.0.1", 0, 0);
 }
 
-void ConnectionManager::quit() {}
+void Controller::quit() {}
 
-void ConnectionManager::backendFailure() {}
+void Controller::backendFailure() {}
 
-void ConnectionManager::captivePortalPresent() {}
+void Controller::captivePortalPresent() {}
 
-void ConnectionManager::captivePortalGone() {}
+void Controller::captivePortalGone() {}
 
-void ConnectionManager::handshakeTimeout() {}
+void Controller::handshakeTimeout() {}
 
 #ifdef MZ_DUMMY
-QString ConnectionManager::currentServerString() const { return QString("42"); }
+QString Controller::currentServerString() const { return QString("42"); }
 #endif
-
-void ConnectionManager::serializeLogs(
-    std::function<void(const QString& name, const QString& logs)>&&) {}
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&) {}

@@ -14,7 +14,7 @@
 
 #include "androidutils.h"
 #include "androidvpnactivity.h"
-#include "connectionmanager.h"
+#include "controller.h"
 #include "errorhandler.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
@@ -115,9 +115,8 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::eventVpnConfigPermissionResponse, this,
       [](bool granted) {
-        ConnectionManager* connectionManager =
-            MozillaVPN::instance()->connectionManager();
-        connectionManager->startHandshakeTimer();
+        Controller* controller = MozillaVPN::instance()->controller();
+        controller->startHandshakeTimer();
 
         granted
             ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
@@ -140,7 +139,7 @@ void AndroidController::initialize(const Device* device, const Keys* keys) {
 }
 
 void AndroidController::activate(const InterfaceConfig& config,
-                                 ConnectionManager::Reason reason) {
+                                 Controller::Reason reason) {
   Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   logger.debug() << "Activation";
 
@@ -181,7 +180,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
   const QList<Server> serverList =
-      vpn->connectionManager()->currentServer().exitServers();
+      vpn->controller()->currentServer().exitServers();
   Server* fallbackServer = nullptr;
   foreach (auto item, serverList) {
     if (item.publicKey() != config.m_serverPublicKey) {
@@ -215,7 +214,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
   QString localizedCityName =
-      vpn->connectionManager()->currentServer().localizedExitCityName();
+      vpn->controller()->currentServer().localizedExitCityName();
   args["city"] = localizedCityName;
 
   QJsonObject messages;
@@ -255,10 +254,10 @@ void AndroidController::activate(const InterfaceConfig& config,
                                     doc.toJson(QJsonDocument::Compact));
 }
 
-void AndroidController::deactivate(ConnectionManager::Reason reason) {
+void AndroidController::deactivate(Controller::Reason reason) {
   logger.debug() << "deactivation";
 
-  if (reason != ConnectionManager::ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     // Just show that we're disconnected
     // we're doing the actual disconnect once
     // the vpn-service has the new server ready in Action->Activate

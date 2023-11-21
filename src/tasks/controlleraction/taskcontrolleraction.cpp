@@ -16,10 +16,10 @@ Logger logger("TaskControllerAction");
 
 TaskControllerAction::TaskControllerAction(
     TaskControllerAction::TaskAction action,
-    ConnectionManager::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
+    Controller::ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy)
     : Task("TaskControllerAction"),
       m_action(action),
-      m_lastState(ConnectionManager::State::StateOff),
+      m_lastState(Controller::State::StateOff),
       // Let's take a copy of the current server-data to activate/switch to the
       // current locations even if the settings change in the meantime.
       m_serverData(*MozillaVPN::instance()->serverData()),
@@ -38,33 +38,31 @@ TaskControllerAction::~TaskControllerAction() {
 void TaskControllerAction::run() {
   logger.debug() << "TaskControllerAction run";
 
-  ConnectionManager* connectionManager =
-      MozillaVPN::instance()->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = MozillaVPN::instance()->controller();
+  Q_ASSERT(controller);
 
-  connect(connectionManager, &ConnectionManager::stateChanged, this,
+  connect(controller, &Controller::stateChanged, this,
           &TaskControllerAction::stateChanged, Qt::QueuedConnection);
 
   bool expectSignal = false;
 
-  m_lastState = connectionManager->state();
+  m_lastState = controller->state();
 
   switch (m_action) {
     case eActivate:
-      expectSignal = connectionManager->activate(m_serverData);
+      expectSignal = controller->activate(m_serverData);
       break;
 
     case eDeactivate:
-      expectSignal = connectionManager->deactivate();
+      expectSignal = controller->deactivate();
       break;
 
     case eSilentSwitch:
-      expectSignal =
-          connectionManager->silentSwitchServers(m_serverCoolDownPolicy);
+      expectSignal = controller->silentSwitchServers(m_serverCoolDownPolicy);
       break;
 
     case eSwitch:
-      expectSignal = connectionManager->switchServers(m_serverData);
+      expectSignal = controller->switchServers(m_serverData);
       break;
   }
 
@@ -85,14 +83,13 @@ void TaskControllerAction::stateChanged() {
     return;
   }
 
-  ConnectionManager* connectionManager =
-      MozillaVPN::instance()->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = MozillaVPN::instance()->controller();
+  Q_ASSERT(controller);
 
-  ConnectionManager::State state = connectionManager->state();
+  Controller::State state = controller->state();
   if (((m_action == eActivate || m_action == eSwitch) &&
-       state == ConnectionManager::StateOn) ||
-      (m_action == eDeactivate && state == ConnectionManager::StateOff)) {
+       state == Controller::StateOn) ||
+      (m_action == eDeactivate && state == Controller::StateOff)) {
     logger.debug() << "Operation completed";
     m_timer.stop();
     emit completed();
@@ -100,14 +97,13 @@ void TaskControllerAction::stateChanged() {
 }
 
 void TaskControllerAction::checkStatus() {
-  ConnectionManager* connectionManager =
-      MozillaVPN::instance()->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = MozillaVPN::instance()->controller();
+  Q_ASSERT(controller);
 
-  if (connectionManager->state() == m_lastState) {
+  if (controller->state() == m_lastState) {
     m_timer.stop();
     emit completed();
   } else {
-    m_lastState = connectionManager->state();
+    m_lastState = controller->state();
   }
 }
