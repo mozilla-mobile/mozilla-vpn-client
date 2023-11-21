@@ -139,7 +139,7 @@ Security / Privacy
 
 Since all the work is being done on device, the only security concerns are ensuring we don't log any private info.
 
-The excluded apps list will likely live in the client repo. There are ways to weaponize the suggested apps list to weaken privacy of key apps, but for this attack vector to be used a Mozilla staffer would need to approve the PR with the bad-faith addition to the suggested app list.
+The excluded apps list will likely live in the client repo. There are ways to weaponize the suggested apps list to weaken privacy of key apps, but for this attack vector to be used a Mozilla staffer would need to approve the PR with the bad-faith addition to the suggested app list. Furthermore, we'll review the list of excluded apps quarterly to make ensure we remove apps from the list if there are worrisome changes in an app's ownership or security approaches.
 
 Considerations for roll out
 ----------------------
