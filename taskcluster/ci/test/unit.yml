@@ -25,7 +25,7 @@ ctest-linux:
     run:
         cwd: '{checkout}'
         command: >-
-            cmake -S . -B build -GNinja -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/lib/cmake -DCMAKE_BUILD_TYPE=Debug &&
+            cmake -S . -B build -GNinja -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake -DCMAKE_BUILD_TYPE=Debug &&
             cmake --build build/ --target build_tests &&
             ctest  --test-dir .\build\vpn\ 
 
