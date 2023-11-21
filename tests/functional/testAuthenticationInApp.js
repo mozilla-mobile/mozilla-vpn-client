@@ -454,6 +454,82 @@ describe('User authentication', function() {
     });
   });
 
+  describe('Account creation with stub account', function() {
+    this.ctx.fxaOverrideEndpoints = {
+      GETs: {},
+      POSTs: {
+        '/v1/account/status': {
+          status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          body: {exists: true, hasLinkedAccount: false, hasPassword: false}
+        },
+      },
+      DELETEs: {},
+    };
+
+    it('Account creation with stub account', async () => {
+      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
+        await vpn.flipFeatureOn('inAppAuthentication');
+        await vpn.flipFeatureOn('inAppAccountCreate');
+      }
+
+      await vpn.waitForInitialView();
+
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .disabled());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+          'text', 'test@test.com');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .enabled());
+
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+    });
+  });
+
+  describe('Account creation with SSO account', function() {
+    this.ctx.fxaOverrideEndpoints = {
+      GETs: {},
+      POSTs: {
+        '/v1/account/status': {
+          status: 200,
+          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          body: {exists: true, hasLinkedAccount: true, hasPassword: false}
+        },
+      },
+      DELETEs: {},
+    };
+
+    it('Account creation with stub account', async () => {
+      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
+        await vpn.flipFeatureOn('inAppAuthentication');
+        await vpn.flipFeatureOn('inAppAccountCreate');
+      }
+
+      await vpn.waitForInitialView();
+
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await vpn.waitForQuery(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .disabled());
+      await vpn.setQueryProperty(
+          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+          'text', 'test@test.com');
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+              .enabled());
+
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+    });
+  });
+
   describe('auth in app related telemetry tests', () => {
     if(vpn.runningOnWasm()) {
         // No Glean on WASM.

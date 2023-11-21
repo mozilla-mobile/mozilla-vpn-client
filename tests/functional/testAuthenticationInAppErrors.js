@@ -121,7 +121,7 @@ describe('User authentication', function() {
       // Step 3: start -> 151 error (failed to send email)
       this.ctx.fxaStatusCallback = (req) => {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].body = {
-          exists: true
+          exists: true, hasPassword: true
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].status = 200;
       };
@@ -299,7 +299,7 @@ describe('User authentication', function() {
 
       this.ctx.fxaStatusCallback = (req) => {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].body = {
-          exists: true
+          exists: true, hasPassword: true
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].status = 200;
       };
