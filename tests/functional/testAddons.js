@@ -378,10 +378,10 @@ describe('Addons', function() {
         if (shouldBeAvailable) {
             await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
             
-            //Check timestamp
             await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
             await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
+            //Check timestamp
             let expectedTimestamp
             let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
             //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
