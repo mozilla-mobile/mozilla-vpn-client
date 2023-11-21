@@ -517,6 +517,66 @@ Item {
         }
     }
 
+    MZIconButton {
+        id: ipInfoToggleButton
+        objectName: "ipInfoToggleButton"
+
+        property var connectionInfoCloseText: MZI18n.GlobalClose
+
+        anchors {
+            right: parent.right
+            rightMargin: MZTheme.theme.windowMargin / 2
+            top: parent.top
+            topMargin: MZTheme.theme.windowMargin / 2
+        }
+        accessibleName: ipInfoPanel.isOpen
+            ? connectionInfoCloseText
+            : MZI18n.ConnectionInfoConnectionInformation
+        Accessible.ignored: !enabled || !visible
+        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
+        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
+        opacity: visible ? 1 : 0
+        visible: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching)
+            && !connectionInfoScreen.isOpen
+            && !connectionInfoScreen.isTransitioning
+        z: 1
+        onClicked: {
+            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
+
+            if (ipInfoPanel.isOpen) {
+                Glean.interaction.openConnectionInfoSelected.record({
+                    screen: "main",
+                });
+            } else {
+                Glean.interaction.closeSelected.record({
+                    screen: "connection_info",
+                });
+            }
+        }
+
+        Image {
+            property int iconSize: ipInfoPanel.isOpen
+                ? MZTheme.theme.iconSize
+                : MZTheme.theme.iconSize * 1.5
+
+            anchors.centerIn: ipInfoToggleButton
+            source: ipInfoPanel.isOpen
+                ? "qrc:/nebula/resources/close-white.svg"
+                : "qrc:/ui/resources/connection-info.svg"
+            sourceSize {
+                height: iconSize
+                width: iconSize
+            }
+            opacity: parent.enabled ? 1 : .6
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 300
+            }
+        }
+    }
+
     Column {
         id: col
 
@@ -631,66 +691,6 @@ Item {
         enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
 
         Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
-    }
-
-    MZIconButton {
-        id: ipInfoToggleButton
-        objectName: "ipInfoToggleButton"
-
-        property var connectionInfoCloseText: MZI18n.GlobalClose
-
-        anchors {
-            right: parent.right
-            rightMargin: MZTheme.theme.windowMargin / 2
-            top: parent.top
-            topMargin: MZTheme.theme.windowMargin / 2
-        }
-        accessibleName: ipInfoPanel.isOpen
-            ? connectionInfoCloseText
-            : MZI18n.ConnectionInfoConnectionInformation
-        Accessible.ignored: !enabled || !visible
-        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
-        enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
-        opacity: visible ? 1 : 0
-        visible: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching)
-            && !connectionInfoScreen.isOpen
-            && !connectionInfoScreen.isTransitioning
-        z: 1
-        onClicked: {
-            ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
-
-            if (ipInfoPanel.isOpen) {
-                Glean.interaction.openConnectionInfoSelected.record({
-                    screen: "main",
-                });
-            } else {
-                Glean.interaction.closeSelected.record({
-                    screen: "connection_info",
-                });
-            }
-        }
-
-        Image {
-            property int iconSize: ipInfoPanel.isOpen
-                ? MZTheme.theme.iconSize
-                : MZTheme.theme.iconSize * 1.5
-
-            anchors.centerIn: ipInfoToggleButton
-            source: ipInfoPanel.isOpen
-                ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/ui/resources/connection-info.svg"
-            sourceSize {
-                height: iconSize
-                width: iconSize
-            }
-            opacity: parent.enabled ? 1 : .6
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
     }
 
     IPInfoPanel {
