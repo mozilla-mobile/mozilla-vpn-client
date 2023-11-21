@@ -26,8 +26,8 @@ Logger logger("SubscriptionData");
 SubscriptionData::SubscriptionData() {
   MZ_COUNT_CTOR(SubscriptionData);
 
-  connect(SettingsHolder::instance(), &SettingsHolder::subscriptionDataChanged, this,
-          &SubscriptionData::fromSettings);
+  connect(SettingsHolder::instance(), &SettingsHolder::subscriptionDataChanged,
+          this, &SubscriptionData::fromSettings);
 }
 
 SubscriptionData::~SubscriptionData() { MZ_COUNT_DTOR(SubscriptionData); }

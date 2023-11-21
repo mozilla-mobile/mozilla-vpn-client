@@ -14,4 +14,5 @@ class TestAddonApi final : public TestHelper {
   void settings();
   void urlopener();
   void foobar();
+  void settimedcallback();
 };
