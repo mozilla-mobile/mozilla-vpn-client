@@ -20,6 +20,7 @@ RUN apt-get -y install build-essential \
                        locales \
                        ninja-build \
                        patchelf \
+                       libsecret-1-dev \
                        sudo
 
 ## Install Qt6/X11 build dependencies
