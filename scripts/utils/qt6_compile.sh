@@ -141,6 +141,77 @@ bash ./configure \
   -no-feature-sql \
   -no-feature-textodfwriter \
   -no-feature-networklistmanager \
+  -no-feature-style-stylesheet \
+  -no-feature-itemviews \
+  -no-feature-treewidget \
+  -no-feature-listwidget \
+  -no-feature-tablewidget \
+  -no-feature-datetimeedit \
+  -no-feature-stackedwidget \
+  -no-feature-textbrowser \
+  -no-feature-splashscreen \
+  -no-feature-splitter \
+  -no-feature-widgettextcontrol \
+  -no-feature-label \
+  -no-feature-formlayout \
+  -no-feature-lcdnumber \
+  -no-feature-menu \
+  -no-feature-lineedit \
+  -no-feature-radiobutton \
+  -no-feature-spinbox \
+  -no-feature-tabbar \
+  -no-feature-tabwidget \
+  -no-feature-combobox \
+  -no-feature-fontcombobox \
+  -no-feature-checkbox \
+  -no-feature-pushbutton \
+  -no-feature-toolbutton \
+  -no-feature-toolbar \
+  -no-feature-toolbox \
+  -no-feature-groupbox \
+  -no-feature-buttongroup \
+  -no-feature-mainwindow \
+  -no-feature-dockwidget \
+  -no-feature-mdiarea \
+  -no-feature-resizehandler \
+  -no-feature-statusbar \
+  -no-feature-menubar \
+  -no-feature-contextmenu \
+  -no-feature-progressbar \
+  -no-feature-abstractslider \
+  -no-feature-slider \
+  -no-feature-scrollbar \
+  -no-feature-dial \
+  -no-feature-scrollarea \
+  -no-feature-scroller \
+  -no-feature-graphicsview \
+  -no-feature-graphicseffect \
+  -no-feature-textedit \
+  -no-feature-syntaxhighlighter \
+  -no-feature-rubberband \
+  -no-feature-tooltip \
+  -no-feature-statustip \
+  -no-feature-sizegrip \
+  -no-feature-calendarwidget \
+  -no-feature-keysequenceedit \
+  -no-feature-dialog \
+  -no-feature-dialogbuttonbox \
+  -no-feature-messagebox \
+  -no-feature-colordialog \
+  -no-feature-filedialog \
+  -no-feature-fontdialog \
+  -no-feature-progressdialog \
+  -no-feature-inputdialog \
+  -no-feature-errormessage \
+  -no-feature-wizard \
+  -no-feature-listview \
+  -no-feature-tableview \
+  -no-feature-treeview \
+  -no-feature-datawidgetmapper \
+  -no-feature-columnview \
+  -no-feature-completer \
+  -no-feature-fscompleter \
+  -no-feature-undoview
   -no-feature-dbus \
   -no-feature-xml \
   -skip qt3d  \
