@@ -9,25 +9,12 @@ transforms:
     - taskgraph.transforms.job:transforms
     - taskgraph.transforms.task:transforms
 
-tasks:
-    taskgraph-definition:
-        worker-type: b-linux
-        worker:
-            docker-image: {in-tree: base}
-            max-run-time: 3600
-        description: "Test the full `mozilla_vpn_taskgraph` to validate the latest changes"
-        treeherder:
-            symbol: test-taskgraph-definition
-            kind: test
-            platform: tests/opt
-            tier: 1
-        run:
-            using: run-task
-            use-caches: true
-            cwd: '{checkout}'
-            command: >-
-                pip3 install -r taskcluster/requirements.txt &&
-                for param in `ls taskcluster/test/params`; do
-                    taskgraph full -p taskcluster/test/params/$param
-                done &&
-                taskgraph full
+kind-dependencies:
+    - fetch
+    - toolchain
+    - build
+
+tasks-from: 
+    - taskcluster.yml
+    - unit.yml
+

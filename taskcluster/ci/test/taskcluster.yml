@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+taskgraph-definition:
+  worker-type: b-linux
+  worker:
+      docker-image: {in-tree: base}
+      max-run-time: 3600
+  description: "Test the full `mozilla_vpn_taskgraph` to validate the latest changes"
+  treeherder:
+      symbol: test-taskgraph-definition
+      kind: test
+      platform: tests/opt
+      tier: 1
+  run:
+      using: run-task
+      use-caches: true
+      cwd: '{checkout}'
+      command: >-
+          pip3 install -r taskcluster/requirements.txt &&
+          for param in `ls taskcluster/test/params`; do
+              taskgraph full -p taskcluster/test/params/$param
+          done &&
+          taskgraph full
