@@ -79,16 +79,6 @@ Item {
                     // Accessibility provided by btn's Accessible properties
                     Accessible.ignored: true
 
-                    Rectangle {
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        border.width: MZTheme.theme.focusBorderWidth
-                        border.color: MZTheme.theme.fontColor
-                        color: MZTheme.theme.transparent
-                        visible: btn.activeFocus
-                        radius: 4
-                    }
-
                     Behavior on color {
                         PropertyAnimation {
                             duration: 100
