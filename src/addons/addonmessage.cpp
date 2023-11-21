@@ -61,6 +61,9 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
+  // if "notify" is not specified in the manifest, default to true
+  message->m_shouldNotify = messageObj["notify"].toBool(true);
+
   message->setBadge(messageObj["badge"].toString());
 
   guard.dismiss();
@@ -104,6 +107,12 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
 
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
   QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
+
+  // We are going from dismissed, to some other status, so re-enable the message
+  if (m_status == MessageStatus::Dismissed) {
+    enable();
+  }
+
   m_status = newStatus;
   emit statusChanged(m_status);
 
@@ -125,6 +134,11 @@ void AddonMessage::dismiss() {
 }
 
 void AddonMessage::markAsRead() { updateMessageStatus(MessageStatus::Read); }
+
+// Marks messaged as un-read and un-dimissed
+void AddonMessage::resetMessage() {
+  updateMessageStatus(MessageStatus::Received);
+}
 
 bool AddonMessage::containsSearchString(const QString& query) const {
   if (query.isEmpty()) {
@@ -220,6 +234,8 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = WhatsNew;
   } else if (badge == "survey") {
     m_badge = Survey;
+  } else if (badge == "subscription") {
+    m_badge = Subscription;
   } else {
     logger.error() << "Unsupported badge type" << badge;
   }
@@ -233,4 +249,6 @@ void AddonMessage::setBadge(Badge badge) {
 void AddonMessage::setDate(qint64 date) {
   m_date = date;
   emit dateChanged();
+  // Notifies formattedDate that the date has been changed
+  emit retranslationCompleted();
 }

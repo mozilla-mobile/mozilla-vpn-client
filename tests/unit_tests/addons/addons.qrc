@@ -13,6 +13,7 @@
         <file>api_featurelist.js</file>
         <file>api_foobar.js</file>
         <file>api_navigator.js</file>
+        <file>api_settimedcallback.js</file>
         <file>api_settings.js</file>
         <file>api_urlopener.js</file>
     </qresource>

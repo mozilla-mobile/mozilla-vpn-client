@@ -23,7 +23,12 @@ namespace {
 Logger logger("SubscriptionData");
 }  // namespace
 
-SubscriptionData::SubscriptionData() { MZ_COUNT_CTOR(SubscriptionData); }
+SubscriptionData::SubscriptionData() {
+  MZ_COUNT_CTOR(SubscriptionData);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::subscriptionDataChanged,
+          this, &SubscriptionData::fromSettings);
+}
 
 SubscriptionData::~SubscriptionData() { MZ_COUNT_DTOR(SubscriptionData); }
 
@@ -50,12 +55,13 @@ bool SubscriptionData::fromSettings() {
 
   logger.debug() << "Reading the subscription data from settings";
 
-  const QByteArray& json = settingsHolder->devices();
+  const QByteArray& json = settingsHolder->subscriptionData();
   if (json.isEmpty() || !fromJsonInternal(json)) {
     return false;
   }
 
   m_rawJson = json;
+  emit initialized();
   return true;
 }
 
