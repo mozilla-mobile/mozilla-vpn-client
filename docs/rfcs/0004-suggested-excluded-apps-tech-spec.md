@@ -18,14 +18,10 @@ Assumptions & Out-of-scope
 -   This is only for platforms that currently support split tunnel - Windows, Linux, and Android. We will not build split tunneling into macOS or iOS as part of this work.
 -   Notifications refer to system-level notifications. There are no additions to the messages tab considered in this tech spec.
 
-Open Questions
+Open Question
 --------------
 
 -   What do we use to canonically track apps we may want to exclude? Is there a bundle ID? The name of app (fragile)? Something else? Do we use different IDs across platforms?
--   Any easy ways to categorize games? (See [VPN-4433](https://mozilla-hub.atlassian.net/browse/VPN-4433).)
--   How will we decide which apps are initially on the suggested list?
--   Does the suggested list just include specific apps, or can it include entire directories (like well-known Windows game directories) and/or allow wildcard matching?
--   What is the process for adding an app to list, in light of potential security/privacy concerns when adding malicious apps?
 
 Implementation (estimated 36-57 points total)
 ---------------------------------------------------
@@ -36,6 +32,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 
 -   (3-5 points) Answer the open questions above
 -   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). This JSON doc will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
+    - This file will only allow specific apps. It will not allow the inclusion of wildcards or entire directories.
     - The document format will be a single JSON file for all platforms. Within each platform there will be an array of IDs for the suggested apps. These will each be an array, and we'll only look at the first item in the array - if a second string exists in the array will be considered comments (as JSON doesn't have the concept of comments). (This is preferred to keys/values for binary/comments compactness/legibility.)
     ```
     {
@@ -52,10 +49,10 @@ This work is broken into four sections, with the bulk of code coming in the midd
     ```
     -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file in a comment.
-        -   The precise methods to determine whether an app belongs on the list is currently an open question, and one that will be decided separately.
+        -   The precise methods to determine whether an app belongs on the list is described in the [epic](https://mozilla-hub.atlassian.net/browse/VPN-4412).
     -   From Santiago (this is a reminder to review these later): <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>, for Android <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
 -   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
--   (2-5 points) Create initial list of recommended app exclusions
+-   (2-5 points) Create initial list of recommended app exclusions, from work done by Product.
 
 ### Create daily task in app (11-15 points total)
 <img src="./images/0004-02.png" width=800 alt="New daily task">
