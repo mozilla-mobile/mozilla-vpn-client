@@ -14,11 +14,11 @@ extension NWInterface.InterfaceType {
             return "Cellular"
         case .wiredEthernet:
             return "Wired Ethernet"
-        case .loopback:
-            return "Loopback"
         default:
+            // Other or loopback,
+            // doesn't really matter.
             return "Unknown"
-            
+
         }
     }
 }
@@ -33,17 +33,13 @@ final class IOSNetworkMonitor {
         monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             if (path.status == .satisfied) {
-                IOSNetworkMonitor.logger.info(message: "New connected path: \(path.localEndpoint), \(String(describing: path.remoteEndpoint))")
+                IOSNetworkMonitor.logger.info(message: "New connected path")
                 IOSNetworkMonitor.logger.info(message: "Gateways: \(path.gateways)")
-                IOSNetworkMonitor.logger.info(message: "Available interfaces types: \(path.availableInterfaces.map { "\($0.type.toString())" })")
-            } else {
-                IOSNetworkMonitor.logger.info(message: "New unconnected path: \(path.localEndpoint), \(path.remoteEndpoint)")
-                IOSNetworkMonitor.logger.info(message: "Gateways: \(path.gateways)")
-                IOSNetworkMonitor.logger.info(message: "Available interfaces: \(path.availableInterfaces.map { "\($0.type.toString())" })")
+                IOSNetworkMonitor.logger.info(message: "Available interfaces types: \(path.availableInterfaces.map { "\($0.type.toString()): \(path.usesInterfaceType($0.type))" })")
             }
         }
     }
-    
+
     deinit {
         stop();
     }
