@@ -10,6 +10,7 @@ treeherder:
         'lint': 'Linting tasks'
         'Fetch': 'Fetching Tasks'
         'TL': 'Toolchain Tasks'
+        'T': 'Testing Tasks'
         'rpk': 'Re-Package Tasks'
         'BM': 'Beetmover Tasks'
 
