@@ -53,9 +53,3 @@ add_addon_target(test_08_message_disabled
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/08_message_disabled/
 )
 set_target_properties(test_08_message_disabled PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
-add_addon_target(09_message_upgrade_to_annual_plan
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/09_message_upgrade_to_annual_plan/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/09_message_upgrade_to_annual_plan/
-)
-set_target_properties(09_message_upgrade_to_annual_plan PROPERTIES EXCLUDE_FROM_ALL FALSE)

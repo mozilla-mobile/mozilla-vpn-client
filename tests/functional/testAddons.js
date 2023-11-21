@@ -369,9 +369,7 @@ describe('Addons', function() {
 
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
       it.only(`message display is correct when subscription started at ${testCase}`, async () => {
-    
-        //Change to prod when released
-        await vpn.resetAddons('09_message_upgrade_to_annual_plan');
+        await vpn.resetAddons('prod');
 
         //Load messages
         const loadedMessages = await vpn.messages();
@@ -385,21 +383,21 @@ describe('Addons', function() {
             await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
             let expectedTimestamp
-            let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate')
+            let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
             //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
-            const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0
+            const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0;
 
             if (expectedTimeFormat === "time") {
-              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
             }
             else if (expectedTimeFormat === "date") {
-              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })
+              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
             }
             else if (expectedTimeFormat === "yesterday") {
-              expectedTimestamp = "Yesterday"
+              expectedTimestamp = "Yesterday";
             }
 
-            assert.equal(actualTimestamp, expectedTimestamp)
+            assert.equal(actualTimestamp, expectedTimestamp);
         }
         assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
 
