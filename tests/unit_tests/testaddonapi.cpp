@@ -210,11 +210,20 @@ void TestAddonApi::settimedcallback() {
 
   QTimer timer;
 
+  int timeoutPeriodMsec = 1000;
+
   timer.setSingleShot(true);
-  timer.start(1000);
+  timer.start(timeoutPeriodMsec);
+
+  QSignalSpy spy(&timer, &QTimer::timeout);
+
+  //Give the slot time to execute
+  QTest::qWait(timeoutPeriodMsec + 1000);
 
   QObject::connect(&timer, &QTimer::timeout,
                    [&]() { QVERIFY(a->conditionApplied()); });
+
+  QCOMPARE(spy.count(), 1);
 }
 
 static TestAddonApi s_testAddonApi;

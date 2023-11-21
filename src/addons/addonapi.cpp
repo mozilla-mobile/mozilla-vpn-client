@@ -101,7 +101,11 @@ void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
   }
 
   // disconnect a potential previous timer
-  QObject::disconnect(&m_timer, nullptr, nullptr, nullptr);
+  if (m_timer.isActive()) {
+    logger.warning() << "Disconnecting timer for addon: " << m_addon->id();
+
+    QObject::disconnect(&m_timer, nullptr, nullptr, nullptr);
+  }
 
   connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });
 
