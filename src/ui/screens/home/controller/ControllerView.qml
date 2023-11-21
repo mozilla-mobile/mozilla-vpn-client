@@ -652,7 +652,9 @@ Item {
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
-        visible: !connectionInfoScreen.isOpen && !connectionInfoScreen.isTransitioning
+        visible: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching)
+            && !connectionInfoScreen.isOpen
+            && !connectionInfoScreen.isTransitioning
         z: 1
         onClicked: {
             ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
