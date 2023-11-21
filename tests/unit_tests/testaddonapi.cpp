@@ -217,7 +217,7 @@ void TestAddonApi::settimedcallback() {
 
   QSignalSpy spy(&timer, &QTimer::timeout);
 
-  //Give the slot time to execute
+  // Give the slot time to execute
   QTest::qWait(timeoutPeriodMsec + 1000);
 
   QObject::connect(&timer, &QTimer::timeout,
