@@ -213,9 +213,8 @@ void TestAddonApi::settimedcallback() {
   timer.setSingleShot(true);
   timer.start(1000);
 
-  QObject::connect(&timer, &QTimer::timeout, [&]() {
-    QVERIFY(a->conditionApplied());
-  });
+  QObject::connect(&timer, &QTimer::timeout,
+                   [&]() { QVERIFY(a->conditionApplied()); });
 }
 
 static TestAddonApi s_testAddonApi;
