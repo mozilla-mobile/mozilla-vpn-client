@@ -55,10 +55,15 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             ),
             buildInfo: GleanMetrics.GleanBuild.info
         )
+        
+        networkMonitor.onNewConnectedPath = { [self] isPrivateLAN in
+            self.logger.info(message: "(!!!) onNewConnectedPath")
+            
+        }
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-        networkMonitor.start();
+        networkMonitor.start()
         
         // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
         if let gleanDebugTag = gleanDebugTag {

@@ -70,7 +70,6 @@ target_sources(networkextension PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmessage.swift
-    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmanager.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosnetworkmonitor.swift
 )
 

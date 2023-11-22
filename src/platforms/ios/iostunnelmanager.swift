@@ -36,7 +36,7 @@ class TunnelManager {
         
         logger.debug(message: "Attempting to initialize VPN tunnel")
         
-        TunnelManager.instance.setTunnel {
+        TunnelManager.instance.loadOrCreateTunnel {
             guard let tunnel = TunnelManager.instance.tunnel else {
                 completionHandler(TunnelError(), nil)
                 return
@@ -61,33 +61,48 @@ class TunnelManager {
             return nil
         }
     }
-
-    private func setTunnel(_ completionHandler: @escaping () -> Void) {
+    
+    static func getAndUseTunnel(_ completionHandler: @escaping (_ tunnel: NETunnelProviderManager?) -> Void) {
+        TunnelManager.instance.loadTunnel(completionHandler)
+    }
+    
+    private func loadTunnel(_ completionHandler: @escaping (_ tunnel: NETunnelProviderManager?) -> Void) {
+        if(self.tunnel != nil) {
+            completionHandler(self.tunnel);
+        }
+        
         NETunnelProviderManager.loadAllFromPreferences { [weak self] managers, error in
             guard let self = self else {
                 TunnelManager.logger.debug(message: "We are shutting down.")
-                completionHandler();
+                completionHandler(nil);
                 return
             }
 
             if let error = error {
                 TunnelManager.logger.error(message: "Loading from preference failed: \(error)")
-                completionHandler();
+                completionHandler(nil);
                 return
             }
 
             let nsManagers = managers ?? []
             TunnelManager.logger.debug(message: "We have received \(nsManagers.count) managers.")
 
-            guard let tunnel = nsManagers.first(where: TunnelManager.isOurManager(_:)) else {
+            let tunnel = nsManagers.first(where: TunnelManager.isOurManager(_:))
+            self.tunnel = tunnel;
+            completionHandler(tunnel);
+        }
+    }
+
+    private func loadOrCreateTunnel(_ completionHandler: @escaping () -> Void) {
+        loadTunnel { [self] tunnel in
+            if(tunnel == nil) {
                 TunnelManager.logger.debug(message: "Creating the tunnel")
                 self.tunnel = NETunnelProviderManager()
                 completionHandler();
                 return
             }
-
+            
             TunnelManager.logger.debug(message: "Tunnel already exists")
-            self.tunnel = tunnel
             completionHandler()
         }
     }

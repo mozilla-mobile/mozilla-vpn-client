@@ -29,7 +29,7 @@ final class IOSNetworkMonitor {
     private let queue = DispatchQueue(label: "NetworkMonitorQueue")
     private let monitor: NWPathMonitor
 
-    private var onNewConnectedPath: ((Bool) -> Void)?
+    public var onNewConnectedPath: ((Bool) -> Void)?
 
     init() {
         monitor = NWPathMonitor()
@@ -55,8 +55,8 @@ final class IOSNetworkMonitor {
             }
 
             IOSNetworkMonitor.logger.info(message: "Are all gateways private? \(areAllGatewaysPrivate ? "Yes." : "No.")")
-
-            onNewConnectedPath?(areAllGatewaysPrivate)
+            
+            self.onNewConnectedPath?(areAllGatewaysPrivate)
         }
     }
 
@@ -64,7 +64,7 @@ final class IOSNetworkMonitor {
         stop();
     }
 
-    func start(onNewConnectedPath: ((Bool) -> Void)) {
+    func start() {
         IOSNetworkMonitor.logger.info(message: "Starting network monitoring")
         monitor.start(queue: queue)
     }
@@ -73,53 +73,47 @@ final class IOSNetworkMonitor {
         IOSNetworkMonitor.logger.info(message: "Stopping network monitoring")
         monitor.cancel()
     }
+    
+    // Function to check if an IPv4 address is in RFC 1918 range
+    private static func isRFC1918IPv4(address: Data) -> Bool {
+        return (
+            (address[0] == 10) ||
+            (address[0] == 172 && address[1] >= 16 && address[1] <= 31) ||
+            (address[0] == 192 && address[1] == 168)
+        )
+    }
 
-    private static func isPrivateGateway(gateway: NWEndpoint) {
+    // Function to check if an IPv6 address is in RFC 4193 range
+    private static func isRFC4193IPv6(address: Data) -> Bool {
+        return address.starts(with: [0xfd])
+    }
+
+    private static func isPrivateGateway(gateway: NWEndpoint) -> Bool {
         switch gateway {
-        case let .hostPort(host: host, port: _):
-            switch host {
-            case let .name(hostname):
-                // Convert the hostname to an array of integers for IPv4
-                let components = hostname.split(separator: ".").compactMap { Int($0) }
-
-                // Check for RFC 1918 private IP address ranges (for IPv4)
-                let isRFC1918IPv4 = (
-                    components.count == 4 &&
-                    (components[0] == 10 ||
-                    (components[0] == 172 && components[1] >= 16 && components[1] <= 31) ||
-                    (components[0] == 192 && components[1] == 168))
-                )
-
-                // Check for RFC 4193 Unique Local IPv6 Unicast Addresses (for IPv6)
-                let isRFC4193IPv6 = (
-                    components.count == 8 &&
-                    hostname.lowercased().hasPrefix("fc") &&
-                    !hostname.contains("::")
-                )
-
-                // Return true if the host is in RFC 1918 or RFC 4193 ranges
-                return isRFC1918IPv4 || isRFC4193IPv6
-
-            case let .ipv4(address):
-                // Check for RFC 1918 private IP address ranges (for IPv4)
-                let isRFC1918IPv4 = (
-                    (address[0] == 10) ||
-                    (address[0] == 172 && address[1] >= 16 && address[1] <= 31) ||
-                    (address[0] == 192 && address[1] == 168)
-                )
-
-                return isRFC1918IPv4
-
-            case let .ipv6(address):
-                // Check for RFC 4193 Unique Local IPv6 Unicast Addresses (for IPv6)
-                let isRFC4193IPv6 = (
-                    address.starts(with: [0xfd])
-                )
-
-                return isRFC4193IPv6
+            case let .hostPort(host: host, port: _):
+                switch host {
+                case let .name(hostname, _):
+                    // Convert the hostname to an array of integers for IPv4
+                    let components = hostname.split(separator: ".").compactMap { Int($0) }
+                    
+                    if components.count == 4 {
+                        return IOSNetworkMonitor.isRFC1918IPv4(address: Data(components.map { UInt8($0) }))
+                    } else if components.count == 8 && hostname.lowercased().hasPrefix("fc") && !hostname.contains("::") {
+                        return true
+                    } else {
+                        return false
+                    }
+                case let .ipv4(address):
+                    return IOSNetworkMonitor.isRFC1918IPv4(address: address.rawValue)
+                case let .ipv6(address):
+                    return IOSNetworkMonitor.isRFC4193IPv6(address: address.rawValue)
+                default:
+                    IOSNetworkMonitor.logger.error(message: "IMPOSSIBLE: Unexpected host port type. Assuming unsafe.")
+                    return false
+                }
+            default:
+                IOSNetworkMonitor.logger.error(message: "IMPOSSIBLE: Unexpected endpoint type. Assuming unsafe.")
+                return false
             }
-        default:
-            return false
-        }
     }
 }
