@@ -115,9 +115,7 @@ The goals for the file format:
 -   Easy for humans to add to, no matter their level of technical proficiency
 -   Easy for us to parse in the app
 -   Allowing comments in the file.
-
-Initially, there was one additional goal (no longer consideration):
--   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this seems unimportant. (However, if one file per platform seems more streamlined, it's still acceptable.)
+-   To have one file for all platforms, so that we'd remember to add a specific app to all platforms at once. With a conversation around potentially wanting different suggested app categories on mobile, this is less important but a nice-to-have.
 
 Other options considered included CSV, YAML, and plain text files. While YAML could be useful (as it's easy for less-technical people to read), we don't have a good YAML parser in the app yet. We could add a library, of course. However, we'd need to write our own document format test, because the YAML file (or CSV) would need to be structured in a specific way. 
 
@@ -130,7 +128,7 @@ We will create several metrics as part of this work; they are described in the a
 
 We'd expect the `apps_excluded` metric to increase after this is implemented on platforms which have app exclusions. Both the number of people with more than 0 apps excluded and the average count of apps excluded should increase.
 
-If Nimbus is available by the time this feature is complete, we will use it to roll out the test.
+We will use Nimbus to roll out the test of this feature.
 
 Security / Privacy
 ------------------
