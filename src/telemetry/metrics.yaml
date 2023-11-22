@@ -8,6 +8,67 @@
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
+# The metrics under this category are part of a limited time iOS-only experiment
+# created to answer the following question:
+#
+# * How often does the iOS network monitor assess that
+# a local network may be excluded from the VPN tunnel?
+ios_network_monitor:
+  new_connected_path:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+        - daemonsession
+    description: |
+        A new connected network path has been detected by the IOSNetworkMonitor.
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5864
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - technical
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - brizental@mozilla.com
+    expires: 2024-02-02
+  should_bypass:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+        - daemonsession
+    description: |
+        This gets counted when:
+          1. The user has connected to a local network that uses a private IP address range.
+          2. The user has connected to a cellular network.
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5864
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - technical
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - brizental@mozilla.com
+    expires: 2024-02-02
+  should_not_bypass:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+        - daemonsession
+    description: |
+        Whenever a new connected network path is detected,
+        but it doesn't get counted towards `should_bypass`.
+    bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-5864
+    data_reviews:
+        - TODO
+    data_sensitivity:
+        - technical
+    notification_emails:
+        - vpn-telemetry@mozilla.com
+        - brizental@mozilla.com
+    expires: 2024-02-02
+
 sample:
   addon_cta_clicked:
     type: event

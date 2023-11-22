@@ -1,0 +1,44 @@
+default	MozillaVPNNetworkExtension	12:14:56.290369-0600	(NetworkMonitor) Info: Starting network monitoring
+default	MozillaVPNNetworkExtension	12:14:56.292542-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:14:56.293492-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:14:56.294532-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Cellular"]
+default	MozillaVPNNetworkExtension	12:14:56.509671-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:14:56.509850-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:14:56.510030-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown", "Cellular"]
+default	MozillaVPNNetworkExtension	12:15:04.730443-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:04.792371-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:04.810213-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown", "Cellular"]
+default	MozillaVPNNetworkExtension	12:15:04.949506-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:04.949892-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:04.950123-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:10.684591-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:10.686603-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:10.686990-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:10.920605-0600	(NetworkMonitor) Info: New unconnected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:10.921025-0600	(NetworkMonitor) Info: Gateways: []
+default	MozillaVPNNetworkExtension	12:15:10.921931-0600	(NetworkMonitor) Info: Available interfaces: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:11.039942-0600	(NetworkMonitor) Info: New unconnected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:11.040420-0600	(NetworkMonitor) Info: Gateways: []
+default	MozillaVPNNetworkExtension	12:15:11.040900-0600	(NetworkMonitor) Info: Available interfaces: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:15.487719-0600	(NetworkMonitor) Info: New unconnected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:15.488962-0600	(NetworkMonitor) Info: Gateways: []
+default	MozillaVPNNetworkExtension	12:15:15.489029-0600	(NetworkMonitor) Info: Available interfaces: ["Wi-Fi", "Unknown", "Cellular"]
+default	MozillaVPNNetworkExtension	12:15:27.501081-0600	(NetworkMonitor) Info: New unconnected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:27.720890-0600	(NetworkMonitor) Info: New unconnected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:27.722105-0600	(NetworkMonitor) Info: Gateways: []
+default	MozillaVPNNetworkExtension	12:15:27.722899-0600	(NetworkMonitor) Info: Available interfaces: ["Cellular", "Unknown", "Wi-Fi"]
+default	MozillaVPNNetworkExtension	12:15:27.985996-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:27.986818-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:27.987127-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi"]
+default	MozillaVPNNetworkExtension	12:15:28.104710-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:28.105600-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:28.105748-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:28.359832-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:28.359981-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:28.360349-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:35.684753-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:35.700428-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:35.701282-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
+default	MozillaVPNNetworkExtension	12:15:35.811028-0600	(NetworkMonitor) Info: New connected path: nil, nil
+default	MozillaVPNNetworkExtension	12:15:35.811269-0600	(NetworkMonitor) Info: Gateways: [192.168.1.254:0, fe80::ae8f:a9ff:fed0:41420.000000e+00n00.000000e+00n0.0]
+default	MozillaVPNNetworkExtension	12:15:35.811754-0600	(NetworkMonitor) Info: Available interfaces types: ["Wi-Fi", "Unknown"]
