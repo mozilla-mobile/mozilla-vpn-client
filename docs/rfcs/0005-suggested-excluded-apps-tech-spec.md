@@ -101,6 +101,8 @@ Rolling back the JSON file
 ---------------------
 If we mistakenly add a suggested exclusion or an app changes in significant ways, we may need to quickly update the suggested apps file. This will be done by turning off the feature entirely. This is a large hammer, and it's likely better to have more granular control over turning off specific apps. However, with the current launch planned for a small handful of well-known apps, the risk of reversion is low. We may want to change how this reversion works in the future, but for the current risk of reversion this simple feature on/off is appropriate.
 
+The app runs the task to check the feature list every sixty minutes, so it would be turned off on all apps within an hour of pushing the change to Guardian.
+
 Other options considered
 ------------------------
 
