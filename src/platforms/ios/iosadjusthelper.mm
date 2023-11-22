@@ -19,6 +19,7 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
   NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
   if(adjustToken.length) {
+    logger.debug() << "Successfully found Adjust token in info.plist.";
     NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
     ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
                                                 environment:environment];
@@ -27,6 +28,8 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
     [ADJAdjustFactory setBaseUrl:proxyAddress];
     [ADJAdjustFactory setGdprUrl:proxyAddress];
     [Adjust appDidLaunch:adjustConfig];
+  } else {
+    logger.debug() << "Did not find Adjust token in info.plist.";
   }
 }
 
