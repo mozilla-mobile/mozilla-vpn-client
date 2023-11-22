@@ -6,8 +6,8 @@ use crate::balrog::*;
 use crate::logger::*;
 use ring::signature;
 use std::ffi::CStr;
-use std::os::raw::c_uchar;
 use std::os::raw::c_char;
+use std::os::raw::c_uchar;
 use x509_parser::prelude::*;
 
 pub mod balrog;
@@ -102,7 +102,11 @@ pub extern "C" fn verify_content_signature(
         }
         Ok(x) => x,
     };
+
+    #[cfg(not(test))]
     let now: i64 = ASN1Time::now().timestamp();
+    #[cfg(test)]
+    let now = test::mock_x5u_timestamp(x5u);
 
     /* Perform the content signature validation. */
     let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subject_str) {
@@ -135,6 +139,20 @@ mod test {
     // Fetched from: https://aus5.mozilla.org/json/1/FirefoxVPN/2.14.0/WINNT_x86_64/release-cdntest/update.json
     const PROD_SIGNATURE: &str = "znYFqdKKFgijVgUhnq5VuZxtI5Zay8MARVFr3cG1CbB9eH9slQFkE9ZjMdLzbf5OZqj2gds1OqbCm45L38e2joKD_mCAUGtajebztDdWx9Rqgmn-9vu6t-SCl6HQrzbh";
     const PROD_INPUT_DATA: &[u8] = include_bytes!("../assets/prod_update_data.json");
+
+    /* Extract a timestamp from a certificate, suitable for mocking. */
+    #[cfg(test)]
+    pub fn mock_x5u_timestamp(x5u: &[u8]) -> i64 {
+        let Ok((_rem, pem)) = parse_x509_pem(x5u) else {
+            return 0;
+        };
+        let Ok((_rem, x509)) = parse_x509_certificate(&pem.contents) else {
+            return 0;
+        };
+
+        let v = x509.validity();
+        (v.not_before.timestamp() + v.not_after.timestamp()) / 2
+    }
 
     #[test]
     fn test_rsa_success() {
@@ -228,7 +246,7 @@ mod test {
             PROD_CERT_CHAIN,
             PROD_INPUT_DATA,
             PROD_SIGNATURE,
-            1696272799, // Oct 2, 2023 - the time when I wrote this test
+            mock_x5u_timestamp(PROD_CERT_CHAIN),
             PROD_ROOT_HASH,
             PROD_HOSTNAME,
         );
@@ -241,9 +259,6 @@ mod test {
         let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
 
-        // TODO: Is there a way to mock the timestamp?
-        // Otherwise this test will mysteriously start to fail sometime
-        // in the future when the certificates start to expire.
         let r = verify_content_signature(
             PROD_CERT_CHAIN.as_ptr(),
             PROD_CERT_CHAIN.len(),
