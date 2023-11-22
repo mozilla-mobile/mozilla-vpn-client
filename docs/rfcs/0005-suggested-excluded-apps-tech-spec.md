@@ -47,7 +47,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
             ]
     }
     ```
-    -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. That is, full research by our engineers to ensure nothing malicious is being brought in. And erring on the side of not including any.
+    -   Additions to the list should be given the same amount of thought that adding new dependencies to our repo are given. We should err on the side of not including any.
         -   This statement (or something similar) should be added to the top of the file. This will be in some JSON value that serves as a comment.
         -   The precise methods to determine whether an app belongs on the list is described in the [epic](https://mozilla-hub.atlassian.net/browse/VPN-4412).
     -   From Santiago (this is a reminder to review these later): <https://github.com/citizenlab/test-lists/tree/master/lists>, <https://ooni.org/>, for Android <https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0>
