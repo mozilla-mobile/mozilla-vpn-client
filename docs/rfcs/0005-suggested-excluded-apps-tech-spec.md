@@ -23,7 +23,7 @@ Open Question
 
 -   What do we use to canonically track apps we may want to exclude? Is there a bundle ID? The name of app (fragile)? Something else? Do we use different IDs across platforms?
 
-Implementation (estimated 36-57 points total)
+Implementation (estimated 38-59 points total)
 ---------------------------------------------------
 
 This work is broken into four sections, with the bulk of code coming in the middle two sections. Those two sections should each be built behind their own separate feature flag, though we'd expose both parts together via Nimbus.
@@ -54,7 +54,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 -   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
 -   (2-5 points) Create initial list of recommended app exclusions, from work done by Product.
 
-### Create daily task in app (11-15 points total)
+### Create daily task in app (12-16 points total)
 <img src="./images/0005-02.png" width=800 alt="New daily task">
 
 -   (3-5 points) Daily task at noon (local) to check for suggested apps that are installed on the device (after one week from first install) and not already excluded, halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
@@ -71,8 +71,9 @@ This work is broken into four sections, with the bulk of code coming in the midd
     - Pull a new suggested apps list immediately
     - Clear the "have sent notification" list.
     - Immediately run the daily check job.
+-   (1 point) Ensure we've added all needed logging. Add more log lines if we didn't.
 
-### Improve existing split tunnel screen (10-16 points total)
+### Improve existing split tunnel screen (11-17 points total)
 [Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0)
 
 <img src="./images/0005-03.png" width=500 alt="Updated flow for existing App Exclusion screen">
@@ -86,6 +87,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 -   (1-2 points) Ensure search works, shows one section, is alphabetically sorted
 -   (2-5 points) Ensure accessibility is up to date
 -   (1 point) Add metrics for how many suggested (and non-suggested) apps are excluded
+-   (1 point) Ensure we've added all needed logging. Add more log lines if we didn't.
 
 ### Day 2
 
