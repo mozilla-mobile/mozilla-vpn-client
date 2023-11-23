@@ -47,6 +47,7 @@ Item {
             id: textArea
 
             Accessible.focused: textArea.focus
+            Accessible.name: formattedPlaceholderText.visible ? formattedPlaceholderText.text : textArea.text
             background: MZInputBackground {
                 itemToFocus: textArea
                 z: -1
@@ -68,6 +69,8 @@ Item {
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
             Keys.onTabPressed: nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason)
+            Keys.onBacktabPressed: nextItemInFocusChain(false).forceActiveFocus(Qt.BacktabFocusReason)
+
             onTextChanged: {
                 handleOnTextChanged(textArea.text);
 

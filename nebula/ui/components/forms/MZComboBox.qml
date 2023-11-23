@@ -11,7 +11,7 @@ import compat 0.1
 import components 0.1
 
 ComboBox {
-    property string placeholderText
+    property string placeholderText: ""
     property bool showInteractionStates: true
     textRole: "name"
     valueRole: "value"
@@ -20,6 +20,7 @@ ComboBox {
     Layout.preferredHeight: MZTheme.theme.rowHeight
     currentIndex: -1
     activeFocusOnTab: true
+    Accessible.name: contentItem.text
     background: MZInputBackground {
         z: -1
     }
