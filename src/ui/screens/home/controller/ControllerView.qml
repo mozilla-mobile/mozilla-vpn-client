@@ -619,7 +619,6 @@ Item {
             lineHeight: 22
             font.pixelSize: 22
             Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
-            Accessible.description: logoSubtitle.text
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
             onTextChanged: handleConnectionStateChange()
@@ -635,7 +634,6 @@ Item {
             objectName: "controllerSubTitle"
 
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.ignored: true
             width: parent.width - MZTheme.theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
