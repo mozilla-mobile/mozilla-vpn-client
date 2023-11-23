@@ -21,14 +21,14 @@ ctest-linux:
             - qt-linux
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: linux-qt6-build}
+        docker-image: {in-tree: linux-build-focal}
     run:
         cwd: '{checkout}'
         command: >-
             pip install -r requirements.txt &&
             cmake -S . -B build -GNinja -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake -DCMAKE_BUILD_TYPE=Debug &&
             cmake --build build/ --target build_tests &&
-            ctest  --test-dir .\build\vpn\ 
+            ctest  --test-dir ./build/vpn
 
 
 
