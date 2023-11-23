@@ -19,7 +19,8 @@
 #include "signalhandler.h"
 
 MacOSDnsManager::MacOSDnsManager(QObject* parent)
-    : Command(parent, "macosdnsmanager", "Update the DNS settings while the VPN is active") {
+    : Command(parent, "macosdnsmanager",
+              "Update the DNS settings while the VPN is active") {
   MZ_COUNT_CTOR(MacOSDnsManager);
 }
 
@@ -132,7 +133,7 @@ int MacOSDnsManager::run(QStringList& tokens) {
 
   // Open the system configuration store.
   m_scStore = SCDynamicStoreCreate(kCFAllocatorSystemDefault,
-                                  CFSTR("mozillavpn"), nullptr, nullptr);
+                                   CFSTR("mozillavpn"), nullptr, nullptr);
   if (m_scStore == nullptr) {
     stream << "Failed to open system configuration:" << scErrorMessage()
            << Qt::endl;

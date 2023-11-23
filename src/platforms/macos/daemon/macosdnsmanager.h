@@ -5,11 +5,11 @@
 #ifndef MACOSDNSMANAGER_H
 #define MACOSDNSMANAGER_H
 
-#include "command.h"
-
 #include <systemconfiguration/scdynamicstore.h>
 
 #include <QMap>
+
+#include "command.h"
 
 class MacOSDnsManager final : public Command {
  public:
