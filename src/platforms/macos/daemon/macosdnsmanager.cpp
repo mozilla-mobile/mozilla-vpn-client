@@ -175,7 +175,7 @@ int MacOSDnsManager::run(QStringList& tokens) {
 
 QStringList MacOSDnsManager::enumerateNetServices() {
   CFArrayRef netServices = SCDynamicStoreCopyKeyList(
-      m_scStore, CFSTR("Setup:/Network/Service/[0-9A-F-]+"));
+      m_scStore, CFSTR("Setup:/Network/Service/[0-9A-Fa-f-]+"));
   if (netServices == nullptr) {
     return QStringList();
   }

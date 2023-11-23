@@ -13,7 +13,6 @@
 #include <QJsonValue>
 #include <QStandardPaths>
 
-#include "constants.h"
 #include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -23,7 +22,10 @@
 #include "models/server.h"
 #include "settingsholder.h"
 
-// How long do we wait between one try and the next one.
+// When the daemon is unreachable, we will retry indefinitely using an
+// exponential backoff algorithm. The interval between retries starts at
+// the initial value, and doubles after each failed connection attempt,
+// with time between each retry clamped to the maximum value.
 constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;
 constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;
 
@@ -49,8 +51,8 @@ LocalSocketController::LocalSocketController() {
   connect(&m_initializingTimer, &QTimer::timeout, this,
           &LocalSocketController::initializeInternal);
 
-  m_messageTimeout.setSingleShot(true);
-  connect(&m_messageTimeout, &QTimer::timeout, this,
+  m_responseTimeout.setSingleShot(true);
+  connect(&m_responseTimeout, &QTimer::timeout, this,
           [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
 }
 
@@ -90,7 +92,9 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
 }
 
 void LocalSocketController::initializeInternal() {
-  // Perform an exponential backoff.
+  // Perform an exponential backoff when trying to connect to the daemon. This
+  // ensures that we will reconnect gracefully even if it takes the daemon a
+  // while to start up, or needs time to recover from a crash.
   if (m_daemonState != eInitializing) {
     m_initializingInterval = CONNECTION_RETRY_INITIAL_MSEC;
   } else if (m_initializingInterval < CONNECTION_RETRY_MAXIMUM_MSEC) {
@@ -108,7 +112,7 @@ void LocalSocketController::initializeInternal() {
 #endif
 
   logger.debug() << "Connecting to:" << path;
-  m_socket->disconnectFromServer();
+  m_socket->abort();
   m_socket->connectToServer(path);
 }
 
@@ -196,7 +200,7 @@ void LocalSocketController::cleanupBackendLogs() {
 
   QJsonObject json;
   json.insert("type", "cleanlogs");
-  write(json);
+  write(json, "logs", 5000);
 }
 
 void LocalSocketController::readData() {
@@ -243,9 +247,9 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   QString type = typeValue.toString();
 
   logger.debug() << "Parse command:" << type;
-  if (!m_messageExpected.isEmpty() && (m_messageExpected == type)) {
-    m_messageExpected.clear();
-    m_messageTimeout.stop();
+  if (!m_responseExpected.isEmpty() && (m_responseExpected == type)) {
+    m_responseExpected.clear();
+    m_responseTimeout.stop();
   }
 
   if (m_daemonState == eInitializing && type == "status") {
@@ -352,13 +356,16 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 }
 
 void LocalSocketController::write(const QJsonObject& json,
-                                  const QString& expect) {
+                                  const QString& expect, int timeout) {
   QByteArray payload = QJsonDocument(json).toJson(QJsonDocument::Compact);
   payload.append('\n');
 
+  // If an immediate response to this message is expected, start a timer to
+  // throw an error if that response fails to arrive in a timely manner. This
+  // is used to detect a crash or failure of the daemon.
   if (!expect.isEmpty()) {
-    m_messageExpected = expect;
-    m_messageTimeout.start(CONNECTION_RETRY_INITIAL_MSEC);
+    m_responseExpected = expect;
+    m_responseTimeout.start(timeout);
   }
 
   Q_ASSERT(m_socket);
