@@ -5,11 +5,8 @@
 #ifndef DNSUTILSMACOS_H
 #define DNSUTILSMACOS_H
 
-#include <systemconfiguration/scdynamicstore.h>
-#include <systemconfiguration/systemconfiguration.h>
-
 #include <QHostAddress>
-#include <QMap>
+#include <QProcess>
 #include <QString>
 
 #include "daemon/dnsutils.h"
@@ -25,27 +22,11 @@ class DnsUtilsMacos final : public DnsUtils {
                        const QList<QHostAddress>& resolvers) override;
   bool restoreResolvers() override;
 
- private:
-  class DnsBackup {
-   public:
-    DnsBackup() {}
-    bool isValid() const {
-      return !m_domain.isEmpty() || !m_search.isEmpty() ||
-             !m_servers.isEmpty() || !m_sortlist.isEmpty();
-    }
-
-    QString m_domain;
-    QStringList m_search;
-    QStringList m_servers;
-    QStringList m_sortlist;
-  };
-
-  SCDynamicStoreRef m_scStore = nullptr;
-  int m_dnsSnapshotPid = -1;
+ private slots:
+  void dnsManagerStdoutReady();
 
  private:
-  bool takeDnsSnapshot(void);
-  DnsBackup backupService(const QString& uuid);
+  QProcess m_dnsManager;
 };
 
 #endif  // DNSUTILSMACOS_H

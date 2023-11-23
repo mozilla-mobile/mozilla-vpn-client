@@ -237,9 +237,11 @@ int MacOSDnsManager::waitForTermination(void) {
   sigaddset(&set, SIGINT);
   sigaddset(&set, SIGTERM);
   sigaddset(&set, SIGHUP);
+  sigaddset(&set, SIGPIPE);
   signal(SIGINT, [](int s) { Q_UNUSED(s); });
   signal(SIGTERM, [](int s) { Q_UNUSED(s); });
   signal(SIGHUP, [](int s) { Q_UNUSED(s); });
+  signal(SIGPIPE, [](int s) { Q_UNUSED(s); });
   if (sigwait(&set, &sig) != 0) {
     // Something went horribly wrong.
     return SIGKILL;
