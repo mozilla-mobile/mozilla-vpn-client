@@ -81,9 +81,6 @@ MZAlert {
                     target: alertBox
                     alertText: qsTrId("vpn.alert.backendServiceError")
                     visible: true
-                    onActionPressed: ()=>{
-                        VPN.backendServiceRestore();
-                    }
                 }
             },
             State {
@@ -93,9 +90,6 @@ MZAlert {
                     //% "Remote service error"
                     alertText: qsTrId("vpn.alert.remoteServiceError")
                     visible: true
-                    onActionPressed: ()=>{
-                        VPN.backendServiceRestore();
-                    }
                 }
             },
             State {
