@@ -5,7 +5,7 @@ import { Grid, Segment, Header, Container, Divider } from 'semantic-ui-react'
 import StringsList from "./StringsList.js"
 
 // Data from latest main
-const DEFAULT_DATA_URL = "https://firefox-ci-tc.services.mozilla.com/tasks/index/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.tools.translation-report"
+const DEFAULT_DATA_URL = "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.tools.translation-report/artifacts/public%2Fbuild%2Foutput.json"
 
 function App() {
   const [chosenTarget, setChosenTarget] = useState("main_app")
