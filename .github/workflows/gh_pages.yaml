@@ -121,7 +121,7 @@ jobs:
       - name: Building
         shell: bash
         run: |
-          cd tools/translationsreport
+          cd tools/translationsreport/app
           npm install
           npm run build
 
@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: Translations Report
-            path: tools/translationsreport/build
+            path: tools/translationsreport/app/build
 
   addons:
     runs-on: ubuntu-22.04
