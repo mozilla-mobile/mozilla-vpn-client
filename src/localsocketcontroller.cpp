@@ -359,7 +359,7 @@ void LocalSocketController::write(const QJsonObject& json,
   // throw an error if that response fails to arrive in a timely manner. This
   // is used to detect a crash or failure of the daemon.
   if (!expect.isEmpty()) {
-    QTimer *t = new QTimer(this);
+    QTimer* t = new QTimer(this);
     connect(t, &QTimer::timeout, this,
             [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
 
