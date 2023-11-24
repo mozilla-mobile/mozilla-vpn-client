@@ -49,6 +49,8 @@ class LocalSocketController final : public ControllerImpl {
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
   void readData();
   void parseCommand(const QByteArray& command);
+  void disarmTimeout(const QString& responseType);
+  void clearAllTimeouts();
 
   /**
    * @brief Write a JSON message to the socket, sending it to the daemon.
@@ -80,8 +82,7 @@ class LocalSocketController final : public ControllerImpl {
 
   // When a message to the daemon expects an immediate response, these
   // are used to trigger a timeout error if the response never arrives.
-  QTimer m_responseTimeout;
-  QString m_responseExpected;
+  QList<QTimer*> m_expectedResponses;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

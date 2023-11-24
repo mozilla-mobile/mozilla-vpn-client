@@ -50,14 +50,11 @@ LocalSocketController::LocalSocketController() {
   m_initializingTimer.setSingleShot(true);
   connect(&m_initializingTimer, &QTimer::timeout, this,
           &LocalSocketController::initializeInternal);
-
-  m_responseTimeout.setSingleShot(true);
-  connect(&m_responseTimeout, &QTimer::timeout, this,
-          [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
 }
 
 LocalSocketController::~LocalSocketController() {
   MZ_COUNT_DTOR(LocalSocketController);
+  clearAllTimeouts();
 }
 
 void LocalSocketController::errorOccurred(
@@ -69,6 +66,7 @@ void LocalSocketController::errorOccurred(
     emit disconnected();
   }
 
+  clearAllTimeouts();
   m_initializingTimer.start(m_initializingInterval);
 }
 
@@ -247,10 +245,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   QString type = typeValue.toString();
 
   logger.debug() << "Parse command:" << type;
-  if (!m_responseExpected.isEmpty() && (m_responseExpected == type)) {
-    m_responseExpected.clear();
-    m_responseTimeout.stop();
-  }
+  disarmTimeout(type);
 
   if (m_daemonState == eInitializing && type == "status") {
     m_daemonState = eReady;
@@ -364,11 +359,39 @@ void LocalSocketController::write(const QJsonObject& json,
   // throw an error if that response fails to arrive in a timely manner. This
   // is used to detect a crash or failure of the daemon.
   if (!expect.isEmpty()) {
-    m_responseExpected = expect;
-    m_responseTimeout.start(timeout);
+    QTimer *t = new QTimer(this);
+    connect(t, &QTimer::timeout, this,
+            [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
+
+    t->setProperty("responseType", QVariant(expect));
+    t->setSingleShot(true);
+    t->start(timeout);
+
+    m_expectedResponses.append(t);
   }
 
   Q_ASSERT(m_socket);
   m_socket->write(payload);
   m_socket->flush();
+}
+
+void LocalSocketController::disarmTimeout(const QString& responseType) {
+  for (QTimer* t : m_expectedResponses) {
+    QVariant qv = t->property("responseType");
+    if (qv.type() != QVariant::String) {
+      continue;
+    }
+    if (qv.toString() != responseType) {
+      continue;
+    }
+    m_expectedResponses.removeOne(t);
+    delete t;
+  }
+}
+
+void LocalSocketController::clearAllTimeouts(void) {
+  while (!m_expectedResponses.isEmpty()) {
+    QTimer* t = m_expectedResponses.takeFirst();
+    delete t;
+  }
 }
