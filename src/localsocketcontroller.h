@@ -5,7 +5,6 @@
 #ifndef LOCALSOCKETCONTROLLER_H
 #define LOCALSOCKETCONTROLLER_H
 
-#include <QHostAddress>
 #include <QLocalSocket>
 #include <QTimer>
 #include <functional>
@@ -78,7 +77,7 @@ class LocalSocketController final : public ControllerImpl {
   std::function<void(const QString&)> m_logCallback = nullptr;
 
   QTimer m_initializingTimer;
-  uint32_t m_initializingInterval;
+  uint32_t m_initializingInterval = 0;
 
   // When a message to the daemon expects an immediate response, these
   // are used to trigger a timeout error if the response never arrives.

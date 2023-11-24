@@ -4,23 +4,14 @@
 
 #include "localsocketcontroller.h"
 
-#include <QDir>
 #include <QFileInfo>
-#include <QHostAddress>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QStandardPaths>
 
 #include "errorhandler.h"
-#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/device.h"
-#include "models/keys.h"
-#include "models/server.h"
-#include "settingsholder.h"
 
 // When the daemon is unreachable, we will retry indefinitely using an
 // exponential backoff algorithm. The interval between retries starts at
