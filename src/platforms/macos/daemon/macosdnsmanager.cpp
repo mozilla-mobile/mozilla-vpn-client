@@ -4,6 +4,7 @@
 
 #include "macosdnsmanager.h"
 
+#include <sys/event.h>
 #include <systemconfiguration/scdynamicstore.h>
 #include <systemconfiguration/scpreferences.h>
 #include <systemconfiguration/systemconfiguration.h>
@@ -230,24 +231,36 @@ void MacOSDnsManager::clearSnapshot(void) {
 }
 
 // Block the process and wait for a termination signal.
-// TODO: Also check for exit of the parent process.
 int MacOSDnsManager::waitForTermination(void) {
-  int sig;
-  sigset_t set;
-  sigemptyset(&set);
-  sigaddset(&set, SIGINT);
-  sigaddset(&set, SIGTERM);
-  sigaddset(&set, SIGHUP);
-  sigaddset(&set, SIGPIPE);
-  signal(SIGINT, [](int s) { Q_UNUSED(s); });
-  signal(SIGTERM, [](int s) { Q_UNUSED(s); });
-  signal(SIGHUP, [](int s) { Q_UNUSED(s); });
-  signal(SIGPIPE, [](int s) { Q_UNUSED(s); });
-  if (sigwait(&set, &sig) != 0) {
+  int kq = kqueue();
+
+  // Watch for NOTE_EXIT on our parent process.
+  // https://developer.apple.com/library/archive/technotes/tn2050/_index.html
+  struct kevent changes;
+  EV_SET(&changes, getppid(), EVFILT_PROC, EV_ADD | EV_RECEIPT, NOTE_EXIT, 0,
+         nullptr);
+  kevent(kq, &changes, 1, &changes, 1, nullptr);
+
+  // Prepare to handle termination signals.
+  static int sig = 0;
+  signal(SIGINT, [](int s) { sig = s; });
+  signal(SIGTERM, [](int s) { sig = s; });
+  signal(SIGHUP, [](int s) { sig = s; });
+  signal(SIGPIPE, [](int s) { sig = s; });
+
+  struct kevent ev;
+  int ret = kevent(kq, nullptr, 0, &ev, 1, nullptr);
+  close(kq);
+  if ((ret < 0) && (errno == EINTR)) {
+    // Received a signal.
+    return sig;
+  } else if ((ret <= 0) || (ev.flags & EV_ERROR)) {
     // Something went horribly wrong.
     return SIGKILL;
+  } else {
+    // Received NOTE_EXIT; our parent has terminated.
+    return SIGCHLD;
   }
-  return sig;
 }
 
 static Command::RegistrationProxy<MacOSDnsManager> s_commandMacOSDaemon;
