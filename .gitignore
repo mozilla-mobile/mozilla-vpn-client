@@ -221,3 +221,6 @@ target/
 
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
+
+# Translations Report
+tools/translationsreport/output.json

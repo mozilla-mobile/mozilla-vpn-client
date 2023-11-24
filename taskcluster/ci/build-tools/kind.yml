@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.release_index:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+tasks:
+    translation-report:
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: base}
+            max-run-time: 3600
+            artifacts:
+              - type: directory
+                name: public/build
+                path: /builds/worker/artifacts
+        description: "Generate translations report"
+        add-index-routes: tools
+        treeherder:
+            symbol: TL(I18NREPORT)
+            kind: build
+            platform: tools/dev
+            tier: 1
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: >-
+                pip3 install -r requirements.txt &&
+                python3 tools/translationsreport/analyzer.py &&
+                mv tools/translationsreport/output.json /builds/worker/artifacts
