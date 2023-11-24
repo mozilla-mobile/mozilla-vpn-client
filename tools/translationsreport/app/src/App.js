@@ -66,7 +66,7 @@ function App() {
               </Segment.Group>
               </Grid.Column>
               <Grid.Column width={10}>
-                  {chosenTarget == "main_app"
+                  {chosenTarget === "main_app"
                     ? <StringsList target={"Main app"} strings={data.main_app_translations} />
                     : <StringsList target={chosenTarget} strings={data.addon_translations[chosenTarget]} />
                   }

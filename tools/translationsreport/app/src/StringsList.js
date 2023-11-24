@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import { Table, Icon, Input, Progress } from 'semantic-ui-react'
 import LanguageDropdown, { LANGUAGES } from './LanguageDropdown.js'
 
 function StringsList({ target, strings }) {
   const defaultExpectedLanguages = LANGUAGES.map(l => l.value)
-  const filterLanguagesPerString = () => {
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const [expectedLanguages, setExpectedLanguages] = useState(defaultExpectedLanguages)
+
+  const filterLanguagesPerString = useCallback(() => {
     return Object.entries(strings).reduce((result, [string, languages]) => {
         return {
             ...result,
             [string]: languages.filter(l => expectedLanguages.includes(l))
         }
       }, {})
-  }
-
-  const [searchTerm, setSearchTerm] = useState("")
-  const [expectedLanguages, setExpectedLanguages] = useState(defaultExpectedLanguages)
+  }, [strings, expectedLanguages])
   const [parsedStrings, setParsedStrings] = useState(filterLanguagesPerString())
 
-  const calculateCompleteness = () => {
+  const calculateCompleteness = useCallback(() => {
     const [percentagesSum, stringsSum] = Object.entries(parsedStrings).reduce(([p, s], [_, languages]) => {
         // How much is this specific string translated?
         const localCompleteness = expectedLanguages.filter(l => languages.includes(l)).length / expectedLanguages.length
@@ -26,8 +27,7 @@ function StringsList({ target, strings }) {
       }, [0, 0])
 
     return (percentagesSum / stringsSum) * 100;
-  }
-
+  }, [parsedStrings, expectedLanguages])
   const [completeness, setCompleteness] = useState(calculateCompleteness())
 
   const onSearch = event => {
@@ -37,11 +37,11 @@ function StringsList({ target, strings }) {
 
   useEffect(() => {
     setParsedStrings(filterLanguagesPerString())
-  }, [strings, expectedLanguages])
+  }, [strings, expectedLanguages, filterLanguagesPerString])
 
   useEffect(() => {
     setCompleteness(calculateCompleteness())
-  }, [parsedStrings])
+  }, [parsedStrings, calculateCompleteness])
 
   return (
     <>
@@ -62,7 +62,7 @@ function StringsList({ target, strings }) {
         />
         <p style={{ fontSize: "10px", color: "#999" }}>Completeness score for {expectedLanguages.sort().join(", ").trim()}</p>
 
-        {Object.keys(parsedStrings).length == 0 ? (
+        {Object.keys(parsedStrings).length === 0 ? (
             <p style={{ marginTop: "30px" }}>No translations found.</p>
         ) : (
             <Table striped>
@@ -76,7 +76,7 @@ function StringsList({ target, strings }) {
             <Table.Body>
                 {Object.entries(parsedStrings).map(([string, languages]) => {
                 if (searchTerm && !string.toLowerCase().includes(searchTerm.toLowerCase())) {
-                    return;
+                    return null;
                 }
 
                 return (
