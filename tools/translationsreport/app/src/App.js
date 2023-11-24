@@ -13,9 +13,6 @@ function App() {
   const [error, setError] = useState("")
   const [data, setData] = useState({})
 
-  const branch = process.env.REACT_APP_BRANCH
-  const commit = process.env.REACT_APP_COMMIT
-
   useEffect(() => {
     fetch((new URL(document.location)).searchParams.get("data") || DEFAULT_DATA_URL)
       .then(response => {
@@ -43,7 +40,9 @@ function App() {
   return (
     <Container style={{ margin: "50px 0" }}>
       <Header as='h1'>Mozilla VPN Translations Report</Header>
-      <p>This report was generated from branch {branch}, commit: {commit}.</p>
+      {!isLoading && !error && (
+        <p>This report was generated from branch {data.metadata.branch}, commit: {data.metadata.commit}.</p>
+      )}
       <Divider style={{ margin: "30px 0" }}></Divider>
       {isLoading ? (
         <p>Loading</p>

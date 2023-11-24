@@ -2,6 +2,23 @@ import os
 import xml.etree.ElementTree as ET
 import argparse
 from jinja2 import Environment, FileSystemLoader
+import subprocess
+
+
+def get_current_branch():
+    try:
+        result = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], universal_newlines=True)
+        return result.strip()
+    except subprocess.CalledProcessError:
+        return "Unknown"
+
+
+def get_current_commit():
+    try:
+        result = subprocess.check_output(['git', 'rev-parse', 'HEAD'], universal_newlines=True)
+        return result.strip()
+    except subprocess.CalledProcessError:
+        return "Unknown"
 
 
 def extract_translated_strings(xliff_path):
@@ -104,6 +121,8 @@ def generate_html(result):
 
     (main_app_translations, addon_translations) = result
     output = template.render(
+        branch=get_current_branch(),
+        commit=get_current_commit(),
         main_app_translations=main_app_translations,
         addon_translations=addon_translations
     )

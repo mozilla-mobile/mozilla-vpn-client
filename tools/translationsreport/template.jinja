@@ -1,4 +1,8 @@
 {
+    "metadata": {
+        "branch": "{{ branch }}",
+        "commit": "{{ commit }}"
+    },
     "main_app_translations": {
         {%+ for string in main_app_translations %}
                 "{{ string }}" : [{%+ for language in main_app_translations[string] %}

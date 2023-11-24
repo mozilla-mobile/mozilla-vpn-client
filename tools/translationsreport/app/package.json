@@ -14,8 +14,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "REACT_APP_BRANCH=$(git rev-parse --abbrev-ref HEAD) REACT_APP_COMMIT=$(git rev-parse HEAD) react-scripts start",
-    "build": "REACT_APP_BRANCH=$(git rev-parse --abbrev-ref HEAD) REACT_APP_COMMIT=$(git rev-parse HEAD) react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
