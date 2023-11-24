@@ -1,72 +1,94 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-import { Table, Icon, Input } from 'semantic-ui-react'
+import { Table, Icon, Input, Progress } from 'semantic-ui-react'
+import LanguageDropdown, { LANGUAGES } from './LanguageDropdown.js'
 
 function StringsList({ target, strings }) {
-  const [searchTerm, setSearchTerm] = useState("")
+  const defaultExpectedLanguages = LANGUAGES.map(l => l.value)
+  const filterLanguagesPerString = () => {
+    return Object.entries(strings).reduce((result, [string, languages]) => {
+        return {
+            ...result,
+            [string]: languages.filter(l => expectedLanguages.includes(l))
+        }
+      }, {})
+  }
 
-  const expectedLanguages = [
-    "bg", "co", "cs", "cy", "da", "de", "dsb", "el", "en", "en_CA", "en_GB", "es_AR", "es_CL",
-    "es_ES", "es_MX", "fa", "fi", "fr", "fy_NL", "hsb", "hu", "ia", "id", "is", "it", "ja", "lo",
-    "nl", "oc", "pa_IN", "pl", "pt_BR", "pt_PT", "ru", "sk", "sl", "sq", "sv_SE", "tr", "uk",
-    "zh_CN", "zh_TW"
-  ]
+  const [searchTerm, setSearchTerm] = useState("")
+  const [expectedLanguages, setExpectedLanguages] = useState(defaultExpectedLanguages)
+  const [parsedStrings, setParsedStrings] = useState(filterLanguagesPerString())
+
+  const calculateCompleteness = () => {
+    const [percentagesSum, stringsSum] = Object.entries(parsedStrings).reduce(([p, s], [_, languages]) => {
+        // How much is this specific string translated?
+        const localCompleteness = expectedLanguages.filter(l => languages.includes(l)).length / expectedLanguages.length
+        return [ p + localCompleteness, s + 1 ]
+      }, [0, 0])
+
+    return (percentagesSum / stringsSum) * 100;
+  }
+
+  const [completeness, setCompleteness] = useState(calculateCompleteness())
 
   const onSearch = event => {
     event.preventDefault();
     setSearchTerm(event.target.value)
   }
 
-  console.log(strings)
+  useEffect(() => {
+    setParsedStrings(filterLanguagesPerString())
+  }, [strings, expectedLanguages])
+
+  useEffect(() => {
+    setCompleteness(calculateCompleteness())
+  }, [parsedStrings])
 
   return (
     <>
         <h1>{target}</h1>
-        <Input icon placeholder='Search...' value={searchTerm} onChange={onSearch}>
-        <input />
-        <Icon name='search' />
-        </Input>
-        {Object.keys(strings).length == 0 ? (
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <Input icon placeholder='Search...' value={searchTerm} onChange={onSearch}>
+                <input />
+                <Icon name='search' />
+            </Input>
+            <LanguageDropdown onChange={l => setExpectedLanguages(l ? [l] : defaultExpectedLanguages)} />
+        </div>
+
+        <Progress
+            style={{ marginBottom: "7px" }}
+            percent={completeness.toFixed(2)}
+            progress
+            color={completeness >= 70 ? 'green' : 'orange'}
+        />
+        <p style={{ fontSize: "10px", color: "#999" }}>Completeness score for {expectedLanguages.sort().join(", ").trim()}</p>
+
+        {Object.keys(parsedStrings).length == 0 ? (
             <p style={{ marginTop: "30px" }}>No translations found.</p>
         ) : (
             <Table striped>
             <Table.Header>
                 <Table.Row>
-                <Table.HeaderCell rowSpan='2'>String</Table.HeaderCell>
-                <Table.HeaderCell colSpan='2'>Stats</Table.HeaderCell>
-                </Table.Row>
-                <Table.Row>
-                <Table.HeaderCell>Translation Percentage</Table.HeaderCell>
-                <Table.HeaderCell>Translated Languages</Table.HeaderCell>
+                    <Table.HeaderCell>String</Table.HeaderCell>
+                    <Table.HeaderCell>Translation Ratio</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 
             <Table.Body>
-                {Object.entries(strings).map(([string, languages]) => {
-                if (searchTerm && !searchTerm.startsWith("language:") && !string.toLowerCase().includes(searchTerm.toLowerCase())) {
+                {Object.entries(parsedStrings).map(([string, languages]) => {
+                if (searchTerm && !string.toLowerCase().includes(searchTerm.toLowerCase())) {
                     return;
-                }
-
-                if (searchTerm.startsWith("language:")) {
-                    const [ _, languageList ] = searchTerm.split("language:")
-                    const searchedLanguages = languageList.split(",");
-
-                    if(!searchedLanguages.find(searchedLanguage => languages.map(l => l.toLocaleLowerCase()).toLowerCase().includes(searchedLanguage.toLowerCase()))) {
-                    return;
-                    }
                 }
 
                 return (
                     <Table.Row>
                     <Table.Cell>
-                        {string}
+                        {string}&nbsp;
                         {languages.length === expectedLanguages.length
-                        ? <Icon color='green' name='checkmark' title="All translations present"/>
-                        : <Icon color='red' name='x'  title={`Missing translations for ${expectedLanguages.filter(l => !languages.includes(l)).sort().join(", ").trim()}`} />
+                            ? <Icon color='green' name='checkmark' title="All translations present"/>
+                            : <Icon color='red' name='question circle outline'  title={`Missing translations for ${expectedLanguages.filter(l => !languages.includes(l)).sort().join(", ").trim()}`} />
                         }
                     </Table.Cell>
-                    <Table.Cell>{Math.floor((languages.length / expectedLanguages.length) * 100)}%</Table.Cell>
-                    <Table.Cell>{languages.sort().join(", ").trim()}</Table.Cell>
+                    <Table.Cell>{languages.length} of {expectedLanguages.length} translations</Table.Cell>
                     <Table.Cell></Table.Cell>
                     </Table.Row>
                 )
