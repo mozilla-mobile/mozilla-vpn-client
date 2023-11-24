@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wasm_chrome: 
+  wasm_chrome:
     name: Add Wasm_Chrome
     runs-on: ubuntu-20.04
     steps:
@@ -41,7 +41,7 @@ jobs:
             name: Wasm-Chrome
             path: tools/wasm_chrome
 
-  logviewer: 
+  logviewer:
       name: Add Logviewer
       runs-on: ubuntu-20.04
       steps:
@@ -53,7 +53,7 @@ jobs:
               name: Logviewer
               path: tools/logviewer
 
-  addonStats: 
+  addonStats:
       name: Add Addon-Stats
       runs-on: ubuntu-20.04
       steps:
@@ -74,8 +74,8 @@ jobs:
       - name: Building
         shell: bash
         run: |
-            sudo apt-get update 
-            sudo apt-get install doxygen -y 
+            sudo apt-get update
+            sudo apt-get install doxygen -y
             doxygen
       - name: Uploading
         uses: actions/upload-artifact@v3
@@ -107,12 +107,36 @@ jobs:
             name: Inspector Build
             path: tools/inspector/dist
 
+  translationsreport:
+    name: Add Translations Report
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Building
+        shell: bash
+        run: |
+          cd tools/translationsreport/app
+          npm install
+          npm run build
+
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+            name: Translations Report
+            path: tools/translationsreport/app/build
+
   addons:
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with: 
+        with:
           submodules: 'true'
       - name: Install Linux packages
         run: |
@@ -155,7 +179,7 @@ jobs:
 
   ghPages:
     runs-on: ubuntu-20.04
-    needs: [wasm_chrome, inspector,addons,logviewer,addonstats,docs]
+    needs: [wasm_chrome, inspector, translationsreport, addons, logviewer, addonstats, docs]
     name: Compile Github Page from Components
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -198,6 +222,12 @@ jobs:
           name: Inspector Build
           path: _site/inspector
 
+      - name: Download the Translations Report artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Inspector Build
+          path: _site/translationsreport
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
 
@@ -210,6 +240,6 @@ jobs:
       needs: ghPages
       if: github.ref == 'refs/heads/main'
       steps:
-        - name: Deploy to GitHub Pages  
+        - name: Deploy to GitHub Pages
           id: deployment
           uses: actions/deploy-pages@v1
