@@ -1,0 +1,7 @@
+.clickable-segment {
+  cursor: pointer;
+}
+
+.clickable-segment:hover {
+  background-color: #f0f0f09f;
+}
