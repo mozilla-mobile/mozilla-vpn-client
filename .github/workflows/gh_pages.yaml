@@ -225,7 +225,7 @@ jobs:
       - name: Download the Translations Report artifact
         uses: actions/download-artifact@v3
         with:
-          name: Inspector Build
+          name: Translations Report
           path: _site/translationsreport
 
       - name: Upload artifact
