@@ -13,6 +13,9 @@ class MacOSDaemonServer final : public Command {
   ~MacOSDaemonServer();
 
   int run(QStringList& tokens) override;
+
+ private:
+  QString daemonPath() const;
 };
 
 #endif  // MACOSDAEMONSERVER_H

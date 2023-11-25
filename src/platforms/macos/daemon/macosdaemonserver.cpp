@@ -4,7 +4,12 @@
 
 #include "macosdaemonserver.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <QCoreApplication>
+#include <QDir>
 
 #include "commandlineparser.h"
 #include "constants.h"
@@ -14,6 +19,9 @@
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
+
+constexpr const char* TMP_PATH = "/tmp/mozillavpn.socket";
+constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
 
 namespace {
 Logger logger("MacOSDaemonServer");
@@ -43,7 +51,7 @@ int MacOSDaemonServer::run(QStringList& tokens) {
 
   MacOSDaemon daemon;
 
-  DaemonLocalServer server(qApp);
+  DaemonLocalServer server(daemonPath(), qApp);
   if (!server.initialize()) {
     logger.error() << "Failed to initialize the server";
     return 1;
@@ -57,6 +65,32 @@ int MacOSDaemonServer::run(QStringList& tokens) {
                    &QCoreApplication::quit, Qt::QueuedConnection);
 
   return app.exec();
+}
+
+QString MacOSDaemonServer::daemonPath() const {
+  QDir dir("/var/run");
+  if (!dir.exists()) {
+    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
+    return TMP_PATH;
+  }
+
+  if (dir.exists("mozillavpn")) {
+    logger.debug() << "/var/run/mozillavpn seems to be usable";
+    return VAR_PATH;
+  }
+
+  if (!dir.mkdir("mozillavpn")) {
+    logger.warning() << "Failed to create /var/run/mozillavpn";
+    return TMP_PATH;
+  }
+
+  if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
+    logger.warning()
+        << "Failed to set the right permissions to /var/run/mozillavpn";
+    return TMP_PATH;
+  }
+
+  return VAR_PATH;
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

@@ -13,6 +13,9 @@ class MockDaemonServer final : public Command {
   ~MockDaemonServer();
 
   int run(QStringList& tokens) override;
+
+ private:
+  QString daemonPath() const;
 };
 
 #endif  // MOCKDAEMONSERVER_H

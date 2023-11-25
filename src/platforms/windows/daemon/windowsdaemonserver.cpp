@@ -77,7 +77,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
 
   WindowsDaemon daemon;
 
-  DaemonLocalServer server(qApp);
+  DaemonLocalServer server("\\\\.\\pipe\\mozillavpn", qApp);
   if (!server.initialize()) {
     logger.error() << "Failed to initialize the server";
     return 1;

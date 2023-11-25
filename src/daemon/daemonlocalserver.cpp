@@ -4,7 +4,6 @@
 
 #include "daemonlocalserver.h"
 
-#include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
 
@@ -12,20 +11,12 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef MZ_MACOS
-#  include <sys/stat.h>
-#  include <sys/types.h>
-#  include <unistd.h>
-
-constexpr const char* TMP_PATH = "/tmp/mozillavpn.socket";
-constexpr const char* VAR_PATH = "/var/run/mozillavpn/daemon.socket";
-#endif
-
 namespace {
 Logger logger("DaemonLocalServer");
 }  // namespace
 
-DaemonLocalServer::DaemonLocalServer(QObject* parent) : QObject(parent) {
+DaemonLocalServer::DaemonLocalServer(QString path, QObject* parent)
+    : QObject(parent), m_path(path) {
   MZ_COUNT_CTOR(DaemonLocalServer);
 }
 
@@ -34,14 +25,13 @@ DaemonLocalServer::~DaemonLocalServer() { MZ_COUNT_DTOR(DaemonLocalServer); }
 bool DaemonLocalServer::initialize() {
   m_server.setSocketOptions(QLocalServer::WorldAccessOption);
 
-  QString path = daemonPath();
-  logger.debug() << "Server path:" << path;
+  logger.debug() << "Server path:" << m_path;
 
-  if (QFileInfo::exists(path)) {
-    QFile::remove(path);
+  if (QFileInfo::exists(m_path)) {
+    QFile::remove(m_path);
   }
 
-  if (!m_server.listen(path)) {
+  if (!m_server.listen(m_path)) {
     logger.error() << "Failed to listen the daemon path";
     return false;
   }
@@ -63,36 +53,4 @@ bool DaemonLocalServer::initialize() {
   });
 
   return true;
-}
-
-QString DaemonLocalServer::daemonPath() const {
-#if defined(MZ_WINDOWS)
-  return "\\\\.\\pipe\\mozillavpn";
-#elif defined(MZ_MACOS)
-  QDir dir("/var/run");
-  if (!dir.exists()) {
-    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
-    return TMP_PATH;
-  }
-
-  if (dir.exists("mozillavpn")) {
-    logger.debug() << "/var/run/mozillavpn seems to be usable";
-    return VAR_PATH;
-  }
-
-  if (!dir.mkdir("mozillavpn")) {
-    logger.warning() << "Failed to create /var/run/mozillavpn";
-    return TMP_PATH;
-  }
-
-  if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
-    logger.warning()
-        << "Failed to set the right permissions to /var/run/mozillavpn";
-    return TMP_PATH;
-  }
-
-  return VAR_PATH;
-#else
-#  error Unsupported platform
-#endif
 }

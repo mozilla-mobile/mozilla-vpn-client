@@ -11,15 +11,13 @@ class DaemonLocalServer final : public QObject {
   Q_DISABLE_COPY_MOVE(DaemonLocalServer)
 
  public:
-  explicit DaemonLocalServer(QObject* parent);
+  explicit DaemonLocalServer(QString path, QObject* parent = nullptr);
   ~DaemonLocalServer();
 
   bool initialize();
 
  private:
-  QString daemonPath() const;
-
- private:
+  QString m_path;
   QLocalServer m_server;
 };
 

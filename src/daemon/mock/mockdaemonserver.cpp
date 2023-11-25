@@ -5,6 +5,9 @@
 #include "mockdaemonserver.h"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QProcessEnvironment>
+#include <QStandardPaths>
 
 #include "commandlineparser.h"
 #include "constants.h"
@@ -12,7 +15,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mockdaemon.h"
-#include "mozillavpn.h"
 #include "signalhandler.h"
 
 namespace {
@@ -43,7 +45,7 @@ int MockDaemonServer::run(QStringList& tokens) {
 
   MockDaemon daemon;
 
-  DaemonLocalServer server(qApp);
+  DaemonLocalServer server(daemonPath(), qApp);
   if (!server.initialize()) {
     logger.error() << "Failed to initialize the server";
     return 1;
@@ -57,6 +59,16 @@ int MockDaemonServer::run(QStringList& tokens) {
                    &QCoreApplication::quit, Qt::QueuedConnection);
 
   return app.exec();
+}
+
+QString MockDaemonServer::daemonPath() const {
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("MVPN_CONTROL_SOCKET")) {
+    return pe.value("MVPN_CONTROL_SOCKET");
+  }
+
+  QDir d(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
+  return d.filePath("mozillavpn-mock.sock");
 }
 
 static Command::RegistrationProxy<MockDaemonServer> s_commandMockDaemon;
