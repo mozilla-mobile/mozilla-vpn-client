@@ -63,7 +63,6 @@ int MacOSDnsManager::run(QStringList& tokens) {
              << Qt::endl;
       return 1;
     }
-    // TODO: Should we prohibit the loopback address?
   }
 
   // Prepare the updated DNS configuration.
