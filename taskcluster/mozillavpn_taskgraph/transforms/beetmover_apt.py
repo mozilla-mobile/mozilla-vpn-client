@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 from itertools import islice
 
-from taskgraph import MAX_DEPENDENCIES
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.util.dependencies import get_primary_dependency
 
@@ -69,7 +68,7 @@ def beetmover_apt(config, tasks):
         if len(gcs_sources) == 0:
             # We do have nothing to ship, skip this task
             continue
-        task["worker"]["gcs-sources"]=gcs_sources
+        task["worker"]["gcs-sources"] = gcs_sources
         is_relpro = (
             config.params["level"] == "3"
             and config.params["tasks_for"] in task["run-on-tasks-for"]

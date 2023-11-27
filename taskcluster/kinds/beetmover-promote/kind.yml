@@ -60,12 +60,16 @@ tasks:
         attributes:
             build-type: macos/opt
     windows:
+        worker-type: beetmover
+        run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.msi]
         dependencies:
             repackage-signing: repackage-signing-msi
         attributes:
             build-type: windows/opt
     addons-bundle:
+        worker-type: beetmover
+        run-on-tasks-for: [action]
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
         release-artifacts: []
         dependencies:
@@ -73,6 +77,8 @@ tasks:
         attributes:
             build-type: addons/opt
     addons-manifest:
+        worker-type: beetmover
+        run-on-tasks-for: [action]
         release-artifacts:
             - manifest.json
             - manifest.json.sig
@@ -84,6 +90,5 @@ tasks:
         release-artifacts: [mozillavpn.deb]
         dependencies:
             build: build-linux64/release-deb
-        if-dependencies: [build]
         attributes:
             build-type: linux64/release-deb
