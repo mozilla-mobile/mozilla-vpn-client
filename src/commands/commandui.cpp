@@ -17,7 +17,6 @@
 #include "commandlineparser.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
-#include "connectionmanager.h"
 #include "constants.h"
 #include "controller.h"
 #include "feature.h"
@@ -272,9 +271,8 @@ int CommandUI::run(QStringList& tokens) {
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
     SignalHandler sh;
-    QObject::connect(&sh, &SignalHandler::quitRequested, []() {
-      MozillaVPN::instance()->connectionManager()->quit();
-    });
+    QObject::connect(&sh, &SignalHandler::quitRequested,
+                     []() { MozillaVPN::instance()->controller()->quit(); });
 #endif
 
     // Font loader
@@ -309,7 +307,7 @@ int CommandUI::run(QStringList& tokens) {
         "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
         MozillaVPN::instance()->captivePortalDetection());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
-                                 MozillaVPN::instance()->connectionManager());
+                                 MozillaVPN::instance()->controller());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
                                  MozillaVPN::instance()->user());
     qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
@@ -387,8 +385,8 @@ int CommandUI::run(QStringList& tokens) {
         []() { MozillaVPN::instance()->deactivate(true); },
         Qt::DirectConnection);
 
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::readyToQuit,
-                     &vpn, &App::quit, Qt::QueuedConnection);
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
+                     &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
@@ -401,7 +399,7 @@ int CommandUI::run(QStringList& tokens) {
     NotificationHandler* notificationHandler =
         NotificationHandler::create(&engineHolder);
 
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged,
+    QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
                      &NotificationHandler::showNotification);
 
@@ -412,8 +410,8 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::stateChanged,
-                     &menuBar, &MacOSMenuBar::controllerStateChanged);
+    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
+                     &MacOSMenuBar::controllerStateChanged);
 
 #endif
 
@@ -445,8 +443,8 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     ServerHandler serverHandler;
-    QObject::connect(vpn.connectionManager(), &ConnectionManager::readyToQuit,
-                     &serverHandler, &ServerHandler::close);
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
+                     &ServerHandler::close);
 #endif
 
     KeyRegenerator keyRegenerator;

@@ -7,6 +7,7 @@
 
 #include <QJSValue>
 #include <QQmlPropertyMap>
+#include <QTimer>
 
 class Addon;
 
@@ -27,6 +28,8 @@ class AddonApi final : public QQmlPropertyMap {
                                  const QJSValue& callback);
   Q_INVOKABLE void log(const QString& message);
 
+  Q_INVOKABLE void setTimedCallback(int interval, const QJSValue& callback);
+
   /**
    * @brief callback executed when a new AddonApi is created. Use it to add
    * your custom APIs.
@@ -39,6 +42,7 @@ class AddonApi final : public QQmlPropertyMap {
 
  private:
   Addon* m_addon = nullptr;
+  QTimer m_timer;
 };
 
 class AddonApiCallbackWrapper final : public QObject {

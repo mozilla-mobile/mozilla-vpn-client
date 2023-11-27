@@ -175,7 +175,10 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
 
   NetworkRequest* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/status").arg(Constants::fxaApiBaseUrl()),
-                QJsonObject{{"email", m_emailAddress}});
+                QJsonObject{
+                    {"email", m_emailAddress},
+                    {"thirdPartyAuthStatus", true},
+                });
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
@@ -191,12 +194,20 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
 
-            accountChecked(obj["exists"].toBool());
+            bool accountExists = obj["exists"].toBool();
+            bool hasPassword = obj["hasPassword"].toBool();
+            accountChecked(accountExists, hasPassword);
           });
 }
 
-void AuthenticationInAppSession::accountChecked(bool exists) {
+void AuthenticationInAppSession::accountChecked(bool exists, bool hasPassword) {
   logger.debug() << "Account checked:" << exists;
+
+  if (exists && !hasPassword) {
+    AuthenticationInApp::instance()->requestErrorPropagation(
+        this, AuthenticationInApp::ErrorAccountHasNoPassword);
+    return;
+  }
 
   if (exists) {
     AuthenticationInApp::instance()->requestState(

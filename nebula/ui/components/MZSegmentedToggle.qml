@@ -110,15 +110,6 @@ Rectangle {
 
                 Accessible.name: (root.selectedIndex === index ? MZI18n.AccessibilitySelectedAndItemName.arg(MZI18n[segmentLabelStringId]) : MZI18n[segmentLabelStringId]) + MZI18n.AccessibilityCurrentIndexFocusedOfTotalItemsInGroup.arg(index + 1).arg(options.count)
 
-                Rectangle {
-                    anchors.fill: parent
-                    border.width: MZTheme.theme.focusBorderWidth
-                    border.color: MZTheme.theme.fontColor
-                    color: MZTheme.theme.transparent
-                    visible: parent.focus
-                    radius: root.radius
-                }
-
                 onFocusChanged: {
                     if(!root.anySegmentFocused()) root.focusedViaClick = false
                 }

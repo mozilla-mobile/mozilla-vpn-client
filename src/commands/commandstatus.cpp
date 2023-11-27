@@ -114,53 +114,51 @@ int CommandStatus::run(QStringList& tokens) {
            << Qt::endl;
     stream << "Server city: " << sd->exitCityName() << Qt::endl;
 
-    ConnectionManager connectionManager;
+    Controller controller;
 
     QEventLoop loop;
-    QObject::connect(
-        &connectionManager, &ConnectionManager::stateChanged,
-        &connectionManager, [&] {
-          if (connectionManager.state() == ConnectionManager::StateOff ||
-              connectionManager.state() == ConnectionManager::StateOn) {
-            loop.exit();
-          }
-        });
-    connectionManager.initialize();
+    QObject::connect(&controller, &Controller::stateChanged, &controller, [&] {
+      if (controller.state() == Controller::StateOff ||
+          controller.state() == Controller::StateOn) {
+        loop.exit();
+      }
+    });
+    controller.initialize();
     loop.exec();
 
     stream << "VPN state: ";
-    switch (connectionManager.state()) {
-      case ConnectionManager::StateInitializing:
+    switch (controller.state()) {
+      case Controller::StateInitializing:
         stream << "initializing";
         break;
 
-      case ConnectionManager::StateOff:
+      case Controller::StateOff:
         stream << "off";
         break;
 
-      case ConnectionManager::StateCheckSubscription:
+      case Controller::StateCheckSubscription:
         stream << "check subscription";
         break;
 
-      case ConnectionManager::StateConnecting:
+      case Controller::StateConnecting:
         stream << "connecting";
         break;
 
-      case ConnectionManager::StateConfirming:
+      case Controller::StateConfirming:
         stream << "confirming";
         break;
 
-      case ConnectionManager::StateOn:
+      case Controller::StateOn:
         [[fallthrough]];
-      case ConnectionManager::StateSilentSwitching:
+      case Controller::StateSilentSwitching:
         stream << "on";
         break;
 
-      case ConnectionManager::StateDisconnecting:
+      case Controller::StateDisconnecting:
         stream << "disconnecting";
         break;
 
-      case ConnectionManager::StateSwitching:
+      case Controller::StateSwitching:
         stream << "switching";
         break;
     }

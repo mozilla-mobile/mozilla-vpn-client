@@ -68,6 +68,7 @@ class SubscriptionData final : public QObject {
 
  signals:
   void changed();
+  void initialized();
 
  private:
   bool fromJsonInternal(const QByteArray& json);

@@ -4,6 +4,12 @@
 
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 
+# There is a macro for "min" and "max"
+# https:#learn.microsoft.com/de-de/windows/win32/multimedia/min
+# However QApplication has constexpr calling std::numericlimit<T>::min()
+# So let's ask the Windows SDK to not define them for us. 
+add_definitions(-DNOMINMAX)
+
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
     VERSION ${CMAKE_PROJECT_VERSION}

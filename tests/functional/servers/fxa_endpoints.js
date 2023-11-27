@@ -7,7 +7,10 @@
 const VALIDATORS = {
   fxaStatus: {
     type: 'object',
-    properties: {email: {type: 'string'}},
+    properties: {
+      email: {type: 'string'},
+      thirdPartyAuthStatus: {type: 'boolean'}
+    },
     required: ['email']
   },
 
@@ -138,7 +141,7 @@ exports.generateEndpoints = function(guardianUrl) {
       '/v1/account/status': {
         status: 200,
         bodyValidator: VALIDATORS.fxaStatus,
-        body: {exists: true}
+        body: {exists: true, hasLinkedAccount: false, hasPassword: true}
       },
 
       '/v1/account/login': {

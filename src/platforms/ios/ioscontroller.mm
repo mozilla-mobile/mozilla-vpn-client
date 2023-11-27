@@ -4,7 +4,7 @@
 
 #include "ioscontroller.h"
 #include "Mozilla-Swift.h"
-#include "connectionmanager.h"
+#include "controller.h"
 #include "feature.h"
 #include "glean/generated/metrics.h"
 #include "ipaddress.h"
@@ -83,9 +83,9 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
           }
           case ConnectionStateDisconnected:
-            ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
-            Q_ASSERT(connectionManager);
-            if (connectionManager->state() != ConnectionManager::StateInitializing) {
+            Controller* controller = MozillaVPN::instance()->controller();
+            Q_ASSERT(controller);
+            if (controller->state() != Controller::StateInitializing) {
               // Just in case we are connecting, let's call disconnect.
               [impl disconnect];
             }
@@ -106,7 +106,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
       }];
 }
 
-void IOSController::activate(const InterfaceConfig& config, ConnectionManager::Reason reason) {
+void IOSController::activate(const InterfaceConfig& config, Controller::Reason reason) {
   // These features are not supported on ios yet.
   Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
   Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
@@ -163,18 +163,18 @@ void IOSController::activate(const InterfaceConfig& config, ConnectionManager::R
         MozillaVPN::instance()->onboardingCompleted();
       }
       vpnConfigPermissionResponseCallback:^(BOOL granted) {
-        ConnectionManager* connectionManager = MozillaVPN::instance()->connectionManager();
-        connectionManager->startHandshakeTimer();
+        Controller* controller = MozillaVPN::instance()->controller();
+        controller->startHandshakeTimer();
 
         granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
                 : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       }];
 }
 
-void IOSController::deactivate(ConnectionManager::Reason reason) {
+void IOSController::deactivate(Controller::Reason reason) {
   logger.debug() << "IOSController deactivated";
 
-  if (reason != ConnectionManager::ReasonNone) {
+  if (reason != Controller::ReasonNone) {
     logger.debug() << "We do not need to disable the VPN for switching or connection check.";
     emit disconnected();
     return;

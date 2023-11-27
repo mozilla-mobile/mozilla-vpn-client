@@ -120,7 +120,7 @@ QJsonObject serializeStatus() {
   }
 
   {
-    ConnectionManager::State state = vpn->connectionManager()->state();
+    Controller::State state = vpn->controller()->state();
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
@@ -191,7 +191,7 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   MozillaVPN* vpn = MozillaVPN::instance();
 
   connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
-  connect(vpn->connectionManager(), &ConnectionManager::stateChanged, this,
+  connect(vpn->controller(), &Controller::stateChanged, this,
           &ServerConnection::writeState);
 }
 

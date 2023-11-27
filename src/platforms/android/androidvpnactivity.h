@@ -74,7 +74,7 @@ enum ServiceEvents {
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
   // Signals MozillaVPN that we have completed onboarding
   EVENT_ONBOARDING_COMPLETED = 9,
-  // Signals the ConnectionManager that it may now allow
+  // Signals the Controller that it may now allow
   // activation retries now that the system vpn config modal
   // has been responded to
   EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 10,

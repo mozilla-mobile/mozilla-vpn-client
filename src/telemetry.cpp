@@ -112,15 +112,15 @@ void Telemetry::initialize() {
   connect(vpn, &MozillaVPN::authenticationCompleted, this,
           []() { mozilla::glean::sample::authentication_completed.record(); });
 
-  ConnectionManager* connectionManager = vpn->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
 
 #if defined(MZ_ANDROID)
   connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::eventInitialized,
           this, &Telemetry::onDaemonStatus);
 #endif
 
-  connect(connectionManager, &ConnectionManager::handshakeFailed, this,
+  connect(controller, &Controller::handshakeFailed, this,
           [](const QString& publicKey) {
             logger.info() << "Send a handshake failure event";
 
@@ -132,14 +132,14 @@ void Telemetry::initialize() {
                                       ->getCurrentTransport()});
           });
 
-  connect(connectionManager, &ConnectionManager::stateChanged, this, [this]() {
+  connect(controller, &Controller::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    ConnectionManager* connectionManager = vpn->connectionManager();
-    Q_ASSERT(connectionManager);
-    ConnectionManager::State state = connectionManager->state();
+    Controller* controller = vpn->controller();
+    Q_ASSERT(controller);
+    Controller::State state = controller->state();
 
-    if (state != ConnectionManager::StateOn) {
+    if (state != Controller::StateOn) {
       m_connectionStabilityTimer.stop();
     } else {
       m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
@@ -149,21 +149,20 @@ void Telemetry::initialize() {
         mozilla::glean::sample::ControllerStepExtra{
             ._state = QVariant::fromValue(state).toString()});
     // Specific events for on and off state to aid with analysis
-    if (state == ConnectionManager::StateOn) {
+    if (state == Controller::StateOn) {
       mozilla::glean::sample::controller_state_on.record();
     }
-    if (state == ConnectionManager::StateOff) {
+    if (state == Controller::StateOff) {
       mozilla::glean::sample::controller_state_off.record();
     }
   });
 
-  connect(connectionManager, &ConnectionManager::readyToServerUnavailable, this,
-          []() {
-            MozillaVPN* vpn = MozillaVPN::instance();
-            Q_ASSERT(vpn);
+  connect(controller, &Controller::readyToServerUnavailable, this, []() {
+    MozillaVPN* vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
 
-            mozilla::glean::sample::server_unavailable_error.record();
-          });
+    mozilla::glean::sample::server_unavailable_error.record();
+  });
 
   connect(
       SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
@@ -195,10 +194,10 @@ void Telemetry::initialize() {
   });
 
   connect(
-      connectionManager, &ConnectionManager::newConnectionSucceeded, this,
-      [this, connectionManager]() {
+      controller, &Controller::newConnectionSucceeded, this,
+      [this, controller]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOn) {
+          if (controller->state() == Controller::StateOn) {
             mozilla::glean_pings::Vpnsession.submit("flush");
 
             mozilla::glean::session::session_id.generateAndSet();
@@ -220,10 +219,10 @@ void Telemetry::initialize() {
       });
 
   connect(
-      connectionManager, &ConnectionManager::controllerDisconnected, this,
-      [this, connectionManager]() {
+      controller, &Controller::controllerDisconnected, this,
+      [this, controller]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (connectionManager->state() == ConnectionManager::StateOff &&
+          if (controller->state() == Controller::StateOff &&
               SettingsHolder::instance()->onboardingCompleted()) {
             mozilla::glean::session::session_end.set();
 
@@ -246,9 +245,9 @@ void Telemetry::connectionStabilityEvent() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  ConnectionManager* connectionManager = vpn->connectionManager();
-  Q_ASSERT(connectionManager);
-  Q_ASSERT(connectionManager->state() == ConnectionManager::StateOn);
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
+  Q_ASSERT(controller->state() == Controller::StateOn);
 
   // We use Controller->currentServer because the telemetry event should record
   // the location in use by the Controller and not MozillaVPN::serverData, which
@@ -257,8 +256,7 @@ void Telemetry::connectionStabilityEvent() {
       mozilla::glean::sample::ConnectivityStableExtra{
           ._latency = QString::number(vpn->connectionHealth()->latency()),
           ._loss = QString::number(vpn->connectionHealth()->loss()),
-          ._server =
-              vpn->connectionManager()->currentServer().exitServerPublicKey(),
+          ._server = vpn->controller()->currentServer().exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
           ._transport = vpn->networkWatcher()->getCurrentTransport()});
 }
@@ -287,15 +285,15 @@ void Telemetry::stopTimeToFirstScreenTimer() {
 void Telemetry::periodicStateRecorder() {
   // On mobile this is handled seperately in a background process
   MozillaVPN* vpn = MozillaVPN::instance();
-  ConnectionManager* connectionManager = vpn->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
 
-  ConnectionManager::State connectionManagerState = connectionManager->state();
+  Controller::State controllerState = controller->state();
 
-  if (connectionManagerState == ConnectionManager::StateOn) {
+  if (controllerState == Controller::StateOn) {
     mozilla::glean::sample::controller_state_on.record();
   }
-  if (connectionManagerState == ConnectionManager::StateOff) {
+  if (controllerState == Controller::StateOff) {
     mozilla::glean::sample::controller_state_off.record();
   }
 }

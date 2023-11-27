@@ -32,6 +32,10 @@
       "type": "string",
       "description": "The type of this message"
     },
+    "notify": {
+      "type": "boolean",
+      "description": "Determines whether we trigger a system notification. Default: true"
+    },
     "blocks": {
       "type": "array",
       "description": "The list of text blocks",

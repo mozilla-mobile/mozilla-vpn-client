@@ -31,10 +31,10 @@ ConnectionBenchmark::~ConnectionBenchmark() {
 void ConnectionBenchmark::initialize() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  ConnectionManager* connectionManager = vpn->connectionManager();
-  Q_ASSERT(connectionManager);
+  Controller* controller = vpn->controller();
+  Q_ASSERT(controller);
 
-  connect(connectionManager, &ConnectionManager::stateChanged, this,
+  connect(controller, &Controller::stateChanged, this,
           &ConnectionBenchmark::handleControllerState);
   connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &ConnectionBenchmark::handleStabilityChange);
@@ -81,9 +81,9 @@ void ConnectionBenchmark::start() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  ConnectionManager* connectionManager = vpn->connectionManager();
-  ConnectionManager::State connectionState = connectionManager->state();
-  Q_ASSERT(connectionState == ConnectionManager::StateOn);
+  Controller* controller = vpn->controller();
+  Controller::State connectionState = controller->state();
+  Q_ASSERT(connectionState == Controller::StateOn);
 
   setState(StateRunning);
 
@@ -204,11 +204,11 @@ void ConnectionBenchmark::handleControllerState() {
     return;
   }
 
-  ConnectionManager::State connectionState =
-      MozillaVPN::instance()->connectionManager()->state();
+  Controller::State connectionState =
+      MozillaVPN::instance()->controller()->state();
   logger.debug() << "Handle connection state" << connectionState;
 
-  if (connectionState != ConnectionManager::StateOn) {
+  if (connectionState != Controller::StateOn) {
     setState(StateError);
     stop();
   }

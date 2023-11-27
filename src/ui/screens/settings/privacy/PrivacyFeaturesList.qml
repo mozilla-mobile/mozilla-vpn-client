@@ -36,7 +36,7 @@ ColumnLayout {
                 objectName: "blockMalware",
                 settingValue: MZSettings.BlockMalware,
                 settingTitle: MZI18n.SettingsPrivacyMalwareTitle,
-                settingDescription: MZI18n.SettingsPrivacyMalwareBody,
+                settingDescription: MZI18n.SettingsPrivacyMalwareBody2,
             }
         ];
 

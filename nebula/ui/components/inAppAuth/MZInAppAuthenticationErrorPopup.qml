@@ -52,6 +52,10 @@ MZSimplePopup {
                 showGenericAuthError();
                 break;
 
+            case MZAuthInApp.ErrorAccountHasNoPassword:
+                showGenericAuthError();
+                break;
+
             case MZAuthInApp.ErrorUnknownAccount:
                 showGenericAuthError();
                 break;

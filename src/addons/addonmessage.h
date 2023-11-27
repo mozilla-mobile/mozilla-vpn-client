@@ -38,7 +38,15 @@ class AddonMessage final : public Addon {
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
   Q_PROPERTY(Badge badge MEMBER m_badge WRITE setBadge NOTIFY badgeChanged)
 
-  enum Badge { None, Warning, Critical, NewUpdate, WhatsNew, Survey };
+  enum Badge {
+    None,
+    Warning,
+    Critical,
+    NewUpdate,
+    WhatsNew,
+    Survey,
+    Subscription
+  };
   Q_ENUM(Badge)
 
   static Addon* create(QObject* parent, const QString& manifestFileName,
@@ -61,6 +69,7 @@ class AddonMessage final : public Addon {
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void markAsRead();
+  Q_INVOKABLE void resetMessage();
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
   void setBadge(Badge badge);
@@ -69,6 +78,8 @@ class AddonMessage final : public Addon {
   bool isRead() const { return m_status == MessageStatus::Read; }
 
   bool isReceived() const { return m_status == MessageStatus::Received; }
+
+  bool shouldNotify() const { return m_shouldNotify; }
 
   QString formattedDate() const;
 
@@ -109,6 +120,7 @@ class AddonMessage final : public Addon {
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;
+  bool m_shouldNotify = true;
 
   MessageStatus m_status = MessageStatus::Received;
 

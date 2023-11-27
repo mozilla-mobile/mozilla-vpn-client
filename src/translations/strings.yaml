@@ -347,7 +347,7 @@ settings:
   privacyTrackerTitle: Block trackers
   privacyTrackerBody: Fewer harmful domains will be able to track you
   privacyMalwareTitle: Block malware
-  privacyMalwareBody: Helps protect you from ransomware, phishing, spyware, viruses, and malware
+  privacyMalwareBody2: Helps protect you from ransomware, phishing, spyware, and viruses
   dnsSettingsStandardDNSTitle: Use standard DNS
   dnsSettingsStandardDNSBody: Resolve websites using Mozilla VPN’s standard DNS
   dnsSettingsCustomDNSTitle: Use custom DNS
@@ -883,6 +883,9 @@ inAppMessaging:
   surveyBadge:
     value: Survey
     comment: A badge shown in a message signifying that this message contains a survey
+  subscriptionBadge:
+    value: Subscription
+    comment: A badge shown in a message signifying that this message contains information about the user's subscription
 
 devices:
   countLabel:

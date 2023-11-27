@@ -186,4 +186,44 @@ void TestAddonApi::foobar() {
   AddonApi::setConstructorCallback(nullptr);
 }
 
+void TestAddonApi::settimedcallback() {
+  SettingsHolder settingsHolder;
+  Localizer l;
+
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  QJsonObject content;
+  content["id"] = "foo";
+  content["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = content;
+
+  QObject parent;
+  Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
+  QVERIFY(!!message);
+
+  AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
+      message, ":/addons_test/api_settimedcallback.js");
+  QVERIFY(!!a);
+
+  QTimer timer;
+
+  int timeoutPeriodMsec = 1000;
+
+  timer.setSingleShot(true);
+  timer.start(timeoutPeriodMsec);
+
+  QSignalSpy spy(&timer, &QTimer::timeout);
+
+  // Give the slot time to execute
+  QTest::qWait(timeoutPeriodMsec + 1000);
+
+  QObject::connect(&timer, &QTimer::timeout,
+                   [&]() { QVERIFY(a->conditionApplied()); });
+
+  QCOMPARE(spy.count(), 1);
+}
+
 static TestAddonApi s_testAddonApi;

@@ -81,7 +81,7 @@ class AuthenticationInAppSession final : public QObject {
 
   QByteArray generateAuthPw() const;
 
-  void accountChecked(bool exists);
+  void accountChecked(bool exists, bool hasPassword);
   void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
                            const QString& verificationMethod);
   void unblockCodeNeeded();
