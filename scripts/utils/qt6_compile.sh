@@ -178,7 +178,6 @@ bash ./configure \
   -no-feature-menubar \
   -no-feature-contextmenu \
   -no-feature-progressbar \
-  -no-feature-abstractslider \
   -no-feature-slider \
   -no-feature-scrollbar \
   -no-feature-dial \
