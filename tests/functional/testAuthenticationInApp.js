@@ -488,7 +488,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_STUB_SET_PASSWORD_HEADLINE.visible());
     });
   });
 
@@ -505,7 +505,7 @@ describe('User authentication', function() {
       DELETEs: {},
     };
 
-    it('Account creation with stub account', async () => {
+    it('Account creation with SSO account', async () => {
       if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
         await vpn.flipFeatureOn('inAppAuthentication');
         await vpn.flipFeatureOn('inAppAccountCreate');
@@ -526,7 +526,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_SSO_SET_PASSWORD_HEADLINE.visible());
     });
   });
 

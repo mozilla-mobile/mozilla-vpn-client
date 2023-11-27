@@ -90,6 +90,24 @@ Item {
         },
 
         State {
+            name: "StateIsStubAccount"
+            when: MZAuthInApp.state === MZAuthInApp.StateIsStubAccount
+            PropertyChanges {
+                target: loader
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationStubAccount.qml"
+            }
+        },
+
+        State {
+            name: "StateIsSsoAccount"
+            when: MZAuthInApp.state === MZAuthInApp.StateIsSsoAccount
+            PropertyChanges {
+                target: loader
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSsoAccount.qml"
+            }
+        },
+
+        State {
             name: "StateFallbackInBrowser"
             when: MZAuthInApp.state === MZAuthInApp.StateFallbackInBrowser
             PropertyChanges {

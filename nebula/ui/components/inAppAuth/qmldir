@@ -3,3 +3,4 @@ MZInAppAuthenticationErrorPopup 0.1 MZInAppAuthenticationErrorPopup.qml
 MZInAppAuthenticationInputs 0.1 MZInAppAuthenticationInputs.qml
 MZInAppAuthenticationLegalDisclaimer 0.1 MZInAppAuthenticationLegalDisclaimer.qml
 MZInAppAuthenticationPasswordCondition 0.1 MZInAppAuthenticationPasswordCondition.qml
+MZInAppAuthenticationThirdParty 0.1 MZInAppAuthenticationThirdParty.qml

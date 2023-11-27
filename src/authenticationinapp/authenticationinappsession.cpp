@@ -196,16 +196,24 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
 
             bool accountExists = obj["exists"].toBool();
             bool hasPassword = obj["hasPassword"].toBool();
-            accountChecked(accountExists, hasPassword);
+            bool hasLinkedAccount = obj["hasLinkedAccount"].toBool();
+            accountChecked(accountExists, hasPassword, hasLinkedAccount);
           });
 }
 
-void AuthenticationInAppSession::accountChecked(bool exists, bool hasPassword) {
+void AuthenticationInAppSession::accountChecked(bool exists, bool hasPassword,
+                                                bool hasLinkedAccount) {
   logger.debug() << "Account checked:" << exists;
 
+  if (exists && hasLinkedAccount && !hasPassword) {
+    AuthenticationInApp::instance()->requestState(
+        AuthenticationInApp::StateIsSsoAccount, this);
+    return;
+  }
+
   if (exists && !hasPassword) {
-    AuthenticationInApp::instance()->requestErrorPropagation(
-        this, AuthenticationInApp::ErrorAccountHasNoPassword);
+    AuthenticationInApp::instance()->requestState(
+        AuthenticationInApp::StateIsStubAccount, this);
     return;
   }
 
