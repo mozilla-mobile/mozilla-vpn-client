@@ -25,6 +25,13 @@ class MacOSDnsManager final : public Command {
   void clearSnapshot();
   int waitForTermination();
 
+  // Core foundation type handling helpers.
+  static QString cfParseString(CFTypeRef ref);
+  static void cfDictSetString(CFMutableDictionaryRef dict, CFStringRef name,
+                              const QString& value);
+  static void cfDictSetStringList(CFMutableDictionaryRef dict, CFStringRef name,
+                                  const QStringList& valueList);
+
  private:
   SCDynamicStoreRef m_scStore = nullptr;
   QMap<QString, CFDictionaryRef> m_snapshot;

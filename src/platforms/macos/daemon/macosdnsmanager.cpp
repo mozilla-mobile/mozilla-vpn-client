@@ -33,64 +33,6 @@ MacOSDnsManager::~MacOSDnsManager() {
   MZ_COUNT_DTOR(MacOSDnsManager);
 }
 
-static QString cfParseString(CFTypeRef ref) {
-  if (CFGetTypeID(ref) != CFStringGetTypeID()) {
-    return QString();
-  }
-
-  CFStringRef stringref = (CFStringRef)ref;
-  CFRange range;
-  range.location = 0;
-  range.length = CFStringGetLength(stringref);
-  if (range.length <= 0) {
-    return QString();
-  }
-
-  UniChar* buf = (UniChar*)malloc(range.length * sizeof(UniChar));
-  if (!buf) {
-    return QString();
-  }
-  auto guard = qScopeGuard([&] { free(buf); });
-
-  CFStringGetCharacters(stringref, range, buf);
-  return QString::fromUtf16(buf, range.length);
-}
-
-static void cfDictSetString(CFMutableDictionaryRef dict, CFStringRef name,
-                            const QString& value) {
-  if (value.isNull()) {
-    return;
-  }
-  CFStringRef cfValue = CFStringCreateWithCString(
-      kCFAllocatorSystemDefault, qUtf8Printable(value), kCFStringEncodingUTF8);
-  CFDictionarySetValue(dict, name, cfValue);
-  CFRelease(cfValue);
-}
-
-static void cfDictSetStringList(CFMutableDictionaryRef dict, CFStringRef name,
-                                const QStringList& valueList) {
-  if (valueList.isEmpty()) {
-    return;
-  }
-
-  CFMutableArrayRef array;
-  array = CFArrayCreateMutable(kCFAllocatorSystemDefault, 0,
-                               &kCFTypeArrayCallBacks);
-  if (array == nullptr) {
-    return;
-  }
-
-  for (const QString& rstring : valueList) {
-    CFStringRef cfAddr = CFStringCreateWithCString(kCFAllocatorSystemDefault,
-                                                   qUtf8Printable(rstring),
-                                                   kCFStringEncodingUTF8);
-    CFArrayAppendValue(array, cfAddr);
-    CFRelease(cfAddr);
-  }
-  CFDictionarySetValue(dict, name, array);
-  CFRelease(array);
-}
-
 int MacOSDnsManager::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   QString appName = tokens[0];
@@ -261,6 +203,68 @@ int MacOSDnsManager::waitForTermination(void) {
     // Received NOTE_EXIT; our parent has terminated.
     return SIGCHLD;
   }
+}
+
+// static
+QString MacOSDnsManager::cfParseString(CFTypeRef ref) {
+  if (CFGetTypeID(ref) != CFStringGetTypeID()) {
+    return QString();
+  }
+
+  CFStringRef stringref = (CFStringRef)ref;
+  CFRange range;
+  range.location = 0;
+  range.length = CFStringGetLength(stringref);
+  if (range.length <= 0) {
+    return QString();
+  }
+
+  UniChar* buf = (UniChar*)malloc(range.length * sizeof(UniChar));
+  if (!buf) {
+    return QString();
+  }
+  auto guard = qScopeGuard([&] { free(buf); });
+
+  CFStringGetCharacters(stringref, range, buf);
+  return QString::fromUtf16(buf, range.length);
+}
+
+// static
+void MacOSDnsManager::cfDictSetString(CFMutableDictionaryRef dict,
+                                      CFStringRef name, const QString& value) {
+  if (value.isNull()) {
+    return;
+  }
+  CFStringRef cfValue = CFStringCreateWithCString(
+      kCFAllocatorSystemDefault, qUtf8Printable(value), kCFStringEncodingUTF8);
+  CFDictionarySetValue(dict, name, cfValue);
+  CFRelease(cfValue);
+}
+
+// static
+void MacOSDnsManager::cfDictSetStringList(CFMutableDictionaryRef dict,
+                                          CFStringRef name,
+                                          const QStringList& valueList) {
+  if (valueList.isEmpty()) {
+    return;
+  }
+
+  CFMutableArrayRef array;
+  array = CFArrayCreateMutable(kCFAllocatorSystemDefault, 0,
+                               &kCFTypeArrayCallBacks);
+  if (array == nullptr) {
+    return;
+  }
+
+  for (const QString& rstring : valueList) {
+    CFStringRef cfAddr = CFStringCreateWithCString(kCFAllocatorSystemDefault,
+                                                   qUtf8Printable(rstring),
+                                                   kCFStringEncodingUTF8);
+    CFArrayAppendValue(array, cfAddr);
+    CFRelease(cfAddr);
+  }
+  CFDictionarySetValue(dict, name, array);
+  CFRelease(array);
 }
 
 static Command::RegistrationProxy<MacOSDnsManager> s_commandMacOSDaemon;
