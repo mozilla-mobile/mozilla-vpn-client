@@ -1,0 +1,26 @@
+{
+    "metadata": {
+        "branch": "{{ branch }}",
+        "commit": "{{ commit }}"
+    },
+    "main_app_translations": {
+        {%+ for string in main_app_translations %}
+                "{{ string }}" : [{%+ for language in main_app_translations[string] %}
+                        "{{ language }}"{{ "," if not loop.last }}
+                    {%- endfor %}
+                ]{{ "," if not loop.last }}
+        {%- endfor %}
+    },
+    "addon_translations": {
+        {%+ for addon in addon_translations %}
+            "{{ addon }}": {
+                {%+ for string in addon_translations[addon] %}
+                    "{{ string }}": [{%+ for language in addon_translations[addon][string] %}
+                            "{{ language }}"{{ "," if not loop.last }}
+                        {%- endfor %}
+                    ]{{ "," if not loop.last }}
+                {%- endfor %}
+            }{{ "," if not loop.last }}
+        {%- endfor %}
+    }
+}
