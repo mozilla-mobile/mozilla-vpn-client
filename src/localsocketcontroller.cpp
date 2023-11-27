@@ -17,8 +17,11 @@
 // exponential backoff algorithm. The interval between retries starts at
 // the initial value, and doubles after each failed connection attempt,
 // with time between each retry clamped to the maximum value.
-constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;
-constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;
+//
+// This means that if the daemon never starts, the steady-state behaviour will
+// have client to retry every 16 seconds indefinitely.
+constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500; // 0.5 seconds
+constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000; // 16 seconds
 
 namespace {
 Logger logger("LocalSocketController");
