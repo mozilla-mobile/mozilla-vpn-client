@@ -231,6 +231,12 @@ void Controller::quit() {
   }
 }
 
+void Controller::testDaemonCrash() {
+  if (m_impl) {
+    m_impl->testDaemonCrash();
+  }
+}
+
 void Controller::deleteOSTunnelConfig() {
   if (m_impl) {
     m_impl->deleteOSTunnelConfig();

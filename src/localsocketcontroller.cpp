@@ -13,6 +13,15 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+#ifdef MZ_MACOS
+#include <QProcess>
+
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <signal.h>
+#include <unistd.h>
+#endif
+
 // When the daemon is unreachable, we will retry indefinitely using an
 // exponential backoff algorithm. The interval between retries starts at
 // the initial value, and doubles after each failed connection attempt,
@@ -388,4 +397,28 @@ void LocalSocketController::clearAllTimeouts(void) {
     QTimer* t = m_expectedResponses.takeFirst();
     delete t;
   }
+}
+
+void LocalSocketController::testDaemonCrash() {
+#ifdef MZ_MACOS
+  pid_t pid;
+  socklen_t len = sizeof(pid);
+  int sd = m_socket->socketDescriptor();
+  if (getsockopt(sd, SOL_LOCAL, LOCAL_PEERPID, &pid, &len) < 0) {
+    return;
+  }
+  if ((pid <= 0) || (pid == getpid())) {
+    return;
+  }
+  logger.warning() << "Sending SIGSEGV to:" << pid;
+
+  QProcess proc;
+  QStringList args;
+  args.append("-e");
+  args.append(QString("do shell script \"kill -SEGV %1\" with administrator privileges").arg(pid));
+  proc.start("osascript", args);
+  if (proc.waitForStarted()) {
+    proc.waitForFinished();
+  }
+#endif
 }

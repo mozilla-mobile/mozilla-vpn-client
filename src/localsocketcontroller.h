@@ -40,6 +40,8 @@ class LocalSocketController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
+  void testDaemonCrash() override;
+
  private:
   void initializeInternal();
   void disconnectInternal();

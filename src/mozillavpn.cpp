@@ -2160,6 +2160,15 @@ void MozillaVPN::registerInspectorCommands() {
         }
         return QJsonObject();
       });
+  
+#ifdef MZ_MACOS
+  InspectorHandler::registerCommand(
+      "force_daemon_crash", "Force the VPN daemon to crash", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->controller()->testDaemonCrash();
+        return QJsonObject();
+      });
+#endif
 }
 
 // static

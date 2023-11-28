@@ -51,6 +51,8 @@ class ControllerImpl : public QObject {
   // tunnel cannot be reactivated in system settings.
   virtual void deleteOSTunnelConfig(){};
 
+  virtual void testDaemonCrash() { /* not implemented */ }
+
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is
   // active.
