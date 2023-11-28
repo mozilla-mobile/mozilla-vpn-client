@@ -34,6 +34,7 @@ MZInAppAuthenticationBase {
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
+    _backButtonVisible: false
 
     _inputs: MZInAppAuthenticationInputs {
         objectName: "authVerificationSessionByEmailNeeded"
