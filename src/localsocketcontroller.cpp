@@ -16,14 +16,13 @@
 #ifdef MZ_MACOS
 #include <Security/Authorization.h>
 #include <Security/AuthorizationTags.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
 
 #include <QProcess>
 #include <QScopeGuard>
-
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <signal.h>
-#include <unistd.h>
 #endif
 
 // When the daemon is unreachable, we will retry indefinitely using an
@@ -417,20 +416,23 @@ void LocalSocketController::testDaemonCrash() {
 
   // Create an authorization session.
   AuthorizationRef authRef;
-  AuthorizationFlags authFlags = kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed | kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights; 
-  OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment, authFlags, &authRef);
+  AuthorizationFlags authFlags =
+      kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed |
+      kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights; 
+  OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment,
+                                        authFlags, &authRef);
   if (status != errAuthorizationSuccess) {
     logger.error() << "Failed to acquire authorization:" << status;
     return;
   }
-  auto authGuard = qScopeGuard([&] {
-    AuthorizationFree(authRef, kAuthorizationFlagDefaults);
-  });
+  auto authGuard = qScopeGuard(
+      [&] { AuthorizationFree(authRef, kAuthorizationFlagDefaults); });
 
   // Acquire execution permissions.
-  AuthorizationItem authItems = { kAuthorizationRightExecute, 0, nullptr, 0 };
-  AuthorizationRights authRights = { 1, &authItems };
-  status = AuthorizationCopyRights(authRef, &authRights, nullptr, authFlags, nullptr);
+  AuthorizationItem authItems = {kAuthorizationRightExecute, 0, nullptr, 0};
+  AuthorizationRights authRights = {1, &authItems};
+  status = AuthorizationCopyRights(authRef, &authRights, nullptr, authFlags,
+                                   nullptr);
   if (status != errAuthorizationSuccess) {
     logger.error() << "Failed to copy authorization rights:" << status;
     return;
@@ -441,12 +443,13 @@ void LocalSocketController::testDaemonCrash() {
   QByteArray pidString = QString::number(pid).toUtf8();
   char killpath[] = "/bin/kill";
   char killsignal[] = "-SEGV";
-  char* const killargs[] = { killsignal, pidString.data(), nullptr };
+  char* const killargs[] = {killsignal, pidString.data(), nullptr};
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  status = AuthorizationExecuteWithPrivileges(authRef, killpath, kAuthorizationFlagDefaults, killargs, nullptr);
-#pragma clang diagnostic pop
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  status = AuthorizationExecuteWithPrivileges(
+      authRef, killpath, kAuthorizationFlagDefaults, killargs, nullptr);
+#  pragma clang diagnostic pop
   if (status != errAuthorizationSuccess) {
     logger.error() << "Failed to copy execute tool:" << status;
     return;
