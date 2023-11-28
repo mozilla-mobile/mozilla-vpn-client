@@ -51,7 +51,9 @@ class ControllerImpl : public QObject {
   // tunnel cannot be reactivated in system settings.
   virtual void deleteOSTunnelConfig(){};
 
-  virtual void testDaemonCrash(){}
+  // This method attempts to force the daemon to crash, and is used for
+  // testing the ability of the VPN to recover from a backend error.
+  virtual void testDaemonCrash() {}
 
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is
