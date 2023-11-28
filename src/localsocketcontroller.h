@@ -85,7 +85,7 @@ class LocalSocketController final : public ControllerImpl {
 
   // When a message to the daemon expects an immediate response, these
   // are used to trigger a timeout error if the response never arrives.
-  QList<QTimer*> m_expectedResponses;
+  QList<QTimer*> m_responseTimeouts;
 };
 
 #endif  // LOCALSOCKETCONTROLLER_H

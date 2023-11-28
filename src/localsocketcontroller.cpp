@@ -375,7 +375,7 @@ void LocalSocketController::write(const QJsonObject& message,
     t->setSingleShot(true);
     t->start(timeout);
 
-    m_expectedResponses.append(t);
+    m_responseTimeouts.append(t);
   }
 
   Q_ASSERT(m_socket);
@@ -384,7 +384,7 @@ void LocalSocketController::write(const QJsonObject& message,
 }
 
 void LocalSocketController::clearTimeout(const QString& responseType) {
-  for (QTimer* t : m_expectedResponses) {
+  for (QTimer* t : m_responseTimeouts) {
     QVariant qv = t->property("responseType");
     if (qv.type() != QVariant::String) {
       continue;
@@ -392,14 +392,14 @@ void LocalSocketController::clearTimeout(const QString& responseType) {
     if (qv.toString() != responseType) {
       continue;
     }
-    m_expectedResponses.removeOne(t);
+    m_responseTimeouts.removeOne(t);
     delete t;
   }
 }
 
 void LocalSocketController::clearAllTimeouts() {
-  while (!m_expectedResponses.isEmpty()) {
-    QTimer* t = m_expectedResponses.takeFirst();
+  while (!m_responseTimeouts.isEmpty()) {
+    QTimer* t = m_responseTimeouts.takeFirst();
     delete t;
   }
 }
