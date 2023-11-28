@@ -163,8 +163,7 @@ const screenAuthenticationInApp = {
   AUTH_SIGNIN_BACK_BUTTON: new QmlQueryComposer('//authSignIn-backButton'),
   AUTH_SIGNIN_PASSWORD_PASTE_BUTTON:
       new QmlQueryComposer('//authSignIn-inputPasteButton'),
-  AUTH_SIGNIN_CANCEL_BUTTON:
-      new QmlQueryComposer('//authSignIn-cancel'),
+  AUTH_SIGNIN_CANCEL_BUTTON: new QmlQueryComposer('//authSignIn-cancel'),
   AUTH_SIGNIN_CHANGE_EMAIL_BUTTON:
       new QmlQueryComposer('//authSignIn-changeEmail'),
   AUTH_SIGNIN_FORGOT_PASSWORD_BUTTON:
@@ -183,8 +182,7 @@ const screenAuthenticationInApp = {
   AUTH_SIGNUP_BACK_BUTTON: new QmlQueryComposer('//authSignUp-backButton'),
   AUTH_SIGNUP_PASSWORD_PASTE_BUTTON:
       new QmlQueryComposer('//authSignUp-inputPasteButton'),
-  AUTH_SIGNUP_CANCEL_BUTTON:
-      new QmlQueryComposer('//authSignUp-cancel'),
+  AUTH_SIGNUP_CANCEL_BUTTON: new QmlQueryComposer('//authSignUp-cancel'),
   AUTH_SIGNUP_BACK_BUTTON: new QmlQueryComposer('//authSignUp-backButton'),
 
   AUTH_EMAILVER_TEXT_INPUT:
@@ -193,8 +191,6 @@ const screenAuthenticationInApp = {
       new QmlQueryComposer('//authVerificationSessionByEmailNeeded-button'),
   AUTH_EMAILVER_GET_HELP_LINK: new QmlQueryComposer(
       '//authVerificationSessionByEmailNeeded-getHelpLink'),
-  AUTH_EMAILVER_BACK_BUTTON:
-      new QmlQueryComposer('//authVerificationSessionByEmailNeeded-backButton'),
   AUTH_EMAILVER_PASTE_BUTTON: new QmlQueryComposer(
       '//authVerificationSessionByEmailNeeded-inputPasteButton'),
   AUTH_EMAILVER_CANCEL_BUTTON:
