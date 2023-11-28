@@ -11,6 +11,21 @@
 
 #include "command.h"
 
+// This class adds a command to the Mozilla VPN that overwrites the system
+// DNS configuration, and restores it upon program exit. This provides a
+// watchdog mechansim to ensure that no matter how the daemon termanates
+// (or crashes!) we always do our best to clean up.
+//
+// This command accepts DNS server addresses as positional arguments to be
+// applied to the system. For example:
+//   Mozilla\ VPN macosdnsmanager 8.8.8.8
+//
+// This program will exit upon the normal POSIX termination signals (eg:
+// SIGINT, SIGTERM and so on), or when it detects that the parent process
+// has exited via kqueue().
+//
+// To exit without restoring the DNS configuration, this program can be
+// sent the hang-up signal (SIGHUP).
 class MacOSDnsManager final : public Command {
  public:
   explicit MacOSDnsManager(QObject* parent);

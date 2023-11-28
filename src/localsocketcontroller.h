@@ -11,10 +11,7 @@
 
 #include "controllerimpl.h"
 
-// For messages that are expected to generate a synchronous response, this
-// defines the default time that we will wait before assuming an error in
-// the daemon has occured.
-constexpr int CONNECTION_RESPONSE_TIMEOUT_MSEC = 500;
+
 
 class QJsonObject;
 
@@ -43,6 +40,11 @@ class LocalSocketController final : public ControllerImpl {
   void testDaemonCrash() override;
 
  private:
+  // For messages that are expected to generate a synchronous response, this
+  // defines the default time that we will wait before assuming an error in
+  // the daemon has occured.
+  static constexpr int CONNECTION_RESPONSE_TIMEOUT_MSEC = 500;
+
   void initializeInternal();
   void disconnectInternal();
 
@@ -50,18 +52,20 @@ class LocalSocketController final : public ControllerImpl {
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
   void readData();
   void parseCommand(const QByteArray& command);
-  void disarmTimeout(const QString& responseType);
+  void clearTimeout(const QString& responseType);
   void clearAllTimeouts();
 
   /**
    * @brief Write a JSON message to the socket, sending it to the daemon.
    *
-   * @param json - A JSON object describing the message to be sent.
-   * @param expect - An optional message type that we expect as a response.
+   * @param message - A JSON object describing the message to be sent.
+   * @param expectedResponseType - An optional message type that we expect as
+   *                               a response.
    * @param timeout - The timeout, in milliseconds, to wait for the response.
    * @return * void
    */
-  void write(const QJsonObject& json, const QString& expect = QString(),
+  void write(const QJsonObject& message,
+             const QString& expectedResponseType = QString(),
              int timeout = CONNECTION_RESPONSE_TIMEOUT_MSEC);
 
  private:

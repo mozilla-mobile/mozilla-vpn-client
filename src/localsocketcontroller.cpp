@@ -72,6 +72,7 @@ void LocalSocketController::errorOccurred(
     emit disconnected();
   }
 
+  // We have lost communication with the daemon, try to reconnect.
   clearAllTimeouts();
   m_initializingTimer.start(m_initializingInterval);
 }
@@ -251,7 +252,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   QString type = typeValue.toString();
 
   logger.debug() << "Parse command:" << type;
-  disarmTimeout(type);
+  clearTimeout(type);
 
   if (m_daemonState == eInitializing && type == "status") {
     m_daemonState = eReady;
@@ -356,20 +357,21 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   logger.warning() << "Invalid command received:" << command;
 }
 
-void LocalSocketController::write(const QJsonObject& json,
-                                  const QString& expect, int timeout) {
-  QByteArray payload = QJsonDocument(json).toJson(QJsonDocument::Compact);
+void LocalSocketController::write(const QJsonObject& message,
+                                  const QString& expectedResponseType,
+                                  int timeout) {
+  QByteArray payload = QJsonDocument(message).toJson(QJsonDocument::Compact);
   payload.append('\n');
 
   // If an immediate response to this message is expected, start a timer to
   // throw an error if that response fails to arrive in a timely manner. This
   // is used to detect a crash or failure of the daemon.
-  if (!expect.isEmpty()) {
+  if (!expectedResponseType.isEmpty()) {
     QTimer* t = new QTimer(this);
     connect(t, &QTimer::timeout, this,
             [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
 
-    t->setProperty("responseType", QVariant(expect));
+    t->setProperty("responseType", QVariant(expectedResponseType));
     t->setSingleShot(true);
     t->start(timeout);
 
@@ -381,7 +383,7 @@ void LocalSocketController::write(const QJsonObject& json,
   m_socket->flush();
 }
 
-void LocalSocketController::disarmTimeout(const QString& responseType) {
+void LocalSocketController::clearTimeout(const QString& responseType) {
   for (QTimer* t : m_expectedResponses) {
     QVariant qv = t->property("responseType");
     if (qv.type() != QVariant::String) {
@@ -395,7 +397,7 @@ void LocalSocketController::disarmTimeout(const QString& responseType) {
   }
 }
 
-void LocalSocketController::clearAllTimeouts(void) {
+void LocalSocketController::clearAllTimeouts() {
   while (!m_expectedResponses.isEmpty()) {
     QTimer* t = m_expectedResponses.takeFirst();
     delete t;

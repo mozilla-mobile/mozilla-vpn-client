@@ -12,6 +12,7 @@
 
 namespace {
 Logger logger("DnsUtilsMacos");
+Logger dnsManagerLogger("MacosDnsManager");
 }
 
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
@@ -27,6 +28,7 @@ DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
 DnsUtilsMacos::~DnsUtilsMacos() {
   MZ_COUNT_DTOR(DnsUtilsMacos);
   if (!restoreResolvers()) {
+    // If it didn't terminate gracefully, force it to exit with SIGKILL.
     m_dnsManager.kill();
   }
   logger.debug() << "DnsUtilsMacos destroyed.";
@@ -38,10 +40,13 @@ void DnsUtilsMacos::dnsManagerStdoutReady() {
     if (line.length() <= 0) {
       break;
     }
-    logger.debug() << QString::fromUtf8(line);
+    dnsManagerLogger.debug() << QString::fromUtf8(line);
   }
 }
 
+// Re-launch ourself using the `macosdnsmanager` command to update the system
+// DNS configuration. This will run as a separate process so that the DNS
+// settings will always be restored no matter how the daemon exits.
 bool DnsUtilsMacos::updateResolvers(const QString& ifname,
                                     const QList<QHostAddress>& resolvers) {
   Q_UNUSED(ifname);
@@ -58,11 +63,13 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
   return m_dnsManager.waitForStarted();
 }
 
+// Restore the DNS configuration by terminating the DNS manager process.
 bool DnsUtilsMacos::restoreResolvers() {
   if (m_dnsManager.state() == QProcess::NotRunning) {
     return true;
   }
 
-  m_dnsManager.terminate();
+  // Terminate the process gracefully with SIGTERM.
+  m_dnsManager.terminate(); 
   return m_dnsManager.waitForFinished();
 }
