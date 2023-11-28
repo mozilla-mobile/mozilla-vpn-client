@@ -14,7 +14,11 @@
 #include "logger.h"
 
 #ifdef MZ_MACOS
+#include <Security/Authorization.h>
+#include <Security/AuthorizationTags.h>
+
 #include <QProcess>
+#include <QScopeGuard>
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -410,15 +414,42 @@ void LocalSocketController::testDaemonCrash() {
   if ((pid <= 0) || (pid == getpid())) {
     return;
   }
-  logger.warning() << "Sending SIGSEGV to:" << pid;
 
-  QProcess proc;
-  QStringList args;
-  args.append("-e");
-  args.append(QString("do shell script \"kill -SEGV %1\" with administrator privileges").arg(pid));
-  proc.start("osascript", args);
-  if (proc.waitForStarted()) {
-    proc.waitForFinished();
+  // Create an authorization session.
+  AuthorizationRef authRef;
+  AuthorizationFlags authFlags = kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed | kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights; 
+  OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment, authFlags, &authRef);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to acquire authorization:" << status;
+    return;
+  }
+  auto authGuard = qScopeGuard([&] {
+    AuthorizationFree(authRef, kAuthorizationFlagDefaults);
+  });
+
+  // Acquire execution permissions.
+  AuthorizationItem authItems = { kAuthorizationRightExecute, 0, nullptr, 0 };
+  AuthorizationRights authRights = { 1, &authItems };
+  status = AuthorizationCopyRights(authRef, &authRights, nullptr, authFlags, nullptr);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy authorization rights:" << status;
+    return;
+  }
+
+  // Execute 'kill' to terminate the daemon as though it crashed.
+  logger.warning() << "Sending SIGSEGV to:" << pid;
+  QByteArray pidString = QString::number(pid).toUtf8();
+  char killpath[] = "/bin/kill";
+  char killsignal[] = "-SEGV";
+  char* const killargs[] = { killsignal, pidString.data(), nullptr };
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  status = AuthorizationExecuteWithPrivileges(authRef, killpath, kAuthorizationFlagDefaults, killargs, nullptr);
+#pragma clang diagnostic pop
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy execute tool:" << status;
+    return;
   }
 #endif
 }
