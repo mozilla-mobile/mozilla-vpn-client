@@ -20,8 +20,8 @@
 //
 // This means that if the daemon never starts, the steady-state behaviour will
 // have client to retry every 16 seconds indefinitely.
-constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500; // 0.5 seconds
-constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000; // 16 seconds
+constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;    // 0.5 seconds
+constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;  // 16 seconds
 
 namespace {
 Logger logger("LocalSocketController");
