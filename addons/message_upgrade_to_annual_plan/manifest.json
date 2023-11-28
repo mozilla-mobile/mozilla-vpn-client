@@ -4,6 +4,7 @@
   "name": "Upgrade to annual plan",
   "type": "message",
   "conditions": {
+    "env": "staging",
     "javascript": "conditions.js"
   },
   "message": {
