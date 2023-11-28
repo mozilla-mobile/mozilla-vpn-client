@@ -11,8 +11,6 @@
 
 #include "controllerimpl.h"
 
-
-
 class QJsonObject;
 
 class LocalSocketController final : public ControllerImpl {

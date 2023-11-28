@@ -13,7 +13,7 @@
 namespace {
 Logger logger("DnsUtilsMacos");
 Logger dnsManagerLogger("MacosDnsManager");
-}
+}  // namespace
 
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
   MZ_COUNT_CTOR(DnsUtilsMacos);
@@ -70,6 +70,6 @@ bool DnsUtilsMacos::restoreResolvers() {
   }
 
   // Terminate the process gracefully with SIGTERM.
-  m_dnsManager.terminate(); 
+  m_dnsManager.terminate();
   return m_dnsManager.waitForFinished();
 }

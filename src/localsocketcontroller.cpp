@@ -14,15 +14,15 @@
 #include "logger.h"
 
 #ifdef MZ_MACOS
-#include <Security/Authorization.h>
-#include <Security/AuthorizationTags.h>
-#include <signal.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <unistd.h>
+#  include <Security/Authorization.h>
+#  include <Security/AuthorizationTags.h>
+#  include <signal.h>
+#  include <sys/socket.h>
+#  include <sys/un.h>
+#  include <unistd.h>
 
-#include <QProcess>
-#include <QScopeGuard>
+#  include <QProcess>
+#  include <QScopeGuard>
 #endif
 
 // When the daemon is unreachable, we will retry indefinitely using an
@@ -420,7 +420,7 @@ void LocalSocketController::testDaemonCrash() {
   AuthorizationRef authRef;
   AuthorizationFlags authFlags =
       kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed |
-      kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights; 
+      kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights;
   OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment,
                                         authFlags, &authRef);
   if (status != errAuthorizationSuccess) {
