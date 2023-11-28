@@ -26,7 +26,7 @@ class DnsUtilsMacos final : public DnsUtils {
   void dnsManagerStdoutReady();
 
  private:
-  QProcess m_dnsManager;
+  QProcess m_dnsManagerProcess;
 };
 
 #endif  // DNSUTILSMACOS_H

@@ -18,8 +18,8 @@ Logger dnsManagerLogger("MacosDnsManager");
 DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
   MZ_COUNT_CTOR(DnsUtilsMacos);
 
-  m_dnsManager.setProcessChannelMode(QProcess::MergedChannels);
-  connect(&m_dnsManager, SIGNAL(readyReadStandardOutput()), this,
+  m_dnsManagerProcess.setProcessChannelMode(QProcess::MergedChannels);
+  connect(&m_dnsManagerProcess, SIGNAL(readyReadStandardOutput()), this,
           SLOT(dnsManagerStdoutReady()));
 
   logger.debug() << "DnsUtilsMacos created.";
@@ -29,14 +29,14 @@ DnsUtilsMacos::~DnsUtilsMacos() {
   MZ_COUNT_DTOR(DnsUtilsMacos);
   if (!restoreResolvers()) {
     // If it didn't terminate gracefully, force it to exit with SIGKILL.
-    m_dnsManager.kill();
+    m_dnsManagerProcess.kill();
   }
   logger.debug() << "DnsUtilsMacos destroyed.";
 }
 
 void DnsUtilsMacos::dnsManagerStdoutReady() {
   for (;;) {
-    QByteArray line = m_dnsManager.readLine();
+    QByteArray line = m_dnsManagerProcess.readLine();
     if (line.length() <= 0) {
       break;
     }
@@ -59,17 +59,17 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
   }
 
   // Launch the DNS manager process.
-  m_dnsManager.start(qApp->applicationFilePath(), args);
-  return m_dnsManager.waitForStarted();
+  m_dnsManagerProcess.start(qApp->applicationFilePath(), args);
+  return m_dnsManagerProcess.waitForStarted();
 }
 
 // Restore the DNS configuration by terminating the DNS manager process.
 bool DnsUtilsMacos::restoreResolvers() {
-  if (m_dnsManager.state() == QProcess::NotRunning) {
+  if (m_dnsManagerProcess.state() == QProcess::NotRunning) {
     return true;
   }
 
   // Terminate the process gracefully with SIGTERM.
-  m_dnsManager.terminate();
-  return m_dnsManager.waitForFinished();
+  m_dnsManagerProcess.terminate();
+  return m_dnsManagerProcess.waitForFinished();
 }
