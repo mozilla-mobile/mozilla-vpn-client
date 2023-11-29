@@ -107,7 +107,8 @@ int MacOSDnsManager::run(QStringList& tokens) {
   int sig = waitForTermination();
   stream << "Caught signal " << sig << ". Preparing to exit." << Qt::endl;
 
-  // If we exit on SIGHUP, leave the DNS configuration in-place.
+  // SIGHUP is typically used to inform processes of a configuration change.
+  // Handle this for now by exiting without restoring the DNS resolver config.
   if (sig == SIGHUP) {
     clearSnapshot();
   }
