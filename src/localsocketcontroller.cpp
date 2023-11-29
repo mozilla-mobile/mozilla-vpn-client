@@ -31,7 +31,7 @@
 // with time between each retry clamped to the maximum value.
 //
 // This means that if the daemon never starts, the steady-state behaviour will
-// have client to retry every 16 seconds indefinitely.
+// have the client retry every 16 seconds indefinitely.
 constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;    // 0.5 seconds
 constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;  // 16 seconds
 
@@ -385,11 +385,11 @@ void LocalSocketController::write(const QJsonObject& message,
 
 void LocalSocketController::clearTimeout(const QString& responseType) {
   for (QTimer* t : m_responseTimeouts) {
-    QVariant qv = t->property("responseType");
-    if (qv.type() != QVariant::String) {
+    QVariant timerResponseType = t->property("responseType");
+    if (timerResponseType.type() != QVariant::String) {
       continue;
     }
-    if (qv.toString() != responseType) {
+    if (timerResponseType.toString() != responseType) {
       continue;
     }
     m_responseTimeouts.removeOne(t);
