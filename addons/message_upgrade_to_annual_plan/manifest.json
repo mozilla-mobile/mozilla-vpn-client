@@ -4,7 +4,7 @@
   "name": "Upgrade to annual plan",
   "type": "message",
   "conditions": {
-    "env": "staging",
+    "platforms": ["macos", "windows", "linux"],
     "javascript": "conditions.js"
   },
   "message": {

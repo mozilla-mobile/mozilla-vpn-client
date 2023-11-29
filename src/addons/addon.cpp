@@ -87,6 +87,11 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"platforms",
      [](const QJsonValue& value) -> bool {
        QStringList platforms;
+
+       // always add "dummy" to the list of supported platforms so addons can be
+       // tested by functional tests
+       platforms.append("dummy");
+
        QJsonArray platformArray = value.toArray();
        for (const QJsonValue& platform : platformArray) {
          platforms.append(platform.toString());
