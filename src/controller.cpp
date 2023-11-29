@@ -350,6 +350,11 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  if (!device) {
+    logger.warning() << "No current device. Aborting activation.";
+    m_nextStep = Disconnect;
+    return;
+  }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   // Prepare the exit server's connection data.
