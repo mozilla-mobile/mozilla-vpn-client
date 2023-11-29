@@ -366,7 +366,11 @@ void NotificationHandler::addonCreated(Addon* addon) {
     return;
   }
 
-  if (addon->enabled() && qobject_cast<AddonMessage*>(addon)->shouldNotify()) {
+  if (!qobject_cast<AddonMessage*>(addon)->shouldNotify()) {
+    return;
+  }
+
+  if (addon->enabled()) {
     maybeAddonNotification(addon);
   }
 
