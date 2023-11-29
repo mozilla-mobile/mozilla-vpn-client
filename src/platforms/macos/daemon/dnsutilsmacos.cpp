@@ -27,10 +27,7 @@ DnsUtilsMacos::DnsUtilsMacos(QObject* parent) : DnsUtils(parent) {
 
 DnsUtilsMacos::~DnsUtilsMacos() {
   MZ_COUNT_DTOR(DnsUtilsMacos);
-  if (!restoreResolvers()) {
-    // If it didn't terminate gracefully, force it to exit with SIGKILL.
-    m_dnsManagerProcess.kill();
-  }
+  restoreResolvers();
   logger.debug() << "DnsUtilsMacos destroyed.";
 }
 
@@ -60,7 +57,13 @@ bool DnsUtilsMacos::updateResolvers(const QString& ifname,
 
   // Launch the DNS manager process.
   m_dnsManagerProcess.start(qApp->applicationFilePath(), args);
-  return m_dnsManagerProcess.waitForStarted();
+  if (!m_dnsManagerProcess.waitForStarted()) {
+    m_dnsManagerProcess.kill();
+    return false;
+  }
+
+  // Success!
+  return true;
 }
 
 // Restore the DNS configuration by terminating the DNS manager process.
@@ -71,5 +74,11 @@ bool DnsUtilsMacos::restoreResolvers() {
 
   // Terminate the process gracefully with SIGTERM.
   m_dnsManagerProcess.terminate();
-  return m_dnsManagerProcess.waitForFinished();
+  if (!m_dnsManagerProcess.waitForFinished()) {
+    m_dnsManagerProcess.kill();
+    return false;
+  }
+
+  // Success!
+  return true;
 }
