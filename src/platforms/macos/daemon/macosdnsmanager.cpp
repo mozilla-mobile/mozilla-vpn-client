@@ -35,7 +35,7 @@ MacOSDnsManager::~MacOSDnsManager() {
 
 int MacOSDnsManager::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  QString appName = tokens[0];
+  const QString appName = tokens[0];
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
@@ -51,7 +51,7 @@ int MacOSDnsManager::run(QStringList& tokens) {
   }
 
   // Ensure that the DNS addresses we received are valid.
-  QStringList dnsAddrList = tokens.mid(1);
+  const QStringList dnsAddrList = tokens.mid(1);
   for (const QString& addr : dnsAddrList) {
     QHostAddress host = QHostAddress(addr);
     if (host.isNull()) {
@@ -66,11 +66,11 @@ int MacOSDnsManager::run(QStringList& tokens) {
   }
 
   // Prepare the updated DNS configuration.
-  CFMutableDictionaryRef dnsConfig = CFDictionaryCreateMutable(
+  const CFMutableDictionaryRef dnsConfig = CFDictionaryCreateMutable(
       kCFAllocatorSystemDefault, 0, &kCFCopyStringDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks);
   auto configGuard = qScopeGuard([&] { CFRelease(dnsConfig); });
-  cfDictSetStringList(dnsConfig, kSCPropNetDNSServerAddresses, tokens.mid(1));
+  cfDictSetStringList(dnsConfig, kSCPropNetDNSServerAddresses, dnsAddrList);
   cfDictSetString(dnsConfig, kSCPropNetDNSDomainName, "lan");
 
   // Open the system configuration store.
@@ -249,9 +249,8 @@ void MacOSDnsManager::cfDictSetStringList(CFMutableDictionaryRef dict,
     return;
   }
 
-  CFMutableArrayRef array;
-  array = CFArrayCreateMutable(kCFAllocatorSystemDefault, 0,
-                               &kCFTypeArrayCallBacks);
+  CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorSystemDefault, 0,
+                                                 &kCFTypeArrayCallBacks);
   if (array == nullptr) {
     return;
   }
