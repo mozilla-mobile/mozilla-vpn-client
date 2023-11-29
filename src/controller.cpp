@@ -4,6 +4,8 @@
 
 #include "controller.h"
 
+#include <QFileInfo>
+
 #include "app.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
@@ -119,8 +121,14 @@ void Controller::initialize() {
 
 #if defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController());
+#elif defined(MZ_MACOS)
+  QString path = "/var/run/mozillavpn/daemon.socket";
+  if (!QFileInfo::exists(path)) {
+    path = "/tmp/mozillavpn.socket";
+  }
+  m_impl.reset(new LocalSocketController(path));
+#elif defined(MZ_WINDOWS)
+  m_impl.reset(new LocalSocketController("\\\\.\\pipe\\mozillavpn"));
 #elif defined(MZ_IOS)
   m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
