@@ -639,7 +639,7 @@ describe('User authentication', function() {
             await goToPasswordScreen(false);
         });
 
-        it("impression event is are recorded", async () => {
+        it("impression event is recorded", async () => {
             const  enterPasswordViewEvent = await vpn.gleanTestGetValue("impression", "enterPasswordScreen", "main");
             assert.strictEqual(enterPasswordViewEvent.length, 1)
             const enterPasswordViewEventExtras = enterPasswordViewEvent[0].extra;
@@ -910,6 +910,8 @@ describe('User authentication', function() {
                 eventName: "verifySelected",
                 screen
             });
+            // Give the authentication APIs a moment to finish.
+            await vpn.wait();
 
             // Now the successfull outcome
             const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
@@ -1200,6 +1202,8 @@ describe('User authentication', function() {
                 eventName: "verifySelected",
                 screen
             });
+            // Give the authentication APIs a moment to finish.
+            await vpn.wait();
 
             // Now the successfull outcome
             const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
@@ -1350,6 +1354,8 @@ describe('User authentication', function() {
                 eventName: "verifySelected",
                 screen
             });
+            // Give the authentication APIs a moment to finish.
+            await vpn.wait();
 
             // Now the successfull outcome
             const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
