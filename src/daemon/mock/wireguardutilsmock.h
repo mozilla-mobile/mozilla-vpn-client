@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSMOCK_H
 
 #include <QObject>
+#include <QMap>
 
 #include "daemon/wireguardutils.h"
 
@@ -33,6 +34,10 @@ class WireguardUtilsMock final : public WireguardUtils {
 
  signals:
   void backendFailure();
+
+ private:
+  // Keep a list of peers and when we added them.
+  QMap<QString, qint64> m_handshakes;
 };
 
 #endif  // WIREGUARDUTILSMOCK_H

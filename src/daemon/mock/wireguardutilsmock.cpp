@@ -4,8 +4,12 @@
 
 #include "wireguardutilsmock.h"
 
+#include <QDateTime>
+
 #include "leakdetector.h"
 #include "logger.h"
+
+constexpr int MOCK_HANDSHAKE_DELAY_MSEC = 1500;
 
 namespace {
 Logger logger("WireguardUtilsMock");
@@ -31,26 +35,38 @@ bool WireguardUtilsMock::deleteInterface() {
   return true;
 }
 
-// dummy implementations for now
 bool WireguardUtilsMock::updatePeer(const InterfaceConfig& config) {
+  qint64 now = QDateTime::currentMSecsSinceEpoch();
+  m_handshakes[config.m_serverPublicKey] = now + MOCK_HANDSHAKE_DELAY_MSEC;
   return true;
 }
 
 bool WireguardUtilsMock::deletePeer(const InterfaceConfig& config) {
-  return true;
+  return m_handshakes.remove(config.m_serverPublicKey) > 0;
 }
 
 QList<WireguardUtils::PeerStatus> WireguardUtilsMock::getPeerStatus() {
   QList<PeerStatus> peerList;
+  qint64 now = QDateTime::currentMSecsSinceEpoch();
+  for (const QString& pubkey : m_handshakes.keys()) {
+    PeerStatus status(pubkey);
+    qint64 hsTime = m_handshakes[pubkey];
+    if (now > hsTime) {
+      status.m_handshake = hsTime;
+      status.m_rxBytes = (now - hsTime) * 7;
+      status.m_txBytes = (now - hsTime) * 3;
+    }
+    peerList.append(status);
+  }
   return peerList;
 }
 
 bool WireguardUtilsMock::updateRoutePrefix(const IPAddress& prefix) {
-  return false;
+  return true;
 }
 
 bool WireguardUtilsMock::deleteRoutePrefix(const IPAddress& prefix) {
-  return false;
+  return true;
 }
 
 bool WireguardUtilsMock::addExclusionRoute(const IPAddress& prefix) {
