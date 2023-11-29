@@ -4,7 +4,6 @@
 
 #include "localsocketcontroller.h"
 
-#include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -39,7 +38,8 @@ namespace {
 Logger logger("LocalSocketController");
 }
 
-LocalSocketController::LocalSocketController() {
+LocalSocketController::LocalSocketController(const QString& path)
+    : m_path(path) {
   MZ_COUNT_CTOR(LocalSocketController);
 
   m_socket = new QLocalSocket(this);
@@ -107,18 +107,8 @@ void LocalSocketController::initializeInternal() {
   }
   m_daemonState = eInitializing;
 
-#ifdef MZ_WINDOWS
-  QString path = "\\\\.\\pipe\\mozillavpn";
-#else
-  QString path = "/var/run/mozillavpn/daemon.socket";
-  if (!QFileInfo::exists(path)) {
-    path = "/tmp/mozillavpn.socket";
-  }
-#endif
-
-  logger.debug() << "Connecting to:" << path;
-  m_socket->abort();
-  m_socket->connectToServer(path);
+  logger.debug() << "Connecting to:" << m_path;
+  m_socket->connectToServer(m_path);
 }
 
 void LocalSocketController::daemonConnected() {
