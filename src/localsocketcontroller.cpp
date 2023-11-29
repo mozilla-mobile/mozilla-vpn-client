@@ -384,6 +384,9 @@ void LocalSocketController::write(const QJsonObject& message,
 }
 
 void LocalSocketController::clearTimeout(const QString& responseType) {
+  // We assume that responses arrive in the same order, the local socket
+  // API has no mechanism to detect out-of-order responses, and any change
+  // here to add such a mechanism would risk a compatibility issue.
   for (QTimer* t : m_responseTimeouts) {
     QVariant timerResponseType = t->property("responseType");
     if (timerResponseType.type() != QVariant::String) {
