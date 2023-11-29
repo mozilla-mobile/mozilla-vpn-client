@@ -659,7 +659,12 @@ void Controller::connected(const QString& pubkey,
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
-  emit newConnectionSucceeded();
+
+  logger.debug() << "Connection happened due to server switch:"
+                 << isActivatingFromSwitch;
+  if (!isActivatingFromSwitch) {
+    emit newConnectionSucceeded();
+  }
 
   // In case the Controller provided a valid timestamp that
   // should be used.
@@ -900,6 +905,10 @@ bool Controller::activate(const ServerData& serverData,
     logger.debug() << "Already connected";
     return false;
   }
+
+  isActivatingFromSwitch = (m_state == Controller::StateSwitching ||
+                            m_state == Controller::StateSilentSwitching);
+  logger.debug() << "Set isActivatingFromSwitch to" << isActivatingFromSwitch;
 
   m_serverData = serverData;
 

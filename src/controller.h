@@ -221,6 +221,7 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
+  bool isActivatingFromSwitch;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
