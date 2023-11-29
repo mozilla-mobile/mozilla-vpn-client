@@ -15,6 +15,7 @@ class MockDaemon final : public Daemon {
   ~MockDaemon();
 
   static MockDaemon* instance();
+  bool activate(const InterfaceConfig& config) override;
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
