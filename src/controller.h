@@ -188,6 +188,7 @@ class Controller : public QObject, public LogSerializer {
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  static ControllerImpl* newControllerImpl();
 
  private:
   QTimer m_timer;

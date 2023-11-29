@@ -5,6 +5,7 @@
 #include "controller.h"
 
 #include <QFileInfo>
+#include <QProcessEnvironment>
 
 #include "app.h"
 #include "apppermission.h"
@@ -35,10 +36,12 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS) || defined(MZ_MACOS)
+#  include "localsocketcontroller.h"
+#endif
+
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-#  include "localsocketcontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -104,6 +107,35 @@ Controller::~Controller() {
   MZ_COUNT_DTOR(Controller);
 }
 
+ControllerImpl* Controller::newControllerImpl() {
+  // For testing, the MVPN_CONTROL_SOCKET environment variable can be set
+  // to override the default location of the VPN daemon.
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS) || defined(MZ_MACOS)
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (!Constants::inProduction() && pe.contains("MVPN_CONTROL_SOCKET")) {
+    return new LocalSocketController(pe.value("MVPN_CONTROL_SOCKET"));
+  }
+#endif
+
+#if defined(MZ_LINUX)
+  return new LinuxController();
+#elif defined(MZ_MACOS)
+  QString path = "/var/run/mozillavpn/daemon.socket";
+  if (!QFileInfo::exists(path)) {
+    path = "/tmp/mozillavpn.socket";
+  }
+  return new LocalSocketController(path);
+#elif defined(MZ_WINDOWS)
+  return new LocalSocketController("\\\\.\\pipe\\mozillavpn");
+#elif defined(MZ_IOS)
+  return new IOSController();
+#elif defined(MZ_ANDROID)
+  return new AndroidController();
+#else
+  return new DummyController();
+#endif
+}
+
 void Controller::initialize() {
   logger.debug() << "Initializing the controller";
 
@@ -119,24 +151,7 @@ void Controller::initialize() {
   m_serverData = *MozillaVPN::instance()->serverData();
   m_nextServerData = *MozillaVPN::instance()->serverData();
 
-#if defined(MZ_LINUX)
-  m_impl.reset(new LinuxController());
-#elif defined(MZ_MACOS)
-  QString path = "/var/run/mozillavpn/daemon.socket";
-  if (!QFileInfo::exists(path)) {
-    path = "/tmp/mozillavpn.socket";
-  }
-  m_impl.reset(new LocalSocketController(path));
-#elif defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController("\\\\.\\pipe\\mozillavpn"));
-#elif defined(MZ_IOS)
-  m_impl.reset(new IOSController());
-#elif defined(MZ_ANDROID)
-  m_impl.reset(new AndroidController());
-#else
-  m_impl.reset(new DummyController());
-#endif
-
+  m_impl.reset(newControllerImpl());
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
   connect(m_impl.get(), &ControllerImpl::disconnected, this,
