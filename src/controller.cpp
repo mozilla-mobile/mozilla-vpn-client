@@ -231,9 +231,9 @@ void Controller::quit() {
   }
 }
 
-void Controller::testDaemonCrash() {
+void Controller::forceDaemonCrash() {
   if (m_impl) {
-    m_impl->testDaemonCrash();
+    m_impl->forceDaemonCrash();
   }
 }
 

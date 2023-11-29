@@ -35,7 +35,7 @@ class LocalSocketController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
-  void testDaemonCrash() override;
+  void forceDaemonCrash() override;
 
  private:
   // For messages that are expected to generate a synchronous response, this

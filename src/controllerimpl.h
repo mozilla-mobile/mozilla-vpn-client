@@ -53,7 +53,7 @@ class ControllerImpl : public QObject {
 
   // This method attempts to force the daemon to crash, and is used for
   // testing the ability of the VPN to recover from a backend error.
-  virtual void testDaemonCrash() {}
+  virtual void forceDaemonCrash() {}
 
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is

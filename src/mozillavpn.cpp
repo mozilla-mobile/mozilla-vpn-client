@@ -2165,7 +2165,7 @@ void MozillaVPN::registerInspectorCommands() {
   InspectorHandler::registerCommand(
       "force_daemon_crash", "Force the VPN daemon to crash", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->controller()->testDaemonCrash();
+        MozillaVPN::instance()->controller()->forceDaemonCrash();
         return QJsonObject();
       });
 #endif

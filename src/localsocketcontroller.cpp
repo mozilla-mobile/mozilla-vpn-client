@@ -404,7 +404,7 @@ void LocalSocketController::clearAllTimeouts() {
   }
 }
 
-void LocalSocketController::testDaemonCrash() {
+void LocalSocketController::forceDaemonCrash() {
 #ifdef MZ_MACOS
   pid_t pid;
   socklen_t len = sizeof(pid);
