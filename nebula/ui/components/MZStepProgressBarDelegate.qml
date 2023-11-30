@@ -26,7 +26,7 @@ Column {
     }
 
     //Width is set to the size of the button, so the label exceeds bounds
-    width: button.width
+    width: button.implicitWidth
 
     spacing: 8
 
@@ -140,17 +140,23 @@ Column {
             onTriggered: {
                 if (label.mapToItem(dontExtendPastComponent, 0, 0).x < 0) {
                     label.anchors.left = delegate.left
+                    label.anchors.leftMargin = label.mapToItem(dontExtendPastComponent, 0, 0).x * -1
                     label.anchors.right = undefined
+                    label.anchors.rightMargin = undefined
                     label.anchors.horizontalCenter = undefined
                 }
                 else if (label.mapToItem(dontExtendPastComponent, 0, 0).x + label.implicitWidth > dontExtendPastComponent.width) {
-                    label.anchors.left = undefined
-                    label.anchors.right = delegate.right
                     label.anchors.horizontalCenter = undefined
+                    label.anchors.left = undefined
+                    label.anchors.leftMargin = undefined
+                    label.anchors.right = delegate.right
+                    label.anchors.rightMargin = (dontExtendPastComponent.width - label.mapToItem(dontExtendPastComponent, 0, 0).x - label.implicitWidth) * -1
                 }
                 else {
                     label.anchors.left = undefined
+                    label.anchors.leftMargin = undefined
                     label.anchors.right = undefined
+                    label.anchors.rightMargin = undefined
                     label.anchors.horizontalCenter = delegate.horizontalCenter
                 }
 
