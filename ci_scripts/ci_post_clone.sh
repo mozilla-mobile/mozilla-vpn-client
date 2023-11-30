@@ -74,7 +74,8 @@ $QT_IOS_PATH/bin/qt-cmake -S . -GXcode \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DSENTRY_DSN=$SENTRY_DSN \
   -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
-  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN
 
 # Rename the default scheme to match the Xcode cloud configuration.
 XCPROJ_SCHEME_DIR=MozillaVPN.xcodeproj/xcshareddata/xcschemes
