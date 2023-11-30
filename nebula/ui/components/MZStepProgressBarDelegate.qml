@@ -120,7 +120,6 @@ Column {
 
         anchors.horizontalCenter: delegate.horizontalCenter
 
-        elide: Text.ElideNone
         maximumLineCount: 1
         font.pixelSize: MZTheme.theme.fontSizeSmallest
         lineHeightMode: Text.FixedHeight
