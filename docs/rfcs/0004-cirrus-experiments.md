@@ -3,13 +3,9 @@
 - Author: [@brizental](https://github.com/brizental)
 - RFC PR: [#TODO](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO)
 - Implementation GitHub issue: TODO
-  
+
 Mozilla VPN and Nimbus Integration
 ==================================
-
-Author: Beatriz Rizental (brizental)
-
-Ticket: [VPN-5247](https://mozilla-hub.atlassian.net/browse/VPN-5247)
 
 TIMELINE
 ========
@@ -150,13 +146,13 @@ Client side will be responsible for querying the server for active features and 
 
 In order for Nimbus to run its targeting logic, it requires an experimenter id to be attached to each request.
 
-The experimenter id must be generated per user. It's important that this is user based to ensure users are assigned to the same features in all of their logged in devices.
+The experimenter id must be generated per user. It's important that this is user based to ensure users are assigned to the same features in all of their logged in devices. The Mozilla VPN client already has access to an identifier that fits the requirements of the experimenter id: the FxA id. Therefore that id will be used for this purpose.
 
-That poses an issue for non-logged in users. In these cases, a random UUID will be generated for the experimenter id. (See also question 2. on the "Open questions" section of this document).
+That poses an issue for non-logged in users. In these cases, a random UUID will be generated for the experimenter id and the id will be switched to the FxA once the user successfully logs in. (See also question 2. on the "Open questions" section of this document).
 
-Nimbus relies on Glean data for experiment analysis. Therefore the generated experimenter id needs to be included in all Glean pings. The Glean team is working on a new API that will facilitate setting this id, see[  Bug 1848201](https://bugzilla.mozilla.org/show_bug.cgi?id=1848201). The Mozilla VPN application will rely on this API to provide the experiment id to Glean.
+Nimbus relies on Glean data for experiment analysis. Therefore the generated experimenter id needs to be included in all Glean pings. The Glean team is working on a new API that will facilitate setting this id, see [Bug 1848201](https://bugzilla.mozilla.org/show_bug.cgi?id=1848201). The Mozilla VPN application will rely on this API to provide the experiment id to Glean.
 
-Timing: The experimenter id must be set as soon as possible on the application lifecycle, since it is required for all Cirrus requests and should be included in all Glean pings.
+Timing: The experimenter id must be set as soon as possible on the application life cycle, since it is required for all Cirrus requests and should be included in all Glean pings.
 
 #### 2\. Query Nimbus for active features
 
@@ -224,6 +220,10 @@ Experimental feature settings will only have public getters. They may only be se
 It will be the responsibility of the TaskGetFeatureList at the time of parsing the featurelist response, to set each of these settings to the received value. Turning the feature on will happen only after all settings are set.
 
 Experiment treatments may also be in the form of addons. Addons can be conditioned to feature flags already, therefore nothing is required by the addons infrastructure to attend to this proposal.
+
+#### 4\. EXTRA: Experimentation opt-out
+
+Users will be able to opt-out of telemetry and experimentation independently. These options will be available to users in the Settings section of the VPN application. Design for the user experience of these options is still TBD (See: VPN-5862).
 
 Validation
 ----------
