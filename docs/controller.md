@@ -29,7 +29,7 @@ sequenceDiagram
     Controller->>Controller: m_nextServerData = Yc
     Controller->>Controller: Connected
     Controller->>Controller: deactivate...
-    Controller->>Controller: ativate(m_nextServerData)
+    Controller->>Controller: activate(m_nextServerData)
     Controller->>Controller: m_serverData = m_nextServerData
     deactivate Controller
 ```
