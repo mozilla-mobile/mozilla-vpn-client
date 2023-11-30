@@ -61,8 +61,8 @@ Item {
                 objectName: model.objectName
 
                 iconSource: model.iconSource
-                labelText: MZI18n[model.labelText]
-                labelWidth: progressBar.width / progressBar.model.count
+                label.text: MZI18n[model.labelText]
+                label.visible: index === progressBar.activeIndex
                 currentState: {
                     if (index === activeIndex) {
                         MZStepProgressBarDelegate.State.Active

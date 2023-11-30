@@ -12,10 +12,10 @@ import compat 0.1
 Column {
     id: delegate
     property string iconSource
-    property alias labelText: label.text
-    property alias labelWidth: label.width
+    property alias label: label
     property string accessibleName: ""
     property int currentState: MZStepProgressBarDelegate.State.Incomplete
+    property var dontExtendPastComponent: window.contentItem //Component that the label should never extend past
 
     signal clicked
 
@@ -26,7 +26,7 @@ Column {
     }
 
     //Width is set to the size of the button, so the label exceeds bounds
-    width: button.implicitWidth
+    width: button.width
 
     spacing: 8
 
@@ -118,15 +118,44 @@ Column {
     MZInterLabel {
         id: label
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: delegate.horizontalCenter
 
-        elide: Text.ElideRight
-        maximumLineCount: 2
+        elide: Text.ElideNone
+        maximumLineCount: 1
         font.pixelSize: MZTheme.theme.fontSizeSmallest
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight
         color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.purple70 : MZTheme.theme.fontColorDark
 
         Accessible.ignored: true
+
+        onTextChanged: labelRepositionTimer.start
+
+        //Hacky workaround to reposition label based on its global x coordinate (so it is not clipped by the window)
+        //For some reason, label.mapToItem(window.contentItem, 0, 0).x returns 0 if done inside component.onCompleted, hence the timer
+        Timer {
+            id: labelRepositionTimer
+            running: true
+            interval: 1
+            onTriggered: {
+                if (label.mapToItem(dontExtendPastComponent, 0, 0).x < 0) {
+                    label.anchors.left = delegate.left
+                    label.anchors.right = undefined
+                    label.anchors.horizontalCenter = undefined
+                }
+                else if (label.mapToItem(dontExtendPastComponent, 0, 0).x + label.implicitWidth > dontExtendPastComponent.width) {
+                    label.anchors.left = undefined
+                    label.anchors.right = delegate.right
+                    label.anchors.horizontalCenter = undefined
+                }
+                else {
+                    label.anchors.left = undefined
+                    label.anchors.right = undefined
+                    label.anchors.horizontalCenter = delegate.horizontalCenter
+                }
+
+                label.width = label.implicitWidth
+            }
+        }
     }
 }
