@@ -14,6 +14,7 @@ MZViewBase {
     id: vpnFlickable
     objectName: "settingsView"
     _menuTitle: MZI18n.NavBarSettingsTab
+    visible: false
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
@@ -193,6 +194,7 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
+        vpnFlickable.visible = true;
         Glean.sample.settingsViewOpened.record();
     }
 }

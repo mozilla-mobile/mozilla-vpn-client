@@ -14,6 +14,7 @@ import components.forms 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "messageInboxView"
+    visible: false
 
     property bool isEmptyState
     property bool isEditing: false
@@ -345,5 +346,9 @@ MZViewBase {
         Component.onCompleted: {
             vpnFlickable.isEmptyState = Qt.binding(() => { return messagesModel.count === 0} )
         }
+    }
+
+    Component.onCompleted: {
+        vpnFlickable.visible = true;
     }
 }
