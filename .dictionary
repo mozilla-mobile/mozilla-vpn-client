@@ -1,7 +1,6 @@
-personal_ws-1.1 en 212 utf-8
+personal_ws-1.1 en 232 utf-8
 ADRs
 APIs
-apk's
 Adblock
 AdjustSdk
 Affero
@@ -18,9 +17,12 @@ FFI
 FeatureList
 FreeDesktop
 FxA
+GDocs
 GPL
+Github
 GmbH
 HACL
+HTTPS
 Homebrew
 HowTo
 INRIA
@@ -32,6 +34,7 @@ LLC
 LTS
 Lerche
 Linters
+Lockhart
 LottieAnimation
 MERCHANTABILITY
 MPL
@@ -52,8 +55,8 @@ RCC
 README
 RSA
 Replacer
+Rizental
 Rustup
-scalable
 SDKs
 SHA
 Serde
@@ -64,6 +67,7 @@ TODO
 TORTIOUS
 TOTP
 TP
+TaskGetFeatureList
 UniFFI
 WebAssembly
 WebSockets
@@ -82,9 +86,11 @@ analytics
 anonymized
 api
 apk
+apk's
 aqt
 assignees
 att
+auth
 backend
 backgrounded
 benchmarked
@@ -94,6 +100,7 @@ bugfixes
 byteorder
 cancelled
 cldr
+cloudops
 cmake
 codebase
 colima
@@ -114,12 +121,17 @@ eq
 executables
 exitCity
 exitCountryCode
+experimentalFeatures
+experimentalfeaturelist
 facto
+featurelist
+featuresOverride
 frontend
+getters
 gobject
 golang
-gradle
 gps
+gradle
 iap
 idfv
 ie
@@ -178,6 +190,7 @@ resolvconf
 rlottie
 runtime
 rustup
+scalable
 sdk
 serverData
 settingHolder
@@ -189,10 +202,13 @@ sublicense
 submodule
 symlink
 taskcluster
+th
 tmp
+toggleable
 tooltip
 ui
 ulist
+unenrolled
 uploader
 urls
 utils
