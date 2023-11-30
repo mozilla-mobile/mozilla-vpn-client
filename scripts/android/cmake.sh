@@ -129,6 +129,7 @@ if [[ "$ADJUST_SDK_TOKEN" ]]; then
   print Y "Use adjust config"
   ADJUST="CONFIG+=adjust"
 else
+  print Y "No adjust token found."
   ADJUST="CONFIG-=adjust"
 fi
 
