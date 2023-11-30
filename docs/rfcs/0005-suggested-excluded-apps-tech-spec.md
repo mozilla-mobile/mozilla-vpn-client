@@ -107,7 +107,7 @@ This is how we save the applications that a user has excluded:
 **How we'll match to suggested list**
 - Android: Bundle ID. Suggested list for Android will have strings like this: `com.google.android.GoogleCamera`
 - Windows: Application folder + application name. Suggested list for Windows will have strings like this: `Firefox Nightly/firefox.exe`. This will not match if the user picks a non-standard install folder, but lowers chance of false or malicious positives that just call themselves `firefox.exe`. Additionally, if a user doesn’t use the default folder name, there is a good chance they are a more advanced user, for what that is worth.
-- Linux: Similar to Windows, application directory + name. Suggested list for Linux will have strings like this: `applications/firefox.desktop`. This has similar tradeoffs as Windows, on the line above.
+- Linux: Similar to Windows, application directory + name. Suggested list for Linux will have strings like this: `applications/firefox.desktop`. This has similar trade-offs as Windows, on the line above.
 
 Rolling back the JSON file
 ---------------------
