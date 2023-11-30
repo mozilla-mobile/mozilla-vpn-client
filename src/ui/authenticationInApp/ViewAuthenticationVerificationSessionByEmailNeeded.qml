@@ -15,22 +15,6 @@ MZInAppAuthenticationBase {
 
     _telemetryScreenId: "enter_verification_code"
     _viewObjectName: "authVerificationSessionByEmailNeeded"
-    _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
-    _menuButtonOnClick: () => {
-        if (isReauthFlow) {
-            // No telemetry.
-            // Re-auth flow is not contemplated by the telemetry design.
-
-            cancelAuthenticationFlow();
-        } else {
-            Glean.interaction.closeSelected.record({
-                screen: _telemetryScreenId,
-            });
-
-            MZAuthInApp.reset();
-        }
-    }
-    _menuButtonAccessibleName: MZI18n.GlobalClose
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
