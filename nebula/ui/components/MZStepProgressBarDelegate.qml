@@ -129,7 +129,7 @@ Column {
 
         Accessible.ignored: true
 
-        onTextChanged: labelRepositionTimer.start
+        onTextChanged: labelRepositionTimer.start()
 
         //Hacky workaround to reposition label based on its global x coordinate (so it is not clipped by the window)
         //For some reason, label.mapToItem(window.contentItem, 0, 0).x returns 0 if done inside component.onCompleted, hence the timer
