@@ -660,10 +660,12 @@ void Controller::connected(const QString& pubkey,
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
 
-  logger.debug() << "Connection happened due to server switch:"
-                 << isActivatingFromSwitch;
   if (!isActivatingFromSwitch) {
+    logger.debug() << "Collecting telemetry for new session.";
     emit newConnectionSucceeded();
+  } else {
+    logger.debug() << "Connection happened due to server switch. Not "
+                      "collecting telemetry.";
   }
 
   // In case the Controller provided a valid timestamp that
