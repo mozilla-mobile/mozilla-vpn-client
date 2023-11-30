@@ -18,6 +18,9 @@ Item {
    property alias _interactive: vpnFlickable.interactive
    property alias _contentHeight: vpnFlickable.contentHeight
 
+   Accessible.name: _menuTitle
+   Accessible.role: Accessible.PopupMenu
+
    anchors {
        top: if (parent) parent.top
    }
@@ -44,6 +47,14 @@ Item {
                 topMargin: MZTheme.theme.viewBaseTopMargin
                 bottomMargin: navbar.visible ? 0 : MZTheme.theme.rowHeight
             }
+        }
+    }
+
+    onVisibleChanged: {
+        // Screens with LoadPersistently policy have their visiblity turned on when they become the
+        // current screen. Reset focus to the root to clear the previous focus.
+        if (visible) {
+            root.forceActiveFocus();
         }
     }
 
