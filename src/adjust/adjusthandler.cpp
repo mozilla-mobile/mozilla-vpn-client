@@ -39,7 +39,9 @@ void AdjustHandler::initialize() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-// If this works, definitely need a comment.
+// This file should only run if MZ_ADJUST is active, which means we shouldn't
+// need to check for the flag here. However, to prevent compiler errors we need
+// to wrap every use of the adjustActivatable setting in this flag.
 #ifdef MZ_ADJUST
   if (settingsHolder->firstExecution() &&
       !settingsHolder->hasAdjustActivatable()) {
