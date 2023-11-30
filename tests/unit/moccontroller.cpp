@@ -91,3 +91,5 @@ QString Controller::currentServerString() const { return QString("42"); }
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&) {}
+
+void Controller::forceDaemonCrash() {}

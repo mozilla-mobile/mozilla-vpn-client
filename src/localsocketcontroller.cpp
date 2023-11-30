@@ -4,29 +4,36 @@
 
 #include "localsocketcontroller.h"
 
-#include <QDir>
 #include <QFileInfo>
-#include <QHostAddress>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QStandardPaths>
 
 #include "errorhandler.h"
-#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/device.h"
-#include "models/keys.h"
-#include "models/server.h"
-#include "settingsholder.h"
 
-// How many times do we try to reconnect.
-constexpr int MAX_CONNECTION_RETRY = 10;
+#ifdef MZ_MACOS
+#  include <Security/Authorization.h>
+#  include <Security/AuthorizationTags.h>
+#  include <signal.h>
+#  include <sys/socket.h>
+#  include <sys/un.h>
+#  include <unistd.h>
 
-// How long do we wait between one try and the next one.
-constexpr int CONNECTION_RETRY_TIMER_MSEC = 500;
+#  include <QProcess>
+#  include <QScopeGuard>
+#endif
+
+// When the daemon is unreachable, we will retry indefinitely using an
+// exponential backoff algorithm. The interval between retries starts at
+// the initial value, and doubles after each failed connection attempt,
+// with time between each retry clamped to the maximum value.
+//
+// This means that if the daemon never starts, the steady-state behaviour will
+// have the client retry every 16 seconds indefinitely.
+constexpr int CONNECTION_RETRY_INITIAL_MSEC = 500;    // 0.5 seconds
+constexpr int CONNECTION_RETRY_MAXIMUM_MSEC = 16000;  // 16 seconds
 
 namespace {
 Logger logger("LocalSocketController");
@@ -45,6 +52,7 @@ LocalSocketController::LocalSocketController() {
   connect(m_socket, &QLocalSocket::readyRead, this,
           &LocalSocketController::readData);
 
+  m_initializingInterval = CONNECTION_RETRY_INITIAL_MSEC;
   m_initializingTimer.setSingleShot(true);
   connect(&m_initializingTimer, &QTimer::timeout, this,
           &LocalSocketController::initializeInternal);
@@ -52,30 +60,27 @@ LocalSocketController::LocalSocketController() {
 
 LocalSocketController::~LocalSocketController() {
   MZ_COUNT_DTOR(LocalSocketController);
+  clearAllTimeouts();
 }
 
 void LocalSocketController::errorOccurred(
     QLocalSocket::LocalSocketError error) {
   logger.error() << "Error occurred:" << error;
 
-  if (m_daemonState == eInitializing) {
-    if (m_initializingRetry++ < MAX_CONNECTION_RETRY) {
-      m_initializingTimer.start(CONNECTION_RETRY_TIMER_MSEC);
-      return;
-    }
-
-    emit initialized(false, false, QDateTime());
+  if (m_daemonState != eInitializing) {
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    emit disconnected();
   }
 
-  REPORTERROR(ErrorHandler::ControllerError, "controller");
-  disconnectInternal();
+  // We have lost communication with the daemon, try to reconnect.
+  clearAllTimeouts();
+  m_initializingTimer.start(m_initializingInterval);
 }
 
 void LocalSocketController::disconnectInternal() {
   // We're still eReady as the Deamon is alive
   // and can make a new connection.
   m_daemonState = eReady;
-  m_initializingRetry = 0;
   m_initializingTimer.stop();
   emit disconnected();
 }
@@ -87,12 +92,19 @@ void LocalSocketController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(keys);
 
   Q_ASSERT(m_daemonState == eUnknown);
-  m_initializingRetry = 0;
 
   initializeInternal();
 }
 
 void LocalSocketController::initializeInternal() {
+  // Perform an exponential backoff when trying to connect to the daemon. This
+  // ensures that we will reconnect gracefully even if it takes the daemon a
+  // while to start up, or needs time to recover from a crash.
+  if (m_daemonState != eInitializing) {
+    m_initializingInterval = CONNECTION_RETRY_INITIAL_MSEC;
+  } else if (m_initializingInterval < CONNECTION_RETRY_MAXIMUM_MSEC) {
+    m_initializingInterval *= 2;
+  }
   m_daemonState = eInitializing;
 
 #ifdef MZ_WINDOWS
@@ -105,6 +117,7 @@ void LocalSocketController::initializeInternal() {
 #endif
 
   logger.debug() << "Connecting to:" << path;
+  m_socket->abort();
   m_socket->connectToServer(path);
 }
 
@@ -152,7 +165,7 @@ void LocalSocketController::checkStatus() {
 
     QJsonObject json;
     json.insert("type", "status");
-    write(json);
+    write(json, "status");
   }
 }
 
@@ -192,7 +205,7 @@ void LocalSocketController::cleanupBackendLogs() {
 
   QJsonObject json;
   json.insert("type", "cleanlogs");
-  write(json);
+  write(json, "logs", 5000);
 }
 
 void LocalSocketController::readData() {
@@ -239,6 +252,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   QString type = typeValue.toString();
 
   logger.debug() << "Parse command:" << type;
+  clearTimeout(type);
 
   if (m_daemonState == eInitializing && type == "status") {
     m_daemonState = eReady;
@@ -343,9 +357,107 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   logger.warning() << "Invalid command received:" << command;
 }
 
-void LocalSocketController::write(const QJsonObject& json) {
+void LocalSocketController::write(const QJsonObject& message,
+                                  const QString& expectedResponseType,
+                                  int timeout) {
+  QByteArray payload = QJsonDocument(message).toJson(QJsonDocument::Compact);
+  payload.append('\n');
+
+  // If an immediate response to this message is expected, start a timer to
+  // throw an error if that response fails to arrive in a timely manner. This
+  // is used to detect a crash or failure of the daemon.
+  if (!expectedResponseType.isEmpty()) {
+    QTimer* t = new QTimer(this);
+    connect(t, &QTimer::timeout, this,
+            [&] { this->errorOccurred(QLocalSocket::SocketTimeoutError); });
+
+    t->setProperty("responseType", QVariant(expectedResponseType));
+    t->setSingleShot(true);
+    t->start(timeout);
+
+    m_responseTimeouts.append(t);
+  }
+
   Q_ASSERT(m_socket);
-  m_socket->write(QJsonDocument(json).toJson(QJsonDocument::Compact));
-  m_socket->write("\n");
+  m_socket->write(payload);
   m_socket->flush();
+}
+
+void LocalSocketController::clearTimeout(const QString& responseType) {
+  // We assume that responses arrive in the same order, the local socket
+  // API has no mechanism to detect out-of-order responses, and any change
+  // here to add such a mechanism would risk a compatibility issue.
+  for (QTimer* t : m_responseTimeouts) {
+    QVariant timerResponseType = t->property("responseType");
+    if (timerResponseType.type() != QVariant::String) {
+      continue;
+    }
+    if (timerResponseType.toString() != responseType) {
+      continue;
+    }
+    m_responseTimeouts.removeOne(t);
+    delete t;
+  }
+}
+
+void LocalSocketController::clearAllTimeouts() {
+  while (!m_responseTimeouts.isEmpty()) {
+    QTimer* t = m_responseTimeouts.takeFirst();
+    delete t;
+  }
+}
+
+void LocalSocketController::forceDaemonCrash() {
+#ifdef MZ_MACOS
+  pid_t pid;
+  socklen_t len = sizeof(pid);
+  int sd = m_socket->socketDescriptor();
+  if (getsockopt(sd, SOL_LOCAL, LOCAL_PEERPID, &pid, &len) < 0) {
+    return;
+  }
+  if ((pid <= 0) || (pid == getpid())) {
+    return;
+  }
+
+  // Create an authorization session.
+  AuthorizationRef authRef;
+  AuthorizationFlags authFlags =
+      kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed |
+      kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights;
+  OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment,
+                                        authFlags, &authRef);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to acquire authorization:" << status;
+    return;
+  }
+  auto authGuard = qScopeGuard(
+      [&] { AuthorizationFree(authRef, kAuthorizationFlagDefaults); });
+
+  // Acquire execution permissions.
+  AuthorizationItem authItems = {kAuthorizationRightExecute, 0, nullptr, 0};
+  AuthorizationRights authRights = {1, &authItems};
+  status = AuthorizationCopyRights(authRef, &authRights, nullptr, authFlags,
+                                   nullptr);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy authorization rights:" << status;
+    return;
+  }
+
+  // Execute 'kill' to terminate the daemon as though it crashed.
+  logger.warning() << "Sending SIGSEGV to:" << pid;
+  QByteArray pidString = QString::number(pid).toUtf8();
+  char killpath[] = "/bin/kill";
+  char killsignal[] = "-SEGV";
+  char* const killargs[] = {killsignal, pidString.data(), nullptr};
+
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  status = AuthorizationExecuteWithPrivileges(
+      authRef, killpath, kAuthorizationFlagDefaults, killargs, nullptr);
+#  pragma clang diagnostic pop
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy execute tool:" << status;
+    return;
+  }
+#endif
 }

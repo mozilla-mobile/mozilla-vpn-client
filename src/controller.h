@@ -98,6 +98,7 @@ class Controller : public QObject, public LogSerializer {
   bool deactivate();
 
   Q_INVOKABLE void quit();
+  Q_INVOKABLE void forceDaemonCrash();
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
@@ -221,6 +222,7 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
+  bool isActivatingFromSwitch;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;

@@ -10,6 +10,7 @@ CHACHA
 CLI
 CMU
 CMake
+CSV
 Changelog
 Conda
 ConnectionDiagnostics
@@ -45,6 +46,7 @@ Mozillians
 NDK
 NONINFRINGEMENT
 OpenSSL
+PeriodicWorkRequest
 QML
 QMLs
 QMake

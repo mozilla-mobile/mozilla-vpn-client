@@ -164,8 +164,6 @@ void Controller::implInitialized(bool status, bool a_connected,
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
-  Q_ASSERT(m_state == Controller::StateInitializing);
-
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
     setState(StateOff);
@@ -230,6 +228,12 @@ void Controller::quit() {
       m_state == StateCheckSubscription) {
     deactivate();
     return;
+  }
+}
+
+void Controller::forceDaemonCrash() {
+  if (m_impl) {
+    m_impl->forceDaemonCrash();
   }
 }
 
@@ -350,6 +354,11 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
+  if (!device) {
+    logger.warning() << "No current device. Aborting activation.";
+    m_nextStep = Disconnect;
+    return;
+  }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   // Prepare the exit server's connection data.
@@ -654,7 +663,14 @@ void Controller::connected(const QString& pubkey,
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
-  emit newConnectionSucceeded();
+
+  if (!isActivatingFromSwitch) {
+    logger.debug() << "Collecting telemetry for new session.";
+    emit newConnectionSucceeded();
+  } else {
+    logger.debug() << "Connection happened due to server switch. Not "
+                      "collecting telemetry.";
+  }
 
   // In case the Controller provided a valid timestamp that
   // should be used.
@@ -895,6 +911,10 @@ bool Controller::activate(const ServerData& serverData,
     logger.debug() << "Already connected";
     return false;
   }
+
+  isActivatingFromSwitch = (m_state == Controller::StateSwitching ||
+                            m_state == Controller::StateSilentSwitching);
+  logger.debug() << "Set isActivatingFromSwitch to" << isActivatingFromSwitch;
 
   m_serverData = serverData;
 

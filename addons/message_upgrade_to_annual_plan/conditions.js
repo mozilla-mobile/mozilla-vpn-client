@@ -25,7 +25,7 @@
     let fourteenDaysAfterSubscriptionStarted = api.subscriptionData.createdAt + 1000 * 60 * 60 * 24 * 14
     let eightySevenDaysAfterSubscriptionStarted = api.subscriptionData.createdAt + 1000 * 60 * 60 * 24 * 87
 
-    if (isMonthlyWebPlan) {
+    if (isMonthlyWebPlan()) {
       //Less than 14 days into the subscription, don't show message
       if (now < fourteenDaysAfterSubscriptionStarted) {
         api.setTimedCallback(fourteenDaysAfterSubscriptionStarted - now, () => computeCondition());
