@@ -804,9 +804,9 @@ interaction:
     send_in_pings:
       - main
     description: |
-      TheMy devices button in the Settings screen was selected
+      The My devices button in the Settings screen was selected
     bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-XXXX
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
     data_sensitivity:
