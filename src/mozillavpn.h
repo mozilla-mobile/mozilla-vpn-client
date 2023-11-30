@@ -110,7 +110,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void deactivate(bool block = false);
   Q_INVOKABLE void refreshDevices();
   Q_INVOKABLE void update();
-  Q_INVOKABLE void backendServiceRestore();
   Q_INVOKABLE void triggerHeartbeat();
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,

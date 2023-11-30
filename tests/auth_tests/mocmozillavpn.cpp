@@ -93,8 +93,6 @@ void MozillaVPN::setUpdating(bool) {}
 
 void MozillaVPN::controllerStateChanged() {}
 
-void MozillaVPN::backendServiceRestore() {}
-
 void MozillaVPN::heartbeatCompleted(bool) {}
 
 void MozillaVPN::triggerHeartbeat() {}

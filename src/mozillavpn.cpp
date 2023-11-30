@@ -1165,11 +1165,6 @@ void MozillaVPN::controllerStateChanged() {
   NetworkManager::instance()->clearCache();
 }
 
-void MozillaVPN::backendServiceRestore() {
-  logger.debug() << "Background service restore request";
-  // TODO
-}
-
 void MozillaVPN::heartbeatCompleted(bool success) {
   logger.debug() << "Server-side check done:" << success;
 
@@ -2165,6 +2160,15 @@ void MozillaVPN::registerInspectorCommands() {
         }
         return QJsonObject();
       });
+
+#ifdef MZ_MACOS
+  InspectorHandler::registerCommand(
+      "force_daemon_crash", "Force the VPN daemon to crash", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->controller()->forceDaemonCrash();
+        return QJsonObject();
+      });
+#endif
 }
 
 // static

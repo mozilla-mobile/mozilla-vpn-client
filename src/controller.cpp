@@ -164,8 +164,6 @@ void Controller::implInitialized(bool status, bool a_connected,
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
-  Q_ASSERT(m_state == Controller::StateInitializing);
-
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
     setState(StateOff);
@@ -230,6 +228,12 @@ void Controller::quit() {
       m_state == StateCheckSubscription) {
     deactivate();
     return;
+  }
+}
+
+void Controller::forceDaemonCrash() {
+  if (m_impl) {
+    m_impl->forceDaemonCrash();
   }
 }
 
