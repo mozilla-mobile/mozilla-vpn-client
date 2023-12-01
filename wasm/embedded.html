@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-us">
+    <script>
+
+
+
+    </script>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Mozilla VPN - WebAssembly Viewer</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+  </head>
+  <body onload="mvpnWasm.init()" class="wasm-loading">
+    <canvas id="qmlcanvas" oncontextmenu="event.preventDefault()" contenteditable="false" tabindex="-1"></canvas>
+    <div id="qtstatus" style="display: none;"></div>
+    <div id="preset" style="display: none;"></div>
+    <button id="backButton" style="display: none;"></button>
+    <canvas id="controlcanvas" width="0" height="0" style="display: none;"></canvas>
+    <script type="text/javascript" src="fxa_endpoints.js"></script>
+    <script type="text/javascript" src="guardian_endpoints.js"></script>
+    <script type="text/javascript" src="controller.js"></script>
+    <script type="text/javascript" src="presets.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="qtloader.js"></script>
+  </body>
+  <style>
+    html,
+    body {
+        padding: 0;
+        margin : 0;
+        height: 100vh;
+        width: 100vw;
+        background-color: black;
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    canvas{
+        cursor: default !important;
+    }
+  </style>
+  <script>
+    let planned_resize = false;
+    
+    const resizeCanvas = ()=>{
+        if(planned_resize){return;}
+        planned_resize=true
+        const canvas = document.querySelector("#qmlcanvas")
+        requestAnimationFrame(()=>{
+    
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            planned_resize = false;
+        })
+    }
+
+    window.addEventListener("resize", resizeCanvas, {passive:true});
+    window.addEventListener("load", resizeCanvas, {passive:true});
+
+  </script>
+</html>
+
