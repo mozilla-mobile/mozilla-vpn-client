@@ -38,6 +38,8 @@
     }
     canvas{
         cursor: default !important;
+        height: 100vh;
+        width: 100vw;
     }
   </style>
   <script>
@@ -49,8 +51,8 @@
         const canvas = document.querySelector("#qmlcanvas")
         requestAnimationFrame(()=>{
     
-            canvas.height = window.innerHeight;
-            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight /window.devicePixelRatio;
+            canvas.width = window.innerWidth / window.devicePixelRatio;
             planned_resize = false;
         })
     }
