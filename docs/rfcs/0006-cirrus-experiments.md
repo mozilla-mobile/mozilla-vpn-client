@@ -1,7 +1,7 @@
 - Status:
 - Date: 2023-10-16
 - Author: [@brizental](https://github.com/brizental)
-- RFC PR: [#TODO](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO)
+- RFC PR: [#8297](https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8297)
 - Implementation GitHub issue: TODO
 
 Mozilla VPN and Nimbus Integration
@@ -15,6 +15,8 @@ TIMELINE
 2023-09-21: Feedback Requested on GDocs (accepting feedback until October 13th)
 
 2023-10-16: Feedback Request on Github
+
+2023-12-01: Approved
 
 > **Note**: This RFC was first shared on Google Docs. See: https://docs.google.com/document/d/1TqAlbwuNCx4fXgZvvQhmg6nBKBOPfFC2iYU1AfGYjTI/edit
 
