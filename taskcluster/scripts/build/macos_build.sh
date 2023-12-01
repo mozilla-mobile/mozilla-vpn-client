@@ -132,7 +132,7 @@ fi
 
 cp -r ${TASK_HOME}/build/src/Mozilla\ VPN.app tmp || die
 cp -r ${TASK_HOME}/build/macos/pkg/Resources tmp || die
-cp -r ./macos/pkg/scripts tmp || die
+cp -r ${TASK_HOME}/build/macos/pkg/scripts tmp || die
 cp -r ./macos/pkg/Distribution tmp || die
 
 print Y "Compressing the build artifacts..."
