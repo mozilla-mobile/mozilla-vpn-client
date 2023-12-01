@@ -6,6 +6,10 @@ set -e
 
 source /opt/emsdk/emsdk_env.sh
 
+export CCACHE_DIR=/builds/worker/checkouts/.ccache
+mkdir -p .ccache
+
+
 # Reqs
 git submodule update --init --depth 1
 
@@ -13,7 +17,10 @@ pip3 install -r requirements.txt
 
 export PATH="$QTPATH/wasm_32/bin:$PATH"
 mkdir build
-$QTPATH/wasm_32/bin/qt-cmake -S . -B build -DQT_HOST_PATH=/$QTPATH/gcc_64 -DQT_HOST_PATH_CMAKE_DIR=/$QTPATH/gcc_64/lib/cmake
+$QTPATH/wasm_32/bin/qt-cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DQT_HOST_PATH=/$QTPATH/gcc_64 \
+    -DQT_HOST_PATH_CMAKE_DIR=/$QTPATH/gcc_64/lib/cmake
 cmake --build build -j8
 
 # Artifacts should be placed here!
