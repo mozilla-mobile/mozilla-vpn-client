@@ -55,7 +55,7 @@ jobs:
             -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
             -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64
           cmake --build build/cmake -j4
-          cp -r build/cmake/wasm_build build/wasm_build
+          cmake --install build/cmake --prefix build/wasm_build
 
       - name: Compile test addons
         shell: bash

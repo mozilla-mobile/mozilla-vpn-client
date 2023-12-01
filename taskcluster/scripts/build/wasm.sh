@@ -24,7 +24,6 @@ cmake --build build -j8
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/
-
-cp -r build/wasm_build/* /builds/worker/artifacts/
+cmake --install build --prefix /builds/worker/artifacts/
 
 ccache -s

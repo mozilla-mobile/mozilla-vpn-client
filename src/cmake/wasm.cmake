@@ -2,6 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+add_link_options(-Wno-unused-command-line-argument)
+
+
+
 target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.h
@@ -21,17 +25,20 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
 )
 
-set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/wasm_build)
-add_custom_command(
-     TARGET mozillavpn
-     POST_BUILD
-     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/wasm ${WASM_FINAL_DIR}
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.js ${WASM_FINAL_DIR}/mozillavpn.js
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.wasm ${WASM_FINAL_DIR}/mozillavpn.wasm
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/qtloader.js ${WASM_FINAL_DIR}/qtloader.js
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/fxa_endpoints.js ${WASM_FINAL_DIR}/fxa_endpoints.js
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js ${WASM_FINAL_DIR}/guardian_endpoints.js
-     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/tools/logviewer ${WASM_FINAL_DIR}/logviewer
-)
+# Install the Compile Artifacts
+install(FILES ${CMAKE_BINARY_DIR}/src/mozillavpn.js DESTINATION .)
+install(FILES ${CMAKE_BINARY_DIR}/src/mozillavpn.wasm DESTINATION .)
+install(FILES ${CMAKE_BINARY_DIR}/src/qtloader.js DESTINATION .)
+# Install the Emulator for Guardian and FXA
+install(FILES ${CMAKE_SOURCE_DIR}/tests/functional/servers/fxa_endpoints.js DESTINATION .)
+install(FILES ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js DESTINATION .)
+
+# Install the static runner web-page
+set(WASM_RUNTIME_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../wasm)
+file(GLOB_RECURSE WASM_FILES ${WASM_RUNTIME_SOURCE_DIR}/*)
+foreach(WASM_FILE ${WASM_FILES})
+    get_filename_component(FILE_NAME ${WASM_FILE} NAME)
+    install(FILES ${WASM_FILE} DESTINATION .)
+endforeach()
 
 add_compile_definitions("MZ_DUMMY")
