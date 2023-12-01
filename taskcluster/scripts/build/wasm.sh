@@ -6,7 +6,6 @@ set -e
 
 source /opt/emsdk/emsdk_env.sh
 
-export CCACHE_DIR=/builds/worker/checkouts/.ccache
 mkdir -p .ccache
 
 
