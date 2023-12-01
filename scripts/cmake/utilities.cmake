@@ -1,5 +1,5 @@
 
-# Set's Defaults like `-Wall -Werror` if we know it will not 
+# Sets Defaults like `-Wall -Werror` if we know it will not 
 # explode on that target + compiler
 function(mz_target_handle_warnings MZ_TARGET)
     if(MSVC OR IOS)
