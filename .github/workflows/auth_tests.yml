@@ -44,6 +44,9 @@ jobs:
 
   macos-unit-tests:
     runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash -el {0}
     name: Run auth tests on MacOS
 
     steps:
