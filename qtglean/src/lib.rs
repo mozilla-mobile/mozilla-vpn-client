@@ -29,7 +29,7 @@ pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mu
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr) {
+pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr, locale: FfiStr) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
@@ -58,7 +58,7 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         app_build: env!("BUILD_ID").to_string(),
         app_display_version: env!("APP_VERSION").to_string(),
         channel: channel.to_string_fallible().ok(),
-        locale: None,
+        locale: locale.to_string_fallible().ok(),
     };
 
     register_pings();
@@ -86,7 +86,7 @@ pub extern "C" fn glean_shutdown() {
 }
 
 #[no_mangle]
-pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: FfiStr) {
+pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: FfiStr, locale: FfiStr) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
@@ -117,7 +117,7 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         app_build: env!("BUILD_ID").to_string(),
         app_display_version: env!("APP_VERSION").to_string(),
         channel: Some("testing".to_string()),
-        locale: None,
+        locale: locale.to_string_fallible().ok(),
     };
 
     glean::test_reset_glean(cfg, client_info, true);

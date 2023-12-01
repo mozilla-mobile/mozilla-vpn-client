@@ -104,7 +104,8 @@ void MZGlean::initialize() {
     return;
 #elif defined(UNIT_TEST) || defined(MZ_DUMMY)
     glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
-                           gleanDirectory.absolutePath().toUtf8());
+                           gleanDirectory.absolutePath().toUtf8(),
+                           QLocale::system().name().toUtf8());
 #elif defined(MZ_IOS)
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
@@ -118,7 +119,8 @@ void MZGlean::initialize() {
 
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
                      gleanDirectory.absolutePath().toUtf8(),
-                     Constants::inProduction() ? "production" : "staging");
+                     Constants::inProduction() ? "production" : "staging",
+                     QLocale::system().name().toUtf8());
 
     setLogPings(settingsHolder->gleanLogPings());
     if (settingsHolder->gleanDebugTagActive()) {
