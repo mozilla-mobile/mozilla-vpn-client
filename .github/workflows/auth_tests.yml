@@ -52,19 +52,22 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Install dependencies
-        shell: bash
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          environment-file: env.yml
+          activate-environment: vpn
+
+      - name: Install build dependencies
         run: |
-          pip3 install -r requirements.txt
+          ./scripts/macos/conda_install_extras.sh
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
       - name: Install Qt6
-        shell: bash
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
-          unzip -a mac.zip
-          sudo mv qt_dist /opt
-          cd ..
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
+          unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
       - name: Install Grcov
         if: steps.cache-grcov.outputs.cache-hit != 'true'
