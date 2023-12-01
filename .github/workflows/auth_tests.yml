@@ -72,21 +72,12 @@ jobs:
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
-      - name: Install Grcov
-        if: steps.cache-grcov.outputs.cache-hit != 'true'
-        shell: bash
+      - name: Compile test client
         run: |
-          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
-
-      - name: Building tests
-        shell: bash
-        run: |
-          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
-          mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake \
-            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
-          cmake --build $(pwd)/build --target app_auth_tests
+          mkdir -p build/cmake
+          cmake -S $(pwd) -B build/cmake -GNinja \
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+          cmake --build build/cmake -j$(nproc) --target app_auth_tests
 
       - name: Running tests
         shell: bash
