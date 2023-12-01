@@ -25,6 +25,9 @@ set_target_properties(build_tests PROPERTIES
         FOLDER "Tests"
 )
 
+# Include Global Helper functions
+include(scripts/cmake/utilities.cmake)
+
 ## Some workarounds for platform build quirks
 if(WIN32)
     ## CMake v3.20 has problems with race conditions in dependency generation.

@@ -7,9 +7,7 @@
 # statically.
 qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(mozillavpn PRIVATE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(mozillavpn)
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
