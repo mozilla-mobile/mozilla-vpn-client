@@ -1078,20 +1078,12 @@ describe('User authentication', function() {
             await goToVerificationScreen("AUTH_EMAILVER");
         });
 
-        it("impression event is recorded", async () => {
-            const  verificationViewEvent = await vpn.gleanTestGetValue("impression", "enterVerificationCodeScreen", "main");
-            assert.strictEqual(verificationViewEvent.length, 1)
-            const verificationViewEventExtras = verificationViewEvent[0].extra;
-            assert.strictEqual(screen, verificationViewEventExtras.screen);
-        });
-
-        it("close button event is recorded", async () => {
-            // Click the "Close" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_BACK_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "closeSelected",
-                screen
-            });
+        it('impression event is recorded', async () => {
+          const verificationViewEvent = await vpn.gleanTestGetValue(
+              "impression", "enterVerificationCodeScreen", "main");
+          assert.strictEqual(verificationViewEvent.length, 1)
+          const verificationViewEventExtras = verificationViewEvent[0].extra;
+          assert.strictEqual(screen, verificationViewEventExtras.screen);
         });
 
         it("get help event is recorded", async () => {

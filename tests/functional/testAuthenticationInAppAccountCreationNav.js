@@ -146,12 +146,12 @@ describe('User authentication', function() {
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
-                                 .AUTH_EMAILVER_BACK_BUTTON.visible());
 
       // Step 8: email verification -> start
-      await vpn.clickOnQuery(queries.screenAuthenticationInApp
-                                 .AUTH_EMAILVER_BACK_BUTTON.visible());
+      await vpn.waitForQueryAndClick(
+          queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
+              .visible());
+      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
