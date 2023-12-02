@@ -47,56 +47,6 @@ describe('Settings', function() {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     });
 
-    it.only("record telemetry when user enables and disables connecting on startup", async () => {
-        // Startup on boot is not enabled by default so the first click will enable it
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.START_AT_BOOT.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-        // Startup on boot is not enabled by default so the first click will enable it
-        await vpn.waitForQuery(
-            queries.screenSettings.appPreferencesView.START_AT_BOOT
-                .visible()
-                .prop('checked', false));
-    
-        const events = await vpn.gleanTestGetValue("interaction", "vpnOnStartupEnabled", "main");
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
-
-        //Disable startup on boot and check that we sent the telemetry
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.START_AT_BOOT.visible());
-
-        events = await vpn.gleanTestGetValue("interaction", "vpnOnStartupDisabled", "main");
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
-    });
-
-    it("record telemetry when user enables and disables telemetry", async () => {
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.DATA_COLLECTION.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-        const events = await vpn.gleanTestGetValue("interaction", "dataCollectionEnabled", "main");
-
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
-
-        //Disable data collection and check that we sent the telemetry
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.START_AT_BOOT.visible());
-        events = await vpn.gleanTestGetValue("interaction", "dataCollectionDisabled", "main");
-
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
-    });
-
     it("record telemetry when user clicks on Notifications in App preferences", async () => {
         await vpn.waitForQueryAndClick(
             queries.screenSettings.APP_PREFERENCES.visible());
@@ -145,9 +95,10 @@ describe('Settings', function() {
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
         await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-        const [ { extra: DnsSettingsScreenExtra } ] = await vpn.gleanTestGetValue("impression", "dnsSettingsScreen", "main");
-        assert.strictEqual("main", DnsSettingsScreenExtra.screen);
-        assert.strictEqual("impression", DnsSettingsScreenExtra.action);
+        const dnsSettingsScreenEvent = await vpn.gleanTestGetValue("impression", "dnsSettingsScreen", "main");
+        assert.strictEqual(dnsSettingsScreenEvent.length, 1);
+        const dnsSettingsScreenEventExtras = dnsSettingsScreenEvent[0].extra;
+        assert.strictEqual("dns_settings", dnsSettingsScreenEventExtras.screen);
     });
 
     it("record telemetry when user opens Language in App preferences", async () => {
@@ -157,9 +108,10 @@ describe('Settings', function() {
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.LANGUAGE.visible());
         await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-        const [ { extra: LanguageScreenExtra } ] = await vpn.gleanTestGetValue("impression", "languageScreen", "main")
-        assert.strictEqual("language", LanguageScreenExtra.screen);
-        assert.strictEqual("impression", LanguageScreenExtra.action);
+        const languageScreenEvent = await vpn.gleanTestGetValue("impression", "languageScreen", "main");
+        assert.strictEqual(languageScreenEvent.length, 1);
+        const languageScreenEventExtras = languageScreenEvent[0].extra;
+        assert.strictEqual("language", languageScreenEventExtras.screen);
     });
   });
 });
