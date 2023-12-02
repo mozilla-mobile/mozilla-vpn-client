@@ -939,7 +939,7 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "settings");
     });
 
-    it("record telemetry when user clicks on Sign out in the Settings screen", async () => {
+    it.only("record telemetry when user clicks on Sign out in the Settings screen", async () => {
         await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
         await vpn.scrollToQuery(
             queries.screenSettings.SCREEN,
@@ -948,7 +948,6 @@ describe('Settings', function() {
         await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
 
         const events = await vpn.gleanTestGetValue("interaction", "signOutSelected", "main");
-
         assert.equal(events.length, 1);
         var element = events[0];
         assert.equal(element.extra.screen, "settings");

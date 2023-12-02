@@ -22,12 +22,6 @@ MZViewBase {
     property bool dnsSelectionChanged: false
     readonly property string telemetryScreenId : "dns_settings"
 
-    // Component.onCompleted: {
-    //     Glean.impression.dnsSettingsScreen.record({
-    //         screen: telemetryScreenId,
-    //     });
-    // }
-
     function applyFrontendChanges(settingValue) {
         if (settingValue === MZSettings.Gateway) {
             root.dnsSelectionChanged = true;

@@ -167,9 +167,6 @@ MZViewBase {
                 }
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                 Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
-                onClicked: {
-                    Glean.interaction.signOutSelected.record({screen:telemetryScreenId})
-                }
             }
 
         }
