@@ -81,9 +81,8 @@ jobs:
 
       - name: Running tests
         shell: bash
-        working-directory: ./build/tests/auth_tests
+        working-directory: ./build/cmake/tests/auth_tests
         run: |
-          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
   windows-unit-tests:
