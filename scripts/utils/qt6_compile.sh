@@ -74,7 +74,6 @@ MACOS="
   -no-feature-qdbus \
   -appstore-compliant \
   -feature-texthtmlparser \ 
-  -feature-xml \
   -- \
   -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
 "
@@ -170,6 +169,7 @@ bash ./configure \
   -skip qtweb \
   -feature-imageformat_png \
   -feature-optimize_full \
+  -feature-xml \
   -qt-doubleconversion \
   -qt-libpng \
   -qt-zlib \
