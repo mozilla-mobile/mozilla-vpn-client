@@ -1,8 +1,7 @@
 about:
   description: Nimbus Feature Manifest for Monitor Web testing
 channels:
-  - staging
-  - production
+  - vpn
 features:
   example-feature:
     description: An example feature
@@ -16,10 +15,8 @@ features:
         type: Option<String>
         default: null
     defaults:
-      - channel: staging
+      - channel: vpn
         value: { "enabled": true }
-      - channel: production
-        value: { "something": "wicked" }
 
 types:
   objects: {}
