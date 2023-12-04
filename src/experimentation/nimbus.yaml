@@ -1,5 +1,5 @@
 about:
-  description: Nimbus Feature Manifest for Monitor Web testing
+  description: Nimbus Feature Manifest for Mozilla VPN testing
 channels:
   - vpn
 features:
