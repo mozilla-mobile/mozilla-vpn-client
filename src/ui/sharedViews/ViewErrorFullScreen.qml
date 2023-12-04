@@ -108,6 +108,8 @@ MZFlickable {
                     font.pixelSize: MZTheme.theme.fontSize
                     lineHeight: 22
                     text: errorMessage2
+                    // If empty, keep the white space for better layout, but ignore for Accessibility.
+                    Accessible.ignored: (text.length === 0) || !visible
                 }
 
                 MZLinkButton {
