@@ -210,6 +210,6 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
-        Glean.sample.settingsViewOpened.record();
+        Glean.impression.settingsScreen.record({screen:telemetryScreenId});
     }
 }
