@@ -75,4 +75,16 @@ describe('Settings', function() {
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
   });
+
+  // Dummy VPN does not have the Add Application button so we cannot currently test this.
+  // Jira issue: https://mozilla-hub.atlassian.net/browse/VPN-5974
+  it('Record telemetry when users clicks on Add application', async () => {
+    // await vpn.waitForQueryAndClick(appExclusionsView.ADD_APPLICATION_BUTTON.visible());
+    // await vpn.waitForQuery(appExclusionsView.STACKVIEW.ready());
+
+    // const events = await vpn.gleanTestGetValue("interaction", "addApplicationSelected", "main")
+    // assert.equal(events.length, 1);
+    // var element = events[0];
+    // assert.equal(element.extra.screen, "app_exclusions");
+  });
 });
