@@ -591,7 +591,7 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const  enterEmailViewEvent = await vpn.gleanTestGetValue("impression", "enterEmailScreen", "main");
+            const enterEmailViewEvent = await vpn.gleanTestGetValue("impression", "enterEmailScreen", "main");
             assert.strictEqual(enterEmailViewEvent.length, 1)
             const enterEmailViewEventExtras = enterEmailViewEvent[0].extra;
             assert.strictEqual(screen, enterEmailViewEventExtras.screen);

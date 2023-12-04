@@ -13,6 +13,9 @@ import components.forms 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "settingsLanguagesView"
+    readonly property string telemetryScreenId : "language"
+
+    Component.onCompleted: Glean.impression.languageScreen.record({screen:telemetryScreenId})
 
     //% "Language"
     _menuTitle :  qsTrId("vpn.settings.language")

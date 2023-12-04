@@ -422,3 +422,57 @@ impression:
       - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
+  app_preferences_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User is on the App preferences screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  dns_settings_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+        User has opened the DNS settings screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  language_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+        User has opened the Language screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

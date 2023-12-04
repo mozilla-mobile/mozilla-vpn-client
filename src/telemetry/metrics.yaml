@@ -811,24 +811,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  get_help_clicked_view_settings:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked "Get help" from the settings view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
   manage_account_clicked:
     type: event
     lifetime: ping
@@ -1533,24 +1515,6 @@ sample:
       - main
     description: |
       The user selected the view logs option within the help menu
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  settings_about_us_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user selected the about us option within the settings menu
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3630
     data_reviews:
