@@ -13,12 +13,13 @@ Item {
    id: root
 
    property string _menuTitle: ""
+   property string accessibleName: ""
    property var _menuOnBackClicked
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
    property alias _contentHeight: vpnFlickable.contentHeight
 
-   Accessible.name: _menuTitle
+   Accessible.name: (_menuTitle.length > 0) ? _menuTitle : accessibleName
    Accessible.role: Accessible.PopupMenu
 
    anchors {
