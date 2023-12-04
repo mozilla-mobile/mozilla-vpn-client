@@ -71,8 +71,8 @@ MACOS="
   -skip qtwayland  \
   -no-feature-quickcontrols2-ios \
   -no-feature-quickcontrols2-macos \
-  -appstore-compliant \
   -no-feature-qdbus \
+  -appstore-compliant \
   -feature-texthtmlparser \ 
   -feature-xml \
   -- \
@@ -132,7 +132,6 @@ bash ./configure \
   -no-feature-itemmodeltester \
   -no-feature-quick-sprite \
   -no-feature-quick-tableview \
-  -no-feature-quick-treeview \
   -no-feature-sql-sqlite \
   -no-feature-sql \
   -no-feature-dbus \
