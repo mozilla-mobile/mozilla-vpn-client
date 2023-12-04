@@ -15,7 +15,7 @@ Column {
     property alias label: label
     property string accessibleName: ""
     property int currentState: MZStepProgressBarDelegate.State.Incomplete
-    property var dontExtendPastComponent: window.contentItem //Component that the label should never extend past
+    property var clippingContainer: window.contentItem //Component that the label should never extend past
 
     signal clicked
 
@@ -137,25 +137,34 @@ Column {
             running: true
             interval: 1
             onTriggered: {
-                if (label.mapToItem(dontExtendPastComponent, 0, 0).x < 0) {
+                //Reset anchors
+                label.anchors.left = undefined
+                label.anchors.leftMargin = undefined
+                label.anchors.right = undefined
+                label.anchors.rightMargin = undefined
+                label.anchors.horizontalCenter = undefined
+
+                //When the label extends horizontally past the clippingContainer on the leading edge, mapToItem tells us how far past
+                //the leading edge the label is (eg -24px) and we use margin to set the X to the leading edge of the clippingContainer
+                //using the absolute value of the offset
+                if (label.mapToItem(clippingContainer, 0, 0).x < 0) {
                     label.anchors.left = delegate.left
-                    label.anchors.leftMargin = label.mapToItem(dontExtendPastComponent, 0, 0).x * -1
-                    label.anchors.right = undefined
-                    label.anchors.rightMargin = undefined
-                    label.anchors.horizontalCenter = undefined
+                    label.anchors.leftMargin = label.mapToItem(clippingContainer, 0, 0).x * -1
                 }
-                else if (label.mapToItem(dontExtendPastComponent, 0, 0).x + label.implicitWidth > dontExtendPastComponent.width) {
-                    label.anchors.horizontalCenter = undefined
-                    label.anchors.left = undefined
-                    label.anchors.leftMargin = undefined
+                //When the label extends horizontally past the clippingContainer on the trailing edge, we find how far past it extends
+                //by locating the X of the end of the label (label.mapToItem(clippingContainer, 0, 0).x - label.implicitWidth) and
+                //subtracting that from the clippingContainers width
+                //Eg clippingContainer width is 360px, but the X of the end of the label is 384. rightMargin = |360-384| or 24
+
+                //mapToItem tells us how far past
+                //the trailing edge the label is (eg -24px) and we use margin to set the X to the trailing edge of the clippingContainer
+                //using the absolute value of the offset
+                else if (label.mapToItem(clippingContainer, 0, 0).x + label.implicitWidth > clippingContainer.width) {
                     label.anchors.right = delegate.right
-                    label.anchors.rightMargin = (dontExtendPastComponent.width - label.mapToItem(dontExtendPastComponent, 0, 0).x - label.implicitWidth) * -1
+                    label.anchors.rightMargin = (clippingContainer.width - label.mapToItem(clippingContainer, 0, 0).x - label.implicitWidth) * -1
                 }
+                //When the label does not extend past the clippingContainer on either edge , horizontally center it with it's parent
                 else {
-                    label.anchors.left = undefined
-                    label.anchors.leftMargin = undefined
-                    label.anchors.right = undefined
-                    label.anchors.rightMargin = undefined
                     label.anchors.horizontalCenter = delegate.horizontalCenter
                 }
 
