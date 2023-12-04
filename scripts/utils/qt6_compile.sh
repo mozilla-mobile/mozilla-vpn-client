@@ -71,7 +71,6 @@ MACOS="
   -skip qtwayland  \
   -appstore-compliant \
   -no-feature-qdbus \
-  -no-dbus \
   -feature-texthtmlparser \ 
   -feature-xml \
   -- \
@@ -83,6 +82,13 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   PLATFORM=$LINUX
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
+
+  # There is a QT-Linguist GUI tool that 
+  # we cannot feature flag off, 
+  # also it does not build on macos ... so nuklear option here.
+  rm -rf qttools/src/linguist/linguist
+  mkdir qttools/src/linguist/linguist
+  echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
   PLATFORM=$MACOS
 else
   die "Unsupported platform (yet?)"
@@ -100,7 +106,6 @@ bash ./configure \
   -silent \
   -nomake tests \
   -make libs \
-  -no-feature-dynamicgl \
   -no-feature-sql-odbc \
   -no-feature-pixeltool \
   -no-feature-qdbus \
@@ -139,7 +144,6 @@ bash ./configure \
   -no-feature-quick-treeview \
   -no-feature-sql-sqlite \
   -no-feature-sql \
-  -no-feature-textodfwriter \
   -no-feature-dbus \
   -no-feature-xml \
   -skip qt3d  \
