@@ -48,6 +48,11 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on Notifications in App preferences", async () => {
+        if (this.ctx.wasm) {
+          // This test cannot run in wasm
+          return;
+        }
+
         await vpn.waitForQueryAndClick(
             queries.screenSettings.APP_PREFERENCES.visible());
         await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    

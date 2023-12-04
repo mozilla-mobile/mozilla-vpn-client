@@ -939,7 +939,12 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "settings");
     });
 
-    it.only("record telemetry when user clicks on Sign out in the Settings screen", async () => {
+    it("record telemetry when user clicks on Sign out in the Settings screen", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+
         await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
         await vpn.scrollToQuery(
             queries.screenSettings.SCREEN,
