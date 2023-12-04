@@ -895,6 +895,10 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on their account details", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
         await vpn.waitForQueryAndClick(queries.screenSettings.USER_PROFILE.visible());
         const events = await vpn.gleanTestGetValue("interaction", "accountSelected", "main");
 
@@ -904,6 +908,10 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on Privacy features", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
         await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
         const events = await vpn.gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
 
@@ -913,6 +921,10 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on Tips and tricks", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
         await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
         const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
 
@@ -922,6 +934,10 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on My devices", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
         await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES.visible());
         const events = await vpn.gleanTestGetValue("interaction", "myDevicesSelected", "main");
 
@@ -931,6 +947,10 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on App preferences", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
         await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
         const events = await vpn.gleanTestGetValue("interaction", "appPreferencesSelected", "main");
 
