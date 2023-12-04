@@ -1,0 +1,26 @@
+about:
+  description: Nimbus Feature Manifest for Monitor Web testing
+channels:
+  - staging
+  - production
+features:
+  example-feature:
+    description: An example feature
+    variables:
+      enabled:
+        description: If the feature is enabled
+        type: Boolean
+        default: false
+      something:
+        description: Another variable
+        type: Option<String>
+        default: null
+    defaults:
+      - channel: staging
+        value: { "enabled": true }
+      - channel: production
+        value: { "something": "wicked" }
+
+types:
+  objects: {}
+  enums: {}
