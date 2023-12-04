@@ -69,6 +69,8 @@ LINUX="
 
 MACOS="
   -skip qtwayland  \
+  -no-feature-quickcontrols2-ios \
+  -no-feature-quickcontrols2-macos \
   -appstore-compliant \
   -no-feature-qdbus \
   -feature-texthtmlparser \ 
@@ -120,9 +122,7 @@ bash ./configure \
   -no-feature-style-windows \
   -no-feature-style-windowsvista \
   -no-feature-quickcontrols2-material \
-  -no-feature-quickcontrols2-macos \
   -no-feature-quickcontrols2-imagine \
-  -no-feature-quickcontrols2-ios \
   -no-feature-quickcontrols2-universal \
   -no-feature-quicktemplates2-calendar \
   -no-feature-quicktemplates2-hover \
