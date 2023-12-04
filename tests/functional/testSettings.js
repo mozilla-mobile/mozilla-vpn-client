@@ -979,6 +979,11 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user goes to the Settings screen", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        
         await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
         const settingsScreenEvent = await vpn.gleanTestGetValue("impression", "settingsScreen", "main");

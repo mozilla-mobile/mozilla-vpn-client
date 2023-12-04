@@ -41,6 +41,11 @@ describe('Settings', function() {
      });
 
   it('Clear all button removes all apps from exclusion list and records telemetry', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+    
     await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX1.visible());
     await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX2.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
@@ -89,6 +94,10 @@ describe('Settings', function() {
   });
 
   it('Record telemetry when user clicks on App Exclusions', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
     await vpn.waitForQueryAndClick(navBar.SETTINGS.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
