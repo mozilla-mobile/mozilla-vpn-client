@@ -22,7 +22,7 @@ buildscript {
 
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.7.0"
+        classpath "org.mozilla.telemetry:glean-gradle-plugin:56.0.0"
     }
 }
 
