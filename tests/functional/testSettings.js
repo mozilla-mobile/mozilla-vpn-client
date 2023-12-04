@@ -977,5 +977,18 @@ describe('Settings', function() {
         var element = events[0];
         assert.equal(element.extra.screen, "settings");
     });
+
+    it("record telemetry when user goes to the Settings screen", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        
+        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+
+        const settingsScreenEvent = await vpn.gleanTestGetValue("impression", "settingsScreen", "main");
+        const settingsScreenEventExtras = settingsScreenEvent[0].extra;
+        assert.strictEqual("settings", settingsScreenEventExtras.screen);
+    });
   });
 });

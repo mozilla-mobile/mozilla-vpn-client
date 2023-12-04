@@ -84,7 +84,10 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                onClicked: {
+                    Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
+                    stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                }
                 visible: MZFeatureList.get("splitTunnel").isSupported
             }
 
@@ -207,6 +210,6 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
-        Glean.sample.settingsViewOpened.record();
+        Glean.impression.settingsScreen.record({screen:telemetryScreenId});
     }
 }
