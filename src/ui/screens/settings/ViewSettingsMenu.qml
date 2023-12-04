@@ -13,7 +13,7 @@ import components 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "settingsView"
-    accessibleName: MZI18n.NavBarSettingsTab
+    _accessibleName: MZI18n.NavBarSettingsTab
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
