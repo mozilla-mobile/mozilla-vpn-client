@@ -4,261 +4,144 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-. $(dirname $0)/commons.sh
+set -e
 
-POSITIONAL=()
-JOBS=8
 
-helpFunction() {
-  print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder> [-j|--jobs <jobs>] [anything else will be use as argument for the QT configure script]"
-  print N ""
-  exit 0
-}
+. $(dirname $0)/../../../scripts/utils/commons.sh
 
-print N "This script compiles Qt6 statically"
-print N ""
-
+RELEASE=1
+# Parse Script arguments
 while [[ $# -gt 0 ]]; do
   key="$1"
-
   case $key in
-  -j | --jobs)
-    JOBS="$2"
-    shift
-    shift
-    ;;
-  -h | --help)
-    helpFunction
-    ;;
-  *)
-    POSITIONAL+=("$1")
-    shift
-    ;;
-  esac
+        -d | --debug)
+        RELEASE=
+        shift
+        ;;
+    esac
 done
 
-set -- "${POSITIONAL[@]}" # restore positional parameters
+# Find the Output Directory and clear that
+TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+rm -rf "${TASK_HOME}/artifacts"
+mkdir -p "${TASK_HOME}/artifacts"
 
-if [[ $# -lt 2 ]]; then
-  helpFunction
-fi
 
-[ -d "$1" ] || die "Unable to find the QT source folder."
+print N "Taskcluster macOS compilation script"
+print N ""
 
-cd "$1" || die "Unable to enter into the QT source folder"
 
-shift
+# TC NIT: we need to assert
+# that everything is UTF-8
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+export PYTHONIOENCODING="UTF-8"
 
-PREFIX=$1
-shift
 
-printn Y "Cleaning the folder... "
-make distclean -j $JOBS &>/dev/null;
+print Y "Installing conda"
+chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
+source ${TASK_HOME}/miniconda/bin/activate
+
+
+print Y "Installing provided conda env..."
+# TODO: Check why --force is needed if we install into TASK_HOME?
+conda env create --force -f env.yml
+conda activate VPN
+./scripts/macos/conda_install_extras.sh  
+conda info
+
+# Conda Cannot know installed MacOS SDK'S
+# and as we use conda'provided clang/llvm
+# we need to manually provide the Path.
+#
+print G "Checking Available SDK'S..."
+# Now you would guess the SDK path is the same on all runners
+# But no. So... let's find out?
+# TODO: Check if this is the same version for every runner on taskcluster .__.
+export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
+
+# Should already have been done by taskcluser, but double checking c:
+print Y "Get the submodules..."
+git submodule update --init --recursive || die "Failed to init submodules"
 print G "done."
 
-LINUX="
-  -platform linux-clang \
-  -egl \
-  -opengl es2 \
-  -no-icu \
-  -no-linuxfb \
-  -bundled-xcb-xinput \
-  -xcb \
-"
-
-MACOS="
-  -skip qtwayland  \
-  -appstore-compliant \
-  -no-feature-qdbus \
-  -no-dbus \
-  -feature-texthtmlparser \ 
-  -feature-xml \
-  -- \
-  -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
-"
-
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  print N "Configure for linux"
-  PLATFORM=$LINUX
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  print N "Configure for darwin"
-  PLATFORM=$MACOS
+# Install dependendy got get-secret.py
+python3 -m pip install -r taskcluster/scripts/requirements.txt
+print Y "Fetching tokens..."
+# Only on a release build we have access to those secrects.
+if [[ "$RELEASE" ]]; then
+   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_dsn -f sentry_dsn
+   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_envelope_endpoint -f sentry_envelope_endpoint
+   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 else
-  die "Unsupported platform (yet?)"
+    # write a dummy value in the files, so that we still compile sentry c:
+    echo "dummy" > sentry_dsn
+    echo "dummy" > sentry_envelope_endpoint
+    echo "dummy" > sentry_debug_file_upload_key
 fi
 
-print Y "Wait..."
-bash ./configure \
-  $* \
-  --prefix=$PREFIX \
-  -opensource \
-  -confirm-license \
-  -release \
-  -static \
-  -strip \
-  -silent \
-  -nomake tests \
-  -make libs \
-  -no-feature-dynamicgl \
-  -no-feature-sql-odbc \
-  -no-feature-pixeltool \
-  -no-feature-qdbus \
-  -no-feature-qtattributionsscanner \
-  -no-feature-qtdiag \
-  -no-feature-qtplugininfo \
-  -no-feature-pixeltool \
-  -no-feature-distancefieldgenerator \
-  -no-feature-designer \
-  -no-feature-assistant \
-  -no-feature-style-fusion \
-  -no-feature-style-windows \
-  -no-feature-style-windowsvista \
-  -no-feature-quickcontrols2-material \
-  -no-feature-quickcontrols2-macos \
-  -no-feature-quickcontrols2-imagine \
-  -no-feature-quickcontrols2-ios \
-  -no-feature-quickcontrols2-universal \
-  -no-feature-quicktemplates2-calendar \
-  -no-feature-quicktemplates2-hover \
-  -no-feature-quicktemplates2-multitouch \
-  -no-feature-qml-xml-http-request \
-  -no-feature-qml-network \
-  -no-feature-tiff \
-  -no-feature-webp \
-  -no-feature-cups \
-  -no-feature-style-fusion \
-  -no-feature-style-mac \
-  -no-feature-style-windows \
-  -no-feature-textmarkdownwriter \
-  -no-feature-cssparser \
-  -no-feature-qmake \
-  -no-feature-itemmodeltester \
-  -no-feature-quick-sprite \
-  -no-feature-quick-tableview \
-  -no-feature-quick-treeview \
-  -no-feature-sql-sqlite \
-  -no-feature-sql \
-  -no-feature-textodfwriter \
-  -no-feature-networklistmanager \
-  -no-feature-style-stylesheet \
-  -no-feature-itemviews \
-  -no-feature-treewidget \
-  -no-feature-listwidget \
-  -no-feature-tablewidget \
-  -no-feature-datetimeedit \
-  -no-feature-stackedwidget \
-  -no-feature-textbrowser \
-  -no-feature-splashscreen \
-  -no-feature-splitter \
-  -no-feature-widgettextcontrol \
-  -no-feature-label \
-  -no-feature-formlayout \
-  -no-feature-lcdnumber \
-  -no-feature-menu \
-  -no-feature-lineedit \
-  -no-feature-radiobutton \
-  -no-feature-spinbox \
-  -no-feature-tabbar \
-  -no-feature-tabwidget \
-  -no-feature-combobox \
-  -no-feature-fontcombobox \
-  -no-feature-checkbox \
-  -no-feature-pushbutton \
-  -no-feature-toolbutton \
-  -no-feature-toolbar \
-  -no-feature-toolbox \
-  -no-feature-groupbox \
-  -no-feature-buttongroup \
-  -no-feature-mainwindow \
-  -no-feature-dockwidget \
-  -no-feature-mdiarea \
-  -no-feature-resizehandler \
-  -no-feature-statusbar \
-  -no-feature-menubar \
-  -no-feature-contextmenu \
-  -no-feature-progressbar \
-  -no-feature-abstractslider \
-  -no-feature-slider \
-  -no-feature-scrollbar \
-  -no-feature-dial \
-  -no-feature-scrollarea \
-  -no-feature-scroller \
-  -no-feature-graphicsview \
-  -no-feature-graphicseffect \
-  -no-feature-textedit \
-  -no-feature-syntaxhighlighter \
-  -no-feature-rubberband \
-  -no-feature-tooltip \
-  -no-feature-statustip \
-  -no-feature-sizegrip \
-  -no-feature-calendarwidget \
-  -no-feature-keysequenceedit \
-  -no-feature-dialog \
-  -no-feature-dialogbuttonbox \
-  -no-feature-messagebox \
-  -no-feature-colordialog \
-  -no-feature-filedialog \
-  -no-feature-fontdialog \
-  -no-feature-progressdialog \
-  -no-feature-inputdialog \
-  -no-feature-errormessage \
-  -no-feature-wizard \
-  -no-feature-listview \
-  -no-feature-tableview \
-  -no-feature-treeview \
-  -no-feature-datawidgetmapper \
-  -no-feature-columnview \
-  -no-feature-completer \
-  -no-feature-fscompleter \
-  -no-feature-undoview \
-  -no-feature-dbus \
-  -no-feature-xml \
-  -skip qt3d  \
-  -skip qtdoc \
-  -skip qtgrpc \
-  -skip qtconnectivity \
-  -skip qtquickeffectmaker \
-  -skip qtquicktimeline \
-  -skip qtwebengine  \
-  -skip qtlocation \
-  -skip qtmultimedia  \
-  -skip qtserialport  \
-  -skip qtsensors  \
-  -skip qtgamepad  \
-  -skip qtgraphs \
-  -skip qtandroidextras  \
-  -skip qtquick3dphysics \
-  -skip qtactiveqt  \
-  -skip qtcharts  \
-  -skip qtcoap  \
-  -skip qtdatavis3d  \
-  -skip qtgrpc  \
-  -skip qtremoteobjects  \
-  -skip qtlottie  \
-  -skip qtmqtt  \
-  -skip qtopcua  \
-  -skip qtpositioning  \
-  -skip qtquick3d  \
-  -skip qtscxml  \
-  -skip qtserialbus  \
-  -skip qtserialport  \
-  -skip qtspeech  \
-  -skip qtvirtualkeyboard  \
-  -skip qtweb \
-  -feature-imageformat_png \
-  -feature-optimize_full \
-  -qt-doubleconversion \
-  -qt-libpng \
-  -qt-zlib \
-  -qt-pcre \
-  -qt-freetype \
-  $PLATFORM || die "Configuration error."
+export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
+export SENTRY_DSN=$(cat sentry_dsn)
+#Install Sentry CLI, if' not already installed from previous run.
+if ! command -v sentry-cli &> /dev/null
+then
+    npm install -g @sentry/cli
+fi
 
-print Y "Compiling..."
-cmake --build . --parallel $JOBS || die "Make failed"
+print Y "Configuring the build..."
+if [ -d ${TASK_HOME}/build ]; then
+    echo "Found old build-folder, weird!"
+    echo "Removing it..."
+    rm -r ${TASK_HOME}/build
+fi
+mkdir ${TASK_HOME}/build
 
-print Y "Installing..."
-cmake --install . || die "Make install failed"
+cmake -S . -B ${TASK_HOME}/build -GNinja \
+        -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+        -DSENTRY_DSN=$SENTRY_DSN \
+        -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 
-print G "All done!"
+print Y "Building the client..."
+cmake --build ${TASK_HOME}/build
+
+print Y "Building the installer..."
+cmake --build ${TASK_HOME}/build --target pkg
+
+print Y "Exporting the build artifacts..."
+mkdir -p tmp || die
+
+
+print Y "Extracting the Symbols..."
+dsymutil ${TASK_HOME}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
+
+
+print Y "Checking & genrating a symbols bundle"
+ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
+sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+
+if [[ "$RELEASE" ]]; then
+    print Y "Uploading the Symbols..."
+    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
+fi
+
+cp -r ${TASK_HOME}/build/src/Mozilla\ VPN.app tmp || die
+cp -r ${TASK_HOME}/build/macos/pkg/Resources tmp || die
+cp -r ./macos/pkg/scripts tmp || die
+cp -r ./macos/pkg/Distribution tmp || die
+
+print Y "Compressing the build artifacts..."
+tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
+rm -rf tmp || die
+rm -rf ${TASK_HOME}/build || die
+
+# Check for unintended writes to the source directory.
+print G "Ensuring the source dir is clean:"
+./scripts/utils/dirtycheck.sh
+
+print G "Done!"
