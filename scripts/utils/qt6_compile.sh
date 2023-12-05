@@ -64,6 +64,7 @@ LINUX="
   -no-icu \
   -no-linuxfb \
   -bundled-xcb-xinput \
+  -feature-qdbus \
   -xcb \
 "
 
@@ -111,7 +112,6 @@ bash ./configure \
   -make libs \
   -no-feature-sql-odbc \
   -no-feature-pixeltool \
-  -no-feature-qdbus \
   -no-feature-qtattributionsscanner \
   -no-feature-qtdiag \
   -no-feature-qtplugininfo \
@@ -120,7 +120,6 @@ bash ./configure \
   -no-feature-designer \
   -no-feature-assistant \
   -no-feature-qml-xml-http-request \
-  -no-feature-qml-network \
   -no-feature-tiff \
   -no-feature-webp \
   -no-feature-cups \
@@ -129,10 +128,7 @@ bash ./configure \
   -no-feature-style-windows \
   -no-feature-textmarkdownwriter \
   -no-feature-cssparser \
-  -no-feature-qmake \
   -no-feature-itemmodeltester \
-  -no-feature-quick-sprite \
-  -no-feature-quick-tableview \
   -no-feature-sql-sqlite \
   -no-feature-sql \
   -no-feature-dbus \
