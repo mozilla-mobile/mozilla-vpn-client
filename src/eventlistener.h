@@ -17,7 +17,7 @@ class EventListener final : public QObject {
   ~EventListener();
 
   static bool checkOtherInstances(const QString& windowTitle);
-  static bool sendDeepLink(const QString& url);
+  static bool sendDeepLink(const QUrl& url);
 
  private:
   void socketReadyRead();

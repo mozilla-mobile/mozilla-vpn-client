@@ -139,11 +139,12 @@ int CommandUI::run(QStringList& tokens) {
     // If we are given URL commands, send them to the UI socket and exit.
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     if (!tokens.isEmpty()) {
-      for (const QString& url : tokens) {
-        if (url.startsWith("mozilla-vpn://")) {
-          EventListener::sendDeepLink(url);
+      for (const QString& value : tokens) {
+        QUrl url(value);
+        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+          logger.error() << "Invalid link:" << value;
         } else {
-          logger.error() << "Invalid link:" << url;
+          EventListener::sendDeepLink(url);
         }
       }
       return 0;

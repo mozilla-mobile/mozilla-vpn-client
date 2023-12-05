@@ -6,8 +6,10 @@
 
 #include <QFileInfo>
 #include <QLocalSocket>
+#include <QUrl>
 
 #include "constants.h"
+#include "frontend/navigator.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
@@ -65,8 +67,25 @@ void EventListener::socketReadyRead() {
   if (command == "show") {
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
+  } else if (command == "link") {
+    QUrl url(payload);
+
+    // We only accept the mozilla-vpn scheme.
+    if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+      return;
+    }
+    // The authority determins who hanndles this.
+    if (url.authority() == "nav") {
+      Navigator::instance()->requestDeepLink(url);
+    } else {
+      logger.info() << "Unknown deep link target:" << url.authority();
+    }
+
+    // Show the window after handling a deep link.
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
   } else {
-    logger.debug() << "Unknown UI command:" << command;
+    logger.info() << "Unknown UI command:" << command;
   }
 }
 
@@ -122,7 +141,7 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
   return false;
 }
 
-bool EventListener::sendDeepLink(const QString& url) {
+bool EventListener::sendDeepLink(const QUrl& url) {
 #ifndef MZ_WINDOWS
   if (!QFileInfo::exists(Constants::UI_PIPE)) {
     logger.warning() << "No other instances found - no unix socket";
@@ -137,7 +156,7 @@ bool EventListener::sendDeepLink(const QString& url) {
     return true;
   }
 
-  QString message = QString("link %1\n").arg(url);
+  QString message = QString("link %1\n").arg(url.toString(QUrl::FullyEncoded));
   socket.write(message.toUtf8());
   socket.disconnectFromServer();
   if (socket.state() != QLocalSocket::UnconnectedState) {

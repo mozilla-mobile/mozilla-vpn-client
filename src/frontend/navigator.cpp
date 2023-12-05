@@ -206,6 +206,11 @@ void Navigator::requestScreen(int requestedScreen,
   logger.debug() << "Unable to show the requested screen";
 }
 
+void Navigator::requestDeepLink(const QUrl& url) {
+  // TODO: More work needs to go here.
+  logger.debug() << "Receied nav link:" << url.toString();
+}
+
 void Navigator::requestPreviousScreen() {
   logger.debug() << "Previous screen request";
 
