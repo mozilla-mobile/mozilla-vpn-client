@@ -86,6 +86,7 @@ qt_add_qml_module(components
          MZStepProgressBar.qml
          MZStepProgressBarDelegate.qml
          MZStepNavigation.qml
+         MZText.qml
          navigationBar/MZBottomNavigationBar.qml
          navigationBar/MZBottomNavigationBarButton.qml
          navigator/MZNavigatorLoader.qml
