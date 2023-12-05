@@ -93,7 +93,7 @@ fi
 # There is a QT-Linguist GUI tool that 
 # we cannot feature flag off, and itself does not properly 
 # check during configure if it can be built. 
-# so nuklear option here.
+# so nuclear option here.
 rm -rf qttools/src/linguist/linguist
 mkdir qttools/src/linguist/linguist
 echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
