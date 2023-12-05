@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef COMMANDEXCLUDEIP_H
-#define COMMANDEXCLUDEIP_H
+#ifndef COMMANDDEEPLINK_H
+#define COMMANDDEEPLINK_H
 
 #include "command.h"
 
-class CommandExcludeIP final : public Command {
+class CommandDeepLink final : public Command {
  public:
-  explicit CommandExcludeIP(QObject* parent);
-  ~CommandExcludeIP();
+  explicit CommandDeepLink(QObject* parent);
+  ~CommandDeepLink();
 
   int run(QStringList& tokens) override;
 };
 
-#endif  // COMMANDEXCLUDEIP_H
+#endif  // COMMANDDEEPLINK_H

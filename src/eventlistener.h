@@ -19,6 +19,9 @@ class EventListener final : public QObject {
   static bool checkOtherInstances(const QString& windowTitle);
 
  private:
+  void socketReadyRead();
+
+ private:
   QLocalServer m_server;
 };
 

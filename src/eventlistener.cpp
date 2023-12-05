@@ -49,21 +49,25 @@ EventListener::EventListener() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
-    connect(socket, &QLocalSocket::readyRead, socket, [socket]() {
-      QByteArray input = socket->readAll();
-      input = input.trimmed();
-
-      logger.debug() << "EventListener input:" << input;
-
-      // So far, just the show window signal, but in the future, we could have
-      // more.
-      if (input == "show") {
-        QmlEngineHolder* engine = QmlEngineHolder::instance();
-        engine->showWindow();
-        return;
-      }
-    });
+    connect(socket, &QLocalSocket::readyRead, this, &EventListener::socketReadyRead);
   });
+}
+
+void EventListener::socketReadyRead() {
+  QObject* obj = QObject::sender();
+  QLocalSocket* socket = qobject_cast<QLocalSocket*>(obj);
+  QString input = QString::fromUtf8(socket->readLine()).trimmed();
+
+  logger.debug() << "EventListener input:" << input;
+  QString command = input.section(' ', 0, 0);
+  QString payload = input.section(' ', 1, -1);
+
+  if (command == "show") {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  } else {
+    logger.debug() << "Unknown UI command:" << command;
+  }
 }
 
 EventListener::~EventListener() {
