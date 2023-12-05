@@ -4,9 +4,7 @@
 
 add_library(adjust STATIC)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(adjust-sources PRIVATE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(adjust-sources)
 
 set_target_properties(adjust PROPERTIES FOLDER "Libs")
 

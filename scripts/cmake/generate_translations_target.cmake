@@ -32,9 +32,7 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
     message("Creating library ${TARGET_NAME} from ${TRANSLATIONS_DIRECTORY}")
     add_library(${TARGET_NAME} STATIC)
 
-    if(NOT MSVC)
-        target_compile_options(${TARGET_NAME} PRIVATE -Wall -Werror -Wno-conversion)
-    endif()
+    mz_target_handle_warnings(${TARGET_NAME})
 
     set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Libs")
     target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Core Qt6::Qml)

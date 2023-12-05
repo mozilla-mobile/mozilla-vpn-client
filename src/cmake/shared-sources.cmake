@@ -5,9 +5,7 @@
 # Library of sources shared between app and tests
 add_library(shared-sources INTERFACE)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(shared-sources)
 
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
