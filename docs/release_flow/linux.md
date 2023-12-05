@@ -9,7 +9,7 @@ wget -q https://repository.stage.productdelivery.nonprod.webservices.mozgcp.net/
 > The fingerprint should be 35BA A0B3 3E9E B396 F59C A838 C0BA 5CE6 DC63 15A3
 
 ## Next, add the APT repository to your sources list:
-echo "deb [signed-by=/etc/apt/trusted.gpg.d/repository.stage.productdelivery.nonprod.webservices.mozgcp.net.gpg] https://repository.stage.productdelivery.nonprod.webservices.mozgcp.net/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
 
 ## Update the package list
 sudo apt-get update
