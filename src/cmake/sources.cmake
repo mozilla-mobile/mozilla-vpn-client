@@ -50,8 +50,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandactivate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddeactivate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddeactivate.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddeeplink.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddeeplink.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddevice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandexcludeip.cpp

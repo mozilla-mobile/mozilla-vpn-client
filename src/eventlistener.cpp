@@ -121,3 +121,27 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
   logger.debug() << "Terminating the current process";
   return false;
 }
+
+bool EventListener::sendDeepLink(const QString& url) {
+#ifndef MZ_WINDOWS
+  if (!QFileInfo::exists(Constants::UI_PIPE)) {
+    logger.warning() << "No other instances found - no unix socket";
+    return true;
+  }
+#endif
+
+  QLocalSocket socket;
+  socket.connectToServer(Constants::UI_PIPE);
+  if (!socket.waitForConnected(1000)) {
+    logger.error() << "Connection failed:" << socket.errorString();
+    return true;
+  }
+
+  QString message = QString("link %1\n").arg(url);
+  socket.write(message.toUtf8());
+  socket.disconnectFromServer();
+  if (socket.state() != QLocalSocket::UnconnectedState) {
+    socket.waitForDisconnected(1000);
+  }
+  return false;
+}

@@ -136,9 +136,23 @@ int CommandUI::run(QStringList& tokens) {
       return 1;
     }
 
+    // If we are given URL commands, send them to the UI socket and exit.
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+    if (!tokens.isEmpty()) {
+      for (const QString& url : tokens) {
+        if (url.startsWith("mozilla-vpn://")) {
+          EventListener::sendDeepLink(url);
+        } else {
+          logger.error() << "Invalid link:" << url;
+        }
+      }
+      return 0;
+    }
+#else
     if (!tokens.isEmpty()) {
       return clp.unknownOption(this, appName, tokens[0], options, false);
     }
+#endif
 
     if (hOption.m_set) {
       clp.showHelp(this, appName, options, false, false);
