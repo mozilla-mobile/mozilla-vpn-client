@@ -43,7 +43,7 @@ def get_gcs_sources(dependent_task):
 
 ALLOWED_SHIPPING_PHASES = [
     "ship-client",
-    "promote-client"
+#    "promote-client" - candidates are not setup yet.
 ]
 
 @transforms.add
