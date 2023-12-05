@@ -21,7 +21,6 @@ Therefore we want to propose a new Web-Extension that extends on top of the VPN+
 - Enable the VPN only on Firefox 
  - Disable the VPN only on Firefox 
  - Exclude a Firefox tab from VPN protection  
- - Specify an exit location on a tab  
  - Specify an Exit Location a Page.
 
 We already have integrated into Firefox with [Multi Account Containers](https://github.com/mozilla/multi-account-containers) which allows users to specify an exit location for a container. 
@@ -30,8 +29,13 @@ The following parts expect knowledge on how the MAC Extension works, for a refre
 ----
 
 ## Preconditions
+As we currently not plan to be a bundled feature into Firefox the first MVP, Users need to have the VPN Client installed, 
+be logged in with a subscription. During an ✨ Onboarding Flow ✨ (currently unspecified) users installed 
+the VPN-Integration Extension into their Firefox Profile. 
 
-For this feature to be enabled, a Firefox user on the desktop needs to have the VPN installed, be logged in and have an active subscription. 
+## Delivery
+As the Extension will be Mozilla signed, asking Firefox to open a URL pointing to our XPI will prompt the install, without warnings. 
+The onboarding will be refined based on foxfooding feedback. 
 
 
 ## VPN API 
@@ -49,8 +53,8 @@ In the following sections, we will explain what changes we need inside the clien
 
 
 #### State 1: Device VPN is On & Page VPN is On
-In this State the Extension can simply set the Proxy for those network requests to `null` to use the user's active server.
-If a custom exit location is set it must set it to the `socks5` proxy of that endpoint. No changes are needed on the Client as this is how MAC uses the current API. 
+In this state the extension can simply set the proxy for those network requests to `null` to use the user's active server.  
+If a custom exit location is set it must set it to the `socks5` proxy of that endpoint. No changes are needed on the client as this is how MAC uses the current API.
 
 
 #### State 2: Device VPN is OFF & Page VPN is On
