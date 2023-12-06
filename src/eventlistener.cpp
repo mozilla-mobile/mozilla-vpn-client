@@ -60,8 +60,12 @@ EventListener::EventListener() {
 void EventListener::socketReadyRead() {
   QObject* obj = QObject::sender();
   QLocalSocket* socket = qobject_cast<QLocalSocket*>(obj);
-  QString input = QString::fromUtf8(socket->readLine()).trimmed();
+  if (socket == nullptr) {
+    logger.warning() << "Signal sender is not a socket!";
+    return;
+  }
 
+  QString input = QString::fromUtf8(socket->readLine()).trimmed();
   logger.debug() << "EventListener input:" << input;
   QString command = input.section(' ', 0, 0);
   QString payload = input.section(' ', 1, -1);
@@ -70,25 +74,30 @@ void EventListener::socketReadyRead() {
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
   } else if (command == "link") {
-    QUrl url(payload);
-
-    // We only accept the mozilla-vpn scheme.
-    if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
-      return;
-    }
-    // The authority determines who hanndles this.
-    if (url.authority() == "nav") {
-      Navigator::instance()->requestDeepLink(url);
-    } else {
-      logger.info() << "Unknown deep link target:" << url.authority();
-    }
-
-    // Show the window after handling a deep link.
-    QmlEngineHolder* engine = QmlEngineHolder::instance();
-    engine->showWindow();
+    handleLinkCommand(payload);
   } else {
     logger.info() << "Unknown UI command:" << command;
   }
+}
+
+void EventListener::handleLinkCommand(const QString& payload) {
+  const QUrl url(payload);
+
+  // We only accept the mozilla-vpn scheme.
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return;
+  }
+
+  // The URL authority determines who handles this.
+  if (url.authority() == "nav") {
+    Navigator::instance()->requestDeepLink(url);
+  } else {
+    logger.info() << "Unknown deep link target:" << url.authority();
+  }
+
+  // Show the window after handling a deep link.
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  engine->showWindow();
 }
 
 EventListener::~EventListener() {

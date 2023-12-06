@@ -34,7 +34,10 @@ class EventListener final : public QObject {
 
  private:
   void socketReadyRead();
+  void handleLinkCommand(const QString& payload);
+
   static bool sendCommand(const QString& data);
+
 
  private:
   QLocalServer m_server;

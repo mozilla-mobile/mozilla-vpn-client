@@ -207,7 +207,7 @@ void Navigator::requestScreen(int requestedScreen,
 }
 
 void Navigator::requestDeepLink(const QUrl& url) {
-  logger.debug() << "Recevied nav link:" << url.toString();
+  logger.debug() << "Received nav link:" << url.toString();
 
   // Quick and dirty navigation handler for testing.
   // This will be expanded upon as we implement VPN-4412.
