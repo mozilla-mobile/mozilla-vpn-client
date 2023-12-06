@@ -168,7 +168,7 @@ int CommandUI::run(QStringList& tokens) {
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances(
             I18nStrings::instance()->t(I18nStrings::ProductName))) {
-      // If we are given URL parameters, send them to the UI socket.
+      // If we are given URL parameters, send them to the UI socket and exit.
       for (const QString& value : tokens) {
         QUrl url(value);
         if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
@@ -177,9 +177,6 @@ int CommandUI::run(QStringList& tokens) {
           EventListener::sendDeepLink(url);
         }
       }
-
-      // Try to bring the UI to the foreground.
-      EventListener::sendCommand("show");
       return 0;
     }
 

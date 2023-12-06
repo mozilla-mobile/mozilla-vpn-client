@@ -109,19 +109,20 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
   // Let's check if there is a window with the right name.
   HWND window =
       FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
-  if (window) {
-    WindowsUtils::windowsLog("VPN Instance found");
-    return false;
+  if (!window) {
+    WindowsUtils::windowsLog("No other instances found");
+    return true;
   }
 #else
-  if (QFileInfo::exists(Constants::UI_PIPE)) {
-    logger.warning() << "VPN intance found - UNIX socket exists.";
-    return false;
+  if (!QFileInfo::exists(Constants::UI_PIPE)) {
+    logger.warning() << "No other instances found - no unix socket";
+    return true;
   }
 #endif
 
-  // No other VPN instances found.
-  return true;
+  // Try to wake the UI and bring it to the foreground.
+  logger.debug() << "Try to communicate with the existing instance";
+  return !sendCommand("show");
 }
 
 bool EventListener::sendCommand(const QString& message) {
