@@ -136,25 +136,6 @@ int CommandUI::run(QStringList& tokens) {
       return 1;
     }
 
-    // If we are given URL commands, send them to the UI socket and exit.
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    if (!tokens.isEmpty()) {
-      for (const QString& value : tokens) {
-        QUrl url(value);
-        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
-          logger.error() << "Invalid link:" << value;
-        } else {
-          EventListener::sendDeepLink(url);
-        }
-      }
-      return 0;
-    }
-#else
-    if (!tokens.isEmpty()) {
-      return clp.unknownOption(this, appName, tokens[0], options, false);
-    }
-#endif
-
     if (hOption.m_set) {
       clp.showHelp(this, appName, options, false, false);
       return 0;
@@ -187,6 +168,18 @@ int CommandUI::run(QStringList& tokens) {
     // If there is another instance, the execution terminates here.
     if (!EventListener::checkOtherInstances(
             I18nStrings::instance()->t(I18nStrings::ProductName))) {
+      // If we are given URL parameters, send them to the UI socket.
+      for (const QString& value : tokens) {
+        QUrl url(value);
+        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+          logger.error() << "Invalid link:" << value;
+        } else {
+          EventListener::sendDeepLink(url);
+        }
+      }
+
+      // Try to bring the UI to the foreground.
+      EventListener::sendCommand("show");
       return 0;
     }
 
@@ -461,6 +454,16 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
+
+    // If there happen to be navigation URLs, send them to the navigator class.
+    for (const QString& value : tokens) {
+      QUrl url(value);
+      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+        logger.error() << "Invalid link:" << value;
+      } else {
+        Navigator::instance()->requestDeepLink(url);
+      }
+    }
 
     KeyRegenerator keyRegenerator;
     // Let's go.

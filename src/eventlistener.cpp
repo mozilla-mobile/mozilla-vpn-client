@@ -108,47 +108,22 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
   // Let's check if there is a window with the right name.
   HWND window =
       FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
-  if (!window) {
-    WindowsUtils::windowsLog("No other instances found");
-    return true;
+  if (window) {
+    WindowsUtils::windowsLog("VPN Instance found");
+    return false;
   }
 #else
-  if (!QFileInfo::exists(Constants::UI_PIPE)) {
-    logger.warning() << "No other instances found - no unix socket";
-    return true;
+  if (QFileInfo::exists(Constants::UI_PIPE)) {
+    logger.warning() << "VPN intance found - UNIX socket exists.";
+    return false;
   }
 #endif
 
-  logger.debug() << "Try to communicate with the existing instance";
-
-  QLocalSocket socket;
-  socket.connectToServer(Constants::UI_PIPE);
-  if (!socket.waitForConnected(1000)) {
-    logger.error() << "Connection failed.";
-    return true;
-  }
-
-  logger.debug() << "Request to show up";
-  socket.write("show\n");
-
-  logger.debug() << "Disconnecting";
-  socket.disconnectFromServer();
-  if (socket.state() != QLocalSocket::UnconnectedState) {
-    socket.waitForDisconnected(1000);
-  }
-
-  logger.debug() << "Terminating the current process";
-  return false;
+  // No other VPN instances found.
+  return true;
 }
 
-bool EventListener::sendDeepLink(const QUrl& url) {
-#ifndef MZ_WINDOWS
-  if (!QFileInfo::exists(Constants::UI_PIPE)) {
-    logger.warning() << "No other instances found - no unix socket";
-    return true;
-  }
-#endif
-
+bool EventListener::sendCommand(const QString& message) {
   QLocalSocket socket;
   socket.connectToServer(Constants::UI_PIPE);
   if (!socket.waitForConnected(1000)) {
@@ -156,11 +131,19 @@ bool EventListener::sendDeepLink(const QUrl& url) {
     return true;
   }
 
-  QString message = QString("link %1\n").arg(url.toString(QUrl::FullyEncoded));
-  socket.write(message.toUtf8());
+  QByteArray data = message.toUtf8();
+  if (!message.endsWith('\n')) {
+    data.append('\n');
+  }
+  socket.write(data);
   socket.disconnectFromServer();
   if (socket.state() != QLocalSocket::UnconnectedState) {
     socket.waitForDisconnected(1000);
   }
-  return false;
+  return true;
+}
+
+bool EventListener::sendDeepLink(const QUrl& url) {
+  QString message = QString("link %1").arg(url.toString(QUrl::FullyEncoded));
+  return sendCommand(message);
 }
