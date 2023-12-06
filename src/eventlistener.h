@@ -38,7 +38,6 @@ class EventListener final : public QObject {
 
   static bool sendCommand(const QString& data);
 
-
  private:
   QLocalServer m_server;
 };
