@@ -14,7 +14,6 @@ task-defaults:
     fetches:
         fetch:
             - miniconda-osx
-            - qt-hotfix
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -27,15 +26,31 @@ task-defaults:
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/macos_build.sh
 
-
 macos/pr:
+    fetches:
+        fetch:
+            - qt-hotfix
     description: "Mac Build"
     treeherder:
         symbol: BD
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
 
+macos/next:
+    fetches:
+        toolchain:
+            - qt-macos-6.6
+    description: "Mac Build"
+    treeherder:
+        symbol: NEXT
+    run:
+        command: ./taskcluster/scripts/build/macos_build.sh -d
+
+
 macos/opt:
+    fetches:
+        fetch:
+            - qt-hotfix
     description: "Mac Build"
     treeherder:
         symbol: B

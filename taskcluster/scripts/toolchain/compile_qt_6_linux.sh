@@ -7,6 +7,8 @@
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt_dist
+set -e
+
 ./vcs/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist
 
 echo "Patch Qt configuration"
