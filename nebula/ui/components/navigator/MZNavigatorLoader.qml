@@ -60,20 +60,23 @@ StackView {
 
       for (let i = 0; i < stackView.screens.length; ++i) {
         stackView.get(i+1).visible = i === pos;
-        // I really don't know why.
-        // Follow up bug for proper fixing: https://mozilla-hub.atlassian.net/browse/VPN-2813
-        // For some reason, once we navigate away the loader of the component
-        // on android will get the opacity and X value set to garbage. 
-        // This will cause the page broken, once we re-navigate here. 
-        // So in case we're on android and this is the component we want to show
-        // Let's reset those 2 values.
-        if(i === pos){
+
+        if (i === pos) {
+          // I really don't know why.
+          // Follow up bug for proper fixing: https://mozilla-hub.atlassian.net/browse/VPN-2813
+          // For some reason, once we navigate away the loader of the component
+          // on android will get the opacity and X value set to garbage. 
+          // This will cause the page broken, once we re-navigate here. 
+          // So in case we're on android and this is the component we want to show
+          // Let's reset those 2 values.
           stackView.get(i+1).opacity = 1;
-          stackView.get(i+1).x = 0; 
+          stackView.get(i+1).x = 0;
+
+          // Set focus to current component
+          stackView.get(i+1).forceActiveFocus();
         }
       }
   }
-
 
   Connections {
     target: MZNavigator
@@ -94,5 +97,9 @@ StackView {
       stackView.push(initialScreen);
 
       showCurrentComponent()
+  }
+
+  onCurrentItemChanged: {
+    currentItem.forceActiveFocus();
   }
 }

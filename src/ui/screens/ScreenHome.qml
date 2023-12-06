@@ -11,6 +11,10 @@ import components 0.1
 
 MZScreenBase {
     objectName: "screenHome"
+    id: screenHome
+    Accessible.name: MZI18n.ProductName
+    Accessible.role: Accessible.Client
+
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenHome, getStack())
         getStack().push("qrc:/ui/screens/home/ViewHome.qml")
@@ -30,6 +34,14 @@ MZScreenBase {
 
             // push server view
             getStack().push("qrc:/ui/screens/home/ViewServers.qml", StackView.Immediate);
+        }
+    }
+
+    onVisibleChanged: {
+        // Screens with LoadPersistently policy have their visiblity turned on when they become the
+        // current screen. Reset focus to the root to clear the previous focus.
+        if (visible) {
+            screenHome.forceActiveFocus();
         }
     }
 }

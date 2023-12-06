@@ -13,6 +13,7 @@ import components 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "settingsView"
+    _accessibleName: MZI18n.NavBarSettingsTab
 
     readonly property string telemetryScreenId : "settings"
 

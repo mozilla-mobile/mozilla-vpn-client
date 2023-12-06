@@ -68,7 +68,8 @@ Item {
             onCurrentItemChanged: {
                 menu.title = Qt.binding(() => currentItem._menuTitle || "");
                 menu.visible = Qt.binding(() => menu.title !== "");
-                menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop()
+                menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => getHelpStackView.pop();
+                currentItem.forceActiveFocus();
             }
         }
     }

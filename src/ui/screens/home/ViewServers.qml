@@ -17,6 +17,7 @@ Item {
     id: root
     objectName: "viewServers"
     Accessible.name: qsTrId("vpn.servers.selectLocation")
+    Accessible.role: Accessible.Grouping
     Accessible.ignored: !visible
 
     MZMenu {

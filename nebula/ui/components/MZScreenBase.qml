@@ -57,7 +57,8 @@ Item {
             Layout.alignment: Qt.AlignTop
             onCurrentItemChanged: {
                 menu.title = Qt.binding(() => currentItem._menuTitle || "");
-                menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => menu.maybeRequestPreviousScreen()
+                menu._menuOnBackClicked = currentItem._menuOnBackClicked ? currentItem._menuOnBackClicked : () => menu.maybeRequestPreviousScreen();
+                currentItem.forceActiveFocus();
             }
 
             Connections {
