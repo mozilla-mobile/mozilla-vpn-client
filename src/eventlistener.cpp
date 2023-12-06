@@ -51,7 +51,8 @@ EventListener::EventListener() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
-    connect(socket, &QLocalSocket::readyRead, this, &EventListener::socketReadyRead);
+    connect(socket, &QLocalSocket::readyRead, this,
+            &EventListener::socketReadyRead);
   });
 }
 
