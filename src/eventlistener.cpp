@@ -130,7 +130,7 @@ bool EventListener::sendCommand(const QString& message) {
   socket.connectToServer(Constants::UI_PIPE);
   if (!socket.waitForConnected(1000)) {
     logger.error() << "Connection failed:" << socket.errorString();
-    return true;
+    return false;
   }
 
   QByteArray data = message.toUtf8();
