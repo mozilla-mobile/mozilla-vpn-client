@@ -53,6 +53,8 @@ EventListener::EventListener() {
 
     connect(socket, &QLocalSocket::readyRead, this,
             &EventListener::socketReadyRead);
+    connect(socket, &QLocalSocket::disconnected, socket,
+            &QObject::deleteLater);
   });
 }
 
