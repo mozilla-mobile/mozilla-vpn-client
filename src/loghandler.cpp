@@ -261,12 +261,20 @@ void LogHandler::addLog(const Log& log,
   emit logEntryAdded(buffer);
 
 #if defined(MZ_ANDROID)
+#  ifdef MZ_DEBUG
+  const char* str = buffer.constData();
+  if (str) {
+    __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
+  }
+#  else
   if (!Constants::inProduction()) {
     const char* str = buffer.constData();
     if (str) {
       __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
     }
   }
+#  endif
+
 #endif
 }
 
