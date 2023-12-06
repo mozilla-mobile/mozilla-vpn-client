@@ -166,7 +166,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances(
+    if (EventListener::checkForInstances(
             I18nStrings::instance()->t(I18nStrings::ProductName))) {
       // If we are given URL parameters, send them to the UI socket and exit.
       for (const QString& value : tokens) {
@@ -177,6 +177,8 @@ int CommandUI::run(QStringList& tokens) {
           EventListener::sendDeepLink(url);
         }
       }
+
+      logger.debug() << "Terminating the current process";
       return 0;
     }
 

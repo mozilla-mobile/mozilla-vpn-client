@@ -53,8 +53,7 @@ EventListener::EventListener() {
 
     connect(socket, &QLocalSocket::readyRead, this,
             &EventListener::socketReadyRead);
-    connect(socket, &QLocalSocket::disconnected, socket,
-            &QObject::deleteLater);
+    connect(socket, &QLocalSocket::disconnected, socket, &QObject::deleteLater);
   });
 }
 
@@ -77,7 +76,7 @@ void EventListener::socketReadyRead() {
     if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
       return;
     }
-    // The authority determins who hanndles this.
+    // The authority determines who hanndles this.
     if (url.authority() == "nav") {
       Navigator::instance()->requestDeepLink(url);
     } else {
@@ -113,18 +112,18 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
       FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
   if (!window) {
     WindowsUtils::windowsLog("No other instances found");
-    return true;
+    return false;
   }
 #else
   if (!QFileInfo::exists(Constants::UI_PIPE)) {
     logger.warning() << "No other instances found - no unix socket";
-    return true;
+    return false;
   }
 #endif
 
   // Try to wake the UI and bring it to the foreground.
   logger.debug() << "Try to communicate with the existing instance";
-  return !sendCommand("show");
+  return sendCommand("show");
 }
 
 bool EventListener::sendCommand(const QString& message) {

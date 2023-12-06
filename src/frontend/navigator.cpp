@@ -209,15 +209,22 @@ void Navigator::requestScreen(int requestedScreen,
 void Navigator::requestDeepLink(const QUrl& url) {
   logger.debug() << "Recevied nav link:" << url.toString();
 
-  // Quick and dirty navigation handler.
-  // Lookup the screen by name using QMetaEnum
+  // Quick and dirty navigation handler for testing.
+  // This will be expanded upon as we implement VPN-4412.
+
+  // Lookup the screen name by iterating over the keys in the CustomScreens
+  // enumeration and finding the screen whose name matches the first path
+  // segment.
   QString topPath = url.path().section('/', 0, 0, QString::SectionSkipEmpty);
+  if (topPath.isEmpty()) {
+    return;
+  }
   QString name = QString("Screen%1").arg(topPath);
   const QMetaEnum meta = QMetaEnum::fromType<MozillaVPN::CustomScreen>();
   for (int index = 0; meta.keyCount(); index++) {
     const char* key = meta.key(index);
-    if ((key != nullptr) && name.compare(key, Qt::CaseInsensitive) == 0) {
-      requestScreen(meta.value(index), NoFlags);
+    if ((key != nullptr) && (name.compare(key, Qt::CaseInsensitive) == 0)) {
+      requestScreen(meta.value(index));
       break;
     }
   }
