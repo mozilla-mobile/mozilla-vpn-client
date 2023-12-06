@@ -132,6 +132,16 @@
           <RegistryValue Type="integer" Name="DumpCount" Value="3" />
           <RegistryValue Type="integer" Name="DumpType" Value="1" />
         </RegistryKey>
+        <RegistryKey Root="HKCR" Key="mozilla-vpn">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:Mozilla VPN"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[MozillaVPNFolder]\Mozilla VPN.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[MozillaVPNFolder]\Mozilla VPN.exe&quot; ui &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
       </Component>
     </DirectoryRef>
 
