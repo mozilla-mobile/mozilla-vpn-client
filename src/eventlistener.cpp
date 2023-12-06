@@ -103,7 +103,7 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkOtherInstances(const QString& windowName) {
+bool EventListener::checkForInstances(const QString& windowName) {
   logger.debug() << "Checking other instances";
 
 #ifdef MZ_WINDOWS
