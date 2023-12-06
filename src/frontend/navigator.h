@@ -55,6 +55,7 @@ class Navigator final : public QObject {
       int screen, Navigator::LoadingFlags loadingFlags = NoFlags);
   Q_INVOKABLE void requestScreen(
       int screen, Navigator::LoadingFlags loadingFlags = NoFlags);
+  Q_INVOKABLE void requestDeepLink(const QUrl& url);
   Q_INVOKABLE void requestPreviousScreen();
 
   Q_INVOKABLE void addStackView(int screen, const QVariant& stackView);

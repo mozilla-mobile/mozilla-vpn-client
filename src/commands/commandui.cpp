@@ -136,10 +136,6 @@ int CommandUI::run(QStringList& tokens) {
       return 1;
     }
 
-    if (!tokens.isEmpty()) {
-      return clp.unknownOption(this, appName, tokens[0], options, false);
-    }
-
     if (hOption.m_set) {
       clp.showHelp(this, appName, options, false, false);
       return 0;
@@ -170,8 +166,19 @@ int CommandUI::run(QStringList& tokens) {
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     // If there is another instance, the execution terminates here.
-    if (!EventListener::checkOtherInstances(
+    if (EventListener::checkForInstances(
             I18nStrings::instance()->t(I18nStrings::ProductName))) {
+      // If we are given URL parameters, send them to the UI socket and exit.
+      for (const QString& value : tokens) {
+        QUrl url(value);
+        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+          logger.error() << "Invalid link:" << value;
+        } else {
+          EventListener::sendDeepLink(url);
+        }
+      }
+
+      logger.debug() << "Terminating the current process";
       return 0;
     }
 
@@ -446,6 +453,16 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
                      &ServerHandler::close);
 #endif
+
+    // If there happen to be navigation URLs, send them to the navigator class.
+    for (const QString& value : tokens) {
+      QUrl url(value);
+      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+        logger.error() << "Invalid link:" << value;
+      } else {
+        Navigator::instance()->requestDeepLink(url);
+      }
+    }
 
     KeyRegenerator keyRegenerator;
     // Let's go.

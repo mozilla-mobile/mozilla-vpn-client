@@ -206,6 +206,30 @@ void Navigator::requestScreen(int requestedScreen,
   logger.debug() << "Unable to show the requested screen";
 }
 
+void Navigator::requestDeepLink(const QUrl& url) {
+  logger.debug() << "Received nav link:" << url.toString();
+
+  // Quick and dirty navigation handler for testing.
+  // This will be expanded upon as we implement VPN-4412.
+
+  // Lookup the screen name by iterating over the keys in the CustomScreens
+  // enumeration and finding the screen whose name matches the first path
+  // segment.
+  QString topPath = url.path().section('/', 0, 0, QString::SectionSkipEmpty);
+  if (topPath.isEmpty()) {
+    return;
+  }
+  QString name = QString("Screen%1").arg(topPath);
+  const QMetaEnum meta = QMetaEnum::fromType<MozillaVPN::CustomScreen>();
+  for (int index = 0; meta.keyCount(); index++) {
+    const char* key = meta.key(index);
+    if ((key != nullptr) && (name.compare(key, Qt::CaseInsensitive) == 0)) {
+      requestScreen(meta.value(index));
+      break;
+    }
+  }
+}
+
 void Navigator::requestPreviousScreen() {
   logger.debug() << "Previous screen request";
 

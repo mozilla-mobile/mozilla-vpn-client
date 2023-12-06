@@ -16,7 +16,27 @@ class EventListener final : public QObject {
   EventListener();
   ~EventListener();
 
-  static bool checkOtherInstances(const QString& windowTitle);
+  /**
+   * @brief Check for the existence of other instances of the program.
+   *
+   * @param windowTitle - expected name of the UI window.
+   * @return * true if another instance was found.
+   */
+  static bool checkForInstances(const QString& windowTitle);
+
+  /**
+   * @brief Send a deep link command to the other instance of the program.
+   *
+   * @param url - deep link URL
+   * @return * true if the command was sent successfully.
+   */
+  static bool sendDeepLink(const QUrl& url);
+
+ private:
+  void socketReadyRead();
+  void handleLinkCommand(const QString& payload);
+
+  static bool sendCommand(const QString& data);
 
  private:
   QLocalServer m_server;
