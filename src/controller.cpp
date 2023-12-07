@@ -664,9 +664,9 @@ void Controller::connected(const QString& pubkey,
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
 
-  if (!isActivatingFromSwitch) {
+  if (shouldSkipSessionTelemetry == false) {
     logger.debug() << "Collecting telemetry for new session.";
-    emit newConnectionSucceeded();
+    emit recordConnectionStartTelemetry();
   } else {
     logger.debug() << "Connection happened due to server switch. Not "
                       "collecting telemetry.";
@@ -717,7 +717,9 @@ void Controller::disconnected() {
   }
 
   setState(StateOff);
-  emit controllerDisconnected();
+  if (shouldSkipSessionTelemetry == false) {
+    emit recordConnectionEndTelemetry();
+  }
 }
 
 bool Controller::processNextStep() {
@@ -912,9 +914,12 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
 
-  isActivatingFromSwitch = (m_state == Controller::StateSwitching ||
-                            m_state == Controller::StateSilentSwitching);
-  logger.debug() << "Set isActivatingFromSwitch to" << isActivatingFromSwitch;
+  shouldSkipSessionTelemetry =
+      (m_state == Controller::StateSwitching ||
+       m_state == Controller::StateSilentSwitching ||
+       App::instance()->state() == App::StateOnboarding);
+  logger.debug() << "Set shouldSkipSessionTelemetry to"
+                 << shouldSkipSessionTelemetry;
 
   m_serverData = serverData;
 

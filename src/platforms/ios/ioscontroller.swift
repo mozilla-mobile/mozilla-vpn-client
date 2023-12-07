@@ -181,6 +181,7 @@ public class IOSControllerImpl : NSObject {
             }
 
             var configHack = proto?.providerConfiguration ?? [:]
+            configHack["shouldSkipTelemetry"] = isOnboarding
             configHack["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
             configHack["gleanDebugTag"] = gleanDebugTag
             configHack["installationId"] = installationId
@@ -220,7 +221,7 @@ public class IOSControllerImpl : NSObject {
                             IOSControllerImpl.logger.info(message: "Sending new message \(message)")
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
-                            try TunnelManager.session?.startTunnel(options: ["source":"app", "shouldAlwaysSkipTelemetry": isOnboarding])
+                            try TunnelManager.session?.startTunnel(options: ["source":"app"])
                         }
                     } catch let error {
                         IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")

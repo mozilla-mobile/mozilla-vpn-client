@@ -134,8 +134,8 @@ class Controller : public QObject, public LogSerializer {
   void enableDisconnectInConfirmingChanged();
   void handshakeFailed(const QString& serverHostname);
   void connectionRetryChanged();
-  void newConnectionSucceeded();
-  void controllerDisconnected();
+  void recordConnectionStartTelemetry();
+  void recordConnectionEndTelemetry();
   void readyToQuit();
   void readyToUpdate();
   void readyToBackendFailure();
@@ -222,7 +222,7 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
-  bool isActivatingFromSwitch;
+  bool shouldSkipSessionTelemetry;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;

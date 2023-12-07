@@ -32,6 +32,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
 
+    private var shouldSkipTelemetry: Bool {
+        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["shouldSkipTelemetry"] as? Bool) ?? false
+    }
+
+    private var shouldSendTelemetry: Bool {
+        return !shouldSkipTelemetry && isSuperDooperFeatureActive
+    }
+
     override init() {
         super.init()
 
@@ -65,7 +73,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
-        let shouldAlwaysSkipTelemetry = ((options?["shouldAlwaysSkipTelemetry"] as? Bool) ?? false)
         logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))
 
         guard let tunnelProviderProtocol = self.protocolConfiguration as? NETunnelProviderProtocol,
@@ -75,7 +82,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
 
-        if isSuperDooperFeatureActive {
+        if shouldSendTelemetry {
             if let installationIdString = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["installationId"] as? String),
                 let installationId = UUID(uuidString: installationIdString) {
                 logger.info(message: "Setting installation ID in network extension")
@@ -94,13 +101,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
-                if !shouldAlwaysSkipTelemetry {
-                    if self.isSuperDooperFeatureActive {
-                        GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
-                        GleanMetrics.Session.daemonSessionId.generateAndSet()
-                        GleanMetrics.Session.daemonSessionStart.set()
-                        GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
-                    }
+                if self.shouldSendTelemetry {
+                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
+                    GleanMetrics.Session.daemonSessionId.generateAndSet()
+                    GleanMetrics.Session.daemonSessionStart.set()
+                    GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
                 completionHandler(nil)
@@ -142,7 +147,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
-            if self.isSuperDooperFeatureActive {
+            if self.shouldSendTelemetry {
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
 
