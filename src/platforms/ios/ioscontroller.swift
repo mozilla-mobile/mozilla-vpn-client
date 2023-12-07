@@ -120,7 +120,7 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, onboardingTunnelSavedCallback: @escaping () -> Void, disconnectCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, onboardingTunnelSavedCallback: @escaping () -> Void, disconnectOnErrorCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         tunnelSavedCallback = isOnboarding ? onboardingTunnelSavedCallback : nil
@@ -158,11 +158,11 @@ public class IOSControllerImpl : NSObject {
 
             let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isOnboarding: isOnboarding, disconnectCallback: disconnectCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isOnboarding: isOnboarding, disconnectOnErrorCallback: disconnectOnErrorCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, disconnectCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, disconnectOnErrorCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
@@ -198,11 +198,7 @@ public class IOSControllerImpl : NSObject {
                 
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
-                    disconnectCallback()
-                    if isOnboarding {
-                        IOSControllerImpl.logger.info(message: "Finishing onboarding, but saving tunnel resulted in error...")
-                        onboardingCompletedCallback()
-                    }
+                    disconnectOnErrorCallback()
                     return
                 }
 
@@ -211,11 +207,7 @@ public class IOSControllerImpl : NSObject {
                tunnel.loadFromPreferences { error in
                     if let error = error {
                         IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
-                        disconnectCallback()
-                        if isOnboarding {
-                            IOSControllerImpl.logger.info(message: "Finishing onboarding, but loading tunnel resulted in error...")
-                            onboardingCompletedCallback()
-                        }
+                        disconnectOnErrorCallback()
                         return
                     }
 
@@ -229,13 +221,10 @@ public class IOSControllerImpl : NSObject {
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
                             try TunnelManager.session?.startTunnel(options: ["source":"app", "shouldAlwaysSkipTelemetry": isOnboarding])
-                            if isOnboarding {
-                                onboardingCompletedCallback()
-                            }
                         }
                     } catch let error {
                         IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")
-                        disconnectCallback()
+                        disconnectOnErrorCallback()
                         return
                     }
                 }

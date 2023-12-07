@@ -103,6 +103,12 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
         }
 
         emit disconnected();
+        // If this disconnect is due to the end of onboarding, call appropriate function.
+        if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+          if (SettingsHolder::instance()->onboardingCompleted() == false) {
+            MozillaVPN::instance()->onboardingCompleted();
+          }
+        }
       }];
 }
 
@@ -159,12 +165,16 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         logger.info() << "Onboarding tunnel saved, deactivating tunnel";
         deactivate(Controller::ReasonNone);
       }
-      disconnectCallback:^() {
+      disconnectOnErrorCallback:^() {
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();
-      }
-      onboardingCompletedCallback:^() {
-        MozillaVPN::instance()->onboardingCompleted();
+        // If this disconnect is due to the end of onboarding, call appropriate function.
+        if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
+          if (SettingsHolder::instance()->onboardingCompleted() == false) {
+            logger.error() << "Error in tunnel creation, but finishing onboarding";
+            MozillaVPN::instance()->onboardingCompleted();
+          }
+        }
       }
       vpnConfigPermissionResponseCallback:^(BOOL granted) {
         Controller* controller = MozillaVPN::instance()->controller();
