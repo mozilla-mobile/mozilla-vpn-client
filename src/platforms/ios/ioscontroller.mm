@@ -155,6 +155,10 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
       installationId:config.m_installationId.toNSString()
       isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
+      onboardingTunnelSavedCallback:^() {
+        logger.info() << "Onboarding tunnel saved, deactivating tunnel";
+        deactivate(Controller::ReasonNone);
+      }
       disconnectCallback:^() {
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();

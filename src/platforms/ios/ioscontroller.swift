@@ -22,12 +22,14 @@ let VPN_NAME = "Mozilla VPN"
 }
 
 public class IOSControllerImpl : NSObject {
-    private static let logger = IOSLoggerImpl(tag: "IOSController")
+    private static let logger = IOSLoggerImpl(tag: "IOSSwiftController")
 
     private var stateChangeCallback: ((Bool, Date?) -> Void?)? = nil
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
+    private var shouldStopTunnelUponActivation: Bool = false
+    private var tunnelSavedCallback: (() -> Void)?
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
@@ -61,8 +63,18 @@ public class IOSControllerImpl : NSObject {
         switch session.status {
         case .connected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
+            if shouldStopTunnelUponActivation {
+                IOSControllerImpl.logger.info(message: "Stopping tunnel: Activation was due to onboarding.")
+                shouldStopTunnelUponActivation = false
+                                tunnelSavedCallback?()
+            }
         case .connecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
+            if shouldStopTunnelUponActivation {
+                IOSControllerImpl.logger.info(message: "Stopping tunnel: Activation was due to onboarding.")
+                shouldStopTunnelUponActivation = false
+                tunnelSavedCallback?()
+            }
         case .disconnected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
         case .disconnecting:
@@ -116,8 +128,10 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, disconnectCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, onboardingTunnelSavedCallback: @escaping () -> Void, disconnectCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
+
+        tunnelSavedCallback = isOnboarding ? onboardingTunnelSavedCallback : nil
 
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
@@ -184,6 +198,11 @@ public class IOSControllerImpl : NSObject {
             tunnel.localizedDescription = VPN_NAME
             tunnel.isEnabled = true
 
+        if isOnboarding {
+            IOSControllerImpl.logger.info(message: "Onboarding, so setting shouldStopTunnelUponActivation to true")
+            shouldStopTunnelUponActivation = true
+        }
+
             return tunnel.saveToPreferences { saveError in
                 // At this point, the user has made a selection on the system config permission modal to either allow or not allow
                 // the vpn configuration to be created, so it is safe to run activation retries via Controller::startHandshakeTimer()
@@ -206,18 +225,14 @@ public class IOSControllerImpl : NSObject {
                     if let error = error {
                         IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
                         disconnectCallback()
+                        if isOnboarding {
+                            IOSControllerImpl.logger.info(message: "Finishing onboarding, but loading tunnel resulted in error...")
+                            onboardingCompletedCallback()
+                        }
                         return
                     }
 
                     IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
-
-                    // Used to create a VPN configuration without connecting during onboarding
-                    if isOnboarding {
-                        IOSControllerImpl.logger.info(message: "Finishing onboarding... do not turn on the VPN after gaining permission")
-                        disconnectCallback()
-                        onboardingCompletedCallback()
-                        return
-                    }
 
                     do {
                         if (reason == 1 /* ReasonSwitching */) {
@@ -226,7 +241,10 @@ public class IOSControllerImpl : NSObject {
                             IOSControllerImpl.logger.info(message: "Sending new message \(message)")
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
-                            try TunnelManager.session?.startTunnel(options: ["source":"app"])
+                            try TunnelManager.session?.startTunnel(options: ["source":"app", "shouldAlwaysSkipTelemetry": isOnboarding])
+                            if isOnboarding {
+                                onboardingCompletedCallback()
+                            }
                         }
                     } catch let error {
                         IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")

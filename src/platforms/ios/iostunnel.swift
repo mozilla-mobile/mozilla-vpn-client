@@ -65,6 +65,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
+        let shouldAlwaysSkipTelemetry = ((options?["shouldAlwaysSkipTelemetry"] as? Bool) ?? false)
         logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))
 
         guard let tunnelProviderProtocol = self.protocolConfiguration as? NETunnelProviderProtocol,
@@ -93,11 +94,13 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
-                if self.isSuperDooperFeatureActive {
-                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
-                    GleanMetrics.Session.daemonSessionId.generateAndSet()
-                    GleanMetrics.Session.daemonSessionStart.set()
-                    GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
+                if !shouldAlwaysSkipTelemetry {
+                    if self.isSuperDooperFeatureActive {
+                        GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
+                        GleanMetrics.Session.daemonSessionId.generateAndSet()
+                        GleanMetrics.Session.daemonSessionStart.set()
+                        GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
+                    }
                 }
 
                 completionHandler(nil)
