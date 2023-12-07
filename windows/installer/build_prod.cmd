@@ -26,9 +26,10 @@ if exist %BUILDDIR%\wix\prepared goto :build
 
 :build
 	echo [+] Extracting %FETCHESDIR%\unsigned.zip
+	rmdir /s /q %BUILDDIR%\unsigned 2> NUL
 	mkdir %BUILDDIR%\unsigned || goto :error
 	powershell -command "Expand-Archive" -Path %FETCHESDIR%\unsigned.zip -DestinationPath %BUILDDIR%\unsigned || exit /b 1
-	set WIX=%BUILDDIR%wix\
+	set WIX=%BUILDDIR%\wix
 	call :msi x64 || goto :error
 
 :success
@@ -46,7 +47,7 @@ if exist %BUILDDIR%\wix\prepared goto :build
 	if not exist "%ARTIFACTDIR%" mkdir "%ARTIFACTDIR%"
 	pushd %BUILDDIR%\unsigned
 	echo [+] Compiling %1
-       "%WIX%\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -out "%ARTIFACTDIR%\MozillaVPN.wixobj" -arch %1 %BUILDDIR%\src\windows\installer\MozillaVPN.wxs || exit /b %errorlevel%
+       "%WIX%\candle" %WIX_CANDLE_FLAGS% -dPlatform=%1 -out "%ARTIFACTDIR%\MozillaVPN.wixobj" -arch %1 %~dp0\MozillaVPN.wxs || exit /b %errorlevel%
 	echo [+] Linking %1
        "%WIX%\light" %WIX_LIGHT_FLAGS% -out "%ARTIFACTDIR%/MozillaVPN.msi" "%ARTIFACTDIR%\MozillaVPN.wixobj" || exit /b %errorlevel%
 	popd
