@@ -28,7 +28,6 @@ public class IOSControllerImpl : NSObject {
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
-    private var shouldStopTunnelUponActivation: Bool = false
     private var tunnelSavedCallback: (() -> Void)?
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
@@ -63,18 +62,11 @@ public class IOSControllerImpl : NSObject {
         switch session.status {
         case .connected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
-            if shouldStopTunnelUponActivation {
-                IOSControllerImpl.logger.info(message: "Stopping tunnel: Activation was due to onboarding.")
-                shouldStopTunnelUponActivation = false
-                                tunnelSavedCallback?()
-            }
         case .connecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
-            if shouldStopTunnelUponActivation {
-                IOSControllerImpl.logger.info(message: "Stopping tunnel: Activation was due to onboarding.")
-                shouldStopTunnelUponActivation = false
-                tunnelSavedCallback?()
-            }
+            tunnelSavedCallback?()
+            // Next line shouldn't be necessary as will be reset on next tunnel activation, but being defensive
+            tunnelSavedCallback = nil
         case .disconnected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
         case .disconnecting:
@@ -197,11 +189,6 @@ public class IOSControllerImpl : NSObject {
             tunnel.protocolConfiguration = proto
             tunnel.localizedDescription = VPN_NAME
             tunnel.isEnabled = true
-
-        if isOnboarding {
-            IOSControllerImpl.logger.info(message: "Onboarding, so setting shouldStopTunnelUponActivation to true")
-            shouldStopTunnelUponActivation = true
-        }
 
             return tunnel.saveToPreferences { saveError in
                 // At this point, the user has made a selection on the system config permission modal to either allow or not allow
