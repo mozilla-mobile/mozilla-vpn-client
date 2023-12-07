@@ -21,7 +21,7 @@ add_custom_target(msi
     COMMAND ${CMAKE_COMMAND} -E echo "Building MSI installer for $<CONFIG>"
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_CURRENT_BINARY_DIR}/staging --config $<CONFIG>
     COMMAND ${WIX_BINARY_DIR}/candle ${WIX_CANDLE_FLAGS} -dPlatform=${WIX_PLATFORM} 
-                    -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.wixobj -arch x64 ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN_cmake.wxs
+                    -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.wixobj -arch x64 ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxs
     COMMAND ${WIX_BINARY_DIR}/light ${WIX_LIGHT_FLAGS} -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.wixobj
 )
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/staging)
