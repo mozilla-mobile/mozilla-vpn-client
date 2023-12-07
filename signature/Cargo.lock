@@ -261,9 +261,9 @@ dependencies = [
 
 [[package]]
 name = "ring"
-version = "0.17.5"
+version = "0.17.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb0205304757e5d899b9c2e448b867ffd03ae7f988002e47cd24954391394d0b"
+checksum = "688c63d65483050968b2a8937f7995f443e27041a0f7700aa59b0822aedebb74"
 dependencies = [
  "cc",
  "getrandom",
@@ -311,7 +311,7 @@ dependencies = [
  "ffi-support",
  "hex",
  "oid-registry",
- "ring 0.17.5",
+ "ring 0.17.7",
  "thiserror",
  "x509-parser",
 ]
