@@ -34,14 +34,6 @@ tasks:
             size: 158837368
         #artifact-prefix: vpn/win-perl
         fetch-alias: win-perl
-    open-ssl:
-        description: Open SSL Source
-        fetch:
-            type: static-url
-            url: https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1m.zip
-            artifact-name: open-ssl-src.zip
-            sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
-            size: 158837368
     win-rustup:
         description: Rustup for Windows v1.25.2
         fetch:
