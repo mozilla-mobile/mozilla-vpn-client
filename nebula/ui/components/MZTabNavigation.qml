@@ -49,6 +49,7 @@ Item {
                 height: bar.contentHeight
                 Accessible.name: MZI18n[tabLabelStringId]
                 Accessible.ignored: !visible
+                Accessible.onPressAction: handleTabClick(btn)
 
                 onClicked: handleTabClick(btn)
 
