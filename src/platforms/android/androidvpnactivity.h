@@ -117,7 +117,6 @@ class AndroidVPNActivity : public QObject {
   AndroidVPNActivity();
   void startAtBootChanged();
   void onLogout();
-  void applicationStateChanged(Qt::ApplicationState state);
 
   static void onServiceMessage(JNIEnv* env, jobject thiz, jint messageType,
                                jstring body);
@@ -128,7 +127,6 @@ class AndroidVPNActivity : public QObject {
   static void onIntentInternal(JNIEnv* env, jobject thiz);
   void handleServiceMessage(int code, const QString& data);
 
-  bool m_suspended = false;
 };
 
 #endif  // ANDROIDVPNACTIVITY_H
