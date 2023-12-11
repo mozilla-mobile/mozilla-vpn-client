@@ -9,9 +9,9 @@ target_sources(shared-sources INTERFACE
 )
 
 if(ADJUST_TOKEN)
-    message(Adjust SDK enabled)
+    message("Adjust SDK enabled")
     # SDK Token present, let's enable that.
-    target_compile_definitions(shared-sources INTERFACE MZ_ADJUST)
+    target_compile_definitions(mozillavpn PUBLIC MZ_ADJUST)
 
     target_sources(shared-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.cpp
