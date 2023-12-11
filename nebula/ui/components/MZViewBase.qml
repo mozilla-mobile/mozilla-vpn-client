@@ -20,7 +20,7 @@ Item {
    property alias _contentHeight: vpnFlickable.contentHeight
 
    Accessible.name: (_menuTitle.length > 0) ? _menuTitle : _accessibleName
-   Accessible.role: Accessible.Grouping
+   Accessible.role: Accessible.Pane
 
    anchors {
        top: if (parent) parent.top
