@@ -67,14 +67,28 @@ Simplified, the VPN has the following states:
     (...) // unrelated intermediate states
   };
 ```
-An extension can send an `ExtensionMessage<activate>` to the VPN to turn on whole-device protection. 
+An extension can currently send an `ExtensionMessage<activate>` to the VPN to turn on whole-device protection. 
 For this case, we propose to introduce a new state `StateOnPartial` that will be activated on a call of an extension to `ExtensionMessage<activate>` instead. It is similar to `StateOn` with the following properties: 
 - The `allowedIPAddressRanges` for this activation is set to `10.124.0.0/20` so that only the Mullvad Exit Proxies are accessible on the VPN Network Device. Therefore, all other traffic will not use the VPN. 
 - A Mullvad DNS server will be set, so that the Mullvad proxies are resolvable. If a custom DNS is set, we need to set a Mullvad DNS as 2nd DNS server.
 - The Client UI does not show an activation. (or a new special UI state)
 > Q: Do we need a new UI state ? or like a "firefox is using the vpn?" 
 - If the Client activates, it will attempt to switch to `StateOn` and protect the whole device.
-- An Extension may request `ExtensionMessage<deactivate>` only if the client is in `StateOnPartial` and it was the activator. The Client will then go to `StateOff`.
+- An Extension may request `ExtensionMessage<deactivate>` only if the client is in `StateOnPartial`. The Client will then go to `StateOff`.
+
+A simplified graph excluding the intermediate states. 
+
+```mermaid 
+---
+title: State Diagramm v2
+---
+stateDiagram-v2
+    StateOff --> StateOn: activate
+    StateOff --> StateOnPartial: activatePartial
+    StateOnPartial --> StateOn: silentServerSwitch
+    StateOnPartial --> StateOff: deactivate
+    StateOn -->StateOff : deactivate 
+```
 
 The extension must then set the proxy to the `socks5` URL of the current `exitServer` OR, if a custom exit location is set, to the `socks5` proxy of that endpoint.
 
@@ -87,12 +101,13 @@ For that, we will create an external binary that:
 - generates a username and password for this session
 - prints the port, username, password to STDOUT so that the parent process may gather that info. 
 
+The Client can start the Proxy process by using [QProcess](https://doc.qt.io/qt-6/qprocess.html), which allows the Client to easily read I/O as it's a QOIODevice. 
+
 The VPN client will then pass that info to the Extension inside it's `status` response as an extra field. The extension must use that proxy for pages wanting to bypass the VPN.
 
 For Platforms where split tunneling is supported, the proxy is permanently fixed in the split-tunnel rule list, making sure the vpn connection cannot be used. 
 
-For Platforms where split tunneling is not available, the proxy will use socket options to make sure the right network device is used.
-> Q: do we need more details here? 
+For Platforms where split tunneling is not available, the proxy might use socket options to make sure the right network device is used. However support for those platforms will be covered in a different RFC, as that is not goal for the MVP.
 
 If the daemon has support for per-app firewall rules (currently Windows), we will make sure only Firefox may access the port of the proxy to make sure other local apps cannot use the proxy to get the real IP of the user. 
 
@@ -104,10 +119,12 @@ This State is trivial, no proxy needs to be set by the extension.
 ### Other API Changes 
 
 #### Renaming
-We will rename the current C++ Extension API classes to ... ExtensionAPI. They are currently under `server/` and called `ServerHandler` && `ServerConnection` which is an overloaded term for a VPN. 
+We will rename the current C++ Extension API classes to ... BrowserExtensionInterface. They are currently under `server/` and called `ServerHandler` && `ServerConnection` which is an overloaded term for a VPN. 
 
 #### Split-Tunnel Lists
-Instead of reporting all excluded apps in `disabled_apps`, we will limit the response to executables containing `firefox`. The Extension may then limit it's funcitonality until resolved, as Firefox cannot access the VPN if it is excluded.  
+Currently we offer Mac to query the list of all apps that the user has set inside `disabled_apps`. That way MAC can correctly assume the vpn is "off" for the current firefox process, if the vpn is on but firefox is disabled. 
+The VPN-Integration extension probably has a similar use case for using this api. 
+Reporting all excluded apps in `disabled_apps`, leaks the presence of apps the extension has no need of. Therefore we are going to will limit the response to executables relating to  `firefox`.
 
 
 
