@@ -16,6 +16,8 @@ set(CMAKE_C_FLAGS_RELEASE "-O2 -g -DNDEBUG")
 # See https://bugreports.qt.io/browse/QTBUG-93268
 set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
 
+target_link_options(mozillavpn PRIVATE "-ObjC")
+
 ## Install the Glean iOS SDK into the bundle.
 include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
 

@@ -267,7 +267,10 @@ void MozillaVPN::initialize() {
   QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
 
 #ifdef MZ_ADJUST
+  logger.debug() << "Adjust included in build.";
   initTasks.append(new TaskFunction([] { AdjustHandler::initialize(); }));
+#else
+  logger.debug() << "Adjust not included in build.";
 #endif
 
   TaskScheduler::scheduleTask(new TaskGroup(initTasks));
