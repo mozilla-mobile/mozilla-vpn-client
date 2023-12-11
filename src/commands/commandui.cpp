@@ -468,7 +468,7 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(
         AndroidVPNActivity::instance(), &AndroidVPNActivity::onOpenedWithUrl,
         [](QUrl url) { Navigator::instance()->requestDeepLink(url); });
-#else 
+#else
     // If there happen to be navigation URLs, send them to the navigator class.
     for (const QString& value : tokens) {
       QUrl url(value);
