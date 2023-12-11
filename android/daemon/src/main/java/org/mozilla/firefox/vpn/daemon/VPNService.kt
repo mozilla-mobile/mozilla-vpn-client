@@ -63,7 +63,7 @@ class VPNService : android.net.VpnService() {
     private val isChangingServers: Boolean
         get() {
             // could be user choosing new server or silent switching
-            return this.mConfig?.optInt("reason") ?: 1
+            return (this.mConfig?.optInt("reason") ?: 0) == 1
         }
 
     private val shouldRecordMetrics: Boolean
