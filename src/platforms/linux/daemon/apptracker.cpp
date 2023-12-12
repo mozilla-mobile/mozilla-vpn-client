@@ -121,6 +121,22 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
   }
 }
 
+// static
+// Expand unicode escape sequences.
+QString AppTracker::decodeUnicodeEscape(const QString& str) {
+  static const QRegularExpression re("\\x[0-9A-Za-z][0-9A-Za-z]");
+
+  QString result = str;
+  QRegularExpressionMatch match = re.match(result);
+  for (int i = match.lastCapturedIndex(); i > 0; i--) {
+    bool okay;
+    QChar code = match.captured(i).mid(2).toUShort(&okay, 16);
+    result.replace(match.capturedStart(i), match.capturedLength(i),
+                   QString(code));
+  }
+  return result;
+}
+
 void AppTracker::appHeuristicMatch(AppData* data) {
   // If this cgroup contains the last-launched PID, then we have a fairly
   // strong indication of which application this control group is running.
@@ -129,15 +145,39 @@ void AppTracker::appHeuristicMatch(AppData* data) {
       logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
       data->desktopId = m_lastLaunchName;
       data->rootpid = m_lastLaunchPid;
-      break;
+      return;
     }
   }
 
+  // Make an attempt to resolve the desktop ID from a cgroup scope.
+  QString scopeName = QFileInfo(data->cgroup).fileName();
+
+  // Reverse the desktop ID from a cgroup scope and known launcher tools.
+  if (scopeName.startsWith("app-gnome-") ||
+      scopeName.startsWith("app-flatpak-")) {
+    QString raw = scopeName.section('-', 2, 2);
+    if (!raw.isEmpty()) {
+      data->desktopId = QString("%1.desktop").arg(decodeUnicodeEscape(raw));
+      return;
+    }
+  }
+
+  QString gnomeLaunchdPrefix("gnome-launchd-");
+  if (scopeName.startsWith(gnomeLaunchdPrefix)) {
+    qsizetype start = gnomeLaunchdPrefix.length();
+    qsizetype end = scopeName.lastIndexOf('-');
+    if (end > start) {
+      data->desktopId = scopeName.mid(start, end - start);
+      return;
+    }
+  }
+
+  // TODO: Snaps are weird.
+
   // Query the systemd unit for its SourcePath property, which is set to the
   // desktop file's full path on KDE
-  QString unit = QFileInfo(data->cgroup).fileName();
   QDBusReply<QDBusObjectPath> objPath =
-      m_systemdInterface->call("GetUnit", unit);
+      m_systemdInterface->call("GetUnit", scopeName);
 
   QDBusInterface interface(DBUS_SYSTEMD_SERVICE, objPath.value().path(),
                            DBUS_SYSTEMD_UNIT, m_systemdInterface->connection(),
@@ -146,12 +186,6 @@ void AppTracker::appHeuristicMatch(AppData* data) {
   if (!source.isEmpty() && source.endsWith(".desktop")) {
     data->desktopId = LinuxDependencies::desktopFileId(source);
   }
-
-  // TODO: Some comparison between the .desktop file and the directory name
-  // of the control group is also very likely to produce viable application
-  // matching, but this will have to be a fuzzy match of some sort because
-  // there's a lot of variability in how desktop environments choose to name
-  // them.
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {

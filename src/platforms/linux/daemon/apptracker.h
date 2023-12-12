@@ -53,6 +53,7 @@ class AppTracker final : public QObject {
 
  private:
   void appHeuristicMatch(AppData* data);
+  static QString decodeUnicodeEscape(const QString& str);
 
  private:
   // Monitoring of the user's control groups.
