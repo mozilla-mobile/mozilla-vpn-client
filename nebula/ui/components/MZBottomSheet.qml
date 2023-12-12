@@ -8,7 +8,7 @@ import Mozilla.Shared 1.0
 Drawer {
     id: drawer
 
-    readonly property int maxHeight: window.height - 32
+    readonly property int maxHeight: parent.height - MZTheme.theme.sheetTopMargin //parent is the overlay
 
     implicitWidth: window.width
     implicitHeight: maxHeight

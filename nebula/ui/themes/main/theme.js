@@ -75,6 +75,7 @@ theme.listSpacing = 8;
 theme.maxTextWidth = 296;
 theme.windowMargin = 16;
 theme.popupMargin = 24;
+theme.sheetTopMargin = 32
 theme.desktopAppHeight = 640;
 theme.desktopAppWidth = 360;
 theme.tabletMinimumWidth = 600;

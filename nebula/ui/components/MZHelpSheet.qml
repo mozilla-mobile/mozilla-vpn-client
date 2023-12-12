@@ -5,12 +5,37 @@ import QtQuick.Layouts 1.14
 import components 0.1
 import Mozilla.Shared 1.0
 
+//Usage: pass a list of blocks into the model
+/*
+  MZHelpSheet {
+      title: "MZHelpSheet"
+      iconSource: "qrc:/ui/resources/connection-info-dark.svg"
+
+      model: [
+          {type: MZHelpSheet.BlockType.Title, text: "title"},
+          {type: MZHelpSheet.BlockType.Text, text: "text"},
+          {type: MZHelpSheet.BlockType.Text, text: "text"},
+          {type: MZHelpSheet.BlockType.Text, text: "text"},
+          {type: MZHelpSheet.BlockType.PrimaryButton, text: "Primary", action: () => { sheet.close(); MZNavigator.requestScreen(VPN.ScreenGetHelp) } },
+          {type: MZHelpSheet.BlockType.LinkButton, text: "Link", action: () => { MZUrlOpener.openUrl("https://mozilla.org") } }
+      ]
+    }
+*/
+
 MZBottomSheet {
     id: bottomSheet
 
     property alias iconSource: icon.source
     property alias title: title.text
-    property alias content: layout.data
+    property var model
+
+
+    enum BlockType {
+        Title,
+        Text,
+        PrimaryButton,
+        LinkButton
+    }
 
     implicitHeight: Math.min(contentItem.implicitHeight, maxHeight)
 
@@ -115,8 +140,91 @@ MZBottomSheet {
                 id: layout
                 anchors.fill: parent
                 anchors.margins: MZTheme.theme.windowMargin * 1.5
+
+                Repeater {
+                    model: bottomSheet.model
+                    delegate: Loader {
+                        id: loader
+
+                        property var composerBlock: bottomSheet.model[index]
+
+                        function getSourceComponent() {
+                            switch (composerBlock.type) {
+                            case MZHelpSheet.BlockType.Title:
+                                return titleBlock
+                            case MZHelpSheet.BlockType.Text:
+                                return textBlock
+                            case MZHelpSheet.BlockType.PrimaryButton:
+                                return buttonBlock
+                            case MZHelpSheet.BlockType.LinkButton:
+                                return linkButtonBlock
+                            default:
+                                return console.error("Unable to create view for composer block of type: " + modelData)
+                            }
+
+                        }
+
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: item.implicitHeight
+
+                        sourceComponent: getSourceComponent()
+
+                        Component {
+                            id: titleBlock
+
+                            MZBoldInterLabel {
+                                Layout.fillWidth: true
+
+                                text: loader.composerBlock.text
+                                font.pixelSize: MZTheme.theme.fontSize
+                                lineHeight: MZTheme.theme.labelLineHeight
+                                verticalAlignment: Text.AlignVCenter
+                                wrapMode: Text.Wrap
+                            }
+                        }
+
+                        Component {
+                            id: textBlock
+
+                            MZInterLabel {
+
+                                text: loader.composerBlock.text
+                                font.pixelSize: MZTheme.theme.fontSizeSmall
+                                color: MZTheme.theme.fontColor
+                                horizontalAlignment: Text.AlignLeft
+                            }
+                        }
+
+                        Component {
+                            id: buttonBlock
+
+                            MZButton {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
+                                implicitHeight: MZTheme.theme.rowHeight
+
+                                text: loader.composerBlock.text
+
+                                onClicked: loader.composerBlock.action()
+                            }
+                        }
+
+                        Component {
+                            id: linkButtonBlock
+
+                            MZLinkButton {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
+                                labelText: loader.composerBlock.text
+
+                                onClicked: loader.composerBlock.action()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-
 }
