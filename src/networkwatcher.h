@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <QMap>
 
+#include "networkwatcherimpl.h"
 #include "notificationhandler.h"
 
 class NetworkWatcherImpl;
@@ -25,6 +26,12 @@ class NetworkWatcher final : public QObject {
 
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
+
+  // public for the inspector, only used to set the transport
+  // type to None to mock internet connection being down.
+  NetworkWatcherImpl::TransportType setTransportTypeToNone() /*override*/ {
+    return NetworkWatcherImpl::TransportType_None;
+  };
 
   QString getCurrentTransport();
 

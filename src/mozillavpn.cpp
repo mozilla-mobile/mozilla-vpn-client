@@ -1959,6 +1959,13 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "force_no_network", "Force a network connection failure", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->networkWatcher()->setTransportTypeToNone();
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "force_server_unavailable",
       "Timeout all servers in a city using force_server_unavailable "
       "{countryCode} "
