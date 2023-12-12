@@ -46,7 +46,7 @@ class VPNService : android.net.VpnService() {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
-            if (isSuperDooperMetricsActive) {
+            if (shouldRecordMetrics) {
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -58,6 +58,17 @@ class VPNService : android.net.VpnService() {
     private val isSuperDooperMetricsActive: Boolean
         get() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
+        }
+
+    private val isChangingServers: Boolean
+        get() {
+            // could be user choosing new server or silent switching
+            return (this.mConfig?.optInt("reason") ?: 0) == 1
+        }
+
+    private val shouldRecordMetrics: Boolean
+        get() {
+            return isSuperDooperMetricsActive && !isChangingServers
         }
 
     private val isUsingShortTimerSessionPing: Boolean
@@ -338,7 +349,7 @@ class VPNService : android.net.VpnService() {
             Log.i(tag, "Setting Glean debug tag for daemon.")
             Glean.setDebugViewTag(gleanTag)
         }
-        if (isSuperDooperMetricsActive) {
+        if (shouldRecordMetrics) {
             val installationIdString = json.getString("installationId")
             installationIdString?.let {
                 try {
@@ -421,7 +432,7 @@ class VPNService : android.net.VpnService() {
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
-        if (isSuperDooperMetricsActive) {
+        if (shouldRecordMetrics) {
             Session.daemonSessionEnd.set()
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,
