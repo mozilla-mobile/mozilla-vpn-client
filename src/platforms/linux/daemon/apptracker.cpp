@@ -40,9 +40,6 @@ AppTracker::~AppTracker() {
   MZ_COUNT_DTOR(AppTracker);
   logger.debug() << "AppTracker destroyed.";
 
-  for (AppData* data : m_runningApps) {
-    delete data;
-  }
   m_runningApps.clear();
 }
 
@@ -122,16 +119,15 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
 }
 
 // Make an attempt to resolve the desktop ID from a cgroup scope.
-void AppTracker::appHeuristicMatch(AppData* data) {
-  QString scopeName = QFileInfo(data->cgroup).fileName();
+QString AppTracker::findDesktopId(const QString& cgroup) {
+  QString scopeName = QFileInfo(cgroup).fileName();
 
   // Reverse the desktop ID from a cgroup scope and known launcher tools.
   if (scopeName.startsWith("app-gnome-") ||
       scopeName.startsWith("app-flatpak-")) {
     QString raw = scopeName.section('-', 2, 2);
     if (!raw.isEmpty()) {
-      data->desktopId = QString("%1.desktop").arg(decodeUnicodeEscape(raw));
-      return;
+      return QString("%1.desktop").arg(decodeUnicodeEscape(raw));
     }
   }
 
@@ -140,8 +136,7 @@ void AppTracker::appHeuristicMatch(AppData* data) {
     qsizetype start = gnomeLaunchdPrefix.length();
     qsizetype end = scopeName.lastIndexOf('-');
     if (end > start) {
-      data->desktopId = scopeName.mid(start, end - start);
-      return;
+      return scopeName.mid(start, end - start);
     }
   }
 
@@ -157,8 +152,11 @@ void AppTracker::appHeuristicMatch(AppData* data) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    data->desktopId = LinuxDependencies::desktopFileId(source);
+    return LinuxDependencies::desktopFileId(source);
   }
+
+  // Otherwise, we don't know the desktop ID for this control group.
+  return QString();
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {
@@ -179,12 +177,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
-      AppData* data = new AppData(path);
+      QString desktopId = findDesktopId(path);
+      m_runningApps[path] = desktopId;
 
-      m_runningApps[path] = data;
-      appHeuristicMatch(data);
-
-      emit appLaunched(data->cgroup, data->desktopId);
+      emit appLaunched(path, desktopId);
     }
   }
 
@@ -194,10 +190,9 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
       Q_ASSERT(m_runningApps.contains(scope));
-      AppData* data = m_runningApps.take(scope);
+      QString desktopId = m_runningApps.take(scope);
 
-      emit appTerminated(data->cgroup, data->desktopId);
-      delete data;
+      emit appTerminated(scope, desktopId);
     }
   }
 }

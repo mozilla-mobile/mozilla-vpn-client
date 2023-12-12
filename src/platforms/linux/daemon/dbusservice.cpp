@@ -251,11 +251,10 @@ void DBusService::appTerminated(const QString& cgroup,
 QString DBusService::runningApps() {
   QJsonArray result;
 
-  for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
-    const AppData* data = *i;
+  for (const QString& cgroup : m_appTracker->getRunningApps()) {
     QJsonObject appObject;
-    appObject.insert("id", QJsonValue(data->desktopId));
-    appObject.insert("cgroup", QJsonValue(data->cgroup));
+    appObject.insert("id", QJsonValue(m_appTracker->getDesktopId(cgroup)));
+    appObject.insert("cgroup", QJsonValue(cgroup));
 
     result.append(appObject);
   }
@@ -274,15 +273,11 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
   logger.debug() << "Setting" << desktopId << "to firewall state" << state;
 
   // Update the split tunnelling state for any running apps.
-  for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
-    const AppData* data = *i;
-    if (data->desktopId != desktopId) {
-      continue;
-    }
+  for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
     if (state == APP_STATE_EXCLUDED) {
-      m_wgutils->excludeCgroup(data->cgroup);
+      m_wgutils->excludeCgroup(cgroup);
     } else {
-      m_wgutils->resetCgroup(data->cgroup);
+      m_wgutils->resetCgroup(cgroup);
     }
   }
 

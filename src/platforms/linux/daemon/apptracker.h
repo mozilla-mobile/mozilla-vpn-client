@@ -13,15 +13,6 @@
 
 class QDBusInterface;
 
-class AppData {
- public:
-  AppData(const QString& path) : cgroup(path) { MZ_COUNT_CTOR(AppData); }
-  ~AppData() { MZ_COUNT_DTOR(AppData); }
-
-  const QString cgroup;
-  QString desktopId;
-};
-
 class AppTracker final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppTracker)
@@ -33,9 +24,13 @@ class AppTracker final : public QObject {
   void userCreated(uint userid, const QString& xdgRuntimePath);
   void userRemoved(uint userid);
 
-  QHash<QString, AppData*>::iterator begin() { return m_runningApps.begin(); }
-  QHash<QString, AppData*>::iterator end() { return m_runningApps.end(); }
-  AppData* find(const QString& cgroup) { return m_runningApps.value(cgroup); }
+  QStringList getRunningApps() const { return m_runningApps.keys(); }
+  QString getDesktopId(const QString& cgroup) const {
+    return m_runningApps.value(cgroup);
+  }
+  QStringList findByDesktopId(const QString& desktopId) const {
+    return m_runningApps.keys(desktopId);
+  }
 
  signals:
   void appLaunched(const QString& cgroup, const QString& desktopId);
@@ -45,7 +40,7 @@ class AppTracker final : public QObject {
   void cgroupsChanged(const QString& directory);
 
  private:
-  void appHeuristicMatch(AppData* data);
+  QString findDesktopId(const QString& cgroup);
   QList<int> pids(const QString& cgroup) const;
   static QString decodeUnicodeEscape(const QString& str);
 
@@ -56,7 +51,9 @@ class AppTracker final : public QObject {
   QDBusInterface* m_systemdInterface = nullptr;
 
   // The set of applications that we have tracked.
-  QHash<QString, AppData*> m_runningApps;
+  //  - key is the cgroup path.
+  //  - value is the desktopId, or an empty QString if unknown.
+  QHash<QString, QString> m_runningApps;
 };
 
 #endif  // APPTRACKER_H
