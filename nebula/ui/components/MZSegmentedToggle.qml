@@ -154,7 +154,7 @@ Rectangle {
                         elide: Qt.platform.os === "android" ? Text.ElideNone : Text.ElideRight
                         font.family: MZTheme.theme.fontBoldFamily
                         font.pixelSize: MZTheme.theme.fontSize
-                        // Ignore because the segment MZButtonBase provides accessibility
+                        // Ignore because the parent MZButtonBase provides accessibility
                         Accessible.ignored: true
                         color: {
                             if (root.selectedIndex === index) {

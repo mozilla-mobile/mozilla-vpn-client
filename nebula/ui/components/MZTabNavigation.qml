@@ -20,9 +20,9 @@ Item {
         bar.setCurrentIndex(idx);
     }
 
-    function selectTab(tabButton){
+    function selectTab(tabButton) {
         bar.currentIndex = tabButton.TabBar.index;
-        // Emit clicked signal to call handleTabClick, which processes selection change
+        // Emit the clicked signal to invoke handleTabClick, which handles the selection change
         tabButton.clicked();
     }
 
