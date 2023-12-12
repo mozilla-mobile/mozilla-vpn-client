@@ -124,16 +124,27 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
 // static
 // Expand unicode escape sequences.
 QString AppTracker::decodeUnicodeEscape(const QString& str) {
-  static const QRegularExpression re("\\x[0-9A-Za-z][0-9A-Za-z]");
+  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
 
   QString result = str;
-  QRegularExpressionMatch match = re.match(result);
-  for (int i = match.lastCapturedIndex(); i > 0; i--) {
+  qsizetype offset = 0;
+  while (offset < result.length()) {
+    QRegularExpressionMatch match = re.match(result, offset);
+    if (!match.hasMatch()) {
+      break;
+    }
+
     bool okay;
-    QChar code = match.captured(i).mid(2).toUShort(&okay, 16);
-    result.replace(match.capturedStart(i), match.capturedLength(i),
-                   QString(code));
+    qsizetype start = match.capturedStart(0);
+    QChar code = match.captured(0).mid(2).toUShort(&okay, 16);
+    if (okay) {
+      result.replace(start, match.capturedLength(0), QString(code));
+      offset = start + 1;
+    } else {
+      offset = match.capturedEnd(0);
+    }
   }
+
   return result;
 }
 
