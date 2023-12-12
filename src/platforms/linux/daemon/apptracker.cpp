@@ -131,7 +131,7 @@ QString AppTracker::findDesktopId(const QString& cgroup) {
     }
   }
 
-  QString gnomeLaunchdPrefix("gnome-launchd-");
+  QString gnomeLaunchdPrefix("gnome-launched-");
   if (scopeName.startsWith(gnomeLaunchdPrefix)) {
     qsizetype start = gnomeLaunchdPrefix.length();
     qsizetype end = scopeName.lastIndexOf('-');
