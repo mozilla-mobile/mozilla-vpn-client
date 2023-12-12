@@ -19,6 +19,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "platforms/linux/linuxdependencies.h"
 
 namespace {
 Logger logger("DBusService");
@@ -224,24 +225,25 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
   m_appTracker->userRemoved(uid);
 }
 
-void DBusService::appLaunched(const QString& cgroup, const QString& appId,
-                              int rootpid) {
-  logger.debug() << "tracking:" << cgroup << "appId:" << appId
+void DBusService::appLaunched(const QString& cgroup,
+                              const QString& desktopId, int rootpid) {
+  logger.debug() << "tracking:" << cgroup << "id:" << desktopId
                  << "PID:" << rootpid;
 
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  if (m_excludedApps.contains(desktopId)) {
     m_wgutils->excludeCgroup(cgroup);
   }
 }
 
-void DBusService::appTerminated(const QString& cgroup, const QString& appId) {
-  logger.debug() << "terminate:" << cgroup;
+void DBusService::appTerminated(const QString& cgroup,
+                                const QString& desktopId) {
+  logger.debug() << "terminate:" << cgroup << "id:" << desktopId;
 
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  if (m_excludedApps.contains(desktopId)) {
     m_wgutils->resetCgroup(cgroup);
   }
 }
@@ -254,7 +256,7 @@ QString DBusService::runningApps() {
     const AppData* data = *i;
     QJsonObject appObject;
     QJsonArray pidList;
-    appObject.insert("appId", QJsonValue(data->appId));
+    appObject.insert("id", QJsonValue(data->desktopId));
     appObject.insert("cgroup", QJsonValue(data->cgroup));
     appObject.insert("rootpid", QJsonValue(data->rootpid));
 
@@ -276,12 +278,13 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
     return false;
   }
 
-  logger.debug() << "Setting" << appName << "to firewall state" << state;
+  QString desktopId = LinuxDependencies::desktopFileId(appName);
+  logger.debug() << "Setting" << desktopId << "to firewall state" << state;
 
   // Update the split tunnelling state for any running apps.
   for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
     const AppData* data = *i;
-    if (data->appId != appName) {
+    if (data->desktopId != desktopId) {
       continue;
     }
     if (state == APP_STATE_EXCLUDED) {
@@ -293,9 +296,9 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
 
   // Update the list of apps to exclude from the VPN.
   if (state != APP_STATE_EXCLUDED) {
-    m_excludedApps.removeAll(appName);
-  } else if (!m_excludedApps.contains(appName)) {
-    m_excludedApps.append(appName);
+    m_excludedApps.removeAll(desktopId);
+  } else if (!m_excludedApps.contains(desktopId)) {
+    m_excludedApps.append(desktopId);
   }
   return true;
 }
@@ -307,23 +310,10 @@ bool DBusService::firewallPid(int rootpid, const QString& state) {
     return false;
   }
 
-#if 0
-  ProcessGroup* group = m_pidtracker->group(rootpid);
-  if (!group) {
-    return false;
-  }
-
-  group->state = state;
-  group->moveToCgroup(getAppStateCgroup(group->state));
-
-  logger.debug() << "Setting" << group->name << "PID:" << rootpid
-                 << "to firewall state" << state;
-  return true;
-#else
+  // Not implemented.
   Q_UNUSED(rootpid);
   Q_UNUSED(state);
   return false;
-#endif
 }
 
 /* Clear the firewall and return all applications to the active state */

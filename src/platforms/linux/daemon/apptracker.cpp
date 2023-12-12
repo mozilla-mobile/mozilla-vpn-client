@@ -116,7 +116,7 @@ void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
     appIdName.chop(1);
   }
   if (!appIdName.isEmpty()) {
-    m_lastLaunchName = appIdName;
+    m_lastLaunchName = LinuxDependencies::desktopFileId(appIdName);
     m_lastLaunchPid = pid;
   }
 }
@@ -127,7 +127,7 @@ void AppTracker::appHeuristicMatch(AppData* data) {
   for (int pid : data->pids()) {
     if ((pid != 0) && (pid == m_lastLaunchPid)) {
       logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
-      data->appId = m_lastLaunchName;
+      data->desktopId = m_lastLaunchName;
       data->rootpid = m_lastLaunchPid;
       break;
     }
@@ -144,7 +144,7 @@ void AppTracker::appHeuristicMatch(AppData* data) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    data->appId = source;
+    data->desktopId = LinuxDependencies::desktopFileId(source);
   }
 
   // TODO: Some comparison between the .desktop file and the directory name
@@ -177,7 +177,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       m_runningApps[path] = data;
       appHeuristicMatch(data);
 
-      emit appLaunched(data->cgroup, data->appId, data->rootpid);
+      emit appLaunched(data->cgroup, data->desktopId);
     }
   }
 
@@ -189,7 +189,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       Q_ASSERT(m_runningApps.contains(scope));
       AppData* data = m_runningApps.take(scope);
 
-      emit appTerminated(data->cgroup, data->appId);
+      emit appTerminated(data->cgroup, data->desktopId);
       delete data;
     }
   }

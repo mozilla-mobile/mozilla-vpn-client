@@ -21,7 +21,7 @@ class AppData {
   QList<int> pids() const;
 
   const QString cgroup;
-  QString appId;
+  QString desktopId;
   int rootpid = 0;
 };
 
@@ -41,8 +41,8 @@ class AppTracker final : public QObject {
   AppData* find(const QString& cgroup) { return m_runningApps.value(cgroup); }
 
  signals:
-  void appLaunched(const QString& cgroup, const QString& appId, int rootpid);
-  void appTerminated(const QString& cgroup, const QString& appId);
+  void appLaunched(const QString& cgroup, const QString& desktopId);
+  void appTerminated(const QString& cgroup, const QString& desktopId);
 
  private slots:
   void gtkLaunchEvent(const QByteArray& appid, const QString& display,
