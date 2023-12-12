@@ -118,6 +118,40 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
   return result;
 }
 
+// The naming convention for snaps follows one of the following formats:
+//   snap.<pkg>.<app>.service - assigned by systemd for services
+//   snap.<pkg>.<app>-<uuid>.scope - transient scope for apps
+//   snap.<pkg>.hook.<app>-<uuid>.scope - transient scope for hooks
+//
+// However, at some point the separator between the app and UUID was
+// swapped from a dot to a dash. Which makes the parsing a bit of a pain.
+// 
+// See: https://github.com/snapcore/snapd/blob/master/sandbox/cgroup/scanning.go
+QString AppTracker::snapDesktopId(const QString& scope) {
+  static const QRegularExpression snapuuid("[-.][0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}");
+
+  // Strip the UUID out of the scope name
+  QString stripped(scope);
+  stripped.remove(snapuuid);
+
+  // Split the remainder on dots and discard the extension.
+  QStringList split = stripped.split('.');
+  split.removeLast();
+
+  // Parse the package and application.
+  QString package = split.value(1);
+  QString app = split.value(2);
+  if (app == "hook") {
+    app = split.value(3);
+  }
+  if (package.isEmpty() || app.isEmpty()) {
+    return QString();
+  }
+
+  // Reassemble the desktop identifier.
+  return QString("%1_%2.desktop").arg(package).arg(app);
+}
+
 // Make an attempt to resolve the desktop ID from a cgroup scope.
 QString AppTracker::findDesktopId(const QString& cgroup) {
   QString scopeName = QFileInfo(cgroup).fileName();
@@ -140,7 +174,10 @@ QString AppTracker::findDesktopId(const QString& cgroup) {
     }
   }
 
-  // TODO: Snaps are weird.
+  // Snaps have their own format.
+  if (scopeName.startsWith("snap.")) {
+    return snapDesktopId(scopeName);
+  }
 
   // Query the systemd unit for its SourcePath property, which is set to the
   // desktop file's full path on KDE

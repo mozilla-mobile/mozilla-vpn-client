@@ -41,6 +41,7 @@ class AppTracker final : public QObject {
 
  private:
   QString findDesktopId(const QString& cgroup);
+  QString snapDesktopId(const QString& cgroup);
   QList<int> pids(const QString& cgroup) const;
   static QString decodeUnicodeEscape(const QString& str);
 
