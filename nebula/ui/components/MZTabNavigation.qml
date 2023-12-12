@@ -20,6 +20,11 @@ Item {
         bar.setCurrentIndex(idx);
     }
 
+    function handleSelection(btn){
+        bar.currentIndex = btn.TabBar.index;
+        btn.clicked();
+    }
+
     Rectangle {
         // grey divider
         anchors.bottom: bar.bottom
@@ -49,7 +54,9 @@ Item {
                 height: bar.contentHeight
                 Accessible.name: MZI18n[tabLabelStringId]
                 Accessible.ignored: !visible
-                Accessible.onPressAction: handleTabClick(btn)
+                Accessible.onPressAction: handleSelection(btn)
+                Keys.onReturnPressed: handleSelection(btn)
+                Keys.onSpacePressed: handleSelection(btn)
 
                 onClicked: handleTabClick(btn)
 
