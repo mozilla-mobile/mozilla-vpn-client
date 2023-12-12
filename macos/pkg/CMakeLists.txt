@@ -44,20 +44,32 @@ foreach(LOCALE ${I18N_LOCALES})
     set_target_properties(pkg_resources_${LOCALE} PROPERTIES FOLDER "Installer")
 endforeach()
 
-## Stage 1: Create the staging directory, and populate it with the app.
+## Stage 1: Preprocess the installation scripts.
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/postinstall.in
+    ${CMAKE_CURRENT_BINARY_DIR}/scripts/postinstall
+    @ONLY
+)
+
+## Stage 2: Create the staging directory, and populate it with the app.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
     DEPENDS mozillavpn
     COMMAND ${CMAKE_COMMAND} -E remove_directory -f ${CMAKE_CURRENT_BINARY_DIR}/staging
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/staging
     COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:mozillavpn>
        ${CMAKE_CURRENT_BINARY_DIR}/staging/Applications/$<TARGET_PROPERTY:mozillavpn,OUTPUT_NAME>.app/
+    COMMAND pkgbuild --analyze --root ${CMAKE_CURRENT_BINARY_DIR}/staging ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
+    COMMAND plutil -replace 0.BundleIsRelocatable -bool NO ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
     COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>" --version "2.0"
-        --scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts --root ${CMAKE_CURRENT_BINARY_DIR}/staging
+        --scripts ${CMAKE_CURRENT_BINARY_DIR}/scripts --root ${CMAKE_CURRENT_BINARY_DIR}/staging
+        --component-plist ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
         ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
 )
 
-## Stage 2: Run productbuild to inject the distribution files.
+## Stage 3: Run productbuild to inject the distribution files.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN-unsigned.pkg
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg pkg_resources
@@ -67,7 +79,7 @@ add_custom_command(
         MozillaVPN-unsigned.pkg
 )
 
-## Stage 3 (optional): Sign the installer package
+## Stage 4 (optional): Sign the installer package
 if(INSTALLER_SIGN_IDENTITY)
     add_custom_command(
         COMMENT "Building Signed MacOS Installer Package"
