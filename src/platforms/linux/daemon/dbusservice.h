@@ -56,7 +56,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   void dropRootPermissions();
 
  private slots:
-  void appLaunched(const QString& cgroup, const QString& desktopId, int rootpid);
+  void appLaunched(const QString& cgroup, const QString& desktopId);
   void appTerminated(const QString& cgroup, const QString& desktopId);
 
   void userListCompleted(QDBusPendingCallWatcher* call);

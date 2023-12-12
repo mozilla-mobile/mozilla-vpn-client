@@ -45,8 +45,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   }
 
   m_appTracker = new AppTracker(this);
-  connect(m_appTracker, SIGNAL(appLaunched(QString, QString, int)), this,
-          SLOT(appLaunched(QString, QString, int)));
+  connect(m_appTracker, SIGNAL(appLaunched(QString, QString)), this,
+          SLOT(appLaunched(QString, QString)));
   connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
           SLOT(appTerminated(QString, QString)));
 
@@ -226,9 +226,8 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
 }
 
 void DBusService::appLaunched(const QString& cgroup,
-                              const QString& desktopId, int rootpid) {
-  logger.debug() << "tracking:" << cgroup << "id:" << desktopId
-                 << "PID:" << rootpid;
+                              const QString& desktopId) {
+  logger.debug() << "tracking:" << cgroup << "id:" << desktopId;
 
   // HACK: Quick and dirty split tunnelling.
   // TODO: Apply filtering to currently-running apps too.
@@ -255,16 +254,9 @@ QString DBusService::runningApps() {
   for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
     const AppData* data = *i;
     QJsonObject appObject;
-    QJsonArray pidList;
     appObject.insert("id", QJsonValue(data->desktopId));
     appObject.insert("cgroup", QJsonValue(data->cgroup));
-    appObject.insert("rootpid", QJsonValue(data->rootpid));
 
-    for (int pid : data->pids()) {
-      pidList.append(QJsonValue(pid));
-    }
-
-    appObject.insert("pids", pidList);
     result.append(appObject);
   }
 

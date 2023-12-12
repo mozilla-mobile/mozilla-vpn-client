@@ -26,7 +26,6 @@ constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 
 namespace {
 Logger logger("AppTracker");
-QString s_cgroupMount;
 }  // namespace
 
 AppTracker::AppTracker(QObject* parent) : QObject(parent) {
@@ -34,7 +33,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  s_cgroupMount = LinuxDependencies::findCgroup2Path();
+  m_cgroupMount = LinuxDependencies::findCgroup2Path();
 }
 
 AppTracker::~AppTracker() {
@@ -83,8 +82,8 @@ void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
       new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
                          DBUS_SYSTEMD_MANAGER, connection, this);
   QVariant qv = m_systemdInterface->property("ControlGroup");
-  if (!s_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
-    QString userCgroupPath = s_cgroupMount + qv.toString();
+  if (!m_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
+    QString userCgroupPath = m_cgroupMount + qv.toString();
     logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
 
     connect(&m_cgroupWatcher, SIGNAL(directoryChanged(QString)), this,
@@ -151,11 +150,10 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
 void AppTracker::appHeuristicMatch(AppData* data) {
   // If this cgroup contains the last-launched PID, then we have a fairly
   // strong indication of which application this control group is running.
-  for (int pid : data->pids()) {
+  for (int pid : pids(data->cgroup)) {
     if ((pid != 0) && (pid == m_lastLaunchPid)) {
       logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
       data->desktopId = m_lastLaunchName;
-      data->rootpid = m_lastLaunchPid;
       return;
     }
   }
@@ -201,7 +199,7 @@ void AppTracker::appHeuristicMatch(AppData* data) {
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
-  QDir mountpoint(s_cgroupMount);
+  QDir mountpoint(m_cgroupMount);
   QFileInfoList newScopes = dir.entryInfoList(
       QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
   QStringList oldScopes = m_runningApps.keys();
@@ -228,7 +226,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
 
   // Anything left, if it shares the same root directory, has been removed.
   for (const QString& scope : oldScopes) {
-    QFileInfo scopeInfo(s_cgroupMount + scope);
+    QFileInfo scopeInfo(m_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
       Q_ASSERT(m_runningApps.contains(scope));
@@ -240,9 +238,9 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   }
 }
 
-QList<int> AppData::pids() const {
+QList<int> AppTracker::pids(const QString& cgroup) const {
   QList<int> results;
-  QFile cgroupProcs(s_cgroupMount + cgroup + "/cgroup.procs");
+  QFile cgroupProcs(m_cgroupMount + cgroup + "/cgroup.procs");
 
   if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
     while (true) {

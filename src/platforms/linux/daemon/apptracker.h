@@ -18,11 +18,8 @@ class AppData {
   AppData(const QString& path) : cgroup(path) { MZ_COUNT_CTOR(AppData); }
   ~AppData() { MZ_COUNT_DTOR(AppData); }
 
-  QList<int> pids() const;
-
   const QString cgroup;
   QString desktopId;
-  int rootpid = 0;
 };
 
 class AppTracker final : public QObject {
@@ -53,6 +50,7 @@ class AppTracker final : public QObject {
 
  private:
   void appHeuristicMatch(AppData* data);
+  QList<int> pids(const QString& cgroup) const;
   static QString decodeUnicodeEscape(const QString& str);
 
  private:
