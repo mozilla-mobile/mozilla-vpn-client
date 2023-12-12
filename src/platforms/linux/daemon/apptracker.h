@@ -42,10 +42,6 @@ class AppTracker final : public QObject {
   void appTerminated(const QString& cgroup, const QString& desktopId);
 
  private slots:
-  void gtkLaunchEvent(const QByteArray& appid, const QString& display,
-                      qlonglong pid, const QStringList& uris,
-                      const QVariantMap& extra);
-
   void cgroupsChanged(const QString& directory);
 
  private:
@@ -61,8 +57,6 @@ class AppTracker final : public QObject {
 
   // The set of applications that we have tracked.
   QHash<QString, AppData*> m_runningApps;
-  QString m_lastLaunchName;
-  int m_lastLaunchPid;
 };
 
 #endif  // APPTRACKER_H

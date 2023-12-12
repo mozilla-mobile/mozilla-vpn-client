@@ -68,15 +68,6 @@ void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
   QDBusConnection connection =
       QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
 
-  /* Connect to the user's GTK launch event. */
-  bool gtkConnected = connection.connect(
-      "", GTK_DESKTOP_APP_PATH, GTK_DESKTOP_APP_SERVICE, "Launched", this,
-      SLOT(gtkLaunchEvent(const QByteArray&, const QString&, qlonglong,
-                          const QStringList&, const QVariantMap&)));
-  if (!gtkConnected) {
-    logger.warning() << "Failed to connect to GTK Launched signal";
-  }
-
   // Watch the user's control groups for new application scopes.
   m_systemdInterface =
       new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
@@ -101,23 +92,6 @@ void AppTracker::userRemoved(uint userid) {
   logger.debug() << "User removed uid:" << userid;
 
   QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
-}
-
-void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
-                                qlonglong pid, const QStringList& uris,
-                                const QVariantMap& extra) {
-  Q_UNUSED(display);
-  Q_UNUSED(uris);
-  Q_UNUSED(extra);
-
-  QString appIdName(appid);
-  while (appIdName.endsWith('\0')) {
-    appIdName.chop(1);
-  }
-  if (!appIdName.isEmpty()) {
-    m_lastLaunchName = LinuxDependencies::desktopFileId(appIdName);
-    m_lastLaunchPid = pid;
-  }
 }
 
 // static
@@ -147,18 +121,8 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
   return result;
 }
 
+// Make an attempt to resolve the desktop ID from a cgroup scope.
 void AppTracker::appHeuristicMatch(AppData* data) {
-  // If this cgroup contains the last-launched PID, then we have a fairly
-  // strong indication of which application this control group is running.
-  for (int pid : pids(data->cgroup)) {
-    if ((pid != 0) && (pid == m_lastLaunchPid)) {
-      logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
-      data->desktopId = m_lastLaunchName;
-      return;
-    }
-  }
-
-  // Make an attempt to resolve the desktop ID from a cgroup scope.
   QString scopeName = QFileInfo(data->cgroup).fileName();
 
   // Reverse the desktop ID from a cgroup scope and known launcher tools.
