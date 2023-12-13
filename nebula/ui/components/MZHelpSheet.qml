@@ -5,10 +5,11 @@ import QtQuick.Layouts 1.14
 import components 0.1
 import Mozilla.Shared 1.0
 
-//Usage: pass a list of blocks into the model
+//Usage: pass a list of blocks into the model to instantiate components
 //Fields:
 //"type": MZHelpSheet.BlockType (eg MZHelpSheet.BlockType.PrimaryButton)
 //"text": label or button text (eg "Hello world")
+//"margin": top margin above the component (eg 16)
 //"action": action performed on button click - only applicable when type is MZHelpSheet.BlockType.PrimaryButton or MZHelpSheet.BlockType.LinkButton
 //(eg () => { MZUrlOpener.openUrl("https://mozilla.org") })
 /*
@@ -18,11 +19,11 @@ import Mozilla.Shared 1.0
 
       model: [
           {type: MZHelpSheet.BlockType.Title, text: "title"},
-          {type: MZHelpSheet.BlockType.Text, text: "text"},
-          {type: MZHelpSheet.BlockType.Text, text: "text"},
-          {type: MZHelpSheet.BlockType.Text, text: "text"},
-          {type: MZHelpSheet.BlockType.PrimaryButton, text: "Primary", action: () => { sheet.close(); MZNavigator.requestScreen(VPN.ScreenGetHelp) } },
-          {type: MZHelpSheet.BlockType.LinkButton, text: "Link", action: () => { MZUrlOpener.openUrl("https://mozilla.org") } }
+          {type: MZHelpSheet.BlockType.Text, margin: 8, text: "text"},
+          {type: MZHelpSheet.BlockType.Text, margin: 16, text: "text"},
+          {type: MZHelpSheet.BlockType.Text, margin: 16, text: "text"},
+          {type: MZHelpSheet.BlockType.PrimaryButton, text: "Primary", margin: 16, action: () => { sheet.close(); MZNavigator.requestScreen(VPN.ScreenGetHelp) } },
+          {type: MZHelpSheet.BlockType.LinkButton, text: "Link", margin: 8, action: () => { MZUrlOpener.openUrl("https://mozilla.org") } }
       ]
     }
 */
@@ -170,6 +171,7 @@ MZBottomSheet {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: item.implicitHeight
+                        Layout.topMargin: composerBlock.margin
 
                         sourceComponent: getSourceComponent()
 
