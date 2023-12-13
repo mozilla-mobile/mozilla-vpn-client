@@ -107,7 +107,7 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
     bool okay;
     qsizetype start = match.capturedStart(0);
     QChar code = match.captured(0).mid(2).toUShort(&okay, 16);
-    if (okay) {
+    if (okay && (code != 0)) {
       result.replace(start, match.capturedLength(0), QString(code));
       offset = start + 1;
     } else {
