@@ -6,6 +6,7 @@
 #define DBUSSERVICE_H
 
 #include <QDBusContext>
+#include <QHash>
 
 #include "apptracker.h"
 #include "daemon/daemon.h"
@@ -24,7 +25,11 @@ class DBusService final : public Daemon, protected QDBusContext {
   DBusService(QObject* parent);
   ~DBusService();
 
+  enum AppState { Active, Excluded, Blocked };
+  Q_ENUM(AppState)
+
   void setAdaptor(DbusAdaptor* adaptor);
+  void setAppState(const QString& desktopId, AppState state);
 
   using Daemon::activate;
 
@@ -70,7 +75,8 @@ class DBusService final : public Daemon, protected QDBusContext {
   DnsUtilsLinux* m_dnsutils = nullptr;
 
   AppTracker* m_appTracker = nullptr;
-  QList<QString> m_excludedApps;
+  QHash<QString, AppState> m_excludedApps;
+  QHash<QString, AppState> m_excludedCgroups;
 
   uint m_sessionUid = 0;
 };

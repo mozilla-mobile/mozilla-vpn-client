@@ -25,10 +25,6 @@ namespace {
 Logger logger("DBusService");
 }
 
-constexpr const char* APP_STATE_ACTIVE = "active";
-constexpr const char* APP_STATE_EXCLUDED = "excluded";
-constexpr const char* APP_STATE_BLOCKED = "blocked";
-
 constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
 constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
 constexpr const char* DBUS_LOGIN_MANAGER = "org.freedesktop.login1.Manager";
@@ -143,7 +139,7 @@ bool DBusService::activate(const QString& jsonConfig) {
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
-      firewallApp(app.toString(), APP_STATE_EXCLUDED);
+      setAppState(LinuxDependencies::desktopFileId(app.toString()), Excluded);
     }
   }
 
@@ -228,9 +224,15 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
 void DBusService::appLaunched(const QString& cgroup, const QString& desktopId) {
   logger.debug() << "tracking:" << cgroup << "id:" << desktopId;
 
-  // HACK: Quick and dirty split tunnelling.
-  // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(desktopId)) {
+  AppState state = m_excludedApps.value(desktopId, Active);
+  if (state == Active) {
+    // Nothing to do here.
+    return;
+  }
+
+  // Apply firewall rules to this control group.
+  m_excludedCgroups[cgroup] = state;
+  if (state == Excluded) {
     m_wgutils->excludeCgroup(cgroup);
   }
 }
@@ -239,9 +241,8 @@ void DBusService::appTerminated(const QString& cgroup,
                                 const QString& desktopId) {
   logger.debug() << "terminate:" << cgroup << "id:" << desktopId;
 
-  // HACK: Quick and dirty split tunnelling.
-  // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(desktopId)) {
+  // Remove any firewall rules applied to this control group.
+  if (m_excludedCgroups.remove(cgroup)) {
     m_wgutils->resetCgroup(cgroup);
   }
 }
@@ -255,10 +256,41 @@ QString DBusService::runningApps() {
     appObject.insert("id", QJsonValue(m_appTracker->getDesktopId(cgroup)));
     appObject.insert("cgroup", QJsonValue(cgroup));
 
+    AppState state = m_excludedCgroups.value(cgroup, Active);
+    QMetaEnum meta = QMetaEnum::fromType<AppState>();
+    appObject.insert("state", QJsonValue(meta.valueToKey(state)));
+
     result.append(appObject);
   }
 
   return QJsonDocument(result).toJson(QJsonDocument::Compact);
+}
+
+void DBusService::setAppState(const QString& desktopId, AppState state) {
+  logger.debug() << "Setting" << desktopId << "to firewall state" << state;
+
+  // When the App is "Active" there is no special manipulation to do.
+  if (state == Active) {
+    m_excludedApps.remove(desktopId);
+    for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
+      m_wgutils->resetCgroup(cgroup);
+    }
+    return;
+  }
+
+  // Otherwise, apply special handling to any matching control groups.
+  m_excludedApps[desktopId] = state;
+  for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
+    if (m_excludedCgroups.contains(cgroup)) {
+      m_wgutils->resetCgroup(cgroup);
+    }
+    m_excludedCgroups[cgroup] = state;
+    if (state == Excluded) {
+      // Excluded control groups are given special netfilter rules to direct their
+      // traffic outside of the VPN tunnel.
+      m_wgutils->excludeCgroup(cgroup);
+    }
+  }
 }
 
 /* Update the firewall for running applications matching the application ID. */
@@ -269,24 +301,20 @@ bool DBusService::firewallApp(const QString& appName, const QString& state) {
   }
 
   QString desktopId = LinuxDependencies::desktopFileId(appName);
-  logger.debug() << "Setting" << desktopId << "to firewall state" << state;
 
-  // Update the split tunnelling state for any running apps.
-  for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
-    if (state == APP_STATE_EXCLUDED) {
-      m_wgutils->excludeCgroup(cgroup);
-    } else {
-      m_wgutils->resetCgroup(cgroup);
+  // Convert the state into an AppState enum.
+  const QMetaEnum meta = QMetaEnum::fromType<AppState>();
+  for (int index = 0; meta.keyCount(); index++) {
+    const char* key = meta.key(index);
+    if ((key != nullptr) && (state.compare(key, Qt::CaseInsensitive) == 0)) {
+      setAppState(desktopId, AppState(meta.value(index)));
+      return true;
     }
   }
 
-  // Update the list of apps to exclude from the VPN.
-  if (state != APP_STATE_EXCLUDED) {
-    m_excludedApps.removeAll(desktopId);
-  } else if (!m_excludedApps.contains(desktopId)) {
-    m_excludedApps.append(desktopId);
-  }
-  return true;
+  // Otherwise, we couldn't convert the state.
+  logger.error() << "Invalid firewall state:" << state;
+  return false;
 }
 
 /* Update the firewall for the application matching the desired PID. */
@@ -311,6 +339,7 @@ bool DBusService::firewallClear() {
 
   logger.debug() << "Clearing excluded app list";
   m_wgutils->resetAllCgroups();
+  m_excludedCgroups.clear();
   m_excludedApps.clear();
   return true;
 }
