@@ -125,7 +125,7 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
 //
 // However, at some point the separator between the app and UUID was
 // swapped from a dot to a dash. Which makes the parsing a bit of a pain.
-// 
+//
 // See: https://github.com/snapcore/snapd/blob/master/sandbox/cgroup/scanning.go
 QString AppTracker::snapDesktopId(const QString& scope) {
   static const QRegularExpression snapuuid(
