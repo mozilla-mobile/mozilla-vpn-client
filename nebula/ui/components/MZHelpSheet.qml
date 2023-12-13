@@ -6,6 +6,11 @@ import components 0.1
 import Mozilla.Shared 1.0
 
 //Usage: pass a list of blocks into the model
+//Fields:
+//"type": MZHelpSheet.BlockType (eg MZHelpSheet.BlockType.PrimaryButton)
+//"text": label or button text (eg "Hello world")
+//"action": action performed on button click - only applicable when type is MZHelpSheet.BlockType.PrimaryButton or MZHelpSheet.BlockType.LinkButton
+//(eg () => { MZUrlOpener.openUrl("https://mozilla.org") })
 /*
   MZHelpSheet {
       title: "MZHelpSheet"
@@ -123,14 +128,13 @@ MZBottomSheet {
             }
         }
 
-
         MZFlickable {
             id: flickable
 
             readonly property int maxheight: bottomSheet.maxHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
 
             Layout.fillWidth: true
-            Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, flickable.maxheight)
+            Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, maxheight)
 
             flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
 
@@ -177,9 +181,8 @@ MZBottomSheet {
 
                                 text: loader.composerBlock.text
                                 font.pixelSize: MZTheme.theme.fontSize
-                                lineHeight: MZTheme.theme.labelLineHeight
+                                lineHeight: 24
                                 verticalAlignment: Text.AlignVCenter
-                                wrapMode: Text.Wrap
                             }
                         }
 
@@ -191,6 +194,7 @@ MZBottomSheet {
                                 text: loader.composerBlock.text
                                 font.pixelSize: MZTheme.theme.fontSizeSmall
                                 color: MZTheme.theme.fontColor
+                                lineHeight: 21
                                 horizontalAlignment: Text.AlignLeft
                             }
                         }
