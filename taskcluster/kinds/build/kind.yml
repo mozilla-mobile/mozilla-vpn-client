@@ -9,7 +9,7 @@ transforms:
     - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.build:transforms
     - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
-    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:

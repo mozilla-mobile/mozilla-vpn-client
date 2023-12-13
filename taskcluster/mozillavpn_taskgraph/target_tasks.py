@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from taskgraph.target_tasks import _target_task
+from taskgraph.target_tasks import register_target_task
 
 
-@_target_task("addons-target-tasks")
+@register_target_task("addons-target-tasks")
 def addons_target_tasks(full_task_graph, parameters, graph_config):
     def filter(task):
         if (
@@ -17,7 +17,7 @@ def addons_target_tasks(full_task_graph, parameters, graph_config):
     return [label for label, task in full_task_graph.tasks.items() if filter(task)]
 
 
-@_target_task("client-target-tasks")
+@register_target_task("client-target-tasks")
 def client_target_tasks(full_task_graph, parameters, graph_config):
     def filter(task):
         if (
