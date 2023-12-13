@@ -128,7 +128,9 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
 // 
 // See: https://github.com/snapcore/snapd/blob/master/sandbox/cgroup/scanning.go
 QString AppTracker::snapDesktopId(const QString& scope) {
-  static const QRegularExpression snapuuid("[-.][0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}");
+  static const QRegularExpression snapuuid(
+      "[-.][0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}"
+      "\\b-[0-9a-fA-F]{12}");
 
   // Strip the UUID out of the scope name
   QString stripped(scope);

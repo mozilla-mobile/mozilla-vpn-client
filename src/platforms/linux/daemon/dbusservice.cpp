@@ -225,8 +225,7 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
   m_appTracker->userRemoved(uid);
 }
 
-void DBusService::appLaunched(const QString& cgroup,
-                              const QString& desktopId) {
+void DBusService::appLaunched(const QString& cgroup, const QString& desktopId) {
   logger.debug() << "tracking:" << cgroup << "id:" << desktopId;
 
   // HACK: Quick and dirty split tunnelling.
