@@ -27,16 +27,9 @@ export PYTHONIOENCODING="UTF-8"
 
 
 print Y "Installing conda"
-chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
-bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
-source ${TASK_HOME}/miniconda/bin/activate
-
-
-print Y "Installing provided conda env..."
-# TODO: Check why --force is needed if we install into TASK_HOME?
-conda env create --force -f env.yml
-conda activate VPN
-./scripts/macos/conda_install_extras.sh  
+# We need to call bash with a login shell, so that conda is intitialized
+source $TASK_WORKDIR/fetches/bin/activate
+conda-unpack
 conda info
 
 # Should already have been done by taskcluser, but double checking c:
@@ -45,8 +38,6 @@ git submodule update --init --recursive || die "Failed to init submodules"
 print G "done."
 
 print Y "Configuring the build..."
-QTVERSION=$(ls ${MOZ_FETCHES_DIR}/qt_ios)
-
 
 if [ -d ${TASK_HOME}/build ]; then
     echo "Found old build-folder, weird!"
@@ -55,11 +46,7 @@ if [ -d ${TASK_HOME}/build ]; then
 fi
 mkdir ${TASK_HOME}/build
 
-
-
-$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/ios/bin/qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
-  -DQT_HOST_PATH="$MOZ_FETCHES_DIR/qt_ios/$QTVERSION/macos" \
-  -DCMAKE_PREFIX_PATH=$MOZ_FETCHES_DIR/qt_ios/lib/cmake \
+qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \

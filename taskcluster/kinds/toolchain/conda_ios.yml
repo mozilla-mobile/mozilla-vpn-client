@@ -27,7 +27,7 @@ conda-ios-x86_64-6.2.4:
             env:
                 QT_VERSION: "6.2.4"
         run:
-            toolchain-alias: conda-ios-x86_64
+            toolchain-alias: conda-ios-6.2.4
             toolchain-artifact: public/build/conda-ios.tar.gz
 
 conda-ios-x86_64-6.6.0:
@@ -37,5 +37,5 @@ conda-ios-x86_64-6.6.0:
             env:
                 QT_VERSION: "6.6.0"
         run:
-            toolchain-alias: conda-ios-x86_64
+            toolchain-alias: conda-ios-6.6.0
             toolchain-artifact: public/build/conda-ios.tar.gz

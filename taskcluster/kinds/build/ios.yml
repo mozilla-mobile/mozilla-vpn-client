@@ -14,7 +14,7 @@ ios/debug/cmake:
         fetch:
             - miniconda-osx
         toolchain:
-            - qt-ios
+            - conda-ios-6.2.4
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
