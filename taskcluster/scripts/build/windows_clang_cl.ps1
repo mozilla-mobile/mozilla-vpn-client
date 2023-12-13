@@ -94,6 +94,6 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
     sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
     # This will ask sentry to scan all files in there and upload
     # missing debug info, for symbolification
-    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $BUILD_DIR/src/CMakeFiles/mozillavpn.dir/vc140.pdb
+    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $TASK_WORKDIR/unsigned/Mozilla\ VPN.pdb
 }
 
