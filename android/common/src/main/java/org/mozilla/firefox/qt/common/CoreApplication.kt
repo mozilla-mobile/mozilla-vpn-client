@@ -43,6 +43,7 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
          */
         @JvmStatic
         fun initializeAdjust(inProduction: Boolean, proxyPort: Int) {
+            Log.i(tag, "Initializing Adjust")
             val appToken: String = BuildConfig.ADJUST_SDK_TOKEN
             val environment: String =
                 if (inProduction) AdjustConfig.ENVIRONMENT_PRODUCTION else AdjustConfig.ENVIRONMENT_SANDBOX
@@ -60,11 +61,14 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
         @JvmStatic
         fun trackEvent(event: String) {
             if (event.isNullOrEmpty()) {
+                Log.i(tag, "Tracking event: Null or empty")
                 return
             }
             if (!instance.adjustActive) {
+                Log.i(tag, "Tracking event: Adjust not active")
                 return
             }
+            Log.i(tag, "Tracking Adjust event: " + event)
             val adjustEvent = AdjustEvent(event)
             Adjust.trackEvent(adjustEvent)
         }
@@ -75,6 +79,7 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
          */
         @JvmStatic
         fun forget(activity: Activity?) {
+            Log.i(tag, "Forget Adjust")
             if (!instance.adjustActive) {
                 return
             }
