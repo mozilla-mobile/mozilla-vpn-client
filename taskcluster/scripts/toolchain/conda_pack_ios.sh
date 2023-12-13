@@ -10,7 +10,6 @@ ls
 cd vcs
 ls 
 
-print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/miniconda
 source ${TASK_HOME}/miniconda/bin/activate
