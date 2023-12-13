@@ -77,14 +77,14 @@ target_link_libraries(mozillavpn PRIVATE netfilter)
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
+configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn-startup.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
+configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn-startup.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop
     DESTINATION /etc/xdg/autostart)
 
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/mozillavpn.png
