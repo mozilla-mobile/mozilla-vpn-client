@@ -286,8 +286,8 @@ void DBusService::setAppState(const QString& desktopId, AppState state) {
     }
     m_excludedCgroups[cgroup] = state;
     if (state == Excluded) {
-      // Excluded control groups are given special netfilter rules to direct their
-      // traffic outside of the VPN tunnel.
+      // Excluded control groups are given special netfilter rules to direct
+      // their traffic outside of the VPN tunnel.
       m_wgutils->excludeCgroup(cgroup);
     }
   }
