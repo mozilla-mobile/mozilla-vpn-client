@@ -11,8 +11,8 @@ cd vcs
 ls 
 
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
-bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p ${TASK_HOME}/checkouts/vcs/miniconda
-source ${TASK_HOME}/checkouts/vcs/miniconda/bin/activate
+bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
+source bin/activate
 
 conda install conda-pack -y
 conda env create -f env.yml -n vpn
