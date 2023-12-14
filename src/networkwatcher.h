@@ -22,6 +22,7 @@ class NetworkWatcher final : public QObject {
   ~NetworkWatcher();
 
   void initialize();
+  void setImpl(NetworkWatcherImpl* networkWatcherImpl);
 
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);

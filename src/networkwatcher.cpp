@@ -7,6 +7,7 @@
 #include <QMetaEnum>
 
 #include "controller.h"
+#include "inspectornetworkwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -173,4 +174,32 @@ QString NetworkWatcher::getCurrentTransport() {
   QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
   return QString(metaEnum.valueToKey(type))
       .remove("TransportType_", Qt::CaseSensitive);
+}
+
+void NetworkWatcher::setImpl(NetworkWatcherImpl* networkWatcherImpl) {
+  logger.debug() << "setImpl";
+
+  m_impl = new InspectorNetworkWatcher(this);
+
+  connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
+          &NetworkWatcher::unsecuredNetwork);
+  connect(m_impl, &NetworkWatcherImpl::networkChanged, this,
+          &NetworkWatcher::networkChange);
+
+  m_impl->initialize();
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  m_active = settingsHolder->unsecuredNetworkAlert() ||
+             settingsHolder->captivePortalAlert();
+  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
+  if (m_active) {
+    m_impl->start();
+  }
+
+  connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
+          &NetworkWatcher::settingsChanged);
+  connect(settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
+          &NetworkWatcher::settingsChanged);
 }
