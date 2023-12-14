@@ -32,6 +32,7 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
     private var adjustActive = false
 
     companion object {
+        private val tag = "CoreApplicationAdjust"
         lateinit var instance: CoreApplication
             private set
 

@@ -105,6 +105,7 @@ void AdjustHandler::initialize() {
   }
 
 #ifdef MZ_ANDROID
+  logger.info() << "Sending signal to initialize adjust";
   QJniObject::callStaticMethod<void>(CORE_APPLICATION, "initializeAdjust",
                                      "(ZI)V", Constants::inProduction(),
                                      s_adjustProxy->serverPort());

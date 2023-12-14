@@ -11,7 +11,7 @@ android {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
         
-        buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + System.getenv("ADJUST_SDK_TOKEN") + '"'
+        buildConfigField "String", "ADJUST_SDK_TOKEN", '"' + adjusttoken + '"'
     }
     sourceSets {
         main {
