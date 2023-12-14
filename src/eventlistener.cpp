@@ -4,9 +4,15 @@
 
 #include "eventlistener.h"
 
+#include <QApplication>
+#include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
 #include <QUrl>
+#ifndef MZ_WINDOWS
+#  include <QStandardPaths>
+#  include <QRegularExpression>
+#endif
 
 #include "constants.h"
 #include "frontend/navigator.h"
@@ -28,15 +34,22 @@ EventListener::EventListener() {
 
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
-  logger.debug() << "Server path:" << Constants::UI_PIPE;
+#if defined(MZ_WINDOWS)
+  m_pipeLocation = QString("\\\\.\\pipe\\%1.ui").arg(pipeName());
+#else
+  QDir dir(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
+  m_pipeLocation = dir.filePath(QString("%1.ui.sock").arg(pipeName()));
+#endif
+
+  logger.debug() << "Server path:" << m_pipeLocation;
 
 #ifdef MZ_LINUX
-  if (QFileInfo::exists(Constants::UI_PIPE)) {
-    QFile::remove(Constants::UI_PIPE);
+  if (QFileInfo::exists(m_pipeLocation)) {
+    QFile::remove(m_pipeLocation);
   }
 #endif
 
-  if (!m_server.listen(Constants::UI_PIPE)) {
+  if (!m_server.listen(m_pipeLocation)) {
     logger.error() << "Failed to listen the daemon path";
     return;
   }
@@ -106,8 +119,8 @@ EventListener::~EventListener() {
   m_server.close();
 
 #ifdef MZ_LINUX
-  if (QFileInfo::exists(Constants::UI_PIPE)) {
-    QFile::remove(Constants::UI_PIPE);
+  if (QFileInfo::exists(m_pipeLocation)) {
+    QFile::remove(m_pipeLocation);
   }
 #endif
 }
@@ -123,11 +136,6 @@ bool EventListener::checkForInstances(const QString& windowName) {
     WindowsUtils::windowsLog("No other instances found");
     return false;
   }
-#else
-  if (!QFileInfo::exists(Constants::UI_PIPE)) {
-    logger.warning() << "No other instances found - no unix socket";
-    return false;
-  }
 #endif
 
   // Try to wake the UI and bring it to the foreground.
@@ -136,8 +144,18 @@ bool EventListener::checkForInstances(const QString& windowName) {
 }
 
 bool EventListener::sendCommand(const QString& message) {
+#if defined(MZ_WINDOWS)
+  QString path = QString("\\\\.\\pipe\\%1.ui").arg(pipeName());
+#else
+  QString path = QStandardPaths::locate(QStandardPaths::RuntimeLocation,
+                                        QString("%1.ui.sock").arg(pipeName()));
+  if (path.isEmpty()) {
+    return false;
+  }
+#endif
+
   QLocalSocket socket;
-  socket.connectToServer(Constants::UI_PIPE);
+  socket.connectToServer(path);
   if (!socket.waitForConnected(1000)) {
     logger.error() << "Connection failed:" << socket.errorString();
     return false;
@@ -158,4 +176,10 @@ bool EventListener::sendCommand(const QString& message) {
 bool EventListener::sendDeepLink(const QUrl& url) {
   QString message = QString("link %1").arg(url.toString(QUrl::FullyEncoded));
   return sendCommand(message);
+}
+
+// static
+QString EventListener::pipeName() {
+  QString appName = qApp->applicationName().toLower();
+  return appName.remove(QRegularExpression("[^a-z]"));
 }
