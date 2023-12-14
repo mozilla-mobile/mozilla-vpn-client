@@ -751,6 +751,19 @@ SETTING_BOOL(shortTimerSessionPing,        // getter
              false                         // sensitive (do not log)
 )
 
+#if defined(MZ_FLATPAK)
+SETTING_STRING(tunnelUuid,        // getter
+               setTunnelUuid,     // setter
+               removeTunnelUuid,  // remover
+               hasTunnelUuid,     // has
+               "tunnelUuid",      // key
+               "",                // default value
+               false,             // user setting
+               false,             // remove when reset
+               true               // sensitive (do not log)
+)
+#endif
+
 #ifdef UNIT_TEST
 SETTING_BOOL(addonApiSetting,        // getter
              setAddonApiSetting,     // setter

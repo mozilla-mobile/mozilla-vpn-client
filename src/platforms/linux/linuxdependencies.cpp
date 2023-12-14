@@ -10,8 +10,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QProcess>
+#include <QtDBus/QtDBus>
 
-#include "dbusclient.h"
+#ifndef MZ_FLATPAK
+# include "dbusclient.h"
+#endif
 #include "logger.h"
 
 namespace {
@@ -26,7 +30,8 @@ void showAlert(const QString& message) {
   alert.exec();
 }
 
-bool checkDaemonVersion() {
+#ifndef MZ_FLATPAK
+static bool checkDaemonVersion() {
   logger.debug() << "Check Daemon Version";
 
   DBusClient* dbus = new DBusClient(nullptr);
@@ -60,6 +65,7 @@ bool checkDaemonVersion() {
   delete dbus;
   return value;
 }
+#endif
 
 }  // namespace
 
@@ -71,10 +77,12 @@ bool LinuxDependencies::checkDependencies() {
     return false;
   }
 
+#ifndef MZ_FLATPAK
   if (!checkDaemonVersion()) {
     showAlert("mozillavpn linuxdaemon needs to be updated or restarted.");
     return false;
   }
+#endif
 
   return true;
 }
