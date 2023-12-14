@@ -85,7 +85,7 @@ bool FeatureCallback_splitTunnel() {
   return true;
 #elif defined(MZ_WINDOWS)
   return !WindowsSplitTunnel::detectConflict();
-#elif defined(MZ_LINUX)
+#elif defined(MZ_LINUX) && !defined(MZ_FLATPAK)
   static bool initDone = false;
   static bool splitTunnelSupported = false;
   if (initDone) {
