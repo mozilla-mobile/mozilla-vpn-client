@@ -12,7 +12,7 @@ InspectorNetworkWatcher::InspectorNetworkWatcher(QObject* parent)
 }
 
 InspectorNetworkWatcher::~InspectorNetworkWatcher() {
-  MZ_COUNT_DTOR(DummyNetworkWatcher);
+  MZ_COUNT_DTOR(InspectorNetworkWatcher);
 }
 
 void InspectorNetworkWatcher::initialize() {}
