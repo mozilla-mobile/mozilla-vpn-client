@@ -8,7 +8,7 @@ import Mozilla.Shared 1.0
 Drawer {
     id: drawer
 
-    readonly property int maxHeight: window.height - MZTheme.theme.sheetTopMargin //parent is the overlay
+    readonly property int maxHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
 
     implicitWidth: window.width
     implicitHeight: maxHeight
