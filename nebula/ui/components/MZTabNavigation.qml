@@ -53,8 +53,8 @@ Item {
                 id: btn
                 objectName: tabButtonId
                 height: bar.contentHeight
-                // Use selected state in the accessibility name, because Qt doesn't correctly provide it for a selected tab.
-                Accessible.name: (bar.currentIndex === btn.TabBar.index) ? (MZI18n.AccessibilitySelectedAndItemName.arg(MZI18n[tabLabelStringId])) : MZI18n[tabLabelStringId]
+                // Qt doesn't correctly provide the selected state for a tab on Windows, so include the selected state in the accessibility name.
+                Accessible.name: ((Qt.platform.os === "windows") && (bar.currentIndex === btn.TabBar.index)) ? (MZI18n.AccessibilitySelectedAndItemName.arg(MZI18n[tabLabelStringId])) : MZI18n[tabLabelStringId]
                 Accessible.ignored: !visible
                 Accessible.onPressAction: selectTab(btn)
                 Keys.onReturnPressed: selectTab(btn)
