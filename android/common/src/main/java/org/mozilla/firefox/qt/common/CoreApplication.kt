@@ -32,6 +32,7 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
     private var adjustActive = false
 
     companion object {
+        private val tag = "CoreApplicationAdjust"
         lateinit var instance: CoreApplication
             private set
 
@@ -43,6 +44,7 @@ class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Confi
          */
         @JvmStatic
         fun initializeAdjust(inProduction: Boolean, proxyPort: Int) {
+            Log.i(tag, "Initializing Adjust")
             val appToken: String = BuildConfig.ADJUST_SDK_TOKEN
             val environment: String =
                 if (inProduction) AdjustConfig.ENVIRONMENT_PRODUCTION else AdjustConfig.ENVIRONMENT_SANDBOX
