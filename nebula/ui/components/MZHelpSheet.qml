@@ -9,7 +9,11 @@ import QtQuick.Layouts 1.14
 import components 0.1
 import Mozilla.Shared 1.0
 
-//Usage: pass a list of blocks into the model to instantiate components
+//SUMMARY: MZHelpSheet is a component derived from MZBottomSheet that opens a drawer from the bottom of the screen who's content
+//is always laid out in a consistnet way by passing in a model with the correct schema, and sizes to fit the content it contains
+
+//USAGE: pass a list of blocks into the model to instantiate components as follows:
+
 //Fields:
 //"type": MZHelpSheet.BlockType (eg MZHelpSheet.BlockType.PrimaryButton)
 //"text": label or button text (eg "Hello world")
@@ -37,8 +41,7 @@ MZBottomSheet {
 
     property alias iconSource: icon.source
     property alias title: title.text
-    property var model
-
+    required property var model
 
     enum BlockType {
         Title,
@@ -65,8 +68,8 @@ MZBottomSheet {
                 Item {
                     Layout.topMargin: MZTheme.theme.windowMargin / 2
                     Layout.leftMargin: MZTheme.theme.windowMargin
-                    Layout.preferredHeight: 24
-                    Layout.preferredWidth: 24
+                    Layout.preferredHeight: MZTheme.theme.iconSize * 1.5
+                    Layout.preferredWidth: MZTheme.theme.iconSize * 1.5
                     Layout.alignment: Qt.AlignTop
 
                     Image {
@@ -105,12 +108,9 @@ MZBottomSheet {
                     Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: MZTheme.theme.rowHeight
 
-                    //                skipEnsureVisible: true // prevents scrolling of lists when this is focused
-
                     onClicked: bottomSheet.close()
 
                     accessibleName: MZI18n.GlobalClose
-                    Accessible.ignored: !visible
 
                     Image {
                         anchors.centerIn: parent
@@ -126,7 +126,7 @@ MZBottomSheet {
 
             Rectangle {
                 Layout.topMargin: 8
-                Layout.preferredHeight: 1
+                Layout.preferredHeight: MZTheme.theme.dividerHeight
                 Layout.preferredWidth: parent.width
 
                 color: MZTheme.colors.grey10
@@ -143,7 +143,7 @@ MZBottomSheet {
 
             flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
 
-            navbarVisible: false
+            addNavbarHeightOffset: false
 
             ColumnLayout {
                 id: layout

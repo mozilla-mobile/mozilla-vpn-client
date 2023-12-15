@@ -9,6 +9,23 @@ import QtQuick.Layouts 1.14
 import components 0.1
 import Mozilla.Shared 1.0
 
+//SUMMARY: MZBottomSheet opens a drawer from the bottom of the screen showing it's contentItem
+
+//USAGE:
+/*
+  MZBottomSheet {
+      contentItem: ColumnLayout {
+          Rectangle {
+              anchors.left: parent.left
+              anchors. right: parent.right
+              height: 20
+              color: "green"
+
+          }
+      }
+  }
+*/
+
 Drawer {
     id: drawer
 

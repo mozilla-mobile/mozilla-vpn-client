@@ -14,7 +14,7 @@ Flickable {
     property var flickContentHeight
     property bool contentExceedsHeight: height < contentHeight
     property bool hideScollBarOnStackTransition: false
-    property bool navbarVisible: navbar.visible
+    property bool addNavbarHeightOffset: navbar.visible
 
     //This property should be true if the flickable appears behind the main navbar
     interactive: contentHeight > height || contentY > 0
@@ -95,13 +95,13 @@ Flickable {
 
         const isItemBehindNavbar = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height - MZTheme.theme.navBarHeightWithMargins
         const isItemOffScreen = item.mapToItem(window.contentItem, 0, 0).y + item.height > window.height
-        const buffer = vpnFlickable.navbarVisible && isItemBehindNavbar ? MZTheme.theme.navBarHeightWithMargins : MZTheme.theme.contentBottomMargin
+        const buffer = vpnFlickable.addNavbarHeightOffset && isItemBehindNavbar ? MZTheme.theme.navBarHeightWithMargins : MZTheme.theme.contentBottomMargin
         const itemHeight = Math.max(item.height, MZTheme.theme.rowHeight) + buffer
         let destinationY
 
         //When focusing on an item either behind the navbar and/or that is partially or fully off screen in the downward direction
         //scroll to it so that it is visible
-        if((vpnFlickable.navbarVisible && isItemBehindNavbar) || (!vpnFlickable.navbarVisible && isItemOffScreen)) {
+        if((vpnFlickable.addNavbarHeightOffset && isItemBehindNavbar) || (!vpnFlickable.addNavbarHeightOffset && isItemOffScreen)) {
             const scrollDistance = item.mapToItem(window.contentItem, 0, 0).y + item.height - (window.height - buffer)
 
             destinationY = contentY + scrollDistance
@@ -130,7 +130,7 @@ Flickable {
         //Checks if the flickable AND it's content interferes with the navbar area (bottom 146px for iOS, bottom 128px for other platforms)
         //If it does, we pad the flickable's contentHeight with whatever bottom padding is needed so that there is always 48px (aka theme.navBarTopMargin)
         //between the bottom of the flickable's content and the navbar
-        if (vpnFlickable.navbarVisible && absoluteYPosition + height >= contentSpace
+        if (vpnFlickable.addNavbarHeightOffset && absoluteYPosition + height >= contentSpace
                 && flickContentHeight + absoluteYPosition >= contentSpace) {
             vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? MZTheme.theme.navBarHeightWithMargins : (absoluteYPosition + flickContentHeight) - contentSpace + (height - flickContentHeight))
         }

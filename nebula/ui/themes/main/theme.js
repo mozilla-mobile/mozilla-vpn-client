@@ -83,6 +83,7 @@ theme.largePhoneHeight = 852
 theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
 theme.checkBoxRowSubLabelTopMargin = 2;
+theme.dividerHeight = 1
 
 theme.guideCardHeight = 172
 
