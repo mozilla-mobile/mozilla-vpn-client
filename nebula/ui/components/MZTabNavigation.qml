@@ -20,6 +20,12 @@ Item {
         bar.setCurrentIndex(idx);
     }
 
+    function selectTab(tabButton) {
+        bar.currentIndex = tabButton.TabBar.index;
+        // Emit the clicked signal to invoke handleTabClick, which handles the selection change
+        tabButton.clicked();
+    }
+
     Rectangle {
         // grey divider
         anchors.bottom: bar.bottom
@@ -47,8 +53,12 @@ Item {
                 id: btn
                 objectName: tabButtonId
                 height: bar.contentHeight
-                Accessible.name: MZI18n[tabLabelStringId]
+                // Qt doesn't correctly provide the selected state for a tab on Windows, so include the selected state in the accessibility name.
+                Accessible.name: ((Qt.platform.os === "windows") && (bar.currentIndex === btn.TabBar.index)) ? (MZI18n.AccessibilitySelectedAndItemName.arg(MZI18n[tabLabelStringId])) : MZI18n[tabLabelStringId]
                 Accessible.ignored: !visible
+                Accessible.onPressAction: selectTab(btn)
+                Keys.onReturnPressed: selectTab(btn)
+                Keys.onSpacePressed: selectTab(btn)
 
                 onClicked: handleTabClick(btn)
 
