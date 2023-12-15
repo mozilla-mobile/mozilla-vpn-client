@@ -26,12 +26,6 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  MessageStatus messageStatus = loadMessageStatus(id);
-  if (messageStatus == MessageStatus::Dismissed) {
-    logger.info() << "Message" << id << "has been already dismissed";
-    return nullptr;
-  }
-
   QJsonObject messageObj = obj["message"].toObject();
 
   QString messageId = messageObj["id"].toString();
@@ -42,6 +36,12 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 
   AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
+
+  MessageStatus messageStatus = message->loadMessageStatus(id);
+  if (messageStatus == MessageStatus::Dismissed) {
+    logger.info() << "Message" << id << "has been already dismissed";
+    return nullptr;
+  }
 
   message->m_status = messageStatus;
 
@@ -76,19 +76,25 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
-    : Addon(parent, manifestFileName, id, name, "message") {
+    : Addon(parent, manifestFileName, id, name, "message"),
+      m_messageSettings(QString("%1/%2/%3")
+                            .arg(Constants::ADDONS_SETTINGS_GROUP)
+                            .arg(ADDON_MESSAGE_SETTINGS_GROUP)
+                            .arg(id),
+                        true,  // remove when reset
+                        false  // sensitive setting
+      ) {
   MZ_COUNT_CTOR(AddonMessage);
 }
 
 AddonMessage::~AddonMessage() { MZ_COUNT_DTOR(AddonMessage); }
 
-// static
 AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
   QString statusSetting =
-      settingsHolder->getAddonSetting(MessageStatusQuery(id));
+      m_messageSettings.get(ADDON_MESSAGE_SETTINGS_STATUS_KEY).toString();
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
 
   bool isValidStatus = false;
@@ -116,10 +122,7 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
   m_status = newStatus;
   emit statusChanged(m_status);
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  settingsHolder->setAddonSetting(MessageStatusQuery(id()), newStatusSetting);
+  m_messageSettings.set(ADDON_MESSAGE_SETTINGS_STATUS_KEY, newStatusSetting);
 
   mozilla::glean::sample::addon_message_state_changed.record(
       mozilla::glean::sample::AddonMessageStateChangedExtra{

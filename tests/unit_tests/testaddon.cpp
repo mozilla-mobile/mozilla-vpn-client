@@ -27,6 +27,8 @@
 #include "models/featuremodel.h"
 #include "qmlengineholder.h"
 #include "qtglean.h"
+#include "settings/settingfactory.h"
+#include "settings/settingsbase.h"
 #include "settingsholder.h"
 
 void TestAddon::init() {
@@ -224,7 +226,14 @@ void TestAddon::conditions() {
   QFETCH(QVariant, settingValue);
 
   if (!settingKey.isEmpty()) {
-    SettingsHolder::instance()->setRawSetting(settingKey, settingValue);
+    auto s = SettingsBase::getSetting(settingKey);
+    if (!s) {
+      SettingFactory::createOrGetSetting(
+          settingKey, []() { return nullptr; }, true, false);
+      s = SettingsBase::getSetting(settingKey);
+    }
+
+    s->set(settingValue);
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);
@@ -690,12 +699,34 @@ void TestAddon::message_load_status_data() {
 }
 
 void TestAddon::message_load_status() {
+  Localizer l;
+
   QFETCH(AddonMessage::MessageStatus, status);
   QFETCH(QString, setting);
 
-  SettingsHolder::instance()->setAddonSetting(
-      AddonMessage::MessageStatusQuery("foo"), setting);
-  QCOMPARE(AddonMessage::loadMessageStatus("foo"), status);
+  QJsonObject messageObj;
+  messageObj["id"] = "foo";
+  messageObj["blocks"] = QJsonArray();
+
+  QJsonObject obj;
+  obj["message"] = messageObj;
+  obj["type"] = "message";
+  obj["api_version"] = "0.1";
+  obj["id"] = "foo";
+  obj["name"] = "foo";
+
+  QTemporaryFile file;
+  QVERIFY(file.open());
+  file.write(QJsonDocument(obj).toJson());
+  file.close();
+
+  QObject parent;
+  Addon* message = Addon::create(&parent, file.fileName());
+
+  static_cast<AddonMessage*>(message)->m_messageSettings.set(
+      ADDON_MESSAGE_SETTINGS_STATUS_KEY, (setting));
+  QCOMPARE(static_cast<AddonMessage*>(message)->loadMessageStatus("foo"),
+           status);
 }
 
 void TestAddon::message_dismiss() {
@@ -723,12 +754,12 @@ void TestAddon::message_dismiss() {
   QVERIFY(message->enabled());
 
   QString addonSetting;
-  connect(SettingsHolder::instance(), &SettingsHolder::addonSettingsChanged,
-          [&]() {
-            addonSetting = SettingsHolder::instance()->getAddonSetting(
-                SettingsHolder::AddonSettingQuery(
-                    "bar", ADDON_MESSAGE_SETTINGS_GROUP,
-                    ADDON_MESSAGE_SETTINGS_STATUS_KEY, "?!?"));
+  connect(&static_cast<AddonMessage*>(message)->m_messageSettings,
+          &SettingGroup::changed, [&]() {
+            addonSetting =
+                static_cast<AddonMessage*>(message)
+                    ->m_messageSettings.get(ADDON_MESSAGE_SETTINGS_STATUS_KEY)
+                    .toString();
           });
 
   QCOMPARE(addonSetting, "");

@@ -5,6 +5,7 @@
 #include "mozillavpn.h"
 
 #include "addons/addonapi.h"
+#include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
@@ -38,6 +39,8 @@
 #include "qmlengineholder.h"
 #include "releasemonitor.h"
 #include "serveri18n.h"
+#include "settings/settinggroup.h"
+#include "settings/settingsbase.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
 #include "subscriptionmonitor.h"
@@ -317,19 +320,19 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
-    settingsHolder->clear();
+    SettingsBase::reset();
     return;
   }
 
   if (!m_private->m_serverCountryModel.fromSettings()) {
     logger.error() << "No server list found";
-    settingsHolder->clear();
+    SettingsBase::reset();
     return;
   }
 
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
-    settingsHolder->clear();
+    SettingsBase::reset();
     return;
   }
 
@@ -347,7 +350,7 @@ void MozillaVPN::initialize() {
 
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
-    settingsHolder->clear();
+    SettingsBase::reset();
     return;
   }
 
@@ -420,7 +423,7 @@ void MozillaVPN::maybeStateMain() {
 
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
-    SettingsHolder::instance()->clear();
+    SettingsBase::reset();
     REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
 
     setUserState(UserNotAuthenticated);
@@ -825,7 +828,7 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   deactivate();
 
-  SettingsHolder::instance()->clear();
+  SettingsBase::reset();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
@@ -1249,7 +1252,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  settingsHolder->hardReset();
+  SettingsBase::hardReset();
   controller()->deleteOSTunnelConfig();
 }
 
@@ -1805,7 +1808,16 @@ void MozillaVPN::registerNavigationBarButtons() {
       MozillaVPN::ScreenSettings, "qrc:/nebula/resources/navbar/settings.svg",
       "qrc:/nebula/resources/navbar/settings-selected.svg"));
 
-  connect(SettingsHolder::instance(), &SettingsHolder::addonSettingsChanged,
+  // A group of settings containing all the addon message settings.
+  SettingGroup messageSettingGroup =
+      SettingGroup(QString("%1/%2")
+                       .arg(Constants::ADDONS_SETTINGS_GROUP)
+                       .arg(ADDON_MESSAGE_SETTINGS_GROUP),
+                   true,  // remove when reset
+                   false  // sensitive setting
+      );
+
+  connect(&messageSettingGroup, &SettingGroup::changed,
           [messageIcon]() { resetNotification(messageIcon); });
 
   connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
