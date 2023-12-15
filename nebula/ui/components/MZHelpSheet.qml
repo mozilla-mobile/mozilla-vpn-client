@@ -53,7 +53,13 @@ MZBottomSheet {
     implicitHeight: Math.min(contentItem.implicitHeight, maxHeight)
 
     contentItem: ColumnLayout {
+
         spacing: 0
+
+        Accessible.role: Accessible.Grouping
+        Accessible.name: bottomSheet.title
+
+        Component.onCompleted: forceActiveFocus()
 
         ColumnLayout {
             id: headerLayout
