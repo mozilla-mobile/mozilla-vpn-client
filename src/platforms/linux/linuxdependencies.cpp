@@ -178,7 +178,9 @@ QString LinuxDependencies::desktopFileId(const QString& path) {
   if (index >= 0) {
     index += dirComponent.length();
   } else if (index < 0) {
-    index = 0;
+    // If no applications dir was found, let's just use the filename.
+    index = path.lastIndexOf('/') + 1;
+    Q_ASSERT(index > 0);
   }
 
   // Convert it.
