@@ -78,7 +78,7 @@ void SettingsHolder::clear() {
   logger.debug() << "Clean up the settings";
 
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
-                userSettings, removeWhenReset, ...)                        \
+                removeWhenReset, ...)                                      \
   if (removeWhenReset) {                                                   \
     m_settings.remove(key);                                                \
     emit getter##Changed();                                                \
@@ -115,7 +115,7 @@ void SettingsHolder::setRawSetting(const QString& key, const QVariant& value) {
 #endif
 
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
-                userSettings, ...)                                         \
+                ...)                                                       \
   bool SettingsHolder::has() const { return m_settings.contains(key); }    \
   type SettingsHolder::getter() const {                                    \
     if (!has()) {                                                          \
@@ -186,7 +186,7 @@ void SettingsHolder::serializeLogs(
   QString buff;
   QTextStream out(&buff);
 #define SETTING(type, toType, getter, setter, remover, has, key, defvalue, \
-                userSettings, removeWhenReset, sensitive)                  \
+                removeWhenReset, sensitive)                                \
   if (has()) {                                                             \
     if (sensitive) {                                                       \
       out << key << " -> <Sensitive>" << Qt::endl;                         \
