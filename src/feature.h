@@ -8,6 +8,8 @@
 #include <QApplication>
 #include <QObject>
 
+#include "settings/settinggroup.h"
+
 class Feature : public QObject {
   Q_OBJECT
 
@@ -17,6 +19,11 @@ class Feature : public QObject {
   static constexpr const char* Feature_##id = #id;
 #include "featurelist.h"
 #undef FEATURE
+
+#define EXPERIMENTAL_FEATURE(id, name, ...) \
+  static constexpr const char* ExperimentalFeature_##id = #id;
+#include "experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)

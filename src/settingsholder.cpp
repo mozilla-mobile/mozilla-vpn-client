@@ -37,8 +37,9 @@ SettingsHolder::SettingsHolder() {
 
   logger.debug() << "Initializing SettingsHolder";
 
-#define SETTING(type, toType, getter, ...) \
-  connect(m_##getter, &Setting::changed, [&]() { emit getter##Changed(); });
+#define SETTING(type, toType, getter, ...)     \
+  connect(m_##getter, &Setting::changed, this, \
+          [&]() { emit getter##Changed(); });
 
 #include "settingslist.h"
 #undef SETTING
