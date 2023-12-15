@@ -9,6 +9,7 @@
 #include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
+#include "settings/settingsbase.h"
 #include "settingsholder.h"
 
 void TestLocalizer::init() {
@@ -63,7 +64,7 @@ void testGleanEntries(const QString& language) {
 }
 
 void TestLocalizer::systemLanguage() {
-  m_settingsHolder->hardReset();
+  SettingsBase::hardReset();
 
   Localizer l;
 

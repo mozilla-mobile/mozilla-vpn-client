@@ -116,7 +116,8 @@ constexpr const char* ADDON_PRODUCTION_KEY =
     ":/addons_signature/production.der";
 constexpr const char* ADDON_STAGING_KEY = ":/addons_signature/staging.der";
 
-constexpr const char* ADDON_SETTINGS_GROUP = "addons";
+// A settings group that will contain all addons related settings.
+constexpr const char* ADDONS_SETTINGS_GROUP = "addons";
 
 constexpr const char* PLATFORM_NAME =
 #if defined(MZ_IOS)

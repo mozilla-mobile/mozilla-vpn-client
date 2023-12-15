@@ -113,8 +113,6 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testsettings.cpp
-    testsettings.h
     testtasks.cpp
     testtasks.h
     testtasksentry.cpp

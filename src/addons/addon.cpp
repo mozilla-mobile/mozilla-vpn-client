@@ -31,6 +31,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "qmlengineholder.h"
+#include "settings/settingsbase.h"
 #include "settingsholder.h"
 #include "state/addonsessionstate.h"
 #include "versionutils.h"
@@ -117,9 +118,15 @@ QList<ConditionCallback> s_conditionCallbacks{
 
          QString op = obj["op"].toString();
          QString key = obj["setting"].toString();
-         QVariant valueA = SettingsHolder::instance()->rawSetting(key);
+         auto settingA = SettingsBase::getSetting(key);
+         if (!settingA) {
+           logger.info() << "Unable to retrieve unregistered setting" << key;
+           return false;
+         }
+
+         QVariant valueA = settingA->get();
          if (!valueA.isValid()) {
-           logger.info() << "Unable to retrieve setting key" << key;
+           logger.info() << "Unexpected value stored under setting" << key;
            return false;
          }
 
@@ -431,21 +438,27 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_manifestFileName(manifestFileName),
       m_id(id),
       m_name(name),
-      m_type(type) {
+      m_type(type),
+      m_settings(SettingGroup(QString("%1/%2/%3")
+                                  .arg(Constants::ADDONS_SETTINGS_GROUP)
+                                  .arg(ADDON_SETTINGS_GROUP)
+                                  .arg(id),
+                              true,  // remove when reset
+                              false  // sensitive setting
+                              )) {
   MZ_COUNT_CTOR(Addon);
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  QString statusSetting = settingsHolder->getAddonSetting(StatusQuery(id));
+  QString storedStatus = m_settings.get(ADDON_SETTINGS_STATUS_KEY).toString();
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
 
   bool isValidStatus = false;
   int persistedStatus = statusMetaEnum.keyToValue(
-      statusSetting.toLocal8Bit().constData(), &isValidStatus);
+      storedStatus.toLocal8Bit().constData(), &isValidStatus);
 
   if (isValidStatus) {
     m_status = static_cast<Status>(persistedStatus);
+  } else {
+    m_status = Unknown;
   }
 
   if (m_status == Unknown) {
@@ -474,10 +487,7 @@ void Addon::updateAddonStatus(Status newStatus) {
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
   QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  settingsHolder->setAddonSetting(StatusQuery(id()), newStatusSetting);
+  m_settings.set(ADDON_SETTINGS_STATUS_KEY, newStatusSetting);
 
   mozilla::glean::sample::addon_state_changed.record(
       mozilla::glean::sample::AddonStateChangedExtra{

@@ -18,7 +18,6 @@ class TestAddon;
 
 constexpr const char* ADDON_MESSAGE_SETTINGS_GROUP = "message";
 constexpr const char* ADDON_MESSAGE_SETTINGS_STATUS_KEY = "state";
-constexpr const char* ADDON_MESSAGE_DEFAULT_STATUS = "Received";
 
 class AddonMessage final : public Addon {
   Q_OBJECT
@@ -102,14 +101,7 @@ class AddonMessage final : public Addon {
   AddonMessage(QObject* parent, const QString& manifestFileName,
                const QString& id, const QString& name);
 
-  struct MessageStatusQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit MessageStatusQuery(const QString& ai)
-        : SettingsHolder::AddonSettingQuery(
-              ai, QString(ADDON_MESSAGE_SETTINGS_GROUP),
-              QString(ADDON_MESSAGE_SETTINGS_STATUS_KEY),
-              QString(ADDON_MESSAGE_DEFAULT_STATUS)) {}
-  };
-  static MessageStatus loadMessageStatus(const QString& id);
+  MessageStatus loadMessageStatus(const QString& id);
 
   void planDateRetranslation();
   void setBadge(const QString& badge);
@@ -123,6 +115,8 @@ class AddonMessage final : public Addon {
   bool m_shouldNotify = true;
 
   MessageStatus m_status = MessageStatus::Received;
+
+  SettingGroup m_messageSettings;
 
   Badge m_badge;
 

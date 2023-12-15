@@ -38,6 +38,7 @@
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
+#include "settings/settingsbase.h"
 #include "settingsholder.h"
 #include "task.h"
 #include "urlopener.h"
@@ -478,8 +479,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"settings_filename", "Get the setting filename", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] =
-                           SettingsHolder::instance()->settingsFileName();
+                       obj["value"] = SettingsBase::settingsFileName();
                        return obj;
                      }},
 
