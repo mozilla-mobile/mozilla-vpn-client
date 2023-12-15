@@ -42,6 +42,8 @@ class TestHelper final : public QObject {
   I18nStrings* m_i18nstrings = nullptr;
   MozillaVPN* m_mozillavpn = nullptr;
   Theme* m_theme = nullptr;
+
+  SettingGroup* m_testSettingGroup = nullptr;
 };
 
 #endif  // TESTHELPER_H
