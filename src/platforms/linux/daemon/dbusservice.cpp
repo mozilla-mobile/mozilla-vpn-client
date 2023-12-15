@@ -135,7 +135,7 @@ bool DBusService::activate(const QString& jsonConfig) {
   }
 
   // (Re)load the split tunnelling configuration.
-  firewallClear();
+  clearAppStates();
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
@@ -154,7 +154,7 @@ bool DBusService::deactivate(bool emitSignals) {
   }
 
   m_sessionUid = 0;
-  firewallClear();
+  clearAppStates();
   return Daemon::deactivate(emitSignals);
 }
 
@@ -247,25 +247,6 @@ void DBusService::appTerminated(const QString& cgroup,
   }
 }
 
-/* Get the list of running applications that the firewall knows about. */
-QString DBusService::runningApps() {
-  QJsonArray result;
-
-  for (const QString& cgroup : m_appTracker->getRunningApps()) {
-    QJsonObject appObject;
-    appObject.insert("id", QJsonValue(m_appTracker->getDesktopId(cgroup)));
-    appObject.insert("cgroup", QJsonValue(cgroup));
-
-    AppState state = m_excludedCgroups.value(cgroup, Active);
-    QMetaEnum meta = QMetaEnum::fromType<AppState>();
-    appObject.insert("state", QJsonValue(meta.valueToKey(state)));
-
-    result.append(appObject);
-  }
-
-  return QJsonDocument(result).toJson(QJsonDocument::Compact);
-}
-
 void DBusService::setAppState(const QString& desktopId, AppState state) {
   logger.debug() << "Setting" << desktopId << "to firewall state" << state;
 
@@ -293,55 +274,12 @@ void DBusService::setAppState(const QString& desktopId, AppState state) {
   }
 }
 
-/* Update the firewall for running applications matching the application ID. */
-bool DBusService::firewallApp(const QString& appName, const QString& state) {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
-  QString desktopId = LinuxDependencies::desktopFileId(appName);
-
-  // Convert the state into an AppState enum.
-  const QMetaEnum meta = QMetaEnum::fromType<AppState>();
-  for (int index = 0; meta.keyCount(); index++) {
-    const char* key = meta.key(index);
-    if ((key != nullptr) && (state.compare(key, Qt::CaseInsensitive) == 0)) {
-      setAppState(desktopId, AppState(meta.value(index)));
-      return true;
-    }
-  }
-
-  // Otherwise, we couldn't convert the state.
-  logger.error() << "Invalid firewall state:" << state;
-  return false;
-}
-
-/* Update the firewall for the application matching the desired PID. */
-bool DBusService::firewallPid(int rootpid, const QString& state) {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
-  // Not implemented.
-  Q_UNUSED(rootpid);
-  Q_UNUSED(state);
-  return false;
-}
-
 /* Clear the firewall and return all applications to the active state */
-bool DBusService::firewallClear() {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
+void DBusService::clearAppStates() {
   logger.debug() << "Clearing excluded app list";
   m_wgutils->resetAllCgroups();
   m_excludedCgroups.clear();
   m_excludedApps.clear();
-  return true;
 }
 
 /* Drop root permissions from the daemon. */

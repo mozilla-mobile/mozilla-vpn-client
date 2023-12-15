@@ -25,11 +25,10 @@ class DBusService final : public Daemon, protected QDBusContext {
   DBusService(QObject* parent);
   ~DBusService();
 
-  enum AppState { Active, Excluded, Blocked };
+  enum AppState { Active, Excluded };
   Q_ENUM(AppState)
 
   void setAdaptor(DbusAdaptor* adaptor);
-  void setAppState(const QString& desktopId, AppState state);
 
   using Daemon::activate;
 
@@ -43,11 +42,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   QString getLogs();
   void cleanupLogs() { cleanLogs(); }
 
-  QString runningApps();
-  bool firewallApp(const QString& appName, const QString& state);
-  bool firewallPid(int rootpid, const QString& state);
-  bool firewallClear();
-
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportIPUtils() const override { return true; }
@@ -59,6 +53,9 @@ class DBusService final : public Daemon, protected QDBusContext {
   bool removeInterfaceIfExists();
   bool isCallerAuthorized();
   void dropRootPermissions();
+
+  void setAppState(const QString& desktopId, AppState state);
+  void clearAppStates();
 
  private slots:
   void appLaunched(const QString& cgroup, const QString& desktopId);

@@ -235,24 +235,3 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     }
   }
 }
-
-QList<int> AppTracker::pids(const QString& cgroup) const {
-  QList<int> results;
-  QFile cgroupProcs(m_cgroupMount + cgroup + "/cgroup.procs");
-
-  if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    while (true) {
-      QString line = QString::fromLocal8Bit(cgroupProcs.readLine());
-      if (line.isEmpty()) {
-        break;
-      }
-      int pid = line.trimmed().toInt();
-      if (pid != 0) {
-        results.append(pid);
-      }
-    }
-    cgroupProcs.close();
-  }
-
-  return results;
-}
