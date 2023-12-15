@@ -9,10 +9,8 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "constants.h"
 #include "cryptosettings.h"
 #include "env.h"
-#include "feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"

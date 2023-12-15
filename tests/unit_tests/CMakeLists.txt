@@ -125,6 +125,8 @@ target_sources(app_unit_tests PRIVATE
     testthemes.h
     testurlopener.cpp
     testurlopener.h
+    testsettingsholder.cpp
+    testsettingsholder.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

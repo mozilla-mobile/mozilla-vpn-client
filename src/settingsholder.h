@@ -11,6 +11,8 @@
 #include <QSettings>
 #include <QStringList>
 
+#include "constants.h"
+#include "feature.h"
 #include "loghandler.h"
 
 class SettingsHolder final : public QObject, public LogSerializer {

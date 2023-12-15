@@ -839,7 +839,6 @@ SETTING_STRING(foobar,        // getter
                hasFoobar,     // has
                "foobar",      // key
                "FOO BAR",     // default value
-               true,          // user setting
                true,          // remove when reset
                false          // sensitive (do not log)
 )
@@ -850,7 +849,6 @@ SETTING_STRING(barfoo,        // getter
                hasBarfoo,     // has
                "barfoo",      // key
                "",            // default value
-               false,         // user setting
                true,          // remove when reset
                false          // sensitive (do not log)
 )
@@ -861,7 +859,6 @@ SETTING_STRING(sensitive,        // getter
                hasSensitive,     // has
                "sensitive",      // key
                "",               // default value
-               false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
 )
