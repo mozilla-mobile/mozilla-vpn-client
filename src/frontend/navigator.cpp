@@ -221,7 +221,7 @@ void Navigator::requestDeepLink(const QUrl& url) {
   }
   QString name = QString("Screen%1").arg(topPath);
   const QMetaEnum meta = QMetaEnum::fromType<MozillaVPN::CustomScreen>();
-  for (int index = 0; meta.keyCount(); index++) {
+  for (int index = 0; index < meta.keyCount(); index++) {
     const char* key = meta.key(index);
     if ((key != nullptr) && (name.compare(key, Qt::CaseInsensitive) == 0)) {
       requestScreen(meta.value(index));
