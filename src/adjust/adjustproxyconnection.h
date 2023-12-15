@@ -9,14 +9,14 @@
 
 #include "adjustproxypackagehandler.h"
 
-class QTcpSocket;
+class QSslSocket;
 
 class AdjustProxyConnection final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AdjustProxyConnection)
 
  public:
-  AdjustProxyConnection(QObject* parent, QTcpSocket* connection);
+  AdjustProxyConnection(QObject* parent, QSslSocket* connection);
   ~AdjustProxyConnection();
 
  private:
@@ -24,7 +24,7 @@ class AdjustProxyConnection final : public QObject {
   void forwardRequest();
 
  private:
-  QTcpSocket* m_connection = nullptr;
+  QSslSocket* m_connection = nullptr;
   AdjustProxyPackageHandler m_packageHandler;
 };
 

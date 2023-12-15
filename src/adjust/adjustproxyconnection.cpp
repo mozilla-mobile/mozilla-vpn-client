@@ -7,7 +7,7 @@
 
 #include "adjustproxyconnection.h"
 
-#include <QTcpSocket>
+#include <QSslSocket>
 #include <QUrl>
 #include <QUrlQuery>
 
@@ -27,14 +27,14 @@ Logger logger("AdjustProxyConnection");
 }  // namespace
 
 AdjustProxyConnection::AdjustProxyConnection(QObject* parent,
-                                             QTcpSocket* connection)
+                                             QSslSocket* connection)
     : QObject(parent), m_connection(connection) {
   MZ_COUNT_CTOR(AdjustProxyConnection);
 
   logger.debug() << "New connection received";
 
   Q_ASSERT(m_connection);
-  connect(m_connection, &QTcpSocket::readyRead, this,
+  connect(m_connection, &QSslSocket::readyRead, this,
           &AdjustProxyConnection::readData);
 }
 

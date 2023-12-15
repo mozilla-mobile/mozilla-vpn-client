@@ -5,9 +5,9 @@
 #ifndef ADJUSTPROXY_H
 #define ADJUSTPROXY_H
 
-#include <QTcpServer>
+#include <QSslServer>
 
-class AdjustProxy final : public QTcpServer {
+class AdjustProxy final : public QSslServer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AdjustProxy)
 

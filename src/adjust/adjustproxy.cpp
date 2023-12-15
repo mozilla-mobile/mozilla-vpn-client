@@ -5,7 +5,7 @@
 #include "adjustproxy.h"
 
 #include <QHostAddress>
-#include <QTcpSocket>
+#include <QSslSocket>
 
 #include "adjustproxyconnection.h"
 #include "leakdetector.h"
@@ -15,7 +15,7 @@ namespace {
 Logger logger("AdjustProxy");
 }  // namespace
 
-AdjustProxy::AdjustProxy(QObject* parent) : QTcpServer(parent) {
+AdjustProxy::AdjustProxy(QObject* parent) : QSslServer(parent) {
   MZ_COUNT_CTOR(AdjustProxy);
   logger.debug() << "Creating the AdjustProxy server";
 }
@@ -39,9 +39,9 @@ bool AdjustProxy::initialize(quint16 port) {
 void AdjustProxy::newConnectionReceived() {
   logger.debug() << "New Adjust Proxy connection received";
 
-  QTcpSocket* child = nextPendingConnection();
-  Q_ASSERT(child);
+  QSslSocket* child = new QSslSocket(this);
+  incomingConnection(child->socketDescriptor());
 
   AdjustProxyConnection* connection = new AdjustProxyConnection(this, child);
-  connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
+  connect(child, &QSslSocket::disconnected, connection, &QObject::deleteLater);
 }
