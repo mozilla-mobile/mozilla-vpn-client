@@ -10,6 +10,9 @@
 
 /**
  * @brief Represents a setting stored in the underlying QSettings storage.
+ *
+ * FAQ: Why is this not using a template type for the underlying setting type?
+ * A: Because we can't apply the Q_OBJECT macro to a template class.
  */
 class Setting : public QObject {
   Q_OBJECT
@@ -25,7 +28,7 @@ class Setting : public QObject {
    *
    * @return T
    */
-  Q_INVOKABLE QVariant get() const;
+  QVariant get() const;
 
   /**
    * @brief Set a value for this setting.
@@ -36,7 +39,7 @@ class Setting : public QObject {
    *
    * @param value
    */
-  Q_INVOKABLE void set(QVariant value) const;
+  void set(QVariant value) const;
 
   /**
    * @brief Resets the value for this setting if removeWhenReset is true.
@@ -55,7 +58,7 @@ class Setting : public QObject {
    * @brief Checks whether or not this setting has a stored value.
    *
    */
-  Q_INVOKABLE bool isSet() const;
+  bool isSet() const;
 
   /**
    * @brief Gets a string formatted for adding this setting to logs.

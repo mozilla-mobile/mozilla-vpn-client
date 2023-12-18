@@ -40,7 +40,7 @@
 #include "releasemonitor.h"
 #include "serveri18n.h"
 #include "settings/settinggroup.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
 #include "subscriptionmonitor.h"
@@ -320,19 +320,19 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
-    SettingsBase::reset();
+    SettingsManager::reset();
     return;
   }
 
   if (!m_private->m_serverCountryModel.fromSettings()) {
     logger.error() << "No server list found";
-    SettingsBase::reset();
+    SettingsManager::reset();
     return;
   }
 
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
-    SettingsBase::reset();
+    SettingsManager::reset();
     return;
   }
 
@@ -350,7 +350,7 @@ void MozillaVPN::initialize() {
 
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
-    SettingsBase::reset();
+    SettingsManager::reset();
     return;
   }
 
@@ -423,7 +423,7 @@ void MozillaVPN::maybeStateMain() {
 
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
-    SettingsBase::reset();
+    SettingsManager::reset();
     REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
 
     setUserState(UserNotAuthenticated);
@@ -828,7 +828,7 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   deactivate();
 
-  SettingsBase::reset();
+  SettingsManager::reset();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
@@ -1252,7 +1252,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  SettingsBase::hardReset();
+  SettingsManager::hardReset();
   controller()->deleteOSTunnelConfig();
 }
 

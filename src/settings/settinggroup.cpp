@@ -6,7 +6,7 @@
 
 #include "leakdetector.h"
 #include "settingfactory.h"
-#include "settingsbase.h"
+#include "settingsmanager.h"
 
 SettingGroup::SettingGroup(const QString& groupKey, bool removeWhenReset,
                            bool sensitiveSetting, QStringList acceptedKeys)
@@ -19,7 +19,7 @@ SettingGroup::SettingGroup(const QString& groupKey, bool removeWhenReset,
   // Group settings are dynamic, therefore we need to load from memory all
   // settings that exist under this group prefix in order to emit change signals
   // when they change.
-  auto sb = SettingsBase::instance();
+  auto sb = SettingsManager::instance();
   sb->m_settings.beginGroup(m_groupKey);
   QStringList keys = sb->m_settings.allKeys();
   sb->m_settings.endGroup();
@@ -55,7 +55,7 @@ bool SettingGroup::mayRecord(const QString& key) {
 }
 
 QVariant SettingGroup::get(const QString& key) const {
-  auto setting = SettingsBase::getSetting(getSettingKey(key));
+  auto setting = SettingsManager::getSetting(getSettingKey(key));
   if (!setting) {
     return QVariant();
   }
@@ -69,24 +69,24 @@ void SettingGroup::set(const QString& key, QVariant value) {
   }
 
   auto fullKey = getSettingKey(key);
-  auto setting = SettingsBase::getSetting(fullKey);
+  auto setting = SettingsManager::getSetting(fullKey);
   if (!setting) {
     addSetting(key);
-    setting = SettingsBase::getSetting(fullKey);
+    setting = SettingsManager::getSetting(fullKey);
   }
 
   setting->set(value);
 }
 
 void SettingGroup::remove() {
-  auto sb = SettingsBase::instance();
+  auto sb = SettingsManager::instance();
   sb->m_settings.beginGroup(m_groupKey);
   QStringList keys = sb->m_settings.allKeys();
   sb->m_settings.remove("");
   sb->m_settings.endGroup();
 
   foreach (const QString& key, keys) {
-    auto setting = SettingsBase::getSetting(key);
+    auto setting = SettingsManager::getSetting(key);
     Q_ASSERT(setting);
     setting->changed();
   }

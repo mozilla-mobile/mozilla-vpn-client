@@ -31,7 +31,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "qmlengineholder.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "state/addonsessionstate.h"
 #include "versionutils.h"
@@ -118,7 +118,7 @@ QList<ConditionCallback> s_conditionCallbacks{
 
          QString op = obj["op"].toString();
          QString key = obj["setting"].toString();
-         auto settingA = SettingsBase::getSetting(key);
+         auto settingA = SettingsManager::getSetting(key);
          if (!settingA) {
            logger.info() << "Unable to retrieve unregistered setting" << key;
            return false;

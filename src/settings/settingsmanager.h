@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef SETTINGSBASE_H
-#define SETTINGSBASE_H
+#ifndef settingsmanager_H
+#define settingsmanager_H
 
 #include <QSettings>
 
@@ -12,7 +12,7 @@
 #include "settinggroup.h"
 
 /**
- * @brief The SettingsBase is a singleton class that manages the underlying
+ * @brief The SettingsManager is a singleton class that manages the underlying
  * QtSetting storage object and serves the as the holder of all settings in the
  * codebase dynamic or static. The lifetime of this singleton is tied to the
  * lifetime of the QApplication.
@@ -24,19 +24,19 @@
  * * Dynamic settings are settings which are created on demand at runtime.
  *
  * All settings are created using the SettingsFactory, which creates a Setting
- * object and registers it in the SettingsBase class.
+ * object and registers it in the SettingsManager class.
  *
  * The only public constructor for Setting objects is the SettingsFactory
  * constructor, therefore everytime a Setting object is created it is guaranteed
  * to be registered in the settings base.
  *
  */
-class SettingsBase final : public QObject, public LogSerializer {
+class SettingsManager final : public QObject, public LogSerializer {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(SettingsBase)
+  Q_DISABLE_COPY_MOVE(SettingsManager)
 
  public:
-  ~SettingsBase();
+  ~SettingsManager();
 
   // LogSerializer interface
   void serializeLogs(
@@ -90,11 +90,11 @@ class SettingsBase final : public QObject, public LogSerializer {
 
 #ifdef UNIT_TEST
   /**
-   * @brief Destroys the SettingsBase singleton and clear stores.
+   * @brief Destroys the SettingsManager singleton and clear stores.
    *
-   * The SettingsBase Singleton exists for the entire lifetime of the
+   * The SettingsManager Singleton exists for the entire lifetime of the
    * application. The way our tests are set up now, we have most test cases
-   * running under the same application instance. This way SettingsBase state
+   * running under the same application instance. This way SettingsManager state
    * can leak amongst tests and therefore this function is required.
    *
    */
@@ -102,8 +102,8 @@ class SettingsBase final : public QObject, public LogSerializer {
 #endif
 
  private:
-  SettingsBase(QObject* parent);
-  static SettingsBase* instance();
+  SettingsManager(QObject* parent);
+  static SettingsManager* instance();
 
   static void registerSetting(Setting* setting);
 
@@ -116,9 +116,9 @@ class SettingsBase final : public QObject, public LogSerializer {
   friend class SettingFactory;
 
 #ifdef UNIT_TEST
-  friend class TestSettingsBase;
+  friend class TestSettingsManager;
   friend class TestSettings;
 #endif
 };
 
-#endif  // SETTINGSBASE_H
+#endif  // settingsmanager_H

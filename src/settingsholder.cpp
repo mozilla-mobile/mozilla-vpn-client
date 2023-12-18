@@ -13,7 +13,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #ifdef UNIT_TEST
-#  include "settings/settingsbase.h"
+#  include "settings/settingsmanager.h"
 #endif
 
 namespace {
@@ -64,8 +64,8 @@ SettingsHolder::~SettingsHolder() {
   s_instance = nullptr;
 
 #ifdef UNIT_TEST
-  // Tie the lifetime of the SettingsBase singleton to the SettingsHolder
+  // Tie the lifetime of the SettingsManager singleton to the SettingsHolder
   // singleton.
-  SettingsBase::testCleanup();
+  SettingsManager::testCleanup();
 #endif
 }

@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "settingsbase.h"
-
 #include <QApplication>
 #include <QDir>
 #include <QFile>
@@ -14,12 +12,13 @@
 #include "cryptosettings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "settingsmanager.h"
 
 namespace {
 
-Logger logger("SettingsBase");
+Logger logger("SettingsManager");
 
-SettingsBase* s_instance = nullptr;
+SettingsManager* s_instance = nullptr;
 
 const QSettings::Format MozFormat = QSettings::registerFormat(
     "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
@@ -27,9 +26,9 @@ const QSettings::Format MozFormat = QSettings::registerFormat(
 }  // namespace
 
 // static
-SettingsBase* SettingsBase::instance() {
+SettingsManager* SettingsManager::instance() {
   if (!s_instance) {
-    s_instance = new SettingsBase(qApp);
+    s_instance = new SettingsManager(qApp);
   }
 
   return s_instance;
@@ -37,10 +36,10 @@ SettingsBase* SettingsBase::instance() {
 
 #ifdef UNIT_TEST
 // static
-void SettingsBase::testCleanup() { delete s_instance; }
+void SettingsManager::testCleanup() { delete s_instance; }
 #endif
 
-SettingsBase::SettingsBase(QObject* parent)
+SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
       m_settings(MozFormat, QSettings::UserScope,
 #ifndef UNIT_TEST
@@ -49,17 +48,17 @@ SettingsBase::SettingsBase(QObject* parent)
                  "mozilla_testing",
 #endif
                  Constants::SETTINGS_APP_NAME) {
-  MZ_COUNT_CTOR(SettingsBase);
+  MZ_COUNT_CTOR(SettingsManager);
 
-  logger.debug() << "Initializing SettingsBase";
+  logger.debug() << "Initializing SettingsManager";
 
   LogHandler::instance()->registerLogSerializer(this);
 }
 
-SettingsBase::~SettingsBase() {
-  MZ_COUNT_DTOR(SettingsBase);
+SettingsManager::~SettingsManager() {
+  MZ_COUNT_DTOR(SettingsManager);
 
-  logger.debug() << "Destroying SettingsBase";
+  logger.debug() << "Destroying SettingsManager";
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
@@ -72,12 +71,12 @@ SettingsBase::~SettingsBase() {
 }
 
 // static
-QString SettingsBase::settingsFileName() {
+QString SettingsManager::settingsFileName() {
   return instance()->m_settings.fileName();
 }
 
 // static
-void SettingsBase::registerSetting(Setting* setting) {
+void SettingsManager::registerSetting(Setting* setting) {
   Q_ASSERT(setting);
 
   if (instance()->m_registeredSettings.contains(setting->key())) {
@@ -88,7 +87,7 @@ void SettingsBase::registerSetting(Setting* setting) {
 }
 
 // static
-void SettingsBase::reset() {
+void SettingsManager::reset() {
   logger.debug() << "Clean up the settings";
   foreach (Setting* setting, instance()->m_registeredSettings.values()) {
     setting->reset();
@@ -96,7 +95,7 @@ void SettingsBase::reset() {
 }
 
 // static
-void SettingsBase::hardReset() {
+void SettingsManager::hardReset() {
   logger.debug() << "Hard reset";
   instance()->m_settings.clear();
 
@@ -109,7 +108,7 @@ void SettingsBase::hardReset() {
   qDeleteAll(instance()->m_registeredSettings);
 }
 
-void SettingsBase::serializeLogs(
+void SettingsManager::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&
         a_callback) {
   std::function<void(const QString& name, const QString& logs)> callback =

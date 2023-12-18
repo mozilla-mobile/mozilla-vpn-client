@@ -4,7 +4,7 @@
 
 #include "helper.h"
 
-class TestSettingsBase final : public TestHelper {
+class TestSettingsManager final : public TestHelper {
   Q_OBJECT
 
  private slots:

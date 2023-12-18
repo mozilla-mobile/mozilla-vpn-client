@@ -6,13 +6,13 @@
 #define SETTINGSFACTORY_H
 
 #include "setting.h"
-#include "settingsbase.h"
+#include "settingsmanager.h"
 
 class SettingFactory {
  public:
   /**
    * @brief Construct a new Setting object and register it with the
-   * SettingsBase.
+   * SettingsManager.
    *
    * If another setting with the same key is already registered, no new setting
    * is registered and a pointer to the existing setting is returned. This
