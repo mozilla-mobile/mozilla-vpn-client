@@ -54,43 +54,25 @@ NetworkWatcher::~NetworkWatcher() { MZ_COUNT_DTOR(NetworkWatcher); }
 void NetworkWatcher::initialize() {
   logger.debug() << "Initialize";
 
+  NetworkWatcherImpl* impl = nullptr;
+
 #if defined(MZ_WINDOWS)
-  m_impl = new WindowsNetworkWatcher(this);
+  impl = new WindowsNetworkWatcher(this);
 #elif defined(MZ_LINUX)
-  m_impl = new LinuxNetworkWatcher(this);
+  impl = new LinuxNetworkWatcher(this);
 #elif defined(MZ_MACOS)
-  m_impl = new MacOSNetworkWatcher(this);
+  impl = new MacOSNetworkWatcher(this);
 #elif defined(MZ_WASM)
-  m_impl = new WasmNetworkWatcher(this);
+  impl = new WasmNetworkWatcher(this);
 #elif defined(MZ_ANDROID)
-  m_impl = new AndroidNetworkWatcher(this);
+  impl = new AndroidNetworkWatcher(this);
 #elif defined(MZ_IOS)
-  m_impl = new IOSNetworkWatcher(this);
+  impl = new IOSNetworkWatcher(this);
 #else
-  m_impl = new DummyNetworkWatcher(this);
+  impl = new DummyNetworkWatcher(this);
 #endif
 
-  connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
-          &NetworkWatcher::unsecuredNetwork);
-  connect(m_impl, &NetworkWatcherImpl::networkChanged, this,
-          &NetworkWatcher::networkChange);
-
-  m_impl->initialize();
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  m_active = settingsHolder->unsecuredNetworkAlert() ||
-             settingsHolder->captivePortalAlert();
-  m_reportUnsecuredNetwork = settingsHolder->unsecuredNetworkAlert();
-  if (m_active) {
-    m_impl->start();
-  }
-
-  connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
-          &NetworkWatcher::settingsChanged);
-  connect(settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
-          &NetworkWatcher::settingsChanged);
+  setImpl(impl);
 }
 
 void NetworkWatcher::settingsChanged() {
@@ -177,9 +159,26 @@ QString NetworkWatcher::getCurrentTransport() {
 }
 
 void NetworkWatcher::setImpl(NetworkWatcherImpl* networkWatcherImpl) {
-  logger.debug() << "setImpl";
+  logger.debug() << "NetworkWatcher::setImpl";
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
 
-  m_impl = new InspectorNetworkWatcher(this);
+  // Before proceeding with initializing m_impl, we should perform a clean up to
+  // ensure all resources are released from previous allocations.
+  if (m_impl) {
+    disconnect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
+               &NetworkWatcher::unsecuredNetwork);
+    disconnect(m_impl, &NetworkWatcherImpl::networkChanged, this,
+               &NetworkWatcher::networkChange);
+    disconnect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged,
+               this, &NetworkWatcher::settingsChanged);
+    disconnect(settingsHolder, &SettingsHolder::captivePortalAlertChanged, this,
+               &NetworkWatcher::settingsChanged);
+    m_impl->stop();
+    m_impl->deleteLater();
+  }
+
+  m_impl = networkWatcherImpl;
 
   connect(m_impl, &NetworkWatcherImpl::unsecuredNetwork, this,
           &NetworkWatcher::unsecuredNetwork);
@@ -187,9 +186,6 @@ void NetworkWatcher::setImpl(NetworkWatcherImpl* networkWatcherImpl) {
           &NetworkWatcher::networkChange);
 
   m_impl->initialize();
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
 
   m_active = settingsHolder->unsecuredNetworkAlert() ||
              settingsHolder->captivePortalAlert();

@@ -2137,10 +2137,11 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "force_connection_down", "Mock the internet connection being down", 0,
+      "force_no_network", "Mock the internet connection being down", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->networkWatcher()->setImpl(
-            new InspectorNetworkWatcher());
+            new InspectorNetworkWatcher(
+                MozillaVPN::instance()->networkWatcher()));
         return QJsonObject();
       });
 
