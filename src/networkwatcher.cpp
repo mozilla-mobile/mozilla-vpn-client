@@ -5,11 +5,7 @@
 #include "networkwatcher.h"
 
 #include <QMetaEnum>
-<<<<<<< HEAD
 #include <QNetworkInformation>
-    =======
-// #include <QNetworkInformation>
->>>>>>> 4b51530eb (Reachability)
 
 #include "controller.h"
 #include "leakdetector.h"
