@@ -19,7 +19,6 @@
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
-#include "inspectornetworkwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -33,6 +32,7 @@
 #include "mozillavpn_p.h"
 #include "networkmanager.h"
 #include "networkwatcher.h"
+#include "offlinenetworkwatcher.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
@@ -2140,7 +2140,7 @@ void MozillaVPN::registerInspectorCommands() {
       "force_no_network", "Mock the internet connection being down", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->networkWatcher()->setImpl(
-            new InspectorNetworkWatcher(
+            new OfflineNetworkWatcher(
                 MozillaVPN::instance()->networkWatcher()));
         return QJsonObject();
       });

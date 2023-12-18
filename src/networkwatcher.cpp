@@ -7,11 +7,11 @@
 #include <QMetaEnum>
 
 #include "controller.h"
-#include "inspectornetworkwatcher.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
+#include "offlinenetworkwatcher.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 
@@ -156,6 +156,11 @@ QString NetworkWatcher::getCurrentTransport() {
   QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
   return QString(metaEnum.valueToKey(type))
       .remove("TransportType_", Qt::CaseSensitive);
+}
+
+QNetworkInformation::Reachability NetworkWatcher::getReachability() {
+  //  return QNetworkInformation::Reachability::Disconnected;
+  return QNetworkInformation::instance()->reachability();
 }
 
 void NetworkWatcher::setImpl(NetworkWatcherImpl* networkWatcherImpl) {

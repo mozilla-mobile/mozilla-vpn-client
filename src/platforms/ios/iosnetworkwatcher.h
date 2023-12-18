@@ -17,6 +17,10 @@ class IOSNetworkWatcher : public NetworkWatcherImpl {
   void initialize() override;
   NetworkWatcherImpl::TransportType getTransportType() override;
 
+  QNetworkInformation::Reachability getReachability() override {
+    return QNetworkInformation::Reachability::Disconnected;
+  }
+
  private:
   NetworkWatcherImpl::TransportType toTransportType(nw_path_t path);
   void controllerStateChanged();

@@ -2,20 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DUMMYNETWORKWATCHER_H
-#define DUMMYNETWORKWATCHER_H
+#ifndef INSPECTORNETWORKWATCHER_H
+#define INSPECTORNETWORKWATCHER_H
+
+#include <QNetworkInformation>
 
 #include "networkwatcherimpl.h"
 
-class DummyNetworkWatcher final : public NetworkWatcherImpl {
+class OfflineNetworkWatcher final : public NetworkWatcherImpl {
  public:
-  DummyNetworkWatcher(QObject* parent);
-  ~DummyNetworkWatcher();
+  OfflineNetworkWatcher(QObject* parent);
+  ~OfflineNetworkWatcher();
 
   void initialize() override;
 
   NetworkWatcherImpl::TransportType getTransportType() override {
-    return TransportType_Other;
+    return TransportType_None;
   };
 
   QNetworkInformation::Reachability getReachability() override {
@@ -23,4 +25,4 @@ class DummyNetworkWatcher final : public NetworkWatcherImpl {
   }
 };
 
-#endif  // DUMMYNETWORKWATCHER_H
+#endif  // INSPECTORNETWORKWATCHER_H

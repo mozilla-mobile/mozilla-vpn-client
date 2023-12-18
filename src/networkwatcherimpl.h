@@ -5,6 +5,7 @@
 #ifndef NETWORKWATCHERIMPL_H
 #define NETWORKWATCHERIMPL_H
 
+#include <QNetworkInformation>
 #include <QObject>
 
 class NetworkWatcherImpl : public QObject {
@@ -35,6 +36,7 @@ class NetworkWatcherImpl : public QObject {
 
   // Returns the current type of Network Connection
   virtual TransportType getTransportType() = 0;
+  virtual QNetworkInformation::Reachability getReachability() = 0;
 
  signals:
   // Fires when the Device Connects to an unsecured Network
