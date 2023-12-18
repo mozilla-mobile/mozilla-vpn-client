@@ -254,7 +254,8 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
   // When the App is "Active" there is no special manipulation to do.
   if (state == Active) {
     m_excludedApps.remove(desktopFileId);
-    for (const QString& cgroup : m_appTracker->findByDesktopFileId(desktopFileId)) {
+    for (const QString& cgroup :
+         m_appTracker->findByDesktopFileId(desktopFileId)) {
       m_wgutils->resetCgroup(cgroup);
     }
     return;
@@ -262,7 +263,8 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
 
   // Otherwise, apply special handling to any matching control groups.
   m_excludedApps[desktopFileId] = state;
-  for (const QString& cgroup : m_appTracker->findByDesktopFileId(desktopFileId)) {
+  for (const QString& cgroup :
+       m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
       m_wgutils->resetCgroup(cgroup);
     }

@@ -48,7 +48,7 @@ class AppTracker final : public QObject {
    *        may be running.
    *
    * @param userid Unix User identifier.
-   * @param xdgRuntimePath 
+   * @param xdgRuntimePath User's runtime path (eg: "/run/user/<uid>").
    */
   void userCreated(uint userid, const QString& xdgRuntimePath);
 
