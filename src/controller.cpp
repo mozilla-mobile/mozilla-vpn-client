@@ -939,10 +939,11 @@ bool Controller::activate(const ServerData& serverData,
         QNetworkInformation::Reachability::Disconnected) {
       logger.debug() << "Internet probe failed during controller activation. "
                         "Device has no network connectivity.";
-      m_deviceNetworkConnectivity = false;
-      emit deviceNetworkConnectivityFailed();
+      m_isDeviceConnected = false;
+      emit isDeviceConnectedFailed();
       return false;
     }
+    m_isDeviceConnected = true;
 
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
