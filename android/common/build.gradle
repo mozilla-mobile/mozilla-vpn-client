@@ -16,7 +16,7 @@ android {
         Config.targetSdkVersion
         buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
         buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
-        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + System.getenv("ADJUST_SDK_TOKEN") +  '"'
+        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
