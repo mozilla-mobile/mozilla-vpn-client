@@ -37,7 +37,6 @@ SETTING_BOOL(addonCustomServer,        // getter
              hasAddonCustomServer,     // has
              "addon/customServer",     // key
              false,                    // default value
-             false,                    // user setting
              false,                    // remove when reset
              false                     // sensitive (do not log)
 )
@@ -48,7 +47,6 @@ SETTING_STRING(addonCustomServerAddress,        // getter
                hasAddonCustomServerAddress,     // has
                "addon/customServerAddress",     // key
                Constants::addonBaseUrl(),       // default value
-               false,                           // user setting
                false,                           // remove when reset
                false                            // sensitive (do not log)
 )
@@ -59,7 +57,6 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              hasAddonProdKeyInStaging,     // has
              "addon/prodKeyInStaging",     // key
              false,                        // default value
-             false,                        // user setting
              false,                        // remove when reset
              true                          // sensitive (do not log)
 )
@@ -71,7 +68,6 @@ SETTING_BOOL(adjustActivatable,        // getter
              hasAdjustActivatable,     // has
              "adjustActivatable",      // key
              false,                    // default value
-             false,                    // user setting
              false,                    // remove when reset
              false                     // sensitive (do not log)
 )
@@ -84,7 +80,6 @@ SETTING_BOOL(captivePortalAlert,        // getter
              "captivePortalAlert",      // key
              Feature::get(Feature::Feature_captivePortal)
                  ->isSupported(),  // default value
-             true,                 // user setting
              false,                // remove when reset
              false                 // sensitive (do not log)
 )
@@ -95,7 +90,6 @@ SETTING_STRINGLIST(captivePortalIpv4Addresses,        // getter
                    hasCaptivePortalIpv4Addresses,     // has
                    "captivePortal/ipv4Addresses",     // key
                    QStringList(),                     // default value
-                   false,                             // user setting
                    false,                             // remove when reset
                    false                              // sensitive (do not log)
 )
@@ -106,7 +100,6 @@ SETTING_STRINGLIST(captivePortalIpv6Addresses,         // getter
                    hasCaptivePortalIpv6Addresses,      // has
                    "captivePortal/ipv6Addresses",      // key
                    QStringList(),                      // default value
-                   false,                              // user setting
                    false,                              // remove when reset
                    false                               // sensitive (do not log)
 )
@@ -117,7 +110,6 @@ SETTING_BOOL(connectionChangeNotification,        // getter
              hasConnectionChangeNotification,     // has
              "connectionChangeNotification",      // key
              true,                                // default value
-             true,                                // user setting
              false,                               // remove when reset
              false                                // sensitive (do not log)
 )
@@ -128,7 +120,6 @@ SETTING_STRING(currentServerCityDeprecated,        // getter
                hasCurrentServerCityDeprecated,     // has
                "currentServer/city",               // key
                "",                                 // default value
-               true,                               // user setting
                true,                               // remove when reset
                false                               // sensitive (do not log)
 )
@@ -139,7 +130,6 @@ SETTING_STRING(currentServerCountryCodeDeprecated,        // getter
                hasCurrentServerCountryCodeDeprecated,     // has
                "currentServer/countryCode",               // key
                "",                                        // default value
-               true,                                      // user setting
                true,                                      // remove when reset
                false  // sensitive (do not log)
 )
@@ -150,7 +140,6 @@ SETTING_BOOL(developerUnlock,        // getter
              hasDeveloperUnlock,     // has
              "developerUnlock",      // key
              false,                  // default value
-             false,                  // user setting
              false,                  // remove when reset
              false                   // sensitive (do not log)
 )
@@ -161,7 +150,6 @@ SETTING_STRING(deviceKeyVersion,        // getter
                hasDeviceKeyVersion,     // has
                "deviceKeyVersion",      // key
                "",                      // default value
-               false,                   // user setting
                true,                    // remove when reset
                false                    // sensitive (do not log)
 )
@@ -172,7 +160,6 @@ SETTING_BYTEARRAY(devices,        // getter
                   hasDevices,     // has
                   "devices",      // key
                   "",             // default value
-                  false,          // user setting
                   true,           // remove when reset
                   true  // sensitive (do not log) - noisy and limited value
 )
@@ -183,7 +170,6 @@ SETTING_INT(dnsProviderDeprecated,                      // getter
             hasDNSProviderDeprecated,                   // has
             "dnsProvider",                              // key
             SettingsHolder::DNSProviderFlags::Gateway,  // default value
-            true,                                       // user setting
             false,                                      // remove when reset
             false  // sensitive (do not log)
 )
@@ -194,7 +180,6 @@ SETTING_INT(dnsProviderFlags,                           // getter
             hasDNSProviderFlags,                        // has
             "dnsProviderFlags",                         // key
             SettingsHolder::DNSProviderFlags::Gateway,  // default value
-            true,                                       // user setting
             false,                                      // remove when reset
             false  // sensitive (do not log)
 )
@@ -204,8 +189,7 @@ SETTING_STRING(entryServerCityDeprecated,        // getter
                removeEntryServerCityDeprecated,  // remover
                hasEntryServerCityDeprecated,     // has
                "entryServer/city",               // key
-               nullptr,                          // default value
-               true,                             // user setting
+               "",                               // default value
                true,                             // remove when reset
                false                             // sensitive (do not log)
 )
@@ -215,8 +199,7 @@ SETTING_STRING(entryServerCountryCodeDeprecated,        // getter
                removeEntryServerCountryCodeDeprecated,  // remover
                hasEntryServerCountryCodeDeprecated,     // has
                "entryServer/countryCode",               // key
-               nullptr,                                 // default value
-               true,                                    // user setting
+               "",                                      // default value
                true,                                    // remove when reset
                false  // sensitive (do not log)
 )
@@ -227,7 +210,6 @@ SETTING_STRINGLIST(excludedIpv4Addresses,        // getter
                    hasExcludedIpv4Addresses,     // has
                    "excluded/ipv4Addresses",     // key
                    QStringList(),                // default value
-                   false,                        // user setting
                    false,                        // remove when reset
                    false                         // sensitive (do not log)
 )
@@ -238,7 +220,6 @@ SETTING_STRINGLIST(excludedIpv6Addresses,         // getter
                    hasExcludedIpv6Addresses,      // has
                    "excluded/ipv6Addresses",      // key
                    QStringList(),                 // default value
-                   false,                         // user setting
                    false,                         // remove when reset
                    false                          // sensitive (do not log)
 )
@@ -249,7 +230,6 @@ SETTING_STRINGLIST(featuresFlippedOff,        // getter
                    hasFeaturesFlippedOff,     // has
                    "featuresFlippedOff",      // key
                    QStringList(),             // default value
-                   false,                     // user setting
                    false,                     // remove when reset
                    false                      // sensitive (do not log)
 )
@@ -260,7 +240,6 @@ SETTING_STRINGLIST(featuresFlippedOn,        // getter
                    hasFeaturesFlippedOn,     // has
                    "featuresFlippedOn",      // key
                    QStringList(),            // default value
-                   false,                    // user setting
                    false,                    // remove when reset
                    false                     // sensitive (do not log)
 )
@@ -274,7 +253,6 @@ SETTING_BOOL(gleanEnabled,        // getter
              hasGleanEnabled,     // has
              "gleanEnabled",      // key
              true,                // default value
-             true,                // user setting
              false,               // remove when reset
              false                // sensitive (do not log)
 )
@@ -285,7 +263,6 @@ SETTING_STRINGLIST(iapProducts,        // getter
                    hasIapProducts,     // has
                    "iapProducts",      // key
                    QStringList(),      // default value
-                   false,              // user setting
                    true,               // remove when reset
                    false               // sensitive (do not log)
 )
@@ -296,7 +273,6 @@ SETTING_STRING(installationId,        // getter
                hasInstallationId,     // has
                "installationId",      // key
                "",                    // default value
-               false,                 // user setting
                true,                  // remove when reset
                true                   // sensitive (do not log)
 )
@@ -307,7 +283,6 @@ SETTING_DATETIME(installationTime,        // getter
                  hasInstallationTime,     // has
                  "installationTime",      // key
                  QDateTime(),             // default value
-                 false,                   // user setting
                  false,                   // remove when reset
                  false                    // sensitive (do not log)
 )
@@ -318,7 +293,6 @@ SETTING_STRING(installedVersion,        // getter
                hasInstalledVersion,     // has
                "installedVersion",      // key
                "",                      // default value
-               false,                   // user setting
                false,                   // remove when reset
                false                    // sensitive (do not log)
 )
@@ -329,7 +303,6 @@ SETTING_INT64(keyRegenerationTimeSec,        // getter
               hasKeyRegenerationTimeSec,     // has
               "keyRegenerationTimeSec",      // key
               0,                             // default value
-              false,                         // user setting
               true,                          // remove when reset
               false                          // sensitive (do not log)
 )
@@ -340,7 +313,6 @@ SETTING_STRING(languageCode,        // getter
                hasLanguageCode,     // has
                "languageCode",      // key
                "",                  // default value
-               true,                // user setting
                false,               // remove when reset
                false                // sensitive (do not log)
 )
@@ -352,7 +324,6 @@ SETTING_BOOL(localhostRequestsOnly,        // Feature ID
              hasLocalhostRequestsOnly,     // has
              "localhostRequestOnly",       // key
              false,                        // default value
-             false,                        // user setting
              true,                         // remove when reset
              false                         // sensitive (do not log)
 )
@@ -363,7 +334,6 @@ SETTING_STRINGLIST(missingApps,        // getter
                    hasMissingApps,     // has
                    "MissingApps",      // key
                    QStringList(),      // default value
-                   true,               // user setting
                    false,              // remove when reset
                    false               // sensitive (do not log)
 )
@@ -374,7 +344,6 @@ SETTING_BOOL(onboardingCompleted,        // getter
              hasOnboardingCompleted,     // has
              "onboardingCompleted",      // key
              false,                      // default value
-             false,                      // user setting
              false,                      // remove when reset
              false                       // sensitive (do not log)
 )
@@ -385,7 +354,6 @@ SETTING_BOOL(onboardingDataCollectionEnabled,        // getter
              hasOnboardingDataCollectionEnabled,     // has
              "onboardingDataCollectionEnabled",      // key
              false,                                  // default value
-             false,                                  // user setting
              false,                                  // remove when reset
              false                                   // sensitive (do not log)
 )
@@ -396,7 +364,6 @@ SETTING_BOOL(onboardingStarted,        // getter
              hasOnboardingStarted,     // has
              "onboardingStarted",      // key
              false,                    // default value
-             false,                    // user setting
              false,                    // remove when reset
              false                     // sensitive (do not log)
 )
@@ -407,7 +374,6 @@ SETTING_INT(onboardingStep,        // getter
             hasOnboardingStep,     // has
             "onboardingStep",      // key
             0,                     // default value
-            false,                 // user setting
             false,                 // remove when reset
             false                  // sensitive (do not log)
 )
@@ -418,7 +384,6 @@ SETTING_BOOL(postAuthenticationShown,        // getter
              hasPostAuthenticationShown,     // has
              "postAuthenticationShown",      // key
              false,                          // default value
-             true,                           // user setting
              false,                          // remove when reset
              false                           // sensitive (do not log)
 )
@@ -429,7 +394,6 @@ SETTING_STRING(previousLanguageCode,        // getter
                hasPreviousLanguageCode,     // has
                "previousLanguageCode",      // key
                "",                          // default value
-               true,                        // user setting
                false,                       // remove when reset
                false                        // sensitive (do not log)
 )
@@ -440,7 +404,6 @@ SETTING_STRING(privateKey,        // getter
                hasPrivateKey,     // has
                "privateKey",      // key
                "",                // default value
-               false,             // user setting
                true,              // remove when reset
                true               // sensitive (do not log)
 )
@@ -451,7 +414,6 @@ SETTING_STRING(publicKey,        // getter
                hasPublicKey,     // has
                "publicKey",      // key
                "",               // default value
-               false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
 )
@@ -462,7 +424,6 @@ SETTING_BYTEARRAY(recentConnections,        // getter
                   hasRecentConnections,     // has
                   "recentConnections2",     // key
                   "",                       // default value
-                  true,                     // user setting
                   true,                     // remove when reset
                   true                      // sensitive (do not log)
 )
@@ -473,7 +434,6 @@ SETTING_STRINGLIST(recentConnectionsDeprecated,        // getter
                    hasRecentConnectionsDeprecated,     // has
                    "recentConnections",                // key
                    QStringList(),                      // default value
-                   true,                               // user setting
                    true,                               // remove when reset
                    true                                // sensitive (do not log)
 )
@@ -484,7 +444,6 @@ SETTING_BYTEARRAY(servers,        // getter
                   hasServers,     // has
                   "servers",      // key
                   "",             // default value
-                  false,          // user setting
                   true,           // remove when reset
                   true  // sensitive (do not log) - noisy and limited value
 )
@@ -495,7 +454,6 @@ SETTING_BYTEARRAY(serverData,        // getter
                   hasServerData,     // has
                   "serverData",      // key
                   "",                // default value
-                  true,              // user setting
                   true,              // remove when reset
                   true               // sensitive (do not log)
 )
@@ -506,7 +464,6 @@ SETTING_BOOL(serverSwitchNotification,        // getter
              hasServerSwitchNotification,     // has
              "serverSwitchNotification",      // key
              true,                            // default value
-             true,                            // user setting
              false,                           // remove when reset
              false                            // sensitive (do not log)
 )
@@ -518,7 +475,6 @@ SETTING_BOOL(serverUnavailableNotification,        // getter
              "serverUnavailableNotification",      // key
              Feature::get(Feature::Feature_serverUnavailableNotification)
                  ->isSupported(),  // default value
-             true,                 // user setting
              false,                // remove when reset
              false                 // sensitive (do not log)
 )
@@ -529,7 +485,6 @@ SETTING_BOOL(recommendedServerSelected,        // getter
              hasRecommendedServerSelected,     // has
              "recommendedServerSelected",      // key
              true,                             // default value
-             false,                            // user setting
              false,                            // remove when reset
              false                             // sensitive (do not log)
 )
@@ -542,7 +497,6 @@ SETTING_STRING(
     "stagingServerAddress",      // key
     Constants::envOrDefault("MVPN_API_BASE_URL",
                             Constants::API_STAGING_URL),  // default value
-    false,                                                // user setting
     false,                                                // remove when reset
     false  // sensitive (do not log)
 )
@@ -558,7 +512,6 @@ SETTING_BOOL(stagingServer,                 // getter
              hasStagingServer,              // has
              "stagingServer",               // key
              STAGING_SERVER_DEFAULT_VALUE,  // default value
-             false,                         // user setting
              false,                         // remove when reset
              false                          // sensitive (do not log)
 )
@@ -569,7 +522,6 @@ SETTING_BOOL(startAtBoot,        // getter
              hasStartAtBoot,     // has
              "startAtBoot",      // key
              false,              // default value
-             true,               // user setting
              false,              // remove when reset
              false               // sensitive (do not log)
 )
@@ -580,7 +532,6 @@ SETTING_BYTEARRAY(subscriptionData,        // getter
                   hasSubscriptionData,     // has
                   "subscriptionData",      // key
                   "",                      // default value
-                  false,                   // user setting
                   true,                    // remove when reset
                   true                     // sensitive (do not log)
 )
@@ -591,7 +542,6 @@ SETTING_BOOL(systemLanguageCodeMigrated,        // getter
              hasSystemLanguageCodeMigrated,     // has
              "systemLanguageCodeMigrated",      // key
              false,                             // default value
-             false,                             // user setting
              true,                              // remove when reset
              false                              // sensitive (do not log)
 )
@@ -602,7 +552,6 @@ SETTING_DATETIME(updateTime,        // getter
                  hasUpdateTime,     // has
                  "updateTime",      // key
                  QDateTime(),       // default value
-                 false,             // user setting
                  false,             // remove when reset
                  false              // sensitive (do not log)
 )
@@ -613,7 +562,6 @@ SETTING_STRING(userEmail,        // getter
                hasUserEmail,     // has
                "user/email",     // key
                "",               // default value
-               false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
 )
@@ -624,7 +572,6 @@ SETTING_BOOL(telemetryPolicyShown,        // getter
              hasTelemetryPolicyShown,     // has
              "telemetryPolicyShown",      // key
              false,                       // default value
-             false,                       // user setting
              false,                       // remove when reset
              false                        // sensitive (do not log)
 )
@@ -637,7 +584,6 @@ SETTING_STRING(theme,          // getter
                hasTheme,       // has
                "theme",        // key
                DEFAULT_THEME,  // default value
-               true,           // user setting
                true,           // remove when reset
                false           // sensitive (do not log)
 )
@@ -648,7 +594,6 @@ SETTING_BOOL(tipsAndTricksIntroShown,        // getter
              hasTipsAndTricksIntroShown,     // has
              "tipsAndTricksIntroShown",      // key
              false,                          // default value
-             false,                          // user setting
              false,                          // remove when reset
              false                           // sensitive (do not log)t
 )
@@ -659,7 +604,6 @@ SETTING_STRING(token,        // getter
                hasToken,     // has
                "token",      // key
                "",           // default value
-               false,        // user setting
                true,         // remove when reset
                true          // sensitive (do not log)
 )
@@ -671,7 +615,6 @@ SETTING_BOOL(unsecuredNetworkAlert,        // getter
              "unsecuredNetworkAlert",      // key
              Feature::get(Feature::Feature_unsecuredNetworkNotification)
                  ->isSupported(),  // default value
-             true,                 // user setting
              false,                // remove when reset
              false                 // sensitive (do not log)
 )
@@ -682,7 +625,6 @@ SETTING_STRING(userAvatar,        // getter
                hasUserAvatar,     // has
                "user/avatar",     // key
                "",                // default value
-               false,             // user setting
                true,              // remove when reset
                true               // sensitive (do not log)
 )
@@ -693,7 +635,6 @@ SETTING_STRING(userDisplayName,        // getter
                hasUserDisplayName,     // has
                "user/displayName",     // key
                "",                     // default value
-               false,                  // user setting
                true,                   // remove when reset
                true                    // sensitive (do not log)
 )
@@ -704,7 +645,6 @@ SETTING_STRING(userDNS,        // getter
                hasUserDNS,     // has
                "userDNS",      // key
                "",             // default value
-               true,           // user setting
                false,          // remove when reset
                false           // sensitive (do not log)
 )
@@ -715,7 +655,6 @@ SETTING_INT(userMaxDevices,        // getter
             hasUserMaxDevices,     // has
             "user/maxDevices",     // key
             0,                     // default value
-            false,                 // user setting
             true,                  // remove when reset
             false                  // sensitive (do not log)
 )
@@ -726,7 +665,6 @@ SETTING_BOOL(userSubscriptionNeeded,        // getter
              hasUserSubscriptionNeeded,     // has
              "user/subscriptionNeeded",     // key
              false,                         // default value
-             false,                         // user setting
              true,                          // remove when reset
              false                          // sensitive (do not log)
 )
@@ -737,7 +675,6 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    hasVpnDisabledApps,     // has
                    "vpnDisabledApps",      // key
                    QStringList(),          // default value
-                   true,                   // user setting
                    false,                  // remove when reset
                    false                   // sensitive (do not log)
 )
@@ -748,7 +685,6 @@ SETTING_STRING(sentryDSN,        // getter
                hasSentryDSN,     // has
                "sentry/dsn",     // key
                "",               // default value
-               false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
 )
@@ -759,7 +695,6 @@ SETTING_STRING(sentryEndpoint,        // getter
                hasSentryEndpoint,     // has
                "sentry/endpoint",     // key
                "",                    // default value
-               false,                 // user setting
                true,                  // remove when reset
                true                   // sensitive (do not log)
 )
@@ -771,7 +706,6 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    hasSubscriptionTransactions,     // has
                    "subscriptionTransactions",      // key
                    QStringList(),                   // efault value
-                   false,                           // user setting
                    false,                           // remove when reset
                    true                             // sensitive (do not log)
 )
@@ -783,7 +717,6 @@ SETTING_BOOL(gleanDebugTagActive,        // getter
              hasGleanDebugTagActive,     // has
              "isGleanDebugTagActive",    // key
              false,                      // default value
-             false,                      // user setting
              true,                       // remove when reset
              false                       // sensitive (do not log)
 )
@@ -794,7 +727,6 @@ SETTING_STRING(gleanDebugTag,        // getter
                hasGleanDebugTag,     // has
                "gleanDebugTag",      // key
                "VPNTest",            // default value
-               false,                // user setting
                true,                 // remove when reset
                false                 // sensitive (do not log)
 )
@@ -805,7 +737,6 @@ SETTING_BOOL(gleanLogPings,        // getter
              hasGleanLogPings,     // has
              "gleanLogPings",      // key
              false,                // default value
-             false,                // user setting
              true,                 // remove when reset
              false                 // sensitive (do not log)
 )
@@ -816,7 +747,6 @@ SETTING_BOOL(shortTimerSessionPing,        // getter
              hasShortTimerSessionPing,     // has
              "shortTimerSessionPing",      // key
              false,                        // default value
-             false,                        // user setting
              true,                         // remove when reset
              false                         // sensitive (do not log)
 )
@@ -828,7 +758,6 @@ SETTING_BOOL(addonApiSetting,        // getter
              hasAddonApiSetting,     // has
              "addonApiSetting",      // key
              false,                  // default value
-             true,                   // user setting
              false,                  // remove when reset
              false                   // sensitive (do not log)
 )
@@ -839,7 +768,6 @@ SETTING_STRING(foobar,        // getter
                hasFoobar,     // has
                "foobar",      // key
                "FOO BAR",     // default value
-               true,          // user setting
                true,          // remove when reset
                false          // sensitive (do not log)
 )
@@ -850,7 +778,6 @@ SETTING_STRING(barfoo,        // getter
                hasBarfoo,     // has
                "barfoo",      // key
                "",            // default value
-               false,         // user setting
                true,          // remove when reset
                false          // sensitive (do not log)
 )
@@ -861,7 +788,6 @@ SETTING_STRING(sensitive,        // getter
                hasSensitive,     // has
                "sensitive",      // key
                "",               // default value
-               false,            // user setting
                true,             // remove when reset
                true              // sensitive (do not log)
 )
