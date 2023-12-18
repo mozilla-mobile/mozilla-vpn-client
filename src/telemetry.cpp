@@ -124,18 +124,6 @@ void Telemetry::initialize() {
       controller, &Controller::handshakeFailed, this,
       [](const QString& publicKey) {
         logger.info() << "Send a handshake failure event";
-
-        //            // Get reachability status
-        //            QNetworkInformation::Reachability reachabilityStatus =
-        //            networkWatcher->getReachability();
-        //            // Convert to QVariant
-        //            QVariant variantValue =
-        //            QVariant::fromValue(static_cast<int>(reachabilityStatus));
-        //            // Set the reachability status in the extra
-        //            extra._transport = variantValue;
-        //            // Record the data
-        //            mozilla::glean::sample::connectivity_handshake_timeout.record(extra);
-
         mozilla::glean::sample::connectivity_handshake_timeout.record(
             mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
                 ._server = publicKey,
