@@ -38,7 +38,7 @@ void Feature::maybeInitialize() {
   new Feature(                                                            \
       #id, name, [] { return true; }, [] { return true; }, QStringList(), \
       [] { return false; });
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
   }
 }

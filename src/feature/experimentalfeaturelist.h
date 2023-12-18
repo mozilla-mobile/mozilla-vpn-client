@@ -6,6 +6,9 @@
 #  error Not supported
 #endif
 
+// This list is expected to be in sync with the list on
+// http://github.com/mozilla-services/guardian-website/blob/main/nimbus.yaml
+
 #ifdef UNIT_TEST
 EXPERIMENTAL_FEATURE(myExperimentalFeature,                // Feature ID
                      "myExperimentalFeature",              // Feature name

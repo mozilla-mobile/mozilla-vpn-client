@@ -22,7 +22,7 @@ class Feature : public QObject {
 
 #define EXPERIMENTAL_FEATURE(id, name, ...) \
   static constexpr const char* ExperimentalFeature_##id = #id;
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)

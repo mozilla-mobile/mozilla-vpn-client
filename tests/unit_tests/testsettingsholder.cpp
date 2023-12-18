@@ -132,7 +132,7 @@
     QCOMPARE(spy.count(), 1);                                     \
   }
 
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
 static TestSettingsHolder s_testSettingsHolder;

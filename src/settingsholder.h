@@ -37,7 +37,7 @@ class SettingsHolder final : public QObject {
 #define EXPERIMENTAL_FEATURE(experimentId, ...) \
   Q_PROPERTY(SettingGroup experimentId READ experimentId)
 
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
   SettingsHolder();
@@ -68,7 +68,7 @@ class SettingsHolder final : public QObject {
 #define EXPERIMENTAL_FEATURE(experimentId, ...) \
   SettingGroup* experimentId() { return &m_##experimentId; }
 
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
  private:
@@ -87,7 +87,7 @@ class SettingsHolder final : public QObject {
       QString("%1/%2").arg(EXPERIMENTS_SETTING_GROUP).arg(#experimentId), \
       true, false, experimentSettings);
 
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
   bool m_firstExecution = false;

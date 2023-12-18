@@ -18,6 +18,6 @@ class TestSettingsHolder final : public TestHelper {
 #define EXPERIMENTAL_FEATURE(experimentId, ...) \
   void testGetSet_##experimentId();
 
-#include "experimentalfeaturelist.h"
+#include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 };
