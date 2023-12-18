@@ -65,7 +65,7 @@ class SettingGroup : public QObject {
    *
    * @return QVariant
    */
-  QVariant get(const QString& key) const;
+  Q_INVOKABLE QVariant get(const QString& key) const;
 
   /**
    * @brief Set the value of a setting in this group.

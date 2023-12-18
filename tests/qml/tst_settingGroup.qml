@@ -22,7 +22,7 @@ Item {
         when: windowShown
 
         function test_settingsAreExposedToQML() {
-            compare(TestSettingGroup["aKey"], "Hello, QML!");
+            compare(TestSettingGroup.get("aKey"), "Hello, QML!");
         }
     }
 }

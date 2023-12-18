@@ -11,9 +11,6 @@
 TestHelper::TestHelper() {
   m_i18nstrings = I18nStrings::instance();
   m_mozillavpn = MozillaVPN::instance();
-
-  m_testSettingGroup = new SettingGroup("aGroup");
-  m_testSettingGroup->set("aKey", QVariant("Hello, QML!"));
 }
 
 TestHelper* TestHelper::instance() {
@@ -82,6 +79,8 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<SettingGroup>(
       "Mozilla.Shared", 1, 0, "TestSettingGroup",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        m_testSettingGroup = new SettingGroup("aGroup");
+        m_testSettingGroup->set("aKey", QVariant("Hello, QML!"));
         QObject* obj = m_testSettingGroup;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
