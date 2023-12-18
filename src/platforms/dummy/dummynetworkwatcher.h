@@ -14,9 +14,9 @@ class DummyNetworkWatcher final : public NetworkWatcherImpl {
 
   void initialize() override;
 
-  NetworkWatcherImpl::TransportType getTransportType() override {
-    return TransportType_Other;
-  };
+  QNetworkInformation::Reachability getReachability() override {
+    return QNetworkInformation::instance()->reachability();
+  }
 };
 
 #endif  // DUMMYNETWORKWATCHER_H

@@ -5,6 +5,7 @@
 #include "networkwatcher.h"
 
 #include <QMetaEnum>
+#include <QNetworkInformation>
 
 #include "controller.h"
 #include "leakdetector.h"
@@ -168,9 +169,6 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
   }
 }
 
-QString NetworkWatcher::getCurrentTransport() {
-  auto type = m_impl->getTransportType();
-  QMetaEnum metaEnum = QMetaEnum::fromType<NetworkWatcherImpl::TransportType>();
-  return QString(metaEnum.valueToKey(type))
-      .remove("TransportType_", Qt::CaseSensitive);
+QNetworkInformation::Reachability NetworkWatcher::getReachability() {
+  return QNetworkInformation::instance()->reachability();
 }

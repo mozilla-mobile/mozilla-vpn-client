@@ -7,6 +7,7 @@
 
 #include <QElapsedTimer>
 #include <QMap>
+#include <QNetworkInformation>
 
 #include "notificationhandler.h"
 
@@ -26,7 +27,8 @@ class NetworkWatcher final : public QObject {
   // public for the inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
-  QString getCurrentTransport();
+  // QString getCurrentTransport();
+  QNetworkInformation::Reachability getReachability();
 
  signals:
   void networkChange();

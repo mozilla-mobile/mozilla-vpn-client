@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
+#include <QNetworkInformation>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -31,11 +32,6 @@ AndroidNetworkWatcher::~AndroidNetworkWatcher() {
 
 void AndroidNetworkWatcher::initialize() {}
 
-NetworkWatcherImpl::TransportType AndroidNetworkWatcher::getTransportType() {
-  QJniEnvironment env;
-  QJniObject activity = AndroidCommons::getActivity();
-  int type = QJniObject::callStaticMethod<int>(
-      VPNNetworkWatcher_CLASS, "getTransportType",
-      "(Landroid/content/Context;)I", activity.object());
-  return (NetworkWatcherImpl::TransportType)type;
-};
+QNetworkInformation::Reachability AndroidNetworkWatcher::getReachability() {
+  return QNetworkInformation::instance()->reachability();
+}

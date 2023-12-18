@@ -5,6 +5,7 @@
 #ifndef NETWORKWATCHERIMPL_H
 #define NETWORKWATCHERIMPL_H
 
+#include <QNetworkInformation>
 #include <QObject>
 
 class NetworkWatcherImpl : public QObject {
@@ -23,6 +24,7 @@ class NetworkWatcherImpl : public QObject {
 
   bool isActive() const { return m_active; }
 
+  ///@TODO should this be removed too?
   enum TransportType {
     TransportType_Unknown = 0,
     TransportType_Ethernet = 1,
@@ -34,7 +36,7 @@ class NetworkWatcherImpl : public QObject {
   Q_ENUM(TransportType);
 
   // Returns the current type of Network Connection
-  virtual TransportType getTransportType() = 0;
+  virtual QNetworkInformation::Reachability getReachability() = 0;
 
  signals:
   // Fires when the Device Connects to an unsecured Network
@@ -45,7 +47,7 @@ class NetworkWatcherImpl : public QObject {
   void networkChanged(QString newBSSID);
 
   // Fired when the Device changed the Type of Transport
-  void transportChanged(NetworkWatcherImpl::TransportType transportType);
+  //  void transportChanged(NetworkWatcherImpl::TransportType transportType);
 
  private:
   bool m_active = false;

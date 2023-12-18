@@ -14,7 +14,7 @@ class AndroidNetworkWatcher final : public NetworkWatcherImpl {
 
   void initialize() override;
 
-  NetworkWatcherImpl::TransportType getTransportType() override;
+  QNetworkInformation::Reachability getReachability() override;
 };
 
 #endif  // ANDROIDNETWORKWATCHER_H
