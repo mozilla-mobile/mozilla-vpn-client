@@ -12,7 +12,9 @@
         <domain includeSubdomains="true">sentry.io</domain>
         <domain includeSubdomains="true">apple.com</domain>
         <domain includeSubdomains="true">google.com</domain>
-        <domain includeSubdomains="true">github.io</domain> 
+        <domain includeSubdomains="true">github.io</domain>
+        <domain includeSubdomains="true">allizom.org</domain>
+        <domain includeSubdomains="true">mozaws.net</domain>
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
