@@ -16,25 +16,28 @@ class QDBusInterface;
 // Applications on Linux can be a bit vague and hard to define at runtime, so
 // we need to make some assumptions to try and tackle the problem.
 //
-// The first concept, comes from the Freedesktop specification, which makes use
-// of desktop entry files to populate entities in the applications menu. The
-// path to these files are used to generate identifiers, known as Desktop File
-// IDs. This means that we can only track applications which are launched by
-// the applications menu.
+// First off, we try to identify applications based on the application menu
+// entries. According to the Freedesktop specification, these are described by
+// the `*.desktop` files found under the user's XDG_DATA_DIRS environment
+// variable. The Freedesktop specification also defines that the path to this
+// file can be converted into a Desktop File ID, which we will use as the
+// identifier of the application.
 //
-// The second contept are control groups, or cgroups, which are used to group
-// process IDs together for the purpose of establishing shared resource
-// contstraints. We use these control groups in the Linux netfilter subsystem
-// to apply the split tunnelling traffic manipulation.
+// However, the `*.desktop` files only describe how to launch an application.
+// Once an application has started, there is no definitive way to track the
+// processes of that application. For this, we rely on Linux control groups,
+// or cgroups, which are used to group processes together for the purpose of
+// establishing shared resource constraints and containerization.
 //
 // It just so happens that many modern desktop environments will group their
 // processes forked from the application launchers into cgroups for resource
 // management and containerization. This class attempts to track those cgroups
 // and match them to the destop file ID from which they originated.
 //
-// This means that we also only support desktop environments which make us of
-// control groups for application containerization. This more or less limits us
-// to Gnome, KDE, Flatpaks and Snaps.
+// This means that we only support application environments which make use of
+// control groups for application containerization, and apps which can be
+// launched via the applications menu. This limits us to Gnome, KDE, Flatpaks,
+// and Snaps.
 class AppTracker final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppTracker)
