@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">mozilla.org</domain>
+        <domain includeSubdomains="true">firefox.com</domain>
+        <domain includeSubdomains="true">mozgcp.net</domain>
+        <domain includeSubdomains="true">sentry.io</domain>
+        <domain includeSubdomains="true">apple.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">github.io</domain>
+        <domain includeSubdomains="true">allizom.org</domain>
+        <domain includeSubdomains="true">mozaws.net</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
