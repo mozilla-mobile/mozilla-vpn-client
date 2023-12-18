@@ -91,7 +91,6 @@ MZClickableRow {
 
         Rectangle {
             id: iconButton
-            objectName: _objNameBase + "-manageAccountButton"
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.preferredWidth: MZTheme.theme.rowHeight

@@ -421,7 +421,7 @@ describe('Subscription view', function() {
             .enabled());
 
     await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+        queries.screenSettings.subscriptionView.SCREEN.visible());
   });
 
   it('Authentication needed - totp', async () => {
@@ -498,7 +498,7 @@ describe('Subscription view', function() {
         queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+        queries.screenSettings.subscriptionView.SCREEN.visible());
   });
 
   it('Playing with the subscription view', async () => {
@@ -982,7 +982,7 @@ describe('Subscription view', function() {
       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
       await vpn.waitForQuery(
-          queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+          queries.screenSettings.subscriptionView.SCREEN.visible());
 
       if (data.subscription.expected.status) {
         assert.equal(
@@ -1090,7 +1090,7 @@ describe('Subscription view', function() {
             queries.screenSettings.subscriptionView
                 .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
         await vpn.scrollToQuery(
-            queries.screenSettings.subscriptionView.SCREEN,
+            queries.screenSettings.subscriptionView.FLICKABLE,
             queries.screenSettings.subscriptionView
                 .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
         await vpn.waitForQueryAndClick(
@@ -1144,7 +1144,7 @@ describe('Subscription view', function() {
         queries.screenSettings.USER_PROFILE.visible());
 
     await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+        queries.screenSettings.subscriptionView.SCREEN.visible());
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
@@ -1153,7 +1153,7 @@ describe('Subscription view', function() {
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
     await vpn.scrollToQuery(
-        queries.screenSettings.subscriptionView.SCREEN,
+        queries.screenSettings.subscriptionView.FLICKABLE,
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
     await vpn.waitForQueryAndClick(
@@ -1273,7 +1273,7 @@ describe('Subscription view', function() {
         queries.screenSettings.USER_PROFILE.visible());
 
     await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+        queries.screenSettings.subscriptionView.SCREEN.visible());
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
@@ -1282,7 +1282,7 @@ describe('Subscription view', function() {
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
     await vpn.scrollToQuery(
-        queries.screenSettings.subscriptionView.SCREEN,
+        queries.screenSettings.subscriptionView.FLICKABLE,
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
     await vpn.waitForQueryAndClick(
@@ -1391,13 +1391,12 @@ describe('Subscription view', function() {
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
-  async function clickSettingsIcon() {
+  async function openSubscriptionManagement() {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-  }
-  async function openSubscriptionManagement() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(queries.screenSettings.subscriptionView.SCREEN.visible());
   }
 
   it('Shows annual upgrade UI based on billing interval and purchase type',
@@ -1425,7 +1424,6 @@ describe('Subscription view', function() {
          await vpn.flipFeatureOn('annualUpgrade');
        }
 
-       await clickSettingsIcon();
        await openSubscriptionManagement();
 
        await vpn.waitForQuery(
@@ -1456,7 +1454,6 @@ describe('Subscription view', function() {
          await vpn.flipFeatureOn('annualUpgrade');
        }
 
-       await clickSettingsIcon();
        await openSubscriptionManagement();
 
        await vpn.waitForQuery(
@@ -1486,10 +1483,81 @@ describe('Subscription view', function() {
              .body = SUBSCRIPTION_DETAILS;
        };
 
-       await clickSettingsIcon();
        await openSubscriptionManagement();
 
        await vpn.waitForQuery(
            queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
      });
+
+  describe('Subscription management telemetry tests', () => {
+
+      beforeEach(async () => {
+        await openSubscriptionManagement();
+      });
+
+    describe('Subscription management view events are recorded (annual plan)', () => {
+      const subscriptionManagementScreenTelemetryId = "account";
+
+      it('accountScreen impression event is recorded', async () => {
+
+        //Open the subscription management view and record accountScreen telemetry
+        const accountScreenEvents = await vpn.gleanTestGetValue("impression", "accountScreen", "main");
+        assert.equal(accountScreenEvents.length, 1);
+        const accountScreenEventExtras = accountScreenEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, accountScreenEventExtras.screen);
+      });
+
+      it('editSelected interaction event is recorded', async () => {
+
+        //Click the user profile button and record editSelected telemetry
+        await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
+        const editSelectedEvents = await vpn.gleanTestGetValue("interaction", "editSelected", "main");
+        assert.equal(editSelectedEvents.length, 1);
+        const editSelectedEventsExtras = editSelectedEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, editSelectedEventsExtras.screen);
+      });
+
+      it('manageSubscriptionSelected interaction event is recorded', async () => {
+
+        //Click the manage subscription button and record manageSubscriptionSelected telemetry
+        await vpn.scrollToQuery(queries.screenSettings.subscriptionView.FLICKABLE, queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+        await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+        const manageSubscriptionSelectedEvents = await vpn.gleanTestGetValue("interaction", "manageSubscriptionSelected", "main");
+        assert.equal(manageSubscriptionSelectedEvents.length, 1);
+        const manageSubscriptionSelectedEventsExtras = manageSubscriptionSelectedEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, manageSubscriptionSelectedEventsExtras.screen);
+      });
+
+      it('homeSelected interaction event is recorded with correct screen', async () => {
+
+        //Click the home navbar button and record homeSelected telemetry
+        await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+        const homeSelectedEvents = await vpn.gleanTestGetValue("interaction", "homeSelected", "main");
+        assert.equal(homeSelectedEvents.length, 1);
+        const homeSelectedEventsExtras = homeSelectedEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, homeSelectedEventsExtras.screen);
+      });
+
+      it('messagesSelected interaction event is recorded with correct screen', async () => {
+
+        //Click the messages navbar button and record homeSelected telemetry
+        await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+        const messagesSelectedEvents = await vpn.gleanTestGetValue("interaction", "messagesSelected", "main");
+        assert.equal(messagesSelectedEvents.length, 1);
+        const messagesSelectedEventsExtras = messagesSelectedEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, messagesSelectedEventsExtras.screen);
+
+      });
+
+      it('settingsSelected interaction event is recorded with correct screen', async () => {
+
+        //Click the settings navbar button and record homeSelected telemetry
+        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+        const settingselectedEvents = await vpn.gleanTestGetValue("interaction", "settingsSelected", "main");
+        assert.equal(settingselectedEvents.length, 1);
+        const settingselectedEventsExtras = settingselectedEvents[0].extra;
+        assert.equal(subscriptionManagementScreenTelemetryId, settingselectedEventsExtras.screen);
+      });
+    });
+  });
 });

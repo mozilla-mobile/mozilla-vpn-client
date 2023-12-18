@@ -1086,4 +1086,40 @@ interaction:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
-    extra_keys: *interaction_extra_keys  
+    extra_keys: *interaction_extra_keys 
+  edit_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `edit account` button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
+    expires: never 
+    extra_keys: *interaction_extra_keys
+  manage_subscription_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “manage subscription” button from the subscription management view.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys

@@ -511,4 +511,22 @@ impression:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
-    extra_keys: *impression_extra_keys  
+    extra_keys: *impression_extra_keys
+  account_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has viewed the subscription management screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys   

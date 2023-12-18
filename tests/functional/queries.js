@@ -270,14 +270,11 @@ const screenSettings = {
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
   TIPS_AND_TRICKS: new QmlQueryComposer('//settingsTipsAndTricks'),
   USER_PROFILE:
-      new QmlQueryComposer('//settingsUserProfile-manageAccountButton'),
+      new QmlQueryComposer('//settingsUserProfile'),
   USER_PROFILE_DISPLAY_NAME:
       new QmlQueryComposer('//settingsUserProfile-displayName'),
   USER_PROFILE_EMAIL_ADDRESS:
       new QmlQueryComposer('//settingsUserProfile-emailAddress'),
-
-  SUBSCRIPTION_MANAGMENT_VIEW:
-      new QmlQueryComposer('//subscriptionManagmentView'),
 
   privacyView: {
     BLOCK_ADS: new QmlQueryComposer('//blockAds'),
@@ -380,7 +377,8 @@ const screenSettings = {
     ANNUAL_UPGRADE: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
     PLAN: new QmlQueryComposer('//subscriptionItem-plan-valueText'),
-    SCREEN: new QmlQueryComposer('//subscriptionManagmentView-flickable'),
+    SCREEN: new QmlQueryComposer('//subscriptionManagmentView'),
+    FLICKABLE: new QmlQueryComposer('//subscriptionManagmentView-flickable'),
     STATUS_PILL: new QmlQueryComposer('//subscriptionItem-status-pill'),
 
     ACTIVATED: new QmlQueryComposer(

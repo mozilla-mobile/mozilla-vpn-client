@@ -14,6 +14,8 @@ MZViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
+    property string telemetryScreenId: isAnnualUpgradeAvailable() && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb ? "account_with_change_plan" : "account"
+
     Component.onDestruction: () => VPNProfileFlow.reset()
 
     _menuTitle: MZI18n.SubscriptionManagementMenuTitle
@@ -34,12 +36,13 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
-            objectName: "subscriptionUserProfile"
             _objNameBase: "subscriptionUserProfile"
 
             _iconSource: "qrc:/nebula/resources/open-in-new.svg"
             _buttonOnClicked: () => {
-                Glean.sample.manageAccountClicked.record();
+                Glean.interaction.editSelected.record({
+                    screen: vpnFlickable.telemetryScreenId,
+                });
                 MZUrlOpener.openUrlLabel("account");
             }
         }
@@ -138,7 +141,9 @@ MZViewBase {
                 MZUrlOpener.openUrlLabel("account");
         }
 
-        Glean.sample.manageSubscriptionClicked.record();
+        Glean.interaction.manageSubscriptionSelected.record({
+            screen: vpnFlickable.telemetryScreenId,
+        });
     }
 
     function isAnnualUpgradeAvailable() {
@@ -299,5 +304,9 @@ MZViewBase {
 
     Component.onCompleted: {
         populateListModels();
+        MZNavigator.addView(VPN.ScreenSettings, vpnFlickable)
+        Glean.impression.accountScreen.record({
+            screen: telemetryScreenId,
+        });
     }
 }
