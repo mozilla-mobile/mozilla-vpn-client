@@ -19,7 +19,7 @@ Logger logger("AndroidNetworkWatcher");
 
 // constexpr auto VPNNetworkWatcher_CLASS =
 //     "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";
-// }  // namespace
+}  // namespace
 
 AndroidNetworkWatcher::AndroidNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {

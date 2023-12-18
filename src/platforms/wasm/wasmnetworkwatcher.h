@@ -20,8 +20,7 @@ class WasmNetworkWatcher final : public NetworkWatcherImpl {
 
   void start() override;
 
-  QNetworkInformation::Reachability getReachability()
-      override {
+  QNetworkInformation::Reachability getReachability() override {
     return QNetworkInformation::instance()->reachability();
   }
 };
