@@ -2,33 +2,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testsettingsbase.h"
-
 #include "helper.h"
 #include "settings/setting.h"
 #include "settings/settingfactory.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
+#include "testsettingsmanager.h"
 
-void TestSettingsBase::cleanup() {
+void TestSettingsManager::cleanup() {
   // This test suite requires a manual clean up,
-  // because SettingsBase clean up is tied to the lifetime of a SettingsHolder
-  // object and this test suite doesn't rely on the SettingsHolder at all.
-  SettingsBase::testCleanup();
+  // because SettingsManager clean up is tied to the lifetime of a
+  // SettingsHolder object and this test suite doesn't rely on the
+  // SettingsHolder at all.
+  SettingsManager::testCleanup();
 }
 
-void TestSettingsBase::testGetSetting() {
+void TestSettingsManager::testGetSetting() {
   // Try to get a setting that doesn't exist. All good, but nullptr
-  Q_ASSERT(!SettingsBase::getSetting("doesnotexist"));
+  Q_ASSERT(!SettingsManager::getSetting("doesnotexist"));
 
   // Create a setting
   auto setting = SettingFactory::createOrGetSetting("doesexist");
   Q_UNUSED(setting)
 
   // Try to get it, not it's not nullptr.
-  Q_ASSERT(SettingsBase::getSetting("doesexist"));
+  Q_ASSERT(SettingsManager::getSetting("doesexist"));
 }
 
-void TestSettingsBase::testReset() {
+void TestSettingsManager::testReset() {
   // Create a setting that should be reset
   auto doReset = SettingFactory::createOrGetSetting(
       "doreset", []() { return nullptr; }, true, false);
@@ -37,8 +37,8 @@ void TestSettingsBase::testReset() {
       "donotreset", []() { return nullptr; }, false, false);
 
   // Check they are there, just in case.
-  Q_ASSERT(SettingsBase::getSetting("doreset"));
-  Q_ASSERT(SettingsBase::getSetting("donotreset"));
+  Q_ASSERT(SettingsManager::getSetting("doreset"));
+  Q_ASSERT(SettingsManager::getSetting("donotreset"));
 
   doReset->set(QVariant("hey"));
   doNotReset->set(QVariant("ho"));
@@ -48,18 +48,18 @@ void TestSettingsBase::testReset() {
   QCOMPARE(doNotReset->get().toString(), "ho");
 
   // Now reset!
-  SettingsBase::reset();
+  SettingsManager::reset();
 
   // Fun fact, reset will _not_ unregister. Check that is true.
-  Q_ASSERT(SettingsBase::getSetting("doreset"));
-  Q_ASSERT(SettingsBase::getSetting("donotreset"));
+  Q_ASSERT(SettingsManager::getSetting("doreset"));
+  Q_ASSERT(SettingsManager::getSetting("donotreset"));
 
   // But it will clear the storage, if the setting is setup to do that.
   QVERIFY(doReset->get().isNull());
   QCOMPARE(doNotReset->get().toString(), "ho");
 }
 
-void TestSettingsBase::testHardReset() {
+void TestSettingsManager::testHardReset() {
   // Create a setting that should be reset
   auto doReset = SettingFactory::createOrGetSetting(
       "doreset", []() { return nullptr; }, true, false);
@@ -69,8 +69,8 @@ void TestSettingsBase::testHardReset() {
       "donotreset", []() { return nullptr; }, false, false);
 
   // Check they are there, just in case.
-  Q_ASSERT(SettingsBase::getSetting("doreset"));
-  Q_ASSERT(SettingsBase::getSetting("donotreset"));
+  Q_ASSERT(SettingsManager::getSetting("doreset"));
+  Q_ASSERT(SettingsManager::getSetting("donotreset"));
 
   doReset->set(QVariant("hey"));
   doNotReset->set(QVariant("ho"));
@@ -83,11 +83,11 @@ void TestSettingsBase::testHardReset() {
   QSignalSpy doNotResetSpy(doNotReset, &Setting::changed);
 
   // Now reset!
-  SettingsBase::hardReset();
+  SettingsManager::hardReset();
 
   // Hard reset will in fact unregister settings. Check it.
-  Q_ASSERT(!SettingsBase::getSetting("doreset"));
-  Q_ASSERT(!SettingsBase::getSetting("donotreset"));
+  Q_ASSERT(!SettingsManager::getSetting("doreset"));
+  Q_ASSERT(!SettingsManager::getSetting("donotreset"));
 
   // But it will clear the storage, for all settings regardless of
   // configuration.
@@ -100,7 +100,7 @@ void TestSettingsBase::testHardReset() {
   QCOMPARE(doNotResetSpy.count(), 1);
 }
 
-void TestSettingsBase::testSerializeLogs() {
+void TestSettingsManager::testSerializeLogs() {
   // Register some settings.
   auto oneSetting = SettingFactory::createOrGetSetting("one");
   auto twoSetting = SettingFactory::createOrGetSetting("two");
@@ -114,7 +114,7 @@ void TestSettingsBase::testSerializeLogs() {
 
   QString report;
   // We can do this because serializeLogs() is sync.
-  SettingsBase::instance()->serializeLogs(
+  SettingsManager::instance()->serializeLogs(
       [report = &report](const QString& name, const QString& logs) {
         *report = logs;
       });
@@ -125,4 +125,4 @@ void TestSettingsBase::testSerializeLogs() {
   QVERIFY(!report.contains("neverset ->"));
 }
 
-static TestSettingsBase s_testSettingsBase;
+static TestSettingsManager s_testSettingsManager;

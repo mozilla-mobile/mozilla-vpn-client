@@ -28,7 +28,7 @@
 #include "qmlengineholder.h"
 #include "qtglean.h"
 #include "settings/settingfactory.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
 
 void TestAddon::init() {
@@ -226,11 +226,11 @@ void TestAddon::conditions() {
   QFETCH(QVariant, settingValue);
 
   if (!settingKey.isEmpty()) {
-    auto s = SettingsBase::getSetting(settingKey);
+    auto s = SettingsManager::getSetting(settingKey);
     if (!s) {
       SettingFactory::createOrGetSetting(
           settingKey, []() { return nullptr; }, true, false);
-      s = SettingsBase::getSetting(settingKey);
+      s = SettingsManager::getSetting(settingKey);
     }
 
     s->set(settingValue);

@@ -131,8 +131,8 @@ target_sources(app_unit_tests PRIVATE
     settings/testsettingfactory.h
     settings/testsettinggroup.cpp
     settings/testsettinggroup.h
-    settings/testsettingsbase.cpp
-    settings/testsettingsbase.h
+    settings/testsettingsmanager.cpp
+    settings/testsettingsmanager.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

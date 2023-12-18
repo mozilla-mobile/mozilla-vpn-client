@@ -7,13 +7,14 @@
 #include "helper.h"
 #include "settings/setting.h"
 #include "settings/settinggroup.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
 
 void TestSettingGroup::cleanup() {
   // This test suite requires a manual clean up,
-  // because SettingsBase clean up is tied to the lifetime of a SettingsHolder
-  // object and this test suite doesn't rely on the SettingsHolder at all.
-  SettingsBase::testCleanup();
+  // because SettingsManager clean up is tied to the lifetime of a
+  // SettingsHolder object and this test suite doesn't rely on the
+  // SettingsHolder at all.
+  SettingsManager::testCleanup();
 }
 
 void TestSettingGroup::testLoadSettingsOnInit() {
@@ -29,11 +30,11 @@ void TestSettingGroup::testLoadSettingsOnInit() {
   auto group = SettingGroup("aGroup");
 
   // Check that just by calling the initializer the settings were registered.
-  auto settingOne = SettingsBase::getSetting("aGroup/keyOne");
+  auto settingOne = SettingsManager::getSetting("aGroup/keyOne");
   Q_ASSERT(settingOne);
-  auto settingTwo = SettingsBase::getSetting("aGroup/keyTwo");
+  auto settingTwo = SettingsManager::getSetting("aGroup/keyTwo");
   Q_ASSERT(settingTwo);
-  auto settingThree = SettingsBase::getSetting("aGroup/keyThree");
+  auto settingThree = SettingsManager::getSetting("aGroup/keyThree");
   Q_ASSERT(settingThree);
 }
 
@@ -47,7 +48,7 @@ void TestSettingGroup::testSettingsAreCreatedWithTheRightProperties() {
   // Set something so the setting is created.
   group.set("keyOne", QVariant(1));
 
-  auto setting = SettingsBase::getSetting("aGroup/keyOne");
+  auto setting = SettingsManager::getSetting("aGroup/keyOne");
   QCOMPARE(setting->m_removeWhenReset, expectedRemoveWhenReset);
   QCOMPARE(setting->m_sensitiveSetting, expectedSensitiveSetting);
 }
@@ -106,11 +107,11 @@ void TestSettingGroup::testRemove() {
   QVERIFY(group.get("keyThree").isNull());
 
   // Over zealously check that the settings were also unregisterd.
-  auto settingOne = SettingsBase::getSetting("aGroup/keyOne");
+  auto settingOne = SettingsManager::getSetting("aGroup/keyOne");
   Q_ASSERT(!settingOne);
-  auto settingTwo = SettingsBase::getSetting("aGroup/keyTwo");
+  auto settingTwo = SettingsManager::getSetting("aGroup/keyTwo");
   Q_ASSERT(!settingTwo);
-  auto settingThree = SettingsBase::getSetting("aGroup/keyThree");
+  auto settingThree = SettingsManager::getSetting("aGroup/keyThree");
   Q_ASSERT(!settingThree);
 }
 

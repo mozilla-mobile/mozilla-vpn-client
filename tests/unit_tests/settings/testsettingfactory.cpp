@@ -7,13 +7,14 @@
 #include "helper.h"
 #include "settings/setting.h"
 #include "settings/settingfactory.h"
-#include "settings/settingsbase.h"
+#include "settings/settingsmanager.h"
 
 void TestSettingFactory::cleanup() {
   // This test suite requires a manual clean up,
-  // because SettingsBase clean up is tied to the lifetime of a SettingsHolder
-  // object and this test suite doesn't rely on the SettingsHolder at all.
-  SettingsBase::testCleanup();
+  // because SettingsManager clean up is tied to the lifetime of a
+  // SettingsHolder object and this test suite doesn't rely on the
+  // SettingsHolder at all.
+  SettingsManager::testCleanup();
 }
 
 void TestSettingFactory::testCreateNewSetting() {
@@ -26,7 +27,7 @@ void TestSettingFactory::testCreateNewSetting() {
       expectedKey, [&expectedDefault]() { return QVariant(expectedDefault); },
       expectedRemoveWhenReset, expectedSensitiveSetting);
 
-  auto registeredSetting = SettingsBase::getSetting(expectedKey);
+  auto registeredSetting = SettingsManager::getSetting(expectedKey);
 
   // The registered setting is exactly the same as the setting created.
   QCOMPARE(setting, registeredSetting);

@@ -182,8 +182,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsbase.cpp
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsbase.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
     ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/setting.h
     ${CMAKE_SOURCE_DIR}/src/settings/settingfactory.h

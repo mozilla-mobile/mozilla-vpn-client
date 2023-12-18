@@ -277,8 +277,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/settings/settinggroup.cpp
     ${MZ_SOURCE_DIR}/settings/settinggroup.h
-    ${MZ_SOURCE_DIR}/settings/settingsbase.cpp
-    ${MZ_SOURCE_DIR}/settings/settingsbase.h
+    ${MZ_SOURCE_DIR}/settings/settingsmanager.cpp
+    ${MZ_SOURCE_DIR}/settings/settingsmanager.h
     ${MZ_SOURCE_DIR}/settings/setting.cpp
     ${MZ_SOURCE_DIR}/settings/setting.h
     ${MZ_SOURCE_DIR}/settings/settingfactory.h

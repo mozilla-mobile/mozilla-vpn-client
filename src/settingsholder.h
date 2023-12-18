@@ -15,6 +15,11 @@
 #include "settings/settingfactory.h"
 #include "settings/settinggroup.h"
 
+/**
+ * @brief The SettingsHolder class is a singleton that exposes the APIs to
+ * interact with build time declared static settings.
+ *
+ */
 class SettingsHolder final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SettingsHolder)

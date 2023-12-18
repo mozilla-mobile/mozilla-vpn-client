@@ -5,7 +5,7 @@
 #include "settings/setting.h"
 
 #include "leakdetector.h"
-#include "settingsbase.h"
+#include "settingsmanager.h"
 
 Setting::Setting(QObject* parent, const QString& key,
                  std::function<QVariant()> defaultValue, bool removeWhenReset,
@@ -21,7 +21,7 @@ Setting::Setting(QObject* parent, const QString& key,
 Setting::~Setting() { MZ_COUNT_DTOR(Setting); }
 
 QVariant Setting::get() const {
-  auto value = SettingsBase::instance()->m_settings.value(m_key);
+  auto value = SettingsManager::instance()->m_settings.value(m_key);
 
   if (value.isNull()) {
     value = m_defaultValue();
@@ -32,7 +32,7 @@ QVariant Setting::get() const {
 
 void Setting::set(QVariant value) const {
   if (!isSet() || get() != value) {
-    SettingsBase::instance()->m_settings.setValue(m_key, value);
+    SettingsManager::instance()->m_settings.setValue(m_key, value);
     emit changed();
   }
 }
@@ -50,12 +50,12 @@ void Setting::remove() const {
     return;
   }
 
-  SettingsBase::instance()->m_settings.remove(m_key);
+  SettingsManager::instance()->m_settings.remove(m_key);
   emit changed();
 }
 
 bool Setting::isSet() const {
-  return SettingsBase::instance()->m_settings.contains(m_key);
+  return SettingsManager::instance()->m_settings.contains(m_key);
 }
 
 QString Setting::log() const {

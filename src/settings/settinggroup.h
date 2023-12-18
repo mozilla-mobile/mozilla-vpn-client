@@ -21,7 +21,7 @@
  * Because settings under a SettingsGroup can be dynamically generated, upon
  * initialization of a new SettingsGroup object the underlying storage is probed
  * for any stored setting with the group prefix and those settings are
- * registered to the SettingsBase.
+ * registered to the SettingsManager.
  *
  * A SettingsGroups is useful when
  *
