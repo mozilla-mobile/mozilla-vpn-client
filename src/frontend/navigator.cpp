@@ -206,13 +206,13 @@ void Navigator::requestScreenFromBottomBar(
           break;
         case MozillaVPN::ScreenMessaging:
           mozilla::glean::interaction::messages_selected.record(
-              mozilla::glean::interaction::HomeSelectedExtra{
+              mozilla::glean::interaction::MessagesSelectedExtra{
                   ._screen = telemetryScreenId,
               });
           break;
         case MozillaVPN::ScreenSettings:
           mozilla::glean::interaction::settings_selected.record(
-              mozilla::glean::interaction::HomeSelectedExtra{
+              mozilla::glean::interaction::SettingsSelectedExtra{
                   ._screen = telemetryScreenId,
               });
           break;
