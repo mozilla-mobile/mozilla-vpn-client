@@ -156,3 +156,33 @@ QString LinuxDependencies::kdeFrameworkVersion() {
 
   return QString();
 }
+
+// static
+QString LinuxDependencies::desktopFileId(const QString& path) {
+  // Given the path to a .desktop file, return its Desktop File ID as per
+  // the freedesktop.org's Desktop Entry Spec. See:
+  // https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#desktop-file-id
+  //
+  // To determine the ID of a desktop file, make its full path relative to the
+  // $XDG_DATA_DIRS component in which the desktop file is installed, remove the
+  // "applications/" prefix, and turn '/' into '-'.
+
+  // If the path contains no slashes, assume this conversion is already done.
+  if (!path.contains('/')) {
+    return path;
+  }
+
+  // Find the application dir in the path.
+  const QString dirComponent("/applications/");
+  qsizetype index = path.lastIndexOf(dirComponent);
+  if (index >= 0) {
+    index += dirComponent.length();
+  } else if (index < 0) {
+    // If no applications dir was found, let's just use the filename.
+    index = path.lastIndexOf('/') + 1;
+    Q_ASSERT(index > 0);
+  }
+
+  // Convert it.
+  return path.mid(index).replace('/', '-');
+}

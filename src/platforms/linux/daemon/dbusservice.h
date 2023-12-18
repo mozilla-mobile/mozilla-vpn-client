@@ -6,6 +6,7 @@
 #define DBUSSERVICE_H
 
 #include <QDBusContext>
+#include <QHash>
 
 #include "apptracker.h"
 #include "daemon/daemon.h"
@@ -24,6 +25,9 @@ class DBusService final : public Daemon, protected QDBusContext {
   DBusService(QObject* parent);
   ~DBusService();
 
+  enum AppState { Active, Excluded };
+  Q_ENUM(AppState)
+
   void setAdaptor(DbusAdaptor* adaptor);
 
   using Daemon::activate;
@@ -38,11 +42,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   QString getLogs();
   void cleanupLogs() { cleanLogs(); }
 
-  QString runningApps();
-  bool firewallApp(const QString& appName, const QString& state);
-  bool firewallPid(int rootpid, const QString& state);
-  bool firewallClear();
-
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportIPUtils() const override { return true; }
@@ -55,9 +54,12 @@ class DBusService final : public Daemon, protected QDBusContext {
   bool isCallerAuthorized();
   void dropRootPermissions();
 
+  void setAppState(const QString& desktopFileId, AppState state);
+  void clearAppStates();
+
  private slots:
-  void appLaunched(const QString& cgroup, const QString& appId, int rootpid);
-  void appTerminated(const QString& cgroup, const QString& appId);
+  void appLaunched(const QString& cgroup, const QString& desktopFileId);
+  void appTerminated(const QString& cgroup, const QString& desktopFileId);
 
   void userListCompleted(QDBusPendingCallWatcher* call);
   void userCreated(uint uid, const QDBusObjectPath& path);
@@ -70,7 +72,8 @@ class DBusService final : public Daemon, protected QDBusContext {
   DnsUtilsLinux* m_dnsutils = nullptr;
 
   AppTracker* m_appTracker = nullptr;
-  QList<QString> m_excludedApps;
+  QHash<QString, AppState> m_excludedApps;
+  QHash<QString, AppState> m_excludedCgroups;
 
   uint m_sessionUid = 0;
 };

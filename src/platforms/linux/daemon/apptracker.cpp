@@ -26,7 +26,6 @@ constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 
 namespace {
 Logger logger("AppTracker");
-QString s_cgroupMount;
 }  // namespace
 
 AppTracker::AppTracker(QObject* parent) : QObject(parent) {
@@ -34,17 +33,14 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  s_cgroupMount = LinuxDependencies::findCgroup2Path();
+  m_cgroupMount = LinuxDependencies::findCgroup2Path();
 }
 
 AppTracker::~AppTracker() {
   MZ_COUNT_DTOR(AppTracker);
   logger.debug() << "AppTracker destroyed.";
 
-  for (AppData* data : m_runningApps) {
-    delete data;
-  }
-  m_runningApps.clear();
+  m_runningCgroups.clear();
 }
 
 void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
@@ -69,22 +65,13 @@ void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
   QDBusConnection connection =
       QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
 
-  /* Connect to the user's GTK launch event. */
-  bool gtkConnected = connection.connect(
-      "", GTK_DESKTOP_APP_PATH, GTK_DESKTOP_APP_SERVICE, "Launched", this,
-      SLOT(gtkLaunchEvent(const QByteArray&, const QString&, qlonglong,
-                          const QStringList&, const QVariantMap&)));
-  if (!gtkConnected) {
-    logger.warning() << "Failed to connect to GTK Launched signal";
-  }
-
   // Watch the user's control groups for new application scopes.
   m_systemdInterface =
       new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
                          DBUS_SYSTEMD_MANAGER, connection, this);
   QVariant qv = m_systemdInterface->property("ControlGroup");
-  if (!s_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
-    QString userCgroupPath = s_cgroupMount + qv.toString();
+  if (!m_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
+    QString userCgroupPath = m_cgroupMount + qv.toString();
     logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
 
     connect(&m_cgroupWatcher, SIGNAL(directoryChanged(QString)), this,
@@ -104,62 +91,135 @@ void AppTracker::userRemoved(uint userid) {
   QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
 }
 
-void AppTracker::gtkLaunchEvent(const QByteArray& appid, const QString& display,
-                                qlonglong pid, const QStringList& uris,
-                                const QVariantMap& extra) {
-  Q_UNUSED(display);
-  Q_UNUSED(uris);
-  Q_UNUSED(extra);
+// static
+// Expand unicode escape sequences.
+QString AppTracker::decodeUnicodeEscape(const QString& str) {
+  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
 
-  QString appIdName(appid);
-  while (appIdName.endsWith('\0')) {
-    appIdName.chop(1);
-  }
-  if (!appIdName.isEmpty()) {
-    m_lastLaunchName = appIdName;
-    m_lastLaunchPid = pid;
-  }
-}
-
-void AppTracker::appHeuristicMatch(AppData* data) {
-  // If this cgroup contains the last-launched PID, then we have a fairly
-  // strong indication of which application this control group is running.
-  for (int pid : data->pids()) {
-    if ((pid != 0) && (pid == m_lastLaunchPid)) {
-      logger.debug() << data->cgroup << "matches app:" << m_lastLaunchName;
-      data->appId = m_lastLaunchName;
-      data->rootpid = m_lastLaunchPid;
+  QString result = str;
+  qsizetype offset = 0;
+  while (offset < result.length()) {
+    // Search for the next unicode escape sequence.
+    QRegularExpressionMatch match = re.match(result, offset);
+    if (!match.hasMatch()) {
       break;
     }
+
+    bool okay;
+    qsizetype start = match.capturedStart(0);
+    QChar code = match.captured(0).mid(2).toUShort(&okay, 16);
+    if (okay && (code != 0)) {
+      // Replace the matched escape sequence with the decoded character.
+      result.replace(start, match.capturedLength(0), QString(code));
+      offset = start + 1;
+    } else {
+      // If we failed to decode the character, skip passed the matched string.
+      offset = match.capturedEnd(0);
+    }
+  }
+
+  return result;
+}
+
+// The naming convention for snaps follows one of the following formats:
+//   snap.<pkg>.<app>.service - assigned by systemd for services
+//   snap.<pkg>.<app>-<uuid>.scope - transient scope for apps
+//   snap.<pkg>.hook.<app>-<uuid>.scope - transient scope for hooks
+//
+// However, at some point the separator between the app and UUID was
+// swapped from a dot to a dash. Which makes the parsing a bit of a pain.
+//
+// See: https://github.com/snapcore/snapd/blob/master/sandbox/cgroup/scanning.go
+QString AppTracker::snapDesktopFileId(const QString& scope) {
+  static const QRegularExpression snapuuid(
+      "[-.][0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}"
+      "\\b-[0-9a-fA-F]{12}");
+
+  // Strip the UUID out of the scope name
+  QString stripped(scope);
+  stripped.remove(snapuuid);
+
+  // Split the remainder on dots and discard the extension.
+  QStringList split = stripped.split('.');
+  split.removeLast();
+
+  // Parse the package and application.
+  QString package = split.value(1);
+  QString app = split.value(2);
+  if (app == "hook") {
+    app = split.value(3);
+  }
+  if (package.isEmpty() || app.isEmpty()) {
+    return QString();
+  }
+
+  // Reassemble the desktop identifier.
+  return QString("%1_%2.desktop").arg(package).arg(app);
+}
+
+// Make an attempt to resolve the desktop ID from a cgroup scope.
+QString AppTracker::findDesktopFileId(const QString& cgroup) {
+  QString scopeName = QFileInfo(cgroup).fileName();
+
+  // Reverse the desktop ID from a cgroup scope and known launcher tools.
+  if (scopeName.startsWith("app-gnome-") ||
+      scopeName.startsWith("app-flatpak-")) {
+    // These take the forms:
+    //   app-gnome-<desktopFileId>-<pid>.scope
+    //   app-flatpak-<desktopFileId>-<pid>.scope
+    //
+    // Some characters (typically hyphens) in the desktop file ID may be encoded
+    // as unicode escape sequences to preseve this formatting.
+    QString raw = scopeName.section('-', 2, 2);
+    if (!raw.isEmpty()) {
+      return QString("%1.desktop").arg(decodeUnicodeEscape(raw));
+    }
+  }
+
+  QString gnomeLaunchdPrefix("gnome-launched-");
+  if (scopeName.startsWith(gnomeLaunchdPrefix)) {
+    // These take the form:
+    //   gnome-launched-<desktopFileId>-<pid>.scope
+    //
+    // We have seen this on older Gnome desktop environments (eg: Ubuntu 20.04),
+    // and there is no escaping on the desktopFileId, meaning that it might
+    // contain embedded hyphens. Therefore, we search for the final hyphen that
+    // separates the desktopFileId from the PID.
+    qsizetype start = gnomeLaunchdPrefix.length();
+    qsizetype end = scopeName.lastIndexOf('-');
+    if (end > start) {
+      return scopeName.mid(start, end - start);
+    }
+  }
+
+  // Snaps have their own format.
+  if (scopeName.startsWith("snap.")) {
+    return snapDesktopFileId(scopeName);
   }
 
   // Query the systemd unit for its SourcePath property, which is set to the
   // desktop file's full path on KDE
-  QString unit = QFileInfo(data->cgroup).fileName();
   QDBusReply<QDBusObjectPath> objPath =
-      m_systemdInterface->call("GetUnit", unit);
+      m_systemdInterface->call("GetUnit", scopeName);
 
   QDBusInterface interface(DBUS_SYSTEMD_SERVICE, objPath.value().path(),
                            DBUS_SYSTEMD_UNIT, m_systemdInterface->connection(),
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    data->appId = source;
+    return LinuxDependencies::desktopFileId(source);
   }
 
-  // TODO: Some comparison between the .desktop file and the directory name
-  // of the control group is also very likely to produce viable application
-  // matching, but this will have to be a fuzzy match of some sort because
-  // there's a lot of variability in how desktop environments choose to name
-  // them.
+  // Otherwise, we don't know the desktop ID for this control group.
+  return QString();
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
-  QDir mountpoint(s_cgroupMount);
+  QDir mountpoint(m_cgroupMount);
   QFileInfoList newScopes = dir.entryInfoList(
       QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
-  QStringList oldScopes = m_runningApps.keys();
+  QStringList oldScopes = m_runningCgroups.keys();
 
   // Figure out what has been added.
   for (const QFileInfo& scope : newScopes) {
@@ -172,46 +232,22 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
-      AppData* data = new AppData(path);
+      QString desktopFileId = findDesktopFileId(path);
+      m_runningCgroups[path] = desktopFileId;
 
-      m_runningApps[path] = data;
-      appHeuristicMatch(data);
-
-      emit appLaunched(data->cgroup, data->appId, data->rootpid);
+      emit appLaunched(path, desktopFileId);
     }
   }
 
   // Anything left, if it shares the same root directory, has been removed.
   for (const QString& scope : oldScopes) {
-    QFileInfo scopeInfo(s_cgroupMount + scope);
+    QFileInfo scopeInfo(m_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
-      Q_ASSERT(m_runningApps.contains(scope));
-      AppData* data = m_runningApps.take(scope);
+      Q_ASSERT(m_runningCgroups.contains(scope));
+      QString desktopFileId = m_runningCgroups.take(scope);
 
-      emit appTerminated(data->cgroup, data->appId);
-      delete data;
+      emit appTerminated(scope, desktopFileId);
     }
   }
-}
-
-QList<int> AppData::pids() const {
-  QList<int> results;
-  QFile cgroupProcs(s_cgroupMount + cgroup + "/cgroup.procs");
-
-  if (cgroupProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    while (true) {
-      QString line = QString::fromLocal8Bit(cgroupProcs.readLine());
-      if (line.isEmpty()) {
-        break;
-      }
-      int pid = line.trimmed().toInt();
-      if (pid != 0) {
-        results.append(pid);
-      }
-    }
-    cgroupProcs.close();
-  }
-
-  return results;
 }
