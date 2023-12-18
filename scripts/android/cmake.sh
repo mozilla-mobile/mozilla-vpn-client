@@ -125,13 +125,6 @@ export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to o
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
-if [[ "$ADJUST_SDK_TOKEN" ]]; then
-  print Y "Use adjust config"
-  ADJUST="CONFIG+=adjust"
-else
-  print Y "No adjust token found."
-  ADJUST="CONFIG-=adjust"
-fi
 
 # Warning: this is hacky.
 #
@@ -190,7 +183,7 @@ cd .tmp/src/android-build/
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
-  ./gradlew assemble || die
+  ./gradlew assemble -Padjusttoken=$ADJUST_SDK_TOKEN || die
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
