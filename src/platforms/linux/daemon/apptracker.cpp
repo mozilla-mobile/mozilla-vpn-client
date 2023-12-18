@@ -40,7 +40,7 @@ AppTracker::~AppTracker() {
   MZ_COUNT_DTOR(AppTracker);
   logger.debug() << "AppTracker destroyed.";
 
-  m_runningApps.clear();
+  m_runningCgroups.clear();
 }
 
 void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
@@ -99,6 +99,7 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
   QString result = str;
   qsizetype offset = 0;
   while (offset < result.length()) {
+    // Search for the next unicode escape sequence.
     QRegularExpressionMatch match = re.match(result, offset);
     if (!match.hasMatch()) {
       break;
@@ -108,9 +109,11 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
     qsizetype start = match.capturedStart(0);
     QChar code = match.captured(0).mid(2).toUShort(&okay, 16);
     if (okay && (code != 0)) {
+      // Replace the matched escape sequence with the decoded character.
       result.replace(start, match.capturedLength(0), QString(code));
       offset = start + 1;
     } else {
+      // If we failed to decode the character, skip passed the matched string.
       offset = match.capturedEnd(0);
     }
   }
@@ -127,7 +130,7 @@ QString AppTracker::decodeUnicodeEscape(const QString& str) {
 // swapped from a dot to a dash. Which makes the parsing a bit of a pain.
 //
 // See: https://github.com/snapcore/snapd/blob/master/sandbox/cgroup/scanning.go
-QString AppTracker::snapDesktopId(const QString& scope) {
+QString AppTracker::snapDesktopFileId(const QString& scope) {
   static const QRegularExpression snapuuid(
       "[-.][0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}"
       "\\b-[0-9a-fA-F]{12}");
@@ -155,12 +158,18 @@ QString AppTracker::snapDesktopId(const QString& scope) {
 }
 
 // Make an attempt to resolve the desktop ID from a cgroup scope.
-QString AppTracker::findDesktopId(const QString& cgroup) {
+QString AppTracker::findDesktopFileId(const QString& cgroup) {
   QString scopeName = QFileInfo(cgroup).fileName();
 
   // Reverse the desktop ID from a cgroup scope and known launcher tools.
   if (scopeName.startsWith("app-gnome-") ||
       scopeName.startsWith("app-flatpak-")) {
+    // These take the forms:
+    //   app-gnome-<desktopFileId>-<pid>.scope
+    //   app-flatpak-<desktopFileId>-<pid>.scope
+    //
+    // Some characters (typically hyphens) in the desktop file ID may be encoded
+    // as unicode escape sequences to preseve this formatting.
     QString raw = scopeName.section('-', 2, 2);
     if (!raw.isEmpty()) {
       return QString("%1.desktop").arg(decodeUnicodeEscape(raw));
@@ -169,6 +178,13 @@ QString AppTracker::findDesktopId(const QString& cgroup) {
 
   QString gnomeLaunchdPrefix("gnome-launched-");
   if (scopeName.startsWith(gnomeLaunchdPrefix)) {
+    // These take the form:
+    //   gnome-launched-<desktopFileId>-<pid>.scope
+    //
+    // We have seen this on older Gnome desktop environments (eg: Ubuntu 20.04),
+    // and there is no escaping on the desktopFileId, meaning that it might
+    // contain embedded hyphens. Therefore, we search for the final hyphen that
+    // separates the desktopFileId from the PID.
     qsizetype start = gnomeLaunchdPrefix.length();
     qsizetype end = scopeName.lastIndexOf('-');
     if (end > start) {
@@ -178,7 +194,7 @@ QString AppTracker::findDesktopId(const QString& cgroup) {
 
   // Snaps have their own format.
   if (scopeName.startsWith("snap.")) {
-    return snapDesktopId(scopeName);
+    return snapDesktopFileId(scopeName);
   }
 
   // Query the systemd unit for its SourcePath property, which is set to the
@@ -203,7 +219,7 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   QDir mountpoint(m_cgroupMount);
   QFileInfoList newScopes = dir.entryInfoList(
       QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
-  QStringList oldScopes = m_runningApps.keys();
+  QStringList oldScopes = m_runningCgroups.keys();
 
   // Figure out what has been added.
   for (const QFileInfo& scope : newScopes) {
@@ -216,10 +232,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
       logger.debug() << "Control group created:" << path;
-      QString desktopId = findDesktopId(path);
-      m_runningApps[path] = desktopId;
+      QString desktopFileId = findDesktopFileId(path);
+      m_runningCgroups[path] = desktopFileId;
 
-      emit appLaunched(path, desktopId);
+      emit appLaunched(path, desktopFileId);
     }
   }
 
@@ -228,10 +244,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
     QFileInfo scopeInfo(m_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
       logger.debug() << "Control group removed:" << scope;
-      Q_ASSERT(m_runningApps.contains(scope));
-      QString desktopId = m_runningApps.take(scope);
+      Q_ASSERT(m_runningCgroups.contains(scope));
+      QString desktopFileId = m_runningCgroups.take(scope);
 
-      emit appTerminated(scope, desktopId);
+      emit appTerminated(scope, desktopFileId);
     }
   }
 }

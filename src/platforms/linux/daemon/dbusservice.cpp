@@ -221,10 +221,11 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
   m_appTracker->userRemoved(uid);
 }
 
-void DBusService::appLaunched(const QString& cgroup, const QString& desktopId) {
-  logger.debug() << "tracking:" << cgroup << "id:" << desktopId;
+void DBusService::appLaunched(const QString& cgroup,
+                              const QString& desktopFileId) {
+  logger.debug() << "tracking:" << cgroup << "id:" << desktopFileId;
 
-  AppState state = m_excludedApps.value(desktopId, Active);
+  AppState state = m_excludedApps.value(desktopFileId, Active);
   if (state == Active) {
     // Nothing to do here.
     return;
@@ -238,8 +239,8 @@ void DBusService::appLaunched(const QString& cgroup, const QString& desktopId) {
 }
 
 void DBusService::appTerminated(const QString& cgroup,
-                                const QString& desktopId) {
-  logger.debug() << "terminate:" << cgroup << "id:" << desktopId;
+                                const QString& desktopFileId) {
+  logger.debug() << "terminate:" << cgroup << "id:" << desktopFileId;
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {
@@ -247,21 +248,21 @@ void DBusService::appTerminated(const QString& cgroup,
   }
 }
 
-void DBusService::setAppState(const QString& desktopId, AppState state) {
-  logger.debug() << "Setting" << desktopId << "to firewall state" << state;
+void DBusService::setAppState(const QString& desktopFileId, AppState state) {
+  logger.debug() << "Setting" << desktopFileId << "to firewall state" << state;
 
   // When the App is "Active" there is no special manipulation to do.
   if (state == Active) {
-    m_excludedApps.remove(desktopId);
-    for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
+    m_excludedApps.remove(desktopFileId);
+    for (const QString& cgroup : m_appTracker->findByDesktopFileId(desktopFileId)) {
       m_wgutils->resetCgroup(cgroup);
     }
     return;
   }
 
   // Otherwise, apply special handling to any matching control groups.
-  m_excludedApps[desktopId] = state;
-  for (const QString& cgroup : m_appTracker->findByDesktopId(desktopId)) {
+  m_excludedApps[desktopFileId] = state;
+  for (const QString& cgroup : m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
       m_wgutils->resetCgroup(cgroup);
     }

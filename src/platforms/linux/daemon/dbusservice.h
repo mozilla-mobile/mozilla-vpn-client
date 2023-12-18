@@ -54,12 +54,12 @@ class DBusService final : public Daemon, protected QDBusContext {
   bool isCallerAuthorized();
   void dropRootPermissions();
 
-  void setAppState(const QString& desktopId, AppState state);
+  void setAppState(const QString& desktopFileId, AppState state);
   void clearAppStates();
 
  private slots:
-  void appLaunched(const QString& cgroup, const QString& desktopId);
-  void appTerminated(const QString& cgroup, const QString& desktopId);
+  void appLaunched(const QString& cgroup, const QString& desktopFileId);
+  void appTerminated(const QString& cgroup, const QString& desktopFileId);
 
   void userListCompleted(QDBusPendingCallWatcher* call);
   void userCreated(uint uid, const QDBusObjectPath& path);
