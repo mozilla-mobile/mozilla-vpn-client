@@ -91,11 +91,11 @@ class AndroidVPNActivity : public QObject {
   static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
   /**
-   * @brief Checks if the Intent that opened the Activiy 
+   * @brief Checks if the Intent that opened the Activiy
    * Contains a `mozilla-vpn://<something>` url
    * returns an Empty url if none is found
-   * 
-   * @return QUrl 
+   *
+   * @return QUrl
    */
   static QUrl getOpenerURL();
   void onAppStateChange();
@@ -126,7 +126,6 @@ class AndroidVPNActivity : public QObject {
   // We got a new Intent
   static void onIntentInternal(JNIEnv* env, jobject thiz);
   void handleServiceMessage(int code, const QString& data);
-
 };
 
 #endif  // ANDROIDVPNACTIVITY_H
