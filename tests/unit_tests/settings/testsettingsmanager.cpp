@@ -2,11 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "testsettingsmanager.h"
+
 #include "helper.h"
 #include "settings/setting.h"
 #include "settings/settingfactory.h"
 #include "settings/settingsmanager.h"
-#include "testsettingsmanager.h"
 
 void TestSettingsManager::cleanup() {
   // This test suite requires a manual clean up,
