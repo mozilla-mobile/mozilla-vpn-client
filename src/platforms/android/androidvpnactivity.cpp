@@ -9,7 +9,9 @@
 #include <QJniObject>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QUrl>
 
+#include "androidutils.h"
 #include "constants.h"
 #include "frontend/navigator.h"
 #include "jni.h"
@@ -36,7 +38,7 @@ AndroidVPNActivity::AndroidVPNActivity() {
          reinterpret_cast<void*>(onServiceConnected)},
         {"qtOnServiceDisconnected", "()V",
          reinterpret_cast<void*>(onServiceDisconnected)},
-    };
+        {"onIntentInternal", "()V", reinterpret_cast<void*>(onIntentInternal)}};
     QJniObject javaClass(CLASSNAME);
     QJniEnvironment env;
     jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
@@ -44,6 +46,8 @@ AndroidVPNActivity::AndroidVPNActivity() {
                          sizeof(methods) / sizeof(methods[0]));
     env->DeleteLocalRef(objectClass);
     logger.debug() << "Registered native methods";
+    QJniObject::callStaticMethod<void>(CLASSNAME, "nativeMethodsRegistered",
+                                       "()V");
   });
 
   QObject::connect(SettingsHolder::instance(),
@@ -188,4 +192,36 @@ void AndroidVPNActivity::onAppStateChange() {
     QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",
                                        "(Z)V", isSensitive);
   });
+}
+
+QUrl AndroidVPNActivity::getOpenerURL() {
+  logger.debug() << "Getting deep-link:";
+  QJniEnvironment env;
+  QJniObject string = QJniObject::callStaticObjectMethod(
+      CLASSNAME, "getOpenerURL", "()Ljava/lang/String;");
+  jstring value = (jstring)string.object();
+  auto buf = AndroidUtils::getQByteArrayFromJString(env.jniEnv(), value);
+
+  QString maybeURL = QString::fromUtf8(buf);
+  if (maybeURL.isEmpty()) {
+    return QUrl();
+  }
+  logger.debug() << "Got with deep-link:" << maybeURL;
+  QUrl url(maybeURL);
+  if (!url.isValid()) {
+    return QUrl();
+  }
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return QUrl();
+  }
+  return url;
+}
+
+void AndroidVPNActivity::onIntentInternal(JNIEnv* env, jobject thiz) {
+  logger.debug() << "Activity Resumed with a new Intent";
+  auto url = getOpenerURL();
+  if (url.isEmpty()) {
+    return;
+  }
+  emit s_instance->onOpenedWithUrl(url);
 }

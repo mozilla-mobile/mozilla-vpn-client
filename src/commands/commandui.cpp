@@ -70,6 +70,7 @@
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
+#  include "platforms/android/androidvpnactivity.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -454,6 +455,20 @@ int CommandUI::run(QStringList& tokens) {
                      &ServerHandler::close);
 #endif
 
+#ifdef MZ_ANDROID
+    // If we are created with an url intent, auto pass that.
+    QUrl maybeURL = AndroidVPNActivity::getOpenerURL();
+    if (!maybeURL.isValid()) {
+      logger.error() << "Error in deep-link:" << maybeURL.toString();
+    } else {
+      Navigator::instance()->requestDeepLink(url);
+    }
+    // Whenever the Client is re-opened with a new url
+    // pass that to the navigaot
+    QObject::connect(
+        AndroidVPNActivity::instance(), &AndroidVPNActivity::onOpenedWithUrl,
+        [](QUrl url) { Navigator::instance()->requestDeepLink(url); });
+#else
     // If there happen to be navigation URLs, send them to the navigator class.
     for (const QString& value : tokens) {
       QUrl url(value);
@@ -463,6 +478,7 @@ int CommandUI::run(QStringList& tokens) {
         Navigator::instance()->requestDeepLink(url);
       }
     }
+#endif
 
     KeyRegenerator keyRegenerator;
     // Let's go.
