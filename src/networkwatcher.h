@@ -54,8 +54,6 @@ class NetworkWatcher final : public QObject {
 
   // Used to simulate network disconnection in the Inspector
   bool m_simulatedDisconnection = false;
-  QNetworkInformation::Reachability m_currentReachability =
-      QNetworkInformation::Reachability::Online;
 };
 
 #endif  // NETWORKWATCHER_H
