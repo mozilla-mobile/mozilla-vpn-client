@@ -36,14 +36,8 @@ void SettingGroup::addSetting(const QString& key) {
       settingKey, []() { return nullptr; }, m_removeWhenReset,
       m_sensitiveSetting);
 
-  // Make this setting's getter available for QML.
-  this->setProperty(key.toUtf8().constData(), get(key));
-
   // Emit the group change signal for this group when the setting is changed.
-  connect(setting, &Setting::changed, [key, this]() {
-    this->setProperty(key.toUtf8().constData(), get(key));
-    emit changed();
-  });
+  connect(setting, &Setting::changed, [key, this]() { emit changed(); });
 }
 
 bool SettingGroup::mayRecord(const QString& key) {
