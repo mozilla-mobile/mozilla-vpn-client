@@ -7,3 +7,5 @@
 .cron.yml @mozilla-mobile/releng
 .taskcluster.yml @mozilla-mobile/releng
 taskcluster @mozilla-mobile/releng
+taskcluster/scripts/addons
+taskcluster/scripts/build
