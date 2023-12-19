@@ -111,7 +111,7 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(bool silentServerSwitchingSupported READ
                  silentServerSwitchingSupported CONSTANT);
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
-                 isDeviceConnectedFailed);
+             isDeviceConnectedChanged);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
@@ -144,7 +144,7 @@ class Controller : public QObject, public LogSerializer {
   void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
-  void isDeviceConnectedFailed();
+  void isDeviceConnectedChanged();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();

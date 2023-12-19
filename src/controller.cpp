@@ -940,7 +940,7 @@ bool Controller::activate(const ServerData& serverData,
       logger.debug() << "Internet probe failed during controller activation. "
                         "Device has no network connectivity.";
       m_isDeviceConnected = false;
-      emit isDeviceConnectedFailed();
+      emit isDeviceConnectedChanged();
       return false;
     }
     m_isDeviceConnected = true;
