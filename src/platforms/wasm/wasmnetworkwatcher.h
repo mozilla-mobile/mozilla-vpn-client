@@ -5,6 +5,8 @@
 #ifndef WASMNETWORKWATCHER_H
 #define WASMNETWORKWATCHER_H
 
+#include <QNetworkInformation>
+
 #include "networkwatcherimpl.h"
 
 class WasmNetworkWatcher final : public NetworkWatcherImpl {
@@ -18,9 +20,9 @@ class WasmNetworkWatcher final : public NetworkWatcherImpl {
 
   void start() override;
 
-  NetworkWatcherImpl::TransportType getTransportType() override {
-    return TransportType_Other;
-  };
+  QNetworkInformation::Reachability getReachability() override {
+    return QNetworkInformation::instance()->reachability();
+  }
 };
 
 #endif  // WASMNETWORKWATCHER_H

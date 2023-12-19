@@ -4,6 +4,7 @@
 
 #include "windowsnetworkwatcher.h"
 
+#include <QNetworkInformation>
 #include <QScopeGuard>
 
 #include "leakdetector.h"
@@ -138,7 +139,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
   emit unsecuredNetwork(ssid, bssid);
 }
 
-NetworkWatcherImpl::TransportType WindowsNetworkWatcher::getTransportType() {
-  // TODO: Implement this once we update to Qt6.3 (VPN-3511)
-  return TransportType_Other;
+QNetworkInformation::Reachability WindowsNetworkWatcher::getReachability() {
+  return QNetworkInformation::instance()->reachability();
 }

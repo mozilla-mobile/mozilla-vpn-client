@@ -120,17 +120,17 @@ void Telemetry::initialize() {
           this, &Telemetry::onDaemonStatus);
 #endif
 
-  connect(controller, &Controller::handshakeFailed, this,
-          [](const QString& publicKey) {
-            logger.info() << "Send a handshake failure event";
-
-            mozilla::glean::sample::connectivity_handshake_timeout.record(
-                mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
-                    ._server = publicKey,
-                    ._transport = MozillaVPN::instance()
-                                      ->networkWatcher()
-                                      ->getCurrentTransport()});
-          });
+  connect(
+      controller, &Controller::handshakeFailed, this,
+      [](const QString& publicKey) {
+        logger.info() << "Send a handshake failure event";
+        mozilla::glean::sample::connectivity_handshake_timeout.record(
+            mozilla::glean::sample::ConnectivityHandshakeTimeoutExtra{
+                ._server = publicKey,
+                ._transport = QVariant::fromValue(MozillaVPN::instance()
+                                                      ->networkWatcher()
+                                                      ->getReachability())});
+      });
 
   connect(controller, &Controller::stateChanged, this, [this]() {
     MozillaVPN* vpn = MozillaVPN::instance();
@@ -258,7 +258,8 @@ void Telemetry::connectionStabilityEvent() {
           ._loss = QString::number(vpn->connectionHealth()->loss()),
           ._server = vpn->controller()->currentServer().exitServerPublicKey(),
           ._stddev = QString::number(vpn->connectionHealth()->stddev()),
-          ._transport = vpn->networkWatcher()->getCurrentTransport()});
+          ._transport =
+              QVariant::fromValue(vpn->networkWatcher()->getReachability())});
 }
 
 void Telemetry::vpnSessionPingTimeout() {
