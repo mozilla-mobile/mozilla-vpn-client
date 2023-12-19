@@ -4,9 +4,9 @@
 
 #include "filterproxymodel.h"
 
-#include <QtQml>
 #include <QDebug>
 #include <QQmlEngine>
+#include <QtQml>
 
 FilterProxyModel::FilterProxyModel(QObject* parent)
     : QSortFilterProxyModel(parent) {}
