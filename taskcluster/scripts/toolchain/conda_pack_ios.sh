@@ -22,4 +22,4 @@ conda env config vars set QT_VERSION=${QT_VERSION}
 ./scripts/macos/conda_setup_qt.sh
     
 mkdir -p ../../public/build
-conda pack -n vpn -o $UPLOAD_DIR/conda-ios.tar.gz
+conda pack -n vpn -o conda-ios.tar.gz
