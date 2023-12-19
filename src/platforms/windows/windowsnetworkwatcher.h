@@ -17,7 +17,7 @@ class WindowsNetworkWatcher final : public NetworkWatcherImpl {
 
   void initialize() override;
 
-  QNetworkInformation::Reachability NetworkWatcher::getReachability() override;
+  QNetworkInformation::Reachability getReachability() override;
 
  private:
   static void wlanCallback(PWLAN_NOTIFICATION_DATA data, PVOID context);
