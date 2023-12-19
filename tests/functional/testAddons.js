@@ -368,7 +368,7 @@ describe('Addons', function() {
     afterEach(() => setNextSubscriptionStarted(this.ctx));
 
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
-      it.only(`message display is correct when subscription started at ${testCase}`, async () => {
+      it(`message display is correct when subscription started at ${testCase}`, async () => {
         await vpn.resetAddons('prod');
 
         //Load messages
