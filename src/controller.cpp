@@ -943,7 +943,10 @@ bool Controller::activate(const ServerData& serverData,
       emit isDeviceConnectedChanged();
       return false;
     }
-    m_isDeviceConnected = true;
+    if (!m_isDeviceConnected) {
+      m_isDeviceConnected = true;
+      emit isDeviceConnectedChanged();
+    }
 
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.

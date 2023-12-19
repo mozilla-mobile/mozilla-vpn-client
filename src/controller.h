@@ -111,7 +111,7 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(bool silentServerSwitchingSupported READ
                  silentServerSwitchingSupported CONSTANT);
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
-             isDeviceConnectedChanged);
+                 isDeviceConnectedChanged);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
