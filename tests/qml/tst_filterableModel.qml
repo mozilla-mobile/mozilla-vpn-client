@@ -5,7 +5,7 @@
 import QtQuick 2.3
 import QtTest 1.0
 
-import Mozilla.Shared.qmlcomponents 1.0
+import Mozilla.VPN 1.0
 
 Item {
     width: 600

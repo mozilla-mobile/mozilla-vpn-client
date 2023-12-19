@@ -70,7 +70,7 @@ ExternalProject_Add(functional_test_addons
 add_dependencies(dummyvpn functional_test_addons)
 
 qt6_add_qml_module(dummyvpn
-  URI Mozilla.Shared.qmlcomponents
+  URI Mozilla.VPN
   VERSION 1.0
 )
 

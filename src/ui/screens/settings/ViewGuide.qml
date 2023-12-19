@@ -6,7 +6,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
-import Mozilla.Shared.qmlcomponents 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 

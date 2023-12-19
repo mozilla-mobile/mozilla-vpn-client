@@ -302,7 +302,7 @@ foreach(QML_SOURCE ${QML_TEST_SOURCES})
 endforeach()
 
 qt6_add_qml_module(qml_tests
-  URI Mozilla.Shared.qmlcomponents
+  URI Mozilla.VPN
   VERSION 1.0
 )
 

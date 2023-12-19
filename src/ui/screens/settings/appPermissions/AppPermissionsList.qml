@@ -8,7 +8,6 @@ import QtQuick.Controls
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import Mozilla.Shared.qmlcomponents 1.0
 import Mozilla.VPN 1.0
 import components.forms 0.1
 import components 0.1
