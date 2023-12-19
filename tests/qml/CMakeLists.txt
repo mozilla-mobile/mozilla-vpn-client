@@ -161,8 +161,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/errorhandler.h
     ${MZ_SOURCE_DIR}/feature/feature.cpp
     ${MZ_SOURCE_DIR}/feature/feature.h
-    ${MZ_SOURCE_DIR}/filterproxymodel.cpp
-    ${MZ_SOURCE_DIR}/filterproxymodel.h
     ${MZ_SOURCE_DIR}/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/frontend/navigator.h
     ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp
