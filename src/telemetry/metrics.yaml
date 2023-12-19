@@ -1112,7 +1112,7 @@ sample:
         type: string
       transport:
         description: The Host network type (i.e wifi or 4g). Possible values are Unknown, Disconnected, Local, Site, Online
-        type: QNetworkInformation::Reachability
+        type: string
 
   connectivity_stable:
     type: event
@@ -1148,8 +1148,10 @@ sample:
         description: Standard deviation of the ping responses
         type: string
       transport:
-        description: The Host network type (i.e wifi or 4g). Possible values are Unknown, Disconnected, Local, Site, Online
-        type: QNetworkInformation::Reachability
+        description: |
+             The Host network type (i.e wifi or 4g). 
+             Possible values are Unknown, Disconnected, Local, Site, Online
+        type: string
 
   server_unavailable_error:
     type: event
