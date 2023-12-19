@@ -24,7 +24,6 @@ class NetworkWatcherImpl : public QObject {
 
   bool isActive() const { return m_active; }
 
-  ///@TODO should this be removed too?
   enum TransportType {
     TransportType_Unknown = 0,
     TransportType_Ethernet = 1,

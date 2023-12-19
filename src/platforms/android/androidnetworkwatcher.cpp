@@ -16,9 +16,6 @@
 
 namespace {
 Logger logger("AndroidNetworkWatcher");
-
-// constexpr auto VPNNetworkWatcher_CLASS =
-//     "org/mozilla/firefox/vpn/qt/VPNNetworkWatcher";
 }  // namespace
 
 AndroidNetworkWatcher::AndroidNetworkWatcher(QObject* parent)
