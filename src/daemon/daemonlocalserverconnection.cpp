@@ -95,6 +95,17 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   auto accessControl = DaemonAccessControl::instance();
   if (!accessControl->isCommandAuthorizedForPeer(type, m_socket)) {
+    // It is expected that sometimes the client will request backend logs
+    // before the first authentication. In these cases we just return empty
+    // logs.
+    if (type == "logs") {
+      QJsonObject obj;
+      obj.insert("type", "logs");
+      obj.insert("logs", "");
+      write(obj);
+      return;
+    }
+
     logger.error() << "Unable to authorize command" << type
                    << "for peer. Ignoring.";
     return;
@@ -124,8 +135,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   if (type == "status") {
     QJsonObject obj = Daemon::instance()->getStatus();
     obj.insert("type", "status");
-    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-    m_socket->write("\n");
+    write(obj);
     return;
   }
 
@@ -133,8 +143,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
     QJsonObject obj;
     obj.insert("type", "logs");
     obj.insert("logs", Daemon::instance()->logs().replace("\n", "|"));
-    m_socket->write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-    m_socket->write("\n");
+    write(obj);
     return;
   }
 
