@@ -376,6 +376,8 @@ const screenSettings = {
     ACCOUNT_DELETION: new QmlQueryComposer('//accountDeletionButton'),
     ANNUAL_UPGRADE: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
+    ANNUAL_UPGRADE_BUTTON: new QmlQueryComposer(
+        '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout/subscriptionItem-plan-upgradeToAnnualSub-upgradeButton'),
     PLAN: new QmlQueryComposer('//subscriptionItem-plan-valueText'),
     SCREEN: new QmlQueryComposer('//subscriptionManagmentView'),
     FLICKABLE: new QmlQueryComposer('//subscriptionManagmentView-flickable'),

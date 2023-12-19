@@ -73,7 +73,9 @@ MZViewBase {
                 delegate: Loader {
                     objectName: _objectName
                     Layout.fillWidth: true
-                    source: "qrc:/ui/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                    sourceComponent: SubscriptionManagementItem {
+                        telemetryScreenId: vpnFlickable.telemetryScreenId
+                    }
                 }
             }
 

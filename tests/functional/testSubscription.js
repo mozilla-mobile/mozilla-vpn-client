@@ -1491,72 +1491,116 @@ describe('Subscription view', function() {
 
   describe('Subscription management telemetry tests', () => {
 
-      beforeEach(async () => {
-        await openSubscriptionManagement();
-      });
+    const testCases = [["annual plan", "account"], ["monthly plan", "account_with_change_plan"]];
 
-    describe('Subscription management view events are recorded (annual plan)', () => {
-      const subscriptionManagementScreenTelemetryId = "account";
+    testCases.forEach(([testCase, subscriptionManagementScreenTelemetryId]) => {
+      
+      describe(`Subscription management view events are recorded (${testCase})`, () => {
 
-      it('accountScreen impression event is recorded', async () => {
+        const isMonthlyPlanTest = testCase === "monthly plan"
 
-        //Open the subscription management view and record accountScreen telemetry
-        const accountScreenEvents = await vpn.gleanTestGetValue("impression", "accountScreen", "main");
-        assert.equal(accountScreenEvents.length, 1);
-        const accountScreenEventExtras = accountScreenEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, accountScreenEventExtras.screen);
-      });
+        //Check if we are testing the monthly plan so we can mock the guardian response
+        beforeEach(async () => {
+          if (isMonthlyPlanTest) {
+            if (!(await vpn.isFeatureFlippedOn('annualUpgrade'))) {
+              await vpn.flipFeatureOn('annualUpgrade');
+            }
 
-      it('editSelected interaction event is recorded', async () => {
+            this.ctx.fxaLoginCallback = (req) => {
+             this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
+               sessionToken: 'session',
+               verified: true,
+               verificationMethod: '',
+             };
+             this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
+           };
+           this.ctx.guardianSubscriptionDetailsCallback =
+           req => {
+             this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .status = 200;
 
-        //Click the user profile button and record editSelected telemetry
-        await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
-        const editSelectedEvents = await vpn.gleanTestGetValue("interaction", "editSelected", "main");
-        assert.equal(editSelectedEvents.length, 1);
-        const editSelectedEventsExtras = editSelectedEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, editSelectedEventsExtras.screen);
-      });
+             this.ctx.guardianOverrideEndpoints
+             .GETs['/api/v1/vpn/subscriptionDetails']
+             .body = SUBSCRIPTION_DETAILS_MONTHLY
+           };
+         }
 
-      it('manageSubscriptionSelected interaction event is recorded', async () => {
+         await openSubscriptionManagement();
+       });
 
-        //Click the manage subscription button and record manageSubscriptionSelected telemetry
-        await vpn.scrollToQuery(queries.screenSettings.subscriptionView.FLICKABLE, queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
-        await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
-        const manageSubscriptionSelectedEvents = await vpn.gleanTestGetValue("interaction", "manageSubscriptionSelected", "main");
-        assert.equal(manageSubscriptionSelectedEvents.length, 1);
-        const manageSubscriptionSelectedEventsExtras = manageSubscriptionSelectedEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, manageSubscriptionSelectedEventsExtras.screen);
-      });
+        it('accountScreen impression event is recorded', async () => {
 
-      it('homeSelected interaction event is recorded with correct screen', async () => {
+          //Open the subscription management view and record accountScreen telemetry
+          const accountScreenEvents = await vpn.gleanTestGetValue("impression", "accountScreen", "main");
+          assert.equal(accountScreenEvents.length, 1);
+          const accountScreenEventExtras = accountScreenEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, accountScreenEventExtras.screen);
+        });
 
-        //Click the home navbar button and record homeSelected telemetry
-        await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-        const homeSelectedEvents = await vpn.gleanTestGetValue("interaction", "homeSelected", "main");
-        assert.equal(homeSelectedEvents.length, 1);
-        const homeSelectedEventsExtras = homeSelectedEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, homeSelectedEventsExtras.screen);
-      });
+        it('editSelected interaction event is recorded', async () => {
 
-      it('messagesSelected interaction event is recorded with correct screen', async () => {
+          //Click the user profile button and record editSelected telemetry
+          await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
+          const editSelectedEvents = await vpn.gleanTestGetValue("interaction", "editSelected", "main");
+          assert.equal(editSelectedEvents.length, 1);
+          const editSelectedEventsExtras = editSelectedEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, editSelectedEventsExtras.screen);
+        });
 
-        //Click the messages navbar button and record homeSelected telemetry
-        await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-        const messagesSelectedEvents = await vpn.gleanTestGetValue("interaction", "messagesSelected", "main");
-        assert.equal(messagesSelectedEvents.length, 1);
-        const messagesSelectedEventsExtras = messagesSelectedEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, messagesSelectedEventsExtras.screen);
+        if (isMonthlyPlanTest) {
+          it('changePlanSelected interaction event is recorded with correct screen', async () => {
 
-      });
+            //Click the change plan button and record changePlanSelected telemetry
+            await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.ANNUAL_UPGRADE_BUTTON.visible());
+            const changePlanSelectedEvents = await vpn.gleanTestGetValue("interaction", "changePlanSelected", "main");
+            assert.equal(changePlanSelectedEvents.length, 1);
+            const changePlanSelectedEventsExtras = changePlanSelectedEvents[0].extra;
+            assert.equal(subscriptionManagementScreenTelemetryId, changePlanSelectedEventsExtras.screen);
+          });
+        }
 
-      it('settingsSelected interaction event is recorded with correct screen', async () => {
+        it('manageSubscriptionSelected interaction event is recorded', async () => {
 
-        //Click the settings navbar button and record homeSelected telemetry
-        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-        const settingselectedEvents = await vpn.gleanTestGetValue("interaction", "settingsSelected", "main");
-        assert.equal(settingselectedEvents.length, 1);
-        const settingselectedEventsExtras = settingselectedEvents[0].extra;
-        assert.equal(subscriptionManagementScreenTelemetryId, settingselectedEventsExtras.screen);
+          //Click the manage subscription button and record manageSubscriptionSelected telemetry
+          await vpn.scrollToQuery(queries.screenSettings.subscriptionView.FLICKABLE, queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+          await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
+          const manageSubscriptionSelectedEvents = await vpn.gleanTestGetValue("interaction", "manageSubscriptionSelected", "main");
+          assert.equal(manageSubscriptionSelectedEvents.length, 1);
+          const manageSubscriptionSelectedEventsExtras = manageSubscriptionSelectedEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, manageSubscriptionSelectedEventsExtras.screen);
+        });
+
+        it('homeSelected interaction event is recorded with correct screen', async () => {
+
+          //Click the home navbar button and record homeSelected telemetry
+          await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+          const homeSelectedEvents = await vpn.gleanTestGetValue("interaction", "homeSelected", "main");
+          assert.equal(homeSelectedEvents.length, 1);
+          const homeSelectedEventsExtras = homeSelectedEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, homeSelectedEventsExtras.screen);
+        });
+
+        it('messagesSelected interaction event is recorded with correct screen', async () => {
+
+          //Click the messages navbar button and record messagesSelected telemetry
+          await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+          const messagesSelectedEvents = await vpn.gleanTestGetValue("interaction", "messagesSelected", "main");
+          assert.equal(messagesSelectedEvents.length, 1);
+          const messagesSelectedEventsExtras = messagesSelectedEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, messagesSelectedEventsExtras.screen);
+
+        });
+
+        it('settingsSelected interaction event is recorded with correct screen', async () => {
+
+          //Click the settings navbar button and record settingsSelected telemetry
+          await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+          const settingselectedEvents = await vpn.gleanTestGetValue("interaction", "settingsSelected", "main");
+          assert.equal(settingselectedEvents.length, 1);
+          const settingselectedEventsExtras = settingselectedEvents[0].extra;
+          assert.equal(subscriptionManagementScreenTelemetryId, settingselectedEventsExtras.screen);
+        });
       });
     });
   });
