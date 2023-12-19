@@ -522,7 +522,7 @@ impression:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5547
     data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#issuecomment-1862135964
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
     data_sensitivity:
       - interaction
     notification_emails:
