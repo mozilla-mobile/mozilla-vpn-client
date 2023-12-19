@@ -1093,11 +1093,11 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked the `edit account` button
+      The user has clicked the "edit account" button
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5547
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#issuecomment-1862135964
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1111,11 +1111,11 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked the “manage subscription” button from the subscription management view.
+      The user has clicked the “manage subscription” button from the subscription management view
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5547
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#issuecomment-1862135964
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1129,11 +1129,11 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked the “change plan” button from the subscription management view (monthly web plan).
+      The user has clicked the “change plan” button from the subscription management view (monthly web plan)
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5547
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#issuecomment-1862135964
     data_sensitivity:
       - interaction
     notification_emails:
