@@ -16,14 +16,10 @@ Setting::Setting(QObject* parent, QSettingsConnector* settingsConnector,
       m_sensitiveSetting(sensitiveSetting),
       m_removeWhenReset(removeWhenReset),
       m_settingsConnector(settingsConnector) {
-  qDebug() << "Creating setting" << m_key;
   MZ_COUNT_CTOR(Setting);
 }
 
-Setting::~Setting() {
-  qDebug() << "Destroying setting" << m_key;
-  MZ_COUNT_DTOR(Setting);
-}
+Setting::~Setting() { MZ_COUNT_DTOR(Setting); }
 
 QVariant Setting::get() const {
   auto value = m_settingsConnector->getValue(m_key);

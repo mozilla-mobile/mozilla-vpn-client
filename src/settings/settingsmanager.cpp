@@ -81,8 +81,6 @@ QString SettingsManager::settingsFileName() { return m_settings.fileName(); }
 void SettingsManager::registerSetting(Setting* setting) {
   Q_ASSERT(setting);
 
-  qDebug() << "Resgistering setting" << setting->key();
-
   if (m_registeredSettings.contains(setting->key())) {
     return;
   }

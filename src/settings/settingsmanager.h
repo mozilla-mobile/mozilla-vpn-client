@@ -64,7 +64,6 @@ class SettingsManager final : public QObject, public LogSerializer {
    * @return Setting*
    */
   Setting* getSetting(const QString& key) {
-    qDebug() << "Getting setting" << key;
     return m_registeredSettings.value(key);
   }
 
