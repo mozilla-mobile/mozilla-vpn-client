@@ -31,7 +31,7 @@ If xcrun didn't work, default paths where you probably find your SDK:
 
 Add it to the conda env
 
-    conda env config vars set SDKROOT=<sdk path>
+    conda env config vars set SDKROOT=$SDK_PATH
 
 Reactivate your conda env
 
@@ -60,11 +60,11 @@ Make the build directory
 
 Configure
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/
 
 Compile
 
-    cmake --build build-mac -j <number of processes to use e.g. 8>
+    cmake --build build-mac -j (number of processes to use e.g. 8)
 
 # Run
 
@@ -122,7 +122,7 @@ This step needs to be repeated each time Xcode updates.
 
 Use the same configure command above and add `-GXcode`:
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/ -GXcode
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/ -GXcode
 
 This will generate an Xcode project file at `build-mac/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
