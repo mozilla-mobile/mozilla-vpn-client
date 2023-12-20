@@ -74,7 +74,7 @@ class SettingGroup : public QObject {
    * If the metric was never set and the provided value is the default value,
    * it will be set.
    *
-   * If the setting is not in storage yet / is not loaded in this group, it will
+   * If the setting is not in storage yet, it will
    * be added to the group.
    *
    * @param value
@@ -88,13 +88,18 @@ class SettingGroup : public QObject {
   void remove();
 
  signals:
+  /**
+   * @brief This signal is emmited whenever any of the settings under this group
+   * has their underlying storage value changed.
+   *
+   */
   void changed();
 
  private:
   void addSetting(const QString& key);
   bool mayRecord(const QString& key);
   QString getSettingKey(const QString& key) const {
-    return QString("%1/%2").arg(m_groupKey, key);
+    return QString("%1/%2").arg(m_groupKey).arg(key);
   };
 
  private:

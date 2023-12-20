@@ -33,7 +33,7 @@ SettingGroup::~SettingGroup() { MZ_COUNT_DTOR(Setting); }
 void SettingGroup::addSetting(const QString& key) {
   auto settingKey = getSettingKey(key);
   auto setting = SettingFactory::createOrGetSetting(
-      settingKey, []() { return nullptr; }, m_removeWhenReset,
+      settingKey, []() { return QVariant(); }, m_removeWhenReset,
       m_sensitiveSetting);
 
   // Emit the group change signal for this group when the setting is changed.

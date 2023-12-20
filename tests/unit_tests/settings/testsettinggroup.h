@@ -13,7 +13,6 @@ class TestSettingGroup final : public TestHelper {
 
   // Not adding a generic test for `set` or `get`,
   // because that is tested by all other tests already.
-
   void testLoadSettingsOnInit();
   void testSettingsAreCreatedWithTheRightProperties();
 

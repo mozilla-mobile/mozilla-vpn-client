@@ -32,10 +32,6 @@ class SettingFactory {
       std::function<QVariant()> defaultValue = []() { return QVariant(); },
       bool removeWhenReset = true, bool sensitiveSetting = false);
 
-  static Setting* createOrGetSetting(
-      const QString& key, std::function<std::nullptr_t()> defaultValue,
-      bool removeWhenReset, bool sensitiveSetting);
-
  private:
   SettingFactory() = default;
   ~SettingFactory() = default;

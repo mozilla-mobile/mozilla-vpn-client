@@ -25,11 +25,3 @@ Setting* SettingFactory::createOrGetSetting(
   SettingsManager::instance()->registerSetting(setting);
   return setting;
 }
-
-// static
-Setting* SettingFactory::createOrGetSetting(
-    const QString& key, std::function<std::nullptr_t()> defaultValue,
-    bool removeWhenReset, bool sensitiveSetting) {
-  return createOrGetSetting(
-      key, []() { return QVariant(); }, removeWhenReset, sensitiveSetting);
-}
