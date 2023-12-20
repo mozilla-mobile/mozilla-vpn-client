@@ -22,10 +22,14 @@ conda env config vars set QT_VERSION=${QT_VERSION}
 
 conda deactivate
 conda activate vpn
+echo "INFO"
+conda info 
+env
+echo "INFO"
 conda install conda-pack -y
 
 mkdir -p ../../public/build
 find ../../public/build/ -mindepth 1 -delete
 
-conda pack -n vpn -o conda-ios.tar.gz
+conda-pack -p envs/vpn -o conda-ios.tar.gz
 mv conda-ios.tar.gz  ../../public/build
