@@ -27,7 +27,6 @@ can be used to run tests locally or via the CI.
 - ./utils/bake_shaders.sh - create the shader resources
 - ./utils/commons.sh - common set of functions
 - ./utils/generate_strings.py - process the string.yaml file and generate resources
-- ./utils/getversion.py - parse and extract the project version
 - ./utils/import_languages.py - process languages and import them
 - ./utils/inspector.py - send commands to the VPN client inspector
 - ./utils/qt6_compile.sh - compile qt6 for Linux and MacOS

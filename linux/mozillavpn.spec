@@ -1,5 +1,5 @@
 %define _srcdir %(git rev-parse --show-toplevel)
-%{!?_version: %define _version %(python %{_srcdir}/scripts/utils/getversion.py)}
+%{!?_version: %define _version %(cat %{_srcdir}/version.txt)}
 
 Name:      mozillavpn
 Version:   %{_version}
