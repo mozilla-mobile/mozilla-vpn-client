@@ -105,7 +105,7 @@ void SettingsManager::hardReset() {
   }
 
   instance()->m_registeredSettings.clear();
-  // Free the memory for everythig that was in the map.
+  // Free the memory for everything that was in the map.
   qDeleteAll(instance()->m_registeredSettings);
 }
 
@@ -118,7 +118,7 @@ void SettingsManager::serializeLogs(
   QString buff;
   QTextStream out(&buff);
   foreach (Setting* setting, m_registeredSettings.values()) {
-    auto log = setting->log();
+    const auto log = setting->log();
     if (!log.isEmpty()) {
       out << log << Qt::endl;
     }

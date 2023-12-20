@@ -8,22 +8,22 @@
 Setting* SettingFactory::createOrGetSetting(
     const QString& key, std::function<QVariant()> defaultValue,
     bool removeWhenReset, bool sensitiveSetting) {
-  auto s = SettingsManager::getSetting(key);
-  if (s) {
-    Q_ASSERT(defaultValue() == s->m_defaultValue());
-    Q_ASSERT(removeWhenReset == s->m_removeWhenReset);
-    Q_ASSERT(sensitiveSetting == s->m_sensitiveSetting);
+  auto setting = SettingsManager::getSetting(key);
+  if (setting {
+    Q_ASSERT(defaultValue() == setting->m_defaultValue());
+    Q_ASSERT(removeWhenReset == setting->m_removeWhenReset);
+    Q_ASSERT(sensitiveSetting == setting->m_sensitiveSetting);
 
     return s;
   }
 
-  s = new Setting(
+  setting = new Setting(
       SettingsManager::instance(), key,
       [defaultValue]() { return QVariant(defaultValue()); }, removeWhenReset,
       sensitiveSetting);
 
-  SettingsManager::instance()->registerSetting(s);
-  return s;
+  SettingsManager::instance()->registerSetting(setting);
+  return setting;
 }
 
 // static

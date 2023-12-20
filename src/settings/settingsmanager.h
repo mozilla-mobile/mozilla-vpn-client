@@ -17,7 +17,7 @@
  * codebase dynamic or static. The lifetime of this singleton is tied to the
  * lifetime of the QApplication.
  *
- * There are two types of settings currently in this codebase.
+ * There are two types of settings currently in this codebase:
  *
  * * Static settings are settings defined at build time in a declarative manner
  * e.g. the SETTING macro or the EXPERIMENTAL_FEATURE macro.

@@ -19,10 +19,10 @@ SettingGroup::SettingGroup(const QString& groupKey, bool removeWhenReset,
   // Group settings are dynamic, therefore we need to load from memory all
   // settings that exist under this group prefix in order to emit change signals
   // when they change.
-  auto sb = SettingsManager::instance();
-  sb->m_settings.beginGroup(m_groupKey);
-  QStringList keys = sb->m_settings.allKeys();
-  sb->m_settings.endGroup();
+  auto settingsManager = SettingsManager::instance();
+  settingsManager->m_settings.beginGroup(m_groupKey);
+  QStringList keys = settingsManager->m_settings.allKeys();
+  settingsManager->m_settings.endGroup();
   foreach (const QString& key, keys) {
     addSetting(key);
   }
@@ -73,11 +73,11 @@ void SettingGroup::set(const QString& key, QVariant value) {
 }
 
 void SettingGroup::remove() {
-  auto sb = SettingsManager::instance();
-  sb->m_settings.beginGroup(m_groupKey);
-  QStringList keys = sb->m_settings.allKeys();
-  sb->m_settings.remove("");
-  sb->m_settings.endGroup();
+  auto settingsManager = SettingsManager::instance();
+  settingsManager->m_settings.beginGroup(m_groupKey);
+  QStringList keys = settingsManager->m_settings.allKeys();
+  settingsManager->m_settings.remove("");
+  settingsManager->m_settings.endGroup();
 
   foreach (const QString& key, keys) {
     auto setting = SettingsManager::getSetting(key);

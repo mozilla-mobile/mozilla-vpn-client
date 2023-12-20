@@ -226,14 +226,14 @@ void TestAddon::conditions() {
   QFETCH(QVariant, settingValue);
 
   if (!settingKey.isEmpty()) {
-    auto s = SettingsManager::getSetting(settingKey);
-    if (!s) {
+    auto setting = SettingsManager::getSetting(settingKey);
+    if (!setting) {
       SettingFactory::createOrGetSetting(
           settingKey, []() { return nullptr; }, true, false);
-      s = SettingsManager::getSetting(settingKey);
+      setting = SettingsManager::getSetting(settingKey);
     }
 
-    s->set(settingValue);
+    setting->set(settingValue);
   }
 
   QCOMPARE(Addon::evaluateConditions(conditions), result);

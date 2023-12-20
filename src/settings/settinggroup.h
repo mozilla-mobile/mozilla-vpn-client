@@ -23,7 +23,7 @@
  * for any stored setting with the group prefix and those settings are
  * registered to the SettingsManager.
  *
- * A SettingsGroups is useful when
+ * A SettingsGroups is useful when:
  *
  * * Defining metrics dynamically at runtime is required or
  * * Reacting to changes for _any_ setting under the group is necessary or

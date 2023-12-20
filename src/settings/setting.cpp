@@ -71,6 +71,7 @@ QString Setting::log() const {
     QVariant value = get();
     switch (value.typeId()) {
       case QVariant::List:
+      [[fallthrough]];
       case QVariant::StringList:
         logLine.append(QString("[%1]").arg(value.toStringList().join(",")));
         break;
