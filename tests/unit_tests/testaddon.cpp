@@ -225,11 +225,11 @@ void TestAddon::conditions() {
   QFETCH(QVariant, settingValue);
 
   if (!settingKey.isEmpty()) {
-    auto setting = SettingsManager::getSetting(settingKey);
+    auto setting = SettingsManager::instance()->getSetting(settingKey);
     if (!setting) {
       SettingsManager::createOrGetSetting(
           settingKey, []() { return QVariant(); }, true, false);
-      setting = SettingsManager::getSetting(settingKey);
+      setting = SettingsManager::instance()->getSetting(settingKey);
     }
 
     setting->set(settingValue);
@@ -754,7 +754,7 @@ void TestAddon::message_dismiss() {
 
   QString addonSetting;
   connect(&static_cast<AddonMessage*>(message)->m_messageSettings,
-          &SettingGroup::changed, [&]() {
+          &SettingGroup::changed, &parent, [&]() {
             addonSetting =
                 static_cast<AddonMessage*>(message)
                     ->m_messageSettings.get(ADDON_MESSAGE_SETTINGS_STATUS_KEY)

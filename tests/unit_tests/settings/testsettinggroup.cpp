@@ -19,7 +19,7 @@ void TestSettingGroup::cleanup() {
 
 void TestSettingGroup::testLoadSettingsOnInit() {
   {
-    auto group = SettingGroup("aGroup");
+    auto group = SettingsManager::createSettingGroup("aGroup");
 
     // Let's add some keys to they group.
     group.set("keyOne", QVariant(1));
@@ -27,14 +27,15 @@ void TestSettingGroup::testLoadSettingsOnInit() {
     group.set("keyThree", QVariant(3));
   }
 
-  auto group = SettingGroup("aGroup");
+  auto group = SettingsManager::createSettingGroup("aGroup");
 
   // Check that just by calling the initializer the settings were registered.
-  auto settingOne = SettingsManager::getSetting("aGroup/keyOne");
+  auto settingOne = SettingsManager::instance()->getSetting("aGroup/keyOne");
   Q_ASSERT(settingOne);
-  auto settingTwo = SettingsManager::getSetting("aGroup/keyTwo");
+  auto settingTwo = SettingsManager::instance()->getSetting("aGroup/keyTwo");
   Q_ASSERT(settingTwo);
-  auto settingThree = SettingsManager::getSetting("aGroup/keyThree");
+  auto settingThree =
+      SettingsManager::instance()->getSetting("aGroup/keyThree");
   Q_ASSERT(settingThree);
 }
 
@@ -42,19 +43,19 @@ void TestSettingGroup::testSettingsAreCreatedWithTheRightProperties() {
   bool expectedRemoveWhenReset = false;
   bool expectedSensitiveSetting = true;
 
-  auto group =
-      SettingGroup("aGroup", expectedRemoveWhenReset, expectedSensitiveSetting);
+  auto group = SettingsManager::createSettingGroup(
+      "aGroup", expectedRemoveWhenReset, expectedSensitiveSetting);
 
   // Set something so the setting is created.
   group.set("keyOne", QVariant(1));
 
-  auto setting = SettingsManager::getSetting("aGroup/keyOne");
+  auto setting = SettingsManager::instance()->getSetting("aGroup/keyOne");
   QCOMPARE(setting->m_removeWhenReset, expectedRemoveWhenReset);
   QCOMPARE(setting->m_sensitiveSetting, expectedSensitiveSetting);
 }
 
 void TestSettingGroup::testGetAndSetUnregisteredSetting() {
-  auto group = SettingGroup("aGroup");
+  auto group = SettingsManager::createSettingGroup("aGroup");
 
   QSignalSpy spy(&group, &SettingGroup::changed);
 
@@ -75,7 +76,8 @@ void TestSettingGroup::testGetAndSetUnregisteredSetting() {
 }
 
 void TestSettingGroup::testGetAndSetDisallowedSetting() {
-  auto group = SettingGroup("aGroup", true, false, QStringList("allowedKey"));
+  auto group = SettingsManager::createSettingGroup("aGroup", true, false,
+                                                   QStringList("allowedKey"));
 
   QSignalSpy spy(&group, &SettingGroup::changed);
 
@@ -92,12 +94,21 @@ void TestSettingGroup::testGetAndSetDisallowedSetting() {
 }
 
 void TestSettingGroup::testRemove() {
-  auto group = SettingGroup("aGroup", true, false, QStringList("allowedKey"));
+  // Control setting to make sure only settings in the group are removed.
+  auto notInTheGroup = SettingsManager::createOrGetSetting("notinthegroup");
+  notInTheGroup->set(QVariant("aha!"));
 
-  // Let's add some keys to they group.
+  auto group = SettingsManager::createSettingGroup("aGroup", true, false);
+
+  // Let's add some settings to they group.
   group.set("keyOne", QVariant(1));
   group.set("keyTwo", QVariant(2));
   group.set("keyThree", QVariant(3));
+
+  QVERIFY(!notInTheGroup->get().isNull());
+  QVERIFY(!group.get("keyOne").isNull());
+  QVERIFY(!group.get("keyTwo").isNull());
+  QVERIFY(!group.get("keyThree").isNull());
 
   // Not let's clean the whole group;
   group.remove();
@@ -105,14 +116,8 @@ void TestSettingGroup::testRemove() {
   QVERIFY(group.get("keyOne").isNull());
   QVERIFY(group.get("keyTwo").isNull());
   QVERIFY(group.get("keyThree").isNull());
-
-  // Over zealously check that the settings were also unregisterd.
-  auto settingOne = SettingsManager::getSetting("aGroup/keyOne");
-  Q_ASSERT(!settingOne);
-  auto settingTwo = SettingsManager::getSetting("aGroup/keyTwo");
-  Q_ASSERT(!settingTwo);
-  auto settingThree = SettingsManager::getSetting("aGroup/keyThree");
-  Q_ASSERT(!settingThree);
+  // The setting not in the group is still there though.
+  QVERIFY(!notInTheGroup->get().isNull());
 }
 
 static TestSettingGroup s_testSettingGroup;

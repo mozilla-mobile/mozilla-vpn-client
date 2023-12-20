@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "setting.h"
+#include "qsettingsconnector.h"
 
 /**
  * @brief Represents a group of dynamic settings. Dynamic setttings can be
@@ -41,21 +41,8 @@ class SettingGroup : public QObject {
   Q_OBJECT
 
  public:
-  /**
-   * @brief Construct a new SettingGroup object
-   *
-   * @param groupKey The group key will be used as a prefix for the key of all
-   * settings added to the group e.g. groupKey/mySetting.
-   * @param removeWhenReset Whether or not this settings in this group should
-   * actually be removed when `reset` is called.
-   * @param sensitiveSetting Whether or not settings in this group are
-   * sensitive settings i.e. settings that must not be logged in plain text.
-   * @param acceptedKeys When this list has at least one member, only the listed
-   * keys will be allowed for storing under this group. Other keys will be
-   * ignored.
-   */
-  SettingGroup(const QString& groupKey, bool removeWhenReset = true,
-               bool sensitiveSetting = false,
+  SettingGroup(QSettingsConnector* settingsConnector, const QString& groupKey,
+               bool removeWhenReset = true, bool sensitiveSetting = false,
                QStringList acceptedKeys = QStringList());
   ~SettingGroup();
 
@@ -108,6 +95,8 @@ class SettingGroup : public QObject {
   bool m_sensitiveSetting;
   bool m_removeWhenReset;
   QStringList m_acceptedKeys;
+
+  QSettingsConnector* m_settingsConnector;
 };
 
 #endif  // GROUPEDSETTINGS_H

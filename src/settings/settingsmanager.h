@@ -8,6 +8,7 @@
 #include <QSettings>
 
 #include "loghandler.h"
+#include "qsettingsconnector.h"
 #include "setting.h"
 #include "settinggroup.h"
 
@@ -39,6 +40,16 @@ class SettingsManager final : public QObject, public LogSerializer {
  public:
   ~SettingsManager();
 
+  /**
+   * @brief Get the SettingsManager singleton.
+   *
+   * Creates it if it has not been created yet.
+   * The lifetime o the singleton is tied to the lifetime of the QApplication.
+   *
+   * @return SettingsManager*
+   */
+  static SettingsManager* instance();
+
   // LogSerializer interface
   void serializeLogs(
       std::function<void(const QString& name, const QString& logs)>&& callback)
@@ -52,11 +63,12 @@ class SettingsManager final : public QObject, public LogSerializer {
    * @param key
    * @return Setting*
    */
-  static Setting* getSetting(const QString& key) {
-    return instance()->m_registeredSettings.value(key);
+  Setting* getSetting(const QString& key) {
+    qDebug() << "Getting setting" << key;
+    return m_registeredSettings.value(key);
   }
 
-  static QString settingsFileName();
+  QString settingsFileName();
 
   /**
    * @brief Soft reset all registered settings.
@@ -65,7 +77,7 @@ class SettingsManager final : public QObject, public LogSerializer {
    * otherwise it will stay there.
    *
    */
-  static void reset();
+  void reset();
 
   /**
    * @brief Hard reset all registered settings.
@@ -73,7 +85,7 @@ class SettingsManager final : public QObject, public LogSerializer {
    * All settings are cleared, regardless of configuration.
    *
    */
-  static void hardReset();
+  void hardReset();
 
   /**
    * @brief Writes any unsaved changes to permanent storage,
@@ -87,7 +99,7 @@ class SettingsManager final : public QObject, public LogSerializer {
    * Description copied from: https://doc.qt.io/qt-6/qsettings.html#sync
    *
    */
-  static void sync() { instance()->m_settings.sync(); };
+  void sync() { instance()->m_settings.sync(); };
 
   /**
    * @brief Construct a new Setting object and register it.
@@ -110,14 +122,31 @@ class SettingsManager final : public QObject, public LogSerializer {
       std::function<QVariant()> defaultValue = []() { return QVariant(); },
       bool removeWhenReset = true, bool sensitiveSetting = false);
 
+  /**
+   * @brief Construct a new SettingGroup object
+   *
+   * @param groupKey The group key will be used as a prefix for the key of all
+   * settings added to the group e.g. groupKey/mySetting.
+   * @param removeWhenReset Whether or not this settings in this group should
+   * actually be removed when `reset` is called.
+   * @param sensitiveSetting Whether or not settings in this group are
+   * sensitive settings i.e. settings that must not be logged in plain text.
+   * @param acceptedKeys When this list has at least one member, only the listed
+   * keys will be allowed for storing under this group. Other keys will be
+   * ignored.
+   */
+  static SettingGroup createSettingGroup(
+      const QString& groupKey, bool removeWhenReset = true,
+      bool sensitiveSetting = false, QStringList acceptedKeys = QStringList());
+
 #ifdef UNIT_TEST
   /**
    * @brief Destroys the SettingsManager singleton and clear stores.
    *
    * The SettingsManager Singleton exists for the entire lifetime of the
    * application. The way our tests are set up now, we have most test cases
-   * running under the same application instance. This way SettingsManager state
-   * can leak amongst tests and therefore this function is required.
+   * running under the same application instance. This way SettingsManager
+   * state can leak amongst tests and therefore this function is required.
    *
    */
   static void testCleanup();
@@ -125,17 +154,13 @@ class SettingsManager final : public QObject, public LogSerializer {
 
  private:
   SettingsManager(QObject* parent);
-  static SettingsManager* instance();
 
-  static void registerSetting(Setting* setting);
+  void registerSetting(Setting* setting);
 
  private:
   QMap<QString, Setting*> m_registeredSettings;
   QSettings m_settings;
-
-  friend class Setting;
-  friend class SettingGroup;
-  friend class SettingsManager;
+  QSettingsConnector m_settingsConnector;
 
 #ifdef UNIT_TEST
   friend class TestSettingsManager;

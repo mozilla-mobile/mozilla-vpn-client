@@ -7,21 +7,26 @@
 #include "leakdetector.h"
 #include "settingsmanager.h"
 
-Setting::Setting(QObject* parent, const QString& key,
-                 std::function<QVariant()> defaultValue, bool removeWhenReset,
-                 bool sensitiveSetting)
+Setting::Setting(QObject* parent, QSettingsConnector* settingsConnector,
+                 const QString& key, std::function<QVariant()> defaultValue,
+                 bool removeWhenReset, bool sensitiveSetting)
     : QObject(parent),
       m_key(key),
       m_defaultValue(defaultValue),
       m_sensitiveSetting(sensitiveSetting),
-      m_removeWhenReset(removeWhenReset) {
+      m_removeWhenReset(removeWhenReset),
+      m_settingsConnector(settingsConnector) {
+  qDebug() << "Creating setting" << m_key;
   MZ_COUNT_CTOR(Setting);
 }
 
-Setting::~Setting() { MZ_COUNT_DTOR(Setting); }
+Setting::~Setting() {
+  qDebug() << "Destroying setting" << m_key;
+  MZ_COUNT_DTOR(Setting);
+}
 
 QVariant Setting::get() const {
-  auto value = SettingsManager::instance()->m_settings.value(m_key);
+  auto value = m_settingsConnector->getValue(m_key);
 
   if (value.isNull()) {
     value = m_defaultValue();
@@ -32,7 +37,7 @@ QVariant Setting::get() const {
 
 void Setting::set(QVariant value) const {
   if (!isSet() || get() != value) {
-    SettingsManager::instance()->m_settings.setValue(m_key, value);
+    m_settingsConnector->setValue(m_key, value);
     emit changed();
   }
 }
@@ -50,13 +55,11 @@ void Setting::remove() const {
     return;
   }
 
-  SettingsManager::instance()->m_settings.remove(m_key);
+  m_settingsConnector->remove(m_key);
   emit changed();
 }
 
-bool Setting::isSet() const {
-  return SettingsManager::instance()->m_settings.contains(m_key);
-}
+bool Setting::isSet() const { return m_settingsConnector->contains(m_key); }
 
 QString Setting::log() const {
   if (!isSet()) {

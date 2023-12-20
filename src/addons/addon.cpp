@@ -118,7 +118,7 @@ QList<ConditionCallback> s_conditionCallbacks{
 
          QString op = obj["op"].toString();
          QString key = obj["setting"].toString();
-         auto settingA = SettingsManager::getSetting(key);
+         auto settingA = SettingsManager::instance()->getSetting(key);
          if (!settingA) {
            logger.info() << "Unable to retrieve unregistered setting" << key;
            return false;
@@ -439,13 +439,14 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_id(id),
       m_name(name),
       m_type(type),
-      m_settings(SettingGroup(QString("%1/%2/%3")
-                                  .arg(Constants::ADDONS_SETTINGS_GROUP)
-                                  .arg(ADDON_SETTINGS_GROUP)
-                                  .arg(id),
-                              true,  // remove when reset
-                              false  // sensitive setting
-                              )) {
+      m_settings(SettingsManager::createSettingGroup(
+          QString("%1/%2/%3")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_SETTINGS_GROUP)
+              .arg(id),
+          true,  // remove when reset
+          false  // sensitive setting
+          )) {
   MZ_COUNT_CTOR(Addon);
 
   QString storedStatus = m_settings.get(ADDON_SETTINGS_STATUS_KEY).toString();

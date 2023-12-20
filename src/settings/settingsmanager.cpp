@@ -21,6 +21,12 @@ Logger logger("SettingsManager");
 
 SettingsManager* s_instance = nullptr;
 
+#ifndef UNIT_TEST
+constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla";
+#else
+constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla_testing";
+#endif
+
 const QSettings::Format MozFormat = QSettings::registerFormat(
     "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
 
@@ -37,18 +43,17 @@ SettingsManager* SettingsManager::instance() {
 
 #ifdef UNIT_TEST
 // static
-void SettingsManager::testCleanup() { delete s_instance; }
+void SettingsManager::testCleanup() {
+  Q_ASSERT(s_instance);
+  delete s_instance;
+}
 #endif
 
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
-      m_settings(MozFormat, QSettings::UserScope,
-#ifndef UNIT_TEST
-                 "mozilla",
-#else
-                 "mozilla_testing",
-#endif
-                 Constants::SETTINGS_APP_NAME) {
+      m_settings(MozFormat, QSettings::UserScope, SETTINGS_ORGANIZATION_NAME,
+                 Constants::SETTINGS_APP_NAME),
+      m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 
   logger.debug() << "Initializing SettingsManager";
@@ -61,52 +66,49 @@ SettingsManager::~SettingsManager() {
 
   logger.debug() << "Destroying SettingsManager";
 
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-
   LogHandler::instance()->unregisterLogSerializer(this);
 
 #ifdef UNIT_TEST
   hardReset();
 #endif
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
 
-// static
-QString SettingsManager::settingsFileName() {
-  return instance()->m_settings.fileName();
-}
+QString SettingsManager::settingsFileName() { return m_settings.fileName(); }
 
-// static
 void SettingsManager::registerSetting(Setting* setting) {
   Q_ASSERT(setting);
 
-  if (instance()->m_registeredSettings.contains(setting->key())) {
+  qDebug() << "Resgistering setting" << setting->key();
+
+  if (m_registeredSettings.contains(setting->key())) {
     return;
   }
 
-  instance()->m_registeredSettings.insert(setting->key(), setting);
+  m_registeredSettings.insert(setting->key(), setting);
 }
 
-// static
 void SettingsManager::reset() {
   logger.debug() << "Clean up the settings";
-  foreach (Setting* setting, instance()->m_registeredSettings.values()) {
+  foreach (Setting* setting, m_registeredSettings.values()) {
     setting->reset();
   }
 }
 
-// static
 void SettingsManager::hardReset() {
   logger.debug() << "Hard reset";
-  instance()->m_settings.clear();
+  m_settings.clear();
 
-  foreach (Setting* setting, instance()->m_registeredSettings.values()) {
+  foreach (Setting* setting, m_registeredSettings.values()) {
+    Q_ASSERT(setting);
     setting->changed();
   }
 
-  instance()->m_registeredSettings.clear();
+  m_registeredSettings.clear();
   // Free the memory for everything that was in the map.
-  qDeleteAll(instance()->m_registeredSettings);
+  qDeleteAll(m_registeredSettings);
 }
 
 void SettingsManager::serializeLogs(
@@ -131,7 +133,7 @@ void SettingsManager::serializeLogs(
 Setting* SettingsManager::createOrGetSetting(
     const QString& key, std::function<QVariant()> defaultValue,
     bool removeWhenReset, bool sensitiveSetting) {
-  auto setting = getSetting(key);
+  auto setting = instance()->getSetting(key);
   if (setting) {
     Q_ASSERT(defaultValue() == setting->m_defaultValue());
     Q_ASSERT(removeWhenReset == setting->m_removeWhenReset);
@@ -141,10 +143,19 @@ Setting* SettingsManager::createOrGetSetting(
   }
 
   setting = new Setting(
-      SettingsManager::instance(), key,
+      instance(), &instance()->m_settingsConnector, key,
       [defaultValue]() { return QVariant(defaultValue()); }, removeWhenReset,
       sensitiveSetting);
 
   instance()->registerSetting(setting);
   return setting;
+}
+
+// static
+SettingGroup SettingsManager::createSettingGroup(const QString& groupKey,
+                                                 bool removeWhenReset,
+                                                 bool sensitiveSetting,
+                                                 QStringList acceptedKeys) {
+  return SettingGroup(&instance()->m_settingsConnector, groupKey,
+                      removeWhenReset, sensitiveSetting, acceptedKeys);
 }

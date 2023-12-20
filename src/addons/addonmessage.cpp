@@ -77,13 +77,14 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message"),
-      m_messageSettings(QString("%1/%2/%3")
-                            .arg(Constants::ADDONS_SETTINGS_GROUP)
-                            .arg(ADDON_MESSAGE_SETTINGS_GROUP)
-                            .arg(id),
-                        true,  // remove when reset
-                        false  // sensitive setting
-      ) {
+      m_messageSettings(SettingsManager::createSettingGroup(
+          QString("%1/%2/%3")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_MESSAGE_SETTINGS_GROUP)
+              .arg(id),
+          true,  // remove when reset
+          false  // sensitive setting
+          )) {
   MZ_COUNT_CTOR(AddonMessage);
 }
 

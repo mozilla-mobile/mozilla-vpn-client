@@ -12,6 +12,7 @@
 #include "i18nstrings.h"
 #include "localizer.h"
 #include "mozillavpn.h"
+#include "settings/settinggroup.h"
 #include "settingsholder.h"
 #include "theme.h"
 
@@ -43,7 +44,7 @@ class TestHelper final : public QObject {
   MozillaVPN* m_mozillavpn = nullptr;
   Theme* m_theme = nullptr;
 
-  SettingGroup* m_testSettingGroup = nullptr;
+  SettingGroup m_testSettingGroup;
 };
 
 #endif  // TESTHELPER_H

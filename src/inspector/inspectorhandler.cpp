@@ -479,7 +479,8 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"settings_filename", "Get the setting filename", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
-                       obj["value"] = SettingsManager::settingsFileName();
+                       obj["value"] =
+                           SettingsManager::instance()->settingsFileName();
                        return obj;
                      }},
 

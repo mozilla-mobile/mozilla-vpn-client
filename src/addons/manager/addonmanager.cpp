@@ -433,7 +433,8 @@ void AddonManager::reinstateMessages() const {
   Q_ASSERT(settingsHolder);
 
   // Group containing all the message settings.
-  SettingGroup messageSettingGroup(ADDON_MESSAGE_SETTINGS_GROUP);
+  SettingGroup messageSettingGroup =
+      SettingsManager::createSettingGroup(ADDON_MESSAGE_SETTINGS_GROUP);
   messageSettingGroup.remove();
 }
 

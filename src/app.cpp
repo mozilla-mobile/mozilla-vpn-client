@@ -73,7 +73,7 @@ void App::quit() {
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
   // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
 
-  SettingsManager::sync();
+  SettingsManager::instance()->sync();
   exit(0);
 #endif
 

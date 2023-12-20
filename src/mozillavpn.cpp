@@ -320,19 +320,19 @@ void MozillaVPN::initialize() {
 
   if (!m_private->m_keys.fromSettings()) {
     logger.error() << "No keys found";
-    SettingsManager::reset();
+    SettingsManager::instance()->reset();
     return;
   }
 
   if (!m_private->m_serverCountryModel.fromSettings()) {
     logger.error() << "No server list found";
-    SettingsManager::reset();
+    SettingsManager::instance()->reset();
     return;
   }
 
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
-    SettingsManager::reset();
+    SettingsManager::instance()->reset();
     return;
   }
 
@@ -350,7 +350,7 @@ void MozillaVPN::initialize() {
 
   if (!modelsInitialized()) {
     logger.error() << "Models not initialized yet";
-    SettingsManager::reset();
+    SettingsManager::instance()->reset();
     return;
   }
 
@@ -423,7 +423,7 @@ void MozillaVPN::maybeStateMain() {
 
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
-    SettingsManager::reset();
+    SettingsManager::instance()->reset();
     REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
 
     setUserState(UserNotAuthenticated);
@@ -828,7 +828,7 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   deactivate();
 
-  SettingsManager::reset();
+  SettingsManager::instance()->reset();
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
@@ -1252,7 +1252,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 void MozillaVPN::hardReset() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  SettingsManager::hardReset();
+  SettingsManager::instance()->hardReset();
   controller()->deleteOSTunnelConfig();
 }
 
@@ -1809,13 +1809,13 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/settings-selected.svg"));
 
   // A group of settings containing all the addon message settings.
-  SettingGroup messageSettingGroup =
-      SettingGroup(QString("%1/%2")
-                       .arg(Constants::ADDONS_SETTINGS_GROUP)
-                       .arg(ADDON_MESSAGE_SETTINGS_GROUP),
-                   true,  // remove when reset
-                   false  // sensitive setting
-      );
+  SettingGroup messageSettingGroup = SettingsManager::createSettingGroup(
+      QString("%1/%2")
+          .arg(Constants::ADDONS_SETTINGS_GROUP)
+          .arg(ADDON_MESSAGE_SETTINGS_GROUP),
+      true,  // remove when reset
+      false  // sensitive setting
+  );
 
   connect(&messageSettingGroup, &SettingGroup::changed,
           [messageIcon]() { resetNotification(messageIcon); });

@@ -64,7 +64,7 @@ void testGleanEntries(const QString& language) {
 }
 
 void TestLocalizer::systemLanguage() {
-  SettingsManager::hardReset();
+  SettingsManager::instance()->hardReset();
 
   Localizer l;
 

@@ -37,8 +37,9 @@ SettingsHolder::SettingsHolder() {
 
   logger.debug() << "Initializing SettingsHolder";
 
-#define SETTING(type, toType, getter, ...) \
-  connect(m_##getter, &Setting::changed, [&]() { emit getter##Changed(); });
+#define SETTING(type, toType, getter, ...)     \
+  connect(m_##getter, &Setting::changed, this, \
+          [&]() { emit getter##Changed(); });
 
 #include "settingslist.h"
 #undef SETTING
@@ -60,12 +61,12 @@ SettingsHolder::~SettingsHolder() {
 
   logger.debug() << "Destroying SettingsHolder";
 
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-
 #ifdef UNIT_TEST
   // Tie the lifetime of the SettingsManager singleton to the SettingsHolder
   // singleton.
   SettingsManager::testCleanup();
 #endif
+
+  Q_ASSERT(s_instance == this);
+  s_instance = nullptr;
 }
