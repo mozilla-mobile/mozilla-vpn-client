@@ -30,7 +30,6 @@ print Y "Installing conda"
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
 conda-unpack
-conda info
 
 # Should already have been done by taskcluser, but double checking c:
 print Y "Get the submodules..."

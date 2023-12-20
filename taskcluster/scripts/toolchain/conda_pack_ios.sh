@@ -14,12 +14,15 @@ chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
 
-conda install conda-pack -y
 conda env create -f env.yml -n vpn
 conda activate vpn
 conda env config vars set QT_VERSION=${QT_VERSION}
 ./scripts/macos/conda_install_extras.sh
 ./scripts/macos/conda_setup_qt.sh
+
+conda deactivate
+conda activate vpn
+conda install conda-pack -y
 
 mkdir -p ../../public/build
 find ../../public/build/ -mindepth 1 -delete
