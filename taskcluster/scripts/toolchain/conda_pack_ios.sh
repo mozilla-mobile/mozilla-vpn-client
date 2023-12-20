@@ -20,6 +20,9 @@ conda activate vpn
 conda env config vars set QT_VERSION=${QT_VERSION}
 ./scripts/macos/conda_install_extras.sh
 ./scripts/macos/conda_setup_qt.sh
-    
+
 mkdir -p ../../public/build
+rm ../../public/build/*
+
 conda pack -n vpn -o conda-ios.tar.gz
+mv conda-ios.tar.gz  ../../public/build
