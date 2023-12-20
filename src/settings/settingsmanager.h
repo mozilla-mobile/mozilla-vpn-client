@@ -23,12 +23,13 @@
  * e.g. the SETTING macro or the EXPERIMENTAL_FEATURE macro.
  * * Dynamic settings are settings which are created on demand at runtime.
  *
- * All settings are created using the SettingsFactory, which creates a Setting
- * object and registers it in the SettingsManager class.
+ * All settings are created using SettingsManager::createOrGetSetting, which
+ * creates a Setting object and registers it in the SettingsManager class.
  *
- * The only public constructor for Setting objects is the SettingsFactory
- * constructor, therefore everytime a Setting object is created it is guaranteed
- * to be registered in the settings base.
+ * The only public constructor for Setting objects is
+ * SettingsManager::createOrGetSetting, therefore everytime a
+ * Setting object is created it is guaranteed to be registered in the settings
+ * base.
  *
  */
 class SettingsManager final : public QObject, public LogSerializer {
@@ -88,6 +89,27 @@ class SettingsManager final : public QObject, public LogSerializer {
    */
   static void sync() { instance()->m_settings.sync(); };
 
+  /**
+   * @brief Construct a new Setting object and register it.
+   *
+   * If another setting with the same key is already registered, no new setting
+   * is registered and a pointer to the existing setting is returned. This
+   * function will crash in debug mode in case the existing setting has a
+   * different configuration from the new setting.
+   *
+   * @param key A QSettings valid key.
+   * @param defaultValue The default value to be returned when this setting is
+   * not set. Default value will be null if unset.
+   * @param removeWhenReset Whether or not this setting should actually be
+   * removed when `reset` is called. Default is true.
+   * @param sensitiveSetting Whether or not this is a sensitive setting i.e. a
+   * setting that must not be logged in plain text. Default is false.
+   */
+  static Setting* createOrGetSetting(
+      const QString& key,
+      std::function<QVariant()> defaultValue = []() { return QVariant(); },
+      bool removeWhenReset = true, bool sensitiveSetting = false);
+
 #ifdef UNIT_TEST
   /**
    * @brief Destroys the SettingsManager singleton and clear stores.
@@ -113,7 +135,7 @@ class SettingsManager final : public QObject, public LogSerializer {
 
   friend class Setting;
   friend class SettingGroup;
-  friend class SettingFactory;
+  friend class SettingsManager;
 
 #ifdef UNIT_TEST
   friend class TestSettingsManager;

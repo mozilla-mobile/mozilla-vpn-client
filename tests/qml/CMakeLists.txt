@@ -236,8 +236,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/settings/settingsmanager.h
     ${MZ_SOURCE_DIR}/settings/setting.cpp
     ${MZ_SOURCE_DIR}/settings/setting.h
-    ${MZ_SOURCE_DIR}/settings/settingfactory.h
-    ${MZ_SOURCE_DIR}/settings/settingfactory.cpp
     ${MZ_SOURCE_DIR}/settingsholder.cpp
     ${MZ_SOURCE_DIR}/settingsholder.h
     ${MZ_SOURCE_DIR}/simplenetworkmanager.cpp

@@ -127,8 +127,6 @@ target_sources(app_unit_tests PRIVATE
     testsettingsholder.h
     settings/testsetting.cpp
     settings/testsetting.h
-    settings/testsettingfactory.cpp
-    settings/testsettingfactory.h
     settings/testsettinggroup.cpp
     settings/testsettinggroup.h
     settings/testsettingsmanager.cpp

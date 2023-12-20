@@ -6,7 +6,6 @@
 
 #include "helper.h"
 #include "settings/setting.h"
-#include "settings/settingfactory.h"
 #include "settings/settingsmanager.h"
 
 void TestSettingsManager::cleanup() {
@@ -22,7 +21,7 @@ void TestSettingsManager::testGetSetting() {
   Q_ASSERT(!SettingsManager::getSetting("doesnotexist"));
 
   // Create a setting
-  auto setting = SettingFactory::createOrGetSetting("doesexist");
+  auto setting = SettingsManager::createOrGetSetting("doesexist");
   Q_UNUSED(setting)
 
   // Try to get it, not it's not nullptr.
@@ -31,11 +30,11 @@ void TestSettingsManager::testGetSetting() {
 
 void TestSettingsManager::testReset() {
   // Create a setting that should be reset
-  auto doReset = SettingFactory::createOrGetSetting(
-      "doreset", []() { return nullptr; }, true, false);
+  auto doReset = SettingsManager::createOrGetSetting(
+      "doreset", []() { return QVariant(); }, true, false);
   // Create a setting that should not be reset
-  auto doNotReset = SettingFactory::createOrGetSetting(
-      "donotreset", []() { return nullptr; }, false, false);
+  auto doNotReset = SettingsManager::createOrGetSetting(
+      "donotreset", []() { return QVariant(); }, false, false);
 
   // Check they are there, just in case.
   Q_ASSERT(SettingsManager::getSetting("doreset"));
@@ -62,12 +61,12 @@ void TestSettingsManager::testReset() {
 
 void TestSettingsManager::testHardReset() {
   // Create a setting that should be reset
-  auto doReset = SettingFactory::createOrGetSetting(
-      "doreset", []() { return nullptr; }, true, false);
+  auto doReset = SettingsManager::createOrGetSetting(
+      "doreset", []() { return QVariant(); }, true, false);
   // Create a setting that should not be reset... It doesn't really matter here,
   // everyone will get reset. But just in case.
-  auto doNotReset = SettingFactory::createOrGetSetting(
-      "donotreset", []() { return nullptr; }, false, false);
+  auto doNotReset = SettingsManager::createOrGetSetting(
+      "donotreset", []() { return QVariant(); }, false, false);
 
   // Check they are there, just in case.
   Q_ASSERT(SettingsManager::getSetting("doreset"));
@@ -103,10 +102,10 @@ void TestSettingsManager::testHardReset() {
 
 void TestSettingsManager::testSerializeLogs() {
   // Register some settings.
-  auto oneSetting = SettingFactory::createOrGetSetting("one");
-  auto twoSetting = SettingFactory::createOrGetSetting("two");
-  auto threeSetting = SettingFactory::createOrGetSetting("three");
-  auto thisOneWeWillNotSet = SettingFactory::createOrGetSetting("neverset");
+  auto oneSetting = SettingsManager::createOrGetSetting("one");
+  auto twoSetting = SettingsManager::createOrGetSetting("two");
+  auto threeSetting = SettingsManager::createOrGetSetting("three");
+  auto thisOneWeWillNotSet = SettingsManager::createOrGetSetting("neverset");
   Q_UNUSED(thisOneWeWillNotSet)
 
   oneSetting->set(QVariant(1));
@@ -124,6 +123,38 @@ void TestSettingsManager::testSerializeLogs() {
   QVERIFY(report.contains("two -> 2"));
   QVERIFY(report.contains("three -> 3"));
   QVERIFY(!report.contains("neverset ->"));
+}
+
+void TestSettingsManager::testCreateNewSetting() {
+  QString expectedKey = "aKey";
+  QVariant expectedDefault = "aDefaultValue";
+  bool expectedRemoveWhenReset = false;
+  bool expectedSensitiveSetting = true;
+
+  auto setting = SettingsManager::createOrGetSetting(
+      expectedKey, [&expectedDefault]() { return QVariant(expectedDefault); },
+      expectedRemoveWhenReset, expectedSensitiveSetting);
+
+  auto registeredSetting = SettingsManager::getSetting(expectedKey);
+
+  // The registered setting is exactly the same as the setting created.
+  QCOMPARE(setting, registeredSetting);
+
+  // Check that the registered setting has the expected properties.
+
+  // Getting without setting would return the default value.
+  QCOMPARE(registeredSetting->get(), expectedDefault);
+  QCOMPARE(registeredSetting->m_removeWhenReset, expectedRemoveWhenReset);
+  QCOMPARE(registeredSetting->m_sensitiveSetting, expectedSensitiveSetting);
+}
+
+void TestSettingsManager::testCreateNewSettingButSettingAlreadyExists() {
+  auto oneSetting = SettingsManager::createOrGetSetting("aKey");
+  auto twoSetting = SettingsManager::createOrGetSetting("aKey");
+
+  // They are the same,
+  // because the second time around it just got what was already created!
+  QCOMPARE(oneSetting, twoSetting);
 }
 
 static TestSettingsManager s_testSettingsManager;

@@ -27,7 +27,6 @@
 #include "models/featuremodel.h"
 #include "qmlengineholder.h"
 #include "qtglean.h"
-#include "settings/settingfactory.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 
@@ -228,8 +227,8 @@ void TestAddon::conditions() {
   if (!settingKey.isEmpty()) {
     auto setting = SettingsManager::getSetting(settingKey);
     if (!setting) {
-      SettingFactory::createOrGetSetting(
-          settingKey, []() { return nullptr; }, true, false);
+      SettingsManager::createOrGetSetting(
+          settingKey, []() { return QVariant(); }, true, false);
       setting = SettingsManager::getSetting(settingKey);
     }
 

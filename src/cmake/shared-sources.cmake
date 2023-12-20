@@ -186,8 +186,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
     ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/setting.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingfactory.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingfactory.cpp
     ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
     ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp

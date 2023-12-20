@@ -126,3 +126,25 @@ void SettingsManager::serializeLogs(
 
   callback("Settings", buff);
 }
+
+// static
+Setting* SettingsManager::createOrGetSetting(
+    const QString& key, std::function<QVariant()> defaultValue,
+    bool removeWhenReset, bool sensitiveSetting) {
+  auto setting = getSetting(key);
+  if (setting) {
+    Q_ASSERT(defaultValue() == setting->m_defaultValue());
+    Q_ASSERT(removeWhenReset == setting->m_removeWhenReset);
+    Q_ASSERT(sensitiveSetting == setting->m_sensitiveSetting);
+
+    return setting;
+  }
+
+  setting = new Setting(
+      SettingsManager::instance(), key,
+      [defaultValue]() { return QVariant(defaultValue()); }, removeWhenReset,
+      sensitiveSetting);
+
+  instance()->registerSetting(setting);
+  return setting;
+}

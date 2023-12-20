@@ -5,7 +5,6 @@
 #include "settings/settinggroup.h"
 
 #include "leakdetector.h"
-#include "settingfactory.h"
 #include "settingsmanager.h"
 
 SettingGroup::SettingGroup(const QString& groupKey, bool removeWhenReset,
@@ -32,7 +31,7 @@ SettingGroup::~SettingGroup() { MZ_COUNT_DTOR(Setting); }
 
 void SettingGroup::addSetting(const QString& key) {
   auto settingKey = getSettingKey(key);
-  auto setting = SettingFactory::createOrGetSetting(
+  auto setting = SettingsManager::createOrGetSetting(
       settingKey, []() { return QVariant(); }, m_removeWhenReset,
       m_sensitiveSetting);
 

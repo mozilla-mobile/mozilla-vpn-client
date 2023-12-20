@@ -97,11 +97,11 @@ class Setting : public QObject {
   bool m_sensitiveSetting;
   bool m_removeWhenReset;
 
-  friend class SettingFactory;
+  friend class SettingsManager;
   friend class SettingGroup;
 
 #ifdef UNIT_TEST
-  friend class TestSettingFactory;
+  friend class TestSettingsManager;
   friend class TestSettingGroup;
 #endif
 };

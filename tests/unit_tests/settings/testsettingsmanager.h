@@ -12,7 +12,12 @@ class TestSettingsManager final : public TestHelper {
   void cleanup();
 
   void testGetSetting();
+
   void testReset();
   void testHardReset();
+
   void testSerializeLogs();
+
+  void testCreateNewSetting();
+  void testCreateNewSettingButSettingAlreadyExists();
 };

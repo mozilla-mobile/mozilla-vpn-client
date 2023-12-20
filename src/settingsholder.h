@@ -12,8 +12,7 @@
 #include "constants.h"
 #include "feature.h"
 #include "settings/setting.h"
-#include "settings/settingfactory.h"
-#include "settings/settinggroup.h"
+#include "settings/settingsmanager.h"
 
 /**
  * @brief The SettingsHolder class is a singleton that exposes the APIs to
@@ -60,7 +59,7 @@ class SettingsHolder final : public QObject {
  private:
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 removeWhenReset, isSensitive)                                  \
-  Setting* m_##getter = SettingFactory::createOrGetSetting(                    \
+  Setting* m_##getter = SettingsManager::createOrGetSetting(                   \
       key, []() -> type { return defaultValue; }, removeWhenReset,             \
       isSensitive);
 
