@@ -140,5 +140,8 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
 }
 
 QNetworkInformation::Reachability WindowsNetworkWatcher::getReachability() {
-  return QNetworkInformation::instance()->reachability();
+  if (QNetworkInformation::instance()) {
+    return QNetworkInformation::instance()->reachability();
+  }
+  return QNetworkInformation::Reachability::Unknown;
 }

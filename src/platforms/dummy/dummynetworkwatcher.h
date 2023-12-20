@@ -15,7 +15,10 @@ class DummyNetworkWatcher final : public NetworkWatcherImpl {
   void initialize() override;
 
   QNetworkInformation::Reachability getReachability() override {
-    return QNetworkInformation::instance()->reachability();
+    if (QNetworkInformation::instance()) {
+      return QNetworkInformation::instance()->reachability();
+    }
+    return QNetworkInformation::Reachability::Unknown;
   }
 };
 

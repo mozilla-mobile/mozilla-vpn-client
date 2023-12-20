@@ -30,5 +30,8 @@ AndroidNetworkWatcher::~AndroidNetworkWatcher() {
 void AndroidNetworkWatcher::initialize() {}
 
 QNetworkInformation::Reachability AndroidNetworkWatcher::getReachability() {
-  return QNetworkInformation::instance()->reachability();
+  if (QNetworkInformation::instance()) {
+    return QNetworkInformation::instance()->reachability();
+  }
+  return QNetworkInformation::Reachability::Unknown;
 }
