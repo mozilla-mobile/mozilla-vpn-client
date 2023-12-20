@@ -189,8 +189,9 @@ void Navigator::requestScreenFromBottomBar(
       if (layers.length() < 1 || layers.last()
                                      .m_layer->property("telemetryScreenId")
                                      .toString()
-                                     .isEmpty())
+                                     .isEmpty()) {
         break;
+      }
 
       QString telemetryScreenId =
           layers.last().m_layer->property("telemetryScreenId").toString();

@@ -1490,13 +1490,15 @@ describe('Subscription view', function() {
      });
 
   describe('Subscription management telemetry tests', () => {
+    // No Glean on WASM.
+    if(vpn.runningOnWasm()) {
+      return;
+    }
 
     const testCases = [["annual plan", "account"], ["monthly plan", "account_with_change_plan"]];
 
     testCases.forEach(([testCase, subscriptionManagementScreenTelemetryId]) => {
-      
       describe(`Subscription management view events are recorded (${testCase})`, () => {
-
         const isMonthlyPlanTest = testCase === "monthly plan"
 
         //Check if we are testing the monthly plan so we can mock the guardian response
@@ -1530,7 +1532,6 @@ describe('Subscription view', function() {
        });
 
         it('accountScreen impression event is recorded', async () => {
-
           //Open the subscription management view and record accountScreen telemetry
           const accountScreenEvents = await vpn.gleanTestGetValue("impression", "accountScreen", "main");
           assert.equal(accountScreenEvents.length, 1);
@@ -1539,7 +1540,6 @@ describe('Subscription view', function() {
         });
 
         it('editSelected interaction event is recorded', async () => {
-
           //Click the user profile button and record editSelected telemetry
           await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
           const editSelectedEvents = await vpn.gleanTestGetValue("interaction", "editSelected", "main");
@@ -1550,7 +1550,6 @@ describe('Subscription view', function() {
 
         if (isMonthlyPlanTest) {
           it('changePlanSelected interaction event is recorded with correct screen', async () => {
-
             //Click the change plan button and record changePlanSelected telemetry
             await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.ANNUAL_UPGRADE_BUTTON.visible());
             const changePlanSelectedEvents = await vpn.gleanTestGetValue("interaction", "changePlanSelected", "main");
@@ -1561,7 +1560,6 @@ describe('Subscription view', function() {
         }
 
         it('manageSubscriptionSelected interaction event is recorded', async () => {
-
           //Click the manage subscription button and record manageSubscriptionSelected telemetry
           await vpn.scrollToQuery(queries.screenSettings.subscriptionView.FLICKABLE, queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
           await vpn.waitForQueryAndClick(queries.screenSettings.subscriptionView.SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
@@ -1572,7 +1570,6 @@ describe('Subscription view', function() {
         });
 
         it('homeSelected interaction event is recorded with correct screen', async () => {
-
           //Click the home navbar button and record homeSelected telemetry
           await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
           const homeSelectedEvents = await vpn.gleanTestGetValue("interaction", "homeSelected", "main");
@@ -1582,7 +1579,6 @@ describe('Subscription view', function() {
         });
 
         it('messagesSelected interaction event is recorded with correct screen', async () => {
-
           //Click the messages navbar button and record messagesSelected telemetry
           await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
           const messagesSelectedEvents = await vpn.gleanTestGetValue("interaction", "messagesSelected", "main");
@@ -1593,7 +1589,6 @@ describe('Subscription view', function() {
         });
 
         it('settingsSelected interaction event is recorded with correct screen', async () => {
-
           //Click the settings navbar button and record settingsSelected telemetry
           await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
           const settingselectedEvents = await vpn.gleanTestGetValue("interaction", "settingsSelected", "main");
