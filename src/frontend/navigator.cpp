@@ -186,6 +186,8 @@ void Navigator::requestScreenFromBottomBar(
       // Make sure the screen has a view (and it has been added to the layers
       // via Navigator::addView(), and that view has a non-empty
       // "telemetryScreenId" property
+      // TODO in VPN-6039 - support screens as well (not just views on top of
+      // screens)
       if (layers.length() < 1 || layers.last()
                                      .m_layer->property("telemetryScreenId")
                                      .toString()

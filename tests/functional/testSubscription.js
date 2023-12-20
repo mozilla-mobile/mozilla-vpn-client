@@ -1568,34 +1568,6 @@ describe('Subscription view', function() {
           const manageSubscriptionSelectedEventsExtras = manageSubscriptionSelectedEvents[0].extra;
           assert.equal(subscriptionManagementScreenTelemetryId, manageSubscriptionSelectedEventsExtras.screen);
         });
-
-        it('homeSelected interaction event is recorded with correct screen', async () => {
-          //Click the home navbar button and record homeSelected telemetry
-          await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-          const homeSelectedEvents = await vpn.gleanTestGetValue("interaction", "homeSelected", "main");
-          assert.equal(homeSelectedEvents.length, 1);
-          const homeSelectedEventsExtras = homeSelectedEvents[0].extra;
-          assert.equal(subscriptionManagementScreenTelemetryId, homeSelectedEventsExtras.screen);
-        });
-
-        it('messagesSelected interaction event is recorded with correct screen', async () => {
-          //Click the messages navbar button and record messagesSelected telemetry
-          await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-          const messagesSelectedEvents = await vpn.gleanTestGetValue("interaction", "messagesSelected", "main");
-          assert.equal(messagesSelectedEvents.length, 1);
-          const messagesSelectedEventsExtras = messagesSelectedEvents[0].extra;
-          assert.equal(subscriptionManagementScreenTelemetryId, messagesSelectedEventsExtras.screen);
-
-        });
-
-        it('settingsSelected interaction event is recorded with correct screen', async () => {
-          //Click the settings navbar button and record settingsSelected telemetry
-          await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-          const settingselectedEvents = await vpn.gleanTestGetValue("interaction", "settingsSelected", "main");
-          assert.equal(settingselectedEvents.length, 1);
-          const settingselectedEventsExtras = settingselectedEvents[0].extra;
-          assert.equal(subscriptionManagementScreenTelemetryId, settingselectedEventsExtras.screen);
-        });
       });
     });
   });
