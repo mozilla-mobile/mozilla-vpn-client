@@ -59,7 +59,7 @@ class SettingsHolder final : public QObject {
  private:
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 removeWhenReset, isSensitive)                                  \
-  Setting* m_##getter = SettingsManager::createOrGetSetting(                   \
+  Setting* m_##getter = SettingsManager::instance()->createOrGetSetting(       \
       key, []() -> type { return defaultValue; }, removeWhenReset,             \
       isSensitive);
 

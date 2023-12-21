@@ -433,9 +433,12 @@ void AddonManager::reinstateMessages() const {
   Q_ASSERT(settingsHolder);
 
   // Group containing all the message settings.
-  SettingGroup messageSettingGroup =
-      SettingsManager::createSettingGroup(ADDON_MESSAGE_SETTINGS_GROUP);
-  messageSettingGroup.remove();
+  // It only needs to live for the scope of this function.
+  QObject parent;
+  SettingGroup* messageSettingGroup =
+      SettingsManager::instance()->createSettingGroup(
+          &parent, ADDON_MESSAGE_SETTINGS_GROUP);
+  messageSettingGroup->remove();
 }
 
 // static

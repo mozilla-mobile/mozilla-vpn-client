@@ -279,8 +279,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/settings/settinggroup.h
     ${MZ_SOURCE_DIR}/settings/settingsmanager.cpp
     ${MZ_SOURCE_DIR}/settings/settingsmanager.h
-    ${CMAKE_SOURCE_DIR}/src/settings/qsettingsconnector.h
-    ${CMAKE_SOURCE_DIR}/src/settings/qsettingsconnector.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
     ${MZ_SOURCE_DIR}/settings/setting.cpp
     ${MZ_SOURCE_DIR}/settings/setting.h
     ${MZ_SOURCE_DIR}/settingsholder.cpp

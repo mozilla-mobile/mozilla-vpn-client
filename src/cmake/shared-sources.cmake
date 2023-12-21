@@ -184,8 +184,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
     ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
-    ${CMAKE_SOURCE_DIR}/src/settings/qsettingsconnector.h
-    ${CMAKE_SOURCE_DIR}/src/settings/qsettingsconnector.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/setting.h
     ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp

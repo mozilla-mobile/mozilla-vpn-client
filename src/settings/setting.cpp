@@ -7,12 +7,13 @@
 #include "leakdetector.h"
 #include "settingsmanager.h"
 
-Setting::Setting(QObject* parent, QSettingsConnector* settingsConnector,
-                 const QString& key, std::function<QVariant()> defaultValue,
+Setting::Setting(QObject* parent, SettingsConnector* settingsConnector,
+                 const QString& key,
+                 std::function<QVariant()> defaultValueGetter,
                  bool removeWhenReset, bool sensitiveSetting)
     : QObject(parent),
       m_key(key),
-      m_defaultValue(defaultValue),
+      m_defaultValueGetter(defaultValueGetter),
       m_sensitiveSetting(sensitiveSetting),
       m_removeWhenReset(removeWhenReset),
       m_settingsConnector(settingsConnector) {
@@ -25,7 +26,7 @@ QVariant Setting::get() const {
   auto value = m_settingsConnector->getValue(m_key);
 
   if (value.isNull()) {
-    value = m_defaultValue();
+    value = m_defaultValueGetter();
   }
 
   return value;

@@ -17,7 +17,7 @@ void TestSetting::cleanup() {
 }
 
 void TestSetting::testSetSameAsStoredValue() {
-  auto oneTimeSet = SettingsManager::createOrGetSetting("yoso");
+  auto oneTimeSet = SettingsManager::instance()->createOrGetSetting("yoso");
 
   QSignalSpy spy(oneTimeSet, &Setting::changed);
 
@@ -46,7 +46,7 @@ void TestSetting::testSetSameAsStoredValue() {
 // This is here to make sure the isSet check comes before the equality check
 // against get() inside the set() function. That has bit me during development.
 void TestSetting::testSetDefaultWhenUnset() {
-  auto setToDefault = SettingsManager::createOrGetSetting(
+  auto setToDefault = SettingsManager::instance()->createOrGetSetting(
       "justthedefault", []() { return QVariant("default"); }, false, false);
 
   QSignalSpy spy(setToDefault, &Setting::changed);
@@ -59,7 +59,8 @@ void TestSetting::testSetDefaultWhenUnset() {
 }
 
 void TestSetting::testIsSet() {
-  auto justASetting = SettingsManager::createOrGetSetting("asciishrug");
+  auto justASetting =
+      SettingsManager::instance()->createOrGetSetting("asciishrug");
 
   QCOMPARE(justASetting->isSet(), false);
 
@@ -70,9 +71,9 @@ void TestSetting::testIsSet() {
 void TestSetting::testRemove() {
   // Reset or not reset should not amke any difference for the `remove` API,
   // let's test both and verify that is true.
-  auto doNotReset = SettingsManager::createOrGetSetting(
+  auto doNotReset = SettingsManager::instance()->createOrGetSetting(
       "donotreset", []() { return QVariant(); }, false, false);
-  auto doReset = SettingsManager::createOrGetSetting(
+  auto doReset = SettingsManager::instance()->createOrGetSetting(
       "doreset", []() { return QVariant(); }, true, false);
 
   QSignalSpy doNotResetSpy(doNotReset, &Setting::changed);
@@ -104,7 +105,7 @@ void TestSetting::testRemove() {
 }
 
 void TestSetting::testResetOnNotRemoveWhenReset() {
-  auto doNotReset = SettingsManager::createOrGetSetting(
+  auto doNotReset = SettingsManager::instance()->createOrGetSetting(
       "donotreset", []() { return QVariant(); }, false, false);
 
   QSignalSpy spy(doNotReset, &Setting::changed);
@@ -121,7 +122,7 @@ void TestSetting::testResetOnNotRemoveWhenReset() {
 }
 
 void TestSetting::testResetOnRemoveWhenReset() {
-  auto doReset = SettingsManager::createOrGetSetting(
+  auto doReset = SettingsManager::instance()->createOrGetSetting(
       "doreset", []() { return QVariant(); }, true, false);
 
   QSignalSpy spy(doReset, &Setting::changed);
@@ -137,7 +138,7 @@ void TestSetting::testResetOnRemoveWhenReset() {
 }
 
 void TestSetting::testLogSensitiveSetting() {
-  auto sensitiveSetting = SettingsManager::createOrGetSetting(
+  auto sensitiveSetting = SettingsManager::instance()->createOrGetSetting(
       "sensitive", []() { return QVariant(); }, true, true);
 
   sensitiveSetting->set(QVariant("super sensitive text"));
@@ -145,7 +146,7 @@ void TestSetting::testLogSensitiveSetting() {
 }
 
 void TestSetting::testLogNotSensitiveSetting() {
-  auto notSensitiveetting = SettingsManager::createOrGetSetting(
+  auto notSensitiveetting = SettingsManager::instance()->createOrGetSetting(
       "notsensitive", []() { return QVariant(); }, true, false);
 
   notSensitiveetting->set(QVariant("public text"));
@@ -153,12 +154,12 @@ void TestSetting::testLogNotSensitiveSetting() {
 }
 
 void TestSetting::testLogEmptySetting() {
-  auto notSensitiveetting = SettingsManager::createOrGetSetting(
+  auto notSensitiveetting = SettingsManager::instance()->createOrGetSetting(
       "notsensitive", []() { return QVariant(); }, true, false);
 
   QCOMPARE(notSensitiveetting->log(), "");
 
-  auto sensitiveSetting = SettingsManager::createOrGetSetting(
+  auto sensitiveSetting = SettingsManager::instance()->createOrGetSetting(
       "sensitive", []() { return QVariant(); }, true, true);
 
   QCOMPARE(sensitiveSetting->log(), "");

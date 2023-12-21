@@ -44,7 +44,7 @@ class TestHelper final : public QObject {
   MozillaVPN* m_mozillavpn = nullptr;
   Theme* m_theme = nullptr;
 
-  SettingGroup m_testSettingGroup;
+  SettingGroup* m_testSettingGroup;
 };
 
 #endif  // TESTHELPER_H

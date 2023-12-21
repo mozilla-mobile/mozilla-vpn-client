@@ -72,6 +72,10 @@ SettingsManager::~SettingsManager() {
   hardReset();
 #endif
 
+  // Free the memory for everything that was in the map.
+  qDeleteAll(m_registeredSettings);
+  m_registeredSettings.clear();
+
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }
@@ -103,10 +107,6 @@ void SettingsManager::hardReset() {
     Q_ASSERT(setting);
     setting->changed();
   }
-
-  m_registeredSettings.clear();
-  // Free the memory for everything that was in the map.
-  qDeleteAll(m_registeredSettings);
 }
 
 void SettingsManager::serializeLogs(
@@ -127,13 +127,12 @@ void SettingsManager::serializeLogs(
   callback("Settings", buff);
 }
 
-// static
 Setting* SettingsManager::createOrGetSetting(
-    const QString& key, std::function<QVariant()> defaultValue,
+    const QString& key, std::function<QVariant()> defaultValueGetter,
     bool removeWhenReset, bool sensitiveSetting) {
-  auto setting = instance()->getSetting(key);
+  auto setting = getSetting(key);
   if (setting) {
-    Q_ASSERT(defaultValue() == setting->m_defaultValue());
+    Q_ASSERT(defaultValueGetter() == setting->m_defaultValueGetter());
     Q_ASSERT(removeWhenReset == setting->m_removeWhenReset);
     Q_ASSERT(sensitiveSetting == setting->m_sensitiveSetting);
 
@@ -141,19 +140,23 @@ Setting* SettingsManager::createOrGetSetting(
   }
 
   setting = new Setting(
-      instance(), &instance()->m_settingsConnector, key,
-      [defaultValue]() { return QVariant(defaultValue()); }, removeWhenReset,
-      sensitiveSetting);
+      this, &m_settingsConnector, key,
+      [defaultValueGetter]() { return QVariant(defaultValueGetter()); },
+      removeWhenReset, sensitiveSetting);
 
-  instance()->registerSetting(setting);
+  registerSetting(setting);
   return setting;
 }
 
-// static
-SettingGroup SettingsManager::createSettingGroup(const QString& groupKey,
-                                                 bool removeWhenReset,
-                                                 bool sensitiveSetting,
-                                                 QStringList acceptedKeys) {
-  return SettingGroup(&instance()->m_settingsConnector, groupKey,
-                      removeWhenReset, sensitiveSetting, acceptedKeys);
+SettingGroup* SettingsManager::createSettingGroup(QObject* parent,
+                                                  const QString& groupKey,
+                                                  bool removeWhenReset,
+                                                  bool sensitiveSetting,
+                                                  QStringList acceptedKeys) {
+  if (!parent) {
+    parent = this;
+  }
+
+  return new SettingGroup(parent, &m_settingsConnector, groupKey,
+                          removeWhenReset, sensitiveSetting, acceptedKeys);
 }

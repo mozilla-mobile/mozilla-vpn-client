@@ -1250,8 +1250,6 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 }
 
 void MozillaVPN::hardReset() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
   SettingsManager::instance()->hardReset();
   controller()->deleteOSTunnelConfig();
 }
@@ -1809,18 +1807,20 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/settings-selected.svg"));
 
   // A group of settings containing all the addon message settings.
-  SettingGroup messageSettingGroup = SettingsManager::createSettingGroup(
-      QString("%1/%2")
-          .arg(Constants::ADDONS_SETTINGS_GROUP)
-          .arg(ADDON_MESSAGE_SETTINGS_GROUP),
-      true,  // remove when reset
-      false  // sensitive setting
-  );
+  SettingGroup* messageSettingGroup =
+      SettingsManager::instance()->createSettingGroup(
+          this,
+          QString("%1/%2")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_MESSAGE_SETTINGS_GROUP),
+          true,  // remove when reset
+          false  // sensitive setting
+      );
 
-  connect(&messageSettingGroup, &SettingGroup::changed,
+  connect(messageSettingGroup, &SettingGroup::changed, this,
           [messageIcon]() { resetNotification(messageIcon); });
 
-  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
+  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged, this,
           [messageIcon]() { resetNotification(messageIcon); });
 
   resetNotification(messageIcon);

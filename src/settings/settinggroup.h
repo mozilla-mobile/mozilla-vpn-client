@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "qsettingsconnector.h"
+#include "settingsconnector.h"
 
 /**
  * @brief Represents a group of dynamic settings. Dynamic setttings can be
@@ -41,8 +41,9 @@ class SettingGroup : public QObject {
   Q_OBJECT
 
  public:
-  SettingGroup(QSettingsConnector* settingsConnector, const QString& groupKey,
-               bool removeWhenReset = true, bool sensitiveSetting = false,
+  SettingGroup(QObject* parent, SettingsConnector* settingsConnector,
+               const QString& groupKey, bool removeWhenReset = true,
+               bool sensitiveSetting = false,
                QStringList acceptedKeys = QStringList());
   ~SettingGroup();
 
@@ -84,8 +85,8 @@ class SettingGroup : public QObject {
 
  private:
   void addSetting(const QString& key);
-  bool mayRecord(const QString& key);
-  QString getSettingKey(const QString& key) const {
+  bool isAcceptedKey(const QString& key);
+  QString buildSettingKeyWithGroupPrefix(const QString& key) const {
     return QString("%1/%2").arg(m_groupKey).arg(key);
   };
 
@@ -96,7 +97,7 @@ class SettingGroup : public QObject {
   bool m_removeWhenReset;
   QStringList m_acceptedKeys;
 
-  QSettingsConnector* m_settingsConnector;
+  SettingsConnector* m_settingsConnector;
 };
 
 #endif  // GROUPEDSETTINGS_H

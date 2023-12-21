@@ -77,7 +77,8 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
 AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message"),
-      m_messageSettings(SettingsManager::createSettingGroup(
+      m_messageSettingGroup(SettingsManager::instance()->createSettingGroup(
+          this,
           QString("%1/%2/%3")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_MESSAGE_SETTINGS_GROUP)
@@ -95,7 +96,7 @@ AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
   Q_ASSERT(settingsHolder);
 
   QString statusSetting =
-      m_messageSettings.get(ADDON_MESSAGE_SETTINGS_STATUS_KEY).toString();
+      m_messageSettingGroup->get(ADDON_MESSAGE_SETTINGS_STATUS_KEY).toString();
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();
 
   bool isValidStatus = false;
@@ -123,7 +124,8 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
   m_status = newStatus;
   emit statusChanged(m_status);
 
-  m_messageSettings.set(ADDON_MESSAGE_SETTINGS_STATUS_KEY, newStatusSetting);
+  m_messageSettingGroup->set(ADDON_MESSAGE_SETTINGS_STATUS_KEY,
+                             newStatusSetting);
 
   mozilla::glean::sample::addon_message_state_changed.record(
       mozilla::glean::sample::AddonMessageStateChangedExtra{

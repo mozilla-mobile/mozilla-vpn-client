@@ -116,7 +116,7 @@ class AddonMessage final : public Addon {
 
   MessageStatus m_status = MessageStatus::Received;
 
-  SettingGroup m_messageSettings;
+  SettingGroup* m_messageSettingGroup;
 
   Badge m_badge;
 

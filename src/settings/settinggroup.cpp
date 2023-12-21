@@ -7,10 +7,12 @@
 #include "leakdetector.h"
 #include "settingsmanager.h"
 
-SettingGroup::SettingGroup(QSettingsConnector* settingsConnector,
+SettingGroup::SettingGroup(QObject* parent,
+                           SettingsConnector* settingsConnector,
                            const QString& groupKey, bool removeWhenReset,
                            bool sensitiveSetting, QStringList acceptedKeys)
-    : m_groupKey(groupKey),
+    : QObject(parent),
+      m_groupKey(groupKey),
       m_sensitiveSetting(sensitiveSetting),
       m_removeWhenReset(removeWhenReset),
       m_acceptedKeys(acceptedKeys),
@@ -28,8 +30,8 @@ SettingGroup::SettingGroup(QSettingsConnector* settingsConnector,
 SettingGroup::~SettingGroup() { MZ_COUNT_DTOR(Setting); }
 
 void SettingGroup::addSetting(const QString& key) {
-  auto settingKey = getSettingKey(key);
-  auto setting = SettingsManager::createOrGetSetting(
+  auto settingKey = buildSettingKeyWithGroupPrefix(key);
+  auto setting = SettingsManager::instance()->createOrGetSetting(
       settingKey, []() { return QVariant(); }, m_removeWhenReset,
       m_sensitiveSetting);
 
@@ -37,7 +39,7 @@ void SettingGroup::addSetting(const QString& key) {
   connect(setting, &Setting::changed, this, [this]() { emit changed(); });
 }
 
-bool SettingGroup::mayRecord(const QString& key) {
+bool SettingGroup::isAcceptedKey(const QString& key) {
   if (m_acceptedKeys.count() == 0) {
     return true;
   }
@@ -46,7 +48,8 @@ bool SettingGroup::mayRecord(const QString& key) {
 }
 
 QVariant SettingGroup::get(const QString& key) const {
-  auto setting = SettingsManager::instance()->getSetting(getSettingKey(key));
+  auto setting = SettingsManager::instance()->getSetting(
+      buildSettingKeyWithGroupPrefix(key));
   if (!setting) {
     return QVariant();
   }
@@ -55,11 +58,11 @@ QVariant SettingGroup::get(const QString& key) const {
 }
 
 void SettingGroup::set(const QString& key, QVariant value) {
-  if (!mayRecord(key)) {
+  if (!isAcceptedKey(key)) {
     return;
   }
 
-  auto fullKey = getSettingKey(key);
+  auto fullKey = buildSettingKeyWithGroupPrefix(key);
   auto setting = SettingsManager::instance()->getSetting(fullKey);
   if (!setting) {
     addSetting(key);
@@ -75,7 +78,7 @@ void SettingGroup::remove() {
   m_settingsConnector->remove("", m_groupKey);
 
   foreach (const QString& key, keys) {
-    auto fullKey = getSettingKey(key);
+    auto fullKey = buildSettingKeyWithGroupPrefix(key);
     auto setting = SettingsManager::instance()->getSetting(fullKey);
     setting->changed();
   }

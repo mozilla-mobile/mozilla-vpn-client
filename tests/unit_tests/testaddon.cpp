@@ -227,7 +227,7 @@ void TestAddon::conditions() {
   if (!settingKey.isEmpty()) {
     auto setting = SettingsManager::instance()->getSetting(settingKey);
     if (!setting) {
-      SettingsManager::createOrGetSetting(
+      SettingsManager::instance()->createOrGetSetting(
           settingKey, []() { return QVariant(); }, true, false);
       setting = SettingsManager::instance()->getSetting(settingKey);
     }
@@ -722,7 +722,7 @@ void TestAddon::message_load_status() {
   QObject parent;
   Addon* message = Addon::create(&parent, file.fileName());
 
-  static_cast<AddonMessage*>(message)->m_messageSettings.set(
+  static_cast<AddonMessage*>(message)->m_messageSettingGroup->set(
       ADDON_MESSAGE_SETTINGS_STATUS_KEY, (setting));
   QCOMPARE(static_cast<AddonMessage*>(message)->loadMessageStatus("foo"),
            status);
@@ -753,12 +753,12 @@ void TestAddon::message_dismiss() {
   QVERIFY(message->enabled());
 
   QString addonSetting;
-  connect(&static_cast<AddonMessage*>(message)->m_messageSettings,
+  connect(static_cast<AddonMessage*>(message)->m_messageSettingGroup,
           &SettingGroup::changed, &parent, [&]() {
-            addonSetting =
-                static_cast<AddonMessage*>(message)
-                    ->m_messageSettings.get(ADDON_MESSAGE_SETTINGS_STATUS_KEY)
-                    .toString();
+            addonSetting = static_cast<AddonMessage*>(message)
+                               ->m_messageSettingGroup
+                               ->get(ADDON_MESSAGE_SETTINGS_STATUS_KEY)
+                               .toString();
           });
 
   QCOMPARE(addonSetting, "");

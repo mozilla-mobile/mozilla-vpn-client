@@ -439,7 +439,8 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_id(id),
       m_name(name),
       m_type(type),
-      m_settings(SettingsManager::createSettingGroup(
+      m_settingGroup(SettingsManager::instance()->createSettingGroup(
+          this,
           QString("%1/%2/%3")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_SETTINGS_GROUP)
@@ -449,7 +450,8 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
           )) {
   MZ_COUNT_CTOR(Addon);
 
-  QString storedStatus = m_settings.get(ADDON_SETTINGS_STATUS_KEY).toString();
+  QString storedStatus =
+      m_settingGroup->get(ADDON_SETTINGS_STATUS_KEY).toString();
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
 
   bool isValidStatus = false;
@@ -488,7 +490,7 @@ void Addon::updateAddonStatus(Status newStatus) {
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<Status>();
   QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
 
-  m_settings.set(ADDON_SETTINGS_STATUS_KEY, newStatusSetting);
+  m_settingGroup->set(ADDON_SETTINGS_STATUS_KEY, newStatusSetting);
 
   mozilla::glean::sample::addon_state_changed.record(
       mozilla::glean::sample::AddonStateChangedExtra{

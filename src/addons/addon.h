@@ -117,7 +117,7 @@ class Addon : public QObject {
   QJSValue m_jsDisableFunction;
 
   // Group of dynamic settings related to this specific addon.
-  SettingGroup m_settings;
+  SettingGroup* m_settingGroup;
 
   bool m_enabled = false;
 };

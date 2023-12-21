@@ -8,13 +8,13 @@
 #include <QSettings>
 
 #include "loghandler.h"
-#include "qsettingsconnector.h"
 #include "setting.h"
 #include "settinggroup.h"
+#include "settingsconnector.h"
 
 /**
  * @brief The SettingsManager is a singleton class that manages the underlying
- * QtSetting storage object and serves the as the holder of all settings in the
+ * QtSetting storage object and serves as the holder of all settings in the
  * codebase dynamic or static. The lifetime of this singleton is tied to the
  * lifetime of the QApplication.
  *
@@ -24,13 +24,14 @@
  * e.g. the SETTING macro or the EXPERIMENTAL_FEATURE macro.
  * * Dynamic settings are settings which are created on demand at runtime.
  *
- * All settings are created using SettingsManager::createOrGetSetting, which
- * creates a Setting object and registers it in the SettingsManager class.
+ * All settings are created using
+ * SettingsManager::instance()->createOrGetSetting, which creates a Setting
+ * object and registers it in the SettingsManager class.
  *
  * The only public constructor for Setting objects is
- * SettingsManager::createOrGetSetting, therefore everytime a
+ * SettingsManager::instance()->createOrGetSetting, therefore everytime a
  * Setting object is created it is guaranteed to be registered in the settings
- * base.
+ * manager.
  *
  */
 class SettingsManager final : public QObject, public LogSerializer {
@@ -91,12 +92,6 @@ class SettingsManager final : public QObject, public LogSerializer {
    * and reloads any settings that have been changed in the
    * meantime by another application.
    *
-   * This function is called automatically from QSettings's
-   * destructor and by the event loop at regular intervals,
-   * so you normally don't need to call it yourself.
-   *
-   * Description copied from: https://doc.qt.io/qt-6/qsettings.html#sync
-   *
    */
   void sync() { instance()->m_settings.sync(); };
 
@@ -109,16 +104,17 @@ class SettingsManager final : public QObject, public LogSerializer {
    * different configuration from the new setting.
    *
    * @param key A QSettings valid key.
-   * @param defaultValue The default value to be returned when this setting is
-   * not set. Default value will be null if unset.
+   * @param defaultValueGetter The default value to be returned when this
+   * setting is not set. Default value will be null if unset.
    * @param removeWhenReset Whether or not this setting should actually be
    * removed when `reset` is called. Default is true.
    * @param sensitiveSetting Whether or not this is a sensitive setting i.e. a
    * setting that must not be logged in plain text. Default is false.
    */
-  static Setting* createOrGetSetting(
+  Setting* createOrGetSetting(
       const QString& key,
-      std::function<QVariant()> defaultValue = []() { return QVariant(); },
+      std::function<QVariant()> defaultValueGetter =
+          []() { return QVariant(); },
       bool removeWhenReset = true, bool sensitiveSetting = false);
 
   /**
@@ -134,9 +130,10 @@ class SettingsManager final : public QObject, public LogSerializer {
    * keys will be allowed for storing under this group. Other keys will be
    * ignored.
    */
-  static SettingGroup createSettingGroup(
-      const QString& groupKey, bool removeWhenReset = true,
-      bool sensitiveSetting = false, QStringList acceptedKeys = QStringList());
+  SettingGroup* createSettingGroup(QObject* parent, const QString& groupKey,
+                                   bool removeWhenReset = true,
+                                   bool sensitiveSetting = false,
+                                   QStringList acceptedKeys = QStringList());
 
 #ifdef UNIT_TEST
   /**
@@ -159,7 +156,7 @@ class SettingsManager final : public QObject, public LogSerializer {
  private:
   QMap<QString, Setting*> m_registeredSettings;
   QSettings m_settings;
-  QSettingsConnector m_settingsConnector;
+  SettingsConnector m_settingsConnector;
 
 #ifdef UNIT_TEST
   friend class TestSettingsManager;

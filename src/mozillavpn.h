@@ -192,14 +192,13 @@ class MozillaVPN final : public App {
     emit ticketCreationAnswer(successful);
   }
 
-  void hardReset();
-
   void requestAbout();
 
   static QString appVersionForUpdate();
   static bool mockFreeTrial();
 
  private:
+  void hardReset();
   void maybeStateMain();
 
   void startSchedulingPeriodicOperations();

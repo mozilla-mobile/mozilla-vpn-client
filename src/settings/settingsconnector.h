@@ -12,10 +12,10 @@
  * @brief Exposes APIs to interact with an instance of QSettings.
  *
  */
-class QSettingsConnector : public QObject {
+class SettingsConnector : public QObject {
  public:
-  QSettingsConnector(QObject* parent, QSettings* settings);
-  ~QSettingsConnector();
+  SettingsConnector(QObject* parent, QSettings* settings);
+  ~SettingsConnector();
 
   /**
    * @brief Gets a value from the underlying storage.

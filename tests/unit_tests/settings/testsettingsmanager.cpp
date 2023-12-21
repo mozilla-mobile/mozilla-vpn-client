@@ -21,20 +21,26 @@ void TestSettingsManager::testGetSetting() {
   Q_ASSERT(!SettingsManager::instance()->getSetting("doesnotexist"));
 
   // Create a setting
-  auto setting = SettingsManager::createOrGetSetting("doesexist");
+  auto setting = SettingsManager::instance()->createOrGetSetting("doesexist");
   Q_UNUSED(setting)
 
-  // Try to get it, not it's not nullptr.
+  // Try to get it, now it's not a nullptr.
   Q_ASSERT(SettingsManager::instance()->getSetting("doesexist"));
 }
 
 void TestSettingsManager::testReset() {
   // Create a setting that should be reset
-  auto doReset = SettingsManager::createOrGetSetting(
-      "doreset", []() { return QVariant(); }, true, false);
+  auto doReset = SettingsManager::instance()->createOrGetSetting(
+      "doreset", []() { return QVariant(); },
+      true,  // remove when reset
+      false  // sensitive setting
+  );
   // Create a setting that should not be reset
-  auto doNotReset = SettingsManager::createOrGetSetting(
-      "donotreset", []() { return QVariant(); }, false, false);
+  auto doNotReset = SettingsManager::instance()->createOrGetSetting(
+      "donotreset", []() { return QVariant(); },
+      false,  // remove when reset
+      false   // sensitive setting
+  );
 
   // Check they are there, just in case.
   Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
@@ -50,7 +56,7 @@ void TestSettingsManager::testReset() {
   // Now reset!
   SettingsManager::instance()->reset();
 
-  // Fun fact, reset will _not_ unregister. Check that is true.
+  // Reset should _not_ unregister. Check that is true.
   Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
   Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
 
@@ -61,12 +67,18 @@ void TestSettingsManager::testReset() {
 
 void TestSettingsManager::testHardReset() {
   // Create a setting that should be reset
-  auto doReset = SettingsManager::createOrGetSetting(
-      "doreset", []() { return QVariant(); }, true, false);
+  auto doReset = SettingsManager::instance()->createOrGetSetting(
+      "doreset", []() { return QVariant(); },
+      true,  // remove when reset
+      false  // sensitive setting
+  );
   // Create a setting that should not be reset... It doesn't really matter here,
   // everyone will get reset. But just in case.
-  auto doNotReset = SettingsManager::createOrGetSetting(
-      "donotreset", []() { return QVariant(); }, false, false);
+  auto doNotReset = SettingsManager::instance()->createOrGetSetting(
+      "donotreset", []() { return QVariant(); },
+      false,  // remove when reset
+      false   // sensitive setting
+  );
 
   // Check they are there, just in case.
   Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
@@ -85,11 +97,11 @@ void TestSettingsManager::testHardReset() {
   // Now reset!
   SettingsManager::instance()->hardReset();
 
-  // Hard reset will in fact unregister settings. Check it.
-  Q_ASSERT(!SettingsManager::instance()->getSetting("doreset"));
-  Q_ASSERT(!SettingsManager::instance()->getSetting("donotreset"));
+  // Hard reset will also not unregister settings. Check it.
+  Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
+  Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
 
-  // But it will clear the storage, for all settings regardless of
+  // It will also clear the storage, for all settings regardless of
   // configuration.
   QVERIFY(doReset->get().isNull());
   QVERIFY(doNotReset->get().isNull());
@@ -102,10 +114,11 @@ void TestSettingsManager::testHardReset() {
 
 void TestSettingsManager::testSerializeLogs() {
   // Register some settings.
-  auto oneSetting = SettingsManager::createOrGetSetting("one");
-  auto twoSetting = SettingsManager::createOrGetSetting("two");
-  auto threeSetting = SettingsManager::createOrGetSetting("three");
-  auto thisOneWeWillNotSet = SettingsManager::createOrGetSetting("neverset");
+  auto oneSetting = SettingsManager::instance()->createOrGetSetting("one");
+  auto twoSetting = SettingsManager::instance()->createOrGetSetting("two");
+  auto threeSetting = SettingsManager::instance()->createOrGetSetting("three");
+  auto thisOneWeWillNotSet =
+      SettingsManager::instance()->createOrGetSetting("neverset");
   Q_UNUSED(thisOneWeWillNotSet)
 
   oneSetting->set(QVariant(1));
@@ -131,7 +144,7 @@ void TestSettingsManager::testCreateNewSetting() {
   bool expectedRemoveWhenReset = false;
   bool expectedSensitiveSetting = true;
 
-  auto setting = SettingsManager::createOrGetSetting(
+  auto setting = SettingsManager::instance()->createOrGetSetting(
       expectedKey, [&expectedDefault]() { return QVariant(expectedDefault); },
       expectedRemoveWhenReset, expectedSensitiveSetting);
 
@@ -149,8 +162,8 @@ void TestSettingsManager::testCreateNewSetting() {
 }
 
 void TestSettingsManager::testCreateNewSettingButSettingAlreadyExists() {
-  auto oneSetting = SettingsManager::createOrGetSetting("aKey");
-  auto twoSetting = SettingsManager::createOrGetSetting("aKey");
+  auto oneSetting = SettingsManager::instance()->createOrGetSetting("aKey");
+  auto twoSetting = SettingsManager::instance()->createOrGetSetting("aKey");
 
   // They are the same,
   // because the second time around it just got what was already created!

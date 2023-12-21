@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "qsettingsconnector.h"
+#include "settingsconnector.h"
 
 /**
  * @brief Represents a setting stored in the underlying QSettings storage.
@@ -20,8 +20,8 @@ class Setting : public QObject {
   Q_OBJECT
 
  public:
-  Setting(QObject* parent, QSettingsConnector* settingsConnector,
-          const QString& key, std::function<QVariant()> defaultValue,
+  Setting(QObject* parent, SettingsConnector* settingsConnector,
+          const QString& key, std::function<QVariant()> defaultValueGetter,
           bool removeWhenReset, bool sensitiveSetting);
   ~Setting();
 
@@ -93,12 +93,12 @@ class Setting : public QObject {
  private:
   QString m_key;
 
-  std::function<QVariant()> m_defaultValue;
+  std::function<QVariant()> m_defaultValueGetter;
 
   bool m_sensitiveSetting;
   bool m_removeWhenReset;
 
-  QSettingsConnector* m_settingsConnector = nullptr;
+  SettingsConnector* m_settingsConnector = nullptr;
 
   friend class SettingsManager;
   friend class SettingGroup;
