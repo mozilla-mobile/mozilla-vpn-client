@@ -1,5 +1,7 @@
 ---
 title: Markdown page example
+slug: /hello
+
 ---
 
 # Markdown page example

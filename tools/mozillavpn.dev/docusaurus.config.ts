@@ -1,7 +1,6 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import inspector from './src/plugins/inspector';
 import resouces from './src/plugins/resources';
 
 
@@ -24,23 +23,24 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  plugins: [inspector, resouces],
+  plugins: [resouces],
   presets: [
     [
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          routeBasePath: '/',
+          sidebarPath: './src/sidebars/default.ts',
           path: '../../docs',
-
+          showLastUpdateTime:true,
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-              'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
+//        blog: {
+//          showReadingTime: true,
+//          // Please change this to your repo.
+//          // Remove this to remove the "edit this page" links.
+//          editUrl:
+//              'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+//        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -52,13 +52,13 @@ const config: Config = {
     // Todo: Replace with your project's social card
     image: 'res/logo-generic.png',
     navbar: {
-      title: 'Mozilla VPN Docs',
+      title: '',
       logo: {
         alt: 'Mozilla VPN Logo',
         src: 'res/logo-generic.png',
       },
       items: [
-        {to: '/docs', label: 'Docs', position: 'left'},
+        {to: '/', label: 'Docs', position: 'left'},
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/mozilla-mobile/mozilla-vpn-client',
