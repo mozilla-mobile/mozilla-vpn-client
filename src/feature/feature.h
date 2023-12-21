@@ -18,6 +18,11 @@ class Feature : public QObject {
 #include "featurelist.h"
 #undef FEATURE
 
+#define EXPERIMENTAL_FEATURE(id, name, ...) \
+  static constexpr const char* ExperimentalFeature_##id = #id;
+#include "experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
+
   Q_PROPERTY(QString id MEMBER m_id CONSTANT)
   Q_PROPERTY(QString name MEMBER m_name CONSTANT)
   Q_PROPERTY(bool isToggleable READ isToggleable CONSTANT)

@@ -23,6 +23,7 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
     ${CMAKE_SOURCE_DIR}/src/feature/featurelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/experimentalfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp

@@ -10,9 +10,11 @@
 #include <QVariant>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "settings/setting.h"
 #include "settings/settingsmanager.h"
+
+constexpr const char* EXPERIMENTS_SETTING_GROUP = "experiments";
 
 /**
  * @brief The SettingsHolder class is a singleton that exposes the APIs to
@@ -30,6 +32,12 @@ class SettingsHolder final : public QObject {
 
 #include "settingslist.h"
 #undef SETTING
+
+#define EXPERIMENTAL_FEATURE(experimentId, ...) \
+  Q_PROPERTY(SettingGroup experimentId READ experimentId)
+
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 
   SettingsHolder();
   ~SettingsHolder();
@@ -56,6 +64,12 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
+#define EXPERIMENTAL_FEATURE(experimentId, ...) \
+  SettingGroup* experimentId() { return m_##experimentId; }
+
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
+
  private:
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 removeWhenReset, isSensitive)                                  \
@@ -65,6 +79,16 @@ class SettingsHolder final : public QObject {
 
 #include "settingslist.h"
 #undef SETTING
+
+#define EXPERIMENTAL_FEATURE(experimentId, experimentDescription,             \
+                             experimentSettings)                              \
+  SettingGroup* m_##experimentId =                                            \
+      SettingsManager::instance()->createSettingGroup(                        \
+          QString("%1/%2").arg(EXPERIMENTS_SETTING_GROUP).arg(#experimentId), \
+          true, false, experimentSettings);
+
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 
   bool m_firstExecution = false;
 };
