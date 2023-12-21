@@ -1086,4 +1086,58 @@ interaction:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
-    extra_keys: *interaction_extra_keys  
+    extra_keys: *interaction_extra_keys 
+  edit_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the "edit account" button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
+    expires: never 
+    extra_keys: *interaction_extra_keys
+  manage_subscription_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “manage subscription” button from the subscription management view
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  change_plan_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “change plan” button from the subscription management view (monthly web plan)
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys

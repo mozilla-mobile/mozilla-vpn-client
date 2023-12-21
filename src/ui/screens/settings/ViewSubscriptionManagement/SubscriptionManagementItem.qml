@@ -14,6 +14,8 @@ ColumnLayout {
     id: root
     objectName: _objectName + "-parent"
 
+    property string telemetryScreenId
+
     spacing: 0
 
     states: [
@@ -178,7 +180,12 @@ ColumnLayout {
         MZButton {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
             
-            onClicked: MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
+            onClicked: {
+                Glean.interaction.changePlanSelected.record({
+                    screen: root.telemetryScreenId,
+                });
+                MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
+            }
             text: MZI18n.SubscriptionManagementUpgradeToAnnualButton// "Change plan"
             fontSize: MZTheme.theme.fontSizeSmall
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

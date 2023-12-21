@@ -255,7 +255,7 @@ describe('Addons', function() {
            await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
            await vpn.waitForQuery(
-               queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+               queries.screenSettings.subscriptionView.SCREEN.visible());
 
            // TODO: Uncomment the assertion below once we re-enable
            // "Subscription expiring" message
@@ -368,7 +368,7 @@ describe('Addons', function() {
     afterEach(() => setNextSubscriptionStarted(this.ctx));
 
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
-      it.only(`message display is correct when subscription started at ${testCase}`, async () => {
+      it(`message display is correct when subscription started at ${testCase}`, async () => {
         await vpn.resetAddons('prod');
 
         //Load messages

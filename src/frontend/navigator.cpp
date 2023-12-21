@@ -168,10 +168,61 @@ void Navigator::computeComponent() {
 void Navigator::requestScreenFromBottomBar(
     int requestedScreen, Navigator::LoadingFlags loadingFlags) {
   // Exists so we can add glean metric for screen changes only from bottom bar
+  // "bar_button" extra key denotes destination screen
   mozilla::glean::sample::bottom_navigation_bar_click.record(
       mozilla::glean::sample::BottomNavigationBarClickExtra{
           ._barButton = QVariant::fromValue(
               static_cast<MozillaVPN::CustomScreen>(requestedScreen))});
+
+  // Record navbar button interaction telemetry with "screen" extra key which
+  // denotes the source view
+  // This is done by finding the screen we are currently on, and getting the
+  // "telemetryScreenId" QML property of the top (layers.last()) layer of this
+  // screens stack view, which would be the view currently being displayed
+  for (ScreenData& screen : s_screens) {
+    if (screen.m_screen == m_currentScreen) {
+      auto layers = screen.m_layers;
+
+      QString telemetryScreenId =
+          layers.last().m_layer->property("telemetryScreenId").toString();
+
+      // Make sure the screen has a view (and it has been added to the layers
+      // via Navigator::addView(), and that view has a non-empty
+      // "telemetryScreenId" property
+      // TODO in VPN-6039 - support screens as well (not just views on top of
+      // screens)
+      if (layers.length() < 1 || telemetryScreenId.isEmpty()) {
+        break;
+      }
+
+      // Record telemetry based on which screen was requested (aka which navbar
+      // button pressed)
+      switch (requestedScreen) {
+        case MozillaVPN::ScreenHome:
+          mozilla::glean::interaction::home_selected.record(
+              mozilla::glean::interaction::HomeSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        case MozillaVPN::ScreenMessaging:
+          mozilla::glean::interaction::messages_selected.record(
+              mozilla::glean::interaction::MessagesSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        case MozillaVPN::ScreenSettings:
+          mozilla::glean::interaction::settings_selected.record(
+              mozilla::glean::interaction::SettingsSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        default:
+          logger.warning() << "Requested screen" << requestedScreen
+                           << "is not a screen from the navbar";
+          break;
+      }
+    }
+  }
 
   requestScreen(requestedScreen, loadingFlags);
 }
