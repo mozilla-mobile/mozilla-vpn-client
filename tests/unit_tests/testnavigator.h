@@ -12,7 +12,7 @@ class TestNavigator final : public TestHelper {
  private slots:
   void init();
 
-  void navbar_button_telemetry();
+  void testNavbarButtonTelemetry();
 
  private:
   SettingsHolder* m_settingsHolder = nullptr;

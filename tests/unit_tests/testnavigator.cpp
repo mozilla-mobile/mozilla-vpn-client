@@ -31,7 +31,7 @@ void TestNavigator::init() {
   MZGlean::initialize();
 }
 
-void TestNavigator::navbar_button_telemetry() {
+void TestNavigator::testNavbarButtonTelemetry() {
   // Initialize
   Navigator* navigator = Navigator::instance();
   Localizer l;
@@ -64,21 +64,39 @@ void TestNavigator::navbar_button_telemetry() {
         return true;
       });
 
-  // Setup UI - doesn't really matter what view we start in
+  // Setup UI - doesn't really matter what screen we start in
   navigator->requestScreen(MozillaVPN::ScreenHome);
 
-  QString telemetryScreenId = "test-screen-id";
-
-  // Create QQuickItem and add as a mock view on top of the current screen with
-  // telemetryScreenId property that will be used as the events extra key
-  QQuickItem* item = new QQuickItem;
-  item->setProperty("telemetryScreenId", telemetryScreenId);
-
-  navigator->addView(MozillaVPN::ScreenHome, QVariant::fromValue(item));
+  // Create QQuickItem that acts as a mock view and add it to the screens stack
+  QQuickItem* view = new QQuickItem;
+  navigator->addView(MozillaVPN::ScreenHome, QVariant::fromValue(view));
 
   // Test homeSelected event
   // Verify number of events is 0 before the test
   auto homeSelectedEvents =
+      mozilla::glean::interaction::home_selected.testGetValue();
+
+  QCOMPARE(homeSelectedEvents.length(), 0);
+
+  // Click the navbar home button
+  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+
+  // Verify number of events is still 0 after the test
+  // because the view does not have a telemetryScreenId property
+  homeSelectedEvents =
+      mozilla::glean::interaction::home_selected.testGetValue();
+
+  QCOMPARE(homeSelectedEvents.length(), 0);
+
+  QString telemetryScreenId = "test-screen-id";
+
+  // Give the mock view a telemetryScreenId which will be used as the events
+  // extra key
+  view->setProperty("telemetryScreenId", telemetryScreenId);
+
+  // Test homeSelected event
+  // Verify number of events is still 0 before the test
+  homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
   QCOMPARE(homeSelectedEvents.length(), 0);

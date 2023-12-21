@@ -183,20 +183,17 @@ void Navigator::requestScreenFromBottomBar(
     if (screen.m_screen == m_currentScreen) {
       auto layers = screen.m_layers;
 
+      QString telemetryScreenId =
+          layers.last().m_layer->property("telemetryScreenId").toString();
+
       // Make sure the screen has a view (and it has been added to the layers
       // via Navigator::addView(), and that view has a non-empty
       // "telemetryScreenId" property
       // TODO in VPN-6039 - support screens as well (not just views on top of
       // screens)
-      if (layers.length() < 1 || layers.last()
-                                     .m_layer->property("telemetryScreenId")
-                                     .toString()
-                                     .isEmpty()) {
+      if (layers.length() < 1 || telemetryScreenId.isEmpty()) {
         break;
       }
-
-      QString telemetryScreenId =
-          layers.last().m_layer->property("telemetryScreenId").toString();
 
       // Record telemetry based on which screen was requested (aka which navbar
       // button pressed)
@@ -218,6 +215,10 @@ void Navigator::requestScreenFromBottomBar(
               mozilla::glean::interaction::SettingsSelectedExtra{
                   ._screen = telemetryScreenId,
               });
+          break;
+        default:
+          logger.warning() << "Requested screen" << requestedScreen
+                           << "is not a screen from the navbar";
           break;
       }
     }
