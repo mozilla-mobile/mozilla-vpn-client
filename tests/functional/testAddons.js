@@ -255,7 +255,7 @@ describe('Addons', function() {
            await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
            await vpn.waitForQuery(
-               queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+               queries.screenSettings.subscriptionView.SCREEN.visible());
 
            // TODO: Uncomment the assertion below once we re-enable
            // "Subscription expiring" message

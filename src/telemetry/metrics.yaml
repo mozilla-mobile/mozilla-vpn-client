@@ -811,6 +811,24 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
+  manage_account_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the `manage account` button
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - amarchesini@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
   max_device_reached:
     type: event
     lifetime: ping
