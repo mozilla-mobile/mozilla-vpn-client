@@ -15,11 +15,13 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@cmfcmf/docusaurus-search-local": "^1.1.0",
     "@docusaurus/core": "3.0.1",
     "@docusaurus/preset-classic": "3.0.1",
     "@lit/react": "^1.0.2",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "docusaurus-lunr-search": "^3.3.1",
     "prism-react-renderer": "^2.3.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"

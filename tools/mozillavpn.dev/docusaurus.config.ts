@@ -4,7 +4,6 @@ import type * as Preset from '@docusaurus/preset-classic';
 import resouces from './src/plugins/resources';
 
 
-
 const config: Config = {
   title: 'Mozilla VPN Dev Portal',
   tagline: 'Dinosaurs are cool',
@@ -23,7 +22,7 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  plugins: [resouces],
+  plugins: [resouces, require('docusaurus-lunr-search')],
   presets: [
     [
       'classic',
@@ -59,7 +58,37 @@ const config: Config = {
       },
       items: [
         {to: '/', label: 'Docs', position: 'left'},
-        //{to: '/blog', label: 'Blog', position: 'left'},
+        {
+          label: 'Tools',
+          position: 'left',
+          items: [
+            {
+              href: 'https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/',
+              label: 'Inspector',
+              target: '_blank',
+              rel: null,
+            },
+            {
+              href: 'https://mozilla-mobile.github.io/mozilla-vpn-client/translationsreport/',
+              label: 'Translationsreport',
+              target: '_blank',
+              rel: null,
+            },
+            {
+              href: 'https://mozilla-mobile.github.io/mozilla-vpn-client/logviewer/',
+              label: 'Logviewer',
+              target: '_blank',
+              rel: null,
+            },
+            {
+              href: 'https://mozilla-mobile.github.io/mozilla-vpn-client/?branch=main',
+              label: 'Wasm Client',
+              target: '_blank',
+              rel: null,
+            },
+          ],
+          className: 'navbar__link--community',
+        },
         {
           href: 'https://github.com/mozilla-mobile/mozilla-vpn-client',
           label: 'GitHub',
