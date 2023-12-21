@@ -170,5 +170,8 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
 }
 
 QNetworkInformation::Reachability NetworkWatcher::getReachability() {
-  return QNetworkInformation::instance()->reachability();
+  if (QNetworkInformation::instance()) {
+    return QNetworkInformation::instance()->reachability();
+  }
+  return QNetworkInformation::Reachability::Unknown;
 }
