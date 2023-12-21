@@ -398,8 +398,6 @@ const screenSettings = {
     PAYMENT_METHOD_LABEL: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel'),
 
-    SUBSCRIPTION_USER_PROFILE:
-        new QmlQueryComposer('//subscriptionUserProfile'),
     SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME:
         new QmlQueryComposer('//subscriptionUserProfile-displayName'),
     SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS:

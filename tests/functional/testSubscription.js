@@ -501,7 +501,7 @@ describe('Subscription view', function() {
         queries.screenSettings.subscriptionView.SCREEN.visible());
   });
 
-  it('Playing with the subscription view', async () => {
+  it.only('Playing with the subscription view', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
         sessionToken: 'session',
@@ -1066,7 +1066,7 @@ describe('Subscription view', function() {
       }
 
       await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                 .SUBSCRIPTION_USER_PROFILE.visible());
+                                 .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
       await vpn.waitForQuery(
           queries.screenSettings.subscriptionView
               .SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME.visible()
