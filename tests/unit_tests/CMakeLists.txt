@@ -113,8 +113,6 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testsettings.cpp
-    testsettings.h
     testtasks.cpp
     testtasks.h
     testtasksentry.cpp
@@ -127,6 +125,12 @@ target_sources(app_unit_tests PRIVATE
     testurlopener.h
     testsettingsholder.cpp
     testsettingsholder.h
+    settings/testsetting.cpp
+    settings/testsetting.h
+    settings/testsettinggroup.cpp
+    settings/testsettinggroup.h
+    settings/testsettingsmanager.cpp
+    settings/testsettingsmanager.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

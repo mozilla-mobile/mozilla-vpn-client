@@ -761,34 +761,4 @@ SETTING_BOOL(addonApiSetting,        // getter
              false,                  // remove when reset
              false                   // sensitive (do not log)
 )
-
-SETTING_STRING(foobar,        // getter
-               setFoobar,     // setter
-               removeFoobar,  // remover
-               hasFoobar,     // has
-               "foobar",      // key
-               "FOO BAR",     // default value
-               true,          // remove when reset
-               false          // sensitive (do not log)
-)
-
-SETTING_STRING(barfoo,        // getter
-               setBarfoo,     // setter
-               removeBarfoo,  // remover
-               hasBarfoo,     // has
-               "barfoo",      // key
-               "",            // default value
-               true,          // remove when reset
-               false          // sensitive (do not log)
-)
-
-SETTING_STRING(sensitive,        // getter
-               setSensitive,     // setter
-               removeSensitive,  // remover
-               hasSensitive,     // has
-               "sensitive",      // key
-               "",               // default value
-               true,             // remove when reset
-               true              // sensitive (do not log)
-)
 #endif

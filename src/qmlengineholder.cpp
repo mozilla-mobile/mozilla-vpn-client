@@ -19,6 +19,7 @@
 #include "glean/mzglean.h"
 #include "leakdetector.h"
 #include "localizer.h"
+#include "loghandler.h"
 #include "models/featuremodel.h"
 #include "models/licensemodel.h"
 #include "settingsholder.h"

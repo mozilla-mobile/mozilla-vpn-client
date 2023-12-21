@@ -180,6 +180,14 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/setting.h
     ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
     ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp
