@@ -61,6 +61,9 @@ class InspectorClient extends GenericDispatcher {
   }
 
   sendCommand (command) {
+    if(this.websocketConnection == null){
+      return;
+    }
     if (this.websocketConnection.readyState != 1) {
       this.queue.push(command)
       return
