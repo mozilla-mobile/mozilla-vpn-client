@@ -148,15 +148,10 @@ Setting* SettingsManager::createOrGetSetting(
   return setting;
 }
 
-SettingGroup* SettingsManager::createSettingGroup(QObject* parent,
-                                                  const QString& groupKey,
+SettingGroup* SettingsManager::createSettingGroup(const QString& groupKey,
                                                   bool removeWhenReset,
                                                   bool sensitiveSetting,
                                                   QStringList acceptedKeys) {
-  if (!parent) {
-    parent = this;
-  }
-
-  return new SettingGroup(parent, &m_settingsConnector, groupKey,
-                          removeWhenReset, sensitiveSetting, acceptedKeys);
+  return new SettingGroup(this, &m_settingsConnector, groupKey, removeWhenReset,
+                          sensitiveSetting, acceptedKeys);
 }

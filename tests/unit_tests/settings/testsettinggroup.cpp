@@ -19,9 +19,7 @@ void TestSettingGroup::cleanup() {
 
 void TestSettingGroup::testLoadSettingsOnInit() {
   {
-    QObject parent;
-    auto group =
-        SettingsManager::instance()->createSettingGroup(&parent, "aGroup");
+    auto group = SettingsManager::instance()->createSettingGroup("aGroup");
 
     // Let's add some keys to the group
     group->set("keyOne", QVariant(1));
@@ -29,9 +27,7 @@ void TestSettingGroup::testLoadSettingsOnInit() {
     group->set("keyThree", QVariant(3));
   }
 
-  QObject parent;
-  auto group =
-      SettingsManager::instance()->createSettingGroup(&parent, "aGroup");
+  auto group = SettingsManager::instance()->createSettingGroup("aGroup");
   Q_UNUSED(group)
 
   // Check that just by calling the initializer the settings were registered.
@@ -48,9 +44,8 @@ void TestSettingGroup::testSettingsAreCreatedWithTheRightProperties() {
   bool expectedRemoveWhenReset = false;
   bool expectedSensitiveSetting = true;
 
-  QObject parent;
   auto group = SettingsManager::instance()->createSettingGroup(
-      &parent, "aGroup", expectedRemoveWhenReset, expectedSensitiveSetting);
+      "aGroup", expectedRemoveWhenReset, expectedSensitiveSetting);
 
   // Set something so the setting is created.
   group->set("keyOne", QVariant(1));
@@ -61,9 +56,7 @@ void TestSettingGroup::testSettingsAreCreatedWithTheRightProperties() {
 }
 
 void TestSettingGroup::testGetAndSetUnregisteredSetting() {
-  QObject parent;
-  auto group =
-      SettingsManager::instance()->createSettingGroup(&parent, "aGroup");
+  auto group = SettingsManager::instance()->createSettingGroup("aGroup");
 
   QSignalSpy spy(group, &SettingGroup::changed);
 
@@ -84,9 +77,8 @@ void TestSettingGroup::testGetAndSetUnregisteredSetting() {
 }
 
 void TestSettingGroup::testGetAndSetDisallowedSetting() {
-  QObject parent;
   auto group = SettingsManager::instance()->createSettingGroup(
-      &parent, "aGroup",
+      "aGroup",
       true,   // remove when reset
       false,  // sensitive settings
       QStringList("allowedKey"));
@@ -111,9 +103,8 @@ void TestSettingGroup::testRemove() {
       SettingsManager::instance()->createOrGetSetting("notinthegroup");
   notInTheGroup->set(QVariant("aha!"));
 
-  QObject parent;
   auto group = SettingsManager::instance()->createSettingGroup(
-      &parent, "aGroup",
+      "aGroup",
       true,  // remove when reset
       false  // sensitive settings
   );

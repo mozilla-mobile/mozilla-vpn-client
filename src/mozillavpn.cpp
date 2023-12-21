@@ -1809,7 +1809,6 @@ void MozillaVPN::registerNavigationBarButtons() {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
-          instance(),
           QString("%1/%2")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_MESSAGE_SETTINGS_GROUP),

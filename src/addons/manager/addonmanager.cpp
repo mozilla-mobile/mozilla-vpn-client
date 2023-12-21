@@ -437,7 +437,7 @@ void AddonManager::reinstateMessages() const {
   QObject parent;
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
-          &parent, ADDON_MESSAGE_SETTINGS_GROUP);
+          ADDON_MESSAGE_SETTINGS_GROUP);
   messageSettingGroup->remove();
 }
 

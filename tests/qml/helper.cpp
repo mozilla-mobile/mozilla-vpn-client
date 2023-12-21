@@ -10,7 +10,7 @@
 
 TestHelper::TestHelper()
     : m_testSettingGroup(
-          SettingsManager::instance()->createSettingGroup(this, "aGroup")) {
+          SettingsManager::instance()->createSettingGroup("aGroup")) {
   m_i18nstrings = I18nStrings::instance();
   m_mozillavpn = MozillaVPN::instance();
 }

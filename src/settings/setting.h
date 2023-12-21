@@ -101,7 +101,6 @@ class Setting : public QObject {
   SettingsConnector* m_settingsConnector = nullptr;
 
   friend class SettingsManager;
-  friend class SettingGroup;
 
 #ifdef UNIT_TEST
   friend class TestSettingsManager;

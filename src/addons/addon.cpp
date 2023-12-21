@@ -440,7 +440,6 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
       m_name(name),
       m_type(type),
       m_settingGroup(SettingsManager::instance()->createSettingGroup(
-          this,
           QString("%1/%2/%3")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_SETTINGS_GROUP)

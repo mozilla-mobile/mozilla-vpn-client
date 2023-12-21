@@ -126,7 +126,7 @@ class SettingsManager final : public QObject, public LogSerializer {
    * keys will be allowed for storing under this group. Other keys will be
    * ignored.
    */
-  SettingGroup* createSettingGroup(QObject* parent, const QString& groupKey,
+  SettingGroup* createSettingGroup(const QString& groupKey,
                                    bool removeWhenReset = true,
                                    bool sensitiveSetting = false,
                                    QStringList acceptedKeys = QStringList());

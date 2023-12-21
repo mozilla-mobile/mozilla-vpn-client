@@ -78,7 +78,6 @@ AddonMessage::AddonMessage(QObject* parent, const QString& manifestFileName,
                            const QString& id, const QString& name)
     : Addon(parent, manifestFileName, id, name, "message"),
       m_messageSettingGroup(SettingsManager::instance()->createSettingGroup(
-          this,
           QString("%1/%2/%3")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_MESSAGE_SETTINGS_GROUP)
