@@ -95,8 +95,8 @@ class Setting : public QObject {
 
   std::function<QVariant()> m_defaultValueGetter;
 
-  bool m_sensitiveSetting;
-  bool m_removeWhenReset;
+  bool m_sensitiveSetting = false;
+  bool m_removeWhenReset = true;
 
   SettingsConnector* m_settingsConnector = nullptr;
 

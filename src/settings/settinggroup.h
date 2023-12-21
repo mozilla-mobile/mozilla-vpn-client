@@ -93,8 +93,8 @@ class SettingGroup : public QObject {
  private:
   QString m_groupKey;
 
-  bool m_sensitiveSetting;
-  bool m_removeWhenReset;
+  bool m_sensitiveSetting = false;
+  bool m_removeWhenReset = true;
   QStringList m_acceptedKeys;
 
   SettingsConnector* m_settingsConnector;
