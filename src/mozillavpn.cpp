@@ -1809,7 +1809,7 @@ void MozillaVPN::registerNavigationBarButtons() {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
-          this,
+          instance(),
           QString("%1/%2")
               .arg(Constants::ADDONS_SETTINGS_GROUP)
               .arg(ADDON_MESSAGE_SETTINGS_GROUP),
@@ -1817,11 +1817,11 @@ void MozillaVPN::registerNavigationBarButtons() {
           false  // sensitive setting
       );
 
-  connect(messageSettingGroup, &SettingGroup::changed, this,
+  connect(messageSettingGroup, &SettingGroup::changed, instance(),
           [messageIcon]() { resetNotification(messageIcon); });
 
-  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged, this,
-          [messageIcon]() { resetNotification(messageIcon); });
+  connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
+          instance(), [messageIcon]() { resetNotification(messageIcon); });
 
   resetNotification(messageIcon);
 }
