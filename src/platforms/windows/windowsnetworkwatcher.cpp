@@ -138,10 +138,3 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
                  << "id:" << logger.sensitive(bssid);
   emit unsecuredNetwork(ssid, bssid);
 }
-
-QNetworkInformation::Reachability WindowsNetworkWatcher::getReachability() {
-  if (QNetworkInformation::instance()) {
-    return QNetworkInformation::instance()->reachability();
-  }
-  return QNetworkInformation::Reachability::Unknown;
-}

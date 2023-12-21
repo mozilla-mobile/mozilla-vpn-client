@@ -22,13 +22,6 @@ class LinuxNetworkWatcher final : public NetworkWatcherImpl {
 
   void start() override;
 
-  QNetworkInformation::Reachability getReachability() {
-    if (QNetworkInformation::instance()) {
-      return QNetworkInformation::instance()->reachability();
-    }
-    return QNetworkInformation::Reachability::Unknown;
-  }
-
  signals:
   void checkDevicesInThread();
 

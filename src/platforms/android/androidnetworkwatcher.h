@@ -13,8 +13,6 @@ class AndroidNetworkWatcher final : public NetworkWatcherImpl {
   ~AndroidNetworkWatcher();
 
   void initialize() override;
-
-  QNetworkInformation::Reachability getReachability() override;
 };
 
 #endif  // ANDROIDNETWORKWATCHER_H

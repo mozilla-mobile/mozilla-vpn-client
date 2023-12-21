@@ -40,13 +40,6 @@ void IOSNetworkWatcher::initialize() {
           &IOSNetworkWatcher::controllerStateChanged);
 }
 
-  QNetworkInformation::Reachability IOSNetworkWatcher::getReachability() {
-    if (QNetworkInformation::instance()) {
-    return QNetworkInformation::instance()->reachability();
-    }
-    return QNetworkInformation::Reachability::Unknown;
-  }
-
 NetworkWatcherImpl::TransportType IOSNetworkWatcher::toTransportType(nw_path_t path) {
   if (path == nil) {
     return NetworkWatcherImpl::TransportType_Unknown;
