@@ -17,7 +17,7 @@
 #include <QUrl>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "logger.h"
 #include "urlopener.h"
 

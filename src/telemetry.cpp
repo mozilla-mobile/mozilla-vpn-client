@@ -9,7 +9,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"

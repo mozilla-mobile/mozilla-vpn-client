@@ -6,7 +6,7 @@
 
 #include <QHostAddress>
 
-#include "feature.h"
+#include "feature/feature.h"
 #include "ipaddress.h"
 #include "logger.h"
 #include "rfc/rfc1918.h"

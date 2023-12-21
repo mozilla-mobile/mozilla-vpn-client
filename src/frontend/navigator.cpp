@@ -9,7 +9,7 @@
 
 #include "app.h"
 #include "errorhandler.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"

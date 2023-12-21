@@ -12,7 +12,7 @@
 #include <QScopeGuard>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

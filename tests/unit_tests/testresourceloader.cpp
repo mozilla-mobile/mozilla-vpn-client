@@ -10,7 +10,7 @@
 
 #include "addons/addonreplacer.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "helper.h"
 #include "languagei18n.h"
 #include "localizer.h"

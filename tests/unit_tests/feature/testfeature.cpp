@@ -4,7 +4,7 @@
 
 #include "testfeature.h"
 
-#include "feature.h"
+#include "feature/feature.h"
 #include "helper.h"
 #include "settingsholder.h"
 

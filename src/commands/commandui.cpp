@@ -19,7 +19,7 @@
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
