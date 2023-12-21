@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for iOS
 
 Building for iOS can only be done on a Mac.
 

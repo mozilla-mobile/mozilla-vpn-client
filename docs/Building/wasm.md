@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for WASM
 
 WASM instructions for Linux are below. Building for wasm is a little tricky, you may be able to get by using the taskcluster artifacts that run on each PR. Each PR runs a build-wasm/opt job. From GitHub actions view, you can "View task in Taskcluster", then under Artifacts, click on `public/build/index.html`.
 

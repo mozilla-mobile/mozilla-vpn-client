@@ -1,4 +1,4 @@
-# Mozilla VPN Accessibility -- Principles and Requirements
+# Principles and Requirements
 
 ## Summary
 

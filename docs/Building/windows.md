@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for Windows
 
 ## Get Qt
 

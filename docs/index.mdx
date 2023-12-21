@@ -1,43 +1,83 @@
-# Mozilla VPN
+---
+title: Mozilla VPN
+sidebar_label: Overview
+sidebar_position: 1
+slug: /
+hide_table_of_contents: false
+---
 
->_One tap to privacy
+
+
+_One tap to privacy
 Surf, stream, game, and get work done while maintaining your privacy online.
 Whether you’re traveling, using public WiFi, or simply looking for more online
 security, we will always put your privacy first._
 
 See: https://vpn.mozilla.org
 
-## Getting Involved
+export const Grid = ({children}) => (
+  <span
+    style={{
+      display: "grid",
+      gridTemplateColumns: "2fr 1fr",
+      gridColumnGap: "20px",
+    }}>
+    {children}
+  </span>
+);
+export const Preview = ({children}) =>(<iframe 
+    src="https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.wasm/artifacts/public%2Fbuild%2Fembedded.html"
+    style={{
+      width: "450px",
+      height: "800px",
+      border: "15px solid black",
+      borderRadius: "20px",
+      gridColumn: 2,
+      gridRow: 1,
+      gridRowEnd: "auto",
+      gridRowEnd: 1000,
+    }}
+  />
+);
 
-We encourage you to participate in this open source project. We love Pull
-Requests, Bug Reports, ideas, (security) code reviews, or any other kind of
-positive contribution.
+<Grid>
+  <div>
+  ## Getting Involved
+  We encourage you to participate in this open source project. We love Pull
+  Requests, Bug Reports, ideas, (security) code reviews, or any other kind of
+  positive contribution.
 
-Before you attempt to make a contribution please read the [Community
-Participation
-Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
+  Before you attempt to make a contribution please read the [Community
+  Participation
+  Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/).
 
-Here are some useful links to start:
+  Here are some useful links to start:
 
-* [View open
-  issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues)
-* [View open pull
-  requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls)
-* [File an
-   issue](https://github.com/mozilla-mobile/mozilla-vpn-client/issues/new/choose)
-* [File a security
-  issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN)
-* Join the [matrix
-  channel](https://chat.mozilla.org/#/room/#mozilla-vpn:mozilla.org)
-* [View the wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki)
-* [View the support
-  docs](https://support.mozilla.org/en-US/products/firefox-private-network-vpn)
-* Localization happens on
-  [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
+  * [View open
+    issues](https://github.com/mozilla-mobile/mozilla-vpn-client/issues)
+  * [View open pull
+    requests](https://github.com/mozilla-mobile/mozilla-vpn-client/pulls)
+  * [File an
+    issue](https://github.com/mozilla-mobile/mozilla-vpn-client/issues/new/choose)
+  * [File a security
+    issue](https://bugzilla.mozilla.org/enter_bug.cgi?product=Mozilla%20VPN)
+  * Join the [matrix
+    channel](https://chat.mozilla.org/#/room/#mozilla-vpn:mozilla.org)
+  * [View the wiki](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki)
+  * [View the support
+    docs](https://support.mozilla.org/en-US/products/firefox-private-network-vpn)
+  * Localization happens on
+    [Pontoon](https://pontoon.mozilla.org/projects/mozilla-vpn-client/).
+  </div>
+  <Preview></Preview>
+
+</Grid>
+
+
 
 ## Building the Client
 
-Moved here -> [Dev-Setup](./docs/dev-setup/index.md)
+Moved here - [Dev-Setup](dev-setup/index.md)
 
 ### Pre-commit formatting hook
 
@@ -115,22 +155,6 @@ On this menu, you can enable on the `Staging Server` checkbox to switch to the
 staging environment. A full restart of the VPN will be required for this option
 to take effect.
 
-## Inspector
-
-The inspector is a debugging tool available only when the staging environment
-is activated. When running MozillaVPN, go to the [inspector page](
-https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/) to interact
-with the app. Connect the inspector to the app using the web-socket interface.
-On desktop, use `ws://localhost:8765`.
-
-The inspector offers a number of tools to help debug and navigate through the VPN client:
-* **Shell:** By default the inspector link will take you to the Shell. From there type `help` to see the list of available commands.
-* **Logs:** Will constantly output all the app activities happening in real time. This information includes the timestamp, component and message. From the left column you can select which component(s) you'd like to monitor.
-* **Network Inspector:** Includes a list of all incoming and outgoing network requests. This is especially helpful when debugging network related issues or monitoring how the app communicates with external components such as the Guardian.
-* **QML Inspector:** Allows you to identify and inspect all QML components in the app by mirroring the local VPN client running on your machine and highlighting components by clicking on the QML instance on the right.
-
-![inspector_snapshot](https://user-images.githubusercontent.com/3746552/204422879-0799cbd8-91cd-4601-8df8-0d0e9f7cd887.png)
-
 ## Glean
 
 [Glean](https://docs.telemetry.mozilla.org/concepts/glean/glean.html) is a
@@ -155,7 +179,7 @@ These APIs can be accessed through the Mozilla VPN developer menu, under "Teleme
 If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
 Following is the recommended process along with some pointers.
 
-> The data review process is also described here: https://wiki.mozilla.org/Data_Collection
+The data review process is also described here: https://wiki.mozilla.org/Data_Collection
 
 The basic process is this:
 
@@ -173,9 +197,9 @@ The basic process is this:
 * The data-review questionnaire will result in a data review response. The link to that response is what should be added to the `data_review` entry on the Glean YAML files.
   It must be a public link.
 
-> Note:
-> - It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
-> - It is **not** ok to release code that contains instrumentation changes without a data review r+. It is good practice not to merge code that does not have a data review r+.
+ Note:
+ - It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
+ - It is **not** ok to release code that contains instrumentation changes without a data review r+. It is good practice not to merge code that does not have a data review r+.
 
 [^1]: The data-review questionnaire can be found at https://github.com/mozilla/data-review/blob/main/request.md. That can be copy pasted and filled out manually. However,
 since the VPN application uses Glean for data collection developers can also use the [`glean_parser data-review`](https://mozilla.github.io/glean_parser/) command,

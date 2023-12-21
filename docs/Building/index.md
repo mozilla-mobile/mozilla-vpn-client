@@ -1,3 +1,10 @@
+---
+sidebar_position: 2
+---
+
+
+
+# Building the Client
 Building the for the first time can be a bit daunting.
 
 We strongly recommend first building for the platform you are on. For example if you're on a windows machine, make a windows build; a mac, make a mac build etc.

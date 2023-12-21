@@ -1,4 +1,8 @@
-# Using QML hot reloading. 
+---
+sidebar_position: 3
+---
+
+# QML Hot Reloading. 
 The Client has simple support for live reloading QML file. 
 
 https://user-images.githubusercontent.com/9611612/222613103-edca265c-f489-4762-afa7-22d344d62c19.mov
