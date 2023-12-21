@@ -10,7 +10,8 @@
 SettingGroup::SettingGroup(QObject* parent,
                            SettingsConnector* settingsConnector,
                            const QString& groupKey, bool removeWhenReset,
-                           bool sensitiveSetting, QStringList acceptedKeys)
+                           bool sensitiveSetting,
+                           const QStringList& acceptedKeys)
     : QObject(parent),
       m_groupKey(groupKey),
       m_sensitiveSetting(sensitiveSetting),

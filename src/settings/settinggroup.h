@@ -44,7 +44,7 @@ class SettingGroup : public QObject {
   SettingGroup(QObject* parent, SettingsConnector* settingsConnector,
                const QString& groupKey, bool removeWhenReset = true,
                bool sensitiveSetting = false,
-               QStringList acceptedKeys = QStringList());
+               const QStringList& acceptedKeys = QStringList());
   ~SettingGroup();
 
   /**
