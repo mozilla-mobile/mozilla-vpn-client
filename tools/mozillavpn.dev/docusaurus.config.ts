@@ -59,7 +59,7 @@ const config: Config = {
       },
       items: [
         {to: '/', label: 'Docs', position: 'left'},
-        {to: '/blog', label: 'Blog', position: 'left'},
+        //{to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/mozilla-mobile/mozilla-vpn-client',
           label: 'GitHub',

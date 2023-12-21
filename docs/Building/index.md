@@ -54,7 +54,7 @@ All other dependency installation is discussed in each platform page:
    * Xcode required to build
 * [wasm](./wasm.md)
 
-Before submitting a Pull Request, please, install the clang format pre-commit hook: `./scripts/git-pre-commit-format install`. See [here](/README.md#pre-commit-formatting-hook) for more details.
+Before submitting a Pull Request, please, install the clang format pre-commit hook: `./scripts/git-pre-commit-format install`. See [here](../index.mdx) for more details.
 
 ## Build targets
 
