@@ -24,10 +24,6 @@
  * e.g. the SETTING macro or the EXPERIMENTAL_FEATURE macro.
  * * Dynamic settings are settings which are created on demand at runtime.
  *
- * All settings are created using
- * SettingsManager::instance()->createOrGetSetting, which creates a Setting
- * object and registers it in the SettingsManager class.
- *
  * The only public constructor for Setting objects is
  * SettingsManager::instance()->createOrGetSetting, therefore everytime a
  * Setting object is created it is guaranteed to be registered in the settings
@@ -154,8 +150,26 @@ class SettingsManager final : public QObject, public LogSerializer {
   void registerSetting(Setting* setting);
 
  private:
+  // A map of _all_ Setting objects created during a run of the Mozilla VPN
+  // application. The manager needs to have access to all settings that were
+  // created in order to expose functions that apply to all of these settings
+  // e.g. exposing a log serializer that is comprehensive of all settings.
+  //
+  // Note: Registered settings do not map 1:1 to values stored in the underlying
+  // storage. A Setting object may exist and never get written to, always
+  // returning it's default value. Or it may have had some persisted value that
+  // was removed -- removing that value will not unregister a setting.
+  //
+  // Settings will be unregistered when the SettingsManager is destroyed though,
+  // so it is also possible that if a setting was registered in a given run and
+  // is not created anymore in subsequent runs it just lingers around in storage
+  // unmanaged until removed through an uninstall or hard reset.
   QMap<QString, Setting*> m_registeredSettings;
+
+  // The actual underlying storage.
   QSettings m_settings;
+
+  // APIs to access the QSettings underlying storage.
   SettingsConnector m_settingsConnector;
 
 #ifdef UNIT_TEST
