@@ -24,5 +24,13 @@ Item {
         function test_settingsAreExposedToQML() {
             compare(TestSettingGroup.get("aKey"), "Hello, QML!");
         }
+
+        // TODO(VPN-6057): Enable this
+        // function test_experimentSettingsAreExposedToQML() {
+        //     // Just want to make sure accessing MZSettings.myExperimentalFeature
+        //     // from QML works. Doesn't matter the value of the setting itself,
+        //     // if MZSettings.myExperimentalFeature is not there this will crash.
+        //     compare(MZSettings.myExperimentalFeature.get("one"), undefined);
+        // }
     }
 }
