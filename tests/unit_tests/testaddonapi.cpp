@@ -10,7 +10,7 @@
 #include "addons/addonapi.h"
 #include "addons/addonmessage.h"
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "helper.h"
 #include "localizer.h"
 #include "qmlengineholder.h"

@@ -14,4 +14,10 @@ class TestSettingsHolder final : public TestHelper {
 
 #include "settingslist.h"
 #undef SETTING
+
+#define EXPERIMENTAL_FEATURE(experimentId, ...) \
+  void testGetSet_##experimentId();
+
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 };

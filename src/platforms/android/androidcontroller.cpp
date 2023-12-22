@@ -16,7 +16,7 @@
 #include "androidvpnactivity.h"
 #include "controller.h"
 #include "errorhandler.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"

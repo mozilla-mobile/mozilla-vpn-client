@@ -93,10 +93,6 @@ target_sources(app_unit_tests PRIVATE
     testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
-    testfeature.cpp
-    testfeature.h
-    testfeaturemodel.cpp
-    testfeaturemodel.h
     testipaddress.cpp
     testipaddress.h
     testlanguagei18n.cpp
@@ -127,6 +123,10 @@ target_sources(app_unit_tests PRIVATE
     testurlopener.h
     testsettingsholder.cpp
     testsettingsholder.h
+    feature/testfeature.cpp
+    feature/testfeature.h
+    feature/testfeaturemodel.cpp
+    feature/testfeaturemodel.h
     settings/testsetting.cpp
     settings/testsetting.h
     settings/testsettinggroup.cpp

@@ -22,7 +22,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.h
     ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
-    ${CMAKE_SOURCE_DIR}/src/featurelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/featurelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/experimentalfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -104,8 +105,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
-    ${CMAKE_SOURCE_DIR}/src/feature.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature.h
+    ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
@@ -156,8 +157,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/logger.h
     ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
     ${CMAKE_SOURCE_DIR}/src/loghandler.h
-    ${CMAKE_SOURCE_DIR}/src/models/featuremodel.cpp
-    ${CMAKE_SOURCE_DIR}/src/models/featuremodel.h
+    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp

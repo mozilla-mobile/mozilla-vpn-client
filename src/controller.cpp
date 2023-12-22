@@ -10,7 +10,7 @@
 #include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"

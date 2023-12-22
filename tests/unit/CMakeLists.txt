@@ -206,8 +206,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
-    ${MZ_SOURCE_DIR}/feature.cpp
-    ${MZ_SOURCE_DIR}/feature.h
+    ${MZ_SOURCE_DIR}/feature/feature.cpp
+    ${MZ_SOURCE_DIR}/feature/feature.h
     ${MZ_SOURCE_DIR}/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/frontend/navigator.h
     ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp
@@ -252,8 +252,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/logger.h
     ${MZ_SOURCE_DIR}/loghandler.cpp
     ${MZ_SOURCE_DIR}/loghandler.h
-    ${MZ_SOURCE_DIR}/models/featuremodel.cpp
-    ${MZ_SOURCE_DIR}/models/featuremodel.h
+    ${MZ_SOURCE_DIR}/feature/featuremodel.cpp
+    ${MZ_SOURCE_DIR}/feature/featuremodel.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/models/licensemodel.h
     ${MZ_SOURCE_DIR}/networkmanager.cpp

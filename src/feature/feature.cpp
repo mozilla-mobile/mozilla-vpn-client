@@ -33,6 +33,12 @@ void Feature::maybeInitialize() {
               callback);
 #include "featurelist.h"
 #undef FEATURE
+
+#define EXPERIMENTAL_FEATURE(id, name, ...)                          \
+  new Feature(#id, name, FeatureCallback_true, FeatureCallback_true, \
+              QStringList(), FeatureCallback_false);
+#include "experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
   }
 }
 

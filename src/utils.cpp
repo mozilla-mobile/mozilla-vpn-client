@@ -6,7 +6,7 @@
 
 #include "app.h"
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "urlopener.h"

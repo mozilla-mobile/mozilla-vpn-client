@@ -22,7 +22,8 @@
 #include <functional>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
+#include "feature/featuremodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "inspectorhotreloader.h"
@@ -32,7 +33,6 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/featuremodel.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "mzglean.h"

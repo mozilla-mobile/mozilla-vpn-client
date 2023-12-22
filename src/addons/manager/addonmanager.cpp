@@ -20,7 +20,7 @@
 #include "addonindex.h"
 #include "addons/addonmessage.h"
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
