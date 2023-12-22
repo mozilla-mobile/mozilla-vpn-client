@@ -33,13 +33,6 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
-  // TODO(VPN-6057): Enable this
-  // #define EXPERIMENTAL_FEATURE(experimentId, ...) \
-  //   Q_PROPERTY(SettingGroup experimentId READ experimentId)
-
-  // #include "feature/experimentalfeaturelist.h"
-  // #undef EXPERIMENTAL_FEATURE
-
   SettingsHolder();
   ~SettingsHolder();
 
