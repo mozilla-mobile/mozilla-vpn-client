@@ -21,6 +21,27 @@ MZViewBase {
     property bool privacyDialogNeeded: true
     property bool dnsSelectionChanged: false
     readonly property string telemetryScreenId : "dns_settings"
+    property Component rightMenuButton: Component {
+        Loader {
+            active: MZFeatureList.get("helpSheets").isSupported
+            sourceComponent: MZIconButton {
+                id: iconButton
+
+                onClicked: helpSheetLoader.active = true
+
+                accessibleName: MZI18n.GlobalHelp
+                Accessible.ignored:  !visible
+
+                Image {
+                    anchors.centerIn: parent
+
+                    source: "qrc:/nebula/resources/question.svg"
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+        }
+    }
+
 
     function applyFrontendChanges(settingValue) {
         if (settingValue === MZSettings.Gateway) {
@@ -73,7 +94,7 @@ MZViewBase {
     function reset() {
         root.customDNS = MZSettings.dnsProviderFlags === MZSettings.Custom;
         root.privacyDialogNeeded = MZSettings.dnsProviderFlags !== MZSettings.Custom &&
-                                   MZSettings.dnsProviderFlags !== MZSettings.Gateway;
+                MZSettings.dnsProviderFlags !== MZSettings.Gateway;
         ipInput.text = MZSettings.userDNS;
     }
 
@@ -224,9 +245,9 @@ MZViewBase {
                     }
 
                     onActiveFocusChanged: {
-                       if (!activeFocus && !ipInput.focusReasonA11y) {
-                           maybeSaveChange();
-                       }
+                        if (!activeFocus && !ipInput.focusReasonA11y) {
+                            maybeSaveChange();
+                        }
                     }
                 }
 
@@ -258,8 +279,8 @@ MZViewBase {
 
     Component.onCompleted: {
         Glean.impression.dnsSettingsScreen.record({
-        screen: telemetryScreenId,
-        });
+                                                      screen: telemetryScreenId,
+                                                  });
         reset();
     }
 
@@ -268,11 +289,11 @@ MZViewBase {
     }
 
     onVisibleChanged: {
-      if (!visible) {
-          maybeSaveChange();
-      } else {
-          reset();
-      }
+        if (!visible) {
+            maybeSaveChange();
+        } else {
+            reset();
+        }
     }
 
     Loader {
@@ -314,6 +335,28 @@ MZViewBase {
         }
 
         onActiveChanged: if (active) { item.open() }
+    }
+
+    Loader {
+        id: helpSheetLoader
+
+        active: false
+
+        onActiveChanged: if (active) item.open()
+
+        sourceComponent: MZHelpSheet {
+            title: MZI18n.HelpSheetsDnsTitle
+            iconSource: "qrc:/nebula/resources/tip-filled.svg"
+
+            model: [
+                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: 8},
+                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsDnsBody2, margin: 16},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoDns") } },
+            ]
+
+            onClosed: helpSheetLoader.active = false
+        }
     }
 }
 

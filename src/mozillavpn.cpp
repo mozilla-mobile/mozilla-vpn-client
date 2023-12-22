@@ -1381,6 +1381,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("upgradeToAnnualUrl", []() -> QString {
     return Constants::upgradeToAnnualUrl();
   });
+
+  uo->registerUrlLabel("sumoDns", []() -> QString {
+    return "https://support.mozilla.org/en-US/kb/how-do-i-change-my-dns-settings";
+  });
 }
 
 void MozillaVPN::errorHandled() {

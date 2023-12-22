@@ -89,6 +89,13 @@ FEATURE(gleanRust,             // Feature ID
         QStringList(),         // feature dependencies
         FeatureCallback_true)
 
+FEATURE(helpSheets,            // Feature ID
+        "Help sheets",         // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(inAppAccountCreate,                  // Feature ID
         "In-app Account Creation",           // Feature name
         FeatureCallback_true,                // Can be flipped on

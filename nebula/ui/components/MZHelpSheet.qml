@@ -82,7 +82,7 @@ MZBottomSheet {
                         id: icon
                         anchors.centerIn: parent
 
-                        sourceSize.width: MZTheme.theme.iconSize
+                        sourceSize.width: MZTheme.theme.iconSize * 1.5
 
                         mirror: MZLocalizer.isRightToLeft
                         fillMode: Image.PreserveAspectFit
@@ -107,12 +107,17 @@ MZBottomSheet {
                 }
 
                 MZIconButton {
-                    id: iconButton
-
                     Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
                     Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: MZTheme.theme.rowHeight
+
+                    //Hacky workaround because for some reason, when opening a sheet via
+                    //the right menu button in MZMenu, this close button is in a
+                    //"Hovered" state, even though it wasn't hovered
+                    //Likely something to do with both icon buttons being in the same position
+                    //Relative to their parent (top right corner)
+                    mouseArea.hoverEnabled: bottomSheet.opened
 
                     onClicked: bottomSheet.close()
 

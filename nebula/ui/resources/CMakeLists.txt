@@ -71,5 +71,7 @@ qt_add_qml_module(resources
         info.svg
         lock.svg
         startup.svg
+        question.svg
+        tip-filled.svg
 
 )
