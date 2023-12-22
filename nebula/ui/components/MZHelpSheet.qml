@@ -65,6 +65,7 @@ MZBottomSheet {
             id: headerLayout
 
             Layout.topMargin: 8
+            Layout.preferredWidth: parent.width
 
             spacing: 0
 
@@ -96,10 +97,12 @@ MZBottomSheet {
                     Layout.topMargin: MZTheme.theme.windowMargin / 2
                     Layout.leftMargin: 8
                     Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
 
                     verticalAlignment: Text.AlignVCenter
                     lineHeightMode: Text.FixedHeight
                     lineHeight: 24
+                    elide: Text.ElideRight
                 }
 
                 Item {
