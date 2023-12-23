@@ -40,7 +40,7 @@ ColumnLayout {
         id: col2
         objectName: "appExclusionsList"
 
-        spacing: MZTheme.theme.windowMargin / 2
+        spacing: MZTheme.theme.vSpacing
 
         Layout.preferredWidth: parent.width
 
@@ -82,7 +82,6 @@ ColumnLayout {
                 objectName: `app-${index}`
                 spacing: MZTheme.theme.windowMargin
                 opacity: enabled ? 1.0 : 0.5
-                Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
                 function handleClick() {
                     VPNAppPermissions.flip(appID)
