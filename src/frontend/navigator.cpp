@@ -298,6 +298,12 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
                            LoadingFlags loadingFlags) {
   logger.debug() << "Loading screen" << screen;
 
+  if (screen == m_currentScreen) {
+    logger.debug()
+        << "Attempted to load the currently loaded screen. Ignoring.";
+    return;
+  }
+
   if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
     loadingFlags = ForceReload;
   }
