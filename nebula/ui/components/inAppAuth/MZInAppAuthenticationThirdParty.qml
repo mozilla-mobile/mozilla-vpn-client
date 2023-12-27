@@ -11,6 +11,8 @@ import components 0.1
 import components.forms 0.1
 
 MZFlickable {
+    id: authThirdParty
+
     property string _viewObjectName
     property string _telemetryScreenId
 
@@ -18,7 +20,6 @@ MZFlickable {
     property alias _headlineText: headline.text
     property alias _description: description.data
 
-    id: authThirdParty
     flickContentHeight: col.implicitHeight
 
     ColumnLayout {

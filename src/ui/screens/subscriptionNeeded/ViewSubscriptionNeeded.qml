@@ -84,7 +84,7 @@ MZFlickable {
             horizontalAlignment: Text.AlignHCenter
             textFormat: Text.RichText
             wrapMode: Text.WordWrap
-            lineHeight: 22
+            lineHeight: MZTheme.theme.labelLineHeight
 
             // Prevent html tags from being read by screen readers
             Accessible.name: text.replace(/<[^>]*>/g, "")

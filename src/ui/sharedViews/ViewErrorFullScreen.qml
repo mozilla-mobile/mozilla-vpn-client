@@ -94,7 +94,7 @@ MZFlickable {
                     Layout.alignment: Qt.AlignHCenter
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: MZTheme.theme.fontSize
-                    lineHeight: 22
+                    lineHeight: MZTheme.theme.labelLineHeight
                     text: errorMessage
                 }
 
@@ -106,7 +106,7 @@ MZFlickable {
                     Layout.preferredHeight: paintedHeight
                     Layout.alignment: Qt.AlignHCenter
                     font.pixelSize: MZTheme.theme.fontSize
-                    lineHeight: 22
+                    lineHeight: MZTheme.theme.labelLineHeight
                     text: errorMessage2
                     // If empty, keep the white space for better layout, but ignore for Accessibility.
                     Accessible.ignored: (text.length === 0) || !visible
@@ -143,7 +143,7 @@ MZFlickable {
                 loaderVisible: false
                 onClicked: primaryButtonOnClick()
             }
-            
+
             MZFooterLink {
                 id: secondaryButton
 

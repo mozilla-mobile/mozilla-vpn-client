@@ -16,7 +16,7 @@ MZInAppAuthenticationThirdParty {
     _telemetryScreenId: "authentication_sso_account"
     _viewObjectName: "authSsoAccount"
     _imgSource: "qrc:/ui/resources/create-password.svg"
-    _headlineText: "Create a password"
+    _headlineText: MZI18n.InAppAuthSsoInstructionHeader
 
     flickContentHeight: col.implicitHeight
 
@@ -26,7 +26,7 @@ MZInAppAuthenticationThirdParty {
           text: MZI18n.InAppAuthSsoInstructionLine1
 
           font.pixelSize: MZTheme.theme.fontSize
-          lineHeight: 22
+          lineHeight: MZTheme.theme.labelLineHeight
           Layout.fillWidth: true
           Layout.fillHeight: true
         }
@@ -39,7 +39,7 @@ MZInAppAuthenticationThirdParty {
           Layout.fillHeight: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
-          lineHeight: 22
+          lineHeight: MZTheme.theme.labelLineHeight
 
           // TODO link styling
           onLinkActivated: link => MZUrlOpener.openUrlLabel("setSsoPassword")
@@ -53,7 +53,7 @@ MZInAppAuthenticationThirdParty {
           Layout.fillHeight: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
-          lineHeight: 22
+          lineHeight: MZTheme.theme.labelLineHeight
         }
 
         MZTextBlock {
@@ -62,8 +62,19 @@ MZInAppAuthenticationThirdParty {
 
           Layout.fillWidth: true
           Layout.fillHeight: true
+          Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
-          lineHeight: 22
+          lineHeight: MZTheme.theme.labelLineHeight
+        }
+
+        MZTextBlock {
+          id: ssoInstructionLine5
+          text: MZI18n.InAppAuthSsoInstructionLine5
+
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          font.pixelSize: MZTheme.theme.fontSize
+          lineHeight: MZTheme.theme.labelLineHeight
         }
 
     }

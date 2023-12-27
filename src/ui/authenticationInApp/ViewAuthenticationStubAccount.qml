@@ -16,19 +16,20 @@ MZInAppAuthenticationThirdParty {
     _telemetryScreenId: "authentication_stub_account"
     _viewObjectName: "authStubAccount"
     _imgSource: "qrc:/ui/resources/check-email.svg"
-    _headlineText: "Check your email"
+    _headlineText: MZI18n.InAppAuthStubAccountVerificationHeader
 
     _description: ColumnLayout {
       MZTextBlock {
         id: descriptionText
-        text: MZI18n.InAppAuthStubAccountVerificationInstruction.arg(MZAuthInApp.emailAddress)
+        text: MZI18n.InAppAuthStubAccountVerificationInstruction.arg("<b style='font-family:" + MZTheme.theme.fontInterSemiBoldFamily + "; font-weight: " + MZTheme.theme.fontWeightBold + ";'>" + MZAuthInApp.emailAddress + "</b>")
 
+        textFormat: Text.RichText
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
         Layout.preferredHeight: paintedHeight
         Layout.alignment: Qt.AlignHCenter
         font.pixelSize: MZTheme.theme.fontSize
-        lineHeight: 22
+        lineHeight: MZTheme.theme.labelLineHeight
       }
     }
 }
