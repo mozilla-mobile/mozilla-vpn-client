@@ -21,6 +21,7 @@ MZInAppAuthenticationThirdParty {
     flickContentHeight: col.implicitHeight
 
     _description: ColumnLayout {
+
         MZTextBlock {
           id: ssoInstructionLine1
           text: MZI18n.InAppAuthSsoInstructionLine1
@@ -55,16 +56,6 @@ MZInAppAuthenticationThirdParty {
         MZTextBlock {
           id: ssoInstructionLine4
           text: MZI18n.InAppAuthSsoInstructionLine4
-
-          Layout.fillWidth: true
-          Layout.leftMargin: MZTheme.theme.vSpacing / 2
-          font.pixelSize: MZTheme.theme.fontSize
-          lineHeight: MZTheme.theme.labelLineHeight
-        }
-
-        MZTextBlock {
-          id: ssoInstructionLine5
-          text: MZI18n.InAppAuthSsoInstructionLine5
 
           Layout.fillWidth: true
           font.pixelSize: MZTheme.theme.fontSize

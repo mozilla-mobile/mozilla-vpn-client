@@ -706,15 +706,12 @@ inAppAuth:
     value: "To finish setting up your Mozilla account, create a password in your account settings:"
     comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
   ssoInstructionLine2:
-    value: 1. Go to your <a href="open-account">Mozilla account settings</a>.
+    value: 1. Go to <a href="open-account">Change password</a> in your Mozilla account settings.
     comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding. Do not remove or translate the markup '<a href="open-account">'.
   ssoInstructionLine3:
-    value: 2. Find the password setting, under “Security”.
+    value: 2. Create a password.
     comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
   ssoInstructionLine4:
-    value: 3. Create a password.
-    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
-  ssoInstructionLine5:
     value: When your password is created, return to this screen and continue to sign in to Mozilla VPN.
     comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
   stubAccountVerificationHeader:
