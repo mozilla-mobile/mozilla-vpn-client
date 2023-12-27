@@ -48,7 +48,7 @@ Item {
     }
 
     TestCase {
-        name: "MZFilterPRoxyModel"
+        name: "MZFilterProxyModel"
         when: windowShown
 
         function test_source() {
