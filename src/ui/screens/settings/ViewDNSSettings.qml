@@ -344,7 +344,6 @@ MZViewBase {
 
         sourceComponent: MZHelpSheet {
             title: MZI18n.HelpSheetsDnsTitle
-            iconSource: "qrc:/nebula/resources/tip-filled.svg"
 
             model: [
                 {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},

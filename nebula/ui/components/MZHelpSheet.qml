@@ -23,7 +23,6 @@ import Mozilla.Shared 1.0
 /*
   MZHelpSheet {
       title: "MZHelpSheet"
-      iconSource: "qrc:/ui/resources/connection-info-dark.svg"
 
       model: [
           {type: MZHelpSheet.BlockType.Title, text: "title"},
@@ -39,7 +38,6 @@ import Mozilla.Shared 1.0
 MZBottomSheet {
     id: bottomSheet
 
-    property alias iconSource: icon.source
     property alias title: title.text
     required property var model
 
@@ -83,6 +81,7 @@ MZBottomSheet {
                         id: icon
                         anchors.centerIn: parent
 
+                        source: "qrc:/nebula/resources/tip-filled.svg"
                         sourceSize.width: MZTheme.theme.iconSize * 1.5
 
                         mirror: MZLocalizer.isRightToLeft
