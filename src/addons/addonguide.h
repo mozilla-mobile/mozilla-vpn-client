@@ -5,7 +5,7 @@
 #ifndef ADDONGUIDE_H
 #define ADDONGUIDE_H
 
-#include "../composer/composer.h"
+#include "composer.h"
 #include "addon.h"
 #include "addonproperty.h"
 

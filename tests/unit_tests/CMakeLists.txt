@@ -53,6 +53,8 @@ generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/u
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
+    mozillavpn-ui
+    mozillavpn-uiplugin
     translations-unit-tests
 )
 
