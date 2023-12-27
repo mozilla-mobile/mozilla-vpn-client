@@ -28,7 +28,6 @@ MZInAppAuthenticationThirdParty {
           font.pixelSize: MZTheme.theme.fontSize
           lineHeight: MZTheme.theme.labelLineHeight
           Layout.fillWidth: true
-          Layout.fillHeight: true
         }
 
         MZTextBlock {
@@ -36,12 +35,10 @@ MZInAppAuthenticationThirdParty {
           text: MZI18n.InAppAuthSsoInstructionLine2
 
           Layout.fillWidth: true
-          Layout.fillHeight: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
           lineHeight: MZTheme.theme.labelLineHeight
 
-          // TODO link styling
           onLinkActivated: link => MZUrlOpener.openUrlLabel("setSsoPassword")
         }
 
@@ -50,7 +47,6 @@ MZInAppAuthenticationThirdParty {
           text: MZI18n.InAppAuthSsoInstructionLine3
 
           Layout.fillWidth: true
-          Layout.fillHeight: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
           lineHeight: MZTheme.theme.labelLineHeight
@@ -61,7 +57,6 @@ MZInAppAuthenticationThirdParty {
           text: MZI18n.InAppAuthSsoInstructionLine4
 
           Layout.fillWidth: true
-          Layout.fillHeight: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
           font.pixelSize: MZTheme.theme.fontSize
           lineHeight: MZTheme.theme.labelLineHeight
@@ -72,9 +67,15 @@ MZInAppAuthenticationThirdParty {
           text: MZI18n.InAppAuthSsoInstructionLine5
 
           Layout.fillWidth: true
-          Layout.fillHeight: true
           font.pixelSize: MZTheme.theme.fontSize
           lineHeight: MZTheme.theme.labelLineHeight
+        }
+
+        MZVerticalSpacer {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.minimumHeight: MZTheme.theme.vSpacing / 2
+            Layout.maximumHeight: MZTheme.theme.vSpacing * 2
         }
 
     }

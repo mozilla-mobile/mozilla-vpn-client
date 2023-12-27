@@ -88,7 +88,7 @@ MZFlickable {
 
             ColumnLayout {
                 id: description
-                spacing:  MZTheme.theme.windowMargin
+                spacing: MZTheme.theme.windowMargin
                 Layout.leftMargin: MZTheme.theme.vSpacing
                 Layout.rightMargin: MZTheme.theme.vSpacing
                 Layout.preferredWidth: col.width - MZTheme.theme.vSpacing * 2
