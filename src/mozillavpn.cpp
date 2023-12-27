@@ -1384,6 +1384,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
+
+  uo->registerUrlLabel("sumoMultihop", []() -> QString {
+    return "https://support.mozilla.org/en-US/kb/multi-hop-encrypt-your-data-twice-enhanced-security";
+  });
 }
 
 void MozillaVPN::errorHandled() {
