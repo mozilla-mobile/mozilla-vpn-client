@@ -141,7 +141,7 @@ MZBottomSheet {
             Rectangle {
                 Layout.topMargin: 8
                 Layout.preferredHeight: MZTheme.theme.dividerHeight
-                Layout.preferredWidth: bottomSheet.width
+                Layout.fillWidth: true
 
                 color: MZTheme.colors.grey10
             }
