@@ -25,8 +25,6 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
-                id: iconButton
-
                 onClicked: helpSheetLoader.active = true
 
                 accessibleName: MZI18n.GlobalHelp
