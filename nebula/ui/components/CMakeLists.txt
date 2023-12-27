@@ -82,7 +82,6 @@ qt_add_qml_module(components
          MZSwipeDelegate.qml
          MZSwipeAction.qml
          MZBadge.qml
-         MZComposerView.qml
          MZPasteButton.qml
          MZInformationCard.qml
          MZStepProgressBar.qml

@@ -184,20 +184,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/authenticationlistener.h
     ${MZ_SOURCE_DIR}/collator.cpp
     ${MZ_SOURCE_DIR}/collator.h
-    ${MZ_SOURCE_DIR}/composer/composer.cpp
-    ${MZ_SOURCE_DIR}/composer/composer.h
-    ${MZ_SOURCE_DIR}/composer/composerblock.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblock.h
-    ${MZ_SOURCE_DIR}/composer/composerblockbutton.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblockbutton.h
-    ${MZ_SOURCE_DIR}/composer/composerblockorderedlist.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblockorderedlist.h
-    ${MZ_SOURCE_DIR}/composer/composerblocktext.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblocktext.h
-    ${MZ_SOURCE_DIR}/composer/composerblocktitle.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblocktitle.h
-    ${MZ_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
-    ${MZ_SOURCE_DIR}/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/cryptosettings.h
     ${MZ_SOURCE_DIR}/curve25519.cpp
@@ -315,6 +301,7 @@ target_sources(unit_tests PRIVATE
 )
 
 # VPN Client UI resources
+target_link_libraries(unit_tests PRIVATE mozillavpn-ui mozillavpn-uiplugin)
 target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
