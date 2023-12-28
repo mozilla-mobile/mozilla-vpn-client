@@ -1384,6 +1384,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
+
+  uo->registerUrlLabel("sumoPrivacy", []() -> QString {
+    return "https://support.mozilla.org/en-US/kb/"
+           "how-do-i-change-my-privacy-features";
+  });
 }
 
 void MozillaVPN::errorHandled() {
