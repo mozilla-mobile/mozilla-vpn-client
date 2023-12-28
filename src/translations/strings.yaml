@@ -953,19 +953,6 @@ devices:
     value: My devices
     comment: Title for the menu bar when viewing the devices or device limit pages
 
-helpSheets: 
-  dnsTitle:
-    value: Custom DNS settings
-    comment: Title label for the custom dns help sheet
-  dnsHeader: 
-    value: What is custom DNS?
-    comment: Header label for the custom dns help sheet
-  dnsBody1:
-    value: Whenever you connect to a website, a DNS (domain name system) first turns the domain name (e.g. www.mozilla.org) into an IP address that allows your internet traffic to reach that destination.
-    comment: Body text for the custom dns help sheet
-  dnsBody2:
-    value: Mozilla VPN allows you to choose a custom DNS server if you prefer. If you use one, you won’t be able to use other privacy features in the VPN like tracker blocking.
-    comment: Body text for the custom dns help sheet
   locationTitle:
     value: Location selection
     comment: Title label for the location selection help sheet
