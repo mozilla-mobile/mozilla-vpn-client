@@ -72,18 +72,11 @@ python3 -m pip install -r taskcluster/scripts/requirements.txt
 print Y "Fetching tokens..."
 # Only on a release build we have access to those secrects.
 if [[ "$RELEASE" ]]; then
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_dsn -f sentry_dsn
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_envelope_endpoint -f sentry_envelope_endpoint
-   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+    ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 else
-    # write a dummy value in the files, so that we still compile sentry c:
-    echo "dummy" > sentry_dsn
-    echo "dummy" > sentry_envelope_endpoint
     echo "dummy" > sentry_debug_file_upload_key
 fi
 
-export SENTRY_ENVELOPE_ENDPOINT=$(cat sentry_envelope_endpoint)
-export SENTRY_DSN=$(cat sentry_dsn)
 #Install Sentry CLI, if' not already installed from previous run.
 if ! command -v sentry-cli &> /dev/null
 then
@@ -100,8 +93,6 @@ mkdir ${TASK_HOME}/build
 
 cmake -S . -B ${TASK_HOME}/build -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DSENTRY_DSN=$SENTRY_DSN \
-        -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 

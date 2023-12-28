@@ -55,16 +55,6 @@ while [[ $# -gt 0 ]]; do
     RELEASE=
     shift
     ;;
-  --sentrydsn)
-    SENTRY_DSN="$2"
-    shift
-    shift
-    ;;
-  --sentryendpoint)
-    SENTRY_ENVELOPE_ENDPOINT="$2"
-    shift
-    shift
-    ;;
   -h | --help)
     helpFunction
     ;;
@@ -148,8 +138,6 @@ if [[ "$RELEASE" ]]; then
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
-    -DSENTRY_DSN=$SENTRY_DSN \
-    -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -GNinja \
     -S . -B .tmp/
 else
@@ -161,8 +149,6 @@ else
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DSENTRY_DSN=$SENTRY_DSN \
-    -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -GNinja \
     -S . -B .tmp/
 

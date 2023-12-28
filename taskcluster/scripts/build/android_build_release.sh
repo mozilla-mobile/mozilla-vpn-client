@@ -22,14 +22,10 @@ env
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
   echo "Fetching Tokens!"
   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
-  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_dsn -f sentry_dsn
-  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_envelope_endpoint -f sentry_envelope_endpoint
   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 else
     echo "Using dummy Tokens!"
     # write a dummy value in the files, so that we still compile sentry c:
-    echo "dummy" > sentry_dsn
-    echo "dummy" > sentry_envelope_endpoint
     echo "dummy" > sentry_debug_file_upload_key
     echo "dummy" > adjust_token
 fi
@@ -46,11 +42,10 @@ mkdir -p /builds/worker/artifacts/
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
-./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token) --sentrydsn $(cat sentry_dsn) --sentryendpoint $(cat sentry_envelope_endpoint)
-
-npm install -g @sentry/cli
+./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token)
 
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
+  npm install -g @sentry/cli
   sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
   # This will ask sentry to scan all files in there and upload
   # missing debug info, for symbolification
