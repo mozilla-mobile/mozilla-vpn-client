@@ -1384,6 +1384,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
+
+    uo->registerUrlLabel("sumoDevices", []() -> QString {
+    return "https://support.mozilla.org/en-US/kb/"
+           "how-add-devices-your-mozilla-vpn-subscription";
+  });
 }
 
 void MozillaVPN::errorHandled() {

@@ -40,15 +40,39 @@ MZViewBase {
 
         spacing: 0
 
-        MZInterLabel {
-            Layout.topMargin: -8
+
+        RowLayout {
+            Layout.topMargin: -8 //Because we are in a MZViewBase with default 16px top margin
             Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
             Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
-            Layout.fillWidth: true
 
-            horizontalAlignment: Text.AlignLeft
-            color: MZTheme.theme.fontColor
-            text: MZI18n.DevicesCountLabel.arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+            spacing: 4
+
+            MZInterLabel {
+                Layout.maximumWidth: vpnFlickable.width - parent.Layout.leftMargin - parent.Layout.rightMargin - parent.spacing - helpIconButtonLoader.implicitWidth
+
+                horizontalAlignment: Text.AlignLeft
+                color: MZTheme.theme.fontColor
+                text: MZI18n.DevicesCountLabel.arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
+            }
+
+            Loader {
+                id: helpIconButtonLoader
+                active: MZFeatureList.get("helpSheets").isSupported
+                sourceComponent: MZIconButton {
+                    onClicked: helpSheetLoader.active = true
+
+                    accessibleName: MZI18n.GlobalHelp
+                    Accessible.ignored: !visible
+
+                    Image {
+                        anchors.centerIn: parent
+
+                        source: "qrc:/nebula/resources/question.svg"
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+            }
         }
 
         Rectangle {
@@ -73,6 +97,27 @@ MZViewBase {
             removePopup.deviceName = name;
             removePopup.devicePublicKey = publicKey;
             removePopup.open();
+        }
+    }
+
+    Loader {
+        id: helpSheetLoader
+
+        active: false
+
+        onActiveChanged: if (active) item.open()
+
+        sourceComponent: MZHelpSheet {
+            title: MZI18n.HelpSheetsDevicesTitle
+
+            model: [
+                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: 8},
+                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsDevicesBody2, margin: 16},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") } },
+            ]
+
+            onClosed: helpSheetLoader.active = false
         }
     }
 
