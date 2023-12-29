@@ -976,7 +976,7 @@ helpSheets:
     value: Privacy features give you greater control over the types of content you see, helping you stay safe online.
     comment: Body label for the privacy features help sheet
   privacyBody2:
-    value: If you activate these features, they’ll overwrite any custom DNS you’re using. These protections are not a substitute for taking other security precautions—for example, while blocking malware you should still avoid downloading attachments in strange emails.
+    value: If you activate these features, they’ll overwrite any custom DNS you’re using. These protections are not a substitute for taking other security precautions — for example, while blocking malware you should still avoid downloading attachments in strange emails.
     comment: Body label for the privacy features help sheet
 
 global:
