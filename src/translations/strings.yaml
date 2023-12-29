@@ -966,6 +966,24 @@ helpSheets:
   dnsBody2:
     value: Mozilla VPN allows you to choose a custom DNS server if you prefer. If you use one, you won’t be able to use other privacy features in the VPN like tracker blocking.
     comment: Body text for the custom dns help sheet
+  excludedAppsTitle:
+    value: Excluded apps
+    comment: Title label for the excluded apps help sheet
+  excludedAppsHeader:
+    value: What are excluded apps? 
+    comment: Header label for the excluded apps help sheet
+  excludedAppsBody1:
+    value: Excluded apps let you turn off VPN protection for specific apps, without turning off your device’s VPN protection.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsBody2:
+    value: When you exclude an app, your IP address and approximate location will be exposed to it.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsBody3:
+    value: You can use the settings under Settings > Privacy features to block ads, block trackers, and block malware, even on excluded apps.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsCTA:
+    value: Open “Privacy features”
+    comment: Label for button that opens the "Privacy features" view from the excluded apps help sheet
 
 global:
   expand:

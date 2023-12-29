@@ -1384,6 +1384,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
+
+  uo->registerUrlLabel("sumoExcludedApps", []() -> QString {
+    return "https://support.mozilla.org/en-US/kb/"
+           "split-tunneling-app-permissions";
+  });
 }
 
 void MozillaVPN::errorHandled() {
