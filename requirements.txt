@@ -220,10 +220,6 @@ click==8.1.7 \
     # via
     #   flask
     #   glean-parser
-colorama==0.4.6 \
-    --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
-    --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
-    # via click
 defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
@@ -236,9 +232,9 @@ flask==3.0.0 \
     --hash=sha256:21128f47e4e3b9d597a3e8521a329bf56909b690fcc3fa3e477725aa81367638 \
     --hash=sha256:cfadcdb638b609361d29ec22360d6070a77d7463dcb3ab08d2c2f2f168845f58
     # via -r requirements.in
-glean-parser==10.0.3 \
-    --hash=sha256:d57359629d295f9ee570068a2846966892e3fedb722259ecbcd8cc376d299b51 \
-    --hash=sha256:f8fddd87b24552541318ac037e33750d27d0045131e4f8a60ec13a159fcbdd5c
+glean-parser==11.0.0 \
+    --hash=sha256:307cb9d71e932767055194385da6562d3830b3fe340f0c48a8149cf35cc24e56 \
+    --hash=sha256:af0a58a33cc18c6f6c9d647a06c41ca3ae013476d5febc56d5797fb73ef6b188
     # via -r requirements.in
 humanize==4.8.0 \
     --hash=sha256:8bc9e2bb9315e61ec06bf690151ae35aeb65651ab091266941edf97c90836404 \
