@@ -54,13 +54,6 @@ MZFlickable {
             }
         }
 
-        MZVerticalSpacer {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Layout.minimumHeight: MZTheme.theme.vSpacing / 2
-            Layout.maximumHeight: MZTheme.theme.vSpacing * 2
-        }
-
         ColumnLayout {
             spacing:  MZTheme.theme.windowMargin
 
@@ -96,12 +89,6 @@ MZFlickable {
 
         }
 
-        MZVerticalSpacer {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Layout.minimumHeight: MZTheme.theme.vSpacing / 2
-        }
-
         ColumnLayout {
             id: footerContent
             Layout.alignment: Qt.AlignBottom
@@ -128,6 +115,12 @@ MZFlickable {
                     VPN.cancelAuthentication();
                 }
             }
+        }
+
+        //Manual padding for views without a navbar - not ideal, but modifying
+        //MZFlickable causes a lot of churn, and is a separate issue
+        MZVerticalSpacer {
+            Layout.preferredHeight: MZTheme.theme.navBarBottomMargin
         }
     }
 }
