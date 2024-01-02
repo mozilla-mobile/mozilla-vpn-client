@@ -68,7 +68,6 @@ QString versionString();
 QString buildNumber();
 QString envOrDefault(const QString& name, const QString& defaultValue);
 
-
 // The prefix for the user-agent requests
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
 
