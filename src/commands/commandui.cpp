@@ -309,60 +309,15 @@ int CommandUI::run(QStringList& tokens) {
       engine->addImageProvider(QString("app"), provider);
     }
 
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN",
-                                 MozillaVPN::instance());
-    qmlRegisterSingletonInstance(
-        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
-        MozillaVPN::instance()->captivePortalDetection());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
-                                 MozillaVPN::instance()->controller());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
-                                 MozillaVPN::instance()->user());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
-                                 MozillaVPN::instance()->deviceModel());
-
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
-                                 "VPNRecentConnectionsModel",
-                                 RecentConnections::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
-                                 "VPNRecommendedLocationModel",
-                                 RecommendedLocationModel::instance());
-    qmlRegisterSingletonInstance(
-        "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
-        MozillaVPN::instance()->supportCategoryModel());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerCountryModel",
-                                 MozillaVPN::instance()->serverCountryModel());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNSubscriptionData",
-                                 MozillaVPN::instance()->subscriptionData());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProfileFlow",
-                                 MozillaVPN::instance()->profileFlow());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNCurrentServer",
-                                 MozillaVPN::instance()->serverData());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerLatency",
-                                 MozillaVPN::instance()->serverLatency());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionHealth",
-                                 MozillaVPN::instance()->connectionHealth());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
-                                 MozillaVPN::instance()->releaseMonitor());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAppPermissions",
-                                 AppPermission::instance());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
-                                 MozillaVPN::instance()->connectionBenchmark());
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
-                                 MozillaVPN::instance()->ipAddressLookup());
-
 #ifdef MZ_ANDROID
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
-                                 AndroidUtils::instance());
+    //qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
+    //                             AndroidUtils::instance());
 #endif
 
-    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNPurchase",
-                                 PurchaseHandler::instance());
-
-    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-      qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
-                                   ProductsHandler::instance());
-    }
+    //if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    //  qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
+    //                               ProductsHandler::instance());
+    //}
 
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,
                                  "MZAccessibleNotification",
