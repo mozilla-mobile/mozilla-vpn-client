@@ -224,6 +224,15 @@ const screenAuthenticationInApp = {
   AUTH_UNBLOCKCODE_RESEND_CODE_BUTTON:
       new QmlQueryComposer('//authUnblockCodeNeeded-resendCode'),
 
+  AUTH_STUB_SET_PASSWORD_HEADLINE:
+      new QmlQueryComposer('//authStubAccount-headline'),
+  AUTH_STUB_SET_PASSWORD_SIGN_IN_BUTTON:
+      new QmlQueryComposer('//authStubAccount-buttonSignIn'),
+  AUTH_SSO_SET_PASSWORD_HEADLINE:
+      new QmlQueryComposer('//authSsoAccount-headline'),
+  AUTH_SSO_SET_PASSWORD_SIGN_IN_BUTTON:
+      new QmlQueryComposer('//authSsoAccount-buttonSignIn'),
+
   AUTH_ERROR_POPUP_BUTTON: new QmlQueryComposer('//authErrorPopup-button'),
 };
 

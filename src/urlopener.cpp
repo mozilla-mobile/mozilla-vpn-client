@@ -42,6 +42,10 @@ UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
   UrlOpener::registerUrlLabel("forgotPassword", []() -> QString {
     return QString("%1/reset_password").arg(Constants::fxaUrl());
   });
+
+  UrlOpener::registerUrlLabel("setSsoPassword", []() -> QString {
+    return QString("%1/settings/change_password").arg(Constants::fxaUrl());
+  });
 }
 
 UrlOpener::~UrlOpener() { MZ_COUNT_DTOR(UrlOpener); }

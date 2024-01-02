@@ -8,6 +8,8 @@
         <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
         <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
+        <file>authenticationInApp/ViewAuthenticationStubAccount.qml</file>
+        <file>authenticationInApp/ViewAuthenticationSsoAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>

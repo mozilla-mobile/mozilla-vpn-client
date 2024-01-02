@@ -118,6 +118,12 @@ exports.mochaHooks = {
       await vpn.authenticateInApp(true, true);
     }
 
+    // Add servers to the context so that stub endpoints can be modified in the
+    // middle of the tests
+    this.currentTest.ctx.guardianServer = guardian;
+    this.currentTest.ctx.fxaServer = fxaServer;
+    this.currentTest.ctx.networkBenchmarkServer = networkBenchmark;
+
     console.log('Starting test:', this.currentTest.title);
   },
 

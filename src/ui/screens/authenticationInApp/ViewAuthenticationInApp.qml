@@ -17,6 +17,10 @@ Item {
         id: loader
         property bool isReauthFlow: false
 
+        // This is only necessary to fix a text layout bug in Qt 6.4,
+        // which can sometimes be pulled in on Linux. Remove this once we move
+        // to flatpaks.
+        width: item ? item.implicitWidth : 0
         asynchronous: true
         anchors.fill: parent
     }
@@ -86,6 +90,24 @@ Item {
             PropertyChanges {
                 target: loader
                 source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+            }
+        },
+
+        State {
+            name: "StateIsStubAccount"
+            when: MZAuthInApp.state === MZAuthInApp.StateIsStubAccount
+            PropertyChanges {
+                target: loader
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationStubAccount.qml"
+            }
+        },
+
+        State {
+            name: "StateIsSsoAccount"
+            when: MZAuthInApp.state === MZAuthInApp.StateIsSsoAccount
+            PropertyChanges {
+                target: loader
+                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSsoAccount.qml"
             }
         },
 
