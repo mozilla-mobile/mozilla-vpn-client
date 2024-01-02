@@ -20,7 +20,7 @@ Item {
         // This is only necessary to fix a text layout bug in Qt 6.4,
         // which can sometimes be pulled in on Linux. Remove this once we move
         // to flatpaks.
-        onItemChanged: width = item ? item.implicitWidth : 0
+        width: item ? item.implicitWidth : 0
         asynchronous: true
         anchors.fill: parent
     }
