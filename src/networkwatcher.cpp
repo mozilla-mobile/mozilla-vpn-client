@@ -5,7 +5,11 @@
 #include "networkwatcher.h"
 
 #include <QMetaEnum>
+<<<<<<< HEAD
 #include <QNetworkInformation>
+    =======
+// #include <QNetworkInformation>
+>>>>>>> 4b51530eb (Reachability)
 
 #include "controller.h"
 #include "leakdetector.h"
@@ -40,7 +44,7 @@
 
 // How often we notify the same unsecured network
 #ifndef UNIT_TEST
-constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
+    constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
 #endif
 
 namespace {
@@ -170,8 +174,14 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
 }
 
 QNetworkInformation::Reachability NetworkWatcher::getReachability() {
-  if (QNetworkInformation::instance()) {
+  if (m_simulatedDisconnection) {
+    return QNetworkInformation::Reachability::Disconnected;
+  } else if (QNetworkInformation::instance()) {
     return QNetworkInformation::instance()->reachability();
   }
   return QNetworkInformation::Reachability::Unknown;
+}
+
+void NetworkWatcher::simulateDisconnection(bool simulatedDisconnection) {
+  m_simulatedDisconnection = simulatedDisconnection;
 }
