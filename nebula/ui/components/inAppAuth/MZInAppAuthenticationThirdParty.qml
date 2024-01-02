@@ -101,7 +101,7 @@ MZFlickable {
 
             MZButton {
                 objectName: _viewObjectName + "-buttonSignIn"
-                text: "Continue to sign in"
+                text: MZI18n.InAppAuthContinueToSignIn
                 Layout.fillWidth: true
                 onClicked: {
                     MZAuthInApp.checkAccount(MZAuthInApp.emailAddress);

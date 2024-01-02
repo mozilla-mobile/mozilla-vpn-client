@@ -720,6 +720,9 @@ inAppAuth:
   stubAccountVerificationInstruction:
     value: We’ve sent an email to %1 with the verification link. Please follow the directions to set up your password and finish setting up your account.
     comment: User has tried to log into a Mozilla account before setting their password, which happens after email verification. %1 is the email address associated with the account.
+  continueToSignIn:
+    value: Continue to sign in
+    comment: Button a user clicks after updating their Mozilla account settings so that they can re-attempt sign-in
 
 
 postAuthentication:
