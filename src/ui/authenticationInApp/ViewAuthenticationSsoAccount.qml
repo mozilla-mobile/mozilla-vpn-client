@@ -18,8 +18,6 @@ MZInAppAuthenticationThirdParty {
     _imgSource: "qrc:/ui/resources/create-password.svg"
     _headlineText: MZI18n.InAppAuthSsoInstructionHeader
 
-    flickContentHeight: col.implicitHeight
-
     _description: ColumnLayout {
 
         MZTextBlock {

@@ -17,7 +17,10 @@ Item {
         id: loader
         property bool isReauthFlow: false
 
-        width: item.implicitWidth
+        // This is only necessary to fix a text layout bug in Qt 6.4,
+        // which can sometimes be pulled in on Linux. Remove this once we move
+        // to flatpaks.
+        onItemChanged: if (item) width = item.implicitWidth
         asynchronous: true
         anchors.fill: parent
     }
