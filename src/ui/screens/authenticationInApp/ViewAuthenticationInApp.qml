@@ -17,6 +17,7 @@ Item {
         id: loader
         property bool isReauthFlow: false
 
+        width: item.implicitWidth
         asynchronous: true
         anchors.fill: parent
     }
