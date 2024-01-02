@@ -700,7 +700,7 @@ inAppAuth:
     value: Please wait…
     comment: Headline on loading screen
   ssoInstructionHeader:
-    value: Create a pasword
+    value: Create a password
     comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding. This is the header on the error screen.
   ssoInstructionLine1:
     value: "To finish setting up your Mozilla account, create a password in your account settings:"
