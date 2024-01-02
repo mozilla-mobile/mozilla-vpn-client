@@ -61,7 +61,7 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
     ## Build the list of supported locales and add rules to build them.
     get_filename_component(I18N_DIR ${TRANSLATIONS_DIRECTORY}/i18n ABSOLUTE)
     file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
-    message(${I18N_LOCALES})
+    message(DEBUG ${I18N_LOCALES})
     list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
     foreach(LOCALE ${I18N_LOCALES})
         if(NOT EXISTS ${I18N_DIR}/${LOCALE}/mozillavpn.xliff)
