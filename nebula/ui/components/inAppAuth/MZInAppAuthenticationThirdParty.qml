@@ -100,7 +100,7 @@ MZFlickable {
             spacing: 24
 
             MZButton {
-                objectName: "buttonSignIn"
+                objectName: _viewObjectName + "-buttonSignIn"
                 text: "Continue to sign in"
                 Layout.fillWidth: true
                 onClicked: {

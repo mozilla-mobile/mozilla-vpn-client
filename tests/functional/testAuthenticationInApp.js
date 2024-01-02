@@ -468,6 +468,7 @@ describe('User authentication', function() {
     };
 
     it('Account creation with stub account', async () => {
+
       if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
         await vpn.flipFeatureOn('inAppAuthentication');
         await vpn.flipFeatureOn('inAppAccountCreate');
@@ -489,6 +490,15 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_STUB_SET_PASSWORD_HEADLINE.visible());
+
+      // User goes and sets a password on FxA -- server now reports the user has a password
+      this.ctx.fxaServer.overrideEndpoints.POSTs['/v1/account/status'].body = {
+        exists: true, hasLinkedAccount: false, hasPassword: true
+      }
+
+      await vpn.clickOnQuery(queries.screenAuthenticationInApp.AUTH_STUB_SET_PASSWORD_SIGN_IN_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
     });
   });
 
@@ -527,6 +537,15 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_SSO_SET_PASSWORD_HEADLINE.visible());
+
+      // User goes and sets a password on FxA -- server now reports the user has a password
+      this.ctx.fxaServer.overrideEndpoints.POSTs['/v1/account/status'].body = {
+        exists: true, hasLinkedAccount: false, hasPassword: true
+      }
+
+      await vpn.clickOnQuery(queries.screenAuthenticationInApp.AUTH_SSO_SET_PASSWORD_SIGN_IN_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
     });
   });
 
