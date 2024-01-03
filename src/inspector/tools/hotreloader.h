@@ -68,6 +68,9 @@ class Hotreloader : public QObject {
                    QQmlAbstractUrlInterceptor::DataType type) override;
   };
   HotReloadInterceptor m_intercecptor;
+
+
+  void registerDevCommands();
 };
 }  // namespace InspectorTools
 #endif  // MOZILLA_VPN_INSPECTORHOTRELOADER_H

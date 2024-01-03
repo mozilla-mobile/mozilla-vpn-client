@@ -27,6 +27,7 @@
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspector.h"
+#include "inspector/legacy/commands.h"
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
 #include "leakdetector.h"
@@ -503,7 +504,11 @@ int CommandUI::run(QStringList& tokens) {
 
           }),
           "Mozilla.Shared", 1, 0);
+
+      InspectorLegacyCommands::registerCommands(inspector.data());
     }
+
+
 
     KeyRegenerator keyRegenerator;
     // Let's go.

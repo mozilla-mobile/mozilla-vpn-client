@@ -4,15 +4,15 @@
 target_sources(mozillavpn-sources INTERFACE
     inspector.cpp
     inspector.h
-    inspectoritempicker.cpp
-    inspectoritempicker.h
 
     tools/qquickinspector.cpp
     tools/qquickinspector.h
     tools/qqitemwrapper.h
     tools/qqitemwrapper.cpp
-    tools/inspectorcommandhandler.cpp
-    tools/inspectorcommandhandler.h
+    tools/commandhandler.cpp
+    tools/commandhandler.h
+    tools/command.h
+
     tools/hotreloader.cpp
     tools/hotreloader.h
 
@@ -22,4 +22,9 @@ target_sources(mozillavpn-sources INTERFACE
     server/websockettransport.h
     server/websocketserver.cpp
     server/websocketserver.h
+
+
+    legacy/commands.h
+    legacy/commands.cpp
+
 )

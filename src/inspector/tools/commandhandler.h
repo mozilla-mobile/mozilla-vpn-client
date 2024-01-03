@@ -8,24 +8,22 @@
 #include <QByteArray>
 #include <QObject>
 
+#include "./command.h"
+
+
 class QNetworkReply;
 class QUrl;
 class QQuickItem;
 
 namespace InspectorTools {
 
-class DevCmdHandler : public QObject {
+class CommandHandler : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(DevCmdHandler)
+  Q_DISABLE_COPY_MOVE(CommandHandler)
 
  public:
-  explicit DevCmdHandler(QObject* parent);
-  ~DevCmdHandler();
-
-  static QString getObjectClass(const QObject* target);
-  static QJsonObject getViewTree();
-  static QJsonObject serialize(QQuickItem* item);
-  static void itemsPicked(const QList<QQuickItem*>& objects);
+  explicit CommandHandler(QObject* parent);
+  ~CommandHandler();
 
   /**
   * Must be called when there is an incoming command. 
@@ -41,19 +39,22 @@ class DevCmdHandler : public QObject {
   /**
    * @brief Register a new command.
    */
-  static void registerCommand(
+  void registerCommand(
       const QString& commandName, const QString& commandDescription,
       int32_t arguments,
-      std::function<QJsonObject(DevCmdHandler*, const QList<QByteArray>&)>&&
+      std::function<QJsonObject(const QList<QByteArray>&)>&&
           callback);
+  /**
+   * @brief Register a new command.
+   */
+  void registerCommand(const Command& command);
+
   // Unregister a Command
-  static void unregisterCommand(const QString& commandName);
+  void unregisterCommand(const QString& commandName);
 
 
  private:
-  void addonLoadCompleted();
-  void logEntryAdded(const QByteArray& log);
-  void networkRequestFinished(QNetworkReply* reply);
+   QList<Command> s_commands ;
 };
 }  // namespace InspectorTools
 #endif  // DEVCMD_HANDLER_H

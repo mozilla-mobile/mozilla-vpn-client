@@ -17,10 +17,11 @@
 #include <QWebSocket>
 
 
-#include "tools/inspectorcommandhandler.h"
+#include "tools/commandhandler.h"
 #include "tools/hotreloader.h"
 #include "tools/qquickinspector.h"
 #include "server/factory.h"
+#include "tools/command.h"
 
 /**
  * @brief Service that allow's other Clients to debug it. 
@@ -64,7 +65,16 @@ class Inspector : public QObject {
 
 		void exportObject(QString objName, QObject* o){
             m_channel.registerObject(objName, o);
-		}           
+		}
+
+		/**
+         * @brief Register a new command.
+         */
+                void registerCommand(const InspectorTools::Command& command) {
+                  m_cli.registerCommand(command);
+                };
+
+
 		
 		Q_SLOT void onConnection(
                     QWebChannelAbstractTransport* connection) {
@@ -75,7 +85,7 @@ class Inspector : public QObject {
 		QPointer<InspectorTools::Hotreloader> getHotReloader() {
                                         return &m_hotReloader;
         }
-        QPointer<InspectorTools::DevCmdHandler> getCommandHolder() {
+        QPointer<InspectorTools::CommandHandler> getCommandHolder() {
                                         return &m_cli;
         }
 
@@ -96,7 +106,7 @@ class Inspector : public QObject {
         QPointer<QObject> m_server;
 
 		InspectorTools::Hotreloader m_hotReloader;
-        InspectorTools::DevCmdHandler m_cli; 
+        InspectorTools::CommandHandler m_cli; 
         QWebChannel m_channel;
 };
 #endif
