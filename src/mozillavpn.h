@@ -198,7 +198,6 @@ class MozillaVPN final : public App {
   void requestAbout();
 
   static QString appVersionForUpdate();
-  static bool mockFreeTrial();
 
  private:
   void maybeStateMain();

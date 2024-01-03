@@ -20,12 +20,35 @@
 #include <QTest>
 #include <functional>
 
+
+
+#include "addons/addonapi.h"
+#include "addons/manager/addonmanager.h"
+#include "captiveportal/captiveportaldetection.h"
 #include "constants.h"
+#include "controller.h"
+
 #include "feature.h"
+#include "frontend/navigator.h" 
+#include "glean/mzglean.h"
+#include "inspector/inspector.h"
+#include "inspector/tools/commandhandler.h"
+#include "loghandler.h"
+#include "models/device.h"
+#include "models/devicemodel.h"
+#include "models/keys.h"
+
+#include "models/servercountrymodel.h"
+#include "networkwatcher.h"
+#include "profileflow.h"
+
+#include "releasemonitor.h"
+#include "serveri18n.h"
+
+#include "constants.h"
 #include "frontend/navigator.h"
 #include "../tools/qquickinspector.h"
 #include "../inspector.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -33,10 +56,10 @@
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
-#include "settingsholder.h"
 #include "task.h"
-#include "urlopener.h"
 #include "utils.h"
+#include "notificationhandler.h"
+
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"
@@ -655,8 +678,348 @@ static QList<InspectorTools::Command> s_commands{
 // Please do not consider adding new ones here,
 // Add them wherever the Commands are actually used.
 void InspectorLegacyCommands::registerCommands(Inspector* i) {
+  InspectorTools::CommandHandler* inspectorCli = i->getCommandHolder();
   for (auto const& command : s_commands) {
     i->registerCommand(command);
-    }
   }
+
+  QObject::connect(
+      NotificationHandler::instance(), &NotificationHandler::notificationShown,
+      inspectorCli,
+      [inspectorCli](const QString& title, const QString& message) {
+        QJsonObject obj;
+        obj["type"] = "notification";
+        obj["title"] = title;
+        obj["message"] = message;
+        inspectorCli->send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+      });
+
+  QObject::connect(
+      AddonManager::instance(), &AddonManager::loadCompletedChanged,
+      inspectorCli, [inspectorCli]() {
+        QJsonObject obj;
+        obj["type"] = "addon_load_completed";
+        inspectorCli->send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+      });
+
+#ifdef MZ_ANDROID
+  inspectorCli->registerCommand(
+      "android_daemon", "Send a request to the Daemon {type} {args}", 2,
+      [](const QList<QByteArray>& arguments) {
+        auto activity = AndroidVPNActivity::instance();
+        Q_ASSERT(activity);
+        auto type = QString(arguments[1]);
+        auto json = QString(arguments[2]);
+
+        ServiceAction a = (ServiceAction)type.toInt();
+        AndroidVPNActivity::sendToService(a, json);
+        return QJsonObject();
+      });
+#endif
+
+  inspectorCli->registerCommand("activate", "Activate the VPN", 0,
+                                [](const QList<QByteArray>&) {
+                                  MozillaVPN::instance()->activate();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand(
+      "click_notification", "Click on a notification", 0,
+      [](const QList<QByteArray>&) {
+        NotificationHandler::instance()->messageClickHandle();
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand("deactivate", "Deactivate the VPN", 0,
+                                [](const QList<QByteArray>&) {
+                                  MozillaVPN::instance()->deactivate();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand("devices", "Retrieve the list of devices", 0,
+                                [](const QList<QByteArray>&) {
+                                  MozillaVPN* vpn = MozillaVPN::instance();
+                                  Q_ASSERT(vpn);
+
+                                  DeviceModel* dm = vpn->deviceModel();
+                                  Q_ASSERT(dm);
+
+                                  QJsonArray deviceArray;
+                                  for (const Device& device : dm->devices()) {
+                                    QJsonObject deviceObj;
+                                    deviceObj["name"] = device.name();
+                                    deviceObj["publicKey"] = device.publicKey();
+                                    deviceObj["currentDevice"] =
+                                        device.isCurrentDevice(vpn->keys());
+                                    deviceArray.append(deviceObj);
+                                  }
+
+                                  QJsonObject obj;
+                                  obj["value"] = deviceArray;
+                                  return obj;
+                                });
+
+  inspectorCli->registerCommand("guides", "Returns a list of guide title ids",
+                                0, [](const QList<QByteArray>&) {
+                                  QJsonObject obj;
+
+                                  AddonManager* am = AddonManager::instance();
+                                  Q_ASSERT(am);
+
+                                  QJsonArray guides;
+                                  am->forEach([&](Addon* addon) {
+                                    if (addon->type() == "guide") {
+                                      guides.append(addon->id());
+                                    }
+                                  });
+
+                                  obj["value"] = guides;
+                                  return obj;
+                                });
+
+  inspectorCli->registerCommand("fetch_addons",
+                                "Force a fetch of the addon list manifest", 0,
+                                [](const QList<QByteArray>&) {
+                                  AddonManager::instance()->fetch();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand(
+      "force_backend_failure", "Force a backend failure", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->controller()->backendFailure();
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_captive_portal_check", "Force a captive portal check", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->captivePortalDetection()->detectCaptivePortal();
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_captive_portal_detection", "Simulate a captive portal detection",
+      0, [](const QList<QByteArray>&) {
+        MozillaVPN::instance()
+            ->captivePortalDetection()
+            ->captivePortalDetected();
+        MozillaVPN::instance()->controller()->captivePortalPresent();
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_heartbeat_failure", "Force a heartbeat failure", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->heartbeatCompleted(false /* success */);
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_server_unavailable",
+      "Timeout all servers in a city using force_server_unavailable "
+      "{countryCode} "
+      "{cityCode}",
+      2, [](const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
+          MozillaVPN::instance()
+              ->serverCountryModel()
+              ->setCooldownForAllServersInACity(QString(arguments[1]),
+                                                QString(arguments[2]));
+        } else {
+          obj["error"] =
+              QString("Please provide country and city codes as arguments");
+        }
+
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_subscription_management_reauthentication",
+      "Force re-authentication for the subscription management view", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->profileFlow()->setForceReauthFlow(true);
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_unsecured_network", "Force an unsecured network detection", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
+                                                                   "Dummy");
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand(
+      "force_update_check", "Force a version update check", 0,
+      [](const QList<QByteArray>& arguments) {
+        MozillaVPN::instance()->releaseMonitor()->runSoon();
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand("hard_reset", "Hard reset (wipe all settings).",
+                                0, [](const QList<QByteArray>&) {
+                                  MozillaVPN::instance()->hardReset();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand("logout", "Logout the user", 0,
+                                [](const QList<QByteArray>&) {
+                                  MozillaVPN::instance()->logout();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand("messages",
+                                "Returns a list of the loaded messages ids", 0,
+                                [](const QList<QByteArray>&) {
+                                  QJsonObject obj;
+
+                                  AddonManager* am = AddonManager::instance();
+                                  Q_ASSERT(am);
+
+                                  QJsonArray messages;
+                                  am->forEach([&](Addon* addon) {
+                                    if (addon->type() == "message") {
+                                      messages.append(addon->id());
+                                    }
+                                  });
+
+                                  obj["value"] = messages;
+                                  return obj;
+                                });
+
+  inspectorCli->registerCommand("public_key",
+                                "Retrieve the public key of the current device",
+                                0, [](const QList<QByteArray>&) {
+                                  MozillaVPN* vpn = MozillaVPN::instance();
+                                  Q_ASSERT(vpn);
+
+                                  Keys* keys = vpn->keys();
+                                  Q_ASSERT(keys);
+
+                                  QJsonObject obj;
+                                  obj["value"] = keys->publicKey();
+                                  return obj;
+                                });
+
+  inspectorCli->registerCommand(
+      "reset", "Reset the app", 0, [](const QList<QByteArray>&) {
+        MozillaVPN* vpn = MozillaVPN::instance();
+        Q_ASSERT(vpn);
+
+        vpn->reset(true);
+        ErrorHandler::instance()->hideAlert();
+
+        SettingsHolder* settingsHolder = SettingsHolder::instance();
+        Q_ASSERT(settingsHolder);
+
+        // Extra cleanup for testing
+        settingsHolder->setTelemetryPolicyShown(false);
+
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand("reset_addons",
+                                "Reset all the addons cleaning up the cache", 0,
+                                [](const QList<QByteArray>&) {
+                                  AddonManager::instance()->reset();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand(
+      "servers", "Returns a list of servers", 0, [](const QList<QByteArray>&) {
+        QJsonObject obj;
+
+        QJsonArray countryArray;
+        ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+        for (const ServerCountry& country : scm->countries()) {
+          QJsonArray cityArray;
+          for (const QString& cityName : country.cities()) {
+            const ServerCity& city = scm->findCity(country.code(), cityName);
+            if (!city.initialized()) {
+              continue;
+            }
+            QJsonObject cityObj;
+            cityObj["name"] = city.name();
+            cityObj["localizedName"] =
+                ServerI18N::instance()->translateCityName(country.code(),
+                                                          city.name());
+            cityObj["code"] = city.code();
+            cityArray.append(cityObj);
+          }
+
+          QJsonObject countryObj;
+          countryObj["name"] = country.name();
+          countryObj["localizedName"] =
+              ServerI18N::instance()->translateCountryName(country.code(),
+                                                           country.name());
+          countryObj["code"] = country.code();
+          countryObj["cities"] = cityArray;
+
+          countryArray.append(countryObj);
+        }
+
+        obj["value"] = countryArray;
+        return obj;
+      });
+
+  inspectorCli->registerCommand(
+      "set_glean_source_tags",
+      "Set Glean Source Tags (supply a comma seperated list)", 1,
+      [](const QList<QByteArray>& arguments) {
+        QStringList tags = QString(arguments[1]).split(',');
+        emit MozillaVPN::instance()->setGleanSourceTags(tags);
+        return QJsonObject();
+      });
+
+  inspectorCli->registerCommand("quit", "Quit the app", 0,
+                                [](const QList<QByteArray>&) {
+                                  MozillaVPN::instance()->controller()->quit();
+                                  return QJsonObject();
+                                });
+
+  inspectorCli->registerCommand(
+      "force_connection_health",
+      "Force VPN connection health stability. Possible values are: stable, "
+      "unstable, nosignal",
+      1, [](const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        auto stabilityMode = arguments[1];
+
+        if (stabilityMode == "stable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Stable);
+        } else if (stabilityMode == "unstable") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Unstable);
+        } else if (stabilityMode == "nosignal") {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::NoSignal);
+        } else {
+          obj["error"] = QString("Please enter a valid stability mode value.");
+        }
+        return QJsonObject();
+      });
+
+#ifdef MZ_MACOS
+  inspectorCli->registerCommand(
+      "force_daemon_crash", "Force the VPN daemon to crash", 0,
+      [](const QList<QByteArray>&) {
+        MozillaVPN::instance()->controller()->forceDaemonCrash();
+        return QJsonObject();
+      });
+#endif
+
+
+
+
+
+}
 

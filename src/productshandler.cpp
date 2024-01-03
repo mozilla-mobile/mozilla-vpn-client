@@ -238,10 +238,6 @@ QVariant ProductsHandler::data(const QModelIndex& index, int role) const {
 
     case ProductTrialDaysRole:
       if (Feature::get(Feature::Feature_freeTrial)->isSupported()) {
-        if ((m_products.at(index.row()).m_type == ProductYearly) &&
-            MozillaVPN::mockFreeTrial()) {
-          return QVariant(7);
-        }
         return QVariant(m_products.at(index.row()).m_trialDays);
       }
       return QVariant(0);

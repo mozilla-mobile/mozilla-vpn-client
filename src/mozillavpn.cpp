@@ -18,6 +18,8 @@
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
+#include "inspector/inspector.h"
+#include "inspector/tools/commandhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -91,7 +93,6 @@
 namespace {
 Logger logger("MozillaVPN");
 MozillaVPN* s_instance = nullptr;
-bool s_mockFreeTrial = false;
 QString s_updateVersion;
 }  // namespace
 
@@ -211,8 +212,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   registerUrlOpenerLabels();
 
   registerErrorHandlers();
-
-  registerInspectorCommands();
 
   registerAddonApis();
 
@@ -1812,17 +1811,6 @@ void MozillaVPN::registerNavigationBarButtons() {
 
   resetNotification(messageIcon);
 }
-
-// static
-bool MozillaVPN::mockFreeTrial() { return s_mockFreeTrial; }
-
-// static
-
-void MozillaVPN::registerInspectorCommands() {
-  
-}
-
-
 
 // static
 QString MozillaVPN::appVersionForUpdate() {
