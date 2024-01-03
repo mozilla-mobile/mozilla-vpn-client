@@ -7,11 +7,11 @@ get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
-include_directories(${MZ_SOURCE_DIR}/composer)
 include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/glean)
 
 qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
@@ -245,6 +245,20 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
+    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composer.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/urlopener.cpp
     ${MZ_SOURCE_DIR}/urlopener.h
     ${MZ_SOURCE_DIR}/utils.cpp
@@ -254,7 +268,6 @@ target_sources(qml_tests PRIVATE
 )
 
 # VPN Client UI resources
-target_link_libraries(qml_tests PRIVATE mozillavpn-ui mozillavpn-uiplugin)
 target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/ui/ui.qrc
 )
@@ -285,11 +298,6 @@ file(GLOB QML_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tst_*.qml")
 foreach(QML_SOURCE ${QML_TEST_SOURCES})
     add_test(NAME ${QML_SOURCE} COMMAND qml_tests ${QML_TEST_ARGS} -input ${CMAKE_CURRENT_SOURCE_DIR}/${QML_SOURCE})
 endforeach()
-
-qt6_add_qml_module(qml_tests
-  URI Mozilla.VPN
-  VERSION 1.0
-)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Qt6 REQUIRED COMPONENTS DBus)

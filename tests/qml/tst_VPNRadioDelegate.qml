@@ -6,7 +6,6 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtTest 1.0
 
-import Mozilla.VPN 1.0
 import components 0.1
 
 Item {
