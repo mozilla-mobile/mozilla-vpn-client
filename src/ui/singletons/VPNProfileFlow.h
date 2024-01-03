@@ -7,8 +7,8 @@
 
 #include <QQmlEngine>
 
-#include "profileflow.h"
 #include "mozillavpn.h"
+#include "profileflow.h"
 
 struct VPNProfileFlow {
   Q_GADGET

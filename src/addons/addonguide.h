@@ -5,9 +5,9 @@
 #ifndef ADDONGUIDE_H
 #define ADDONGUIDE_H
 
-#include "composer.h"
 #include "addon.h"
 #include "addonproperty.h"
+#include "composer.h"
 
 class QJsonObject;
 

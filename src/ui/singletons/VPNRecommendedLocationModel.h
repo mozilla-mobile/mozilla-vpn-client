@@ -16,7 +16,8 @@ struct VPNRecommendedLocationModel {
   QML_SINGLETON
 
  public:
-  static RecommendedLocationModel* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine) {
+  static RecommendedLocationModel* create(QQmlEngine* qmlEngine,
+                                          QJSEngine* jsEngine) {
     return RecommendedLocationModel::instance();
   }
 };

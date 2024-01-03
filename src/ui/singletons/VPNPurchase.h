@@ -7,8 +7,8 @@
 
 #include <QQmlEngine>
 
-#include "purchasehandler.h"
 #include "mozillavpn.h"
+#include "purchasehandler.h"
 
 struct VPNPurchase {
   Q_GADGET

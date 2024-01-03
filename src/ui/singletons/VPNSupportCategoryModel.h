@@ -17,7 +17,8 @@ struct VPNSupportCategoryModel {
   QML_SINGLETON
 
  public:
-  static SupportCategoryModel* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine) {
+  static SupportCategoryModel* create(QQmlEngine* qmlEngine,
+                                      QJSEngine* jsEngine) {
     return MozillaVPN::instance()->supportCategoryModel();
   }
 };

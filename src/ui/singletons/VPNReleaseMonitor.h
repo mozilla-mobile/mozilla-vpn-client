@@ -7,8 +7,8 @@
 
 #include <QQmlEngine>
 
-#include "releasemonitor.h"
 #include "mozillavpn.h"
+#include "releasemonitor.h"
 
 struct VPNReleaseMonitor {
   Q_GADGET

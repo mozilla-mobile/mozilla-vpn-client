@@ -17,7 +17,8 @@ struct VPNConnectionBenchmark {
   QML_SINGLETON
 
  public:
-  static ConnectionBenchmark* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine) {
+  static ConnectionBenchmark* create(QQmlEngine* qmlEngine,
+                                     QJSEngine* jsEngine) {
     return MozillaVPN::instance()->connectionBenchmark();
   }
 };
