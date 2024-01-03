@@ -8,11 +8,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
-include_directories(${MZ_SOURCE_DIR}/composer)
 include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
 qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
@@ -292,6 +292,20 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
+    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composer.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
     ${MZ_SOURCE_DIR}/urlopener.cpp
     ${MZ_SOURCE_DIR}/urlopener.h
     ${MZ_SOURCE_DIR}/utils.cpp
@@ -301,7 +315,6 @@ target_sources(unit_tests PRIVATE
 )
 
 # VPN Client UI resources
-target_link_libraries(unit_tests PRIVATE mozillavpn-ui mozillavpn-uiplugin)
 target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )

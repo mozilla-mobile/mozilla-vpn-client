@@ -25,6 +25,7 @@ include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/hacl-star)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
 include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
+include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
@@ -53,8 +54,6 @@ generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/u
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
-    mozillavpn-ui
-    mozillavpn-uiplugin
     translations-unit-tests
 )
 
@@ -141,6 +140,20 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
+    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composer.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
 
 if(NOT BUILD_ADJUST_SDK_TOKEN)
