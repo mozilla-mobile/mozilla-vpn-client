@@ -181,17 +181,19 @@ void Navigator::requestScreenFromBottomBar(
   // screens stack view, which would be the view currently being displayed
   for (ScreenData& screen : s_screens) {
     if (screen.m_screen == m_currentScreen) {
-      auto layers = screen.m_layers;
+      // Make sure the screen has a layer (stack or view added via
+      // Navigator::addView() or Navigator::addStackView())
+      if (screen.m_layers.isEmpty()) {
+        break;
+      }
 
-      QString telemetryScreenId =
-          layers.last().m_layer->property("telemetryScreenId").toString();
+      QString telemetryScreenId = screen.m_layers.last()
+                                      .m_layer->property("telemetryScreenId")
+                                      .toString();
 
-      // Make sure the screen has a view (and it has been added to the layers
-      // via Navigator::addView(), and that view has a non-empty
-      // "telemetryScreenId" property
-      // TODO in VPN-6039 - support screens as well (not just views on top of
-      // screens)
-      if (layers.length() < 1 || telemetryScreenId.isEmpty()) {
+      // Make sure the layer has a "telemetryScreenId" property
+      // If it doesn't, telemetryScreenId will be an empty string
+      if (telemetryScreenId.isEmpty()) {
         break;
       }
 
