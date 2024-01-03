@@ -8,9 +8,9 @@
 #include "composer.h"
 #include "addon.h"
 #include "addonproperty.h"
-#include "settingsholder.h"
 
 class QJsonObject;
+class SettingGroup;
 
 #ifdef UNIT_TEST
 class TestAddon;
@@ -22,8 +22,6 @@ constexpr const char* ADDON_MESSAGE_SETTINGS_STATUS_KEY = "state";
 class AddonMessage final : public Addon {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AddonMessage)
-  QML_NAMED_ELEMENT(MZAddonMessage)
-  QML_UNCREATABLE("")
 
  public:
   ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)

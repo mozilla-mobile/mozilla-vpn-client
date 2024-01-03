@@ -43,6 +43,7 @@ qt_add_qml_module(mozillavpn-ui
         singletons/VPNSubscriptionData.h
         singletons/VPNSupportCategoryModel.h
         singletons/VPNUser.h
+        types/MZAddonMessage.h
 )
 
 target_link_libraries(mozillavpn-ui PRIVATE
@@ -57,4 +58,5 @@ target_include_directories(mozillavpn-ui PRIVATE
 target_include_directories(mozillavpn-ui PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/composer
     ${CMAKE_CURRENT_SOURCE_DIR}/singletons
+    ${CMAKE_CURRENT_SOURCE_DIR}/types
 )
