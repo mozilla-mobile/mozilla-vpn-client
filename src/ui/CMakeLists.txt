@@ -60,3 +60,7 @@ target_include_directories(mozillavpn-ui PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/singletons
     ${CMAKE_CURRENT_SOURCE_DIR}/types
 )
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+    target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
+endif()

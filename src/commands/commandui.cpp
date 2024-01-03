@@ -309,11 +309,6 @@ int CommandUI::run(QStringList& tokens) {
       engine->addImageProvider(QString("app"), provider);
     }
 
-#ifdef MZ_ANDROID
-    //qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
-    //                             AndroidUtils::instance());
-#endif
-
     //if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
     //  qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
     //                               ProductsHandler::instance());
