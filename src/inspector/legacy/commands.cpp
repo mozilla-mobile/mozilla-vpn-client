@@ -2,7 +2,6 @@
 
 #include "commands.h"
 
-#include <QString>
 #include <QBuffer>
 #include <QJSValue>
 #include <QJSValueIterator>
@@ -17,56 +16,48 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QString>
 #include <QTest>
 #include <functional>
 
-
-
+#include "../inspector.h"
+#include "../tools/qquickinspector.h"
 #include "addons/addonapi.h"
 #include "addons/manager/addonmanager.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
-
 #include "feature.h"
-#include "frontend/navigator.h" 
+#include "frontend/navigator.h"
 #include "glean/mzglean.h"
 #include "inspector/inspector.h"
 #include "inspector/tools/commandhandler.h"
-#include "loghandler.h"
-#include "models/device.h"
-#include "models/devicemodel.h"
-#include "models/keys.h"
-
-#include "models/servercountrymodel.h"
-#include "networkwatcher.h"
-#include "profileflow.h"
-
-#include "releasemonitor.h"
-#include "serveri18n.h"
-
-#include "constants.h"
-#include "frontend/navigator.h"
-#include "../tools/qquickinspector.h"
-#include "../inspector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/device.h"
+#include "models/devicemodel.h"
 #include "models/featuremodel.h"
+#include "models/keys.h"
+#include "models/servercountrymodel.h"
 #include "mzglean.h"
 #include "networkmanager.h"
+#include "networkwatcher.h"
+#include "notificationhandler.h"
+#include "profileflow.h"
+#include "urlopener.h"
 #include "qmlengineholder.h"
+#include "releasemonitor.h"
+#include "serveri18n.h"
 #include "task.h"
 #include "utils.h"
-#include "notificationhandler.h"
-
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"
 #else
 #  include <QCoreApplication>
 #endif
-
 
 namespace {
 Logger logger("CommandHandler");
@@ -175,7 +166,6 @@ QJsonObject getViewTree() {
   out["tree"] = viewRoots;
   return out;
 }
-
 
 }  // namespace
 
@@ -670,9 +660,6 @@ static QList<InspectorTools::Command> s_commands{
 
 };
 
-
-
-
 // Those Commands have grown to become a lovely ball of spagetti.
 // I'm not going to bother untangling this.
 // Please do not consider adding new ones here,
@@ -1016,10 +1003,4 @@ void InspectorLegacyCommands::registerCommands(Inspector* i) {
         return QJsonObject();
       });
 #endif
-
-
-
-
-
 }
-
