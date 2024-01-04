@@ -7,8 +7,8 @@
 
 #include <QQmlEngine>
 
-#include "serverlatency.h"
 #include "mozillavpn.h"
+#include "serverlatency.h"
 
 struct VPNServerLatency {
   Q_GADGET

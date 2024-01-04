@@ -17,7 +17,8 @@ struct VPNServerCountryModel {
   QML_SINGLETON
 
  public:
-  static ServerCountryModel* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine) {
+  static ServerCountryModel* create(QQmlEngine* qmlEngine,
+                                    QJSEngine* jsEngine) {
     return MozillaVPN::instance()->serverCountryModel();
   }
 };

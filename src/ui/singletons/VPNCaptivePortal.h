@@ -17,7 +17,8 @@ struct VPNCaptivePortal {
   QML_SINGLETON
 
  public:
-  static CaptivePortalDetection* create(QQmlEngine* qmlEngine, QJSEngine* jsEngine) {
+  static CaptivePortalDetection* create(QQmlEngine* qmlEngine,
+                                        QJSEngine* jsEngine) {
     return MozillaVPN::instance()->captivePortalDetection();
   }
 };
