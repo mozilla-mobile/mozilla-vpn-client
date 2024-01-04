@@ -8,6 +8,8 @@
 #include <emscripten/emscripten.h>
 
 #include <QCoreApplication>
+#include <QJsonDocument>
+#include <Q>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -18,9 +20,12 @@ Logger logger("WasmInspector");
 WasmInspector* s_inspector = nullptr;
 }  // namespace
 
+
+namespace InspectorServer {
+
 EMSCRIPTEN_KEEPALIVE void inspectorCommand(emscripten::val input) {
   std::string str = input.as<std::string>();
-  WasmInspector::instance()->recv(QByteArray(str.c_str(), str.length()));
+  s_inspector->recv(QByteArray(str.c_str(), str.length()));
 }
 
 EMSCRIPTEN_BINDINGS(MozillaVPNIntegraton) {
@@ -35,21 +40,33 @@ EM_JS(void, call_inspectorMessage, (const char* msg), {
   }
 });
 
-// static
-WasmInspector* WasmInspector::instance() {
+void InspectorServer::WasmInspector::receive(const QByteArray& data) {
+   QJsonParseError jsonError;
+   QJsonDocument json = QJsonDocument::fromJson(message, &jsonError);
+   if (QJsonParseError::NoError != jsonError.error) {
+     return;
+   }
+   if (!json.isObject()) {
+      return;
+   }
+   emit messageReceived(json.object(), this);
+}
+
+WasmInspector::WasmInspector(QObject* parent)
+    : QWebChannelAbstractTransport(parent) {
+  MZ_COUNT_CTOR(WasmInspector);
   if (!s_inspector) {
     s_inspector = new WasmInspector(qApp);
   }
-
-  return s_inspector;
-}
-
-WasmInspector::WasmInspector(QObject* parent) : DevCmdHandler(parent) {
-  MZ_COUNT_CTOR(WasmInspector);
 }
 
 WasmInspector::~WasmInspector() { MZ_COUNT_DTOR(WasmInspector); }
 
-void WasmInspector::send(const QByteArray& buffer) {
-  call_inspectorMessage(buffer.constData());
+void WasmInspector::sendMessage(const QJsonObject& message) {
+  QJsonDocument json;
+  json.setObject(message);
+  auto json_bytes = json.toJson(QJsonDocument::JsonFormat::Compact);
+  call_inspectorMessage(json_bytes.constData());
 }
+
+}  // namespace InspectorServer

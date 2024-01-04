@@ -10,7 +10,7 @@
 #ifndef MZ_WASM
 	#include "websocketserver.h"
 #else
-	// Todo: do wasm
+	#include "wasminspector.h"
 #endif  // !MZ_WASM
 namespace InspectorServer {
 
@@ -18,8 +18,7 @@ QObject* Factory::create(Inspector* parent) {
 #ifndef MZ_WASM
   return new InspectorWebSocketServer(parent);
 #else
-  return nullptr;
-  // Todo: do wasm
+  return new WasmInspector(parent);
 #endif  // !MZ_WASM
 }
 
