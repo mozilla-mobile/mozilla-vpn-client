@@ -49,7 +49,6 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
   // For macOS 13 and beyond, register() and unregister() methods
   // are used for managing login items since SMLoginItemSetEnabled() is deprecated.
   // For versions prior to macOS 13, SMLoginItemSetEnabled() is used.
-  #if defined(__MAC_13_0) && (__MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_13_0)
     if (@available(macOS 13, *)) {
       // Use register() or unregister() based on the startAtBoot flag
       NSError *error = nil;
@@ -66,9 +65,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
           logger.debug() << "LoginItem unregistered successfully.";
         }
       }
-    } else
-  #endif
-  {
+    } else {
     CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;
     Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
     logger.debug() << "Result: " << ok;
