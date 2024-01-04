@@ -65,6 +65,10 @@ void TestNavigator::testNavbarButtonTelemetry() {
         return true;
       });
 
+  int expectedHomeSelectedEventsCount = 0;
+  int expectedMessagesSelectedEventsCount = 0;
+  int expectedSettingsSelectedEventsCount = 0;
+
   // Setup UI - doesn't really matter what screen we start in
   navigator->requestScreen(MozillaVPN::ScreenHome);
 
@@ -77,7 +81,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
@@ -87,7 +91,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   QString telemetryScreenId = "test-screen-id";
 
@@ -100,16 +104,17 @@ void TestNavigator::testNavbarButtonTelemetry() {
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+  expectedHomeSelectedEventsCount++;
 
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(homeSelectedEvents.length(), 1);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   auto homeSelectedEventsExtras = homeSelectedEvents[0]["extra"].toObject();
 
@@ -131,17 +136,20 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto messagesSelectedEvents =
       mozilla::glean::interaction::messages_selected.testGetValue();
 
-  QCOMPARE(messagesSelectedEvents.length(), 0);
+  QCOMPARE(messagesSelectedEvents.length(),
+           expectedMessagesSelectedEventsCount);
 
   // Click the navbar messages button
   Navigator::instance()->requestScreenFromBottomBar(
       MozillaVPN::ScreenMessaging);
+  expectedMessagesSelectedEventsCount++;
 
   messagesSelectedEvents =
       mozilla::glean::interaction::messages_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(messagesSelectedEvents.length(), 1);
+  QCOMPARE(messagesSelectedEvents.length(),
+           expectedMessagesSelectedEventsCount);
 
   auto messagesSelectedEventsExtras =
       messagesSelectedEvents[0]["extra"].toObject();
@@ -168,16 +176,19 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto settingsSelectedEvents =
       mozilla::glean::interaction::settings_selected.testGetValue();
 
-  QCOMPARE(settingsSelectedEvents.length(), 0);
+  QCOMPARE(settingsSelectedEvents.length(),
+           expectedSettingsSelectedEventsCount);
 
   // Click the navbar settings button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenSettings);
+  expectedSettingsSelectedEventsCount++;
 
   settingsSelectedEvents =
       mozilla::glean::interaction::settings_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(settingsSelectedEvents.length(), 1);
+  QCOMPARE(settingsSelectedEvents.length(),
+           expectedSettingsSelectedEventsCount);
 
   auto settingsSelectedEventsExtras =
       settingsSelectedEvents[0]["extra"].toObject();
@@ -195,14 +206,37 @@ void TestNavigator::testNavbarButtonTelemetry() {
           ErrorType::InvalidOverflow),
       0);
 
-  // Delete the stack view from the settings screen (such that ScreenSettings
-  // has no layers added to it) and ensure the application does not crash when
-  // switching screens and generating nav bar button telemetry from a screen
-  // containing no layers
-  QmlPath qmlPath("//settings-stackView");
-  QCOMPARE(qmlPath.isValid(), true);
-  qmlPath.evaluate(&engine)->deleteLater();
+  // Next, we will delete the test view (view) and stack view layers from
+  // ScreenHome (such that ScreenHome has no layers added to it) and ensure that
+  // no telemetry is recorded and the application does not crash when switching
+  // screens and generating nav bar button telemetry from a screen containing no
+  // layers
+
+  // Click the home nav bar button to get back to ScreenHome
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+
+  // Verify number of events is still 1 after the test
+  // because the source screen (ScreenSettings) does not have a
+  // telemetryScreenId property
+  homeSelectedEvents =
+      mozilla::glean::interaction::home_selected.testGetValue();
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
+
+  // Delete all layers from ScreenHome (the view we created earlier in the test,
+  // and the stack view created in QML) so that ScreenHome has no layers
+  delete view;
+  QmlPath qmlPath("//screenHome-stackView");
+  QCOMPARE(qmlPath.isValid(), true);
+  delete qmlPath.evaluate(&engine);
+
+  // Click the home nav bar button to go to ScreenHome again
+  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+
+  // Verify number of events is still 1 after the test
+  // because the source screen (ScreenHome) does not have any layers
+  homeSelectedEvents =
+      mozilla::glean::interaction::home_selected.testGetValue();
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 }
 
 static TestNavigator s_testNavigator;
