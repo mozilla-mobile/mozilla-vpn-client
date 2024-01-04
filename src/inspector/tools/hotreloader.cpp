@@ -4,6 +4,7 @@
 
 #include "hotreloader.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -12,27 +13,15 @@
 #include <QStandardPaths>
 #include <QWindow>
 
-#include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "qmlengineholder.h"
-#include "tasks/function/taskfunction.h"
+#include "../inspector.h"
 #include "command.h"
 #include "commandhandler.h"
-
-#include "../inspector.h"
-
-namespace {
-Logger logger("QMLHotReload");
-}
 
 namespace InspectorTools {
 
 Hotreloader::Hotreloader(QObject* parent, QQmlEngine* target)
     : QObject(parent), m_target(target), m_intercecptor(this) {
   m_target->addUrlInterceptor(&m_intercecptor);
-  new NavigatorReloader(qApp);
   QDir dataDir(
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
   m_qml_folder = dataDir.absoluteFilePath("hot_reload");
@@ -53,88 +42,62 @@ Hotreloader::Hotreloader(QObject* parent, QQmlEngine* target)
 }
 
 void Hotreloader::annonceReplacedFile(const QUrl& path) {
-  logger.debug() << "Announced redirect! : " << path.fileName() << " as ->"
-                 << path.toString();
+  qDebug() << "Announced redirect! : " << path.fileName() << " as ->"
+           << path.toString();
 
   if (path.scheme() != "http" && path.scheme() != "file" &&
       path.scheme() != "qrc") {
-    logger.error() << "Unexpected File Scheme in: " << path.toString();
+    qDebug() << "Unexpected File Scheme in: " << path.toString();
     return;
   }
   if (path.scheme() == "file" || path.scheme() == "qrc") {
     // If it's a file, just load it!
     m_target->clearComponentCache();
     m_announced_files.insert(path.fileName(), path);
-    Navigator::instance()->reloadCurrentScreen();
+    reloadWindow();
     return;
   }
-  // If it is a remote file, download to a temp file and then come back to
-  // announce it!
-  fetchAndAnnounce(path);
+  qDebug() << "Unexpected file format";
 }
 
-void Hotreloader::fetchAndAnnounce(const QUrl& path) {
-  if (path.scheme() != "http") {
-    logger.error() << "Unexpected File Scheme in: " << path.toString();
+void Hotreloader::pushFile(const QString& fileName, const QByteArray& data) {
+  auto temp_path = QString("%1/%2").arg(m_qml_folder, fileName);
+  auto temp_file = new QFile(temp_path);
+  temp_file->open(QIODevice::WriteOnly);
+  if (!temp_file->write(data)) {
+    qDebug() << "Unable to write to file:" << temp_file->fileName();
     return;
   }
-  TaskFunction* dummy_task = new TaskFunction([]() {});
-  NetworkRequest* request = new NetworkRequest(dummy_task, 200);
-  request->get(path.toString());
-
-  QObject::connect(
-      request, &NetworkRequest::requestFailed,
-      [dummy_task](QNetworkReply::NetworkError error, const QByteArray&) {
-        dummy_task->deleteLater();
-        logger.error() << "Get qml content failed" << error;
-      });
-
-  QObject::connect(
-      request, &NetworkRequest::requestCompleted,
-      [this, path, dummy_task](const QByteArray& data) {
-        dummy_task->deleteLater();
-        auto temp_path = QString("%1/%2").arg(m_qml_folder, path.fileName());
-        auto temp_file = new QFile(temp_path);
-        temp_file->open(QIODevice::WriteOnly);
-        if (!temp_file->write(data)) {
-          logger.warning() << "Unable to write to file:"
-                           << temp_file->fileName();
-          return;
-        }
-        if (!temp_file->flush()) {
-          logger.warning() << "Unable to flush to file:"
-                           << temp_file->fileName();
-          return;
-        }
-        temp_file->close();
-        QFileInfo info(temp_path);
-        annonceReplacedFile(QUrl::fromLocalFile(info.absoluteFilePath()));
-      });
+  if (!temp_file->flush()) {
+    qDebug() << "Unable to flush to file:" << temp_file->fileName();
+    return;
+  }
+  temp_file->close();
+  QFileInfo info(temp_path);
+  annonceReplacedFile(QUrl::fromLocalFile(info.absoluteFilePath()));
 }
 
 void Hotreloader::resetAllFiles() {
-  logger.debug() << "Resetting hot reloaded files";
+  qDebug() << "Resetting hot reloaded files";
 
   QDir dir(m_qml_folder);
   if (dir.exists()) {
-    logger.debug() << "Removing hot reloaded files from disk";
+    qDebug() << "Removing hot reloaded files from disk";
     dir.removeRecursively();
   }
   m_target->clearComponentCache();
   m_announced_files.clear();
-  Navigator::instance()->reloadCurrentScreen();
+  reloadWindow();
 }
 
 void Hotreloader::reloadWindow() {
-  auto engineHolder = QmlEngineHolder::instance();
-  QQmlApplicationEngine* engine =
-      static_cast<QQmlApplicationEngine*>(engineHolder->engine());
+  QQmlApplicationEngine* engine = static_cast<QQmlApplicationEngine*>(m_target);
   // Here is the main QML file.
-  if (!engineHolder->hasWindow()) {
-    logger.error() << "No Window to reload";
+  if (!engine->rootObjects().isEmpty()) {
+    qDebug() << "No Window to reload";
     return;
   }
-  logger.error() << "Closing and full reloading window";
+  qDebug() << "Closing and full reloading window";
 
   int x = 0, y = 0;
   // We may have multiple closed windows still in here.
@@ -162,49 +125,45 @@ void Hotreloader::reloadWindow() {
 }
 
 QUrl Hotreloader::HotReloadInterceptor::intercept(
-    const QUrl& url,
-                            QQmlAbstractUrlInterceptor::DataType type) {
+    const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) {
   if (m_parent.isNull()) {
     return url;
   }
-  logger.debug() << "Requested: " << url.fileName();
+  qDebug() << "Requested: " << url.fileName();
   if (m_parent->m_announced_files.contains(url.fileName())) {
-    logger.debug() << "Redirect! : "
-                   << m_parent->m_announced_files[url.fileName()].toString();
+    qDebug() << "Redirect! : "
+             << m_parent->m_announced_files[url.fileName()].toString();
     return m_parent->m_announced_files[url.fileName()];
   }
   return url;
 }
 
-void Hotreloader::registerDevCommands(){
+void Hotreloader::registerDevCommands() {
   Inspector* i = qobject_cast<Inspector*>(parent());
-  if (!i) {
+  if (i) {
     return;
   }
 
-
   i->registerCommand(
-   InspectorTools::Command{"live_reload", "Live reload file X", 1,
-                          [this](const QList<QByteArray>& args) {
-                            auto url = QUrl(args.at(1));
-                            annonceReplacedFile(url);
-                            return QJsonObject();
-                          }});
-   i->registerCommand(
+      InspectorTools::Command{"live_reload", "Live reload file X", 1,
+                              [this](const QList<QByteArray>& args) {
+                                auto url = QUrl(args.at(1));
+                                annonceReplacedFile(url);
+                                return QJsonObject();
+                              }});
+  i->registerCommand(
       InspectorTools::Command{"reload_window", "Reload the whole window", 0,
                               [this](const QList<QByteArray>& args) {
                                 reloadWindow();
                                 return QJsonObject();
                               }});
 
-     i->registerCommand(InspectorTools::Command{
-       "reset_live_reload", "Reset all hot reloaded files", 0,
-       [this](const QList<QByteArray>& args) {
+  i->registerCommand(InspectorTools::Command{
+      "reset_live_reload", "Reset all hot reloaded files", 0,
+      [this](const QList<QByteArray>& args) {
         resetAllFiles();
-         return QJsonObject();
-       }});
+        return QJsonObject();
+      }});
 }
-
-
 
 }  // namespace InspectorTools

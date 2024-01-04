@@ -5,7 +5,7 @@
 
 
     <script src="qwebchannel.js"></script>
-    hi
+    <iframe src="https://giphy.com/embed/9WC8WTZsFxkRi" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/hack-9WC8WTZsFxkRi">via GIPHY</a></p>
 
     <script>
     const DEFAULT_URL ="ws://localhost:8765"
@@ -13,7 +13,7 @@
     websocketConnection.onopen = () => {
         console.log("Connection open");
         new QWebChannel(websocketConnection, function(channel) {
-            window.qt = channel;
+            window.qt = channel.objects;
             console.log("Channel open!")
         });
     }

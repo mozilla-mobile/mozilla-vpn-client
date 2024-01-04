@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "qqitemwrapper.h"
+#include <QTest>
+
+
 
 namespace {
 QMap<QQuickItem*, QPointer<InspectorTools::QQItemWrapper>> element_cache;
@@ -13,6 +16,9 @@ namespace InspectorTools {
 
 // Static
 QPointer<QQItemWrapper> QQItemWrapper::from(QQuickItem* parent) {
+  if (parent == nullptr) {
+    return nullptr;
+  }
   if (element_cache.contains(parent)) {
     auto candidate = element_cache.value(parent);
     if (!candidate.isNull()) {
@@ -76,4 +82,13 @@ void QQItemWrapper::connectSignals() {
 
 
 };
+
+
+void QQItemWrapper::click(){
+  QPointF pointF = m_item->mapToScene(QPoint(0, 0));
+  QPoint point = pointF.toPoint();
+  QWindow* win = (QWindow*)(m_item->window());
+  QTest::mouseClick(win, Qt::LeftButton, Qt::NoModifier, point, -1);
+
+}
 }  // namespace InspectorTools

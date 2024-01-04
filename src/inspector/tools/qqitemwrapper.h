@@ -11,6 +11,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
 
+
 namespace InspectorTools {
 
 /**
@@ -25,6 +26,9 @@ class QQItemWrapper : public QObject {
   Q_OBJECT
 
  public:
+
+    // Simulate a click on the Element. 
+    Q_INVOKABLE void click();
   // Wrap a QQuickItem, may create a QQItemWrapper or
   // return an existing wrapper.
   // Important: This object is destroyed when the QQUickItem is

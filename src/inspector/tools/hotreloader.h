@@ -5,7 +5,7 @@
 #ifndef MOZILLA_VPN_INSPECTORHOTRELOADER_H
 #define MOZILLA_VPN_INSPECTORHOTRELOADER_H
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QQmlAbstractUrlInterceptor>
 #include <QQmlEngine>
 
@@ -27,7 +27,7 @@ class Hotreloader : public QObject {
    * Will redirect all requests that match path.filename
    * to that URL
    *
-   * supported schemes: qrc://, file://, http://
+   * supported schemes: qrc://
    *
    * @param path - The Replacement Path
    */
@@ -45,7 +45,7 @@ class Hotreloader : public QObject {
    *
    * @param path - The Replacement Path
    */
-  Q_INVOKABLE void fetchAndAnnounce(const QUrl& path);
+  Q_INVOKABLE void pushFile(const QString& fileName, const QByteArray& file);
 
   /**
    * @brief Closes and re-opens the QML window
@@ -53,6 +53,13 @@ class Hotreloader : public QObject {
    *
    */
   Q_INVOKABLE void reloadWindow();
+
+  /**
+  * @brief Emitted when new Data has been fetched 
+  * and the Parent application must r
+  */
+  Q_SIGNAL void needsReload();
+
 
  private:
   QQmlEngine* m_target = nullptr;

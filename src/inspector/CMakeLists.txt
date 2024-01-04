@@ -17,6 +17,8 @@ target_sources(inspector PUBLIC
     tools/commandhandler.cpp
     tools/commandhandler.h
     tools/command.h
+    tools/hotreloader.cpp
+    tools/hotreloader.h
 
     server/factory.cpp
     server/factory.h
@@ -31,6 +33,7 @@ find_package(Qt6 COMPONENTS
     Network
     WebSockets
     WebChannel
+    Test
 )
 
 target_link_libraries(inspector PUBLIC 
@@ -39,6 +42,7 @@ target_link_libraries(inspector PUBLIC
     Qt6::WebSockets
     Qt6::Network
     Qt6::Quick
+    Qt6::Test
 )
 
 target_sources(mozillavpn-sources INTERFACE
