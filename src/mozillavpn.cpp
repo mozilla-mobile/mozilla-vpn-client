@@ -1383,8 +1383,7 @@ void MozillaVPN::registerUrlOpenerLabels() {
   });
 
   uo->registerUrlLabel("sumoDns", []() -> QString {
-    return "https://support.mozilla.org/en-US/kb/"
-           "how-do-i-change-my-dns-settings";
+    return Constants::SUMO_DNS;
   });
 }
 

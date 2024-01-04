@@ -103,11 +103,11 @@ Item {
 
         sourceComponent: menuBar.rightButtonComponent
         onItemChanged: {
-            //item.item is for right button components that might be inside a loder itself
-            if (item instanceof Text || item.item instanceof Text) {
+            //item.item is for right button components that might be inside a loader itself
+            if (item instanceof Text || (item instanceof Loader && item.item instanceof Text)) {
                 anchors.rightMargin = MZTheme.theme.windowMargin
             }
-            else if(item instanceof MZIconButton || item.item instanceof MZIconButton) {
+            else if(item instanceof MZIconButton || (item instanceof Loader && item.item instanceof MZIconButton)) {
                 anchors.rightMargin = MZTheme.theme.windowMargin / 2
             }
         }
