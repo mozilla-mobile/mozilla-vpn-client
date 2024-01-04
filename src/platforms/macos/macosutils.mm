@@ -11,8 +11,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
-#import <ServiceManagement/SMAppService.h>
-#import <ServiceManagement/SMLoginItem.h>
 
 namespace {
 Logger logger("MacOSUtils");
