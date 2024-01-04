@@ -38,10 +38,10 @@ QString MacOSUtils::computerName() {
 void MacOSUtils::enableLoginItem(bool startAtBoot) {
   logger.debug() << "Enabling login-item";
 
-  NSString * appId = MacOSUtils::appId();
+  NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
 
-  NSString * loginItemAppId =
+  NSString* loginItemAppId =
     QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
 
   // For macOS 13 and beyond, register() and unregister() methods
@@ -49,20 +49,16 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
   // For versions prior to macOS 13, SMLoginItemSetEnabled() is used.
   if (@available(macOS 13, *)) {
     // Use register() or unregister() based on the startAtBoot flag
-    NSError * error = nil;
+    NSError* error = nil;
 
     if (startAtBoot) {
-      if (![
-          [SMAppService mainAppService] registerAndReturnError: & error
-        ]) {
+      if (![[SMAppService mainAppService] registerAndReturnError: & error]) {
         logger.error() << "Failed to register Mozilla VPN LoginItem: " << error.localizedDescription;
       } else {
         logger.debug() << "Mozilla VPN LoginItem registered successfully.";
       }
     } else {
-      if (![
-          [SMAppService mainAppService] unregisterAndReturnError: & error
-        ]) {
+      if (![[SMAppService mainAppService] unregisterAndReturnError: & error]) {
         logger.error() << "Failed to unregister Mozilla VPN LoginItem: " << error.localizedDescription;
       } else {
         logger.debug() << "LoginItem unregistered successfully.";
