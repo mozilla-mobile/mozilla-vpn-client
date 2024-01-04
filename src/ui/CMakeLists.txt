@@ -7,8 +7,6 @@ qt_add_qml_module(mozillavpn-ui
     URI Mozilla.VPN
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
-    QML_FILES
-        composer/MZComposerView.qml
     SOURCES
         composer/composer.cpp
         composer/composer.h
