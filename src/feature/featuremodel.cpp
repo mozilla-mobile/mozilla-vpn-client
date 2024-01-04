@@ -207,6 +207,55 @@ void FeatureModel::updateFeatureList(const QByteArray& data) {
     settingsHolder->setFeaturesFlippedOff(featuresFlippedOff);
   }
 
+  if (json.contains("experimentalFeatures")) {
+    logger.debug() << "Attempting to parse experimental features.";
+
+    QJsonValue experimentalFeatures = json["experimentalFeatures"];
+
+    if (!experimentalFeatures.isObject()) {
+      logger.error() << "Error in the json format: experimentalFeatures is"
+                        "not an object.";
+      return;
+    }
+
+    QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
+    logger.debug() << experimentalFeaturesObj.keys();
+    for (const QString& key : experimentalFeaturesObj.keys()) {
+      const Feature* experimentalFeature = Feature::getOrNull(key);
+      if (!experimentalFeature) {
+        logger.warning() << "Got" << key
+                         << "but experimental feature doesn't exist. Ignoring.";
+        continue;
+      }
+
+      QJsonValue experimentalFeatureSettings = experimentalFeaturesObj[key];
+      if (!experimentalFeatureSettings.isObject()) {
+        logger.error() << "Error in the json format: experimentalFeature" << key
+                       << "is not an object.";
+        return;
+      }
+
+      QJsonObject experimentalFeatureSettingsObj =
+          experimentalFeatureSettings.toObject();
+      for (const QString& settingKey : experimentalFeatureSettingsObj.keys()) {
+        auto value = experimentalFeatureSettingsObj[settingKey].toVariant();
+        if (value.isNull()) {
+          logger.warning()
+              << "Received null value for experimental feature setting"
+              << settingKey;
+          continue;
+        }
+
+        logger.debug() << "Setting experimental feature setting" << settingKey;
+
+        experimentalFeature->settingGroup()->set(settingKey, value);
+      }
+
+      logger.debug() << "Toggling experimental feature" << key << "on.";
+      featureToggleOn(key, true);
+    }
+  }
+
 #ifdef MZ_ADJUST
   QJsonValue adjustFieldsValue = json["adjustFields"];
   if (adjustFieldsValue.isUndefined()) {
