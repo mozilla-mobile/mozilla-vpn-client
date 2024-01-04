@@ -14,6 +14,7 @@
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "qmlpath.h"
 #include "settingsholder.h"
 
 void TestNavigator::init() {
@@ -193,6 +194,15 @@ void TestNavigator::testNavbarButtonTelemetry() {
       mozilla::glean::interaction::settings_selected.testGetNumRecordedErrors(
           ErrorType::InvalidOverflow),
       0);
+
+  // Delete the stack view from the settings screen (such that ScreenSettings
+  // has no layers added to it) and ensure the application does not crash when
+  // switching screens and generating nav bar button telemetry from a screen
+  // containing no layers
+  QmlPath qmlPath("//settings-stackView");
+  QCOMPARE(qmlPath.isValid(), true);
+  qmlPath.evaluate(&engine)->deleteLater();
+  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
 }
 
 static TestNavigator s_testNavigator;
