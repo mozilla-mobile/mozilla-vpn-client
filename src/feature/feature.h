@@ -8,6 +8,8 @@
 #include <QApplication>
 #include <QObject>
 
+class SettingGroup;
+
 class Feature : public QObject {
   Q_OBJECT
 
@@ -37,7 +39,8 @@ class Feature : public QObject {
           std::function<bool()>&& flippableOn,
           std::function<bool()>&& flippableOff,
           const QStringList& otherFeatureDependencies,
-          std::function<bool()>&& callback);
+          std::function<bool()>&& callback,
+          SettingGroup* settingGroup = nullptr);
   ~Feature();
 
  public:
@@ -65,6 +68,19 @@ class Feature : public QObject {
   bool isToggleable() const;
 
   QString id() const { return m_id; }
+
+  /**
+   * @brief Returns the group of settings related to this feature.
+   *
+   * Currently only experimental features have this. Other features will return
+   * a nullptr here.
+   *
+   * @return SettingGroup*
+   */
+  SettingGroup* settingGroup() const {
+    Q_ASSERT(m_settingGroup);
+    return m_settingGroup;
+  }
 
  signals:
   // This signal is emitted if the underlying factors for support changed e.g
@@ -112,6 +128,9 @@ class Feature : public QObject {
     FlippedOff,
   };
   State m_state = DefaultValue;
+
+  // Features may have a group of settings related to them.
+  SettingGroup* m_settingGroup = nullptr;
 
 #ifdef UNIT_TEST
   friend class TestAddonIndex;

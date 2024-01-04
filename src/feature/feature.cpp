@@ -10,6 +10,7 @@
 #include "constants.h"
 #include "featurelistcallback.h"
 #include "logger.h"
+#include "settings/settinggroup.h"
 #include "settingsholder.h"
 #include "versionutils.h"
 
@@ -36,7 +37,8 @@ void Feature::maybeInitialize() {
 
 #define EXPERIMENTAL_FEATURE(id, name, ...)                          \
   new Feature(#id, name, FeatureCallback_true, FeatureCallback_true, \
-              QStringList(), FeatureCallback_false);
+              QStringList(), FeatureCallback_false,                  \
+              SettingsHolder::instance()->id());
 #include "experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
   }
@@ -46,14 +48,15 @@ Feature::Feature(const QString& id, const QString& name,
                  std::function<bool()>&& flippableOn,
                  std::function<bool()>&& flippableOff,
                  const QStringList& featureDependencies,
-                 std::function<bool()>&& callback)
+                 std::function<bool()>&& callback, SettingGroup* settingGroup)
     : QObject(qApp),
       m_id(id),
       m_name(name),
       m_flippableOn(std::move(flippableOn)),
       m_flippableOff(std::move(flippableOff)),
       m_featureDependencies(featureDependencies),
-      m_callback(std::move(callback)) {
+      m_callback(std::move(callback)),
+      m_settingGroup(settingGroup) {
   logger.debug() << "Initializing feature" << id;
 
   Q_ASSERT(s_featuresHashtable);
