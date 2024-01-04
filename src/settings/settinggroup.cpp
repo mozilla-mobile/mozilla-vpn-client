@@ -18,7 +18,7 @@ SettingGroup::SettingGroup(QObject* parent,
       m_removeWhenReset(removeWhenReset),
       m_acceptedKeys(acceptedKeys),
       m_settingsConnector(settingsConnector) {
-  MZ_COUNT_CTOR(Setting);
+  MZ_COUNT_CTOR(SettingGroup);
 
   // Group settings are dynamic, therefore we need to load from memory all
   // settings that exist under this group prefix in order to emit change signals
@@ -28,7 +28,7 @@ SettingGroup::SettingGroup(QObject* parent,
   }
 }
 
-SettingGroup::~SettingGroup() { MZ_COUNT_DTOR(Setting); }
+SettingGroup::~SettingGroup() { MZ_COUNT_DTOR(SettingGroup); }
 
 void SettingGroup::addSetting(const QString& key) {
   auto settingKey = buildSettingKeyWithGroupPrefix(key);
@@ -37,7 +37,7 @@ void SettingGroup::addSetting(const QString& key) {
       m_sensitiveSetting);
 
   // Emit the group change signal for this group when the setting is changed.
-  connect(setting, &Setting::changed, this, [this]() { emit changed(); });
+  connect(setting, &Setting::changed, this, [&]() { emit changed(); });
 }
 
 bool SettingGroup::isAcceptedKey(const QString& key) {
