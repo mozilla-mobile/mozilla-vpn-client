@@ -758,7 +758,6 @@ SETTING_STRING(tunnelUuid,        // getter
                hasTunnelUuid,     // has
                "tunnelUuid",      // key
                "",                // default value
-               false,             // user setting
                false,             // remove when reset
                true               // sensitive (do not log)
 )
