@@ -9,7 +9,6 @@
 
 #include <QCoreApplication>
 #include <QJsonDocument>
-#include <Q>
 
 #include "leakdetector.h"
 #include "logger.h"

@@ -109,8 +109,6 @@ target_sources(app_unit_tests PRIVATE
     testlogger.h
     testnetworkmanager.cpp
     testnetworkmanager.h
-    testqmlpath.cpp
-    testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
     testsettings.cpp

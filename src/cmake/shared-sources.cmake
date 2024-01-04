@@ -154,8 +154,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/networkrequest.h
     ${CMAKE_SOURCE_DIR}/src/qmlengineholder.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlengineholder.h
-    ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
-    ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
     ${CMAKE_SOURCE_DIR}/src/resourceloader.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp

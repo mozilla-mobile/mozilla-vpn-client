@@ -6,16 +6,11 @@
 
 #include <QHostAddress>
 #include <QWebSocket>
-#include <qapplication.h>
+#include <QCoreApplication.h>
 
 #include "../inspector.h"
 #include "websockettransport.h"
-#include "leakdetector.h"
-#include "logger.h"
 
-namespace {
-Logger logger("InspectorWebSocketServer");
-}
 
 namespace InspectorServer {
 constexpr int INSPECT_PORT = 8765;
@@ -23,27 +18,19 @@ constexpr int INSPECT_PORT = 8765;
 InspectorWebSocketServer::InspectorWebSocketServer(Inspector* parent)
     : QWebSocketServer("", QWebSocketServer::NonSecureMode, (QObject*)parent),
       m_parent(parent) {
-  MZ_COUNT_CTOR(InspectorWebSocketServer);
-
-  logger.debug() << "Creating the inspector websocket server";
 
   if (!listen(QHostAddress::Any, INSPECT_PORT)) {
-    logger.error() << "Failed to listen on port" << INSPECT_PORT;
+  
     return;
   }
 
   connect(this, &InspectorWebSocketServer::newConnection, this,
           &InspectorWebSocketServer::newConnectionReceived);
-  connect(this, &InspectorWebSocketServer::serverError,
-          [this](QWebSocketProtocol::CloseCode closeCode) {
-            logger.error() << "server error" << closeCode;
-          });
   connect(qApp, &QCoreApplication::aboutToQuit, this,
           &InspectorWebSocketServer::close);
 }
 
 InspectorWebSocketServer::~InspectorWebSocketServer() {
-  MZ_COUNT_DTOR(InspectorWebSocketServer);
 }
 
 void InspectorWebSocketServer::newConnectionReceived() {
@@ -58,12 +45,10 @@ void InspectorWebSocketServer::newConnectionReceived() {
   if (address != QHostAddress("::ffff:127.0.0.1") &&
       address != QHostAddress::LocalHost &&
       address != QHostAddress::LocalHostIPv6) {
-    logger.warning() << "Accepting connection from localhost only";
     child->close();
     return;
   }
 #endif
-  logger.info() << "Accepting connection";
   auto transport = new InspectorWebSocketTransport(child);
   m_parent->onConnection(transport);
 }

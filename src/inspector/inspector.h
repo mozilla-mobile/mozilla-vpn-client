@@ -9,7 +9,7 @@
 #include <QPointer>
 #include <QProperty>
 #include <QQmlApplicationEngine>
-#include <QApplication>
+#include <QCoreApplication>
 
 #include <QObject>
 #include <QWebChannel>
@@ -18,7 +18,6 @@
 
 
 #include "tools/commandhandler.h"
-#include "tools/hotreloader.h"
 #include "tools/qquickinspector.h"
 #include "server/factory.h"
 #include "tools/command.h"
@@ -31,10 +30,10 @@ class Inspector : public QObject {
 	Q_OBJECT
 
  public:
-        Inspector(QApplication* parent_app, 
+        Inspector(QCoreApplication* parent_app, 
 			QQmlApplicationEngine* engine)
 		: QObject(parent_app), 
-			m_hotReloader(this,engine), m_cli(this) {
+			m_cli(this) {
 			m_app = parent_app;
 			m_engine = engine;
             m_server = InspectorServer::Factory::create(this);
@@ -70,9 +69,9 @@ class Inspector : public QObject {
 		/**
          * @brief Register a new command.
          */
-                void registerCommand(const InspectorTools::Command& command) {
+        void registerCommand(const InspectorTools::Command& command) {
                   m_cli.registerCommand(command);
-                };
+        };
 
 
 		
@@ -81,10 +80,6 @@ class Inspector : public QObject {
 					m_channel.connectTo(connection);
         };
 
-
-		QPointer<InspectorTools::Hotreloader> getHotReloader() {
-                                        return &m_hotReloader;
-        }
         QPointer<InspectorTools::CommandHandler> getCommandHolder() {
                                         return &m_cli;
         }
@@ -93,7 +88,6 @@ class Inspector : public QObject {
        private:
 
 		void registerInternals(){
-                    m_channel.registerObject("inspector_hotReloader", &m_hotReloader);
                     m_channel.registerObject("app", m_app);
                                         m_channel.registerObject(
                                             "inspector_graph",
@@ -101,11 +95,11 @@ class Inspector : public QObject {
 		}
 
 
-        QPointer<QApplication> m_app;
+        QPointer<QCoreApplication> m_app;
 		QPointer<QQmlApplicationEngine> m_engine;
         QPointer<QObject> m_server;
 
-		InspectorTools::Hotreloader m_hotReloader;
+
         InspectorTools::CommandHandler m_cli; 
         QWebChannel m_channel;
 };

@@ -249,10 +249,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
     ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
-    ${MZ_SOURCE_DIR}/qmlpath.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.h
-    ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
     ${MZ_SOURCE_DIR}/resourceloader.h
     ${MZ_SOURCE_DIR}/rfc/rfc1918.cpp
