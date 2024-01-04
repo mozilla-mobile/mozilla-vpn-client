@@ -10,13 +10,13 @@ class TestFeatureModel final : public TestHelper {
  private slots:
   void flipOnOff();
 
-  void updateFeatureListOverwriteFeatures();
+  void parseFeatureListOverwriteFeatures();
 
-  void updateFeatureListExperimentalFeaturesEmpty();
-  void updateFeatureListExperimentalFeaturesNotObject();
-  void updateFeatureListExperimentalFeaturesUnknownExperiment();
-  void updateFeatureListExperimentalFeaturesNonObjectExperiment();
-  void updateFeatureListExperimentalFeaturesNoSettings();
-  void updateFeatureListExperimentalFeaturesInvalidSettings();
-  void updateFeatureListExperimentalFeaturesValidSettings();
+  void parseFeatureListExperimentalFeaturesEmpty();
+  void parseFeatureListExperimentalFeaturesNotObject();
+  void parseFeatureListExperimentalFeaturesUnknownExperiment();
+  void parseFeatureListExperimentalFeaturesNonObjectExperiment();
+  void parseFeatureListExperimentalFeaturesNoSettings();
+  void parseFeatureListExperimentalFeaturesInvalidSettings();
+  void parseFeatureListExperimentalFeaturesValidSettings();
 };

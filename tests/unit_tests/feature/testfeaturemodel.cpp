@@ -86,7 +86,7 @@ void TestFeatureModel::flipOnOff() {
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 }
 
-void TestFeatureModel::updateFeatureListOverwriteFeatures() {
+void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   SettingsHolder settingsHolder;
   // Fresh settings!
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
@@ -133,7 +133,8 @@ void TestFeatureModel::updateFeatureListOverwriteFeatures() {
   QJsonObject json;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(
+      QJsonDocument(json).toJson());
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -149,7 +150,8 @@ void TestFeatureModel::updateFeatureListOverwriteFeatures() {
   obj["testFeatureC"] = false;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(
+      QJsonDocument(json).toJson());
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -159,33 +161,9 @@ void TestFeatureModel::updateFeatureListOverwriteFeatures() {
   QVERIFY(!Feature::get("testFeatureA")->isSupported());
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
-
-  obj["allowParameters"] = QJsonArray{"allowTest"};
-
-  QJsonObject deny;
-  deny["denyTest"] = "test";
-  obj["denyParameters"] = deny;
-
-  QJsonObject mirror;
-  mirror["mirrorTest"] = QJsonArray{"test", "testValue"};
-  obj["mirrorParameters"] = mirror;
-
-  json["adjustFields"] = obj;
-
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(AdjustFiltering::instance()->allowList.contains("allowTest"));
-  QVERIFY(AdjustFiltering::instance()->denyList.contains("denyTest"));
-  QVERIFY(AdjustFiltering::instance()->denyList.value("denyTest") == "test");
-  QVERIFY(AdjustFiltering::instance()->mirrorList.contains("mirrorTest"));
-  QVERIFY(AdjustFiltering::instance()
-              ->mirrorList.value("mirrorTest")
-              .m_mirrorParamName == "test");
-  QVERIFY(AdjustFiltering::instance()
-              ->mirrorList.value("mirrorTest")
-              .m_defaultValue == "testValue");
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -199,7 +177,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
   // Empty object ¯\_(ツ)_/¯
   QJsonObject experimentalFeatures;
   obj["experimentalFeatures"] = experimentalFeatures;
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an empty object
   QCOMPARE(initialFeaturesOnState.count(),
@@ -208,7 +186,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
            settingsHolder.featuresFlippedOff().count());
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesNotObject() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -220,7 +198,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesNotObject() {
 
   QJsonObject obj;
   obj["experimentalFeatures"] = "notanobject";
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got misformatted input
   QCOMPARE(initialFeaturesOnState.count(),
@@ -229,8 +207,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesNotObject() {
            settingsHolder.featuresFlippedOff().count());
 }
 
-void TestFeatureModel::
-    updateFeatureListExperimentalFeaturesUnknownExperiment() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -246,7 +223,7 @@ void TestFeatureModel::
   experimentalFeatures["unknownExperiment"] = unknownExperiment;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an unknown feature
   QCOMPARE(initialFeaturesOnState.count(),
@@ -256,7 +233,7 @@ void TestFeatureModel::
 }
 
 void TestFeatureModel::
-    updateFeatureListExperimentalFeaturesNonObjectExperiment() {
+    parseFeatureListExperimentalFeaturesNonObjectExperiment() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -271,7 +248,7 @@ void TestFeatureModel::
   experimentalFeatures["unknownExperiment"] = "notanobject";
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got a misconfigured feature
   QCOMPARE(initialFeaturesOnState.count(),
@@ -280,7 +257,7 @@ void TestFeatureModel::
            settingsHolder.featuresFlippedOff().count());
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesNoSettings() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -296,7 +273,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesNoSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // Finally, it is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -311,7 +288,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesNoSettings() {
   QVERIFY(!settingsHolder.myExperimentalFeature()->get("three").isValid());
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -330,7 +307,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -343,7 +320,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
   QVERIFY(!settingsHolder.myExperimentalFeature()->get("three").isValid());
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesValidSettings() {
+void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -362,7 +339,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesValidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
