@@ -933,7 +933,7 @@ helpSheets:
     value: Custom DNS settings
     comment: Title label for the custom dns help sheet
   dnsHeader: 
-    value: What is custom DNS?
+    value: What is a custom DNS?
     comment: Header label for the custom dns help sheet
   dnsBody1:
     value: Whenever you connect to a website, a DNS (domain name system) first turns the domain name (e.g. www.mozilla.org) into an IP address that allows your internet traffic to reach that destination.
