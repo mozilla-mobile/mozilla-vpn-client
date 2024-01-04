@@ -36,7 +36,7 @@ void TaskGetFeatureList::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
             logger.debug() << "Get feature list is completed" << data;
-            FeatureModel::instance()->updateFeatureList(data);
+            FeatureModel::instance()->parseRemoteFeatureList(data);
             emit completed();
           });
 }
