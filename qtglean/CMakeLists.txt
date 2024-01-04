@@ -58,7 +58,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     )
 
     # Build only the staticlib by default
-    set(RUSTFLAGS "-Ctarget-feature=+crt-static")
+    set(RUSTFLAGS "-Ctarget-feature=+crt-static -A deprecated ")
     set(SHARED 0)
 
     if(IOS)
