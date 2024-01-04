@@ -13,7 +13,6 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
     Qt6::Test
     Qt6::WebSockets
-    Qt6::WebChannel
     Qt6::Widgets
     Qt6::Svg
 )
@@ -45,7 +44,7 @@ add_subdirectory(inspector)
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
-    #inspector
+    inspector
     mozillavpn-sources
     lottie
     nebula
