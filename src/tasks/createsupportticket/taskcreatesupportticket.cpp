@@ -50,7 +50,7 @@ void TaskCreateSupportTicket::run() {
 
   NetworkRequest* request = new NetworkRequest(this, 201);
   if (App::isUserAuthenticated()) {
-    request->auth(App::authorizationHeader());
+    request->auth();
   }
 
   request->post(

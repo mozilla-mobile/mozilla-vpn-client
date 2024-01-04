@@ -25,7 +25,24 @@ TaskGetFeatureList::~TaskGetFeatureList() { MZ_COUNT_DTOR(TaskGetFeatureList); }
 
 void TaskGetFeatureList::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->get(Constants::apiUrl(Constants::FeatureList));
+
+  QJsonObject body;
+  if (SettingsHolder::instance()->token().isEmpty()) {
+    auto unauthedExperimenterId =
+        SettingsHolder::instance()->unauthedExperimenterId();
+
+    if (unauthedExperimenterId.isEmpty()) {
+      unauthedExperimenterId = QUuid::createUuid().toString();
+      SettingsHolder::instance()->setUnauthedExperimenterId(
+          unauthedExperimenterId);
+    }
+
+    body["experimenterId"] = unauthedExperimenterId;
+  } else {
+    request->auth();
+  }
+
+  request->post(Constants::apiUrl(Constants::FeatureList), body);
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {

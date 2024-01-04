@@ -6,7 +6,6 @@
 
 #include <QJsonObject>
 
-#include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
@@ -51,7 +50,7 @@ void TaskGetSubscriptionDetails::run() {
 
 void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->get(Constants::apiUrl(Constants::SubscriptionDetails));
 
   connect(

@@ -46,7 +46,9 @@ class NetworkRequest final : public QObject {
 
   QNetworkRequest& requestInternal() { return m_request; }
 
-  void auth(const QByteArray& authorizationHeader);
+  static const QByteArray authorizationHeader();
+
+  void auth(const QByteArray& authorizationHeader = "");
 
   void disableTimeout();
 

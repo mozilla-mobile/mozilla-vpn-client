@@ -7,7 +7,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "app.h"
 #include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -34,7 +33,7 @@ void TaskGetLocation::run() {
   QString host = url.host();
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);
   request->get(url);

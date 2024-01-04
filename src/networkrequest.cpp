@@ -99,7 +99,26 @@ NetworkRequest::~NetworkRequest() {
   }
 }
 
+// static
+const QByteArray NetworkRequest::authorizationHeader() {
+  if (SettingsHolder::instance()->token().isEmpty()) {
+    logger.error() << "INVALID TOKEN! This network request is going to fail.";
+    Q_ASSERT(false);
+  }
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+
+  return authorizationHeader;
+}
+
 void NetworkRequest::auth(const QByteArray& authorizationHeader) {
+  auto finalAuthorizationHeader = authorizationHeader;
+
+  if (finalAuthorizationHeader.isEmpty()) {
+    finalAuthorizationHeader = NetworkRequest::authorizationHeader();
+  }
+
   m_request.setRawHeader("Authorization", authorizationHeader);
 }
 
