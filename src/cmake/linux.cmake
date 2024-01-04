@@ -95,9 +95,9 @@ endif()
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
+configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.in
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/mozillavpn.png
@@ -120,9 +120,9 @@ if(NOT BUILD_FLATPAK)
     ## TODO: We need another solution for sandboxed applications to request
     ## startup at boot. See "org.freedesktop.portal.Background" for the portal
     ## to use for this.
-    configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn-startup.desktop.in
-        ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
+    configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn-startup.desktop.in
+        ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop
         DESTINATION /etc/xdg/autostart)
 
     install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
