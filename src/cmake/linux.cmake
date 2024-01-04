@@ -100,11 +100,6 @@ configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn.desktop.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn-startup.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
-    DESTINATION /etc/xdg/autostart)
-
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
 
@@ -121,21 +116,31 @@ install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/64x64/mozillavpn.png
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/128x128/mozillavpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
-install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
-    DESTINATION /usr/share/dbus-1/system.d)
+if(NOT BUILD_FLATPAK)
+    ## TODO: We need another solution for sandboxed applications to request
+    ## startup at boot. See "org.freedesktop.portal.Background" for the portal
+    ## to use for this.
+    configure_file(${CMAKE_SOURCE_DIR}/linux/extra/mozillavpn-startup.desktop.in
+        ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn-startup.desktop
+        DESTINATION /etc/xdg/autostart)
 
-configure_file(${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.dbus.service.in
-    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
-    DESTINATION /usr/share/dbus-1/system-services)
+    install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
+        DESTINATION /usr/share/dbus-1/system.d)
 
-pkg_check_modules(SYSTEMD systemd)
-if("${SYSTEMD_FOUND}" EQUAL 1)
-    pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-else()
-    set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+    configure_file(${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.dbus.service.in
+        ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
+        DESTINATION /usr/share/dbus-1/system-services)
+
+    pkg_check_modules(SYSTEMD systemd)
+    if("${SYSTEMD_FOUND}" EQUAL 1)
+        pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+    else()
+        set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+    endif()
+    configure_file(${CMAKE_SOURCE_DIR}/linux/mozillavpn.service.in
+        ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
+        DESTINATION ${SYSTEMD_UNIT_DIR})
 endif()
-configure_file(${CMAKE_SOURCE_DIR}/linux/mozillavpn.service.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
-    DESTINATION ${SYSTEMD_UNIT_DIR})

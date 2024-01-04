@@ -56,12 +56,12 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %license %{_licensedir}/%{name}/LICENSE.md
 %{_sysconfdir}/chromium/native-messaging-hosts/mozillavpn.json
 %{_sysconfdir}/opt/chrome/native-messaging-hosts/mozillavpn.json
-%{_sysconfdir}/xdg/autostart/mozillavpn-startup.desktop
+%{_sysconfdir}/xdg/autostart/org.mozilla.vpn-startup.desktop
 %{_unitdir}/mozillavpn.service
 %{_bindir}/mozillavpn
 %{_prefix}/lib/mozillavpn/mozillavpnnp
 %{_prefix}/lib/mozilla/native-messaging-hosts/mozillavpn.json
-%{_datadir}/applications/mozillavpn.desktop
+%{_datadir}/applications/org.mozilla.vpn.desktop
 %{_datadir}/dbus-1/system-services/org.mozilla.vpn.dbus.service
 %{_datadir}/dbus-1/system.d/org.mozilla.vpn.conf
 %{_datadir}/icons/hicolor/128x128/apps/mozillavpn.png

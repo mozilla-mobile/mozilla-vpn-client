@@ -1,0 +1,38 @@
+app-id: org.mozilla.vpn
+runtime: org.kde.Platform
+runtime-version: '6.5'
+sdk: org.kde.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: mozillavpn
+finish-args:
+  - "--share=ipc"
+  - "--share=network"
+  - "--socket=x11"
+  - "--system-talk-name=org.freedesktop.NetworkManager"
+  - "--env=QML2_IMPORT_PATH=/app/lib64/qml:/app/lib/qml:/app/qml"
+build-options:
+  append-path: "/usr/lib/sdk/rust-stable/bin"
+  env:
+    - CARGO_HOME=/run/build/rust-flatpak/cargo
+
+modules:
+  - flatpak-pydeps.yaml
+  - flatpak-libnm.yaml
+  - flatpak-libsecret.yaml
+
+  - name: qt5compat
+    buildsystem: cmake
+    sources:
+      - type: git
+        tag: v6.5.2
+        url: https://github.com/qt/qt5compat
+
+  - name: mozillavpn
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DBUILD_FLATPAK=ON
+    sources:
+      - type: dir
+        path: ..
