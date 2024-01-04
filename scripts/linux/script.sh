@@ -93,7 +93,7 @@ if [ -z "$RELEASE" ]; then
 fi
 
 printn Y "Computing the version... "
-SHORTVERSION=$(scripts/utils/getversion.py)
+SHORTVERSION=$(cat version.txt)
 
 # Adjust the package version if a gitref was provided:
 #  - Pull requests are suffixed with "~pr<Pull Request Number>"

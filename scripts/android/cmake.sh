@@ -109,7 +109,7 @@ print Y "Patch Adjust files..."
 ./scripts/android/patch_adjust.sh
 
 printn Y "Computing the version... "
-export SHORTVERSION=$(scripts/utils/getversion.py) # Export so gradle can pick it up
+export SHORTVERSION=$(cat version.txt) # Export so gradle can pick it up
 export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
 export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
