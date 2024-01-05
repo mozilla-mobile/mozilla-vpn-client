@@ -133,8 +133,7 @@ void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   QJsonObject json;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->parseRemoteFeatureList(
-      QJsonDocument(json).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(json).toJson());
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -150,8 +149,7 @@ void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   obj["testFeatureC"] = false;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->parseRemoteFeatureList(
-      QJsonDocument(json).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(json).toJson());
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -177,7 +175,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
   // Empty object ¯\_(ツ)_/¯
   QJsonObject experimentalFeatures;
   obj["experimentalFeatures"] = experimentalFeatures;
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an empty object
   QCOMPARE(initialFeaturesOnState.count(),
@@ -198,7 +196,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
 
   QJsonObject obj;
   obj["experimentalFeatures"] = "notanobject";
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got misformatted input
   QCOMPARE(initialFeaturesOnState.count(),
@@ -223,7 +221,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
   experimentalFeatures["unknownExperiment"] = unknownExperiment;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an unknown feature
   QCOMPARE(initialFeaturesOnState.count(),
@@ -248,7 +246,7 @@ void TestFeatureModel::
   experimentalFeatures["unknownExperiment"] = "notanobject";
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got a misconfigured feature
   QCOMPARE(initialFeaturesOnState.count(),
@@ -273,7 +271,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // Finally, it is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -307,7 +305,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -339,7 +337,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseRemoteFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,

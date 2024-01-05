@@ -24,7 +24,7 @@ class FeatureModel final : public QAbstractListModel {
 
   static FeatureModel* instance();
 
-  void parseRemoteFeatureList(const QByteArray& data);
+  void parseFeatureList(const QByteArray& data);
 
   // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
@@ -35,8 +35,9 @@ class FeatureModel final : public QAbstractListModel {
   Q_INVOKABLE QObject* get(const QString& feature);
 
  private:
-  static void updateFeatures(QJsonValue featuresOverwrite);
-  static void updateExperimentalFeatures(QJsonValue experimentalFeatures);
+  static void updateFeatures(const QJsonValue& featuresOverwrite);
+  static void updateExperimentalFeatures(
+      const QJsonValue& experimentalFeatures);
 };
 
 #endif  // FEATUREMODEL_H

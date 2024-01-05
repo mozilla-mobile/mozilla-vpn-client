@@ -158,19 +158,19 @@ QObject* FeatureModel::get(const QString& feature) {
 }
 
 // static
-void FeatureModel::updateFeatures(QJsonValue featuresOverwrite) {
+void FeatureModel::updateFeatures(const QJsonValue& features) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (!featuresOverwrite.isObject()) {
-    logger.error() << "Error in the featuresOverwrite json format";
+  if (!features.isObject()) {
+    logger.error() << "Error in the features json format";
     return;
   }
 
   QStringList featuresFlippedOn;
   QStringList featuresFlippedOff;
 
-  QJsonObject featuresObj = featuresOverwrite.toObject();
+  QJsonObject featuresObj = features.toObject();
   for (const QString& key : featuresObj.keys()) {
     QJsonValue value = featuresObj.value(key);
     if (!value.isBool()) {
@@ -206,7 +206,8 @@ void FeatureModel::updateFeatures(QJsonValue featuresOverwrite) {
 }
 
 // static
-void FeatureModel::updateExperimentalFeatures(QJsonValue experimentalFeatures) {
+void FeatureModel::updateExperimentalFeatures(
+    const QJsonValue& experimentalFeatures) {
   if (!experimentalFeatures.isObject()) {
     logger.error() << "Error in the json format: experimentalFeatures is"
                       "not an object.";
@@ -251,12 +252,12 @@ void FeatureModel::updateExperimentalFeatures(QJsonValue experimentalFeatures) {
   }
 }
 
-void FeatureModel::parseRemoteFeatureList(const QByteArray& data) {
+void FeatureModel::parseFeatureList(const QByteArray& data) {
   QJsonObject json = QJsonDocument::fromJson(data).object();
 
   if (json.contains("featuresOverwrite")) {
-    QJsonValue featuresValue = json["featuresOverwrite"];
-    updateFeatures(featuresValue);
+    QJsonValue features = json["featuresOverwrite"];
+    updateFeatures(features);
   }
 
   if (json.contains("experimentalFeatures")) {

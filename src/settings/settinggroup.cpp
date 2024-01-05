@@ -37,7 +37,7 @@ void SettingGroup::addSetting(const QString& key) {
       m_sensitiveSetting);
 
   // Emit the group change signal for this group when the setting is changed.
-  connect(setting, &Setting::changed, this, [&]() { emit changed(); });
+  connect(setting, &Setting::changed, this, [this]() { emit changed(); });
 }
 
 bool SettingGroup::isAcceptedKey(const QString& key) {
