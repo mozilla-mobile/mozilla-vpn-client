@@ -6,12 +6,15 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QUuid>
 
+#include "app.h"
 #include "constants.h"
 #include "feature/featuremodel.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("TaskGetFeatureList");
@@ -46,14 +49,14 @@ void TaskGetFeatureList::run() {
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Get feature list is failed" << error;
+            logger.error() << "Get feature list has failed" << error;
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
           [this](const QByteArray& data) {
-            logger.debug() << "Get feature list is completed" << data;
-            FeatureModel::instance()->updateFeatureList(data);
+            logger.debug() << "Get feature list completed" << data;
+            FeatureModel::instance()->parseFeatureList(data);
             emit completed();
           });
 }

@@ -36,6 +36,10 @@ class NetworkRequest final : public QObject {
       std::function<bool(NetworkRequest*, QIODevice*)>&&
           postResourceIODeviceCallback);
 
+#ifdef UNIT_TEST
+  static void resetRequestHandler();
+#endif
+
   void get(const QUrl& url);
 
   void post(const QUrl& url, QIODevice* uploadData);
@@ -124,6 +128,12 @@ class NetworkRequest final : public QObject {
 
   bool m_completed = false;
   bool m_aborted = false;
+
+// TODO(VPN-6076): Steer away from the friend class pattern for testing
+// NetworkRequests
+#ifdef UNIT_TEST
+  friend class TestTaskGetFeatureList;
+#endif
 };
 
 #endif  // NETWORKREQUEST_H

@@ -55,6 +55,18 @@ void NetworkRequest::setRequestHandler(
   s_postResourceIODeviceCallback = std::move(postResourceIODeviceCallback);
 }
 
+#ifdef UNIT_TEST
+// static
+void NetworkRequest::resetRequestHandler() {
+  std::function<bool(NetworkRequest*)> s_deleteResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*)> s_getResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*, const QByteArray&)>
+      s_postResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*, QIODevice*)>
+      s_postResourceIODeviceCallback = nullptr;
+}
+#endif
+
 NetworkRequest::NetworkRequest(Task* parent, int status)
     : QObject(parent), m_expectedStatusCode(status) {
   MZ_COUNT_CTOR(NetworkRequest);
