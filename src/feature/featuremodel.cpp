@@ -67,6 +67,12 @@ void featureToggleOn(const QString& feature, bool add_to_on) {
   }
 }
 
+QStringList experimentalFeatureIds({
+#define EXPERIMENTAL_FEATURE(id, ...) #id,
+#include "experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
+});
+
 }  // namespace
 
 FeatureModel* FeatureModel::instance() {
@@ -158,13 +164,13 @@ QObject* FeatureModel::get(const QString& feature) {
 }
 
 // static
-void FeatureModel::updateFeatures(const QJsonValue& features) {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
+QPair<QStringList, QStringList> FeatureModel::parseFeatures(
+    const QJsonValue& features) {
+  QPair<QStringList, QStringList> result;
 
   if (!features.isObject()) {
     logger.error() << "Error in the features json format";
-    return;
+    return result;
   }
 
   QStringList featuresFlippedOn;
@@ -201,21 +207,25 @@ void FeatureModel::updateFeatures(const QJsonValue& features) {
     }
   }
 
-  settingsHolder->setFeaturesFlippedOn(featuresFlippedOn);
-  settingsHolder->setFeaturesFlippedOff(featuresFlippedOff);
+  result.first = featuresFlippedOn;
+  result.second = featuresFlippedOff;
+  return result;
 }
 
 // static
-void FeatureModel::updateExperimentalFeatures(
+QPair<QStringList, QStringList> FeatureModel::parseExperimentalFeatures(
     const QJsonValue& experimentalFeatures) {
+  QPair<QStringList, QStringList> result;
   if (!experimentalFeatures.isObject()) {
     logger.error() << "Error in the json format: experimentalFeatures is"
                       "not an object.";
-    return;
+    return result;
   }
 
   QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
+
   QStringList experimentalFeaturesToToggleOn = experimentalFeaturesObj.keys();
+  QStringList experimentalFeaturesToToggleOff = experimentalFeatureIds;
 
   for (const QString& key : experimentalFeaturesToToggleOn) {
     const Feature* experimentalFeature = Feature::getOrNull(key);
@@ -231,7 +241,7 @@ void FeatureModel::updateExperimentalFeatures(
       logger.error() << "Error in the json format: experimentalFeature" << key
                      << "is not an object.";
       experimentalFeaturesToToggleOn.removeAll(key);
-      return;
+      continue;
     }
 
     QJsonObject experimentalFeatureSettingsObj =
@@ -249,24 +259,54 @@ void FeatureModel::updateExperimentalFeatures(
 
       experimentalFeature->settingGroup()->set(settingKey, value);
     }
+
+    experimentalFeaturesToToggleOff.removeAll(key);
   }
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Experimental features that are not in the paylod must be disabled, so
-  // overwriting the whole list here is indeed what we want.
-  settingsHolder->setFeaturesFlippedOn(experimentalFeaturesToToggleOn);
+  result.first = experimentalFeaturesToToggleOn;
+  result.second = experimentalFeaturesToToggleOff;
+  return result;
 }
 
-void FeatureModel::parseFeatureList(const QByteArray& data) {
+void FeatureModel::updateFeatureList(const QByteArray& data) {
   QJsonObject json = QJsonDocument::fromJson(data).object();
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  QStringList featuresToToggleOn = settingsHolder->featuresFlippedOn();
+  QStringList featuresToToggleOff = settingsHolder->featuresFlippedOff();
 
   if (json.contains("featuresOverwrite")) {
     QJsonValue features = json["featuresOverwrite"];
-    updateFeatures(features);
+    auto parsedFeatures = parseFeatures(features);
+
+    featuresToToggleOn = parsedFeatures.first;
+    featuresToToggleOff = parsedFeatures.second;
   }
 
   if (json.contains("experimentalFeatures")) {
     QJsonValue experimentalFeatures = json["experimentalFeatures"];
-    updateExperimentalFeatures(experimentalFeatures);
+    auto parsedExperimentalFeatures =
+        parseExperimentalFeatures(experimentalFeatures);
+    auto experimentalFeaturesToToggleOn = parsedExperimentalFeatures.first;
+    auto experimentalFeaturesToToggleOff = parsedExperimentalFeatures.second;
+
+    // Disable features that should be toggled off.
+    qDebug() << experimentalFeaturesToToggleOff;
+    foreach (const QString& feature, featuresToToggleOn) {
+      if (experimentalFeaturesToToggleOff.contains(feature)) {
+        featuresToToggleOn.removeAll(feature);
+      }
+    }
+
+    // Enable features that should be toggled on.
+    foreach (const QString& feature, experimentalFeaturesToToggleOn) {
+      if (!featuresToToggleOn.contains(feature)) {
+        featuresToToggleOn.append(feature);
+      }
+    }
   }
+
+  settingsHolder->setFeaturesFlippedOff(featuresToToggleOff);
+  settingsHolder->setFeaturesFlippedOn(featuresToToggleOn);
 }

@@ -7,6 +7,7 @@
 
 #include <QAbstractListModel>
 #include <QObject>
+#include <QPair>
 
 class Feature;
 
@@ -24,7 +25,7 @@ class FeatureModel final : public QAbstractListModel {
 
   static FeatureModel* instance();
 
-  void parseFeatureList(const QByteArray& data);
+  void updateFeatureList(const QByteArray& data);
 
   // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
@@ -35,8 +36,9 @@ class FeatureModel final : public QAbstractListModel {
   Q_INVOKABLE QObject* get(const QString& feature);
 
  private:
-  static void updateFeatures(const QJsonValue& featuresOverwrite);
-  static void updateExperimentalFeatures(
+  static QPair<QStringList, QStringList> parseFeatures(
+      const QJsonValue& features);
+  static QPair<QStringList, QStringList> parseExperimentalFeatures(
       const QJsonValue& experimentalFeatures);
 };
 

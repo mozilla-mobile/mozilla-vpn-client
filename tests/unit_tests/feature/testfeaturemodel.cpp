@@ -86,7 +86,7 @@ void TestFeatureModel::flipOnOff() {
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 }
 
-void TestFeatureModel::parseFeatureListOverwriteFeatures() {
+void TestFeatureModel::updateFeatureListOverwriteFeatures() {
   SettingsHolder settingsHolder;
   // Fresh settings!
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
@@ -133,7 +133,7 @@ void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   QJsonObject json;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -149,7 +149,7 @@ void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   obj["testFeatureC"] = false;
   json["featuresOverwrite"] = obj;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(json).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
   QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureC"));
@@ -161,7 +161,7 @@ void TestFeatureModel::parseFeatureListOverwriteFeatures() {
   QVERIFY(!Feature::get("testFeatureC")->isSupported());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -173,14 +173,14 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
   // Empty object ¯\_(ツ)_/¯
   QJsonObject experimentalFeatures;
   obj["experimentalFeatures"] = experimentalFeatures;
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an empty object
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesNotObject() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -190,14 +190,15 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
 
   QJsonObject obj;
   obj["experimentalFeatures"] = "notanobject";
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got misformatted input
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
+void TestFeatureModel::
+    updateFeatureListExperimentalFeaturesUnknownExperiment() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -211,7 +212,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
   experimentalFeatures["unknownExperiment"] = unknownExperiment;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got an unknown feature
   QCOMPARE(initialFeaturesOnState.count(),
@@ -219,7 +220,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
 }
 
 void TestFeatureModel::
-    parseFeatureListExperimentalFeaturesNonObjectExperiment() {
+    updateFeatureListExperimentalFeaturesNonObjectExperiment() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -232,14 +233,14 @@ void TestFeatureModel::
   experimentalFeatures["myExperimentalFeature"] = "notanobject";
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // Nothing happened, because we got a misconfigured feature
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesNoSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -253,7 +254,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // Finally, it is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -266,7 +267,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
   QVERIFY(!settingsHolder.myExperimentalFeature()->get("three").isValid());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -283,7 +284,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -296,7 +297,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
   QVERIFY(!settingsHolder.myExperimentalFeature()->get("three").isValid());
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesValidSettings() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -313,7 +314,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -329,7 +330,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
            "three");
 }
 
-void TestFeatureModel::parseFeatureListExperimentalFeaturesToggleOnOff() {
+void TestFeatureModel::updateFeatureListExperimentalFeaturesToggleOnOff() {
   SettingsHolder settingsHolder;
 
   // Clean up the features state.
@@ -343,7 +344,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesToggleOnOff() {
   experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
   obj["experimentalFeatures"] = experimentalFeatures;
 
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
@@ -352,7 +353,7 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesToggleOnOff() {
 
   QJsonObject emptyObj;
   obj["experimentalFeatures"] = emptyObj;
-  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
 
   // It is flipped off!
   QCOMPARE(initialFeaturesOnState.count(),
