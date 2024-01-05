@@ -86,6 +86,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
     ${CMAKE_SOURCE_DIR}/src/fontloader.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigator.cpp

@@ -4,7 +4,6 @@
 
 #include "testtaskgetfeaturelist.h"
 
-#include "constants.h"
 #include "feature/taskgetfeaturelist.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
@@ -20,7 +19,7 @@ std::function<bool(NetworkRequest*, QIODevice*)> s_noopPostIODeviceCallback =
 
 void stubRequestPostHandler(
     std::function<bool(NetworkRequest*, const QByteArray&)> mockPostHandler) {
-  // Clone the noop callbacks for methods we don't care about.
+  // Clone the callbacks for methods we don't care about.
   auto mockDeleteHandler = s_noopDeleteResourceCallback;
   auto mockGetHandler = s_noopGetResourceCallback;
   auto mockPostIOHandler = s_noopPostIODeviceCallback;

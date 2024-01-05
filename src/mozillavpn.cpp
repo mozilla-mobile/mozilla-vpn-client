@@ -13,6 +13,7 @@
 #include "controller.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
+#include "feature/taskgetfeaturelistworker.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
@@ -53,7 +54,6 @@
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"
-#include "tasks/getfeaturelist/taskgetfeaturelist.h"
 #include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/group/taskgroup.h"
@@ -124,7 +124,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
          new TaskServers(ErrorHandler::DoNotPropagateError),
          new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
-         new TaskHeartbeat(), new TaskGetFeatureList(), new TaskAddonIndex(),
+         new TaskHeartbeat(), new TaskAddonIndex(),
          new TaskGetSubscriptionDetails(
              TaskGetSubscriptionDetails::NoAuthenticationFlow,
              ErrorHandler::PropagateError)}));
@@ -248,6 +248,9 @@ void MozillaVPN::initialize() {
   // This is our first state.
   Q_ASSERT(state() == StateInitialize);
 
+  m_private->m_taskGetFeatureListWorker.start(
+      Constants::schedulePeriodicTaskTimerMsec());
+
   m_private->m_releaseMonitor.runSoon();
 
   m_private->m_telemetry.initialize();
@@ -263,7 +266,7 @@ void MozillaVPN::initialize() {
   RecentConnections::instance()->initialize();
   RecommendedLocationModel::instance()->initialize();
 
-  QList<Task*> initTasks{new TaskAddonIndex(), new TaskGetFeatureList()};
+  QList<Task*> initTasks{new TaskAddonIndex()};
 
 #ifdef MZ_ADJUST
   logger.debug() << "Adjust included in build.";
