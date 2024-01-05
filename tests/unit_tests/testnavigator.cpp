@@ -14,6 +14,7 @@
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "qmlpath.h"
 #include "settingsholder.h"
 
 void TestNavigator::init() {
@@ -30,6 +31,8 @@ void TestNavigator::init() {
   // Note: on tests Glean::initialize clears Glean's storage.
   MZGlean::initialize();
 }
+
+void TestNavigator::cleanup() { delete m_settingsHolder; }
 
 void TestNavigator::testNavbarButtonTelemetry() {
   // Initialize
@@ -64,6 +67,10 @@ void TestNavigator::testNavbarButtonTelemetry() {
         return true;
       });
 
+  int expectedHomeSelectedEventsCount = 0;
+  int expectedMessagesSelectedEventsCount = 0;
+  int expectedSettingsSelectedEventsCount = 0;
+
   // Setup UI - doesn't really matter what screen we start in
   navigator->requestScreen(MozillaVPN::ScreenHome);
 
@@ -76,7 +83,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
@@ -86,7 +93,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   QString telemetryScreenId = "test-screen-id";
 
@@ -99,16 +106,17 @@ void TestNavigator::testNavbarButtonTelemetry() {
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
-  QCOMPARE(homeSelectedEvents.length(), 0);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+  expectedHomeSelectedEventsCount++;
 
   homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(homeSelectedEvents.length(), 1);
+  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   auto homeSelectedEventsExtras = homeSelectedEvents[0]["extra"].toObject();
 
@@ -130,17 +138,20 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto messagesSelectedEvents =
       mozilla::glean::interaction::messages_selected.testGetValue();
 
-  QCOMPARE(messagesSelectedEvents.length(), 0);
+  QCOMPARE(messagesSelectedEvents.length(),
+           expectedMessagesSelectedEventsCount);
 
   // Click the navbar messages button
   Navigator::instance()->requestScreenFromBottomBar(
       MozillaVPN::ScreenMessaging);
+  expectedMessagesSelectedEventsCount++;
 
   messagesSelectedEvents =
       mozilla::glean::interaction::messages_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(messagesSelectedEvents.length(), 1);
+  QCOMPARE(messagesSelectedEvents.length(),
+           expectedMessagesSelectedEventsCount);
 
   auto messagesSelectedEventsExtras =
       messagesSelectedEvents[0]["extra"].toObject();
@@ -167,16 +178,19 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto settingsSelectedEvents =
       mozilla::glean::interaction::settings_selected.testGetValue();
 
-  QCOMPARE(settingsSelectedEvents.length(), 0);
+  QCOMPARE(settingsSelectedEvents.length(),
+           expectedSettingsSelectedEventsCount);
 
   // Click the navbar settings button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenSettings);
+  expectedSettingsSelectedEventsCount++;
 
   settingsSelectedEvents =
       mozilla::glean::interaction::settings_selected.testGetValue();
 
   // Verify number of events and event extras after test
-  QCOMPARE(settingsSelectedEvents.length(), 1);
+  QCOMPARE(settingsSelectedEvents.length(),
+           expectedSettingsSelectedEventsCount);
 
   auto settingsSelectedEventsExtras =
       settingsSelectedEvents[0]["extra"].toObject();
@@ -193,6 +207,31 @@ void TestNavigator::testNavbarButtonTelemetry() {
       mozilla::glean::interaction::settings_selected.testGetNumRecordedErrors(
           ErrorType::InvalidOverflow),
       0);
+
+  view->deleteLater();
+}
+
+void TestNavigator::testNavbarButtonTelemetryNoLayers() {
+  // Initialize
+  Navigator* navigator = Navigator::instance();
+  Localizer l;
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
+
+  // Register screen
+  Navigator::registerScreen(
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
+      [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
+
+  // Click the home nav bar button to go to ScreenHome again
+  navigator->requestScreen(MozillaVPN::ScreenHome);
+
+  // Test homeSelected event and verify number of events is 0 because telemetry
+  // is not recorded when there are no layers on the screen
+  auto homeSelectedEvents =
+      mozilla::glean::interaction::home_selected.testGetValue();
+  QCOMPARE(homeSelectedEvents.length(), 0);
 }
 
 static TestNavigator s_testNavigator;
