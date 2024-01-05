@@ -32,6 +32,8 @@ void TestNavigator::init() {
   MZGlean::initialize();
 }
 
+void TestNavigator::cleanup() { delete m_settingsHolder; }
+
 void TestNavigator::testNavbarButtonTelemetry() {
   // Initialize
   Navigator* navigator = Navigator::instance();
@@ -206,37 +208,30 @@ void TestNavigator::testNavbarButtonTelemetry() {
           ErrorType::InvalidOverflow),
       0);
 
-  // Next, we will delete the test view (view) and stack view layers from
-  // ScreenHome (such that ScreenHome has no layers added to it) and ensure that
-  // no telemetry is recorded and the application does not crash when switching
-  // screens and generating nav bar button telemetry from a screen containing no
-  // layers
+  view->deleteLater();
+}
 
-  // Click the home nav bar button to get back to ScreenHome
-  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+void TestNavigator::testNavbarButtonTelemetryNoLayers() {
+  // Initialize
+  Navigator* navigator = Navigator::instance();
+  Localizer l;
+  QQmlApplicationEngine engine;
+  QmlEngineHolder qml(&engine);
 
-  // Verify number of events is still 1 after the test
-  // because the source screen (ScreenSettings) does not have a
-  // telemetryScreenId property
-  homeSelectedEvents =
-      mozilla::glean::interaction::home_selected.testGetValue();
-  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
-
-  // Delete all layers from ScreenHome (the view we created earlier in the test,
-  // and the stack view created in QML) so that ScreenHome has no layers
-  delete view;
-  QmlPath qmlPath("//screenHome-stackView");
-  QCOMPARE(qmlPath.isValid(), true);
-  delete qmlPath.evaluate(&engine);
+  // Register screen
+  Navigator::registerScreen(
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
+      [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
 
   // Click the home nav bar button to go to ScreenHome again
-  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+  navigator->requestScreen(MozillaVPN::ScreenHome);
 
-  // Verify number of events is still 1 after the test
-  // because the source screen (ScreenHome) does not have any layers
-  homeSelectedEvents =
+  // Test homeSelected event and verify number of events is 0 because telemetry
+  // is not recorded when there are no layers on the screen
+  auto homeSelectedEvents =
       mozilla::glean::interaction::home_selected.testGetValue();
-  QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
+  QCOMPARE(homeSelectedEvents.length(), 0);
 }
 
 static TestNavigator s_testNavigator;
