@@ -13,10 +13,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@lit-labs/preact-signals": "^1.0.1",
+    "@lit/context": "^1.1.0",
     "@parcel/compressor-raw": "^2.2.1",
     "json-schema": ">=0.4.0",
-    "lit": "^2.1.2",
+    "lit": "^3.1.0",
     "parcel": "^2.8.3",
+    "qwebchannel": "^6.2.0",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.7.0"
   },

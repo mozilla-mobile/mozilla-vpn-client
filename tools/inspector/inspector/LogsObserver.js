@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { Client } from './client'
 import { GenericDispatcher } from './genericdispatcher'
 
 const MAX_LOG_COUNT = 200
@@ -10,6 +9,7 @@ const MAX_LOG_COUNT = 200
 class _LogsObserver extends GenericDispatcher {
   constructor () {
     super();
+
     this.LOG_ELEMENTS = [];
     this.LOG_MODULES = [];
     this.LOG_COMPONENT = [];
@@ -17,7 +17,7 @@ class _LogsObserver extends GenericDispatcher {
     this.recording = false;
     this.rowLogEntries = [];
 
-    Client.on('log', (message) => this.processLogLine(message.value))
+    //Client.on('log', (message) => this.processLogLine(message.value))
   }
 
   startRecording() {

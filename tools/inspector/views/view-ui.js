@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { UIObserver } from '../inspector/UiObserver'
+import { UIObserver } from '../inspector/uiObserver'
 import '../elements/pill-toggle'
 import '../elements/live-view'
 

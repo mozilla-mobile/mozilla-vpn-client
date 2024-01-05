@@ -13,7 +13,7 @@ body{
     font-family: sans-serif;
 }
 
-body > main {
+body > mz-inspector {
 
   flex-grow: 1;
   overflow-y: auto;

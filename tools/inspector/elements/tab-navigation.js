@@ -23,7 +23,7 @@ export class TabNavigation extends LitElement {
   `
 
   static properties = {
-    target: { type: String }
+    target: { type: HTMLElement }
   }
 
   constructor () {
@@ -55,7 +55,7 @@ export class TabNavigation extends LitElement {
       return
     }
     /** @type {HTMLElement} */
-    const box = document.querySelector(this.target)
+    const box = this.target
     if (!box) {
       console.error(`Tabview can't find target element: ${this.target}`)
       return
@@ -63,8 +63,8 @@ export class TabNavigation extends LitElement {
     box.innerHTML = ''
     box.appendChild(viewElement)
 
-    // Inspector Tabs are in <slots> thus live in document not shadow root :)
-    const old_active = document.querySelector('inspector-tab.active')
+    // Inspector Tabs are in <slots> thus live in light not shadow root :)
+    const old_active = this.querySelector('inspector-tab.active')
     if (old_active) {
       old_active.classList.remove('active')
     }

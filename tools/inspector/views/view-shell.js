@@ -5,8 +5,7 @@
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { html, css, LitElement } from 'lit'
-import { Client } from '../inspector/client'
-import { CommandObserver } from '../inspector/CommandObserver'
+import { CommandObserver } from '../inspector/commandObserver'
 
 const RED_ESCAPE = '\x1B[0;31m'
 const NO_COLOR_ESCAPE = '\x1B[0m'
@@ -61,12 +60,12 @@ export class ViewShell extends LitElement {
     terminal.open(this.term)
     fitAddon.fit()
 
-    Client.connect().then((url) => {
-      this.terminal.writeln(`\n\rConnected to mozillaVPN@${url}`)
-      this.runCommand('help')
-      this.prompt()
-    })
-    Client.onAny((res) => this.processEvents(res))
+    //Client.connect().then((url) => {
+    //  this.terminal.writeln(`\n\rConnected to mozillaVPN@${url}`)
+    //  this.runCommand('help')
+    //  this.prompt()
+    //})
+    //Client.onAny((res) => this.processEvents(res))
 
     CommandObserver.onAny(() => {
       this.commandList = CommandObserver.commands
@@ -145,7 +144,7 @@ export class ViewShell extends LitElement {
       return
     }
     this.lastCommand = command
-    Client.sendCommand(command)
+    //Client.sendCommand(command)
     this.prompt()
   }
 
@@ -179,7 +178,7 @@ export class ViewShell extends LitElement {
     if (!text && !error) {
       return
     }
-    this.terminal.write(NEWLINE + `client:(${type})` + NEWLINE)
+    this.terminal.write(NEWLINE + `//client:(${type})` + NEWLINE)
 
     if (error) {
       this.terminal.write(`${NEWLINE}${RED_ESCAPE}${error}${NO_COLOR_ESCAPE}`)

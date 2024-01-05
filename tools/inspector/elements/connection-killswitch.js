@@ -3,7 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { Client,DEFAULT_URL } from '../inspector/client'
+import { DEFAULT_URL, InspectorWebsocketClient } from '../inspector/inspectorwebsocketclient'
+import { currentClient } from '../globalstate'
+
+
 
 const STATE_CONNECTING = "connecting";
 const STATE_CONNECTED = "connected";
@@ -19,32 +22,31 @@ export class ConnectionKillswitch extends LitElement {
 
   constructor () {
     super()
-    this.state = 
-    this.classList.add('active')
-    this.state= STATE_DISCONNECTED;
-    this.history=[DEFAULT_URL];
 
+    currentClient.subscribe(newClient =>{
+      newClient.isConnected.subscribe(()=>{
+        this.updateState(newClient);
+      })
+    });
+
+    this.history=[DEFAULT_URL];
     let storage_history= localStorage.getItem(HISTORY_KEY);
     if(storage_history){
       this.history = JSON.parse(storage_history);
     }
-
-    Client.on('connected', () => {
-      this.classList.remove('active')
+  }
+  /**
+   * Update the internal state based on the Client
+   * @param {InspectorWebsocketClient} client 
+   */
+  updateState(client){
+    if(client.isConnected.peek){
       this.state = STATE_CONNECTED;
-    })
-    Client.on('connecting', () => {
-      this.classList.add('active')
-      this.state = STATE_CONNECTING;
-     })
-    Client.on('disconnected', () => {
-     this.classList.add('active')
-     this.state = STATE_DISCONNECTED;
-    })
-    Client.on('connectionFailed', () => {
-      this.classList.add('active')
-      this.state = STATE_DISCONNECTED;
-     })
+      this.classList.remove('active')
+      return;
+    }
+    this.classList.add('active')
+    this.state = STATE_DISCONNECTED;
   }
 
   render () {
