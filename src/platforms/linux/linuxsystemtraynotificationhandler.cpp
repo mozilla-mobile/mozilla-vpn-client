@@ -94,11 +94,11 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
   }
 
   uint32_t replacesId = 0;  // Don't replace.
-  const char* appIcon = MVPN_ICON_PATH;
   QMap<QString, QVariant> hints;
 
-  QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId, appIcon,
-                                  title, message, actions, hints, timerMsec);
+  QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId,
+                                  "org.mozilla.vpn", title, message, actions,
+                                  hints, timerMsec);
   if (!reply.isValid()) {
     logger.warning() << "Failed to show the notification";
   }
