@@ -161,7 +161,9 @@ void NetworkManagerController::initialize(const Device* device,
   // the wireguard settings with our own.
   g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
                qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
-               WG_FIREWALL_MARK, NM_SETTING_WIREGUARD_PEER_ROUTES, true, NULL);
+               WG_FIREWALL_MARK, NM_SETTING_WIREGUARD_PEER_ROUTES, false,
+               NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE, true, 
+               NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE, true, NULL);
 
   // Check if the connection already exists.
   NMRemoteConnection* remote =
@@ -256,6 +258,31 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
   nm_wireguard_peer_set_public_key(peer, qPrintable(config.m_serverPublicKey),
                                    true);
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
+    int family;
+    NMSettingIPConfig* ipcfg;
+    if (i.address().protocol() == QAbstractSocket::IPv6Protocol) {
+      family = AF_INET6;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
+    } else {
+      family = AF_INET;
+      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
+    }
+
+    // Add routes manually so we can place them in the wireguard table.
+    NMIPRoute* route;
+    GError* err = nullptr;
+    route = nm_ip_route_new(family, qPrintable(i.address().toString()),
+                            i.prefixLength(), nullptr, -1, &err);
+    if (route == nullptr) {
+      logger.error() << "Failed to create route:" << err->message;
+      g_error_free(err);
+      continue;
+    }
+    nm_ip_route_set_attribute(route, NM_IP_ROUTE_ATTRIBUTE_TABLE,
+                              g_variant_new_uint32(WG_FIREWALL_MARK));
+    nm_setting_ip_config_add_route(ipcfg, route);
+    nm_ip_route_unref(route);
+
     nm_wireguard_peer_append_allowed_ip(peer, qPrintable(i.toString()), false);
   }
 
