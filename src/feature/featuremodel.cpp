@@ -238,7 +238,7 @@ void FeatureModel::updateExperimentalFeatures(
         experimentalFeatureSettings.toObject();
     for (const QString& settingKey : experimentalFeatureSettingsObj.keys()) {
       auto value = experimentalFeatureSettingsObj[settingKey].toVariant();
-      if (value.isNull()) {
+      if (!value.isValid() || value.isNull()) {
         logger.warning()
             << "Received null value for experimental feature setting"
             << settingKey;
