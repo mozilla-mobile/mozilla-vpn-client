@@ -41,9 +41,6 @@ bool FeatureCallback_iosOrAndroid() {
 // -------------------------
 
 bool FeatureCallback_annualUpgrade() {
-//  if (Constants::inProduction()) {
-//    return false;
-//  }
   if (FeatureCallback_iosOrAndroid()) {
     return false;
   }
