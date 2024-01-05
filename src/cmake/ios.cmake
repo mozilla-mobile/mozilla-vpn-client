@@ -33,6 +33,8 @@ target_sources(mozillavpn PRIVATE
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 
+add_dependencies(mozillavpn widgets)
+
 # We have to manually build the QtGlean bindings framework,
 # so we also have to manually add it.
 get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
@@ -64,6 +66,7 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
     # Make sure the network extension is added as a plugin to the final bundle
     XCODE_EMBED_APP_EXTENSIONS networkextension
+    XCODE_EMBED_APP_EXTENSIONS widgets
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
     # Make sure Glean is added as a framework to the final bundle
