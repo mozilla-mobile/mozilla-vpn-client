@@ -19,4 +19,5 @@ class TestFeatureModel final : public TestHelper {
   void parseFeatureListExperimentalFeaturesNoSettings();
   void parseFeatureListExperimentalFeaturesInvalidSettings();
   void parseFeatureListExperimentalFeaturesValidSettings();
+  void parseFeatureListExperimentalFeaturesToggleOnOff();
 };

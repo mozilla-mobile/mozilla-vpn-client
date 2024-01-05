@@ -215,12 +215,14 @@ void FeatureModel::updateExperimentalFeatures(
   }
 
   QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
-  logger.debug() << experimentalFeaturesObj.keys();
-  for (const QString& key : experimentalFeaturesObj.keys()) {
+  QStringList experimentalFeaturesToToggleOn = experimentalFeaturesObj.keys();
+
+  for (const QString& key : experimentalFeaturesToToggleOn) {
     const Feature* experimentalFeature = Feature::getOrNull(key);
     if (!experimentalFeature) {
       logger.warning() << "Got" << key
                        << "but experimental feature doesn't exist. Ignoring.";
+      experimentalFeaturesToToggleOn.removeAll(key);
       continue;
     }
 
@@ -228,6 +230,7 @@ void FeatureModel::updateExperimentalFeatures(
     if (!experimentalFeatureSettings.isObject()) {
       logger.error() << "Error in the json format: experimentalFeature" << key
                      << "is not an object.";
+      experimentalFeaturesToToggleOn.removeAll(key);
       return;
     }
 
@@ -246,10 +249,12 @@ void FeatureModel::updateExperimentalFeatures(
 
       experimentalFeature->settingGroup()->set(settingKey, value);
     }
-
-    logger.debug() << "Toggling experimental feature" << key << "on.";
-    featureToggleOn(key, true);
   }
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  // Experimental features that are not in the paylod must be disabled, so
+  // overwriting the whole list here is indeed what we want.
+  settingsHolder->setFeaturesFlippedOn(experimentalFeaturesToToggleOn);
 }
 
 void FeatureModel::parseFeatureList(const QByteArray& data) {

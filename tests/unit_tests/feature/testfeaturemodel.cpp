@@ -166,10 +166,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   // Empty object ¯\_(ツ)_/¯
@@ -180,8 +178,6 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesEmpty() {
   // Nothing happened, because we got an empty object
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
-  QCOMPARE(initialFeaturesOffState.count(),
-           settingsHolder.featuresFlippedOff().count());
 }
 
 void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
@@ -189,10 +185,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   obj["experimentalFeatures"] = "notanobject";
@@ -201,8 +195,6 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNotObject() {
   // Nothing happened, because we got misformatted input
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
-  QCOMPARE(initialFeaturesOffState.count(),
-           settingsHolder.featuresFlippedOff().count());
 }
 
 void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
@@ -210,10 +202,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   QJsonObject experimentalFeatures;
@@ -226,8 +216,6 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesUnknownExperiment() {
   // Nothing happened, because we got an unknown feature
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
-  QCOMPARE(initialFeaturesOffState.count(),
-           settingsHolder.featuresFlippedOff().count());
 }
 
 void TestFeatureModel::
@@ -236,14 +224,12 @@ void TestFeatureModel::
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   QJsonObject experimentalFeatures;
-  experimentalFeatures["unknownExperiment"] = "notanobject";
+  experimentalFeatures["myExperimentalFeature"] = "notanobject";
   obj["experimentalFeatures"] = experimentalFeatures;
 
   FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
@@ -251,8 +237,6 @@ void TestFeatureModel::
   // Nothing happened, because we got a misconfigured feature
   QCOMPARE(initialFeaturesOnState.count(),
            settingsHolder.featuresFlippedOn().count());
-  QCOMPARE(initialFeaturesOffState.count(),
-           settingsHolder.featuresFlippedOff().count());
 }
 
 void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
@@ -260,10 +244,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   QJsonObject experimentalFeatures;
@@ -277,8 +259,6 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesNoSettings() {
   QCOMPARE(initialFeaturesOnState.count() + 1,
            settingsHolder.featuresFlippedOn().count());
   QVERIFY(settingsHolder.featuresFlippedOn().contains("myExperimentalFeature"));
-  QCOMPARE(initialFeaturesOffState.count(),
-           settingsHolder.featuresFlippedOff().count());
 
   // No settings were set though, settings were empty.
   QVERIFY(!settingsHolder.myExperimentalFeature()->get("one").isValid());
@@ -291,10 +271,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesInvalidSettings() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   QJsonObject experimentalFeatures;
@@ -323,10 +301,8 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
 
   // Clean up the features state.
   settingsHolder.setFeaturesFlippedOn({});
-  settingsHolder.setFeaturesFlippedOff({});
 
   auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
-  auto initialFeaturesOffState = settingsHolder.featuresFlippedOff();
 
   QJsonObject obj;
   QJsonObject experimentalFeatures;
@@ -351,6 +327,38 @@ void TestFeatureModel::parseFeatureListExperimentalFeaturesValidSettings() {
            "two");
   QCOMPARE(settingsHolder.myExperimentalFeature()->get("three").toString(),
            "three");
+}
+
+void TestFeatureModel::parseFeatureListExperimentalFeaturesToggleOnOff() {
+  SettingsHolder settingsHolder;
+
+  // Clean up the features state.
+  settingsHolder.setFeaturesFlippedOn({});
+
+  auto initialFeaturesOnState = settingsHolder.featuresFlippedOn();
+
+  QJsonObject obj;
+  QJsonObject experimentalFeatures;
+  QJsonObject myExperimentalFeature;
+  experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
+  obj["experimentalFeatures"] = experimentalFeatures;
+
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+
+  // It is flipped on!
+  QCOMPARE(initialFeaturesOnState.count() + 1,
+           settingsHolder.featuresFlippedOn().count());
+  QVERIFY(settingsHolder.featuresFlippedOn().contains("myExperimentalFeature"));
+
+  QJsonObject emptyObj;
+  obj["experimentalFeatures"] = emptyObj;
+  FeatureModel::instance()->parseFeatureList(QJsonDocument(obj).toJson());
+
+  // It is flipped off!
+  QCOMPARE(initialFeaturesOnState.count(),
+           settingsHolder.featuresFlippedOn().count());
+  QVERIFY(
+      !settingsHolder.featuresFlippedOn().contains("myExperimentalFeature"));
 }
 
 static TestFeatureModel s_testFeature;
