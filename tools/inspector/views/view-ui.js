@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { UIObserver } from '../inspector/uiObserver'
 import { currentClient } from '../globalstate'
 
 import { InspectorWebsocketClient } from '../inspector/inspectorwebsocketclient'
@@ -51,12 +50,6 @@ export class ViewUi extends LitElement {
   constructor () {
     super()
     currentClient.subscribe( c => c.qWebChannel.subscribe((q)=>this.clientChanged(q)))
-    this.settings = {
-      'Hide Invisible Elements': false,
-      'Hide Null Size Elements': false,
-      'Show Rulers': false
-    }
-
     this.selectedElement = signal(null);
     this.selectedElement.subscribe(v =>{
       console.log(v);
@@ -91,9 +84,7 @@ export class ViewUi extends LitElement {
 
   static get properties () {
     return {
-      data: { attribute: false },
       detail: { attribute: false },
-      settings: { attribute: false },
       rootQMLObject: { attribute: false },
     }
   }
@@ -111,17 +102,7 @@ export class ViewUi extends LitElement {
   render () {
     return html`
          <nav>
-            <span>Total Elements: ${
-        this.rootQMLObject ? this.getElementCount(this.rootQMLObject) : 0}</span>
-            <pill-toggle noActive="true"  @click=${(e) => {
-      this.saveImage()
-    }}>Download Image</pill-toggle>
-            <span>Settings:</span>
-            ${
-        Object.keys(this.settings)
-            .map(
-                e => html` <pill-toggle id="${e}" @click=${
-                    () => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
+            <span>Total Elements: ${this.rootQMLObject ? this.getElementCount(this.rootQMLObject) : 0}</span>
         </nav>
         <main>
         <qdom-element .target=${this.rootQMLObject} .selectedElement=${this.selectedElement}  ></qdom-element>

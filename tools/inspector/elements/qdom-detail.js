@@ -26,13 +26,13 @@
 
     task: async ([target], {signal}) => {
       const staticProps = await target.staticProperties();
-      //const dynamicProps = await target.dynamicProperties();
+      const dynamicProps = await target.dynamicProperties();
       const forwardedProperties = unwrap(this.currentTarget);
 
       return [
         forwardedProperties,
         unwrap(staticProps),
-        //unwrap(dynamicProps)
+        unwrap(dynamicProps)
       ]
 
     },
@@ -85,26 +85,25 @@ function renderProperties(kv){
     if(!key){
         return;
     }
+    let type = "null"
     try{
         const value = property.value ? property.value : property.get();
-        let type = key.endsWith("Changed") ? "signal": typeof value;
+        type = key.endsWith("Changed") ? "signal": typeof value;
+    }catch(e){}
 
         switch(type){
             case 'signal':
             case 'function':
             case 'object':
             case 'undefined':
+            case 'null':
                 return
             default: 
                 return html`
                     <qdom-property .target=${this.currentTarget} .currentProperty=${property} .key=${key} .disabled=${false}></qdom-property>
                 `
         }
-    }catch(element){
-        return html`
-                    <p>${key}: unknown</p>
-                `
-    }
+    
 
 }
 
