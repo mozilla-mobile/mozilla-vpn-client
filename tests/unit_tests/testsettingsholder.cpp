@@ -8,6 +8,7 @@
                 ...)                                                           \
   void TestSettingsHolder::testGetSetCheckRemove_##getter() {                  \
     SettingsHolder settingsHolder;                                             \
+    SettingsManager::instance()->hardReset();                                  \
                                                                                \
     QSignalSpy spy(&settingsHolder, &SettingsHolder::getter##Changed);         \
                                                                                \
@@ -119,14 +120,16 @@
 
 #define EXPERIMENTAL_FEATURE(experimentId, experimentDescription, \
                              experimentSettings)                  \
-  void testGetSet_##experimentId() {                              \
+  void TestSettingsHolder::testGetSet_##experimentId() {          \
     SettingsHolder settingsHolder;                                \
     auto group = settingsHolder.experimentId();                   \
                                                                   \
     QSignalSpy spy(group, &SettingGroup::changed);                \
                                                                   \
-    group->set(experimentSettings[0], QVariant("hey"));           \
-    QCOMPARE(spy.count(), 1);                                     \
+    if (experimentSettings.count() > 0) {                         \
+      group->set(experimentSettings[0], QVariant("hey"));         \
+      QCOMPARE(spy.count(), 1);                                   \
+    }                                                             \
                                                                   \
     group->set("disalowedkey", QVariant("hey"));                  \
     QCOMPARE(spy.count(), 1);                                     \

@@ -8,7 +8,6 @@
 class TestSettingsHolder final : public TestHelper {
   Q_OBJECT
 
- private slots:
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
   void testGetSetCheckRemove_##getter();
 
@@ -20,4 +19,21 @@ class TestSettingsHolder final : public TestHelper {
 
 #include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
+
+ private slots:
+  void runAllTests() {
+#define SETTING(type, toType, getter, setter, remover, has, ...) \
+  qDebug() << "Testing setting" << #getter;                      \
+  testGetSetCheckRemove_##getter();
+
+#include "settingslist.h"
+#undef SETTING
+
+#define EXPERIMENTAL_FEATURE(experimentId, ...)                      \
+  qDebug() << "Testing experimental setting group" << #experimentId; \
+  testGetSet_##experimentId();
+
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
+  }
 };
