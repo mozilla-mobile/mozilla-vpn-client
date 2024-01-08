@@ -37,8 +37,6 @@ Hotreloader::Hotreloader(QObject* parent, QQmlEngine* target)
       dir.removeRecursively();
     }
   });
-
-  registerDevCommands();
 }
 
 void Hotreloader::annonceReplacedFile(const QUrl& path) {
@@ -136,34 +134,6 @@ QUrl Hotreloader::HotReloadInterceptor::intercept(
     return m_parent->m_announced_files[url.fileName()];
   }
   return url;
-}
-
-void Hotreloader::registerDevCommands() {
-  Inspector* i = qobject_cast<Inspector*>(parent());
-  if (i) {
-    return;
-  }
-
-  i->registerCommand(
-      InspectorTools::Command{"live_reload", "Live reload file X", 1,
-                              [this](const QList<QByteArray>& args) {
-                                auto url = QUrl(args.at(1));
-                                annonceReplacedFile(url);
-                                return QJsonObject();
-                              }});
-  i->registerCommand(
-      InspectorTools::Command{"reload_window", "Reload the whole window", 0,
-                              [this](const QList<QByteArray>& args) {
-                                reloadWindow();
-                                return QJsonObject();
-                              }});
-
-  i->registerCommand(InspectorTools::Command{
-      "reset_live_reload", "Reset all hot reloaded files", 0,
-      [this](const QList<QByteArray>& args) {
-        resetAllFiles();
-        return QJsonObject();
-      }});
 }
 
 }  // namespace InspectorTools
