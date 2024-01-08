@@ -3,16 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import '../elements/pill-toggle.js'
-import '../elements/record-button.js';
-
-import { LogsObserver } from '../inspector/logsObserver.js'
+import { currentClient } from '../globalstate'
+import { parseLogLine } from '../inspector/logsParser.js'
 
 export class ViewLogs extends LitElement {
   static styles = css`
     :host{
         background:white;
         display:flex;
+        flex-direction: column;
         width:100%;
         height:100%;
         overflow-y:auto;
@@ -25,27 +24,9 @@ export class ViewLogs extends LitElement {
         flex: 5;
     }
     aside{
-        contain:strict;
-        height: 100%;
-        max-width: 20vw;
-        min-width: 200px;
-        flex-grow: 1;
         display: flex;
-        flex-direction: column;
-        padding: 20px;
-        border-right: solid 1px var(--lt-color-gray-900);
-        flex: 1;
+        padding: 0px 20px;
     }
-    aside > *{
-        margin-top:10px;
-    }
-    aside p
-    {
-        margin-bottom: 0;
-        font-weight: bold;
-        margin-top: 40px;
-    }
-
     ul{
         display: flex;
         flex-direction: row;
@@ -60,23 +41,40 @@ export class ViewLogs extends LitElement {
     input{
         padding: 10px 5px;
         border-radius: 10px;
-        border: 1px solid var(--lt-color-gray-400);
+        border: 1px solid black;
     }
     table{
         padding: 20px;  
         border-spacing: 10px 5px;
-    }
-    .heading{
-        position:sticky;
-        top:0px;
-        background:white;
-        padding:20px;
+        width: 100%;
     }
     tr{
         margin: 20px 0px;
     }
+    th{
+      text-align: left;
+    }
     
     `
+
+  constructor(){
+    super();
+    currentClient.subscribe( c => c.qWebChannel.subscribe((q)=>this.clientChanged(q)))
+  }
+  clientChanged(client){
+    if(!client){
+        return;
+    }
+    this.logHandler = client.objects.MZLog;
+    this.logHandler.logEntryAdded.connect(log => this.logLineAdded(log))
+  }
+  logLineAdded(log){
+    const entry = parseLogLine(log);
+    console.log(entry);
+    this.logs.push(entry);
+    this.requestUpdate('logs')
+  }
+
 
   static properties = {
     filter: { type: String },
@@ -89,58 +87,32 @@ export class ViewLogs extends LitElement {
 
     this.filter = ''
     this.logs = []
-    this.components = []
-
-    this.logs = LogsObserver.LOG_ELEMENTS
-    this.components = LogsObserver.LOG_COMPONENT
-
-    LogsObserver.on('newLogs', (e) => {
-      this.requestUpdate('logs')
-    })
-    LogsObserver.on('newComponent', (e) => {
-      this.requestUpdate('components')
-    })
-  }
-
-  logRow (row) {
-    return html`
-            <tr>
-                <td>${row.date.getHours()}:${row.date.getMinutes()}:${row.date.getSeconds()}</td>
-                <td>${row.component}</td>
-                <td>${row.log}</td>
-            </tr>
-        `
   }
 
   get renderlist () {
     let outList = this.logs
     if (this.filter) {
-      outList = outList.filter((l) => l.raw.includes(this.filter))
-    }
-    const activePills = Array.from(this.renderRoot.querySelectorAll('pill-toggle.active'))
-    const filterComponents = activePills.map(e => e.textContent)
-    if (filterComponents.length > 0) {
-      outList = outList.filter(row => filterComponents.includes(row.component))
+      const filter = this.filter.toLowerCase()
+      outList = outList.filter((l) => l.text.toLowerCase().includes(filter)  || l.category.toLowerCase().includes(filter))
     }
     return outList
   }
-
-  logComponentFilter (component) {
-    return html`
-            <pill-toggle>${component}</pill-toggle>
-        `
+  filterChanged(filter){
+    this.filter = filter; 
+    this.requestUpdate("logs")
+  }
+  clear(){
+    this.logs = [];
+    this.requestUpdate("logs")
   }
 
   render () {
     return html`
         <aside>
-            <record-button></record-button>
-            <input placeholder="filter" value="${this.filter}" @change=${(e) => this.filter = e.target.value}>
-            <p>Components</p>
-            <ul @click=${() => { this.requestUpdate('logs') }}>
-                ${this.components.map(this.logComponentFilter)}
-            </ul>
-
+            <button @click=${()=>this.clear()}">clear </button>
+            <input placeholder="filter" value="${this.filter}" 
+              @change=${(e) => this.filterChanged(e.target.value)} 
+              @keydown=${(e) => this.filterChanged(e.target.value)}/>
         </aside>
         <main>
             <table>
@@ -149,7 +121,13 @@ export class ViewLogs extends LitElement {
                     <th>Component</th>
                     <th>Message</th>
                 </tr>
-                ${this.renderlist.map(row => this.logRow(row))}
+                ${this.renderlist.map(row => html`
+                  <tr>
+                  <td>${row.date.getHours()}:${row.date.getMinutes()}:${row.date.getSeconds()}</td>
+                  <td>${row.category}</td>
+                  <td>${row.text}</td>
+                  </tr>
+                `)}
             </table>
         </main>
     `

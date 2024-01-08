@@ -7,8 +7,6 @@ import { currentClient } from '../globalstate'
 
 import { InspectorWebsocketClient } from '../inspector/inspectorwebsocketclient'
 
-
-import '../elements/pill-toggle'
 import '../elements/live-view'
 import '../elements/qdom-element'
 import '../elements/qdom-detail'

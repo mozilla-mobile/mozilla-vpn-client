@@ -3,15 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 import { html, css, LitElement } from 'lit'
-import { CommandObserver } from '../inspector/commandObserver'
-
 export class InspectorTab extends LitElement {
   static properties = {
     tag: { type: String },
     import: { type: String },
     title: { type: String },
-    command: { type: String },
-    commandAvaliable: { type: Boolean }
   }
 
   static styles = css`
@@ -50,19 +46,6 @@ export class InspectorTab extends LitElement {
   constructor () {
     super()
     this.title = this.innerText
-    this.command == ''
-    this.commandAvaliable = true
-
-    CommandObserver.on('commandsChanged', (e) => {
-      /** @type {Array} */
-      const commandList = e.value
-      if (this.command == '' || this.command == undefined) {
-        this.commandAvaliable = true
-        return
-      }
-      this.commandAvaliable = commandList.includes(this.command)
-      this.classList.toggle('unavailable', !this.commandAvaliable)
-    })
   }
 
   render () {
