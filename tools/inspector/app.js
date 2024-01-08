@@ -53,7 +53,6 @@ export class InspectorApp extends LitElement {
       <tab-navigation target="main">
           <inspector-tab  class="active" tag="view-shell">🐚 Shell</inspector-tab>
           <inspector-tab  tag="view-logs">📑 Logs</inspector-tab>
-          <inspector-tab  tag="view-network" command="fetch_network">📡 Network Inspector</inspector-tab>
           <inspector-tab  tag="view-ui" command="view_tree">✨ QML Inspector</inspector-tab>
       </tab-navigation>
       <main>

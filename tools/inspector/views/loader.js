@@ -9,8 +9,6 @@ export async function loadView (tag) {
             return import("./view-shell.js")
         case "view-logs":
             return import("./logs.js")
-        case "view-network":
-            return import("./view-network.js")
         case "view-ui":
             return import("./view-ui.js")
     } 
