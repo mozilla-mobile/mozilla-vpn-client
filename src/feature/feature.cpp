@@ -21,6 +21,25 @@ QList<Feature*>* s_featuresList = nullptr;
 }  // namespace
 
 // static
+#ifdef UNIT_TEST
+void Feature::testReset() {
+  if (!s_featuresList) {
+    return;
+  }
+
+  // We can't use qDeleteAll. There are nullptrs in the list sometimes.
+  foreach (Feature* feature, *s_featuresList) {
+    if (feature) {
+      delete feature;
+    }
+  }
+
+  s_featuresHashtable = nullptr;
+  s_featuresList = nullptr;
+}
+#endif
+
+// static
 void Feature::maybeInitialize() {
   if (!s_featuresHashtable) {
     s_featuresHashtable = new QMap<QString, Feature*>();

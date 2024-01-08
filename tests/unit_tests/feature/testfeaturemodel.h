@@ -8,6 +8,9 @@ class TestFeatureModel final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
+
   void flipOnOff();
 
   void updateFeatureListOverwriteFeatures();

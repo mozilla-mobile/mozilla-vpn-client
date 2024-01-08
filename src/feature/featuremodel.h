@@ -36,8 +36,51 @@ class FeatureModel final : public QAbstractListModel {
   Q_INVOKABLE QObject* get(const QString& feature);
 
  private:
+  /**
+   * @brief Parses an object with a list of features to enable / disable.
+   *
+   * The expected format of the object is:
+   *
+   * ```json
+   * {
+   *   "featureToEnable": true,
+   *   "featureToDisable": false,
+   * }
+   * ```
+   *
+   * Features _not_ in the object are ignored by this function.
+   *
+   * @param features
+   * @return QPair<QStringList, QStringList> Returns the a list of the feature
+   * to enabled and disable respectively.
+   */
   static QPair<QStringList, QStringList> parseFeatures(
       const QJsonValue& features);
+
+  /**
+   * @brief Parses an object with a list of experimental features to enable /
+   * disable and the values of related experimental feature settings.
+   *
+   * The expected format of the object is:
+   *
+   * ```json
+   * {
+   *   "experimentalFeatureToEnable": {
+   *      "aFeatureSetting": "aha!"
+   *   },
+   *   "anotherExperimentalFeatureToEnable": {
+   *      "anotherFeatureSetting": 42
+   *   },
+   * }
+   * ```
+   *
+   * Experimental features _not_ in the object are disabled.
+   *
+   *
+   * @param features
+   * @return QPair<QStringList, QStringList> Returns the a list of the feature
+   * to enabled and disable respectively.
+   */
   static QPair<QStringList, QStringList> parseExperimentalFeatures(
       const QJsonValue& experimentalFeatures);
 };

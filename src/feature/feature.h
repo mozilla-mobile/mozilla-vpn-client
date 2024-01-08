@@ -78,9 +78,17 @@ class Feature : public QObject {
    * @return SettingGroup*
    */
   SettingGroup* settingGroup() const {
+    maybeInitialize();
+
     Q_ASSERT(m_settingGroup);
     return m_settingGroup;
   }
+
+#ifdef UNIT_TEST
+  static void testReset();
+#endif
+
+  static void maybeInitialize();
 
  signals:
   // This signal is emitted if the underlying factors for support changed e.g
@@ -89,7 +97,6 @@ class Feature : public QObject {
   void supportedChanged();
 
  private:
-  static void maybeInitialize();
   void maybeFlipOnOrOff();
 
   // Returns true if this feature is flipped on via settings

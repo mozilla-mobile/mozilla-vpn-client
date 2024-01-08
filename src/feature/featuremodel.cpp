@@ -67,6 +67,12 @@ void featureToggleOn(const QString& feature, bool add_to_on) {
   }
 }
 
+// Comprehensive list of experimental feature ids.
+//
+// This is required due to the format of the object parsed by
+// FeatureModel::parseExperimentalFeatures. The object only contains the
+// features that must be enabled. Feature not in the object must be disabled,
+// this list is used to check what is not in the list.
 QStringList experimentalFeatureIds({
 #define EXPERIMENTAL_FEATURE(id, ...) #id,
 #include "experimentalfeaturelist.h"
@@ -225,6 +231,9 @@ QPair<QStringList, QStringList> FeatureModel::parseExperimentalFeatures(
   QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
 
   QStringList experimentalFeaturesToToggleOn = experimentalFeaturesObj.keys();
+
+  // Starts with all features. As experimentalFeaturesToToggleOn are parsed,
+  // they are removed from this list.
   QStringList experimentalFeaturesToToggleOff = experimentalFeatureIds;
 
   for (const QString& key : experimentalFeaturesToToggleOn) {
@@ -292,7 +301,6 @@ void FeatureModel::updateFeatureList(const QByteArray& data) {
     auto experimentalFeaturesToToggleOff = parsedExperimentalFeatures.second;
 
     // Disable features that should be toggled off.
-    qDebug() << experimentalFeaturesToToggleOff;
     foreach (const QString& feature, featuresToToggleOn) {
       if (experimentalFeaturesToToggleOff.contains(feature)) {
         featuresToToggleOn.removeAll(feature);
