@@ -3,30 +3,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  import { html, css, LitElement } from 'lit'
- import { Signal } from '@lit-labs/preact-signals';
- /**
-  * QDomElement: 
-  * 
-  * Renders QDom Root element and expands rendering a list 
-  * Of all QDOM elements
-  * 
-  * Properties
-  * target -> The QQWrapper Element from the Inspector API
-  * selectedElement -> channel<QQWrapper|null> that will contain the selected Element (will propagate downwards)
-  * expanded -> whether the list is oened
-  * 
-  */
+ import {Task} from '@lit/task';
+
+ import "./qdom-property"
+
+
  export class QDomDetail extends LitElement {
    static styles = css`
    div{
-
+    padding:10px;
    }
 
    :host{
     font-size:13px;
    }
-   
+   li{
+        list-style:none;
+   }
    `
+
+    _propTask = new Task(this, {
+
+    task: async ([target], {signal}) => {
+      const staticProps = await target.staticProperties();
+      //const dynamicProps = await target.dynamicProperties();
+      const forwardedProperties = unwrap(this.currentTarget);
+
+      return [
+        forwardedProperties,
+        unwrap(staticProps),
+        //unwrap(dynamicProps)
+      ]
+
+    },
+
+    args: () => [this.currentTarget]
+
+  });
  
    static properties = {
      currentTarget: { type: Object },
@@ -36,25 +49,29 @@
         if(!this.currentTarget){
             return html``;
         }
-        // [["key",{propertiy}]]
-        const properties = getProperties(this.currentTarget);
 
-        const elements = properties.map(renderProperties);
-    return html`
-            <aside style="flex:1;">
-            <button @click="${() => this.close()}">close</button>
-            <hr>
-        <table>
-            ${elements}
-        </table>
-            <hr>
-        </aside>`
-   }
+
+        return this._propTask.render({
+            pending: () => html`<p>Loading product...</p>`,
+            complete: (props) => {
+                const elements = props.flatMap((propList) => propList.map(renderProperties))
+                return  html`
+                <aside style="flex:1;">
+                    <button @click="${() => this.close()}">close</button>
+        
+                    <div>
+                    ${elements}
+                    </div>
+         
+                </aside>`
+            }
+        })
+    }
  }
 
 
 
- function getProperties(target){
+ function unwrap(target){
     return Object.entries(Object.getOwnPropertyDescriptors(target));
  }
 
@@ -68,20 +85,27 @@ function renderProperties(kv){
     if(!key){
         return;
     }
+    try{
+        const value = property.value ? property.value : property.get();
+        let type = key.endsWith("Changed") ? "signal": typeof value;
 
-    const value = property.value ? property.value : property.get();
-    let type = key.endsWith("Changed") ? "signal": typeof value;
-    const writable = property.set != undefined
-
-    switch(type){
-        case 'signal':
-        case 'function':
-            return html`<li>${key}: ${type}; </li>`
-        default: 
-            return html`
-                <li>${key}: ${value} -> ${type} | ${writable}</li>
-            `
+        switch(type){
+            case 'signal':
+            case 'function':
+            case 'object':
+            case 'undefined':
+                return
+            default: 
+                return html`
+                    <qdom-property .target=${this.currentTarget} .currentProperty=${property} .key=${key} .disabled=${false}></qdom-property>
+                `
+        }
+    }catch(element){
+        return html`
+                    <p>${key}: unknown</p>
+                `
     }
+
 }
 
 

@@ -10,6 +10,7 @@
 #include <QProperty>
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
+#include <QQmlProperty>
 
 
 namespace InspectorTools {
@@ -39,9 +40,21 @@ class QQItemWrapper : public QObject {
   // List of Child Elements, all Wrapped
   Q_PROPERTY(QVariantList children READ wrapChildren CONSTANT)
   // Classname of the QML Element
-  Q_PROPERTY(QString className READ getClassName CONSTANT)
+  Q_PROPERTY(QString className READ getClassName CONSTANT )
+
+      /**
+      * Returns all properties on the target's meta Object
+      * that have not already been forwarded. 
+      */
+  Q_INVOKABLE QVariantMap staticProperties() const; 
+        /**
+   * Returns all dynamic created properties on the target object
+   */
+  Q_INVOKABLE QVariantMap dynamicProperties() const; 
  private:
   QVariantList wrapChildren() const;
+
+
 
   QString getClassName() {
     if (m_item == nullptr) {
@@ -57,35 +70,34 @@ class QQItemWrapper : public QObject {
 
 #define FORWARDED_PROPERTY(TYPE, NAME)                                        \
   Q_PROPERTY(TYPE NAME READ get_##NAME WRITE set_##NAME NOTIFY NAME##Changed) \
-  TYPE get_##NAME() const { return m_item->property(#NAME).value<TYPE>(); }   \
+  TYPE get_##NAME() const {                                                   \
+    if (QQmlProperty(m_item, #NAME).isValid()) {                              \
+        return m_item->property(#NAME).value<TYPE>();                         \
+    }                                                                         \
+    return qvariant_cast<TYPE>(QVariant());                                     \
+  }                                                                           \
   void set_##NAME(TYPE value) {                                               \
     m_item->setProperty(#NAME, value);                                        \
     emit NAME##Changed();                                                     \
   }                                                                           \
-  Q_SIGNAL void NAME##Changed();
+  Q_SIGNAL void NAME##Changed();                                              \
+
 
   FORWARDED_PROPERTY(bool, activeFocus);
-  FORWARDED_PROPERTY(bool, activeFocusOnTab);
-  FORWARDED_PROPERTY(bool, antialiasing);
-  FORWARDED_PROPERTY(qreal, baselineOffset);
-  FORWARDED_PROPERTY(QRectF, childrenRect);
-  FORWARDED_PROPERTY(bool, clip);
   FORWARDED_PROPERTY(bool, enabled);
   FORWARDED_PROPERTY(bool, focus);
   FORWARDED_PROPERTY(qreal, height);
-  FORWARDED_PROPERTY(qreal, implicitHeight);
-  FORWARDED_PROPERTY(qreal, implicitWidth);
   FORWARDED_PROPERTY(qreal, opacity);
   FORWARDED_PROPERTY(qreal, rotation);
-  FORWARDED_PROPERTY(qreal, scale);
-  FORWARDED_PROPERTY(bool, smooth);
   FORWARDED_PROPERTY(QString, state);
-  FORWARDED_PROPERTY(QQuickItem::TransformOrigin, transformOrigin);
   FORWARDED_PROPERTY(bool, visible);
   FORWARDED_PROPERTY(qreal, width);
   FORWARDED_PROPERTY(qreal, x);
   FORWARDED_PROPERTY(qreal, y);
   FORWARDED_PROPERTY(qreal, z);
+  FORWARDED_PROPERTY(qreal, contentHeight);
+  FORWARDED_PROPERTY(QString, text);
+  FORWARDED_PROPERTY(QString, source);
 };
 
 }  // namespace InspectorTools

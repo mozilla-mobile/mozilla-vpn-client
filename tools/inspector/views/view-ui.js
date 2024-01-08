@@ -37,10 +37,15 @@ export class ViewUi extends LitElement {
     }
     qdom-element{
       overflow-y: auto;
-}
-qdom-detail{
-  overflow-y: auto;
-}
+      flex:1;
+    }
+    qdom-detail{
+      overflow-y: auto;
+      flex:1;
+    }
+    qdom-detail.hidden{
+      display:none;
+    }
     `
 
   constructor () {
