@@ -4,8 +4,18 @@
 
 import { html, css, LitElement } from 'lit'
 import { UIObserver } from '../inspector/uiObserver'
+import { currentClient } from '../globalstate'
+
+import { InspectorWebsocketClient } from '../inspector/inspectorwebsocketclient'
+
+
 import '../elements/pill-toggle'
 import '../elements/live-view'
+import '../elements/qdom-element'
+import '../elements/qdom-detail'
+
+import { signal } from '@lit-labs/preact-signals'
+
 
 export class ViewUi extends LitElement {
   static styles = css`
@@ -16,225 +26,88 @@ export class ViewUi extends LitElement {
         height:100%;
         overflow-y:auto;
         flex-direction: column;
-        padding: 20px;
+        padding: 0px 20px;
     }
     main{
         height: 100%;
         overflow-y: auto;
         flex-grow:1;
         display:flex;
+        contain:strict;
     }
-    table{
-        width:100%;
-    }
-    aside{
-        height: 70vh;
-        max-width: 50%;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        border: 1px solid var(--lt-color-gray-900);
-        background: white;
-        max-height: 92vh;
-        overflow-y: auto;
-        overflow-x: auto;
-        flex: 4;
-        position: sticky;
-        top: 2px;
-        right: 30px;
-
-    }
-    aside > button {
-      position: sticky;
-      top: 0px;
-    }
-    aside > *{
-        margin-top:5px;
-    
-    }
-    ul{
-        padding-left: 20px;
-        list-style:none;
-    }
-    li{
-        cursor: pointer;
-    }
-    li ul{
-        padding-left: 29px;
-    }
-    li.collapsed ul{
-        display:none;
-    }
-    li.active > span.name{
-        background:blue;
-        color:white;
-    }
-    li span.name{
-        border-radius:10px;
-        padding:3px;
-    }
-
-    tr{
-        cursor: pointer;
-    }
-    pre{
-        padding:0;
-        margin:0;
-    }
-    tr.active{
-      background: lightgray;
-    }  
-    #canvasHolder{
-        flex:1;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        position: sticky;
-        top: 20px;
-    }
-    live-view{
-      position: sticky;
-      top: 0px;
-    }
+    qdom-element{
+      overflow-y: auto;
+}
+qdom-detail{
+  overflow-y: auto;
+}
     `
 
   constructor () {
     super()
+    currentClient.subscribe( c => c.qWebChannel.subscribe((q)=>this.clientChanged(q)))
     this.settings = {
       'Hide Invisible Elements': false,
       'Hide Null Size Elements': false,
       'Show Rulers': false
     }
+
+    this.selectedElement = signal(null);
+    this.selectedElement.subscribe(v =>{
+      console.log(v);
+      const detail = this.renderRoot?.querySelector("qdom-detail");
+      if(detail){
+        detail.currentTarget = v;
+      }
+     
+    });
   }
+  /**
+   * Called whenever a new QWebchannel is available. 
+   * @param {qWebChannel} client 
+   */
+  clientChanged(qWebChannel){
+    this.webchannel = qWebChannel;
+    this.qDOM = qWebChannel.objects.inspector_graph
+
+    this.qDOM.queryAllElements().then((dom)=>{
+      // I do not expect more then 1 Root Element, 
+      // but leaving a TODO here, as we could. 
+      this.rootQMLObject = dom[0];
+      console.log(this.rootQMLObject)
+    })
+  }
+
+
 
   connectedCallback () {
     super.connectedCallback()
-    UIObserver.onAny(() => { this.onRequest() })
-    requestIdleCallback(() => {
-      UIObserver.refresh()
-    })
   }
 
   static get properties () {
     return {
       data: { attribute: false },
       detail: { attribute: false },
-      settings: { attribute: false }
+      settings: { attribute: false },
+      rootQMLObject: { attribute: false },
     }
-  }
-
-  onRequest () {
-    this.data = UIObserver.tree
-    this.requestUpdate('data')
-  }
-
-  renderTree (rootObject) {
-    if (rootObject.subItems.length == 0) {
-      return ''
-    }
-    return html`
-            <ul>
-                ${rootObject.subItems.map(item => this.renderNode(item))}
-            </ul>
-        `
-  }
-
-  renderNode (node) {
-    // Check if the Node Matches the Filter:
-    if (this.settings['Hide Invisible Elements']) {
-      if (!node.visible) {
-        return html``
-      }
-    }
-    if (this.settings['Hide Null Size Elements']) {
-      if (node.width == 0 && node.height == 0) {
-        return html``
-      }
-    }
-
-    const cleanClassname = node.__class__.split('_QMLTYPE_')[0].split('_QML_')[0]
-
-    const text = (node.objectName != '') ? node.objectName : cleanClassname
-    const hasChilden = node.subItems.length > 0
-    const isDetail = this.detail == node
-    const isCollapsed = node.__collapsed__
-    return html`
-        <li class="view-element ${hasChilden ? 'hasChilden' : ''} ${isDetail ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}">
-        ${hasChilden
-? html`
-            <span class="indicator" @click="${(e) => { this.toggleCollapse(e, node) }}">
-            ${isCollapsed ? '➡️' : '⬇️'}
-            </span>
-        `
-: ''}   
-            
-            <span class="name" @click="${(e) => { this.openDetail(e, node) }}" >${text}</span>  
-            ${this.renderTree(node)}
-        </li>
-        `
-  }
-
-  renderDetail (node) {
-    console.log(node)
-    return html`
-             <aside style="flex:1;">
-                 <button @click="${() => this.closeDetail()}">close</button>
-                 <hr>
-                <table>
-                    ${Object.entries(node).map(kv => {
-                        const [key, value] = kv
-                        return html`
-                            <tr>
-                                <td> ${key}</td>
-                                <td><pre>${value}</pre></td>
-                            </tr>
-                        `
-                    })}
-                </table>
-                <hr>
-             </aside>
-            `
-  }
-
-  openDetail (e, node) {
-    e.stopPropagation()
-    this.detail = node
-    this.requestUpdate('detail')
-  }
-
-  closeDetail () {
-    this.detail = undefined
-  }
-
-  quickFilterChange (id) {
-    this.settings[id] = !this.settings[id]
-    this.requestUpdate('settings')
-  }
-  saveImage(){
-    this.renderRoot.querySelector("live-view").saveImage();
-  }
-
-  toggleCollapse (event, node) {
-    node.__collapsed__ = !node.__collapsed__
-    this.requestUpdate('data')
   }
 
   getElementCount(node) {
     if (!node) {
       return 0;
     }
-    if (node.subItems.length == 0) {
+    if (node.children.length == 0) {
       return 1;
     }
-    return node.subItems.reduce((i, n) => i + this.getElementCount(n), 0)
+    return node.children.reduce((i, n) => i + this.getElementCount(n), 0)
   }
 
   render () {
     return html`
          <nav>
             <span>Total Elements: ${
-        this.data ? this.getElementCount(this.data[0]) : 0}</span>
+        this.rootQMLObject ? this.getElementCount(this.rootQMLObject) : 0}</span>
             <pill-toggle noActive="true"  @click=${(e) => {
       this.saveImage()
     }}>Download Image</pill-toggle>
@@ -246,12 +119,8 @@ export class ViewUi extends LitElement {
                     () => this.quickFilterChange(e)}>${e}</pill-toggle>`)}
         </nav>
         <main>
-          <live-view .qmlHighlight=${this.detail} .showRulers=${
-        this.settings['Show Rulers']}></live-view>
-          <ul style="flex:1;">
-            ${this.data ? this.renderNode(this.data[0]) : ''}
-          </ul>
-          ${this.detail ? this.renderDetail(this.detail) : ''}
+        <qdom-element .target=${this.rootQMLObject} .selectedElement=${this.selectedElement}  ></qdom-element>
+        <qdom-detail .selectedElement=${this.selectedElement}></qdom-detail>
         </main>
     `
   }

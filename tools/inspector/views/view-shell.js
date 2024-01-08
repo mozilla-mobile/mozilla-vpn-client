@@ -190,7 +190,9 @@ export class ViewShell extends LitElement {
   }
 
   render () {
-    return html``
+    return html`
+    <link href='/node_modules/xterm/css/xterm.css' rel='stylesheet'>
+    `
   }
 
   static styles = css`

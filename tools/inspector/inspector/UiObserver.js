@@ -7,9 +7,9 @@ import { GenericDispatcher } from './genericdispatcher'
 class _UIObserver extends GenericDispatcher {
   constructor () {
     super()
-    Client.on('qml_tree', (r) => this.onIncomingViewTree(r))
-    Client.on('view_tree', (r) => this.onIncomingViewTree(r))
-    Client.on('screen_capture', (r) => this.onIncomingScreen(r))
+    //Client.on('qml_tree', (r) => this.onIncomingViewTree(r))
+    //Client.on('view_tree', (r) => this.onIncomingViewTree(r))
+    //.on('screen_capture', (r) => this.onIncomingScreen(r))
 
     this.counter = 0
     this.requests = []

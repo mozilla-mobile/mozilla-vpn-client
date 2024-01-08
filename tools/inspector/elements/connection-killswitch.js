@@ -22,7 +22,6 @@ export class ConnectionKillswitch extends LitElement {
 
   constructor () {
     super()
-
     currentClient.subscribe(newClient =>{
       newClient.isConnected.subscribe(()=>{
         this.updateState(newClient);
