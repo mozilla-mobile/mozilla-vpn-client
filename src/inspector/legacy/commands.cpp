@@ -192,7 +192,7 @@ static QList<InspectorTools::Command> s_commands{
           {
             QTextStream out(&value);
             for (const InspectorTools::Command& command : s_commands) {
-              out << command.m_commandName << '\t'
+              out << command.m_commandName << "  "
                   << command.m_commandDescription << Qt::endl;
             }
           }

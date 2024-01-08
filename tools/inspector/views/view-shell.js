@@ -5,47 +5,36 @@
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { html, css, LitElement } from 'lit'
-import { CommandObserver } from '../inspector/commandObserver'
 
-const RED_ESCAPE = '\x1B[0;31m'
-const NO_COLOR_ESCAPE = '\x1B[0m'
+import { signal } from '@lit-labs/preact-signals'
+import { currentClient } from '../globalstate'
+
+
 const NEWLINE = '\r\n'
 
-const baseTheme = {
-  foreground: '#F8F8F8',
-  background: '#2D2E2C',
-  selection: '#5DA5D533',
-  black: '#1E1E1D',
-  brightBlack: '#262625',
-  red: '#CE5C5C',
-  brightRed: '#FF7272',
-  green: '#5BCC5B',
-  brightGreen: '#72FF72',
-  yellow: '#CCCC5B',
-  brightYellow: '#FFFF72',
-  blue: '#5D5DD3',
-  brightBlue: '#7279FF',
-  magenta: '#BC5ED1',
-  brightMagenta: '#E572FF',
-  cyan: '#5DA5D5',
-  brightCyan: '#72F0FF',
-  white: '#F8F8F8',
-  brightWhite: '#FFFFFF'
-}
-
 export class ViewShell extends LitElement {
-  createRenderRoot () {
-    return this
+
+  constructor(){
+    super()
+    currentClient.subscribe( c => c.qWebChannel.subscribe((q)=>this.clientChanged(q)))
+  }
+  clientChanged(client){
+    console.log(client)
+    if(!client){
+      return;
+    }
+
+    this.cli = client.objects.inspector_cli;
+    this.cli.onSend.connect(bytes => this.onMessage(bytes));
   }
 
-  connectedCallback () {
-    super.connectedCallback()
+  firstUpdated(){
     const terminal = new Terminal({
       fontFamily: '"Cascadia Code", Menlo, monospace',
       fontSize: '14',
       lineHeight: 1,
-      theme: baseTheme,
-      cursorBlink: true,
+      cursorBlink: false,
+      disableStdin: true,
       rendererType: 'dom'
     })
     const fitAddon = new FitAddon()
@@ -57,156 +46,74 @@ export class ViewShell extends LitElement {
     window.addEventListener('resize', () => {
       this.fitAddon.fit()
     })
-    terminal.open(this.term)
+
+    const root = this.renderRoot.querySelector("#TerminalHost");
+    terminal.open(root)
     fitAddon.fit()
 
-    //Client.connect().then((url) => {
-    //  this.terminal.writeln(`\n\rConnected to mozillaVPN@${url}`)
-    //  this.runCommand('help')
-    //  this.prompt()
-    //})
-    //Client.onAny((res) => this.processEvents(res))
-
-    CommandObserver.onAny(() => {
-      this.commandList = CommandObserver.commands
-    })
-
-    let command = ''
-    terminal.onData(e => {
-      switch (e) {
-        case '\u0003': // Ctrl+C
-          console.log(terminal.getSelection())
-
-          break
-        case '\r': // Enter
-          this.runCommand(command)
-          command = ''
-          break
-        case '\u007F': // Backspace (DEL)
-          // Do not delete the prompt
-          if (terminal._core.buffer.x > 2) {
-            terminal.write('\b \b')
-            if (command.length > 0) {
-              command = command.substr(0, command.length - 1)
-            }
-          }
-          break
-        default: // Print all other characters for demo
-          if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7B)) {
-            command += e
-            terminal.write(e)
-          }
-      }
-    })
-    terminal.onKey((key, event) => {
-      if (key.key === '\u001b[A') {
-        // UP key ->
-        if (this.lastCommand != '') {
-          command = this.lastCommand
-          this.clearLine()
-          terminal.write(this.lastCommand)
-        }
-        return
-      }
-      if (key.key === '\t') {
-        // Tab Pressed!
-        if (command === '') {
-          // No Command here!
-          terminal.writeln('')
-          terminal.write(this.commandList.join('  '))
-          this.prompt()
-          return
-        }
-        const closestCommands = this.commandList.filter(c => c.startsWith(command))
-        if (closestCommands.length > 1) {
-          terminal.writeln('')
-          terminal.write(closestCommands.join('  '))
-          this.prompt()
-          terminal.write(command)
-        } else if (closestCommands.length == 1) {
-          const newCommand = closestCommands.shift()
-          this.clearLine()
-          terminal.write(newCommand)
-          command = newCommand
-        }
-      }
-    })
+    this.command = ''
   }
-
-  runCommand (command) {
-    if (command === '') {
-      this.prompt()
-      return
-    }
+  runCommand (e) {
+    const command = e.target.value;
+    this.terminal.write('\u001Bc')
+    this.terminal.write(command)
+    this.terminal.write(NEWLINE)
+    
     if (command === 'clear') {
-      this.terminal.write('\u001Bc')
       this.prompt()
       return
     }
     this.lastCommand = command
-    //Client.sendCommand(command)
+    this.cli.recv(command);
+  }
+
+  onMessage (message) {
+    try{
+      // If we get a "value" object. use that
+      // otherwise return the raw thing.
+      const msg_obj = JSON.parse(message);
+      if(msg_obj.value){
+        this.write(msg_obj.value + NEWLINE)
+        this.prompt()
+        return;
+      }
+    }catch(err){}
+    this.write(message + NEWLINE)
     this.prompt()
   }
-
-  prompt () {
-    this.terminal.write('\n\r$ ')
-  }
-
-  clearLine () {
-    this.terminal.write('\x1b[2K\r')
-    this.terminal.write('$ ')
-  }
-
-  processEvents (message) {
-    if (['screen_capture', 'log', 'network'].includes(message.type)) {
-      return
-    }
-    if (message.type == 'help') {
-      message.value = message.value.replaceAll('\t', '\n\t')
-    }
-    this.writeResponse(message)
-  }
-
-  writeResponse (message) {
-    const type = message.type
-    let text = message.value
-    if (typeof text === 'object') {
-      text = JSON.stringify(text)
-    }
-
-    const error = message.error
-    if (!text && !error) {
-      return
-    }
-    this.terminal.write(NEWLINE + `//client:(${type})` + NEWLINE)
-
-    if (error) {
-      this.terminal.write(`${NEWLINE}${RED_ESCAPE}${error}${NO_COLOR_ESCAPE}`)
-    } else {
-      this.terminal.write(text.replaceAll('\n', '\r\n'))
-    }
-    this.terminal.write(NEWLINE)
-    this.prompt()
+  write(text){
+    this.terminal.write(text.replaceAll('\n', '\r\n'))
   }
 
   render () {
     return html`
-    <link href='/node_modules/xterm/css/xterm.css' rel='stylesheet'>
+      <link href='/node_modules/xterm/css/xterm.css' rel='stylesheet'>
+      <div id="TerminalHost"></div>
+      <input type="text" placeholder="command" @change=${this.runCommand}>
     `
   }
-
   static styles = css`
   :host{
-    display: none;
+    padding: 20px;
   }
 
   .terminal{
-    overflow:hidden;
+    overflow: auto;
+    height 100%;
+  }
+  .xterm-helper-textarea{
+    opacity: 0;
+  }
+  input{
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    color: white;
+    background: black;
+    padding: 15px;
+    font-size: 15px;
+    font-family: monospace;
   }
   `
-
-  get term () {
-    return this.parentElement
-  }
 }
 customElements.define('view-shell', ViewShell)

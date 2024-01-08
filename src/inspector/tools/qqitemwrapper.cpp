@@ -31,7 +31,6 @@ QStringList FORBIDDEN_TYPES({"QQmlComponent*", "QQuickItem*",
     "QQuickPen*",
     "QVariant", 
     "QQmlListProperty<QObject>", 
-    //"QJSValue", 
     "QQmlListProperty<QQuickState>" , 
     "QQuickAnchors*"
     });

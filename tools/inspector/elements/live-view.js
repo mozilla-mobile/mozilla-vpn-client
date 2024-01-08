@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { UIObserver } from '../inspector/uiObserver'
+
 
 export class LiveView extends LitElement {
   static styles = css`p { color: blue }`

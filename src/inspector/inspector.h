@@ -101,6 +101,7 @@ class Inspector : public QObject {
        private:
 
 		void registerInternals(){
+          m_channel.registerObject("inspector_cli", &m_cli);
                     m_channel.registerObject("inspector_hotReloader", &m_hotReloader);
                     m_channel.registerObject("app", m_app);
                                         m_channel.registerObject(
