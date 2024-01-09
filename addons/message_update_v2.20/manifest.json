@@ -1,7 +1,7 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.19",
-  "name": "Update to Mozilla VPN 2.19",
+  "id": "message_update_v2.20",
+  "name": "Update to Mozilla VPN 2.20",
   "type": "message",
   "conditions": {
     "max_client_version": "2.18.9"
@@ -11,8 +11,8 @@
   },
   "message": {
     "date": 1671066000,
-    "id": "message_update_v2.19",
-    "title": "Update to Mozilla VPN 2.19",
+    "id": "message_update_v2.20",
+    "title": "Update to Mozilla VPN 2.20",
     "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.",
     "badge": "new_update",
     "blocks": [
@@ -45,7 +45,7 @@
       {
         "id": "extra_1",
         "type": "text",
-        "content": "Download the new Mozilla VPN 2.19"
+        "content": "Download the new Mozilla VPN 2.20"
       }
     ]
   }
