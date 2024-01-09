@@ -80,6 +80,10 @@
 #  include "adjust/adjusthandler.h"
 #endif
 
+#ifdef MZ_IOS
+#  include "platforms/ios/ioswidgets.h"
+#endif
+
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -224,6 +228,11 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &MozillaVPN::errorHandled);
 
   ensureApplicationIdExists();
+
+#ifdef MZ_IOS
+  IOSWidgets* impl = new IOSWidgets();
+  impl->saveToUserDefaults();
+#endif
 }
 
 MozillaVPN::~MozillaVPN() {

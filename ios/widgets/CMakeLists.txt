@@ -28,17 +28,26 @@ set_target_properties(widgets PROPERTIES
     # Do not strip debug symbols on copy
     XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
     XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/widgets.entitlements
+
+#    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_SOURCE_DIR}/src/Widgets-Bridging-Header.h"
 )
+
+
+#target_link_libraries(widgets PRIVATE
+#    Qt6::Core
+#)
 
 find_library(FW_SWIFT_UI SwiftUI)
 find_library(FW_WIDGET_KIT WidgetKit)
 target_link_libraries(widgets PRIVATE ${FW_SWIFT_UI})
 target_link_libraries(widgets PRIVATE ${FW_WIDGET_KIT})
 
-
 target_sources(widgets PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/widgets.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/widgetsBundle.swift
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioswidgets.swift
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
 )
 
 target_include_directories(widgets PRIVATE ${CMAKE_SOURCE_DIR})

@@ -9,6 +9,7 @@ import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {
+        
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), emoji: "😀")
     }
@@ -18,7 +19,6 @@ struct Provider: TimelineProvider {
         completion(entry)
     }
 
-    @available(iOSApplicationExtension 14.0, *)
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
 
@@ -41,15 +41,19 @@ struct SimpleEntry: TimelineEntry {
 }
 
 struct widgetsEntryView : View {
+    
+    var impl = IOSWidgetsImpl()
+    
     var entry: Provider.Entry
 
     var body: some View {
         VStack {
-            Text("Time:")
-            Text(entry.date, style: .time)
-
-            Text("Emoji:")
-            Text(entry.emoji)
+            HStack {
+                Spacer()
+                Text(Date.now, style: .timer)
+//                Spacer()  
+            }
+            Text(impl.retrieveFromUserDefaults())
         }
     }
 }
@@ -59,14 +63,8 @@ struct widgets: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            if #available(iOS 17.0, *) {
                 widgetsEntryView(entry: entry)
                     .containerBackground(.fill.tertiary, for: .widget)
-            } else {
-                widgetsEntryView(entry: entry)
-                    .padding()
-                    .background()
-            }
         }
         .configurationDisplayName("My Widget")
         .description("This is an example widget.")
