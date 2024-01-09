@@ -36,32 +36,36 @@ def add_addons_release_artifacts(config, tasks):
 
 @transforms.add
 def add_beetmover_worker_config(config, tasks):
+    build_id = config.params["moz_build_date"]
+    build_type_os = {
+        "macos/opt": "mac",
+        "windows/opt": "windows",
+        "android/x86": "android",
+        "android/x64": "android",
+        "android/armv7": "android",
+        "android/arm64-v8a": "android",
+    }
+
+    if config.params["version"]:
+        app_version = config.params["version"]
+    elif "releases" in config.params["head_ref"]:
+        app_version = config.params["head_ref"].split("/")[-1]
+    else:
+        app_version = ""  # addons are not versioned
+
+    is_production = (
+        config.params["level"] == "3" and config.params["tasks_for"] == "action"
+    )
+    bucket = "release" if is_production else "dep"
+    archive_url = (
+        "https://ftp.mozilla.org/" if is_production else "https://ftp.stage.mozaws.net/"
+    )
+
     for task in tasks:
         worker_type = task["worker-type"]
-        is_relpro = (
-            config.params["level"] == "3"
-            and config.params["tasks_for"] in task["run-on-tasks-for"]
-        )
-        bucket = "release" if is_relpro else "dep"
-        build_id = config.params["moz_build_date"]
         build_type = task["attributes"]["build-type"]
-        build_type_os = {
-            "macos/opt": "mac",
-            "windows/opt": "windows",
-            "android/x86": "android",
-            "android/x64": "android",
-            "android/armv7": "android",
-            "android/arm64-v8a": "android",
-        }
         build_os = build_type_os.get(build_type)
         shipping_phase = config.params.get("shipping_phase", "")
-
-        if config.params["version"]:
-            app_version = config.params["version"]
-        elif "releases" in config.params["head_ref"]:
-            app_version = config.params["head_ref"].split("/")[-1]
-        else:
-            app_version = ""  # addons are not versioned
 
         destination_paths = []
 
@@ -107,10 +111,6 @@ def add_beetmover_worker_config(config, tasks):
                     "latest",
                 )
             )
-
-        archive_url = (
-            "https://ftp.mozilla.org/" if is_relpro else "https://ftp.stage.mozaws.net/"
-        )
 
         upstream_artifacts = []
         for dep in task["dependencies"]:
