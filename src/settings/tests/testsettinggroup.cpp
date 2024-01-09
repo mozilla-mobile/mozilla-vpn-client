@@ -4,10 +4,12 @@
 
 #include "testsettinggroup.h"
 
-#include "helper.h"
-#include "settings/setting.h"
-#include "settings/settinggroup.h"
-#include "settings/settingsmanager.h"
+#include <QSignalSpy>
+#include <QTest>
+
+#include "setting.h"
+#include "settinggroup.h"
+#include "settingsmanager.h"
 
 void TestSettingGroup::cleanup() {
   // This test suite requires a manual clean up,
@@ -129,4 +131,4 @@ void TestSettingGroup::testRemove() {
   QVERIFY(!notInTheGroup->get().isNull());
 }
 
-static TestSettingGroup s_testSettingGroup;
+QTEST_MAIN(TestSettingGroup);

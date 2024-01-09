@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
 
-class TestSettingsManager final : public TestHelper {
+class TestSettingsManager final : public QObject {
   Q_OBJECT
 
  private slots:
@@ -21,3 +21,5 @@ class TestSettingsManager final : public TestHelper {
   void testCreateNewSetting();
   void testCreateNewSettingButSettingAlreadyExists();
 };
+
+#include "testsettingsmanager.moc"

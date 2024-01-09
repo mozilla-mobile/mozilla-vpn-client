@@ -17,6 +17,12 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+# Modules
+add_subdirectory(
+    ${CMAKE_SOURCE_DIR}/src/settings
+)
+target_link_libraries(shared-sources INTERFACE mz_settings)
+
 # Shared components
 target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.h
@@ -165,14 +171,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
-    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
-    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
-    ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
-    ${CMAKE_SOURCE_DIR}/src/settings/setting.h
     ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
     ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp

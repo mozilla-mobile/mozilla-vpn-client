@@ -4,9 +4,10 @@
 
 #include "testsetting.h"
 
-#include "helper.h"
-#include "settings/setting.h"
-#include "settings/settingsmanager.h"
+#include <QSignalSpy>
+
+#include "setting.h"
+#include "settingsmanager.h"
 
 void TestSetting::cleanup() {
   // This test suite requires a manual clean up,
@@ -165,4 +166,4 @@ void TestSetting::testLogEmptySetting() {
   QCOMPARE(sensitiveSetting->log(), "");
 }
 
-static TestSetting s_testSetting;
+QTEST_MAIN(TestSetting);

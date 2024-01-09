@@ -4,9 +4,11 @@
 
 #include "testsettingsmanager.h"
 
-#include "helper.h"
-#include "settings/setting.h"
-#include "settings/settingsmanager.h"
+#include <QSignalSpy>
+#include <QTest>
+
+#include "setting.h"
+#include "settingsmanager.h"
 
 void TestSettingsManager::cleanup() {
   // This test suite requires a manual clean up,
@@ -170,4 +172,4 @@ void TestSettingsManager::testCreateNewSettingButSettingAlreadyExists() {
   QCOMPARE(oneSetting, twoSetting);
 }
 
-static TestSettingsManager s_testSettingsManager;
+QTEST_MAIN(TestSettingsManager)
