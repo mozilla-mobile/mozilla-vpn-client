@@ -1,0 +1,15 @@
+{
+  "name": "@mozillavpn/qmlHotReload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hot.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node hot.js"
+  },
+  "author": "",
+  "license": "MPL-2.0",
+  "dependencies": {
+  }
+}

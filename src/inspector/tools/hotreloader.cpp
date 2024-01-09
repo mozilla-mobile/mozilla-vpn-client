@@ -6,6 +6,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QUrl>
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonObject>
@@ -39,7 +40,12 @@ Hotreloader::Hotreloader(QObject* parent, QQmlEngine* target)
   });
 }
 
-void Hotreloader::annonceReplacedFile(const QUrl& path) {
+void Hotreloader::annonceReplacedFile(const QString& aPath) {
+  QUrl path = QUrl(aPath);
+  if (!path.isValid()) {
+    qDebug() << "Path not ok: " << aPath;
+  }
+
   qDebug() << "Announced redirect! : " << path.fileName() << " as ->"
            << path.toString();
 
@@ -72,7 +78,7 @@ void Hotreloader::pushFile(const QString& fileName, const QByteArray& data) {
   }
   temp_file->close();
   QFileInfo info(temp_path);
-  annonceReplacedFile(QUrl::fromLocalFile(info.absoluteFilePath()));
+  annonceReplacedFile(QUrl::fromLocalFile(info.absoluteFilePath()).toString());
 }
 
 void Hotreloader::resetAllFiles() {
@@ -91,7 +97,7 @@ void Hotreloader::resetAllFiles() {
 void Hotreloader::reloadWindow() {
   QQmlApplicationEngine* engine = static_cast<QQmlApplicationEngine*>(m_target);
   // Here is the main QML file.
-  if (!engine->rootObjects().isEmpty()) {
+  if (engine->rootObjects().isEmpty()) {
     qDebug() << "No Window to reload";
     return;
   }

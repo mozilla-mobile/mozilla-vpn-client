@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-import {InspectorWebsocketClient, DEFAULT_URL} from './inspector/inspectorwebsocketclient'
+import {InspectorWebsocketClient, DEFAULT_URL} from './inspector/inspectorwebsocketclient.js'
 
 export {
     InspectorWebsocketClient,

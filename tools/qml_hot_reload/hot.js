@@ -2,11 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-(async () => {
-  // Load .env
-  require("dotenv").config();
-  const commandLineArgs = require("command-line-args");
+import { InspectorWebsocketClient, DEFAULT_URL } from '@mozillavpn/inspector'
+import  commandLineArgs  from 'command-line-args'
+import * as chokidar from 'chokidar'
 
+import { ADB } from 'appium-adb'
+
+import * as http from 'node:http'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+
+
+(async () => {
   const optionDefinitions = [
     { name: "remote", alias: "r", type: Boolean, defaultValue: false },
     { name: "adb", alias: "a", type: Boolean, defaultValue: false },
@@ -14,11 +21,8 @@
   const http_port = 8888;
   const options = commandLineArgs(optionDefinitions);
 
-  console.log(options);
-
   async function forwardADBPorts() {
     console.log("Enable Android ADB forwarding");
-    const { ADB } = require("appium-adb");
     const adb = await ADB.createADB();
     const hasEmulator = await adb.isEmulatorConnected();
     const hasDevice = await adb.isDeviceConnected();
@@ -29,61 +33,45 @@
     await adb.reversePort(http_port, http_port);
   }
 
-  const http = require("http");
-  const fs = require("fs");
-  const WebSocket = require("ws");
-  const chokidar = require("chokidar");
-
   var currentPath = process.cwd();
-  const ws_url = "ws://127.0.0.1:8765";
 
   if (options.adb === true) {
     await forwardADBPorts();
   }
-  const websocket = new WebSocket(ws_url);
-  console.log(`Connecting to Client at ${ws_url}`);
+  const client = new InspectorWebsocketClient(DEFAULT_URL);
+  console.log(`Connecting to Client at ${DEFAULT_URL}`);
 
-  websocket.on("open", function () {
-    console.log(`Connected to Client!`);
-    console.log(
+  const qtWebChannel = await new Promise(resolve => client.qWebChannel.subscribe((c)=>{
+    if(c){
+      resolve(c);
+    }
+  }));
+  console.log(`Connected to Client!`);
+  console.log(
         `Controls: \n r \t \t - Force Reload the whole window \n control+c \t - exit`);
 
-    const watcher = chokidar.watch(".", {
+  const watcher = chokidar.watch(`.`, {
       ignored: /(^|[\/\\])\../,
       persistent: true,
       ignoreInitial: true,
       awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 100 },
-    });
-    watcher.on("all", function (event, path) {
+  });
+    watcher.on("all", function (event, changedPath) {
+      console.log("hiii")
       if (event === "add" || event === "change") {
-        if (path.endsWith(".qml")) {
-          const relPath = path.replace(/\\/g, "/");
-          let url = `file://${currentPath}/${relPath}`;
+        if (changedPath.endsWith(".qml")) {          
+          let url = `file://${currentPath}/${changedPath}`;
           if (options.remote) {
-            url = `http://0.0.0.0:${http_port}/${relPath}`;
+            url = `http://0.0.0.0:${http_port}/${changedPath}`;
           }
           console.log(`Announcing ${url}`);
-          websocket.send(`live_reload ${url}`);
+          qtWebChannel.objects.inspectorHotReloader.annonceReplacedFile(url.replace("\\","/"));
         }
       }
-    });
   });
-
-  // When the WebSocket connection is closed, log it to the console
-  websocket.on("close", function () {
-    console.log("Websocket Closed");
-    process.exit(0);
-  });
-
-  // When an error occurs, log it to the console
-  websocket.on("error", function (error) {
-    console.error("WebSocket error:", error);
-    process.exit(0);
-  });
-
   process.on("SIGINT", function () {
     console.log("Unregistering all reloads...");
-    websocket.send(`reset_live_reload`);
+    qtWebChannel.objects.inspectorHotReloader.resetAllFiles();
     process.exit();
   });
 
@@ -95,11 +83,11 @@
   stdin.on('data', function(key) {
     // ctrl-c ( end of text )
     if (key === '\u0003') {
-      websocket.send(`reset_live_reload`);
+      qtWebChannel.objects.inspectorHotReloader.resetAllFiles();
       process.exit();
     }
     if (key === 'r') {
-      websocket.send(`reload_window`);
+      qtWebChannel.objects.inspectorHotReloader.reloadWindow();
       console.log('Requesting App Reload')
     }
   });

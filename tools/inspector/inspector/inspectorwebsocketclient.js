@@ -17,7 +17,7 @@ class InspectorWebsocketClient {
    */
   constructor (url=DEFAULT_URL) {
     this.isConnected = signal(false)
-    this.qWebChannel = signal(null)
+    this.qWebChannel = signal()
 
     if(!url){
       return;
@@ -29,16 +29,12 @@ class InspectorWebsocketClient {
       console.error("Invalid url");
     }
     this.url = url;
-    this.websocketConnection = new WebSocket(url.toString());
-    // 
-    this.websocketConnection.onopen = () => {
-      this.isConnected.value = true;
-    }
-    this.websocketConnection.onerror = () => { 
-      this.isConnected.value = false;
-    }
-    this.websocketConnection.onclose = () => { 
-      this.isConnected.value = false;
+    if(globalThis.WebSocket){
+      // We're running in the browser or Deno
+      this.setupWebSocket(WebSocket,url);
+    }else {
+      // Node i guess. 
+      import('ws').then(ws => this.setupWebSocket(ws.WebSocket,url));
     }
     this.isConnected.subscribe(connected =>{
        if(connected){
@@ -49,6 +45,21 @@ class InspectorWebsocketClient {
     })
 
   }
+  setupWebSocket(websocketImpl,url){
+  this.websocketConnection = new websocketImpl(url.toString());
+  // 
+  this.websocketConnection.onopen = () => {
+    this.isConnected.value = true;
+  }
+  this.websocketConnection.onerror = () => { 
+    this.isConnected.value = false;
+  }
+  this.websocketConnection.onclose = () => { 
+    this.isConnected.value = false;
+  }
+  }
+
+
   /**
    * Signals whether the Inspector is connected.
    */

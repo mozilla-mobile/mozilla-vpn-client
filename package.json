@@ -3,7 +3,7 @@
     "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000",
     "functionalTestWasm": "WASM=true mocha --require ./tests/functional/setupWasm.js --timeout 30000",
     "wasm:dev": "node tests/functional/wasm.js",
-    "qml-reload": "node ./tools/qml_hot_reload/hot.js",
+    "qml-reload": "npm install && node tools/qml_hot_reload/hot.js",
     "languages:check": "cd ./tools/languagelocalizer/ && node languageLocalizer.js -c",
     "languages:update": "cd ./tools/languagelocalizer/ && node languageLocalizer.js",
     "translationsreport:start": "cd ./tools/translationsreport/app && npm run start",
@@ -24,6 +24,8 @@
   },
   "workspaces":[
     "tools/languagelocalizer",
-    "tools/translationsreport"
+    "tools/translationsreport",
+    "tools/inspector",
+    "tools/qml_hot_reload"
   ]
 }

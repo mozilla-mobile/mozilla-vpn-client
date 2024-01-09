@@ -31,7 +31,7 @@ class Hotreloader : public QObject {
    *
    * @param path - The Replacement Path
    */
-  Q_INVOKABLE void annonceReplacedFile(const QUrl& path);
+  Q_INVOKABLE void annonceReplacedFile(const QString& path);
 
   // Removes all injected paths
   // Reload's the current screen with the internal

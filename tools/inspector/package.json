@@ -1,5 +1,5 @@
 {
-  "name": "inspector",
+  "name": "@mozillavpn/inspector",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -10,6 +10,10 @@
   "engines": {
     "node": ">=14.14.0"
   },
+  "exports":[
+    "./index.js"
+  ],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
