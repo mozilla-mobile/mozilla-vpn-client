@@ -78,7 +78,7 @@ class FeatureModel final : public QAbstractListModel {
    *
    *
    * @param features
-   * @return QPair<QStringList, QStringList> Returns the a list of the feature
+   * @return QPair<QStringList, QStringList> Returns a list of the feature
    * to enabled and disable respectively.
    */
   static QPair<QStringList, QStringList> parseExperimentalFeatures(
