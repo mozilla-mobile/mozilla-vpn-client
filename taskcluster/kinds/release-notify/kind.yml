@@ -10,7 +10,8 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - beetmover
+    - beetmover-promote
+    - beetmover-ship
 
 task-defaults:
     description: "Sends notifications to #mozilla-vpn-release in Slack"

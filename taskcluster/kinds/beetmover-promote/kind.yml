@@ -18,6 +18,7 @@ kind-dependencies:
     - repackage-signing
 
 task-defaults:
+    beetmover-action: "push-to-candidates"
     run-on-tasks-for: [action]
     worker-type: beetmover
 

@@ -1,0 +1,70 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.from_deps
+    - mozilla_taskgraph.transforms.scriptworker.release_artifacts
+    - mozillavpn_taskgraph.transforms.beetmover
+    - taskgraph.transforms.task
+
+kind-dependencies:
+    - beetmover-promote
+    - build
+    - signing
+
+task-defaults:
+    from-deps:
+        kinds: [beetmover-promote]
+        group-by: all
+        set-name: false
+        unique-kinds: false
+    worker-type: beetmover
+    worker:
+        chain-of-trust: true
+        max-run-time: 1800
+    run-on-tasks-for: [action]
+
+tasks:
+    client:
+        beetmover-action: "push-to-releases"
+        from-deps:
+            copy-attributes: true
+            with-attributes:
+                shipping-phase: promote-client
+
+    # Beetmoverscript doesn't support the `push-to-release` action for VPN
+    # addons yet, as they use a slightly different directory structure on
+    # archive.mozilla.org.
+    #
+    # For that reason, we need to use the `direct-push-to-bucket` action to
+    # re-upload the build artifacts rather than copying them over from the
+    # candidates dir. This means we need to depend on the build dependencies
+    # even in the `ship` phase. We also depend on the `beetmover-promote` tasks
+    # just to ensure we don't skip uploading to the candidates dir.
+    addons-bundle:
+        beetmover-action: "direct-push-to-bucket"
+        attributes:
+            build-type: "addons/opt"
+        from-deps:
+            with-attributes:
+                shipping-phase: promote-addons
+        dependencies:
+            build: build-addons-bundle
+        # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
+        release-artifacts: []
+
+    addons-manifest:
+        beetmover-action: "direct-push-to-bucket"
+        attributes:
+            build-type: "addons/opt"
+        from-deps:
+            with-attributes:
+                shipping-phase: promote-addons
+        dependencies:
+            signing: signing-addons-bundle
+        release-artifacts:
+            - manifest.json
+            - manifest.json.sig
