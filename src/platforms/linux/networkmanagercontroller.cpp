@@ -4,6 +4,7 @@
 
 #include "networkmanagercontroller.h"
 
+#include <QFile>
 #include <QScopeGuard>
 #include <QUuid>
 
@@ -75,6 +76,9 @@ NetworkManagerController::~NetworkManagerController() {
         m_remote);
   }
 
+  if (m_active != nullptr) {
+    g_object_unref(m_remote);
+  }
   if (m_ipv6config != nullptr) {
     g_object_unref(m_ipv6config);
   }
@@ -126,23 +130,6 @@ static NMIPAddress* parseAddress(const QString& addr) {
   }
 }
 
-// Lookup the active connection handle, or null if the connection is down.
-NMActiveConnection* NetworkManagerController::getActiveConnection() const {
-  if (m_client == nullptr) {
-    return nullptr;
-  }
-
-  const GPtrArray* active = nm_client_get_active_connections(m_client);
-  for (guint i = 0; i < active->len; i++) {
-    NMActiveConnection* conn = NM_ACTIVE_CONNECTION(active->pdata[i]);
-    if (m_tunnelUuid == nm_active_connection_get_uuid(conn)) {
-      return conn;
-    }
-  }
-
-  return nullptr;
-}
-
 void NetworkManagerController::initialize(const Device* device,
                                           const Keys* keys) {
   NMConnection* wg_connection = nm_simple_connection_new();
@@ -180,7 +167,17 @@ void NetworkManagerController::initialize(const Device* device,
         nm_connection_get_setting_ip6_config(NM_CONNECTION(remote));
     m_ipv6config = nm_setting_duplicate(NM_SETTING(ipv6config));
 
-    emit initialized(true, getActiveConnection() != nullptr, QDateTime());
+    // Lookup the active connection handle, or null if the connection is down.
+    const GPtrArray* connections = nm_client_get_active_connections(m_client);
+    for (guint i = 0; i < connections->len; i++) {
+      NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
+      if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
+        m_active = active;
+        break;
+      }
+    }
+
+    emit initialized(true, m_active != nullptr, QDateTime());
     return;
   }
 
@@ -336,7 +333,7 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
   if (!okay) {
     logger.error() << "peer configuration failed:" << err->message;
     g_error_free(err);
-  } else if (getActiveConnection() != nullptr) {
+  } else if (m_active != nullptr) {
     logger.debug() << "device already connected";
     emit connected(m_serverPublicKey);
   } else {
@@ -353,25 +350,29 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
 
 void NetworkManagerController::activateCompleted(void* result) {
   GError* err = nullptr;
-  NMActiveConnection* conn = nm_client_activate_connection_finish(
-      m_client, G_ASYNC_RESULT(result), &err);
+  if (m_active != nullptr) {
+    g_object_unref(m_active);
+  }
+  m_active = nm_client_activate_connection_finish(m_client,
+                                                  G_ASYNC_RESULT(result), &err);
 
-  if (!conn) {
+  // TODO: We are just blindly assuming that the connection will succeed, but
+  // what we really need is to detect the completion of the handshake. If we
+  // find that, then we can also do real multihop.
+  if (!m_active) {
     logger.error() << "peer activation failed:" << err->message;
     g_error_free(err);
   } else {
     emit connected(m_serverPublicKey);
   }
 
-  g_object_unref(conn);
   g_object_unref(result);
 }
 
 void NetworkManagerController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
-  NMActiveConnection* conn = getActiveConnection();
 
-  if (conn == nullptr) {
+  if (m_active == nullptr) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
     return;
@@ -379,7 +380,7 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
 
   Q_ASSERT(m_client);
   nm_client_deactivate_connection_async(
-      m_client, conn, nullptr, LAMBDA_ASYNC_WRAPPER("deactivateCompleted"),
+      m_client, m_active, nullptr, LAMBDA_ASYNC_WRAPPER("deactivateCompleted"),
       this);
 }
 
@@ -390,34 +391,37 @@ void NetworkManagerController::deactivateCompleted(void* result) {
     logger.error() << "Connection deactivation failed:" << err->message;
     g_error_free(err);
   }
+  g_object_unref(m_active);
   g_object_unref(result);
+  m_active = nullptr;
 
   emit disconnected();
 }
 
-// TODO: Implement Me!
+// static
+uint64_t NetworkManagerController::readSysfsFile(const QString& path) {
+  QFile file(path);
+
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return 0;
+  }
+  QString line = QString::fromLocal8Bit(file.readLine());
+  file.close();
+
+  return line.toULongLong();
+}
+
 void NetworkManagerController::checkStatus() {
-  NMActiveConnection* conn = getActiveConnection();
-  if (conn == nullptr) {
+  logger.debug() << "A";
+  NMSettingIPConfig* ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
+  NMIPAddress* nmAddress = nm_setting_ip_config_get_address(ipcfg, 0);
+
+#if 0
+  if (m_active == nullptr) {
     return;
   }
 
-  // At this point, we probably need to go off-script to try and pull
-  // the statistics directly using the D-Bus API, since there doesn't
-  // appear to be a way to do this directly.
-  //
-  // TLDR: To get the interface throughput, we need to enable refresh
-  // in the statistics interface by setting the RefreshRateMs property
-  // and then we can read RxBytes and TxBytes for the data sent and
-  // recieved.
-  //
-  // An ever harder nut to crack without real netlink access. When
-  // did the handshake complete? If we can access that data point then
-  // we could probably do multihop too.
-  const char* objpath = nm_object_get_path(NM_OBJECT(conn));
-  logger.debug() << "Checking status of object:" << objpath;
-
-  NMIPConfig* ipv4cfg = nm_active_connection_get_ip4_config(conn);
+  NMIPConfig* ipv4cfg = nm_active_connection_get_ip4_config(m_active);
   if (ipv4cfg == nullptr) {
     return;
   }
@@ -425,12 +429,19 @@ void NetworkManagerController::checkStatus() {
   if (addrcfg->len < 1) {
     return;
   }
+  nmAddress = (NMIPAddress*)(addrcfg->pdata[0]);
+#endif
 
-  QString deviceAddress(
-      nm_ip_address_get_address((NMIPAddress*)(addrcfg->pdata[0])));
+  QString deviceAddress(nm_ip_address_get_address(nmAddress));
 
-  logger.info() << "Status:" << deviceAddress;
-  emit statusUpdated(m_serverIpv4Gateway, deviceAddress, 1234500, 6789000);
+  QString txPath =
+      QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
+  QString rxPath = 
+      QString("/sys/class/net/%1/statistics/rx_bytes").arg(WG_INTERFACE_NAME);
+  uint64_t txBytes = readSysfsFile(txPath);
+  uint64_t rxBytes = readSysfsFile(rxPath);
+  logger.info() << "Status:" << deviceAddress << txBytes << rxBytes;
+  emit statusUpdated(m_serverIpv4Gateway, deviceAddress, txBytes, rxBytes);
 }
 
 void NetworkManagerController::getBackendLogs(

@@ -45,7 +45,7 @@ class NetworkManagerController final : public ControllerImpl {
   void deactivateCompleted(void*);
 
  private:
-  struct _NMActiveConnection* getActiveConnection() const;
+  static uint64_t readSysfsFile(const QString& path); 
 
  private:
   struct _GCancellable* m_cancellable;
