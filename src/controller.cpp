@@ -1005,6 +1005,7 @@ bool Controller::deactivate() {
 //  if (MozillaVPN::instance()->networkWatcher()->getIsBehindCaptivePortal()) {
   auto instance = QNetworkInformation::instance();
   Q_UNUSED(instance);
+
   if (QNetworkInformation::instance() && QNetworkInformation::instance()->isBehindCaptivePortal())
   {
     emit activationBlockedForCaptivePortal();

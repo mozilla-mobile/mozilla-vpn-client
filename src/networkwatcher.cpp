@@ -86,6 +86,8 @@ void NetworkWatcher::initialize() {
   if (m_active) {
     m_impl->start();
   }
+  
+  QNetworkInformation::loadDefaultBackend();
 
   connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);
