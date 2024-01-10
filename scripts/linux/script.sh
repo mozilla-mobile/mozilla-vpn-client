@@ -232,6 +232,11 @@ case $RELEASE in
     print Y "Building RPM packages for $distro"
     build_rpm_source
     ;;
+  
+  flatpak)
+    print Y "Building Flatpak sources"
+    build_flatpak_manifest
+    ;;
 
   *)
     print Y "Building Debian packages for $RELEASE"

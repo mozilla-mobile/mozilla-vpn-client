@@ -20,13 +20,7 @@ modules:
   - flatpak-pydeps.yaml
   - flatpak-libnm.yaml
   - flatpak-libsecret.yaml
-
-  - name: qt5compat
-    buildsystem: cmake
-    sources:
-      - type: git
-        tag: v6.5.2
-        url: https://github.com/qt/qt5compat
+  - flatpak-qt5compat.yaml
 
   - name: mozillavpn
     buildsystem: cmake-ninja
