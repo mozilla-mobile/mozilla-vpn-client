@@ -6,8 +6,40 @@
 import os.path
 
 from taskgraph.transforms.base import TransformSequence
+from taskgraph.transforms.task import task_description_schema
+from taskgraph.util.schema import Schema
+from voluptuous import Extra, Optional, Required
 
 transforms = TransformSequence()
+
+
+beetmover_schema = Schema(
+    {
+        Required("attributes"): {
+            Required("build-type"): str,
+            Required("release-artifacts"): [dict],
+            Extra: object,
+        },
+        Required("dependencies"): task_description_schema["dependencies"],
+        Required("name"): str,
+        Required("run-on-tasks-for"): task_description_schema["run-on-tasks-for"],
+        Required("worker-type"): task_description_schema["worker-type"],
+        Optional("task-from"): task_description_schema["task-from"],
+    }
+)
+
+
+@transforms.add
+def remove_worker(config, tasks):
+    """The `release_artifacts` transforms add a key to 'worker' which we don't
+    use here, remove it."""
+    for task in tasks:
+        if "worker" in task:
+            del task["worker"]
+        yield task
+
+
+transforms.add_validate(beetmover_schema)
 
 
 @transforms.add
