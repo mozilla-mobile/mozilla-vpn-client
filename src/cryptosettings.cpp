@@ -9,7 +9,7 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-#include "hacl-star/Hacl_Chacha20Poly1305_32.h"
+#include "crypto/hacl-star/Hacl_Chacha20Poly1305_32.h"
 #include "logging/logger.h"
 
 constexpr int NONCE_SIZE = 12;

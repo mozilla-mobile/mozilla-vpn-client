@@ -10,7 +10,7 @@
 
 #include "app.h"
 #include "context/constants.h"
-#include "curve25519.h"
+#include "crypto/curve25519.h"
 #include "errorhandler.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"

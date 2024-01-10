@@ -18,6 +18,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/settings)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/logging)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/feature)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/context)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/crypto)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utilities)
 
 target_link_libraries(shared-sources INTERFACE
@@ -26,6 +27,7 @@ target_link_libraries(shared-sources INTERFACE
     mz_logging
     mz_feature
     mz_utilities
+    mz_crypto
 )
 
 # Shared components
@@ -92,8 +94,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/collator.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
-    ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
-    ${CMAKE_SOURCE_DIR}/src/curve25519.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
@@ -110,14 +110,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Curve25519_51.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.cpp
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.h
-    ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
-    ${CMAKE_SOURCE_DIR}/src/hkdf.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhotreloader.cpp

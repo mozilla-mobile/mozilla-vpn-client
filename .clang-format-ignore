@@ -1,7 +1,7 @@
 ./3rdparty/*
 ./android/tunnel/*
 ./android/src/com/wireguard/*
-./src/hacl-star/*
+./src/crypto/hacl-star/*
 ./src/platforms/windows/golang-msvc-types.h
 ./extension/app/json.hpp
 ./translations/generated/*

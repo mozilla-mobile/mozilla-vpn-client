@@ -8,10 +8,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
 include_directories(${MZ_SOURCE_DIR}/glean)
-include_directories(${MZ_SOURCE_DIR}/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
-include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/glean)
 
 qt_add_executable(qml_tests)
@@ -143,8 +139,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/collator.h
     ${MZ_SOURCE_DIR}/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/cryptosettings.h
-    ${MZ_SOURCE_DIR}/curve25519.cpp
-    ${MZ_SOURCE_DIR}/curve25519.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
     ${MZ_SOURCE_DIR}/feature/feature.cpp
@@ -161,14 +155,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/glean/mzglean.h
     ${MZ_SOURCE_DIR}/glean/mzglean.cpp
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
-    ${MZ_SOURCE_DIR}/hawkauth.cpp
-    ${MZ_SOURCE_DIR}/hawkauth.h
-    ${MZ_SOURCE_DIR}/hkdf.cpp
-    ${MZ_SOURCE_DIR}/hkdf.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
