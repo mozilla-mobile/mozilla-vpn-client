@@ -45,7 +45,8 @@ class NetworkManagerController final : public ControllerImpl {
   void deactivateCompleted(void*);
 
  private:
-  static uint64_t readSysfsFile(const QString& path); 
+  static uint64_t readSysfsFile(const QString& path);
+  void checkActiveState();
 
  private:
   struct _GCancellable* m_cancellable;
@@ -59,6 +60,9 @@ class NetworkManagerController final : public ControllerImpl {
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
   QString m_tunnelUuid;
+
+  QTimer m_activeStateTimer;
+  uint m_activeStateRetries = 0;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H

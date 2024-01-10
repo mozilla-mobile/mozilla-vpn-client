@@ -52,6 +52,10 @@ NetworkManagerController::NetworkManagerController() {
     g_error_free(err);
   }
 
+  m_activeStateTimer.setSingleShot(true);
+  connect(&m_activeStateTimer, &QTimer::timeout, this,
+          &NetworkManagerController::checkActiveState);
+
   m_wireguard = nm_setting_wireguard_new();
   m_cancellable = g_cancellable_new();
 }
@@ -355,15 +359,12 @@ void NetworkManagerController::activateCompleted(void* result) {
   }
   m_active = nm_client_activate_connection_finish(m_client,
                                                   G_ASYNC_RESULT(result), &err);
-
-  // TODO: We are just blindly assuming that the connection will succeed, but
-  // what we really need is to detect the completion of the handshake. If we
-  // find that, then we can also do real multihop.
   if (!m_active) {
     logger.error() << "peer activation failed:" << err->message;
     g_error_free(err);
   } else {
-    emit connected(m_serverPublicKey);
+    m_activeStateRetries = 16;
+    checkActiveState();
   }
 
   g_object_unref(result);
@@ -442,6 +443,33 @@ void NetworkManagerController::checkStatus() {
   uint64_t rxBytes = readSysfsFile(rxPath);
   logger.info() << "Status:" << deviceAddress << txBytes << rxBytes;
   emit statusUpdated(m_serverIpv4Gateway, deviceAddress, txBytes, rxBytes);
+}
+
+// Debug: Check the state of the active connection.
+void NetworkManagerController::checkActiveState() {
+  if (m_active == nullptr) {
+    return;
+  }
+
+  NMActiveConnectionState state = nm_active_connection_get_state(m_active);
+  NMActivationStateFlags flags = nm_active_connection_get_state_flags(m_active);
+  NMActiveConnectionStateReason reason =
+      nm_active_connection_get_state_reason(m_active);
+  logger.debug() << "Active connection state:" << state << flags << reason;
+
+  // If the connection is active, emit the handshake completion signal.
+  if ((state == NM_ACTIVE_CONNECTION_STATE_ACTIVATED) &&
+      (flags & NM_ACTIVATION_STATE_FLAG_LAYER2_READY) &&
+      (flags & NM_ACTIVATION_STATE_FLAG_IP4_READY) &&
+      (flags & NM_ACTIVATION_STATE_FLAG_IP6_READY)) {
+    emit connected(m_serverPublicKey);
+    m_activeStateTimer.stop();
+  } else if (m_activeStateRetries == 0) {
+    m_activeStateTimer.stop();
+  } else {
+    m_activeStateRetries--;
+    m_activeStateTimer.start(100);
+  }
 }
 
 void NetworkManagerController::getBackendLogs(
