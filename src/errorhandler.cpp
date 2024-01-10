@@ -8,7 +8,7 @@
 
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;

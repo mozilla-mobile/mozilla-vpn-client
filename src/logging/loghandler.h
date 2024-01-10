@@ -11,7 +11,7 @@
 #include <QStandardPaths>
 #include <QVector>
 
-#include "loglevel.h"
+#include "logging/loglevel.h"
 
 class QFile;
 class QTextStream;

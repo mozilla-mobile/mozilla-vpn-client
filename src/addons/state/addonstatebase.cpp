@@ -6,7 +6,7 @@
 
 #include <QJsonObject>
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("AddonStateBase");

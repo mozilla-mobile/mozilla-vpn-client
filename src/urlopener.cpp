@@ -12,7 +12,7 @@
 #include "constants.h"
 #include "env.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settingsholder.h"
 
 namespace {

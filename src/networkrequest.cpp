@@ -14,7 +14,7 @@
 #include <QUrl>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"

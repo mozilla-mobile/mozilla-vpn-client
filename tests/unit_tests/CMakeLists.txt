@@ -122,10 +122,6 @@ target_sources(app_unit_tests PRIVATE
     testurlopener.h
     testsettingsholder.cpp
     testsettingsholder.h
-    feature/testfeature.cpp
-    feature/testfeature.h
-    feature/testfeaturemodel.cpp
-    feature/testfeaturemodel.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

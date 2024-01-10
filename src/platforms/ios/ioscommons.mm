@@ -4,7 +4,7 @@
 
 #include "ioscommons.h"
 #include "constants.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 
 #include <QtGui/qpa/qplatformnativeinterface.h>

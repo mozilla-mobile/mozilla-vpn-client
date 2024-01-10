@@ -7,7 +7,7 @@
 #include "authenticationinapp/authenticationinapplistener.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkmanager.h"
 
 #if defined(MZ_MACOS)

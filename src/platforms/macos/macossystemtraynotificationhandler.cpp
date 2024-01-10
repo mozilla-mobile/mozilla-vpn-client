@@ -10,7 +10,7 @@
 
 #include "i18nstrings.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "macosutils.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"

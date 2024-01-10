@@ -12,8 +12,8 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
-#include "loglevel.h"
+#include "logging/logger.h"
+#include "logging/loglevel.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 

@@ -23,7 +23,7 @@
 
 #include "ipaddress.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
 #include "winsock.h"
 

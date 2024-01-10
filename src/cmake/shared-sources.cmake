@@ -20,16 +20,19 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 # Modules
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/settings)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/logging)
-target_link_libraries(shared-sources INTERFACE mz_settings)
-target_link_libraries(shared-sources INTERFACE mz_logging)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/feature)
+
+target_link_libraries(shared-sources INTERFACE
+    mz_settings
+    mz_logging
+    mz_feature
+)
 
 # Shared components
 target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.h
     ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
-    ${CMAKE_SOURCE_DIR}/src/feature/featurelist.h
-    ${CMAKE_SOURCE_DIR}/src/feature/experimentalfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -143,8 +146,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
-    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp

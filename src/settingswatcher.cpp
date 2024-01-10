@@ -11,7 +11,7 @@
 #include "controller.h"
 #include "dnshelper.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"

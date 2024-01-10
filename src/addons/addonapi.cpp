@@ -12,7 +12,7 @@
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "urlopener.h"

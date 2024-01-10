@@ -9,7 +9,7 @@
 
 #include "dnspingsender.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
 

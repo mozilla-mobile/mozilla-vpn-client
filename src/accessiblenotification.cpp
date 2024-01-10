@@ -4,7 +4,7 @@
 
 #include "accessiblenotification.h"
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("AccessibleNotification");

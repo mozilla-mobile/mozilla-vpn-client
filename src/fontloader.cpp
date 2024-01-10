@@ -7,7 +7,7 @@
 #include <QDir>
 #include <QFontDatabase>
 
-#include "logger.h"
+#include "logging/logger.h"
 #include "resourceloader.h"
 
 namespace {

@@ -8,7 +8,7 @@
 #include <QTimer>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "task.h"
 
 namespace {

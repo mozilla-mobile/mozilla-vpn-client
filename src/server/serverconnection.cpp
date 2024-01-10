@@ -15,7 +15,7 @@
 #include "controller.h"
 #include "leakdetector.h"
 #include "localizer.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/servercity.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"

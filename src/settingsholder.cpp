@@ -11,7 +11,7 @@
 
 #include "env.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #ifdef UNIT_TEST
 #  include "settings/settingsmanager.h"
 #endif

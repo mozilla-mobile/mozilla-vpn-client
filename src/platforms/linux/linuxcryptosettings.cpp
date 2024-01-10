@@ -7,7 +7,7 @@
 
 #include "constants.h"
 #include "cryptosettings.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 // No extra QT includes after this line!
 #undef Q_SIGNALS

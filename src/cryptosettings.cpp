@@ -10,7 +10,7 @@
 #include <QRandomGenerator>
 
 #include "hacl-star/Hacl_Chacha20Poly1305_32.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;

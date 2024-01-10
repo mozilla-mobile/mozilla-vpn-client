@@ -11,7 +11,7 @@
 #include <QJniObject>
 #include <QTimer>
 
-#include "logger.h"
+#include "logging/logger.h"
 #include "settingsholder.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";

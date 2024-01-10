@@ -9,7 +9,7 @@
 
 #include "constants.h"
 #include "featurelistcallback.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settings/settinggroup.h"
 #include "settingsholder.h"
 #include "versionutils.h"

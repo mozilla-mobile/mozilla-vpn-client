@@ -7,7 +7,7 @@
 #include "adjustproxy.h"
 #include "app.h"
 #include "constants.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settingsholder.h"
 
 #ifdef MZ_IOS

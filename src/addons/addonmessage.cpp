@@ -12,7 +12,7 @@
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "localizer.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settingsholder.h"
 
 namespace {

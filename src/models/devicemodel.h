@@ -8,7 +8,7 @@
 #include <QAbstractListModel>
 
 #include "device.h"
-#include "loghandler.h"
+#include "logging/loghandler.h"
 
 class Keys;
 

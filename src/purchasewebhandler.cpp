@@ -7,7 +7,7 @@
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "taskscheduler.h"

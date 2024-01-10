@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "loghandler.h"
+#include "logging/loghandler.h"
 
 #include <QDate>
 #include <QDir>
@@ -18,7 +18,7 @@
 
 #include "constants.h"
 #include "feature/feature.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID

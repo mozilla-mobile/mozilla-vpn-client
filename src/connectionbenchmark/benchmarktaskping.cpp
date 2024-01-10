@@ -7,7 +7,7 @@
 #include "connectionhealth.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 
 namespace {

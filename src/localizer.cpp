@@ -18,7 +18,7 @@
 #include "glean/mzglean.h"
 #include "languagei18n.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
 

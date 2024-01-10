@@ -10,7 +10,7 @@
 #include <QtEndian>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr const quint16 DNS_PORT = 53;
 

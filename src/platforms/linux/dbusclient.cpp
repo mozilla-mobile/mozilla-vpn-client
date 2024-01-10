@@ -11,7 +11,7 @@
 #include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"

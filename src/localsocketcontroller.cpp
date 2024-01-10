@@ -11,7 +11,7 @@
 
 #include "errorhandler.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 #ifdef MZ_MACOS
 #  include <Security/Authorization.h>

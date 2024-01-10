@@ -17,8 +17,8 @@
 
 #include "dbus_adaptor.h"
 #include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "platforms/linux/linuxdependencies.h"
 
 namespace {

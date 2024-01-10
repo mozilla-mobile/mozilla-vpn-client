@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 
 #include <objc/message.h>

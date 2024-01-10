@@ -16,7 +16,7 @@
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkrequest.h"
 
 // Implemented in rust. See the `signature` folder.

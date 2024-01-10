@@ -8,7 +8,7 @@
 
 #include "Windows.h"
 #include "Winsvc.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "platforms/windows/windowsutils.h"
 

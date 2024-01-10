@@ -4,7 +4,7 @@
 
 #include "macosnetworkwatcher.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 
 #import <CoreWLAN/CoreWLAN.h>
@@ -126,4 +126,3 @@ void MacOSNetworkWatcher::checkInterface() {
 
   logger.debug() << "Secure WiFi interface";
 }
-

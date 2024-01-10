@@ -12,7 +12,7 @@
 
 #include "androidcommons.h"
 #include "cryptosettings.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr auto KEYSTORE_CLASS =
     "org/mozilla/firefox/qt/common/SettingsKeystore";

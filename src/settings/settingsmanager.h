@@ -7,7 +7,7 @@
 
 #include <QSettings>
 
-#include "loghandler.h"
+#include "logging/loghandler.h"
 #include "setting.h"
 #include "settinggroup.h"
 #include "settingsconnector.h"

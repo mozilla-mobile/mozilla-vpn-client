@@ -14,7 +14,7 @@
 
 #include "daemon/wireguardutils.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr uint32_t ETH_MTU = 1500;
 constexpr uint32_t WG_MTU_OVERHEAD = 80;

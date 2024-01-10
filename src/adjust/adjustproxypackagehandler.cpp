@@ -9,7 +9,7 @@
 
 #include "adjustfiltering.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 
 namespace {

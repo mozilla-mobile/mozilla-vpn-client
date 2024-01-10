@@ -8,7 +8,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 

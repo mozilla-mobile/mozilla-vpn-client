@@ -10,7 +10,7 @@
 #include <QSettings>
 #include <QSysInfo>
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("WindowsUtils");

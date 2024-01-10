@@ -11,7 +11,7 @@
 #include "authenticationlistener.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkrequest.h"
 #include "taskscheduler.h"
 

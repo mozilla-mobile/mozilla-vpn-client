@@ -17,7 +17,7 @@
 #include <QtEndian>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
 #include "windowscommons.h"
 

@@ -14,7 +14,7 @@
 
 #include "jni.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "platforms/android/androidcommons.h"

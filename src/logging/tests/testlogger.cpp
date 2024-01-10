@@ -6,8 +6,8 @@
 
 #include <QScopeGuard>
 
-#include "logger.h"
-#include "loghandler.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 
 void TestLogger::logger() {
   Logger l("class");

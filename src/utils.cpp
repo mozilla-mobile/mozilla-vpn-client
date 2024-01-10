@@ -7,8 +7,8 @@
 #include "app.h"
 #include "constants.h"
 #include "feature/feature.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID

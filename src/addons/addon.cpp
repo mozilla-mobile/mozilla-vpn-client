@@ -29,7 +29,7 @@
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "localizer.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"

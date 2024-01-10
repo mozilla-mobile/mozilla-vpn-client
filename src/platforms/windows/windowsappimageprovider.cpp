@@ -16,7 +16,7 @@
 #include <QSysInfo>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
 
 namespace {

@@ -13,8 +13,8 @@
 #include <QTimer>
 
 #include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;

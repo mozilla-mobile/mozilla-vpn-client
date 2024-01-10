@@ -13,7 +13,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 
 namespace {

@@ -8,7 +8,7 @@
 #include <QRandomGenerator>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/server.h"
 
 constexpr uint32_t DUMMY_CONNECTION_DELAY_MSEC = 1500;

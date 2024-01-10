@@ -13,7 +13,7 @@
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 

@@ -7,7 +7,7 @@
 #include "app.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkrequest.h"
 
 #ifdef MZ_IOS

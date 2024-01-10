@@ -9,7 +9,7 @@
 
 #include "leakdetector.h"
 #include "location.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serverlatency.h"

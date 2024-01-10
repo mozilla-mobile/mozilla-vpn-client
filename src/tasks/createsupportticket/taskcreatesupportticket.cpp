@@ -11,7 +11,7 @@
 #include "env.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"

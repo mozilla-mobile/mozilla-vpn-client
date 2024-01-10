@@ -13,7 +13,7 @@
 
 #include "frontend/navigator.h"
 #include "frontend/navigatorreloader.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
 #include "tasks/function/taskfunction.h"

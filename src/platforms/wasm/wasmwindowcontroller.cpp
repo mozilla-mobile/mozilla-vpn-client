@@ -13,7 +13,7 @@
 #include <QWindow>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "platforms/macos/macosmenubar.h"

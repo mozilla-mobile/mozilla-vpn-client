@@ -5,7 +5,6 @@
 #include "testfeature.h"
 
 #include "feature/feature.h"
-#include "helper.h"
 #include "settingsholder.h"
 
 void TestFeature::flipOnOff() {
@@ -40,4 +39,4 @@ void TestFeature::flipOnOff() {
   QVERIFY(!Feature::get("testFeatureB")->isSupported());
 }
 
-static TestFeature s_testFeature;
+QTEST_MAIN(TestFeature);

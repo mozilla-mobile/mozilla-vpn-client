@@ -11,7 +11,7 @@
 #include <QJniObject>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/android/androidcommons.h"
 
 namespace {

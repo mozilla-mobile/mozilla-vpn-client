@@ -16,7 +16,7 @@
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"

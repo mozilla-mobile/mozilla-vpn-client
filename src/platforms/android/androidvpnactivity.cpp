@@ -15,7 +15,7 @@
 #include "constants.h"
 #include "frontend/navigator.h"
 #include "jni.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "logoutobserver.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidcommons.h"

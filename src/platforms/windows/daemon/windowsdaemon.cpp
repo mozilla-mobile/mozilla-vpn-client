@@ -17,7 +17,7 @@
 
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
 #include "windowsfirewall.h"

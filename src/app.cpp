@@ -7,7 +7,7 @@
 #include <QCoreApplication>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"

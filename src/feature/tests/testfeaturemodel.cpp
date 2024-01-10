@@ -369,4 +369,4 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesToggleOnOff() {
   QVERIFY(s_settingsHolder->featuresFlippedOn().contains("feature"));
 }
 
-static TestFeatureModel s_testFeature;
+QTEST_MAIN(TestFeatureModel);

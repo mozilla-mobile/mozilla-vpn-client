@@ -22,7 +22,7 @@
 #include <QScopeGuard>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/linux/linuxdependencies.h"
 
 // Import wireguard C library for Linux

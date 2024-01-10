@@ -11,7 +11,7 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/daemon/wireguardutilswindows.h"
 #include "platforms/windows/windowsutils.h"
 

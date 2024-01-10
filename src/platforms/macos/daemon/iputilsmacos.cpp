@@ -17,7 +17,7 @@
 
 #include "daemon/wireguardutils.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "macosdaemon.h"
 
 constexpr uint32_t ETH_MTU = 1500;

@@ -10,7 +10,7 @@
 #include <QScopeGuard>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsutils.h"
 #include "windowsdaemon.h"

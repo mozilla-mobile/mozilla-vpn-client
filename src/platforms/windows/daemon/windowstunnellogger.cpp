@@ -7,7 +7,7 @@
 #include <QDateTime>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 /* The ring logger format used by the Wireguard DLL is as follows, assuming
  * no padding:

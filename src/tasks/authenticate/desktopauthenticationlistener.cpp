@@ -10,7 +10,7 @@
 #include <limits>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "urlopener.h"
 
 namespace {

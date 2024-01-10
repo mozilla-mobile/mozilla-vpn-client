@@ -5,7 +5,7 @@
 #include "featuremodel.h"
 
 #include "feature.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 

@@ -13,7 +13,7 @@
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkwatcher.h"
 #include "purchasehandler.h"

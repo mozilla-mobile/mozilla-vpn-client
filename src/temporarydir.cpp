@@ -8,7 +8,7 @@
 #include <QUuid>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("TemporaryDir");

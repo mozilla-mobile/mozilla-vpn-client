@@ -6,7 +6,7 @@
 
 #include "controller.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 
 #import <Network/Network.h>

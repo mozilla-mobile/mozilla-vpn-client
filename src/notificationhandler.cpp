@@ -11,7 +11,7 @@
 #include "controller.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

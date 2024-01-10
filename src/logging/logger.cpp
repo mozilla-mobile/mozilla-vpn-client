@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "logger.h"
+#include "logging/logger.h"
 
 #include <QJsonDocument>
 #include <QMetaEnum>
 
-#include "loghandler.h"
+#include "logging/loghandler.h"
 
 Logger::Logger(const QString& className) : m_className(className) {}
 

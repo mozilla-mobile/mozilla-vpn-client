@@ -10,7 +10,7 @@
 
 #include "constants.h"
 #include "cryptosettings.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("CryptoSettings");

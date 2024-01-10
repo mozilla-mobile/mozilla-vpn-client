@@ -9,7 +9,7 @@
 #include "helper.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
-#include "loghandler.h"
+#include "logging/loghandler.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 

@@ -8,7 +8,7 @@
 
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr const char* DBUS_ITEM = "org.freedesktop.Notifications";
 constexpr const char* DBUS_PATH = "/org/freedesktop/Notifications";

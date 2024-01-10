@@ -11,7 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "logger.h"
+#include "logging/logger.h"
 #include "networkrequest.h"
 
 namespace {

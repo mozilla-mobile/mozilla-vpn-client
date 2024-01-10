@@ -14,7 +14,7 @@
 #include <QString>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "settingsholder.h"
 #include "windowsappimageprovider.h"
 #include "windowscommons.h"

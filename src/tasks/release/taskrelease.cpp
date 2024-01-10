@@ -5,7 +5,7 @@
 #include "taskrelease.h"
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "update/updater.h"
 
 namespace {

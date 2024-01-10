@@ -14,7 +14,7 @@
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"

@@ -7,7 +7,7 @@
 #include <QtDBus/QtDBus>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 // https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NMDeviceType
 #ifndef NM_DEVICE_TYPE_WIFI

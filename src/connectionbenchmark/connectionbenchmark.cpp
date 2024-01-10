@@ -12,7 +12,7 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "taskscheduler.h"
 

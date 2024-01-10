@@ -17,7 +17,7 @@
 #include <QStandardPaths>
 #include <QtEndian>
 
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
 
 #define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"

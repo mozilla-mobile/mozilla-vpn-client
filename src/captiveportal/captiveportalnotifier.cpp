@@ -5,7 +5,7 @@
 #include "captiveportalnotifier.h"
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 

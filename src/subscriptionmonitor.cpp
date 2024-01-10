@@ -9,7 +9,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/account/taskaccount.h"
 #include "taskscheduler.h"

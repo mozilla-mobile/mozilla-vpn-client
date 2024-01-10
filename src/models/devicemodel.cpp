@@ -11,8 +11,8 @@
 
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

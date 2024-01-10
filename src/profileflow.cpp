@@ -9,7 +9,7 @@
 
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"

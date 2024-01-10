@@ -14,7 +14,7 @@
 #include "constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "purchasehandler.h"
 #include "tasks/products/taskproducts.h"

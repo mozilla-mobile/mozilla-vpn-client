@@ -4,7 +4,7 @@
 
 #include "signature.h"
 
-#include "logger.h"
+#include "logging/logger.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

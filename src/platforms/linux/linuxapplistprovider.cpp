@@ -12,7 +12,7 @@
 #include <QString>
 
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 
 constexpr const char* DATA_DIRS_FALLBACK = "/usr/local/share/:/usr/share/";
 constexpr const char* CONFIG_DIRS_FALLBACK = "/etc/xdg/autostart/";

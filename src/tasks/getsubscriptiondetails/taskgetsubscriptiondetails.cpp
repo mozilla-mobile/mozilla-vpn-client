@@ -12,7 +12,7 @@
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/subscriptiondata.h"
 #include "models/user.h"
 #include "mozillavpn.h"
