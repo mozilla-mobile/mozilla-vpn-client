@@ -64,8 +64,8 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/applications/org.mozilla.vpn.desktop
 %{_datadir}/dbus-1/system-services/org.mozilla.vpn.dbus.service
 %{_datadir}/dbus-1/system.d/org.mozilla.vpn.conf
-%{_datadir}/icons/hicolor/128x128/apps/mozillavpn.png
-%{_datadir}/icons/hicolor/16x16/apps/mozillavpn.png
-%{_datadir}/icons/hicolor/32x32/apps/mozillavpn.png
-%{_datadir}/icons/hicolor/48x48/apps/mozillavpn.png
-%{_datadir}/icons/hicolor/64x64/apps/mozillavpn.png
+%{_datadir}/icons/hicolor/128x128/apps/org.mozilla.vpn.png
+%{_datadir}/icons/hicolor/16x16/apps/org.mozilla.vpn.png
+%{_datadir}/icons/hicolor/32x32/apps/org.mozilla.vpn.png
+%{_datadir}/icons/hicolor/48x48/apps/org.mozilla.vpn.png
+%{_datadir}/icons/hicolor/64x64/apps/org.mozilla.vpn.png
