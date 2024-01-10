@@ -17,11 +17,13 @@ kind-dependencies:
     - mac-notarization
     - repackage-signing
 
+task-defaults:
+    run-on-tasks-for: [action]
+    worker-type: beetmover
+
 tasks:
     android-arm64:
         requires-level: 3
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-arm64-v8a-release.apk]
         dependencies:
             signing: signing-android-arm64/release
@@ -29,8 +31,6 @@ tasks:
             build-type: android/arm64-v8a
     android-armv7:
         requires-level: 3
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-armeabi-v7a-release.apk]
         dependencies:
             signing: signing-android-armv7/release
@@ -38,8 +38,6 @@ tasks:
             build-type: android/armv7
     android-x86:
         requires-level: 3
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-x86-release.apk]
         dependencies:
             signing: signing-android-x86/release
@@ -47,8 +45,6 @@ tasks:
             build-type: android/x86
     android-x64:
         requires-level: 3
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-x86_64-release.apk]
         dependencies:
             signing: signing-android-x64/release
@@ -56,8 +52,6 @@ tasks:
             build-type: android/x64
     macos:
         requires-level: 3
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.pkg]
         dependencies:
             signing: signing-macos/opt
@@ -65,16 +59,12 @@ tasks:
         attributes:
             build-type: macos/opt
     windows:
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.msi]
         dependencies:
             repackage-signing: repackage-signing-msi
         attributes:
             build-type: windows/opt
     addons-bundle:
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
         release-artifacts: []
         dependencies:
@@ -82,8 +72,6 @@ tasks:
         attributes:
             build-type: addons/opt
     addons-manifest:
-        worker-type: beetmover
-        run-on-tasks-for: [action]
         release-artifacts:
             - manifest.json
             - manifest.json.sig
