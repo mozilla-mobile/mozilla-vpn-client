@@ -4,6 +4,8 @@
 
 #include "controller.h"
 
+#include <QNetworkInformation>
+
 #include "app.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
@@ -899,9 +901,6 @@ QString Controller::currentServerString() const {
 }
 #endif
 
-// These will eventually go back to the controller but to get the code working
-// for now they will reside here
-
 bool Controller::activate(const ServerData& serverData,
                           ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
@@ -923,7 +922,7 @@ bool Controller::activate(const ServerData& serverData,
 #endif
 
   if (m_state == Controller::StateOff) {
-    if (m_portalDetected) {
+    if (QNetworkInformation::instance()->isBehindCaptivePortal()) {
       emit activationBlockedForCaptivePortal();
       Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
 
