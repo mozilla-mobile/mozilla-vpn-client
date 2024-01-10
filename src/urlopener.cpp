@@ -44,7 +44,7 @@ UrlOpener::UrlOpener(QObject* parent) : QObject(parent) {
   });
 
   UrlOpener::registerUrlLabel("setSsoPassword", []() -> QString {
-    return QString("%1/settings/change_password").arg(Constants::fxaUrl());
+    return QString("%1/settings/create_password").arg(Constants::fxaUrl());
   });
 }
 
