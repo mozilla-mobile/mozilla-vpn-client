@@ -13,7 +13,7 @@
 #include "logging/logger.h"
 #include "networkrequest.h"
 #include "sentry/sentryadapter.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

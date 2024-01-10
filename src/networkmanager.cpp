@@ -6,7 +6,7 @@
 
 #include "context/constants.h"
 #include "networkrequest.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 #if MZ_WINDOWS

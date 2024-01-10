@@ -8,7 +8,7 @@
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "helper.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 namespace {
 SettingsHolder* s_settingsHolder = nullptr;

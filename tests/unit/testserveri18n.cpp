@@ -6,7 +6,7 @@
 
 #include "localizer.h"
 #include "serveri18n.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestServerI18n::basic() {
   SettingsHolder settingsHolder;

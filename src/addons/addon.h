@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QTranslator>
 
+#include "settings/settinggroup.h"
+#include "settings/settingsholder.h"
 #include "state/addonstate.h"
 
 class AddonConditionWatcher;

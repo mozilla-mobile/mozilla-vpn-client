@@ -4,7 +4,7 @@
 
 #include "testtasks.h"
 
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/group/taskgroup.h"

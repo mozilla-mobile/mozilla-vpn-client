@@ -18,7 +18,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "platforms/android/androidcommons.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

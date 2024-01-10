@@ -22,7 +22,7 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/user.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

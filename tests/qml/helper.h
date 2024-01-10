@@ -13,7 +13,7 @@
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "settings/settinggroup.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "theme.h"
 
 class TestHelper final : public QObject {

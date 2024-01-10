@@ -8,6 +8,7 @@
 #include "addon.h"
 #include "addonproperty.h"
 #include "composer.h"
+#include "settings/settingsholder.h"
 
 class QJsonObject;
 class SettingGroup;

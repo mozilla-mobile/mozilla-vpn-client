@@ -13,7 +13,7 @@
 #include "servercountrymodel.h"
 #include "serveri18n.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";

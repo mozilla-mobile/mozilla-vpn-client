@@ -8,7 +8,7 @@
 
 #include "context/constants.h"
 #include "helper.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "tasks/ipfinder/taskipfinder.h"
 

@@ -14,7 +14,7 @@
 #include "mozillavpn.h"
 #include "serverdata.h"
 #include "serveri18n.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

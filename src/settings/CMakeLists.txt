@@ -26,6 +26,8 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/settingsconnector.h
         ${CMAKE_CURRENT_SOURCE_DIR}/settingsmanager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/settingsmanager.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings/cryptosettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings/cryptosettings.h
     ANDROID_SOURCES
@@ -49,6 +51,8 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testsettinggroup.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testsettingsmanager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testsettingsmanager.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testsettingsholder.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testsettingsholder.h
     QT_DEPENDENCIES
         Core
         Widgets

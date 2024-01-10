@@ -19,7 +19,7 @@
 #include "logoutobserver.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidcommons.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 namespace {
 AndroidVPNActivity* s_instance = nullptr;

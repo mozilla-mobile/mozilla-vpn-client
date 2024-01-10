@@ -12,7 +12,7 @@
 #include "dnshelper.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
 #include "utilities/leakdetector.h"

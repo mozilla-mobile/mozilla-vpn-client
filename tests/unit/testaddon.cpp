@@ -28,7 +28,7 @@
 #include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "systemtraynotificationhandler.h"
 
 void TestAddon::init() {

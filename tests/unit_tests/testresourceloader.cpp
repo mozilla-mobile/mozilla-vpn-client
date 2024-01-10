@@ -17,7 +17,7 @@
 #include "localizer.h"
 #include "models/licensemodel.h"
 #include "resourceloader.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 class Interceptor final : public QQmlAbstractUrlInterceptor {
  public:

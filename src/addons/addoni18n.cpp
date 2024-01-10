@@ -4,7 +4,7 @@
 
 #include "addoni18n.h"
 
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 AddonI18n::AddonI18n(QObject* parent, const QString& manifestFileName,

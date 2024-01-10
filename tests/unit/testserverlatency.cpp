@@ -12,7 +12,7 @@
 #include "models/location.h"
 #include "models/servercity.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestServerLatency::init() {
   SettingsHolder settingsHolder;

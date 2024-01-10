@@ -9,7 +9,7 @@
 
 #include "ipaddress.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 constexpr const int LIST = 0;

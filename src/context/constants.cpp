@@ -9,7 +9,7 @@
 #include <QString>
 #include <QtGlobal>
 
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "version.h"
 
 namespace {

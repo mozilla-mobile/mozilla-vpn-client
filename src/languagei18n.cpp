@@ -15,7 +15,7 @@
 #include "localizer.h"
 #include "logging/logger.h"
 #include "resourceloader.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

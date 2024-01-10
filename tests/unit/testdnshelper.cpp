@@ -5,7 +5,7 @@
 #include "testdnshelper.h"
 
 #include "dnshelper.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestDNSHelper::migration_data() {
   QTest::addColumn<int>("deprecated");

@@ -14,7 +14,7 @@
 #include "addonmanager.h"
 #include "context/constants.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "signature.h"
 #include "utilities/leakdetector.h"
 

@@ -11,7 +11,7 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "utilities/leakdetector.h"
 

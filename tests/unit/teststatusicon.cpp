@@ -9,7 +9,7 @@
 
 #include "context/qmlengineholder.h"
 #include "localizer.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "statusicon.h"
 
 void TestStatusIcon::basic() {

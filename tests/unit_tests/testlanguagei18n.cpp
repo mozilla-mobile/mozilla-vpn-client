@@ -6,7 +6,7 @@
 
 #include "languagei18n.h"
 #include "localizer.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestLanguageI18n::translations() {
   QVERIFY(LanguageI18N::instance()->languageExists("tlh"));

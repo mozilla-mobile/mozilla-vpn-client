@@ -16,7 +16,7 @@
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)

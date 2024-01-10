@@ -12,7 +12,7 @@
 #include <QTimer>
 
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 constexpr auto COMMON_UTILS_CLASS = "org/mozilla/firefox/qt/common/Utils";
 constexpr auto VPN_UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";

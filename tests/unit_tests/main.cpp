@@ -9,7 +9,7 @@
 #include "helper.h"
 #include "i18nstrings.h"
 #include "logging/loghandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 QVector<QObject*> TestHelper::testList;

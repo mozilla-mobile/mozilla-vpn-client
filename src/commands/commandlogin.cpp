@@ -10,7 +10,7 @@
 #include "localizer.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "utilities/leakdetector.h"
 

@@ -12,7 +12,7 @@
 #include "context/constants.h"
 #include "glean/mzglean.h"
 #include "logging/loghandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"

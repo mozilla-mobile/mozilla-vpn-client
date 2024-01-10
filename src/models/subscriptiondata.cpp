@@ -16,7 +16,7 @@
 #include "logging/logger.h"
 #include "models/location.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

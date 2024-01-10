@@ -9,7 +9,7 @@
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 #if not(defined(MZ_WASM))
 #  include "qtglean.h"

@@ -10,7 +10,7 @@
 #include "i18nstrings.h"
 #include "logging/loghandler.h"
 #include "networkrequest.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;

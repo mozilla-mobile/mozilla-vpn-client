@@ -4,7 +4,7 @@
 
 #include "iosgleanbridge.h"
 #include "Mozilla-Swift.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 #include <QString>

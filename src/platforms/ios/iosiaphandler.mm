@@ -8,7 +8,7 @@
 #include "errorhandler.h"
 #include "iosutils.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
 #include "utilities/leakdetector.h"

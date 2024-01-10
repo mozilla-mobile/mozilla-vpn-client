@@ -10,7 +10,7 @@
 #include <QJsonValue>
 
 #include "devicemodel.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 Keys::Keys() { MZ_COUNT_CTOR(Keys); }

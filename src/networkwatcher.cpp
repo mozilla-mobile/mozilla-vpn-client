@@ -13,7 +13,7 @@
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 #ifdef MZ_WINDOWS

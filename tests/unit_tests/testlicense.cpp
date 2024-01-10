@@ -6,7 +6,7 @@
 
 #include "helper.h"
 #include "models/licensemodel.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestLicense::parse() {
   LicenseModel* lm = LicenseModel::instance();

@@ -15,7 +15,7 @@
 #include "localizer.h"
 #include "mozillavpn.h"
 #include "qmlpath.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestNavigator::init() {
   m_settingsHolder = new SettingsHolder();

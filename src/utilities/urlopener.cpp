@@ -13,7 +13,7 @@
 #include "context/env.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 namespace {
 Logger logger("UrlOpener");

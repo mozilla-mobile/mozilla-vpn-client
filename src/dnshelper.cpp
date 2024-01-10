@@ -13,7 +13,7 @@
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
 #include "rfc/rfc5735.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 namespace {
 Logger logger("DNSHelper");

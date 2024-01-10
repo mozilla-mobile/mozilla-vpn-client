@@ -8,7 +8,7 @@
 
 #include "context/qmlengineholder.h"
 #include "localizer.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "theme.h"
 
 void TestThemes::loadTheme_data() {

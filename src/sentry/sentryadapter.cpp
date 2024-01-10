@@ -19,7 +19,7 @@
 #include "feature/feature.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"

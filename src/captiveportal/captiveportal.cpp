@@ -10,7 +10,7 @@
 #include <QJsonValue>
 
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

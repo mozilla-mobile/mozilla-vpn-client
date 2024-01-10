@@ -29,7 +29,7 @@
 #include "rfc/rfc4291.h"
 #include "serveri18n.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"

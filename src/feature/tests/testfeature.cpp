@@ -5,7 +5,7 @@
 #include "testfeature.h"
 
 #include "feature/feature.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestFeature::flipOnOff() {
   SettingsHolder settingsHolder;

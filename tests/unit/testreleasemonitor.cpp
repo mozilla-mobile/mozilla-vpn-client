@@ -10,7 +10,7 @@
 
 #include "helper.h"
 #include "releasemonitor.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "update/versionapi.h"
 #include "utilities/versionutils.h"

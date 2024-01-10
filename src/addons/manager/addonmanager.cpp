@@ -23,7 +23,7 @@
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/addon/taskaddon.h"
 #include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/function/taskfunction.h"

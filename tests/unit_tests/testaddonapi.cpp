@@ -14,7 +14,7 @@
 #include "feature/feature.h"
 #include "helper.h"
 #include "localizer.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/urlopener.h"
 
 void TestAddonApi::env() {

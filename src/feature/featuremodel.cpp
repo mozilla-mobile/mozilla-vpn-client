@@ -7,7 +7,7 @@
 #include "context/qmlengineholder.h"
 #include "feature.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 #ifdef MZ_ADJUST
 #  include "adjust/adjustfiltering.h"

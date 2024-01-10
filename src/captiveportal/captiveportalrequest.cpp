@@ -8,7 +8,7 @@
 #include "context/constants.h"
 #include "logging/logger.h"
 #include "networkrequest.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "task.h"
 #include "utilities/leakdetector.h"
 

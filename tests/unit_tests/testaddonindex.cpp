@@ -7,7 +7,7 @@
 #include "addons/manager/addondirectory.h"
 #include "addons/manager/addonindex.h"
 #include "feature/feature.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");

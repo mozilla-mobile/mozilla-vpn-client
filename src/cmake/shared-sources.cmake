@@ -150,8 +150,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
-    ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp
     ${CMAKE_SOURCE_DIR}/src/signature.h
     ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp

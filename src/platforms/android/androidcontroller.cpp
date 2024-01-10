@@ -26,7 +26,7 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

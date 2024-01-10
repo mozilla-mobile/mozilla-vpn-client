@@ -6,7 +6,7 @@
 
 #include "logging/logger.h"
 #include "macosutils.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 namespace {

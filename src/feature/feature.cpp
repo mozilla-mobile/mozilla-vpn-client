@@ -11,7 +11,7 @@
 #include "featurelistcallback.h"
 #include "logging/logger.h"
 #include "settings/settinggroup.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/versionutils.h"
 
 namespace {

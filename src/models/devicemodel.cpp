@@ -13,7 +13,7 @@
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 #if MZ_ANDROID

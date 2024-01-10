@@ -16,7 +16,7 @@
 #include "mozillavpn.h"
 #include "networkwatcher.h"
 #include "purchasehandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 #if defined(MZ_ANDROID)

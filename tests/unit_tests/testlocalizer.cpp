@@ -9,8 +9,8 @@
 #include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
+#include "settings/settingsholder.h"
 #include "settings/settingsmanager.h"
-#include "settingsholder.h"
 
 void TestLocalizer::init() {
   m_settingsHolder = new SettingsHolder();

@@ -7,7 +7,7 @@
 #include <QDateTime>
 
 #include "mfbt/checkedint.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 // static

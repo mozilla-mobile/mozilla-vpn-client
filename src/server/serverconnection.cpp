@@ -19,7 +19,7 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;

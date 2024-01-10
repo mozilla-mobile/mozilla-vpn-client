@@ -11,7 +11,7 @@
 #include "mfbt/checkedint.h"
 #include "models/device.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "taskscheduler.h"

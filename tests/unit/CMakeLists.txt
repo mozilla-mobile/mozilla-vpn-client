@@ -233,8 +233,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/settingsholder.cpp
-    ${MZ_SOURCE_DIR}/settingsholder.h
     ${MZ_SOURCE_DIR}/simplenetworkmanager.cpp
     ${MZ_SOURCE_DIR}/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/signature.cpp

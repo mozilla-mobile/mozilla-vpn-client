@@ -9,7 +9,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
 User::User() { MZ_COUNT_CTOR(User); }

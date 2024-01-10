@@ -8,7 +8,7 @@
 #include "app.h"
 #include "context/constants.h"
 #include "logging/logger.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/iosadjusthelper.h"

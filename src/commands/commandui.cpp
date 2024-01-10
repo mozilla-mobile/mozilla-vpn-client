@@ -55,7 +55,7 @@
 #include "purchasehandler.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "telemetry.h"
 #include "theme.h"
 #include "update/updater.h"
