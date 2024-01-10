@@ -9,9 +9,9 @@
 #include <QJsonObject>
 
 #include "helper.h"
+#include "networking/simplenetworkmanager.h"
 #include "releasemonitor.h"
 #include "settings/settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "update/versionapi.h"
 #include "utilities/versionutils.h"
 

@@ -14,7 +14,7 @@
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "platforms/android/androidcommons.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"

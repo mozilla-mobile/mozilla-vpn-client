@@ -9,8 +9,8 @@
 #include "captiveportal.h"
 #include "captiveportalrequest.h"
 #include "logging/logger.h"
-#include "networkmanager.h"
-#include "networkrequest.h"
+#include "networking/networkmanager.h"
+#include "networking/networkrequest.h"
 #include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 

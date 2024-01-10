@@ -7,7 +7,7 @@
 #include "captiveportal.h"
 #include "context/constants.h"
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "settings/settingsholder.h"
 #include "task.h"
 #include "utilities/leakdetector.h"

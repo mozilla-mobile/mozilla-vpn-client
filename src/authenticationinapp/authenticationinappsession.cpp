@@ -18,7 +18,7 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "utilities/leakdetector.h"
 
 namespace {

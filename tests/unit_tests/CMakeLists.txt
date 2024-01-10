@@ -100,8 +100,6 @@ target_sources(app_unit_tests PRIVATE
     testlocalizer.h
     testnavigator.cpp
     testnavigator.h
-    testnetworkmanager.cpp
-    testnetworkmanager.h
     testqmlpath.cpp
     testqmlpath.h
     testresourceloader.cpp

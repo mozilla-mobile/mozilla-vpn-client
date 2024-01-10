@@ -217,10 +217,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/localizer.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/models/licensemodel.h
-    ${MZ_SOURCE_DIR}/networkmanager.cpp
-    ${MZ_SOURCE_DIR}/networkmanager.h
-    ${MZ_SOURCE_DIR}/networkrequest.cpp
-    ${MZ_SOURCE_DIR}/networkrequest.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
@@ -233,8 +229,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/simplenetworkmanager.cpp
-    ${MZ_SOURCE_DIR}/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/signature.cpp
     ${MZ_SOURCE_DIR}/signature.h
     ${MZ_SOURCE_DIR}/task.h

@@ -12,7 +12,7 @@
 #include <QJsonObject>
 
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 
 namespace {
 Logger logger("WasmNetworkRequest");

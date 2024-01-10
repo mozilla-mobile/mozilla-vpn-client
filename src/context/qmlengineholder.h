@@ -5,7 +5,7 @@
 #ifndef QMLENGINEHOLDER_H
 #define QMLENGINEHOLDER_H
 
-#include "networkmanager.h"
+#include "networking/networkmanager.h"
 
 class QQmlEngine;
 class QWindow;

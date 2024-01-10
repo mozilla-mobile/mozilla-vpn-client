@@ -21,7 +21,7 @@
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "networkwatcher.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"

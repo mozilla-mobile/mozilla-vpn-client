@@ -13,8 +13,8 @@
 #include "models/servercountrymodel.h"
 #include "models/user.h"
 #include "mozillavpn.h"
+#include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "tasks/account/taskaccount.h"
 #include "utilities/leakdetector.h"
 

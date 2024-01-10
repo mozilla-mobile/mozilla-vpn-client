@@ -48,7 +48,7 @@
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
 #include "profileflow.h"

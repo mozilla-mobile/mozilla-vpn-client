@@ -5,7 +5,6 @@
 #include "testnetworkmanager.h"
 
 #include "context/constants.h"
-#include "helper.h"
 #include "settings/settingsholder.h"
 #include "simplenetworkmanager.h"
 
@@ -18,4 +17,4 @@ void TestNetworkManager::basic() {
   QCOMPARE(snm.networkAccessManager(), snm.networkAccessManager());
 }
 
-static TestNetworkManager s_testNetworkManager;
+QTEST_MAIN(TestNetworkManager);

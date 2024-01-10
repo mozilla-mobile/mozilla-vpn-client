@@ -17,8 +17,8 @@
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "mozillavpn.h"
+#include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "utilities/leakdetector.h"
 
 #ifdef MZ_WINDOWS

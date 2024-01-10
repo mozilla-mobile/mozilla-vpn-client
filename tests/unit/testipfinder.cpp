@@ -8,8 +8,8 @@
 
 #include "context/constants.h"
 #include "helper.h"
+#include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {

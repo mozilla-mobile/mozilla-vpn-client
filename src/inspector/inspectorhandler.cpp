@@ -36,7 +36,7 @@
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "mzglean.h"
-#include "networkmanager.h"
+#include "networking/networkmanager.h"
 #include "settings/settingsholder.h"
 #include "settings/settingsmanager.h"
 #include "task.h"

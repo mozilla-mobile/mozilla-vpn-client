@@ -11,7 +11,7 @@
 
 #include "context/constants.h"
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "uploaddatagenerator.h"
 #include "utilities/leakdetector.h"
 

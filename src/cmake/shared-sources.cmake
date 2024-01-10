@@ -20,6 +20,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/feature)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/context)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/crypto)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utilities)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/networking)
 
 target_link_libraries(shared-sources INTERFACE
     mz_context
@@ -28,6 +29,7 @@ target_link_libraries(shared-sources INTERFACE
     mz_feature
     mz_utilities
     mz_crypto
+    mz_networking
 )
 
 # Shared components
@@ -132,10 +134,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
-    ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/networkmanager.h
-    ${CMAKE_SOURCE_DIR}/src/networkrequest.cpp
-    ${CMAKE_SOURCE_DIR}/src/networkrequest.h
     ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
@@ -152,8 +150,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp
     ${CMAKE_SOURCE_DIR}/src/signature.h
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.h
     ${CMAKE_SOURCE_DIR}/src/task.h
     ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
     ${CMAKE_SOURCE_DIR}/src/taskscheduler.h

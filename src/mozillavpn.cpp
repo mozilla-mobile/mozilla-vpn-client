@@ -31,7 +31,7 @@
 #include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn_p.h"
-#include "networkmanager.h"
+#include "networking/networkmanager.h"
 #include "networkwatcher.h"
 #include "productshandler.h"
 #include "profileflow.h"

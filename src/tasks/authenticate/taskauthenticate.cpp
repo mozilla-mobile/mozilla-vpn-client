@@ -14,7 +14,7 @@
 #include "context/constants.h"
 #include "errorhandler.h"
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 

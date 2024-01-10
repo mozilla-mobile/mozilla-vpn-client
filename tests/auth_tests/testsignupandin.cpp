@@ -15,7 +15,7 @@
 
 #include "authenticationinapp/authenticationinapp.h"
 #include "context/constants.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/function/taskfunction.h"

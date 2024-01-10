@@ -9,7 +9,7 @@
 #include "errorhandler.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "utilities/leakdetector.h"
 
 namespace {

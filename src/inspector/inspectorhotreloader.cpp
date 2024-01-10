@@ -15,7 +15,7 @@
 #include "frontend/navigator.h"
 #include "frontend/navigatorreloader.h"
 #include "logging/logger.h"
-#include "networkrequest.h"
+#include "networking/networkrequest.h"
 #include "tasks/function/taskfunction.h"
 
 namespace {

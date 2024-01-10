@@ -13,8 +13,8 @@
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkmanager.h"
-#include "networkrequest.h"
+#include "networking/networkmanager.h"
+#include "networking/networkrequest.h"
 #include "utilities/leakdetector.h"
 
 constexpr uint32_t SUPPORT_TICKET_SUBJECT_MAX_LENGTH = 300;
