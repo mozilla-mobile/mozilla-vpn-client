@@ -16,6 +16,7 @@
     "title": "You’ve updated to Mozilla VPN 2.20",
     "subtitle": "You’re using the latest version of Mozilla VPN.",
     "badge": "whats_new",
+    "notify": false,
     "blocks": [
       {
         "id": "c_1-1",
