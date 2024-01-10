@@ -31,7 +31,7 @@ MZInAppAuthenticationThirdParty {
 
         MZTextBlock {
           id: ssoInstructionLine2
-          text: MZI18n.InAppAuthSsoInstructionLine2
+          text: MZI18n.InAppAuthSsoInstructionLine2a
 
           Layout.fillWidth: true
           Layout.leftMargin: MZTheme.theme.vSpacing / 2
