@@ -158,7 +158,7 @@ def add_beetmover_worker_config(config, tasks):
                 f"This {worker_type} task will upload the {task['name']} to {dest}/"
             )
         elif shipping_phase == "ship-client":
-            task_description = f"This {worker_type} task will copy build {build_id} from candidates to releases"
+            task_description = f"This {worker_type} task will copy the v{app_version} build {build_id} candidate to releases"
         else:
             task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {dest}/"
 
