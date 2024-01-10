@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
+#include "context/qmlengineholder.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 #include <objc/message.h>
 #include <objc/objc.h>
@@ -42,7 +42,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
   Q_ASSERT(appId);
 
   NSString* loginItemAppId =
-    QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
+      QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
 
   // For macOS 13 and beyond, register() and unregister() methods
   // are used for managing login items since SMLoginItemSetEnabled() is deprecated.
@@ -52,20 +52,22 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
     NSError* error = nil;
 
     if (startAtBoot) {
-      if (![[SMAppService mainAppService] registerAndReturnError: & error]) {
-        logger.error() << "Failed to register Mozilla VPN LoginItem: " << error.localizedDescription;
+      if (![[SMAppService mainAppService] registerAndReturnError:&error]) {
+        logger.error() << "Failed to register Mozilla VPN LoginItem: "
+                       << error.localizedDescription;
       } else {
         logger.debug() << "Mozilla VPN LoginItem registered successfully.";
       }
     } else {
-      if (![[SMAppService mainAppService] unregisterAndReturnError: & error]) {
-        logger.error() << "Failed to unregister Mozilla VPN LoginItem: " << error.localizedDescription;
+      if (![[SMAppService mainAppService] unregisterAndReturnError:&error]) {
+        logger.error() << "Failed to unregister Mozilla VPN LoginItem: "
+                       << error.localizedDescription;
       } else {
         logger.debug() << "LoginItem unregistered successfully.";
       }
     }
   } else {
-    CFStringRef cfs = (__bridge CFStringRef) loginItemAppId;
+    CFStringRef cfs = (__bridge CFStringRef)loginItemAppId;
     Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
     logger.debug() << "Result: " << ok;
   }

@@ -16,7 +16,7 @@
 #include <QTextStream>
 #include <QUrl>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "logging/logger.h"
 #include "urlopener.h"

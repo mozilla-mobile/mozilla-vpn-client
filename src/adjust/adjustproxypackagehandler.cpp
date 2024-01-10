@@ -8,9 +8,9 @@
 #include <QUrlQuery>
 
 #include "adjustfiltering.h"
+#include "context/qmlengineholder.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 namespace {
 Logger logger("AdjustProxyPackageHandler");

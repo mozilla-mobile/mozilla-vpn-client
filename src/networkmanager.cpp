@@ -4,7 +4,7 @@
 
 #include "networkmanager.h"
 
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "networkrequest.h"
 #include "settingsholder.h"

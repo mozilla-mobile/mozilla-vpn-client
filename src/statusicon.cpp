@@ -10,7 +10,7 @@
 #include <QPixmap>
 #include <array>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "logging/logger.h"

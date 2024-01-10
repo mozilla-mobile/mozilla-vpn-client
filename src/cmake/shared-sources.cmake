@@ -7,10 +7,6 @@ add_library(shared-sources INTERFACE)
 
 mz_target_handle_warnings(shared-sources)
 
-# Generated version header file
-configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-
 set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/glean
@@ -21,8 +17,10 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/settings)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/logging)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/feature)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/context)
 
 target_link_libraries(shared-sources INTERFACE
+    mz_context
     mz_settings
     mz_logging
     mz_feature
@@ -30,8 +28,6 @@ target_link_libraries(shared-sources INTERFACE
 
 # Shared components
 target_sources(shared-sources INTERFACE
-    ${CMAKE_SOURCE_DIR}/src/constants.h
-    ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
@@ -96,8 +92,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
     ${CMAKE_SOURCE_DIR}/src/curve25519.h
-    ${CMAKE_SOURCE_DIR}/src/env.cpp
-    ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
@@ -152,8 +146,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/networkmanager.h
     ${CMAKE_SOURCE_DIR}/src/networkrequest.cpp
     ${CMAKE_SOURCE_DIR}/src/networkrequest.h
-    ${CMAKE_SOURCE_DIR}/src/qmlengineholder.cpp
-    ${CMAKE_SOURCE_DIR}/src/qmlengineholder.h
     ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp

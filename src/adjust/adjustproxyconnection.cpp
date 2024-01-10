@@ -14,9 +14,9 @@
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
 #include "app.h"
+#include "context/qmlengineholder.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 #include "taskscheduler.h"
 
 const QString HTTP_RESPONSE(

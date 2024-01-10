@@ -9,8 +9,8 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "constants.h"
-#include "env.h"
+#include "context/constants.h"
+#include "context/env.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "settingsholder.h"

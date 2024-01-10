@@ -13,7 +13,7 @@
 #include <QTimer>
 
 #include "commandlineparser.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logging/logger.h"

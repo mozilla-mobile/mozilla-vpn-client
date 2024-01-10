@@ -10,7 +10,7 @@
 #include <QRandomGenerator>
 
 #include "collator.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
 #include "logging/logger.h"

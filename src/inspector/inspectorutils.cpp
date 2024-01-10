@@ -7,7 +7,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
 
-#include "qmlengineholder.h"
+#include "context/qmlengineholder.h"
 #include "qmlpath.h"
 
 // static

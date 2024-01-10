@@ -14,10 +14,10 @@
 #  include <QStandardPaths>
 #endif
 
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "frontend/navigator.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 #if defined(MZ_WINDOWS)
 #  include <windows.h>

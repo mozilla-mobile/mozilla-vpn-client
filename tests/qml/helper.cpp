@@ -4,8 +4,8 @@
 
 #include "helper.h"
 
+#include "context/qmlengineholder.h"
 #include "nebula.h"
-#include "qmlengineholder.h"
 #include "settings/settinggroup.h"
 
 TestHelper::TestHelper()

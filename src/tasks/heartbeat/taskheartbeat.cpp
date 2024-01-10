@@ -7,7 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"

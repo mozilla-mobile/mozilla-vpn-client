@@ -6,7 +6,7 @@
 
 #include "app.h"
 #include "captiveportal/captiveportal.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"

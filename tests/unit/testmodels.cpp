@@ -8,7 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "helper.h"
 #include "localizer.h"
 #include "models/device.h"

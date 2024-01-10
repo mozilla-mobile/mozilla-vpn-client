@@ -13,7 +13,7 @@
 #include <QLocale>
 #include <QTranslator>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "languagei18n.h"

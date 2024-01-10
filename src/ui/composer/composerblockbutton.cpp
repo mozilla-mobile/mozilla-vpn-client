@@ -12,9 +12,9 @@
 
 #include "addons/addon.h"
 #include "addons/addonapi.h"
+#include "context/qmlengineholder.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 namespace {
 Logger logger("ComposerBlockButton");

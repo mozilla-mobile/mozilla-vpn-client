@@ -11,7 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"

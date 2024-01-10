@@ -12,9 +12,9 @@
 #include <QQmlEngine>
 #include <QScopeGuard>
 
+#include "context/qmlengineholder.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 #include "resourceloader.h"
 
 namespace {

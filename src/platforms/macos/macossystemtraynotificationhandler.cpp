@@ -8,12 +8,12 @@
 #include <QMenu>
 #include <QWindow>
 
+#include "context/qmlengineholder.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "macosutils.h"
 #include "mozillavpn.h"
-#include "qmlengineholder.h"
 #include "statusicon.h"
 
 namespace {

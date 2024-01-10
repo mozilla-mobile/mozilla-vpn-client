@@ -10,12 +10,12 @@
 
 #include "addons/addonreplacer.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "helper.h"
 #include "languagei18n.h"
 #include "localizer.h"
 #include "models/licensemodel.h"
-#include "qmlengineholder.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
 

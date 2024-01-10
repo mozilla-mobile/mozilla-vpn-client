@@ -21,7 +21,8 @@
 #include <QTest>
 #include <functional>
 
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
@@ -37,7 +38,6 @@
 #include "mozillavpn.h"
 #include "mzglean.h"
 #include "networkmanager.h"
-#include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "task.h"

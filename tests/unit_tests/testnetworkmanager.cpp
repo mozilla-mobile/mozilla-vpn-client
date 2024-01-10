@@ -4,7 +4,7 @@
 
 #include "testnetworkmanager.h"
 
-#include "constants.h"
+#include "context/constants.h"
 #include "helper.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"

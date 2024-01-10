@@ -9,7 +9,7 @@
 
 #include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "glean/mzglean.h"
 #include "leakdetector.h"
 #include "logging/loghandler.h"

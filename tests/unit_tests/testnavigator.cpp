@@ -7,13 +7,13 @@
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
 
+#include "context/qmlengineholder.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "localizer.h"
 #include "mozillavpn.h"
-#include "qmlengineholder.h"
 #include "qmlpath.h"
 #include "settingsholder.h"
 

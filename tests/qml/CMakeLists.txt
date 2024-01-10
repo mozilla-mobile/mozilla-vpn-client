@@ -39,7 +39,6 @@ target_compile_definitions(qml_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
-    ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/dnspingsender.h
@@ -146,8 +145,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/cryptosettings.h
     ${MZ_SOURCE_DIR}/curve25519.cpp
     ${MZ_SOURCE_DIR}/curve25519.h
-    ${MZ_SOURCE_DIR}/env.cpp
-    ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
     ${MZ_SOURCE_DIR}/feature/feature.cpp
@@ -201,8 +198,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
     ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
-    ${MZ_SOURCE_DIR}/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/qmlengineholder.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp

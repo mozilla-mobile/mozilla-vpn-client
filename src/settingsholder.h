@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QVariant>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "settings/setting.h"
 #include "settings/settingsmanager.h"

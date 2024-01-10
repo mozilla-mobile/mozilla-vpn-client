@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioscommons.h"
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QGuiApplication>

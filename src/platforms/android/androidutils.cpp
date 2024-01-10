@@ -12,13 +12,13 @@
 #include <QNetworkCookieJar>
 #include <QUrlQuery>
 
+#include "context/qmlengineholder.h"
 #include "jni.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "platforms/android/androidcommons.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 
 namespace {

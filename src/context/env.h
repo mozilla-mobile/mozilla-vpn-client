@@ -5,13 +5,9 @@
 #ifndef ENV_H
 #define ENV_H
 
-#include "constants.h"
-
-#ifdef MZ_WINDOWS
-#  include "platforms/windows/windowsutils.h"
-#endif
-
 #include <QObject>
+
+#include "constants.h"
 
 class Env final : public QObject {
   Q_OBJECT
@@ -44,13 +40,10 @@ class Env final : public QObject {
   static bool inProduction() { return Constants::inProduction(); }
   static QString versionString() { return Constants::versionString(); }
   static QString buildNumber() { return Constants::buildNumber(); }
-  static QString osVersion() {
 #ifdef MZ_WINDOWS
-    return WindowsUtils::windowsVersion();
-#else
-    return QSysInfo::productVersion();
+  static QString windowsVersion();
 #endif
-  }
+  static QString osVersion();
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
   static QString devVersion();

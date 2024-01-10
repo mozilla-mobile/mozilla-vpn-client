@@ -7,7 +7,7 @@
 #include <QList>
 #include <QScopeGuard>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "featurelistcallback.h"
 #include "logging/logger.h"
 #include "settings/settinggroup.h"

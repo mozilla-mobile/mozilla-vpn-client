@@ -7,8 +7,8 @@
 #include <QJsonObject>
 
 #include "app.h"
-#include "constants.h"
-#include "env.h"
+#include "context/constants.h"
+#include "context/env.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logging/logger.h"

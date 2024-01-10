@@ -12,7 +12,7 @@
 #include <QUrl>
 
 #include "androidutils.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "frontend/navigator.h"
 #include "jni.h"
 #include "logging/logger.h"

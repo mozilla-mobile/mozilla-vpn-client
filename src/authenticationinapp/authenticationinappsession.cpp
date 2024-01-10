@@ -12,7 +12,7 @@
 
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "hawkauth.h"

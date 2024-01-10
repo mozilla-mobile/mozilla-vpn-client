@@ -10,7 +10,7 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/subscriptiondata.h"

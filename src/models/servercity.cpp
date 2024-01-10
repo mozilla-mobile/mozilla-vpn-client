@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
 #include "location.h"

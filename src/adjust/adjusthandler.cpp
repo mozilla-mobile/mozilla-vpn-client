@@ -6,7 +6,7 @@
 
 #include "adjustproxy.h"
 #include "app.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
 

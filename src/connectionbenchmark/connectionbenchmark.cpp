@@ -7,7 +7,7 @@
 #include "benchmarktaskping.h"
 #include "benchmarktasktransfer.h"
 #include "connectionhealth.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "controller.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"

@@ -4,9 +4,9 @@
 
 #include "featuremodel.h"
 
+#include "context/qmlengineholder.h"
 #include "feature.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 
 #ifdef MZ_ADJUST

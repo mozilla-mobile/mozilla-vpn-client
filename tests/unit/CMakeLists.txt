@@ -48,8 +48,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/command.h
     ${MZ_SOURCE_DIR}/commandlineparser.cpp
     ${MZ_SOURCE_DIR}/commandlineparser.h
-    ${MZ_SOURCE_DIR}/constants.cpp
-    ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/dnshelper.cpp
     ${MZ_SOURCE_DIR}/dnshelper.h
@@ -193,8 +191,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/cryptosettings.h
     ${MZ_SOURCE_DIR}/curve25519.cpp
     ${MZ_SOURCE_DIR}/curve25519.h
-    ${MZ_SOURCE_DIR}/env.cpp
-    ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
     ${MZ_SOURCE_DIR}/frontend/navigator.cpp
@@ -245,8 +241,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkrequest.h
     ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
     ${MZ_SOURCE_DIR}/qmlpath.cpp
-    ${MZ_SOURCE_DIR}/qmlengineholder.cpp
-    ${MZ_SOURCE_DIR}/qmlengineholder.h
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
     ${MZ_SOURCE_DIR}/resourceloader.h
@@ -338,9 +332,6 @@ target_sources(unit_tests PRIVATE
     teststatusicon.cpp
     teststatusicon.h
 )
-
-# Generate the version header
-configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE

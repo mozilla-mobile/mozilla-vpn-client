@@ -9,7 +9,7 @@
 #include <QRandomGenerator>
 
 #include "app.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
 #include "leakdetector.h"

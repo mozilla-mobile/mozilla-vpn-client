@@ -14,7 +14,7 @@
 #include <QTest>
 
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"

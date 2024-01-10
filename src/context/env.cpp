@@ -101,3 +101,26 @@ void Env::setStagingMode(bool stagingMode) {
   emit stagingModeChanged();
 }
 #endif
+
+#ifdef MZ_WINDOWS
+// static
+QString Env::windowsVersion() {
+  QSettings regCurrentVersion(
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+      QSettings::NativeFormat);
+
+  int buildNr = regCurrentVersion.value("CurrentBuild").toInt();
+  if (buildNr >= WINDOWS_11_BUILD) {
+    return "11";
+  }
+  return QSysInfo::productVersion();
+}
+#endif
+
+QString Env::osVersion() {
+#ifdef MZ_WINDOWS
+  return windowsVersion();
+#else
+  return QSysInfo::productVersion();
+#endif
+}

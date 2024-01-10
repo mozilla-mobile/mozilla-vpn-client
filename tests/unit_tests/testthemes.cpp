@@ -6,8 +6,8 @@
 
 #include <QQmlApplicationEngine>
 
+#include "context/qmlengineholder.h"
 #include "localizer.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "theme.h"
 

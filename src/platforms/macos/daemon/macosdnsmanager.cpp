@@ -15,7 +15,7 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "leakdetector.h"
 #include "signalhandler.h"
 

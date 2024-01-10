@@ -5,7 +5,7 @@
 #include <QCoreApplication>
 
 #include "app.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"

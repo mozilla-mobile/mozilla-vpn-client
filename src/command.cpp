@@ -6,7 +6,7 @@
 
 #include "captiveportal/captiveportal.h"
 #include "commandlineparser.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "glean/mzglean.h"
 #include "leakdetector.h"
 #include "localizer.h"

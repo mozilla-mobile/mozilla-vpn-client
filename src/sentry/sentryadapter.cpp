@@ -14,12 +14,12 @@
 #include <QQuickItem>
 #include <QStandardPaths>
 
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"

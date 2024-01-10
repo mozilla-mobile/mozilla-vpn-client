@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosadjusthelper.h"
+#include "context/constants.h"
 #include "logging/logger.h"
-#include "constants.h"
 
-#import "Adjust.h"
 #import "ADJAdjustFactory.h"
+#import "Adjust.h"
 
 namespace {
 
@@ -16,13 +16,13 @@ Logger logger("IOSAdjustHelper");
 }  // namespace
 
 void IOSAdjustHelper::initialize(quint16 proxyPort) {
-  NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+  NSString* adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
-  if(adjustToken.length) {
+  if (adjustToken.length) {
     logger.debug() << "Successfully found Adjust token in info.plist.";
-    NSString *environment = Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
-    ADJConfig *adjustConfig = [ADJConfig configWithAppToken:adjustToken
-                                                environment:environment];
+    NSString* environment =
+        Constants::inProduction() ? ADJEnvironmentProduction : ADJEnvironmentSandbox;
+    ADJConfig* adjustConfig = [ADJConfig configWithAppToken:adjustToken environment:environment];
     [adjustConfig setLogLevel:ADJLogLevelDebug];
     NSString* proxyAddress = [NSString stringWithFormat:@"http://127.0.0.1:%d", proxyPort];
     [ADJAdjustFactory setBaseUrl:proxyAddress];
@@ -34,10 +34,10 @@ void IOSAdjustHelper::initialize(quint16 proxyPort) {
 }
 
 void IOSAdjustHelper::trackEvent(const QString& eventToken) {
-  NSString *adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
+  NSString* adjustToken = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ADJUST_SDK_TOKEN"];
 
-  if(adjustToken.length) {
-    ADJEvent *event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
+  if (adjustToken.length) {
+    ADJEvent* event = [ADJEvent eventWithEventToken:eventToken.toNSString()];
     [Adjust trackEvent:event];
   }
 }

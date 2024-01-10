@@ -8,12 +8,12 @@
 #include <QQmlEngine>
 
 #include "addon.h"
-#include "env.h"
+#include "context/env.h"
+#include "context/qmlengineholder.h"
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "urlopener.h"
 

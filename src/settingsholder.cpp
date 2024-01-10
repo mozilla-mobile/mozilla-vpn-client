@@ -9,7 +9,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "env.h"
+#include "context/env.h"
 #include "leakdetector.h"
 #include "logging/logger.h"
 #ifdef UNIT_TEST

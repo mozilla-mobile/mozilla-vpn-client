@@ -11,11 +11,11 @@
 #include <QStandardPaths>
 #include <QWindow>
 
+#include "context/qmlengineholder.h"
 #include "frontend/navigator.h"
 #include "frontend/navigatorreloader.h"
 #include "logging/logger.h"
 #include "networkrequest.h"
-#include "qmlengineholder.h"
 #include "tasks/function/taskfunction.h"
 
 namespace {
