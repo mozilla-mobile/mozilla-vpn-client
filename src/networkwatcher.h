@@ -28,6 +28,7 @@ class NetworkWatcher final : public QObject {
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
 
   QNetworkInformation::Reachability getReachability();
+  bool getIsBehindCaptivePortal();
 
  signals:
   void networkChange();

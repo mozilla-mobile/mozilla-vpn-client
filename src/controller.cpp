@@ -21,6 +21,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "networkwatcher.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -32,6 +33,8 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+
+#include <QNetworkInformation>
 
 #if defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -998,11 +1001,15 @@ bool Controller::deactivate() {
   // captive portal, they will experience "No Signal". Upon deactivating the VPN
   // a "Captive Portal Detected" screen will be presented to inform the user of
   // the underlying issue.
-  if (m_portalDetected) {
+//  if (m_portalDetected) {
+//  if (MozillaVPN::instance()->networkWatcher()->getIsBehindCaptivePortal()) {
+  auto instance = QNetworkInformation::instance();
+  Q_UNUSED(instance);
+  if (QNetworkInformation::instance() && QNetworkInformation::instance()->isBehindCaptivePortal())
+  {
     emit activationBlockedForCaptivePortal();
     Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
-
-    m_portalDetected = false;
+//    m_portalDetected = false;
   }
 
   if (m_state == StateOn || m_state == StateConfirming ||

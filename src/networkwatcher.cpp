@@ -175,3 +175,10 @@ QNetworkInformation::Reachability NetworkWatcher::getReachability() {
   }
   return QNetworkInformation::Reachability::Unknown;
 }
+
+bool NetworkWatcher::getIsBehindCaptivePortal() {
+  if (QNetworkInformation::instance()) {
+    return QNetworkInformation::instance()->isBehindCaptivePortal();
+  }
+  return false;
+}
