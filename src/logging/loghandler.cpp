@@ -28,8 +28,7 @@
 #endif
 
 #ifdef MZ_IOS
-#  include "platforms/ios/ioscommons.h"
-#  include "platforms/ios/ioslogger.h"
+#  include "ioslogger.h"
 #endif
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
@@ -438,7 +437,7 @@ bool LogHandler::viewLogs() {
 #  if defined(MZ_ANDROID)
     ok = AndroidCommons::shareText(*buffer);
 #  else
-    IOSCommons::shareLogs(*buffer);
+    IOSLogger::shareLogs(*buffer);
 #  endif
 
     delete out;

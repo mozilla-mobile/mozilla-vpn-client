@@ -18,10 +18,10 @@ set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 )
 
 # Modules
-add_subdirectory(
-    ${CMAKE_SOURCE_DIR}/src/settings
-)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/settings)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/logging)
 target_link_libraries(shared-sources INTERFACE mz_settings)
+target_link_libraries(shared-sources INTERFACE mz_logging)
 
 # Shared components
 target_sources(shared-sources INTERFACE
@@ -143,10 +143,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.h
-    ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/loghandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp

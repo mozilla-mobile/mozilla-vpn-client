@@ -81,27 +81,3 @@ bool IOSCommons::verifySignature(const QByteArray& publicKey, const QByteArray& 
   logger.warning() << "Signature verification failed";
   return false;
 }
-
-void IOSCommons::shareLogs(const QString& logs) {
-  UIView* view =
-      static_cast<UIView*>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow(
-          "uiview", QmlEngineHolder::instance()->window()));
-  UIViewController* qtController = [[view window] rootViewController];
-
-  NSURL* url =
-      [NSURL fileURLWithPath:[NSTemporaryDirectory()
-                                 stringByAppendingString:QString(Constants::LOG_FILE_NAME)
-                                                             .toNSString()]];
-  NSData* data = [logs.toNSString() dataUsingEncoding:NSUTF8StringEncoding];
-  [data writeToURL:url atomically:NO];
-
-  UIActivityViewController* activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:@[ url ] applicationActivities:nil];
-  if (activityViewController.popoverPresentationController) {
-    activityViewController.popoverPresentationController.sourceView = view;
-    activityViewController.popoverPresentationController.sourceRect =
-        CGRectMake(view.bounds.size.width / 2, view.bounds.size.height, 0, 0);
-  }
-  [qtController presentViewController:activityViewController animated:YES completion:nil];
-  [activityViewController release];
-}

@@ -17,6 +17,8 @@ class IOSLogger {
   static void debug(const QString& message);
   static void info(const QString& message);
   static void error(const QString& message);
+
+  static void shareLogs(const QString& logs);
 };
 
 #endif  // IOSLOGGER_H

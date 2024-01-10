@@ -102,8 +102,6 @@ target_sources(app_unit_tests PRIVATE
     testlicense.h
     testlocalizer.cpp
     testlocalizer.h
-    testlogger.cpp
-    testlogger.h
     testnavigator.cpp
     testnavigator.h
     testnetworkmanager.cpp

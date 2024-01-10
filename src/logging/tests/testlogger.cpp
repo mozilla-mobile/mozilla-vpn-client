@@ -6,7 +6,6 @@
 
 #include <QScopeGuard>
 
-#include "helper.h"
 #include "logger.h"
 #include "loghandler.h"
 
@@ -77,4 +76,4 @@ void TestLogger::logTruncation() {
   QVERIFY(truncatedBuffer.size() < 128 * 1024);
 }
 
-static TestLogger s_testLogger;
+QTEST_MAIN(TestLogger);

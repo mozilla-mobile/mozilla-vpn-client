@@ -192,10 +192,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
-    ${MZ_SOURCE_DIR}/logger.cpp
-    ${MZ_SOURCE_DIR}/logger.h
-    ${MZ_SOURCE_DIR}/loghandler.cpp
-    ${MZ_SOURCE_DIR}/loghandler.h
     ${MZ_SOURCE_DIR}/feature/featuremodel.cpp
     ${MZ_SOURCE_DIR}/feature/featuremodel.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
