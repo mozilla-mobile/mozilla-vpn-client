@@ -13,12 +13,12 @@
 
 #include "context/constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "purchasehandler.h"
 #include "tasks/products/taskproducts.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ProductsHandler");

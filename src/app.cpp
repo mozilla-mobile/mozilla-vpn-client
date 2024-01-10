@@ -6,11 +6,11 @@
 
 #include <QCoreApplication>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 #ifdef MZ_WASM
 #  include "networkrequest.h"

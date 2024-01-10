@@ -4,7 +4,7 @@
 
 #include "settingsconnector.h"
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 SettingsConnector::SettingsConnector(QObject* parent, QSettings* settings)
     : QObject(parent), m_settings(settings) {

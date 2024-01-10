@@ -53,4 +53,4 @@ void TestUrlOpener::urlLabel() {
   QCOMPARE(uo->lastUrl(), "http://foo.bar");
 }
 
-static TestUrlOpener s_testUrlOpener;
+QTEST_MAIN(TestUrlOpener);

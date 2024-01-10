@@ -4,8 +4,8 @@
 
 #include "wasmnetworkwatcher.h"
 
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("WasmNetworkWatcher");

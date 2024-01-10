@@ -9,8 +9,8 @@
 
 #include "commandlineparser.h"
 #include "controller.h"
-#include "leakdetector.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 CommandDeactivate::CommandDeactivate(QObject* parent)
     : Command(parent, "deactivate", "Deactivate the VPN tunnel") {

@@ -36,7 +36,6 @@
 #include "inspector/inspectorhandler.h"
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
@@ -58,11 +57,12 @@
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "telemetry.h"
-#include "temporarydir.h"
 #include "theme.h"
 #include "update/updater.h"
-#include "urlopener.h"
-#include "utils.h"
+#include "utilities/leakdetector.h"
+#include "utilities/temporarydir.h"
+#include "utilities/urlopener.h"
+#include "utilities/utils.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>

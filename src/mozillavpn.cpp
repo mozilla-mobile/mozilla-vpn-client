@@ -21,7 +21,6 @@
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "logoutobserver.h"
@@ -63,8 +62,9 @@
 #include "taskscheduler.h"
 #include "telemetry.h"
 #include "update/updater.h"
-#include "urlopener.h"
-#include "versionutils.h"
+#include "utilities/leakdetector.h"
+#include "utilities/urlopener.h"
+#include "utilities/versionutils.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"

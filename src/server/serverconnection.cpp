@@ -13,7 +13,6 @@
 #include <functional>
 
 #include "controller.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "models/servercity.h"
@@ -21,6 +20,7 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 

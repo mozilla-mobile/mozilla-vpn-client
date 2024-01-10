@@ -12,7 +12,6 @@
 #include "collator.h"
 #include "context/constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "recommendedlocationmodel.h"
@@ -21,6 +20,7 @@
 #include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ServerCountryModel");

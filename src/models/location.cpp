@@ -9,7 +9,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 Location::Location() {
   MZ_COUNT_CTOR(Location);

@@ -9,11 +9,11 @@
 #include <QJsonValue>
 
 #include "controller.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("IpAddressLookup");

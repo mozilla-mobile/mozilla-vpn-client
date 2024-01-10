@@ -12,11 +12,11 @@
 #include <QJsonObject>
 
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("LanguageI18N");

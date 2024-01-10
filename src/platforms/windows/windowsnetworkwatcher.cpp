@@ -7,10 +7,10 @@
 #include <QNetworkInformation>
 #include <QScopeGuard>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkwatcherimpl.h"
 #include "platforms/windows/windowsutils.h"
+#include "utilities/leakdetector.h"
 
 #pragma comment(lib, "Wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")

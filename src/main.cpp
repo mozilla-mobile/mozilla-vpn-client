@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlineparser.h"
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG

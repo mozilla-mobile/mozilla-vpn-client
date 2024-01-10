@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
+#include <QTest>
 
-class TestTemporaryDir final : public TestHelper {
+class TestUrlOpener : public QObject {
   Q_OBJECT
 
  private slots:
-  void basic();
-  void fallback();
-  void cleanupAll();
+  void urlQueryReplacement_data();
+  void urlQueryReplacement();
+
+  void urlLabel();
 };

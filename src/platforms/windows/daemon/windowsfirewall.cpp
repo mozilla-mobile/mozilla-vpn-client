@@ -22,9 +22,9 @@
 #include <QtEndian>
 
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
+#include "utilities/leakdetector.h"
 #include "winsock.h"
 
 #define IPV6_ADDRESS_SIZE 16

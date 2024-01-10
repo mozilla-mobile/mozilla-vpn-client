@@ -19,7 +19,7 @@
 #include "context/constants.h"
 #include "feature/feature.h"
 #include "logging/logger.h"
-#include "urlopener.h"
+#include "utilities/urlopener.h"
 
 #ifdef MZ_ANDROID
 #  include <android/log.h>

@@ -4,9 +4,9 @@
 
 #include "taskcontrolleraction.h"
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t TASKCONTROLLER_TIMER_MSEC = 3000;
 

@@ -7,9 +7,9 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "task.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskScheduler");

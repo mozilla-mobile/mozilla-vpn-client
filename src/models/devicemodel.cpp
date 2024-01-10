@@ -10,11 +10,11 @@
 #include <QJsonValue>
 
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 #if MZ_ANDROID
 #  include "platforms/android/androidcommons.h"

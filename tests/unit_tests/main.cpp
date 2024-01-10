@@ -8,9 +8,9 @@
 #include "context/constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logging/loghandler.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 QVector<QObject*> TestHelper::testList;
 

@@ -12,10 +12,10 @@
 #include "context/constants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 

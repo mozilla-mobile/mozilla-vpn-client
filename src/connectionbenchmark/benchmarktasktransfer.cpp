@@ -10,10 +10,10 @@
 #include <QScopeGuard>
 
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkrequest.h"
 #include "uploaddatagenerator.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("BenchmarkTaskTransfer");

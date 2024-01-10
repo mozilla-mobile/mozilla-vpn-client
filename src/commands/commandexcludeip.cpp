@@ -8,9 +8,9 @@
 #include <QTextStream>
 
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 constexpr const int LIST = 0;
 constexpr const int ADD = 1;

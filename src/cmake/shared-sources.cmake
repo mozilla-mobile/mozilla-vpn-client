@@ -18,12 +18,14 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/settings)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/logging)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/feature)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/context)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/utilities)
 
 target_link_libraries(shared-sources INTERFACE
     mz_context
     mz_settings
     mz_logging
     mz_feature
+    mz_utilities
 )
 
 # Shared components
@@ -134,8 +136,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/languagei18n.cpp
     ${CMAKE_SOURCE_DIR}/src/languagei18n.h
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
@@ -183,16 +183,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
     ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.h
-    ${CMAKE_SOURCE_DIR}/src/temporarydir.cpp
-    ${CMAKE_SOURCE_DIR}/src/temporarydir.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp
     ${CMAKE_SOURCE_DIR}/src/theme.h
-    ${CMAKE_SOURCE_DIR}/src/urlopener.cpp
-    ${CMAKE_SOURCE_DIR}/src/urlopener.h
-    ${CMAKE_SOURCE_DIR}/src/utils.cpp
-    ${CMAKE_SOURCE_DIR}/src/utils.h
-    ${CMAKE_SOURCE_DIR}/src/versionutils.cpp
-    ${CMAKE_SOURCE_DIR}/src/versionutils.h
 )
 
 target_sources(shared-sources INTERFACE

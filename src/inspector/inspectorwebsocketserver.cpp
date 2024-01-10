@@ -8,8 +8,8 @@
 #include <QWebSocket>
 
 #include "inspectorwebsocketconnection.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("InspectorWebSocketServer");

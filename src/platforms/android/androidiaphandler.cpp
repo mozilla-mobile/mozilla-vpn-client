@@ -11,7 +11,6 @@
 #include <QJsonObject>
 
 #include "androidutils.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
@@ -19,6 +18,7 @@
 #include "platforms/android/androidcommons.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AndroidIAPHandler");

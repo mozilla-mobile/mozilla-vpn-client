@@ -4,7 +4,7 @@
 
 #include "addonsessionstate.h"
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 AddonSessionState::AddonSessionState(const QJsonObject& manifest)
     : AddonStateBase(manifest) {

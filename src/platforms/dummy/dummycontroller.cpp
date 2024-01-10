@@ -7,9 +7,9 @@
 #include <QHostAddress>
 #include <QRandomGenerator>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/server.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t DUMMY_CONNECTION_DELAY_MSEC = 1500;
 

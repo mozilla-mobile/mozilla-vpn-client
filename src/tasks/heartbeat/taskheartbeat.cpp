@@ -8,10 +8,10 @@
 #include <QJsonObject>
 
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskHeartbeat");

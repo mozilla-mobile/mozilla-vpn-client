@@ -10,10 +10,10 @@
 
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AddonMessage");

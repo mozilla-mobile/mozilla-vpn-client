@@ -11,13 +11,13 @@
 #include "controller.h"
 #include "dnshelper.h"
 #include "interfaceconfig.h"
-#include "leakdetector.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)
     : Command(parent, "wgconf", "Generate a wireguard configuration file.") {

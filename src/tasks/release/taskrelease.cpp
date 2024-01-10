@@ -4,9 +4,9 @@
 
 #include "taskrelease.h"
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "update/updater.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskRelease");

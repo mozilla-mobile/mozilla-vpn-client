@@ -10,9 +10,9 @@
 #include <QJniEnvironment>
 #include <QJniObject>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "platforms/android/androidcommons.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AndroidAppImageProvider");

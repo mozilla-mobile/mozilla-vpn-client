@@ -6,7 +6,7 @@
 
 #include <QNetworkAccessManager>
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 SimpleNetworkManager::SimpleNetworkManager() {
   MZ_COUNT_CTOR(SimpleNetworkManager);

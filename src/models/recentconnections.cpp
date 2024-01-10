@@ -10,12 +10,12 @@
 #include <QJsonObject>
 
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "serverdata.h"
 #include "serveri18n.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("RecentConnections");

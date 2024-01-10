@@ -6,8 +6,8 @@
 
 #include <QCoreApplication>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/iosiaphandler.h"

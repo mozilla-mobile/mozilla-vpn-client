@@ -8,12 +8,12 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "utilities/leakdetector.h"
 
 CommandLogout::CommandLogout(QObject* parent)
     : Command(parent, "logout", "Logout the current user.") {

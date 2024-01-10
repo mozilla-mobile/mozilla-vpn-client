@@ -11,13 +11,13 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "context/constants.h"
 #include "glean/mzglean.h"
-#include "leakdetector.h"
 #include "logging/loghandler.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
+#include "utilities/leakdetector.h"
 
 // static
 App* App::instance() {

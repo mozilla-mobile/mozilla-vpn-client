@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosnetworkwatcher.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 #import <CoreWLAN/CoreWLAN.h>
 #import <Network/Network.h>

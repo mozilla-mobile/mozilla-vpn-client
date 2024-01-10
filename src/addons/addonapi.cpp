@@ -12,10 +12,10 @@
 #include "context/qmlengineholder.h"
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
-#include "urlopener.h"
+#include "utilities/leakdetector.h"
+#include "utilities/urlopener.h"
 
 namespace {
 Logger logger("AddonApi");

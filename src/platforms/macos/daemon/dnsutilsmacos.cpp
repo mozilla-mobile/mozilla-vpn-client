@@ -7,8 +7,8 @@
 #include <QCoreApplication>
 #include <QProcess>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("DnsUtilsMacos");

@@ -11,10 +11,10 @@
 #include "constants.h"
 #include "controller.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ConnectionHealth");

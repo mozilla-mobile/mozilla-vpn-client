@@ -4,10 +4,10 @@
 
 #include "ioslogger.h"
 #include "Mozilla-Swift.h"
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
-#include <QString>
 #import <UIKit/UIKit.h>
+#include <QString>
 
 namespace {
 
@@ -48,10 +48,9 @@ void IOSLogger::shareLogs(const QString& logs) {
           "uiview", QmlEngineHolder::instance()->window()));
   UIViewController* qtController = [[view window] rootViewController];
 
-  NSURL* url =
-      [NSURL fileURLWithPath:[NSTemporaryDirectory()
-                                 stringByAppendingString:QString(Constants::LOG_FILE_NAME)
-                                                             .toNSString()]];
+  NSURL* url = [NSURL
+      fileURLWithPath:[NSTemporaryDirectory()
+                          stringByAppendingString:QString(Constants::LOG_FILE_NAME).toNSString()]];
   NSData* data = [logs.toNSString() dataUsingEncoding:NSUTF8StringEncoding];
   [data writeToURL:url atomically:NO];
 

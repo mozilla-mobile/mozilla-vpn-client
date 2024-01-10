@@ -10,12 +10,12 @@
 
 #include "context/constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "location.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serveri18n.h"
 #include "serverlatency.h"
+#include "utilities/leakdetector.h"
 
 // Latency threshold for excellent connections, set intentionally very low.
 constexpr int SCORE_EXCELLENT_LATENCY_THRESHOLD = 30;

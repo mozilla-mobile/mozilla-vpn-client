@@ -7,11 +7,11 @@
 #include "app.h"
 #include "context/constants.h"
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskRemoveDevice");

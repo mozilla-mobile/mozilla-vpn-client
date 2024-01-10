@@ -15,9 +15,9 @@
 #include <QStringList>
 #include <QSysInfo>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("WindowsAppImageProvider");

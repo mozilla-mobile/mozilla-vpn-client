@@ -11,10 +11,10 @@
 #include <QTimer>
 
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("WasmIAPHandler");

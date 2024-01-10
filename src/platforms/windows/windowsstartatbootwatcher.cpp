@@ -8,9 +8,9 @@
 #include <QDir>
 #include <QSettings>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("WindowsStartAtBootWatcher");

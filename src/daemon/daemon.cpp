@@ -12,9 +12,9 @@
 #include <QMetaEnum>
 #include <QTimer>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
+#include "utilities/leakdetector.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;

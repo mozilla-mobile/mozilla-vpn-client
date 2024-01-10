@@ -13,11 +13,11 @@
 #include <QRegularExpression>
 #include <QUrl>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "utilities/leakdetector.h"
 
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;

@@ -12,8 +12,8 @@
 #include "composerblocktext.h"
 #include "composerblocktitle.h"
 #include "composerblockunorderedlist.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ComposerBlock");

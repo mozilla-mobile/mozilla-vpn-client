@@ -10,12 +10,12 @@
 #include "context/constants.h"
 #include "context/env.h"
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkmanager.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t SUPPORT_TICKET_SUBJECT_MAX_LENGTH = 300;
 

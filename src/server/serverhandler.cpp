@@ -7,9 +7,9 @@
 #include <QHostAddress>
 #include <QTcpSocket>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "serverconnection.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ServerHandler");

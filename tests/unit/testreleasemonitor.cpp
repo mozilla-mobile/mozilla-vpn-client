@@ -13,7 +13,7 @@
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "update/versionapi.h"
-#include "versionutils.h"
+#include "utilities/versionutils.h"
 
 void TestReleaseMonitor::failure() {
   SettingsHolder settingsHolder;

@@ -11,8 +11,8 @@
 
 #include "addons/addon.h"
 #include "composerblock.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("Composer");

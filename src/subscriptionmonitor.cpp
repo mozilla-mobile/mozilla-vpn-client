@@ -8,11 +8,11 @@
 
 #include "context/constants.h"
 #include "controller.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/account/taskaccount.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("SubscriptionMonitor");

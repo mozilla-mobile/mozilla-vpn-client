@@ -14,12 +14,12 @@
 
 #include "context/qmlengineholder.h"
 #include "jni.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "platforms/android/androidcommons.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 AndroidUtils* s_instance = nullptr;

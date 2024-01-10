@@ -10,12 +10,12 @@
 
 #include "controller.h"
 #include "dnshelper.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("SettingsWatcher");

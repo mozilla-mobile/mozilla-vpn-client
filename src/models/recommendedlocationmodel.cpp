@@ -7,12 +7,12 @@
 #include <QCoreApplication>
 #include <QPointer>
 
-#include "leakdetector.h"
 #include "location.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serverlatency.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("RecommendedLocationModel");

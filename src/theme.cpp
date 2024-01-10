@@ -8,10 +8,10 @@
 #include <QJSEngine>
 
 #include "context/qmlengineholder.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

@@ -13,9 +13,9 @@
 #include <QStandardPaths>
 #include <QString>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 #include "windowsappimageprovider.h"
 #include "windowscommons.h"
 

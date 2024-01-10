@@ -10,8 +10,8 @@
 #include <QStandardPaths>
 
 #include "context/env.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 #ifdef UNIT_TEST
 #  include "settings/settingsmanager.h"
 #endif

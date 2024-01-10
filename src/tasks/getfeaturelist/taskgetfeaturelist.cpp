@@ -9,9 +9,9 @@
 
 #include "context/constants.h"
 #include "feature/featuremodel.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskGetFeatureList");

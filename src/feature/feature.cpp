@@ -12,7 +12,7 @@
 #include "logging/logger.h"
 #include "settings/settinggroup.h"
 #include "settingsholder.h"
-#include "versionutils.h"
+#include "utilities/versionutils.h"
 
 namespace {
 Logger logger("Feature");

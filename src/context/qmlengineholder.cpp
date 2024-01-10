@@ -8,7 +8,7 @@
 #include <QQmlApplicationEngine>
 #include <QWindow>
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 QmlEngineHolder* s_instance = nullptr;

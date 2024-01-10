@@ -9,9 +9,9 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortal");

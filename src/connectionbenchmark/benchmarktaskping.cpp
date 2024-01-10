@@ -6,9 +6,9 @@
 
 #include "connectionhealth.h"
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("BenchmarkTaskPing");

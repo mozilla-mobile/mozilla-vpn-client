@@ -8,10 +8,10 @@
 #include <cmath>
 
 #include "dnspingsender.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
+#include "utilities/leakdetector.h"
 
 // Any X seconds, a new ping.
 constexpr uint32_t PING_TIMEOUT_SEC = 1;

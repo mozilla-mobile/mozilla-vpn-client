@@ -15,9 +15,9 @@
 #include "context/constants.h"
 #include "errorhandler.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkrequest.h"
+#include "utilities/leakdetector.h"
 
 // Implemented in rust. See the `signature` folder.
 // TODO (VPN-5708): We should really generate this with cbindgen.

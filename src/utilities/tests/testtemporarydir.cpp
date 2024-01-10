@@ -46,4 +46,4 @@ void TestTemporaryDir::cleanupAll() {
   QVERIFY(!td.isValid());
 }
 
-static TestTemporaryDir s_testTemporaryDir;
+QTEST_MAIN(TestTemporaryDir);

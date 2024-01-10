@@ -10,11 +10,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ServerI18N");

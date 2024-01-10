@@ -6,11 +6,11 @@
 
 #include "authenticationlistener.h"
 #include "context/constants.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("PurchaseWebHandler");

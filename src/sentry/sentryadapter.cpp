@@ -17,13 +17,13 @@
 #include "context/constants.h"
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;

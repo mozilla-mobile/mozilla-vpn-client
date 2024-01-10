@@ -7,8 +7,8 @@
 #include <QApplication>
 
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 // in seconds, hide alerts
 constexpr const uint32_t HIDE_ALERT_SEC = 4;

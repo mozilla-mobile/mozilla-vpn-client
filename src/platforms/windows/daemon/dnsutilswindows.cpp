@@ -10,8 +10,8 @@
 #include <QProcess>
 #include <QTextStream>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t WINDOWS_NETSH_TIMEOUT_MSEC = 2000;
 

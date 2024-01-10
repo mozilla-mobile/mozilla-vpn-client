@@ -10,10 +10,10 @@
 #include "context/constants.h"
 #include "controller.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 #if defined(MZ_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"

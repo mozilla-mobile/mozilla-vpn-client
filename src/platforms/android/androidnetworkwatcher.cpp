@@ -9,10 +9,10 @@
 #include <QJniObject>
 #include <QNetworkInformation>
 
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "networkwatcherimpl.h"
 #include "platforms/android/androidcommons.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AndroidNetworkWatcher");

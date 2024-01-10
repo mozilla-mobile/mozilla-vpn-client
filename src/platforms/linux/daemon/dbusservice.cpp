@@ -16,10 +16,10 @@
 #include <QtDBus/QtDBus>
 
 #include "dbus_adaptor.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "platforms/linux/linuxdependencies.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("DBusService");

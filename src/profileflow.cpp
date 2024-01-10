@@ -8,12 +8,12 @@
 #include <QJsonObject>
 
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ProfileFlow");

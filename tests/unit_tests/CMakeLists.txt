@@ -114,12 +114,8 @@ target_sources(app_unit_tests PRIVATE
     testtasks.h
     testtasksentry.cpp
     testtasksentry.h
-    testtemporarydir.cpp
-    testtemporarydir.h
     testthemes.cpp
     testthemes.h
-    testurlopener.cpp
-    testurlopener.h
     testsettingsholder.cpp
     testsettingsholder.h
     ${MZ_SOURCE_DIR}/mozillavpn.h

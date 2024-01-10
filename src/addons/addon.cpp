@@ -28,13 +28,13 @@
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "state/addonsessionstate.h"
-#include "versionutils.h"
+#include "utilities/leakdetector.h"
+#include "utilities/versionutils.h"
 
 namespace {
 Logger logger("Addon");

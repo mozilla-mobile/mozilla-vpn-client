@@ -10,9 +10,9 @@
 #include <QStringList>
 
 #include "collator.h"
-#include "leakdetector.h"
 #include "serverdata.h"
 #include "serveri18n.h"
+#include "utilities/leakdetector.h"
 
 ServerCountry::ServerCountry() { MZ_COUNT_CTOR(ServerCountry); }
 

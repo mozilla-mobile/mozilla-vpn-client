@@ -8,7 +8,6 @@
 #include "commandlineparser.h"
 #include "context/constants.h"
 #include "glean/mzglean.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
@@ -20,6 +19,7 @@
 #include "mozillavpn.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
+#include "utilities/leakdetector.h"
 
 #ifdef MZ_WINDOWS
 #  include <Windows.h>

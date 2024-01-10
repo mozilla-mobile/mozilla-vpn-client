@@ -10,11 +10,11 @@
 #include "connectionhealth.h"
 #include "controller.h"
 #include "frontend/navigator.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "networkwatcher.h"
 #include "settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortalDetection");

@@ -15,9 +15,9 @@
 #include "adjusttasksubmission.h"
 #include "app.h"
 #include "context/qmlengineholder.h"
-#include "leakdetector.h"
 #include "logging/logger.h"
 #include "taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 const QString HTTP_RESPONSE(
     "HTTP/1.1 %1\nContent-Type: application/json\n\n%2\n");
