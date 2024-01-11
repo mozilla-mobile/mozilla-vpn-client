@@ -2,6 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set(RUST_DEPENDENCIES)
+if (${MZ_PLATFORM_NAME} STREQUAL "linux"
+    OR ${MZ_PLATFORM_NAME} STREQUAL "windows"
+    OR ${MZ_PLATFORM_NAME} STREQUAL "macos")
+    list(APPEND RUST_DEPENDENCIES ${CMAKE_CURRENT_SOURCE_DIR}/signature/signature)
+endif()
+
 mz_add_new_module(
     TARGET_NAME mz_crypto
     INCLUDE_DIRECTORIES
@@ -36,7 +43,27 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/hawkauth.h
         ${CMAKE_CURRENT_SOURCE_DIR}/hkdf.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/hkdf.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/signature.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/signature.h
+    ANDROID_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/androidsignature.cpp
+    IOS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/iossignature.mm
+    MACOS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/rustsignature.cpp
+    WINDOWS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/rustsignature.cpp
+    LINUX_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/rustsignature.cpp
+    WASM_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/dummysignature.cpp
+    DUMMY_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/signature/dummysignature.cpp
     QT_DEPENDENCIES
         Core
         Network
+    MZ_DEPENDENCIES
+        mz_logging
+    RUST_DEPENDENCIES
+        ${RUST_DEPENDENCIES}
 )

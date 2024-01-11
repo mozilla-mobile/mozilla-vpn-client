@@ -229,8 +229,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/signature.cpp
-    ${MZ_SOURCE_DIR}/signature.h
     ${MZ_SOURCE_DIR}/task.h
     ${MZ_SOURCE_DIR}/taskscheduler.cpp
     ${MZ_SOURCE_DIR}/taskscheduler.h

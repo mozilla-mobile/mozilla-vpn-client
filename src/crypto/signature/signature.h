@@ -7,10 +7,12 @@
 
 #include <QByteArray>
 
-class Signature final {
- public:
-  static bool verify(const QByteArray& publicKey, const QByteArray& content,
-                     const QByteArray& signature);
-};
+namespace Signature {
+bool verify(const QByteArray& publicKey, const QByteArray& content,
+            const QByteArray& signature);
+
+bool verifyInternal(const QByteArray& publicKey, const QByteArray& content,
+                    const QByteArray& signature);
+};  // namespace Signature
 
 #endif  // SIGNATURE_H

@@ -34,7 +34,6 @@ target_link_libraries(shared-sources INTERFACE
 
 # Shared components
 target_sources(shared-sources INTERFACE
-    ${CMAKE_SOURCE_DIR}/src/settingslist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -148,8 +147,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/signature.cpp
-    ${CMAKE_SOURCE_DIR}/src/signature.h
     ${CMAKE_SOURCE_DIR}/src/task.h
     ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
     ${CMAKE_SOURCE_DIR}/src/taskscheduler.h
@@ -190,20 +187,6 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.cpp
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.h
        )
-endif()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    # Compile and link the signature library.
-    include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-    add_rust_library(signature
-        PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-        CRATE_NAME signature
-    )
-    target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
-    target_link_libraries(shared-sources INTERFACE signature)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/src/platforms/${MZ_PLATFORM_NAME}/sources.cmake)

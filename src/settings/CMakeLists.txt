@@ -30,6 +30,7 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/settingsholder.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings/cryptosettings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings/cryptosettings.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
     ANDROID_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/cryptosettings/androidcryptosettings.cpp
     IOS_SOURCES

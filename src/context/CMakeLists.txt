@@ -15,6 +15,8 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.h
         ${CMAKE_CURRENT_BINARY_DIR}/version.h
+    ANDROID_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidconstants.h
     QT_DEPENDENCIES
         Core
         Network
@@ -22,4 +24,5 @@ mz_add_new_module(
         Quick
     MZ_DEPENDENCIES
         mz_settings
+        mz_utilities
 )
