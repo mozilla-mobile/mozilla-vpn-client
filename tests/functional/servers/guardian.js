@@ -1,15 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-const Server = require('./server.js');
-const guardianEndpoints = require('./guardian_endpoints.js');
+import Server from './server.js';
+import { endpoints } from './guardian_endpoints.js';
 
 let server = null;
-let wsServer = null;
-module.exports = {
+export default {
   async start(headerCheck = true) {
-    server = new Server('Guardian', guardianEndpoints.endpoints, headerCheck);
+    server = new Server('Guardian', endpoints, headerCheck);
     await server.start();
   },
 

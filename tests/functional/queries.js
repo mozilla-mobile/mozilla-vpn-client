@@ -511,7 +511,7 @@ const global = {
   SCREEN_LOADER: new QmlQueryComposer('//screenLoader'),
 };
 
-module.exports = {
+export {
   appExclusionsView,
   screenHome,
   screenInitialize,

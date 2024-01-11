@@ -2,91 +2,91 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
+import assert, { equal } from 'assert';
+import { waitForQuery, getQueryProperty, setSetting, clickOnQuery, waitForCondition, lastNotification, activate, deactivate, activateViaToggle, getMozillaProperty } from './helper.js';
+import { screenHome } from './queries.js';
 
 describe('Connectivity', function() {
   this.ctx.authenticationNeeded = true;
 
   it('check the ui', async () => {
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
+    await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
+    equal(
+        await getQueryProperty(
+            screenHome.CONTROLLER_TITLE, 'text'), 'VPN is off');
 
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_SUBTITLE.visible());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
+    await waitForQuery(screenHome.CONTROLLER_SUBTITLE.visible());
+    equal(
+        await getQueryProperty(
+            screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Turn on to protect your privacy');
 
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+    await waitForQuery(screenHome.CONTROLLER_TOGGLE.visible());
   });
 
   it('Connect to VPN', async () => {
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
 
-    await vpn.setSetting('connectionChangeNotification', 'true');
-    await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+    await setSetting('connectionChangeNotification', 'true');
+    await clickOnQuery(screenHome.CONTROLLER_TOGGLE.visible());
 
-    await vpn.waitForCondition(async () => {
-      let connectingMsg = await vpn.getQueryProperty(
-          queries.screenHome.CONTROLLER_TITLE, 'text');
+    await waitForCondition(async () => {
+      let connectingMsg = await getQueryProperty(
+          screenHome.CONTROLLER_TITLE, 'text');
       return connectingMsg === 'Connecting…';
     });
 
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
+    equal(
+        await getQueryProperty(
+            screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Masking connection and location');
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    await waitForCondition(async () => {
+      return await getQueryProperty(
+                 screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
     });
 
-    assert((await vpn.getQueryProperty(
-                queries.screenHome.SECURE_AND_PRIVATE_SUBTITLE, 'text'))
+    assert((await getQueryProperty(
+                screenHome.SECURE_AND_PRIVATE_SUBTITLE, 'text'))
                .startsWith('Secure and private '));
 
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Connected';
+    await waitForCondition(() => {
+      return lastNotification().title === 'VPN Connected';
     });
 
-    assert.equal(vpn.lastNotification().title, 'VPN Connected');
-    assert(vpn.lastNotification().message.startsWith('Connected through '));
+    equal(lastNotification().title, 'VPN Connected');
+    assert(lastNotification().message.startsWith('Connected through '));
   });
 
   it('Disconnecting and disconnected', async () => {
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
 
-    await vpn.setSetting('connectionChangeNotification', 'true');
-    await vpn.activate();
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    await setSetting('connectionChangeNotification', 'true');
+    await activate();
+    await waitForCondition(async () => {
+      return await getQueryProperty(
+                 screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
     });
-    await vpn.deactivate();
+    await deactivate();
 
     // No test for disconnecting because often it's too fast to be tracked.
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off';
+    await waitForCondition(async () => {
+      return await getQueryProperty(
+                 screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off';
     });
 
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_SUBTITLE, 'text'),
+    equal(
+        await getQueryProperty(
+            screenHome.CONTROLLER_SUBTITLE, 'text'),
         'Turn on to protect your privacy');
 
-    await vpn.waitForCondition(() => {
-      return vpn.lastNotification().title === 'VPN Disconnected';
+    await waitForCondition(() => {
+      return lastNotification().title === 'VPN Disconnected';
     });
 
-    assert.equal(vpn.lastNotification().title, 'VPN Disconnected');
-    assert(vpn.lastNotification().message.startsWith('Disconnected from '));
+    equal(lastNotification().title, 'VPN Disconnected');
+    assert(lastNotification().message.startsWith('Disconnected from '));
   });
 
   it('Connect to VPN - race condition', async () => {
@@ -101,48 +101,48 @@ describe('Connectivity', function() {
     // If we keep the two server data objects in sync (or if we have just one
     // of them), the controller can end up using not what the user asked for
     // but something that has changed in the meantime.
-    await vpn.setSetting(
+    await setSetting(
         'serverData',
         '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Melbourne","exit_country_code":"au"}');
-    await vpn.setSetting('connectionChangeNotification', 'true');
+    await setSetting('connectionChangeNotification', 'true');
 
     // Let's activate the VPN clicking on the toggle.
-    await vpn.activateViaToggle();
+    await activateViaToggle();
 
     // The controller starts with the data we have set in the settings.
-    const currentServer = await vpn.getMozillaProperty(
+    const currentServer = await getMozillaProperty(
         'Mozilla.VPN', 'VPNController', 'currentServerString');
-    assert.equal(currentServer, 'au-Melbourne--');
+    equal(currentServer, 'au-Melbourne--');
 
-    await vpn.setSetting(
+    await setSetting(
         'serverData',
         '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Sydney","exit_country_code":"au"}');
 
     // After changing the settings, the controller has still the previous
     // values. VPNCurrentServer is updated, instead.
-    assert.equal(
+    equal(
         currentServer,
-        await vpn.getMozillaProperty(
+        await getMozillaProperty(
             'Mozilla.VPN', 'VPNController', 'currentServerString'));
-    assert.equal(
-        await vpn.getMozillaProperty(
+    equal(
+        await getMozillaProperty(
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
 
-    await vpn.waitForCondition(async () => {
-      let connectingMsg = await vpn.getQueryProperty(
-          queries.screenHome.CONTROLLER_TITLE, 'text');
+    await waitForCondition(async () => {
+      let connectingMsg = await getQueryProperty(
+          screenHome.CONTROLLER_TITLE, 'text');
       return connectingMsg === 'Connecting…';
     });
 
     // At the end of the activation, controller and VPNCurrentServer are again
     // in sync.
-    assert.equal(
+    equal(
         currentServer,
-        await vpn.getMozillaProperty(
+        await getMozillaProperty(
             'Mozilla.VPN', 'VPNController', 'currentServerString'));
-    assert.equal(
-        await vpn.getMozillaProperty(
+    equal(
+        await getMozillaProperty(
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });

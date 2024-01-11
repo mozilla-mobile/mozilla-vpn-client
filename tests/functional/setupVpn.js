@@ -12,19 +12,19 @@ beforeEach applies to running before every test.
 */
 
 // Load config as early as possible
-const dotenv = require('dotenv');
-dotenv.config();
+import { config } from 'dotenv';
+config();
 
-const fs = require('fs');
-const {execSync, spawn} = require('child_process');
-const vpn = require('./helper.js');
-const vpnWS = require('./helperWS.js');
+import { readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
+import { execSync, spawn } from 'child_process';
+import { connect, reset, setSetting, authenticateInApp, settingsFileName, quit, gleanTestReset, setGleanAutomationHeader, screenCapture, hardReset, disconnect } from './helper.js';
+import vpnWS from './helperWS.js';
 
-const fxaServer = require('./servers/fxa.js');
-const guardian = require('./servers/guardian.js');
-const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./servers/networkBenchmark.js');
-const captivePortalServer = require('./servers/captivePortalServer.js');
+import { start, url, stop, throwExceptionsIfAny, overrideEndpoints } from './servers/fxa.js';
+import { start as _start, url as _url, stop as _stop, throwExceptionsIfAny as _throwExceptionsIfAny, overrideEndpoints as _overrideEndpoints } from './servers/guardian.js';
+import { start as __start, url as __url, stop as __stop, throwExceptionsIfAny as __throwExceptionsIfAny } from './servers/addon.js';
+import { start as ___start, url as ___url, stop as ___stop, throwExceptionsIfAny as ___throwExceptionsIfAny, overrideEndpoints as __overrideEndpoints } from './servers/networkBenchmark.js';
+import { start as ____start, port, stop as ____stop, throwExceptionsIfAny as ____throwExceptionsIfAny } from './servers/captivePortalServer.js';
 
 const app = process.env.MVPN_BIN;
 let vpnProcess = null;
@@ -43,7 +43,7 @@ async function startAndConnect() {
   });
 
   // Connect to VPN
-  await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
+  await connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
 function vpnIsInactive() {
@@ -55,10 +55,12 @@ function vpnIsInactive() {
   }
 }
 
-exports.startAndConnect = startAndConnect;
-exports.vpnIsInactive = vpnIsInactive;
+const _startAndConnect = startAndConnect;
+export { _startAndConnect as startAndConnect };
+const _vpnIsInactive = vpnIsInactive;
+export { _vpnIsInactive as vpnIsInactive };
 
-exports.mochaHooks = {
+export const mochaHooks = {
   async beforeAll() {
     // Check VPN app exists. If not, bail.
     try {
@@ -72,36 +74,36 @@ exports.mochaHooks = {
       process.exit(1);
     }
 
-    await guardian.start();
-    await fxaServer.start(guardian.url);
-    await addonServer.start();
-    await networkBenchmark.start();
-    await captivePortalServer.start();
+    await _start();
+    await start(_url);
+    await __start();
+    await ___start();
+    await ____start();
 
-    process.env['MVPN_API_BASE_URL'] = guardian.url;
-    process.env['MZ_FXA_API_BASE_URL'] = fxaServer.url;
-    process.env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
+    process.env['MVPN_API_BASE_URL'] = _url;
+    process.env['MZ_FXA_API_BASE_URL'] = url;
+    process.env['MZ_ADDON_URL'] = `${__url}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
-    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = networkBenchmark.url;
-    process.env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
+    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = ___url;
+    process.env['MZ_BENCHMARK_UPLOAD_URL'] = ___url;
 
     process.env['MZ_CAPTIVE_PORTAL_URL'] =
-      `http://%1:${captivePortalServer.port}/success.txt`;
+      `http://%1:${port}/success.txt`;
   },
 
   async afterAll() {
-    guardian.stop();
-    fxaServer.stop();
-    addonServer.stop();
-    networkBenchmark.stop();
-    captivePortalServer.stop();
+    _stop();
+    stop();
+    __stop();
+    ___stop();
+    ____stop();
 
-    guardian.throwExceptionsIfAny();
-    fxaServer.throwExceptionsIfAny();
-    addonServer.throwExceptionsIfAny();
-    networkBenchmark.throwExceptionsIfAny();
-    captivePortalServer.throwExceptionsIfAny();
+    _throwExceptionsIfAny();
+    throwExceptionsIfAny();
+    __throwExceptionsIfAny();
+    ___throwExceptionsIfAny();
+    ____throwExceptionsIfAny();
   },
 
   async beforeEach() {
@@ -109,33 +111,33 @@ exports.mochaHooks = {
       !this.currentTest.ctx.vpnSettings) {
       console.log('Retrieving the setting file...');
 
-      guardian.overrideEndpoints = null;
-      fxaServer.overrideEndpoints = null;
-      networkBenchmark.overrideEndpoints = null;
+      _overrideEndpoints = null;
+      overrideEndpoints = null;
+      __overrideEndpoints = null;
 
       await startAndConnect();
-      await vpn.reset();
-      await vpn.setSetting('tipsAndTricksIntroShown', 'true');
-      await vpn.setSetting('localhostRequestsOnly', 'true');
-      await vpn.authenticateInApp(true, true);
+      await reset();
+      await setSetting('tipsAndTricksIntroShown', 'true');
+      await setSetting('localhostRequestsOnly', 'true');
+      await authenticateInApp(true, true);
 
-      const fileName = await vpn.settingsFileName();
+      const fileName = await settingsFileName();
 
-      await vpn.quit();
+      await quit();
 
-      const content = await fs.readFileSync(fileName);
+      const content = await readFileSync(fileName);
       this.currentTest.ctx.vpnSettings = {fileName, content};
     }
 
-    guardian.overrideEndpoints =
+    _overrideEndpoints =
       this.currentTest.ctx.guardianOverrideEndpoints || null;
-    fxaServer.overrideEndpoints =
+    overrideEndpoints =
       this.currentTest.ctx.fxaOverrideEndpoints || null;
-    networkBenchmark.overrideEndpoints =
+    __overrideEndpoints =
       this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
-      fs.writeFileSync(
+      writeFileSync(
         this.currentTest.ctx.vpnSettings.fileName,
         this.currentTest.ctx.vpnSettings.content);
       await startAndConnect();
@@ -143,17 +145,17 @@ exports.mochaHooks = {
       if (this.currentTest.ctx.vpnSettings) {
         // We already have the settings file, we can remove it before starting
         // the app to have a really "hard" reset.
-        fs.unlinkSync(this.currentTest.ctx.vpnSettings.fileName);
+        unlinkSync(this.currentTest.ctx.vpnSettings.fileName);
         this.currentTest.ctx.vpnSettings = null;
       }
 
       await startAndConnect();
-      await vpn.gleanTestReset();
-      await vpn.reset();
-      await vpn.setSetting('tipsAndTricksIntroShown', 'true')
+      await gleanTestReset();
+      await reset();
+      await setSetting('tipsAndTricksIntroShown', 'true')
     }
 
-    await vpn.setGleanAutomationHeader();
+    await setGleanAutomationHeader();
 
     console.log('Starting test:', this.currentTest.title);
   },
@@ -169,14 +171,14 @@ exports.mochaHooks = {
       // Screenshot of failure state
       if (('ARTIFACT_DIR' in process.env)) {
         const dir = process.env.ARTIFACT_DIR + '/screencapture';
-        const data = await vpn.screenCapture();
+        const data = await screenCapture();
         const buffer = Buffer.from(data, 'base64');
         const title = this.currentTest.title.toLowerCase();
         const filename = title.replace(/[^a-z0-9]/g, '_');
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir);
+        if (!existsSync(dir)) {
+          mkdirSync(dir);
         }
-        fs.writeFileSync(`${dir}/${filename}.png`, buffer);
+        writeFileSync(`${dir}/${filename}.png`, buffer);
       }
     }
     // Reset error logs
@@ -186,12 +188,12 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
-      await vpn.hardReset();
-      await vpn.quit();
+      await hardReset();
+      await quit();
     } catch (error) {
       console.error(error);
     }
-    vpn.disconnect();
+    disconnect();
 
     vpnProcess.stdin.pause();
     vpnProcess.kill();

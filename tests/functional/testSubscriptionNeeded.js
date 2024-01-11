@@ -3,16 +3,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
- const assert = require('assert');
- const vpn = require('./helper.js');
- const queries = require('./queries.js');
- const { startAndConnect } = require('./setupVpn.js');
+ import { strictEqual } from 'assert';
+ import { runningOnWasm, authenticateInApp, gleanTestGetValue, waitForQueryAndClick, testLastInteractionEvent, setQueryProperty, waitForQuery, getOneEventOfType } from './helper.js';
+ import { screenSubscriptionNeeded, screenInBrowserSubscriptionLoading } from './queries.js';
+ import { startAndConnect } from './setupVpn.js';
 
 describe("subscription needed tests", function() {
   // TODO (VPN-5711): Create tests for this screen.
 
   describe('subscription needed related telemetry tests', function() {
-    if(vpn.runningOnWasm()) {
+    if(runningOnWasm()) {
       return;
     }
 
@@ -44,20 +44,20 @@ describe("subscription needed tests", function() {
       const screen = "subscription_needed";
 
       beforeEach(async () => {
-        await vpn.authenticateInApp();
+        await authenticateInApp();
       });
 
       it("impression event is recorded", async () => {
-        const  subNeededImpression = await vpn.gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
-        assert.strictEqual(subNeededImpression.length, 1)
+        const  subNeededImpression = await gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
+        strictEqual(subNeededImpression.length, 1)
         const enterEmailViewEventExtras = subNeededImpression[0].extra;
-        assert.strictEqual(screen, enterEmailViewEventExtras.screen);
+        strictEqual(screen, enterEmailViewEventExtras.screen);
       })
 
       it("get help event is recorded", async () => {
         // Click the "Get help" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_GET_HELP.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_GET_HELP.visible());
+        await testLastInteractionEvent({
             eventName: "getHelpSelected",
             screen
         });
@@ -65,15 +65,15 @@ describe("subscription needed tests", function() {
 
       it("legal disclaimer events are recorded", async () => {
         // Click the "Terms of Service" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_TERMS_OF_SERVICE.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_TERMS_OF_SERVICE.visible());
+        await testLastInteractionEvent({
             eventName: "termsOfServiceSelected",
             screen
         });
 
         // Click the "Privacy Notice" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_PRIVACY_NOTICE.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_PRIVACY_NOTICE.visible());
+        await testLastInteractionEvent({
             eventName: "privacyNoticeSelected",
             screen
         });
@@ -81,8 +81,8 @@ describe("subscription needed tests", function() {
 
       it("sign out event is recorded", async () => {
         // Click the "Sign out" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_SIGN_OUT.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_SIGN_OUT.visible());
+        await testLastInteractionEvent({
             eventName: "signOutSelected",
             screen
         });
@@ -90,18 +90,18 @@ describe("subscription needed tests", function() {
 
       it("subscribe now button event is recorded", async () => {
         // Click the "Subscribe now" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
-        const subscriptionNeededViewEvents = await vpn.gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        const subscriptionNeededViewEvents = await gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
         const subscriptionNeededViewEventExtras = subscriptionNeededViewEvents[0].extra;
-        assert.strictEqual(screen, subscriptionNeededViewEventExtras.screen);
+        strictEqual(screen, subscriptionNeededViewEventExtras.screen);
       });
 
       it("restore purchase event is recorded", async () => {
         // Make the "Already a subscriber?" button visible
-        await vpn.setQueryProperty(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_RESTORE_PURCHASE, "visible", true)
+        await setQueryProperty(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_RESTORE_PURCHASE, "visible", true)
         // Click the "Already a subscriber?" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_RESTORE_PURCHASE.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_RESTORE_PURCHASE.visible());
+        await testLastInteractionEvent({
             eventName: "alreadyASubscriberSelected",
             screen
         });
@@ -112,19 +112,19 @@ describe("subscription needed tests", function() {
       const screen = "continue_in_browser"
 
       it("impression event is recorded for in browser screen", async () => {
-        await vpn.authenticateInApp();
+        await authenticateInApp();
         // Click the "Subscribe now" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
         // Wait for the loading screen to show up
-        await vpn.waitForQuery(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_VIEW.visible());
+        await waitForQuery(screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_VIEW.visible());
 
-        const subscriptionNeededViewEvent = await vpn.getOneEventOfType({
+        const subscriptionNeededViewEvent = await getOneEventOfType({
           eventCategory: "impression",
           eventName: "continueInBrowserScreen",
           screen,
           expectedEventCount: 1
         });
-        assert.strictEqual(subscriptionNeededViewEvent.extra.screen, screen);
+        strictEqual(subscriptionNeededViewEvent.extra.screen, screen);
       });
 
       // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
@@ -132,12 +132,12 @@ describe("subscription needed tests", function() {
       it.skip("impression event is recorded for in app screen");
 
       it("cancel button event is recorded (in browser only)", async () => {
-        await vpn.authenticateInApp();
+        await authenticateInApp();
         // Click the "Subscribe now" button
-        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        await waitForQueryAndClick(screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
         // Click on the "Cancel" button
-        await vpn.waitForQueryAndClick(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
-        await vpn.testLastInteractionEvent({
+        await waitForQueryAndClick(screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
+        await testLastInteractionEvent({
           eventName: "cancelSelected",
           screen
         });

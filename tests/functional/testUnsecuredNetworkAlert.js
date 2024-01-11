@@ -2,32 +2,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
+import assert, { equal } from 'assert';
+import { resetLastNotification, setSetting, getSetting, getLastUrl, waitForQuery, forceUnsecuredNetworkAlert, wait, lastNotification, flipFeatureOff, clickOnQuery, waitForCondition, waitForQueryAndClick, authenticateInApp, getQueryProperty, clickOnNotification, activate, deactivate } from './helper.js';
+import { screenInitialize, screenAuthenticating, screenPostAuthentication, screenTelemetry, screenHome } from './queries.js';
 
 describe('Unsecured network alert', function() {
   describe('Basic tests through the intro phases of app', function() {
     it('Enable unsecured-network-alert feature', async () => {
-      vpn.resetLastNotification();
+      resetLastNotification();
 
-      await vpn.setSetting('unsecuredNetworkAlert', 'false');
-      assert.equal(await vpn.getSetting('unsecuredNetworkAlert'), false);
+      await setSetting('unsecuredNetworkAlert', 'false');
+      equal(await getSetting('unsecuredNetworkAlert'), false);
 
-      await vpn.setSetting('unsecuredNetworkAlert', 'true');
-      assert.equal(await vpn.getSetting('unsecuredNetworkAlert'), true);
+      await setSetting('unsecuredNetworkAlert', 'true');
+      equal(await getSetting('unsecuredNetworkAlert'), true);
     });
 
     it('Unsecured network alert during the main view', async () => {
-      assert.equal(await vpn.getLastUrl(), '');
+      equal(await getLastUrl(), '');
 
-      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+      await waitForQuery(screenInitialize.GET_HELP_LINK.visible());
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // No notifications during the main view.
-      assert.equal(vpn.lastNotification().title, null);
+      equal(lastNotification().title, null);
     });
 
     it('Unsecured network alert during the browser authentication', async () => {
@@ -36,83 +36,83 @@ describe('Unsecured network alert', function() {
         return;
       }
 
-      await vpn.flipFeatureOff('inAppAuthentication');
-      await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
+      await flipFeatureOff('inAppAuthentication');
+      await waitForQuery(screenInitialize.GET_HELP_LINK.visible());
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
 
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
+      await waitForCondition(async () => {
+        const url = await getLastUrl();
         return url.includes('/api/v2/vpn/login');
       });
 
-      await vpn.wait();
+      await wait();
 
-      await vpn.waitForQuery(
-          queries.screenInitialize.AUTHENTICATE_VIEW.visible());
+      await waitForQuery(
+          screenInitialize.AUTHENTICATE_VIEW.visible());
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // No notifications during the main view.
-      assert.equal(vpn.lastNotification().title, null);
+      equal(lastNotification().title, null);
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
+      await waitForQueryAndClick(
+          screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
-      await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(screenInitialize.SIGN_UP_BUTTON.visible());
     });
 
     it('Unsecured network alert in the Post authentication view', async () => {
-      await vpn.authenticateInApp(false, false);
-      await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
+      await authenticateInApp(false, false);
+      await waitForQuery(screenPostAuthentication.BUTTON.visible());
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are not OK yet.
-      assert.equal(vpn.lastNotification().title, null);
+      equal(lastNotification().title, null);
 
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await vpn.wait();
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
+      await wait();
     });
 
     it('Unsecured network alert in the Telemetry policy view', async () => {
-      await vpn.authenticateInApp(true, false);
-      await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
+      await authenticateInApp(true, false);
+      await waitForQuery(screenTelemetry.BUTTON.visible());
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are not OK yet.
-      assert.equal(vpn.lastNotification().title, null);
+      equal(lastNotification().title, null);
 
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
-      await vpn.wait();
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
+      await wait();
     });
 
     it('Unsecured network alert in the Controller view', async () => {
-      await vpn.authenticateInApp(true, true);
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
+      await authenticateInApp(true, true);
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
+      equal(
+          await getQueryProperty(
+              screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are OK now.
-      assert.equal(
-          vpn.lastNotification().title, 'Unsecured Wi-Fi network detected');
-      vpn.resetLastNotification();
-      assert.equal(vpn.lastNotification().title, null);
+      equal(
+          lastNotification().title, 'Unsecured Wi-Fi network detected');
+      resetLastNotification();
+      equal(lastNotification().title, null);
 
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_TITLE.visible(), 'text'),
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
+      equal(
+          await getQueryProperty(
+              screenHome.CONTROLLER_TITLE.visible(), 'text'),
           'VPN is off');
     });
   });
@@ -121,86 +121,86 @@ describe('Unsecured network alert', function() {
     this.ctx.authenticationNeeded = true;
 
     it('Clicking the notification activates the VPN', async () => {
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
-      assert.equal(
-          vpn.lastNotification().title, 'Unsecured Wi-Fi network detected');
-      vpn.resetLastNotification();
-      assert.equal(vpn.lastNotification().title, null);
+      await forceUnsecuredNetworkAlert();
+      await wait();
+      equal(
+          lastNotification().title, 'Unsecured Wi-Fi network detected');
+      resetLastNotification();
+      equal(lastNotification().title, null);
 
-      await vpn.clickOnNotification();
+      await clickOnNotification();
 
-      await vpn.waitForCondition(async () => {
-        return await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+      await waitForCondition(async () => {
+        return await getQueryProperty(
+                   screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'Connecting…';
       });
 
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenHome.CONTROLLER_SUBTITLE.visible(), 'text'),
+      equal(
+          await getQueryProperty(
+              screenHome.CONTROLLER_SUBTITLE.visible(), 'text'),
           'Masking connection and location');
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are not OK when connecting, but because the connection
       // is so fast recently, often at this point we are already in the connect
       // state.
       assert(
-          vpn.lastNotification().title === null ||
-          vpn.lastNotification().title === 'VPN Connected');
+          lastNotification().title === null ||
+          lastNotification().title === 'VPN Connected');
     });
 
     it('Unsecured network alert should not show when connected', async () => {
-      await vpn.activate();
-      await vpn.waitForCondition(async () => {
-        return await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+      await activate();
+      await waitForCondition(async () => {
+        return await getQueryProperty(
+                   screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'VPN is on';
       });
 
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'VPN Connected';
+      await waitForCondition(() => {
+        return lastNotification().title === 'VPN Connected';
       });
 
-      vpn.resetLastNotification();
+      resetLastNotification();
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are not OK when connected.
-      assert.equal(vpn.lastNotification().title, null);
+      equal(lastNotification().title, null);
     });
 
     it('After disconnecting unsecured network alert should show', async () => {
-      await vpn.activate();
-      await vpn.waitForCondition(async () => {
-        return await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+      await activate();
+      await waitForCondition(async () => {
+        return await getQueryProperty(
+                   screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'VPN is on';
       });
-      await vpn.deactivate();
+      await deactivate();
 
-      await vpn.waitForCondition(async () => {
-        const msg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+      await waitForCondition(async () => {
+        const msg = await getQueryProperty(
+            screenHome.CONTROLLER_TITLE.visible(), 'text');
         return msg === 'Disconnecting…' || msg === 'VPN is off';
       });
 
-      await vpn.waitForCondition(() => {
-        return vpn.lastNotification().title === 'VPN Disconnected';
+      await waitForCondition(() => {
+        return lastNotification().title === 'VPN Disconnected';
       });
 
-      vpn.resetLastNotification();
-      assert.equal(vpn.lastNotification().title, null);
+      resetLastNotification();
+      equal(lastNotification().title, null);
 
-      await vpn.forceUnsecuredNetworkAlert();
-      await vpn.wait();
+      await forceUnsecuredNetworkAlert();
+      await wait();
 
       // Notifications are OK when disconnected.
-      assert.equal(
-          vpn.lastNotification().title, 'Unsecured Wi-Fi network detected');
+      equal(
+          lastNotification().title, 'Unsecured Wi-Fi network detected');
     });
   });
 });

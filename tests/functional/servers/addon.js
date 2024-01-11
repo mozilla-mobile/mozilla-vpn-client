@@ -2,21 +2,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const Server = require('./server.js');
-const fs = require('fs');
-const path = require('path');
+import Server from './server.js';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { join, dirname } from 'path';
 
 // If not specified, assume the test addons can be found in the 'addons' subdir
 // under the MVPN_BIN binary
 const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
                          process.env.MVPN_ADDONS_PATH : 
-                         path.join(path.dirname(process.env.MVPN_BIN), 'addons');
+                         join(dirname(process.env.MVPN_BIN), 'addons');
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
 function createScenario(scenario, addonPath) {
-  const manifestPath = path.join(addonPath, 'manifest.json');
-  if (!fs.existsSync(manifestPath)) {
+  const manifestPath = join(addonPath, 'manifest.json');
+  if (!existsSync(manifestPath)) {
     throw new Error(`No manifest file! ${manifestPath} should exist!?`);
   }
 
@@ -24,24 +24,24 @@ function createScenario(scenario, addonPath) {
 
   obj[`/${scenario}/manifest.json`] = {
     status: 200,
-    bodyRaw: fs.readFileSync(manifestPath),
+    bodyRaw: readFileSync(manifestPath),
   };
   obj[`/${scenario}/manifest.json.sig`] = {
     status: 404,
     bodyRaw: '',
   };
 
-  const files = fs.readdirSync(addonPath);
+  const files = readdirSync(addonPath);
   for (const file of files) {
-    const filePath = path.join(addonPath, file);
-    const stat = fs.statSync(filePath);
+    const filePath = join(addonPath, file);
+    const stat = statSync(filePath);
     if (!stat.isFile()) {
       throw new Error(`Unexpected object: ${filePath}`);
     }
 
     obj[`/${scenario}/${file}`] = {
       status: 200,
-      bodyRaw: fs.readFileSync(filePath),
+      bodyRaw: readFileSync(filePath),
     };
   }
 
@@ -54,7 +54,7 @@ function createScenario(scenario, addonPath) {
 }
 
 let server = null;
-module.exports = {
+export default {
   async start(headerCheck = true) {
     let scenarios = {};
 

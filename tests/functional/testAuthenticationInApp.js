@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');  // TODO: add asserts to each block
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
-const fxaEndpoints = require('./servers/fxa_endpoints.js')
+import { strictEqual } from 'assert';  // TODO: add asserts to each block
+import { authenticateInApp, isFeatureFlippedOn, flipFeatureOn, waitForInitialView, clickOnQuery, waitForQuery, setQueryProperty, waitForQueryAndClick, copyToClipboard, waitForMozillaProperty, runningOnWasm, wait, waitForQueryAndWriteInTextField, gleanTestGetValue, testLastInteractionEvent, waitForCondition } from './helper.js';
+import { screenInitialize, screenAuthenticationInApp, global, screenPostAuthentication, screenTelemetry, screenHome } from './queries.js';
+import { validators } from './servers/fxa_endpoints.js';
 
 describe('User authentication', function() {
   this.timeout(300000);
 
   it('Completes authentication in app', async () => {
-    await vpn.authenticateInApp();
+    await authenticateInApp();
   });
 
   describe('Account creation', function() {
@@ -20,13 +20,13 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {exists: false}
         },
 
         '/v1/account/create': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaCreate,
+          bodyValidator: validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': true,
@@ -38,121 +38,121 @@ describe('User authentication', function() {
     };
 
     it('Account creation', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNUP_PASSWORD_INPUT.visible());
 
       // Condition 1
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', '12345');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_LENGTH_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', false));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
               .visible()
               .prop('_passwordConditionIsSatisfied', false));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_COMMON_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', false));
 
       // Condition 2
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', 'test@test.com');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_LENGTH_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', true));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
               .visible()
               .prop('_passwordConditionIsSatisfied', false));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_COMMON_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', true));
 
       // Condition 3
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', '12345678');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_LENGTH_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', true));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_EMAIL_CONDITION
               .visible()
               .prop('_passwordConditionIsSatisfied', true));
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp
+      await waitForQuery(
+          screenAuthenticationInApp
               .AUTH_SIGNUP_PASSWORD_COMMON_CONDITION.visible()
               .prop('_passwordConditionIsSatisfied', false));
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .enabled());
 
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', '');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .disabled());
-      await vpn.copyToClipboard('P4ass0rd!!');
-      await vpn.clickOnQuery(queries.screenAuthenticationInApp
+      await copyToClipboard('P4ass0rd!!');
+      await clickOnQuery(screenAuthenticationInApp
                                  .AUTH_SIGNUP_PASSWORD_PASTE_BUTTON.visible());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
@@ -162,13 +162,13 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {exists: false}
         },
 
         '/v1/account/create': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaCreate,
+          bodyValidator: validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': false,
@@ -179,7 +179,7 @@ describe('User authentication', function() {
         '/v1/session/verify_code': {
           status: 200,
           requiredHeaders: ['Authorization'],
-          bodyValidator: fxaEndpoints.validators.fxaVerifyCode,
+          bodyValidator: validators.fxaVerifyCode,
           body: {}
         },
       },
@@ -187,81 +187,81 @@ describe('User authentication', function() {
     };
 
     it('Account creation with email verification', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNUP_PASSWORD_INPUT.visible());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
           'text', '12345');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
           'text', '123456');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .enabled());
 
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
           'text', '');
-      await vpn.copyToClipboard('654321');
-      await vpn.clickOnQuery(queries.screenAuthenticationInApp
+      await copyToClipboard('654321');
+      await clickOnQuery(screenAuthenticationInApp
                                  .AUTH_EMAILVER_PASTE_BUTTON.visible());
 
-      await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await clickOnQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
@@ -271,13 +271,13 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {exists: false}
         },
 
         '/v1/account/create': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaCreate,
+          bodyValidator: validators.fxaCreate,
           body: {
             sessionToken: 'sessionToken',
             'verified': false,
@@ -288,7 +288,7 @@ describe('User authentication', function() {
         '/v1/session/verify/totp': {
           status: 200,
           requiredHeaders: ['Authorization'],
-          bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
+          bodyValidator: validators.fxaVerifyTotp,
           body: {success: true}
         },
       },
@@ -296,82 +296,82 @@ describe('User authentication', function() {
     };
 
     it('Account creation with TOTP', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNUP_PASSWORD_INPUT.visible());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
           'text', '12345');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
           'text', '123456');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .enabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
           'text', '');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .disabled());
-      await vpn.copyToClipboard('123456');
-      await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_PASTE_BUTTON.visible());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await copyToClipboard('123456');
+      await clickOnQuery(
+          screenAuthenticationInApp.AUTH_TOTP_PASTE_BUTTON.visible());
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
@@ -381,7 +381,7 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 400,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {errno: 107, validation: {keys: ['unblockCode']}}
         },
       },
@@ -389,68 +389,68 @@ describe('User authentication', function() {
     };
 
     it('Authentication with unblock code', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible(),
           'text', '1234567');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible(),
           'text', '12345678');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .enabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible(),
           'text', '');
-      await vpn.copyToClipboard("12345678");
-      await vpn.clickOnQuery(queries.screenAuthenticationInApp
+      await copyToClipboard("12345678");
+      await clickOnQuery(screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_PASTE_BUTTON.visible());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
@@ -460,7 +460,7 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {exists: true, hasLinkedAccount: false, hasPassword: false}
         },
       },
@@ -468,27 +468,27 @@ describe('User authentication', function() {
     };
 
     it('Account creation with stub account', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await waitForQuery(screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
     });
   });
 
@@ -498,7 +498,7 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: {exists: true, hasLinkedAccount: true, hasPassword: false}
         },
       },
@@ -506,32 +506,32 @@ describe('User authentication', function() {
     };
 
     it('Account creation with stub account', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await waitForQuery(screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
     });
   });
 
   describe('auth in app related telemetry tests', () => {
-    if(vpn.runningOnWasm()) {
+    if(runningOnWasm()) {
         // No Glean on WASM.
         return;
     }
@@ -540,47 +540,47 @@ describe('User authentication', function() {
     // https://miro.com/app/board/uXjVM0BZcnc=/?share_link_id=228137467679
 
     const goToAuthStartScreen = async () => {
-        await vpn.waitForInitialView();
-        await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-        await vpn.waitForQuery(
-            queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-        await vpn.waitForQuery(
-            queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+        await waitForInitialView();
+        await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+        await waitForQuery(
+            screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+        await waitForQuery(
+            screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .disabled());
 
         // Stop for just a tad, to be sure the telemetry APIs get called.
-        await vpn.wait();
+        await wait();
     };
 
     const goToPasswordScreen = async (signUp = true) => {
         await goToAuthStartScreen();
-        await vpn.setQueryProperty(
-            queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+        await setQueryProperty(
+            screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
             'text', 'test@test.com');
-        await vpn.waitForQueryAndClick(
-            queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+        await waitForQueryAndClick(
+            screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .enabled());
-        await vpn.waitForQuery(queries.screenAuthenticationInApp
+        await waitForQuery(screenAuthenticationInApp
                                    [`AUTH_${signUp ? "SIGNUP" : "SIGNIN"}_BUTTON`].visible());
 
         // Stop for just a tad, to be sure the telemetry APIs get called.
-        await vpn.wait();
+        await wait();
     };
 
     const goToVerificationScreen = async (queriesFamily) => {
         await goToPasswordScreen();
-        await vpn.waitForQueryAndWriteInTextField(
-            queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT.visible(),
+        await waitForQueryAndWriteInTextField(
+            screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT.visible(),
             'P4ass0rd!!'
         );
-        await vpn.waitForQueryAndClick(
-            queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible());
-        await vpn.waitForQuery(
-            queries.screenAuthenticationInApp[`${queriesFamily}_BUTTON`].visible()
+        await waitForQueryAndClick(
+            screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible());
+        await waitForQuery(
+            screenAuthenticationInApp[`${queriesFamily}_BUTTON`].visible()
                 .disabled());
 
         // Stop for just a tad, to be sure the telemetry APIs get called.
-        await vpn.wait();
+        await wait();
     }
 
     describe("authentication started screen", async () => {
@@ -591,16 +591,16 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const enterEmailViewEvent = await vpn.gleanTestGetValue("impression", "enterEmailScreen", "main");
-            assert.strictEqual(enterEmailViewEvent.length, 1)
+            const enterEmailViewEvent = await gleanTestGetValue("impression", "enterEmailScreen", "main");
+            strictEqual(enterEmailViewEvent.length, 1)
             const enterEmailViewEventExtras = enterEmailViewEvent[0].extra;
-            assert.strictEqual(screen, enterEmailViewEventExtras.screen);
+            strictEqual(screen, enterEmailViewEventExtras.screen);
         });
 
         it("back button event is recorded", async () => {
             // Click the "<-" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "backSelected",
                 screen,
             });
@@ -608,8 +608,8 @@ describe('User authentication', function() {
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -617,15 +617,15 @@ describe('User authentication', function() {
 
         it("continue button event is recorded", async () => {
             // Fill out the email form to enable "Continue" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
                 'test@test.com'
             );
             // Click the now enabled "Continue" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "continueSelected",
                 screen
             });
@@ -640,16 +640,16 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const  enterPasswordViewEvent = await vpn.gleanTestGetValue("impression", "enterPasswordScreen", "main");
-            assert.strictEqual(enterPasswordViewEvent.length, 1)
+            const  enterPasswordViewEvent = await gleanTestGetValue("impression", "enterPasswordScreen", "main");
+            strictEqual(enterPasswordViewEvent.length, 1)
             const enterPasswordViewEventExtras = enterPasswordViewEvent[0].extra;
-            assert.strictEqual(screen, enterPasswordViewEventExtras.screen);
+            strictEqual(screen, enterPasswordViewEventExtras.screen);
         });
 
         it("back button event is recorded", async () => {
             // Click the "<-" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "backSelected",
                 screen
             });
@@ -657,8 +657,8 @@ describe('User authentication', function() {
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -666,8 +666,8 @@ describe('User authentication', function() {
 
         it("paste button event is recorded", async () => {
             // Click the "Paste" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_PASTE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_PASTE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "pastePasswordSelected",
                 screen
             });
@@ -675,8 +675,8 @@ describe('User authentication', function() {
 
         it("change email button event is recorded", async () => {
             // Click the "Change email" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_CHANGE_EMAIL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_CHANGE_EMAIL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "changeEmailSelected",
                 screen
             });
@@ -684,8 +684,8 @@ describe('User authentication', function() {
 
         it("forgot password button event is recorded", async () => {
             // Click the "Forgot your password?" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_FORGOT_PASSWORD_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_FORGOT_PASSWORD_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "forgotYourPasswordSelected",
                 screen
             });
@@ -693,8 +693,8 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
             });
@@ -706,15 +706,15 @@ describe('User authentication', function() {
         // They are HTML tags inside of a QML text component???
         it.skip("legal disclaimer events are recorded", async () => {
             // Click the "Terms of Service" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
+            await testLastInteractionEvent({
                 eventName: "termsOfServiceSelected",
                 screen
             });
 
             // Click the "Privacy Notice" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
+            await testLastInteractionEvent({
                 eventName: "privacyNoticeSelected",
                 screen
             });
@@ -722,34 +722,34 @@ describe('User authentication', function() {
 
         it("signin button event and outcome event are recorded", async () => {
             // Fill out the email form to enable "Sign in" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
                 'P4ass0rd!!'
             );
             // Click the now enabled "Sign in" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "signInSelected",
                 screen
             });
 
-            const startedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "loginStarted", "main");
-            assert.strictEqual(startedOutcomeEvent.length, 1);
+            const startedOutcomeEvent = await gleanTestGetValue("outcome", "loginStarted", "main");
+            strictEqual(startedOutcomeEvent.length, 1);
 
-            await vpn.waitForMozillaProperty(
+            await waitForMozillaProperty(
                 'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-            const endedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "loginEnded", "main");
-            assert.strictEqual(endedOutcomeEvent.length, 1);
+            const endedOutcomeEvent = await gleanTestGetValue("outcome", "loginEnded", "main");
+            strictEqual(endedOutcomeEvent.length, 1);
 
             // Make sure 2fa outcome event were NOT recorded
             const unwantedEvents = [
-                ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main")),
-                ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main"))
+                ...(await gleanTestGetValue("outcome", "twoFaVerificationFailed", "main")),
+                ...(await gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main"))
             ];
-            assert.strictEqual(unwantedEvents.length, 0);
+            strictEqual(unwantedEvents.length, 0);
         });
     });
 
@@ -762,7 +762,7 @@ describe('User authentication', function() {
                 POSTs: {
                     '/v1/account/status': {
                         status: 400,
-                        bodyValidator: fxaEndpoints.validators.fxaStatus,
+                        bodyValidator: validators.fxaStatus,
                         body: {errno: 107, validation: {keys: ['unblockCode']}}
                     },
                     '/v1/account/login/send_unblock_code': {
@@ -777,27 +777,27 @@ describe('User authentication', function() {
 
         beforeEach(async () => {
             await goToAuthStartScreen();
-            await vpn.setQueryProperty(
-                queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+            await setQueryProperty(
+                screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
                 'text', 'test@test.com');
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                     .enabled());
-            await vpn.waitForQuery(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible());
+            await waitForQuery(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible());
         });
 
         it("impression event is recorded", async () => {
-            const  unblockCodeViewEvent = await vpn.gleanTestGetValue("impression", "enterUnblockCodeScreen", "main");
-            assert.strictEqual(unblockCodeViewEvent.length, 1)
+            const  unblockCodeViewEvent = await gleanTestGetValue("impression", "enterUnblockCodeScreen", "main");
+            strictEqual(unblockCodeViewEvent.length, 1)
             const unblockCodeViewEventExtras = unblockCodeViewEvent[0].extra;
-            assert.strictEqual(screen, unblockCodeViewEventExtras.screen);
+            strictEqual(screen, unblockCodeViewEventExtras.screen);
         });
 
         it("close button event is recorded", async () => {
             // Click the "Close" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BACK_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_UNBLOCKCODE_BACK_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "closeSelected",
                 screen
             });
@@ -805,8 +805,8 @@ describe('User authentication', function() {
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -814,8 +814,8 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_CANCEL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_UNBLOCKCODE_CANCEL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
             });
@@ -823,8 +823,8 @@ describe('User authentication', function() {
 
         it("paste button event is recorded", async () => {
             // Click the "Paste" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_PASTE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_UNBLOCKCODE_PASTE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "pastePasswordSelected",
                 screen
             });
@@ -832,8 +832,8 @@ describe('User authentication', function() {
 
         it("resend code button event is recorded", async () => {
             // Click the "Resend Code" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_RESEND_CODE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_UNBLOCKCODE_RESEND_CODE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "resendCodeSelected",
                 screen
             });
@@ -846,15 +846,15 @@ describe('User authentication', function() {
         it.skip("legal disclaimer events are recorded", async () => {
             // Click the "Terms of Service" button
             // Click the "Terms of Service" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
+            await testLastInteractionEvent({
                 eventName: "termsOfServiceSelected",
                 screen
             });
 
             // Click the "Privacy Notice" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
+            await testLastInteractionEvent({
                 eventName: "privacyNoticeSelected",
                 screen
             });
@@ -866,15 +866,15 @@ describe('User authentication', function() {
             this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {errno: 107, validation: {keys: ['unblockCode']}}
 
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
                 '87654321'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 elementId: "verify",
                 screen
@@ -882,42 +882,42 @@ describe('User authentication', function() {
 
             // First a failing outcome
             let failedOutcomeEvent;
-            await vpn.waitForCondition(async () => {
-                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+            await waitForCondition(async () => {
+                failedOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
                 return failedOutcomeEvent.length == 1;
             });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
-            assert.strictEqual("unblock_code", failedOutcomeExtras.type);
+            strictEqual("unblock_code", failedOutcomeExtras.type);
 
             // Prepare mocks for a successfull verification
             this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
 
             // Clear the verification code from the form
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
                 ''
             );
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT.visible(),
                 '12345678'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 screen
             });
             // Give the authentication APIs a moment to finish.
-            await vpn.wait();
+            await wait();
 
             // Now the successfull outcome
-            const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
-            assert.strictEqual(successOutcomeEvent.length, 1);
+            const successOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
+            strictEqual(successOutcomeEvent.length, 1);
             const successOutcomeExtras = successOutcomeEvent[0].extra;
-            assert.strictEqual("unblock_code", successOutcomeExtras.type);
+            strictEqual("unblock_code", successOutcomeExtras.type);
         });
     });
 
@@ -931,12 +931,12 @@ describe('User authentication', function() {
                 POSTs: {
                     '/v1/account/status': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaStatus,
+                        bodyValidator: validators.fxaStatus,
                         body: { exists: false }
                     },
                     '/v1/account/create': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaCreate,
+                        bodyValidator: validators.fxaCreate,
                         body: {
                             sessionToken: 'sessionToken',
                             'verified': true,
@@ -953,16 +953,16 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const  createPasswordViewEvent = await vpn.gleanTestGetValue("impression", "createPasswordScreen", "main");
-            assert.strictEqual(createPasswordViewEvent.length, 1)
+            const  createPasswordViewEvent = await gleanTestGetValue("impression", "createPasswordScreen", "main");
+            strictEqual(createPasswordViewEvent.length, 1)
             const createPasswordViewEventExtras = createPasswordViewEvent[0].extra;
-            assert.strictEqual(screen, createPasswordViewEventExtras.screen);
+            strictEqual(screen, createPasswordViewEventExtras.screen);
         });
 
         it("back button event is recorded", async () => {
             // Click the "<-" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "backSelected",
                 screen
             });
@@ -970,8 +970,8 @@ describe('User authentication', function() {
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNUP_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNUP_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -979,8 +979,8 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNUP_CANCEL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_SIGNUP_CANCEL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
             });
@@ -992,15 +992,15 @@ describe('User authentication', function() {
         // They are HTML tags inside of a QML text component???
         it.skip("legal disclaimer events are recorded", async () => {
             // Click the "Terms of Service" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
+            await testLastInteractionEvent({
                 eventName: "termsOfServiceSelected",
                 screen
             });
 
             // Click the "Privacy Notice" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
+            await testLastInteractionEvent({
                 eventName: "privacyNoticeSelected",
                 screen
             });
@@ -1008,36 +1008,36 @@ describe('User authentication', function() {
 
         it("create account button event and outcome event are recorded", async () => {
             // Fill out the password form to enable "Create account" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_SIGNUP_PASSWORD_INPUT.visible(),
                 'P4ass0rd!!'
             );
             // Click the now enabled "Create account" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_SIGNUP_BUTTON.visible()
                     .enabled());
             // Two events are exected here,
             // because of the pressing of the "Continue" button in the start screen
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "createAccountSelected",
                 screen
             });
 
-            const startedEvent = await vpn.gleanTestGetValue("outcome", "registrationStarted", "main");
-            assert.strictEqual(startedEvent.length, 1);
+            const startedEvent = await gleanTestGetValue("outcome", "registrationStarted", "main");
+            strictEqual(startedEvent.length, 1);
 
-            await vpn.waitForMozillaProperty(
+            await waitForMozillaProperty(
                 'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-            const completedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "registrationCompleted", "main");
-            assert.strictEqual(completedOutcomeEvent.length, 1);
+            const completedOutcomeEvent = await gleanTestGetValue("outcome", "registrationCompleted", "main");
+            strictEqual(completedOutcomeEvent.length, 1);
 
              // Make sure no 2fa outcome event was NOT recorded
              const unwantedEvents = [
-                ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main")),
-                ...(await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main"))
+                ...(await gleanTestGetValue("outcome", "twoFaVerificationFailed", "main")),
+                ...(await gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main"))
             ];
-            assert.strictEqual(unwantedEvents.length, 0);
+            strictEqual(unwantedEvents.length, 0);
         });
     });
 
@@ -1051,12 +1051,12 @@ describe('User authentication', function() {
                 POSTs: {
                     '/v1/account/status': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaStatus,
+                        bodyValidator: validators.fxaStatus,
                         body: { exists: false }
                     },
                     '/v1/account/create': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaCreate,
+                        bodyValidator: validators.fxaCreate,
                         body: {
                         sessionToken: 'sessionToken',
                         verified: false,
@@ -1079,17 +1079,17 @@ describe('User authentication', function() {
         });
 
         it('impression event is recorded', async () => {
-          const verificationViewEvent = await vpn.gleanTestGetValue(
+          const verificationViewEvent = await gleanTestGetValue(
               "impression", "enterVerificationCodeScreen", "main");
-          assert.strictEqual(verificationViewEvent.length, 1)
+          strictEqual(verificationViewEvent.length, 1)
           const verificationViewEventExtras = verificationViewEvent[0].extra;
-          assert.strictEqual(screen, verificationViewEventExtras.screen);
+          strictEqual(screen, verificationViewEventExtras.screen);
         });
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -1097,8 +1097,8 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
             });
@@ -1106,8 +1106,8 @@ describe('User authentication', function() {
 
         it("paste button event is recorded", async () => {
             // Click the "Paste" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_PASTE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_EMAILVER_PASTE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "pastePasswordSelected",
                 screen
             });
@@ -1115,8 +1115,8 @@ describe('User authentication', function() {
 
         it("resend code button event is recorded", async () => {
             // Click the "Resend Code" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_RESEND_CODE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_EMAILVER_RESEND_CODE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "resendCodeSelected",
                 screen
             });
@@ -1128,15 +1128,15 @@ describe('User authentication', function() {
         // They are HTML tags inside of a QML text component???
         it.skip("legal disclaimer events are recorded", async () => {
             // Click the "Terms of Service" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
+            await testLastInteractionEvent({
                 eventName: "termsOfServiceSelected",
                 screen
             });
 
             // Click the "Privacy Notice" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
+            await testLastInteractionEvent({
                 eventName: "privacyNoticeSelected",
                 screen
             });
@@ -1150,58 +1150,58 @@ describe('User authentication', function() {
                 validation: { keys: ['code'] }
             }
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
                 '654321'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 screen
             });
 
             // First a failing outcome
             let failedOutcomeEvent;
-            await vpn.waitForCondition(async () => {
-                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+            await waitForCondition(async () => {
+                failedOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
                 return failedOutcomeEvent.length == 1;
             });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
-            assert.strictEqual("email", failedOutcomeExtras.type);
+            strictEqual("email", failedOutcomeExtras.type);
 
             // Prepare mocks for a successfull verification
             this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify_code'].status = 200;
             this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify_code'].body = {};
 
             // Clear the verification code from the form
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
                 ''
             );
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
                 '123456'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 screen
             });
             // Give the authentication APIs a moment to finish.
-            await vpn.wait();
+            await wait();
 
             // Now the successfull outcome
-            const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
-            assert.strictEqual(successOutcomeEvent.length, 1);
+            const successOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
+            strictEqual(successOutcomeEvent.length, 1);
             const successOutcomeExtras = successOutcomeEvent[0].extra;
-            assert.strictEqual("email", successOutcomeExtras.type);
+            strictEqual("email", successOutcomeExtras.type);
         });
     });
 
@@ -1215,12 +1215,12 @@ describe('User authentication', function() {
                 POSTs: {
                     '/v1/account/status': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaStatus,
+                        bodyValidator: validators.fxaStatus,
                         body: { exists: false }
                     },
                     '/v1/account/create': {
                         status: 200,
-                        bodyValidator: fxaEndpoints.validators.fxaCreate,
+                        bodyValidator: validators.fxaCreate,
                         body: {
                         sessionToken: 'sessionToken',
                         verified: false,
@@ -1239,16 +1239,16 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const  verificationViewEvent = await vpn.gleanTestGetValue("impression", "enterSecurityCodeScreen", "main");
-            assert.strictEqual(verificationViewEvent.length, 1)
+            const  verificationViewEvent = await gleanTestGetValue("impression", "enterSecurityCodeScreen", "main");
+            strictEqual(verificationViewEvent.length, 1)
             const verificationViewEventExtras = verificationViewEvent[0].extra;
-            assert.strictEqual(screen, verificationViewEventExtras.screen);
+            strictEqual(screen, verificationViewEventExtras.screen);
         });
 
         it("get help event is recorded", async () => {
             // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
+            await testLastInteractionEvent({
                 eventName: "getHelpSelected",
                 screen
             });
@@ -1256,8 +1256,8 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
             });
@@ -1265,8 +1265,8 @@ describe('User authentication', function() {
 
         it("paste button event is recorded", async () => {
             // Click the "Paste" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TOTP_PASTE_BUTTON.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TOTP_PASTE_BUTTON.visible());
+            await testLastInteractionEvent({
                 eventName: "pastePasswordSelected",
                 screen
             });
@@ -1278,15 +1278,15 @@ describe('User authentication', function() {
         // They are HTML tags inside of a QML text component???
         it.skip("legal disclaimer events are recorded", async () => {
             // Click the "Terms of Service" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_TERMS_OF_SERVICE.visible());
+            await testLastInteractionEvent({
                 eventName: "termsOfServiceSelected",
                 screen
             });
 
             // Click the "Privacy Notice" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
-            await vpn.testLastInteractionEvent({
+            await waitForQueryAndClick(screenAuthenticationInApp.AUTH_PRIVACY_NOTICE.visible());
+            await testLastInteractionEvent({
                 eventName: "privacyNoticeSelected",
                 screen
             });
@@ -1300,27 +1300,27 @@ describe('User authentication', function() {
             };
 
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
                 '654321'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 screen
             });
 
             // First a failing outcome
             let failedOutcomeEvent;
-            await vpn.waitForCondition(async () => {
-                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
+            await waitForCondition(async () => {
+                failedOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
                 return failedOutcomeEvent.length == 1;
             });
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
-            assert.strictEqual("totp", failedOutcomeExtras.type);
+            strictEqual("totp", failedOutcomeExtras.type);
 
             // Prepare mocks for a successfull verification
             this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].status = 200;
@@ -1329,31 +1329,31 @@ describe('User authentication', function() {
             };
 
             // Clear the verification code from the form
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
                 ''
             );
             // Fill out the code form to enable "Verify" button
-            await vpn.waitForQueryAndWriteInTextField(
-                queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+            await waitForQueryAndWriteInTextField(
+                screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
                 '123456'
             );
             // Click the now enabled "Verify" button
-            await vpn.waitForQueryAndClick(
-                queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+            await waitForQueryAndClick(
+                screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
                     .enabled());
-            await vpn.testLastInteractionEvent({
+            await testLastInteractionEvent({
                 eventName: "verifySelected",
                 screen
             });
             // Give the authentication APIs a moment to finish.
-            await vpn.wait();
+            await wait();
 
             // Now the successfull outcome
-            const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
-            assert.strictEqual(successOutcomeEvent.length, 1);
+            const successOutcomeEvent = await gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
+            strictEqual(successOutcomeEvent.length, 1);
             const successOutcomeExtras = successOutcomeEvent[0].extra;
-            assert.strictEqual("totp", successOutcomeExtras.type);
+            strictEqual("totp", successOutcomeExtras.type);
         });
     });
   });

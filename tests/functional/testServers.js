@@ -2,9 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
+ 
+import assert, { equal, strictEqual } from 'assert';
+import { screenHome } from './queries.js';
+import { waitForQueryAndClick, waitForQuery, servers as _servers, getMozillaProperty, scrollToQuery, getQueryProperty, clickOnQuery, setQueryProperty, setSetting, activate, waitForCondition, lastNotification, wait } from './helper.js';
 
 describe('Server list', function() {
   let servers;
@@ -15,15 +16,15 @@ describe('Server list', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.SERVER_LIST_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
+    await waitForQueryAndClick(
+        screenHome.SERVER_LIST_BUTTON.visible());
+    await waitForQuery(screenHome.STACKVIEW.ready());
+    await waitForQueryAndClick(screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
-    servers = await vpn.servers();
-    currentCountryCode = await vpn.getMozillaProperty(
+    servers = await _servers();
+    currentCountryCode = await getMozillaProperty(
         'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
-    currentCity = await vpn.getMozillaProperty(
+    currentCity = await getMozillaProperty(
         'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
 
     for (let server of servers) {
@@ -42,35 +43,35 @@ describe('Server list', function() {
   });
 
   it('opening the server list', async () => {
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.serverListView.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.SERVER_LIST_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenHome.serverListView.BACK_BUTTON.visible());
+    await waitForQuery(screenHome.SERVER_LIST_BUTTON.visible());
   });
 
   it('check the countries and cities', async () => {
     for (let server of servers) {
       const countryId =
-          queries.screenHome.serverListView.generateCountryId(server.code);
-      await vpn.waitForQuery(countryId.visible());
+          screenHome.serverListView.generateCountryId(server.code);
+      await waitForQuery(countryId.visible());
 
-      await vpn.scrollToQuery(
-          queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
+      await scrollToQuery(
+          screenHome.serverListView.COUNTRY_VIEW, countryId);
 
       if (currentCountryCode === server.code) {
-        assert.equal(
-            await vpn.getQueryProperty(countryId, 'cityListVisible'),
+        equal(
+            await getQueryProperty(countryId, 'cityListVisible'),
             'true');
       }
 
-      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+      if (await getQueryProperty(countryId, 'cityListVisible') ===
           'false') {
-        await vpn.clickOnQuery(countryId);
+        await clickOnQuery(countryId);
       }
 
       for (let city of server.cities) {
-        const cityId = queries.screenHome.serverListView.generateCityId(
+        const cityId = screenHome.serverListView.generateCityId(
             countryId, city.name);
-        await vpn.waitForQuery(cityId.visible().prop(
+        await waitForQuery(cityId.visible().prop(
             'checked',
             currentCountryCode === server.code &&
                     currentCity === city.localizedName ?
@@ -83,71 +84,71 @@ describe('Server list', function() {
   it('Pick cities', async () => {
     for (let server of servers) {
       const countryId =
-          queries.screenHome.serverListView.generateCountryId(server.code);
-      await vpn.waitForQuery(countryId.visible());
+          screenHome.serverListView.generateCountryId(server.code);
+      await waitForQuery(countryId.visible());
 
-      await vpn.scrollToQuery(
-          queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
+      await scrollToQuery(
+          screenHome.serverListView.COUNTRY_VIEW, countryId);
 
-      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+      if (await getQueryProperty(countryId, 'cityListVisible') ===
           'false') {
-        await vpn.clickOnQuery(countryId);
-        await vpn.waitForQuery(countryId.ready());
+        await clickOnQuery(countryId);
+        await waitForQuery(countryId.ready());
       }
 
-      await vpn.waitForQuery(countryId.prop('cityListVisible', true));
+      await waitForQuery(countryId.prop('cityListVisible', true));
 
       for (let city of server.cities) {
         console.log('  Start test for city:', city);
-        const cityId = queries.screenHome.serverListView.generateCityId(
+        const cityId = screenHome.serverListView.generateCityId(
             countryId, city.name);
-        await vpn.waitForQuery(cityId);
+        await waitForQuery(cityId);
 
-        await vpn.setQueryProperty(
-            queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-            parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-                parseInt(await vpn.getQueryProperty(countryId, 'y')));
-        await vpn.waitForQuery(cityId.visible());
+        await setQueryProperty(
+            screenHome.serverListView.COUNTRY_VIEW, 'contentY',
+            parseInt(await getQueryProperty(cityId, 'y')) +
+                parseInt(await getQueryProperty(countryId, 'y')));
+        await waitForQuery(cityId.visible());
 
         const cityName =
-            await vpn.getQueryProperty(cityId, 'radioButtonLabelText');
+            await getQueryProperty(cityId, 'radioButtonLabelText');
 
-        await vpn.clickOnQuery(cityId);
-        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+        await clickOnQuery(cityId);
+        await waitForQuery(screenHome.STACKVIEW.ready());
 
         currentCountryCode = server.code;
         currentCity = city.localizedName;
 
         // Back to the main view.
 
-        await vpn.waitForQuery(queries.screenHome.SERVER_LIST_BUTTON.visible());
-        await vpn.waitForQuery(
-            queries.screenHome.SERVER_LIST_BUTTON_LABEL.visible().prop(
+        await waitForQuery(screenHome.SERVER_LIST_BUTTON.visible());
+        await waitForQuery(
+            screenHome.SERVER_LIST_BUTTON_LABEL.visible().prop(
                 'text', cityName));
-        await vpn.waitForQueryAndClick(
-            queries.screenHome.SERVER_LIST_BUTTON.visible());
-        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-        await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
+        await waitForQueryAndClick(
+            screenHome.SERVER_LIST_BUTTON.visible());
+        await waitForQuery(screenHome.STACKVIEW.ready());
+        await waitForQueryAndClick(screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
         // One selected
-        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-        await vpn.waitForQuery(cityId.checked());
+        await waitForQuery(screenHome.STACKVIEW.ready());
+        await waitForQuery(cityId.checked());
       }
     }
   });
 
   it('Server switching', async () => {
-    await vpn.setSetting('serverSwitchNotification', 'true');
-    await vpn.setSetting('connectionChangeNotification', 'true');
+    await setSetting('serverSwitchNotification', 'true');
+    await setSetting('connectionChangeNotification', 'true');
 
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.serverListView.BACK_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenHome.serverListView.BACK_BUTTON.visible());
 
-    await vpn.activate();
+    await activate();
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ==
+    await waitForCondition(async () => {
+      return await getQueryProperty(
+                 screenHome.CONTROLLER_TITLE.visible(), 'text') ==
           'VPN is on';
     });
 
@@ -161,15 +162,15 @@ describe('Server list', function() {
 
     assert(currentCountry != '');
 
-    assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
-    assert.strictEqual(
-        vpn.lastNotification().message,
+    strictEqual(lastNotification().title, 'VPN Connected');
+    strictEqual(
+        lastNotification().message,
         `Connected through ${currentCity}`);
 
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.SERVER_LIST_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
+    await waitForQueryAndClick(
+        screenHome.SERVER_LIST_BUTTON.visible());
+    await waitForQuery(screenHome.STACKVIEW.ready());
+    await waitForQueryAndClick(screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
     let server;
     while (true) {
@@ -178,26 +179,26 @@ describe('Server list', function() {
     }
 
     const countryId =
-        queries.screenHome.serverListView.generateCountryId(server.code);
-    await vpn.waitForQuery(countryId.visible());
+        screenHome.serverListView.generateCountryId(server.code);
+    await waitForQuery(countryId.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
-    await vpn.clickOnQuery(countryId);
+    await scrollToQuery(
+        screenHome.serverListView.COUNTRY_VIEW, countryId);
+    await clickOnQuery(countryId);
 
     let city = server.cities[Math.floor(Math.random() * server.cities.length)];
     const cityId =
-        queries.screenHome.serverListView.generateCityId(countryId, city.name);
-    await vpn.waitForQuery(cityId.visible());
+        screenHome.serverListView.generateCityId(countryId, city.name);
+    await waitForQuery(cityId.visible());
 
-    await vpn.setQueryProperty(
-        queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-        parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-            parseInt(await vpn.getQueryProperty(countryId, 'y')));
-    await vpn.wait();
+    await setQueryProperty(
+        screenHome.serverListView.COUNTRY_VIEW, 'contentY',
+        parseInt(await getQueryProperty(cityId, 'y')) +
+            parseInt(await getQueryProperty(countryId, 'y')));
+    await wait();
 
-    await vpn.clickOnQuery(cityId);
-    await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await clickOnQuery(cityId);
+    await waitForQuery(screenHome.STACKVIEW.ready());
 
     const previousCountry = currentCountry;
     const previousCity = currentCity;
@@ -206,65 +207,65 @@ describe('Server list', function() {
     currentCountry = server.localizedName;
     currentCity = city.localizedName;
 
-    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
 
-    await vpn.waitForCondition(async () => {
-      let connectingMsg = await vpn.getQueryProperty(
-          queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+    await waitForCondition(async () => {
+      let connectingMsg = await getQueryProperty(
+          screenHome.CONTROLLER_TITLE.visible(), 'text');
       return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
     });
 
     // Often the `From ${previousCity} to ${currentCity}` is too fast to be
     // visible. Let's keep this test.
 
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+    await waitForCondition(async () => {
+      return await getQueryProperty(
+                 screenHome.CONTROLLER_TITLE.visible(), 'text') ===
           'VPN is on';
     });
 
-    assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
-    assert.strictEqual(
-        vpn.lastNotification().message,
+    strictEqual(lastNotification().title, 'VPN Switched Servers');
+    strictEqual(
+        lastNotification().message,
         `Switched from ${previousCity} to ${currentCity}`);
   });
 
   it('ensuring search message appears appropriately', async () => {
     // open it up
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.serverListView.SEARCH_BAR.visible());
+    await waitForQueryAndClick(
+        screenHome.serverListView.SEARCH_BAR.visible());
 
     // ensure no message visible
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
+    await waitForQuery(
+        screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
     // search down to one item - need to modify text within it
-    await vpn.setQueryProperty(
-        queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
+    await setQueryProperty(
+        screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
         'Austra');
     // ensure no message visible
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
+    await waitForQuery(
+        screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
     // search to zero items
-    await vpn.setQueryProperty(
-        queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
+    await setQueryProperty(
+        screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
         'Austraz');
     // ensure message is visible
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.SEARCH_BAR_ERROR.visible());
+    await waitForQuery(
+        screenHome.serverListView.SEARCH_BAR_ERROR.visible());
     // add another character
-    await vpn.setQueryProperty(
-        queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
+    await setQueryProperty(
+        screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
         'Austrazz');
     // ensure message
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.SEARCH_BAR_ERROR.visible());
+    await waitForQuery(
+        screenHome.serverListView.SEARCH_BAR_ERROR.visible());
     // delete a couple characters
-    await vpn.setQueryProperty(
-        queries.screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
+    await setQueryProperty(
+        screenHome.serverListView.SEARCH_BAR_TEXT_FIELD, 'text',
         'Austra');
     // ensure message disappears
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
+    await waitForQuery(
+        screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
   });
 
   // TODO: server list disabled when reached the device limit

@@ -2,43 +2,43 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
+import { equal } from 'assert';
+import { screenPostAuthentication, screenTelemetry } from './queries.js';
+import { waitForInitialView, authenticateInApp, clickOnQuery, waitForQuery, getSetting, waitForCondition } from './helper.js';
 
 describe('Telemetry view', function() {
   beforeEach(async () => {
-    await vpn.waitForInitialView();
+    await waitForInitialView();
   });
 
   async function _getToTelemetryPage() {
-    await vpn.authenticateInApp();
-    await vpn.clickOnQuery(queries.screenPostAuthentication.BUTTON.visible());
-    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-    await vpn.waitForQuery(queries.screenTelemetry.DECLINE_LINK.visible());
+    await authenticateInApp();
+    await clickOnQuery(screenPostAuthentication.BUTTON.visible());
+    await waitForQuery(screenTelemetry.BUTTON.visible());
+    await waitForQuery(screenTelemetry.DECLINE_LINK.visible());
   }
 
   it('Accept telemetry', async () => {
-    assert.equal(await vpn.getSetting('telemetryPolicyShown'), false);
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+    equal(await getSetting('telemetryPolicyShown'), false);
+    equal(await getSetting('gleanEnabled'), true);
     await _getToTelemetryPage();
-    await vpn.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
+    await clickOnQuery(screenTelemetry.BUTTON.visible());
 
-    await vpn.waitForCondition(
-        async () => await vpn.getSetting('telemetryPolicyShown') === true);
-    assert.equal(await vpn.getSetting('telemetryPolicyShown'), true);
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+    await waitForCondition(
+        async () => await getSetting('telemetryPolicyShown') === true);
+    equal(await getSetting('telemetryPolicyShown'), true);
+    equal(await getSetting('gleanEnabled'), true);
   });
 
   it('Deny telemetry', async () => {
-    assert.equal(await vpn.getSetting('telemetryPolicyShown'), false);
-    assert.equal(await vpn.getSetting('gleanEnabled'), true);
+    equal(await getSetting('telemetryPolicyShown'), false);
+    equal(await getSetting('gleanEnabled'), true);
     await _getToTelemetryPage();
-    await vpn.clickOnQuery(queries.screenTelemetry.DECLINE_LINK.visible());
+    await clickOnQuery(screenTelemetry.DECLINE_LINK.visible());
 
-    await vpn.waitForCondition(
-        async () => await vpn.getSetting('telemetryPolicyShown') === true);
-    assert.equal(await vpn.getSetting('telemetryPolicyShown'), true);
-    assert.equal(await vpn.getSetting('gleanEnabled'), false);
+    await waitForCondition(
+        async () => await getSetting('telemetryPolicyShown') === true);
+    equal(await getSetting('telemetryPolicyShown'), true);
+    equal(await getSetting('gleanEnabled'), false);
   });
 });

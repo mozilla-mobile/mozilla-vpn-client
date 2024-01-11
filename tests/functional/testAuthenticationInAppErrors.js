@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');  // TODO: add asserts to each block
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
-const fxaEndpoints = require('./servers/fxa_endpoints.js')
+import assert from 'assert';  // TODO: add asserts to each block
+import { isFeatureFlippedOn, flipFeatureOn, clickOnQuery, waitForQuery, setQueryProperty, waitForQueryAndClick, waitForInitialView } from './helper.js';
+import { screenInitialize, screenAuthenticationInApp } from './queries.js';
+import { validators } from './servers/fxa_endpoints.js';
 
 describe('User authentication', function() {
   this.timeout(300000);
@@ -16,14 +16,14 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: null,
           callback: (req) => this.ctx.fxaStatusCallback(req)
         },
 
         '/v1/account/login': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaLogin,
+          bodyValidator: validators.fxaLogin,
           body: null,
           callback: (req) => this.ctx.fxaLoginCallback(req)
         },
@@ -31,7 +31,7 @@ describe('User authentication', function() {
         '/v1/session/verify/totp': {
           status: 200,
           requiredHeaders: ['Authorization'],
-          bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
+          bodyValidator: validators.fxaVerifyTotp,
           body: null,
           callback: (req) => this.ctx.fxaTotpCallback(req)
         },
@@ -39,7 +39,7 @@ describe('User authentication', function() {
         '/v1/session/verify_code': {
           status: 200,
           requiredHeaders: ['Authorization'],
-          bodyValidator: fxaEndpoints.validators.fxaVerifyCode,
+          bodyValidator: validators.fxaVerifyCode,
           body: null,
           callback: (req) => this.ctx.fxaEmailCallback(req)
         },
@@ -48,12 +48,12 @@ describe('User authentication', function() {
     };
 
     it('Error handling', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
 
       // Step 1: start -> popup errors
       for (let errorCode
@@ -73,19 +73,19 @@ describe('User authentication', function() {
               400;
         };
 
-        await vpn.waitForQuery(
-            queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-        await vpn.setQueryProperty(
-            queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+        await waitForQuery(
+            screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+        await setQueryProperty(
+            screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
             'text', 'test@test.com-' + errorCode);
-        await vpn.waitForQueryAndClick(
-            queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+        await waitForQueryAndClick(
+            screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .enabled());
 
-        await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
+        await waitForQueryAndClick(screenAuthenticationInApp
                                            .AUTH_ERROR_POPUP_BUTTON.visible());
-        await vpn.waitForQueryAndClick(
-            queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+        await waitForQueryAndClick(
+            screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .disabled());
       }
 
@@ -98,24 +98,24 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/status'].status = 400;
       };
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@testtest.com');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
               .prop('hasError', false));
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
               .prop('hasError', true));
 
       // Step 3: start -> 151 error (failed to send email)
@@ -133,37 +133,37 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .disabled());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
               .prop('hasError', true));
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible()
               .prop('hasError', false));
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .disabled());
 
       // Step 4: start -> sign-in -> password invalid
@@ -174,21 +174,21 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!!');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible()
               .prop('hasError', false));
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible()
               .prop('hasError', true));
 
       // Step 5: sign-in -> email code -> wrong code
@@ -201,8 +201,8 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
       };
 
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!!!');
 
@@ -215,40 +215,40 @@ describe('User authentication', function() {
         }
       };
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_EMAILVER_TEXT_INPUT.visible(),
           'text', '123456');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_EMAILVER_BUTTON.visible()
               .enabled());
 
       // Step 6: email code -> back -> start -> totp -> error code
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
               .visible());
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
 
@@ -267,35 +267,35 @@ describe('User authentication', function() {
         }
       };
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .disabled());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
           'text', '123456');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible().prop(
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible().prop(
               'hasError', false));
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible().prop(
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible().prop(
               'hasError', true));
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
-      await vpn.waitForInitialView();
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
+      await waitForInitialView();
 
       // Step 7: main -> sign up -> code -> error
 
@@ -314,42 +314,42 @@ describe('User authentication', function() {
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
 
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible(),
           'text', '12345678');
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible()
               .prop('hasError', false));
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_TEXT_INPUT
               .visible()
               .prop('hasError', true));
     });

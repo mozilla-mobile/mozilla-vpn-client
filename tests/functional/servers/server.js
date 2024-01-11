@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors');
-const Validator = require('jsonschema').Validator;
-const ports = require('./ports.js');
+import express from 'express';
+import { json } from 'body-parser';
+import cors from 'cors';
+import { Validator } from 'jsonschema';
+import { register } from './ports.js';
 
 class Server {
   constructor(name, endpoints, headerCheck) {
@@ -20,7 +20,7 @@ class Server {
   async start() {
     const app = express()
 
-    app.use(bodyParser.json());
+    app.use(json());
     app.use(cors());
     app.use((req, res, next) => {
       switch (req.method) {
@@ -160,7 +160,7 @@ class Server {
 
   _createServer(app) {
     return new Promise(r => {
-      this._port = ports.register(this._name);
+      this._port = register(this._name);
       this._server = app.listen(this._port);
       this._server.on('error', err => {
         if (err.code === 'EADDRINUSE') {
@@ -175,4 +175,4 @@ class Server {
   }
 };
 
-module.exports = Server;
+export default Server;

@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
-const guardianEndpoints = require('./servers/guardian_endpoints.js')
+import { navBar, screenSettings, screenInitialize, screenAuthenticationInApp, global, screenPostAuthentication, screenTelemetry, screenHome } from './queries.js';
+import { waitForQueryAndClick, waitForQuery, isFeatureFlippedOn, flipFeatureOn, waitForInitialView, clickOnQuery, setQueryProperty, waitForMozillaProperty, wait } from './helper.js';
+import { validators } from './servers/guardian_endpoints.js';
 
 describe('Devices', function() {
   describe('Device limit', function() {
     this.ctx.authenticationNeeded = true;
 
     it('Opens and closes the device list', async () => {
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
-      await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES);
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK);
+      await waitForQueryAndClick(navBar.SETTINGS);
+      await waitForQueryAndClick(screenSettings.MY_DEVICES);
+      await waitForQueryAndClick(screenSettings.BACK);
 
-      await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
+      await waitForQuery(screenSettings.MY_DEVICES.visible());
     });
   });
 
@@ -78,14 +78,14 @@ describe('Devices', function() {
       POSTs: {
         '/api/v2/vpn/login/verify': {
           status: 200,
-          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          bodyValidator: validators.guardianLoginVerify,
           body: {user: UserData, token: 'our-token'}
         },
 
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
-          bodyValidator: guardianEndpoints.validators.guardianDevice,
+          bodyValidator: validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;
@@ -109,62 +109,62 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
       }
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'password');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
+      await waitForQuery(
+          screenSettings.myDevicesView.DEVICE_LIST.visible());
 
       //Wait for swipe delegate delay
-      await vpn.wait(1000);
+      await wait(1000);
 
       // Let's remove a device
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await waitForQueryAndClick(
+          screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
 
-      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
+      await waitForQueryAndClick(screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 
@@ -227,14 +227,14 @@ describe('Devices', function() {
       POSTs: {
         '/api/v2/vpn/login/verify': {
           status: 200,
-          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          bodyValidator: validators.guardianLoginVerify,
           body: {user: UserData, token: 'our-token'}
         },
 
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
-          bodyValidator: guardianEndpoints.validators.guardianDevice,
+          bodyValidator: validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;
@@ -247,41 +247,41 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
       }
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'password');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(
-        queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
+      await waitForQuery(
+        screenSettings.myDevicesView.DEVICE_LIST.visible());
     });
   });
 
@@ -344,14 +344,14 @@ describe('Devices', function() {
       POSTs: {
         '/api/v2/vpn/login/verify': {
           status: 200,
-          bodyValidator: guardianEndpoints.validators.guardianLoginVerify,
+          bodyValidator: validators.guardianLoginVerify,
           body: {user: UserData, token: 'our-token'}
         },
 
         '/api/v1/vpn/device': {
           status: 201,
           requiredHeaders: ['Authorization'],
-          bodyValidator: guardianEndpoints.validators.guardianDevice,
+          bodyValidator: validators.guardianDevice,
           callback: (req) => {
             UserData.devices[0].name = req.body.name;
             UserData.devices[0].pubkey = req.body.pubkey;
@@ -371,63 +371,63 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
       }
 
       // This method must be called when the client is on the "Get Started"
       // view.
-      await vpn.waitForInitialView();
+      await waitForInitialView();
 
       // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'password');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible());
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible());
 
       // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
+      await waitForMozillaProperty(
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-      await vpn.waitForQuery(
-          queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
+      await waitForQuery(
+          screenSettings.myDevicesView.DEVICE_LIST.visible());
 
       // Let's remove a device
       const key = UserData.devices[0].pubkey;
       UserData.devices.splice(0, 1);
 
       //Wait for swipe delegate delay
-      await vpn.wait(1000);
+      await wait(1000);
 
       // Let's remove a device by clicking the button
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
-      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
+      await waitForQueryAndClick(
+          screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await waitForQueryAndClick(screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenTelemetry.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     });
   });
 

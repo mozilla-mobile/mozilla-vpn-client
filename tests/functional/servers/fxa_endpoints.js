@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-(function(exports) {
 
 const VALIDATORS = {
   fxaStatus: {
@@ -105,9 +104,9 @@ const VALIDATORS = {
   },
 };
 
-exports.validators = VALIDATORS;
+export const validators = VALIDATORS;
 
-exports.generateEndpoints = function(guardianUrl) {
+export function generateEndpoints(guardianUrl) {
   return {
     GETs: {
       '/v1/oauth/subscriptions/iap/plans/guardian-vpn': {
@@ -169,5 +168,5 @@ exports.generateEndpoints = function(guardianUrl) {
 
     DELETEs: {},
   };
-};
-})(typeof exports === 'undefined' ? this['fxaEndpoints'] = {} : exports);
+}
+

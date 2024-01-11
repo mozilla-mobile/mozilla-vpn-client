@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const websocket = require('websocket').w3cwebsocket;
-const {URL} = require('node:url');
-const http = require('http')
+import assert from 'assert';
+import { w3cwebsocket as websocket } from 'websocket';
+import { URL } from 'node:url';
+import http from 'http';
 
 let driver;
 let intervalId;
@@ -34,33 +34,28 @@ async function waitForURL(driver, url) {
   });
 }
 
-module.exports = {
-  async connect(options, onopen, onclose, onmessage) {
-    driver = options.driver;
+export async function connect(options, onopen, onclose, onmessage) {
+  driver = options.driver;
 
-    await driver.setContext('content');
-    const handle = await waitForURL(driver, options.url);
+  await driver.setContext('content');
+  const handle = await waitForURL(driver, options.url);
 
-    const objs = await driver.executeScript('return flushMessages()')
-    if (!Array.isArray(objs) || objs.length === 0) return false;
+  const objs = await driver.executeScript('return flushMessages()');
+  if (!Array.isArray(objs) || objs.length === 0) return false;
 
-    intervalId = setInterval(async () => {
-      const objs = await driver.executeScript('return flushMessages()')
-      if (Array.isArray(objs)) objs.forEach(obj => onmessage(obj));
-    }, 200);
+  intervalId = setInterval(async () => {
+    const objs = await driver.executeScript('return flushMessages()');
+    if (Array.isArray(objs)) objs.forEach(obj => onmessage(obj));
+  }, 200);
 
-    await onopen();
-    setTimeout(() => objs.forEach(obj => onmessage(obj)), 0);
-    return true;
-  },
-
-  close() {
-    clearInterval(intervalId);
-    driver.get('about:blank');
-  },
-
-  async send(msg) {
-    await driver.executeScript(`Module.inspectorCommand("${
-        msg.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')}")`);
-  },
+  await onopen();
+  setTimeout(() => objs.forEach(obj => onmessage(obj)), 0);
+  return true;
+}
+export function close() {
+  clearInterval(intervalId);
+  driver.get('about:blank');
+}
+export async function send(msg) {
+  await driver.executeScript(`Module.inspectorCommand("${msg.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')}")`);
 }

@@ -2,17 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const express = require('express');
-const fs = require('fs');
-const path = require('node:path');
-const ports = require('./servers/ports.js');
+
+import express from 'express';
+import { register } from './servers/ports.js';
 
 let server;
 let port;
 
 function createServer(app) {
   return new Promise(r => {
-    port = ports.register('wasm');
+    port = register('wasm');
     server = app.listen(port);
     server.on('error', err => {
       if (err.code === 'EADDRINUSE') {
@@ -26,7 +25,7 @@ function createServer(app) {
   });
 }
 
-module.exports = {
+export default {
   async start() {
     const app = express();
 
@@ -75,6 +74,6 @@ module.exports = {
 };
 
 if (typeof require !== 'undefined' && require.main === module) {
-  module.exports.start();
-  console.log(`Starting Mozilla VPN on ${module.exports.url}.`)
+  start();
+  console.log(`Starting Mozilla VPN on ${url}.`)
 }

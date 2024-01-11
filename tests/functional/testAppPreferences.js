@@ -2,49 +2,49 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
-const setup = require('./setupVpn.js');
+import { equal, strictEqual } from 'assert';
+import { navBar, screenSettings, screenGetHelp, global } from './queries.js';
+import { waitForQueryAndClick, isFeatureFlippedOff, flipFeatureOff, waitForQuery, getQueryProperty, getSetting, setSetting, gleanTestGetValue } from './helper.js';
+import setup from './setupVpn.js';
 
 describe('Settings', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
 
-    if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.flipFeatureOff('subscriptionManagement');
+    if (!(await isFeatureFlippedOff('subscriptionManagement'))) {
+      await flipFeatureOff('subscriptionManagement');
     }
   });
 
   async function checkSetting(query, settingKey) {
-    await vpn.waitForQuery(query.visible());
-    assert.equal(
-        (await vpn.getQueryProperty(query, 'isChecked') === 'true'),
-        await vpn.getSetting(settingKey));
+    await waitForQuery(query.visible());
+    equal(
+        (await getQueryProperty(query, 'isChecked') === 'true'),
+        await getSetting(settingKey));
 
-    await vpn.setSetting(settingKey, true);
-    assert.equal((await vpn.getSetting(settingKey)), true);
-    assert.equal((await vpn.getQueryProperty(query, 'isChecked')), 'true');
+    await setSetting(settingKey, true);
+    equal((await getSetting(settingKey)), true);
+    equal((await getQueryProperty(query, 'isChecked')), 'true');
 
-    await vpn.setSetting(settingKey, false);
-    assert.equal((await vpn.getSetting(settingKey)), false);
-    assert.equal((await vpn.getQueryProperty(query, 'isChecked')), 'false');
+    await setSetting(settingKey, false);
+    equal((await getSetting(settingKey)), false);
+    equal((await getQueryProperty(query, 'isChecked')), 'false');
   }
 
   async function getToGetHelpView() {
-    await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(screenSettings.GET_HELP.visible());
+    await waitForQuery(screenGetHelp.BACK_BUTTON.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
   }
 
   describe('telemetry in App preferences in Settings', function () {
     this.ctx.authenticationNeeded = true;
 
     beforeEach(async () => {
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await waitForQueryAndClick(navBar.SETTINGS.visible());
     });
 
     it("record telemetry when user clicks on Notifications in App preferences", async () => {
@@ -52,16 +52,16 @@ describe('Settings', function() {
           // This test cannot run in wasm
           return;
         }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-        const events = await vpn.gleanTestGetValue("interaction", "notificationsSelected", "main");
+        await waitForQueryAndClick(
+            screenSettings.APP_PREFERENCES.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());    
+        await waitForQueryAndClick(screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());
+        const events = await gleanTestGetValue("interaction", "notificationsSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
+        equal(element.extra.screen, "app_preferences");
     });
 
     it("record telemetry when user clicks on Language in App preferences", async () => {
@@ -69,17 +69,17 @@ describe('Settings', function() {
         // This test cannot run in wasm
         return;
       }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+        await waitForQueryAndClick(
+            screenSettings.APP_PREFERENCES.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());    
+        await waitForQueryAndClick(screenSettings.appPreferencesView.LANGUAGE.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());
 
-        const events = await vpn.gleanTestGetValue("interaction", "languageSelected", "main");
+        const events = await gleanTestGetValue("interaction", "languageSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
+        equal(element.extra.screen, "app_preferences");
     });
 
     it("record telemetry when user clicks on DNS settings in App preferences", async () => {
@@ -87,17 +87,17 @@ describe('Settings', function() {
         // This test cannot run in wasm
         return;
       }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+        await waitForQueryAndClick(
+            screenSettings.APP_PREFERENCES.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());    
+        await waitForQueryAndClick(screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());
 
-        const events = await vpn.gleanTestGetValue("interaction", "dnsSettingsSelected", "main");
+        const events = await gleanTestGetValue("interaction", "dnsSettingsSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "app_preferences");
+        equal(element.extra.screen, "app_preferences");
     });
 
     it("record telemetry when user opens DNS settings in App preferences", async () => {
@@ -105,16 +105,16 @@ describe('Settings', function() {
         // This test cannot run in wasm
         return;
       }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+        await waitForQueryAndClick(
+            screenSettings.APP_PREFERENCES.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());    
+        await waitForQueryAndClick(screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());
 
-        const dnsSettingsScreenEvent = await vpn.gleanTestGetValue("impression", "dnsSettingsScreen", "main");
-        assert.strictEqual(dnsSettingsScreenEvent.length, 1);
+        const dnsSettingsScreenEvent = await gleanTestGetValue("impression", "dnsSettingsScreen", "main");
+        strictEqual(dnsSettingsScreenEvent.length, 1);
         const dnsSettingsScreenEventExtras = dnsSettingsScreenEvent[0].extra;
-        assert.strictEqual("dns_settings", dnsSettingsScreenEventExtras.screen);
+        strictEqual("dns_settings", dnsSettingsScreenEventExtras.screen);
     });
 
     it("record telemetry when user opens Language in App preferences", async () => {
@@ -122,16 +122,16 @@ describe('Settings', function() {
         // This test cannot run in wasm
         return;
       }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());    
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-        await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+        await waitForQueryAndClick(
+            screenSettings.APP_PREFERENCES.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());    
+        await waitForQueryAndClick(screenSettings.appPreferencesView.LANGUAGE.visible());
+        await waitForQuery(screenSettings.STACKVIEW.ready());
 
-        const languageScreenEvent = await vpn.gleanTestGetValue("impression", "languageScreen", "main");
-        assert.strictEqual(languageScreenEvent.length, 1);
+        const languageScreenEvent = await gleanTestGetValue("impression", "languageScreen", "main");
+        strictEqual(languageScreenEvent.length, 1);
         const languageScreenEventExtras = languageScreenEvent[0].extra;
-        assert.strictEqual("language", languageScreenEventExtras.screen);
+        strictEqual("language", languageScreenEventExtras.screen);
     });
   });
 });

@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
-const fxaEndpoints = require('./servers/fxa_endpoints.js')
-const {validators} = require('./servers/guardian_endpoints.js');
-const http = require('http')
+import { equal } from 'assert';
+import { authenticateInApp, waitForQuery, clickOnQuery, waitForQueryAndClick, waitForCondition, getLastUrl, getQueryProperty, activate, forceConnectionStabilityStatus, isFeatureFlippedOn, flipFeatureOn, flipFeatureOff, setQueryProperty, scrollToQuery, wait } from './helper.js';
+import { screenHome, screenSubscriptionNeeded, navBar, global, screenSettings, screenAuthenticationInApp, screenDeleteAccount, screenInitialize } from './queries.js';
+import { validators as _validators } from './servers/fxa_endpoints.js';
+import { validators } from './servers/guardian_endpoints.js';
+import { request } from 'http';
 
 const SUBSCRIPTION_DETAILS = {
   plan: {amount: 123, currency: 'usd', interval: 'year', interval_count: 1},
@@ -114,18 +114,18 @@ describe('Subscription manager', function() {
          // When they try to turn the VPN on, they get the
          // "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp(true, true);
+         await authenticateInApp(true, true);
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription.
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
              userDataInactive;
 
-         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+         await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
+         await clickOnQuery(screenHome.CONTROLLER_TOGGLE.visible());
 
          // Step 2: Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+         await waitForQuery(screenSubscriptionNeeded
                                     .SUBSCRIPTION_NEEDED_VIEW.visible());
 
          // Reset guardian endpoint for the next test
@@ -142,29 +142,29 @@ describe('Subscription manager', function() {
          // redirected back to the controller home screen.
 
          if (!this.ctx.wasm) {
-           await vpn.authenticateInApp(true, true);
+           await authenticateInApp(true, true);
 
            // Mark the user subscription as inactive
            this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
                userDataInactive;
 
-           await vpn.waitForQuery(
-               queries.screenHome.CONTROLLER_TITLE.visible());
-           await vpn.clickOnQuery(
-               queries.screenHome.CONTROLLER_TOGGLE.visible());
+           await waitForQuery(
+               screenHome.CONTROLLER_TITLE.visible());
+           await clickOnQuery(
+               screenHome.CONTROLLER_TOGGLE.visible());
 
            // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-           await vpn.waitForQuery(queries.screenSubscriptionNeeded
+           await waitForQuery(screenSubscriptionNeeded
                                       .SUBSCRIPTION_NEEDED_VIEW.visible());
 
 
            // Click on the Subscribe Now button.
-           await vpn.waitForQueryAndClick(
-               queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+           await waitForQueryAndClick(
+               screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
                    .visible());
 
-           await vpn.waitForCondition(async () => {
-             const url = await vpn.getLastUrl();
+           await waitForCondition(async () => {
+             const url = await getLastUrl();
              return url.includes('/api/v2/vpn/login');
            });
 
@@ -177,7 +177,7 @@ describe('Subscription manager', function() {
            // are mocking everything. So this next chunk of code manually
            // makes a call to the DesktopAuthenticationListener to mock
            // a successful authentication in browser.
-           const url = await vpn.getLastUrl();
+           const url = await getLastUrl();
            const authListenerPort = (new URL(url)).searchParams.get('port');
            const options = {
              // We hardcode 127.0.0.1 to match listening on
@@ -190,7 +190,7 @@ describe('Subscription manager', function() {
            };
 
            await new Promise(resolve => {
-             const req = http.request(options, res => {});
+             const req = request(options, res => {});
              req.on('close', resolve);
              req.on('error', error => {
                throw new Error(
@@ -202,11 +202,11 @@ describe('Subscription manager', function() {
 
            // Wait for VPN client screen to move from spinning wheel to next
            // screen
-           await vpn.waitForQuery(
-               queries.screenHome.CONTROLLER_TITLE.visible());
-           assert.equal(
-               await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE, 'text'),
+           await waitForQuery(
+               screenHome.CONTROLLER_TITLE.visible());
+           equal(
+               await getQueryProperty(
+                   screenHome.CONTROLLER_TITLE, 'text'),
                'VPN is off');
          }
        });
@@ -222,7 +222,7 @@ describe('Subscription manager', function() {
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
              userDataActive;
 
-         await vpn.authenticateInApp(true, true);
+         await authenticateInApp(true, true);
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription. Set the error status to 500.
@@ -231,10 +231,10 @@ describe('Subscription manager', function() {
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].status =
              500;
 
-         await vpn.activate();
-         await vpn.waitForCondition(async () => {
-           return await vpn.getQueryProperty(
-                      queries.screenHome.CONTROLLER_TITLE, 'text') ==
+         await activate();
+         await waitForCondition(async () => {
+           return await getQueryProperty(
+                      screenHome.CONTROLLER_TITLE, 'text') ==
                'VPN is on';
          });
          // Reset guardian endpoint for the next test
@@ -251,15 +251,15 @@ describe('Subscription manager', function() {
          // They enter No Signal, and once they toggle the VPN off
          // they get the "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp(true, true);
+         await authenticateInApp(true, true);
 
          // toggle on VPN here
-         await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+         await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
+         await clickOnQuery(screenHome.CONTROLLER_TOGGLE.visible());
 
-         await vpn.waitForCondition(async () => {
-           return await vpn.getQueryProperty(
-                      queries.screenHome.CONTROLLER_TITLE, 'text') ==
+         await waitForCondition(async () => {
+           return await getQueryProperty(
+                      screenHome.CONTROLLER_TITLE, 'text') ==
                'VPN is on';
          });
 
@@ -270,12 +270,12 @@ describe('Subscription manager', function() {
 
          // Because the subscription has expired, client enter the No Signal
          // state
-         await vpn.forceConnectionStabilityStatus('nosignal');
+         await forceConnectionStabilityStatus('nosignal');
 
          // Once the VPN is toggled off, we are redirected to the "Subscribe to
          // Mozilla VPN" screen.
-         await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
-         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+         await clickOnQuery(screenHome.CONTROLLER_TOGGLE.visible());
+         await waitForQuery(screenSubscriptionNeeded
                                     .SUBSCRIPTION_NEEDED_VIEW.visible());
        });
   });
@@ -307,7 +307,7 @@ describe('Subscription view', function() {
     POSTs: {
       '/v1/account/login': {
         status: 200,
-        bodyValidator: fxaEndpoints.validators.fxaLogin,
+        bodyValidator: _validators.fxaLogin,
         body: null,
         callback: (req) => this.ctx.fxaLoginCallback(req)
       },
@@ -315,7 +315,7 @@ describe('Subscription view', function() {
       '/v1/session/verify/totp': {
         status: 200,
         requiredHeaders: ['Authorization'],
-        bodyValidator: fxaEndpoints.validators.fxaVerifyTotp,
+        bodyValidator: _validators.fxaVerifyTotp,
         body: null,
         callback: (req) => this.ctx.fxaTotpCallback(req)
       },
@@ -357,11 +357,11 @@ describe('Subscription view', function() {
   this.ctx.resetCallbacks();
 
   beforeEach(async () => {
-    if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
-      await vpn.flipFeatureOn('subscriptionManagement');
+    if (!(await isFeatureFlippedOn('subscriptionManagement'))) {
+      await flipFeatureOn('subscriptionManagement');
     }
-    if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
-      await vpn.flipFeatureOff('accountDeletion');
+    if ((await isFeatureFlippedOn('accountDeletion'))) {
+      await flipFeatureOff('accountDeletion');
     }
   });
 
@@ -385,28 +385,28 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
+    await waitForQuery(
+        screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
             'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+    await waitForQuery(
+        screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
             'text', 'test@mozilla.com'));
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await waitForQueryAndClick(
+        screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
         'text', 'P4ssw0rd!!');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
     this.ctx.guardianSubscriptionDetailsCallback = req => {
@@ -416,12 +416,12 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+    await waitForQuery(
+        screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
   });
 
   it('Authentication needed - totp', async () => {
@@ -432,29 +432,29 @@ describe('Subscription view', function() {
           .body = {}
     };
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
+    await waitForQuery(
+        screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
             'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+    await waitForQuery(
+        screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
             'text', 'test@mozilla.com'));
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await waitForQueryAndClick(
+        screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
         'text', 'P4ssw0rd!!');
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
     this.ctx.fxaLoginCallback = (req) => {
@@ -466,20 +466,20 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
     };
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
             .disabled());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
         'text', '123456');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     this.ctx.fxaTotpCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
@@ -494,11 +494,11 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+    await waitForQuery(
+        screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
   });
 
   it('Playing with the subscription view', async () => {
@@ -967,150 +967,150 @@ describe('Subscription view', function() {
         }
       };
 
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(navBar.SETTINGS.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
 
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+      await waitForQuery(screenSettings.USER_PROFILE.visible());
+      await waitForQuery(
+          screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
               'text', 'Test'));
-      await vpn.waitForQuery(
-          queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+      await waitForQuery(
+          screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
               'text', 'test@mozilla.com'));
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+      await waitForQueryAndClick(
+          screenSettings.USER_PROFILE.visible());
+      await waitForQuery(screenSettings.STACKVIEW.ready());
 
-      await vpn.waitForQuery(
-          queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+      await waitForQuery(
+          screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
       if (data.subscription.expected.status) {
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.STATUS_PILL, 'text'),
+        equal(
+            await getQueryProperty(
+                screenSettings.subscriptionView.STATUS_PILL, 'text'),
             data.subscription.expected.status);
       }
 
       if (data.plan.expected &&
           data.subscription.value._subscription_type == 'web') {
-        await vpn.waitForQuery(
-            queries.screenSettings.subscriptionView.PLAN.visible());
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.PLAN.visible(), 'text'),
+        await waitForQuery(
+            screenSettings.subscriptionView.PLAN.visible());
+        equal(
+            await getQueryProperty(
+                screenSettings.subscriptionView.PLAN.visible(), 'text'),
             data.plan.expected);
       }
 
       if (data.subscription.expected.activated) {
-        await vpn.waitForQuery(
-            queries.screenSettings.subscriptionView.ACTIVATED.visible());
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.ACTIVATED.visible(),
+        await waitForQuery(
+            screenSettings.subscriptionView.ACTIVATED.visible());
+        equal(
+            await getQueryProperty(
+                screenSettings.subscriptionView.ACTIVATED.visible(),
                 'text'),
             data.subscription.expected.activated);
       }
 
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView.CANCELLED.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenSettings.subscriptionView.CANCELLED.visible(),
+      await waitForQuery(
+          screenSettings.subscriptionView.CANCELLED.visible());
+      equal(
+          await getQueryProperty(
+              screenSettings.subscriptionView.CANCELLED.visible(),
               'text'),
           data.subscription.expected.cancelled);
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
+      equal(
+          await getQueryProperty(
+              screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
               'text'),
           data.subscription.expected.label);
 
       if (data.subscription.value._subscription_type == 'web') {
         if (data.payment.expected.card) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.BRAND.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.BRAND.visible(),
+          await waitForQuery(
+              screenSettings.subscriptionView.BRAND.visible());
+          equal(
+              await getQueryProperty(
+                  screenSettings.subscriptionView.BRAND.visible(),
                   'text'),
               data.payment.expected.card);
         }
         if (data.payment.expected.expires) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.EXPIRES.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.EXPIRES.visible(),
+          await waitForQuery(
+              screenSettings.subscriptionView.EXPIRES.visible());
+          equal(
+              await getQueryProperty(
+                  screenSettings.subscriptionView.EXPIRES.visible(),
                   'text'),
               data.payment.expected.expires);
         }
         if (data.payment.expected.brand) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.PAYMENT_METHOD.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.PAYMENT_METHOD
+          await waitForQuery(
+              screenSettings.subscriptionView.PAYMENT_METHOD.visible());
+          equal(
+              await getQueryProperty(
+                  screenSettings.subscriptionView.PAYMENT_METHOD
                       .visible(),
                   'text'),
               data.payment.expected.brand);
         }
         if (data.payment.expected.payment) {
-          await vpn.waitForQuery(queries.screenSettings.subscriptionView
+          await waitForQuery(screenSettings.subscriptionView
                                      .PAYMENT_METHOD_LABEL.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
+          equal(
+              await getQueryProperty(
+                  screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
                       .visible(),
                   'text'),
               data.payment.expected.payment);
         }
       }
 
-      await vpn.waitForQuery(queries.screenSettings.subscriptionView
+      await waitForQuery(screenSettings.subscriptionView
                                  .SUBSCRIPTION_USER_PROFILE.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView
+      await waitForQuery(
+          screenSettings.subscriptionView
               .SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME.visible()
               .prop('text', 'Test'));
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView
+      await waitForQuery(
+          screenSettings.subscriptionView
               .SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS.visible()
               .prop('text', 'test@mozilla.com'));
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.subscriptionView
+      await waitForQueryAndClick(
+          screenSettings.subscriptionView
               .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
 
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
+      await waitForCondition(async () => {
+        const url = await getLastUrl();
         return url.includes('https://accounts.stage.mozaws.net') &&
             url.includes('?email=test@mozilla.com');
       });
 
       if (data.manageSubscriptionLink) {
-        await vpn.waitForQuery(
-            queries.screenSettings.subscriptionView
+        await waitForQuery(
+            screenSettings.subscriptionView
                 .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
-        await vpn.scrollToQuery(
-            queries.screenSettings.subscriptionView.SCREEN,
-            queries.screenSettings.subscriptionView
+        await scrollToQuery(
+            screenSettings.subscriptionView.SCREEN,
+            screenSettings.subscriptionView
                 .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.subscriptionView
+        await waitForQueryAndClick(
+            screenSettings.subscriptionView
                 .SUBSCRIPTION_USER_PROFILE_BUTTON_SUB.visible());
-        await vpn.waitForCondition(async () => {
-          const url = await vpn.getLastUrl();
+        await waitForCondition(async () => {
+          const url = await getLastUrl();
           return url.includes(data.manageSubscriptionLink);
         });
       }
 
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+      await waitForQueryAndClick(screenSettings.BACK.visible());
+      await waitForQuery(screenSettings.STACKVIEW.ready());
 
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+      await waitForQuery(screenSettings.USER_PROFILE.visible());
 
-      await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(navBar.HOME.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
 
-      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+      await waitForQuery(screenHome.CONTROLLER_TITLE.visible());
     }
   });
 
@@ -1130,116 +1130,116 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
+    await waitForQuery(
+        screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
             'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+    await waitForQuery(
+        screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
             'text', 'test@mozilla.com'));
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await waitForQueryAndClick(
+        screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+    await waitForQuery(
+        screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
-    await vpn.flipFeatureOn('accountDeletion');
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await waitForQuery(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
+    await flipFeatureOn('accountDeletion');
+    await waitForQuery(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.subscriptionView.SCREEN,
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await scrollToQuery(
+        screenSettings.subscriptionView.SCREEN,
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
         'text', 'P4ssw0rd!!');
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
-    await vpn.waitForQuery(queries.screenDeleteAccount.LABEL.visible());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(screenDeleteAccount.LABEL.visible());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX1, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX1, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX1.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX1_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX1_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX1.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX2, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX2, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX2.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX2_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX2_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX2.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX3, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX3, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX3.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX3_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX3_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX3.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX3, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX3, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX4.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX4_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX4_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX4.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().enabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().enabled());
 
     this.ctx.fxaDestroyCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.wait();
+    await wait();
 
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.BUTTON.visible().enabled());
+    await waitForQueryAndClick(
+        screenDeleteAccount.BUTTON.visible().enabled());
 
-    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
+    await waitForQuery(screenInitialize.GET_HELP_LINK.visible());
+    await waitForQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+    await waitForQuery(
+        screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
   it('Account deletion - totp', async () => {
@@ -1259,56 +1259,56 @@ describe('Subscription view', function() {
           .body = SUBSCRIPTION_DETAILS;
     };
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
+    await waitForQuery(
+        screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
             'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+    await waitForQuery(
+        screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
             'text', 'test@mozilla.com'));
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await waitForQueryAndClick(
+        screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+    await waitForQuery(
+        screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
-    await vpn.flipFeatureOn('accountDeletion');
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await waitForQuery(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
+    await flipFeatureOn('accountDeletion');
+    await waitForQuery(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.subscriptionView.SCREEN,
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await scrollToQuery(
+        screenSettings.subscriptionView.SCREEN,
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(
+        screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
         'text', 'P4ssw0rd!!');
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
             .enabled());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
             .disabled());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
+    await setQueryProperty(
+        screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
         'text', '123456');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
+    await waitForQuery(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     this.ctx.fxaTotpCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
@@ -1316,88 +1316,88 @@ describe('Subscription view', function() {
       }
     };
 
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
+    await waitForQueryAndClick(
+        screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
-    await vpn.waitForQuery(queries.screenDeleteAccount.LABEL.visible());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(screenDeleteAccount.LABEL.visible());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX1, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX1, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX1.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX1_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX1.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX1_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX1.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX2, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX2, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX2.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX2_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX2.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX2_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX2.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX3, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX3, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX3.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX3_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX3.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX3_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX3.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().disabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().disabled());
 
-    await vpn.setQueryProperty(
-        queries.screenDeleteAccount.SCREEN, 'contentY',
-        parseInt(await vpn.getQueryProperty(
-            queries.screenDeleteAccount.CHECKBOX3, 'y')));
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+    await setQueryProperty(
+        screenDeleteAccount.SCREEN, 'contentY',
+        parseInt(await getQueryProperty(
+            screenDeleteAccount.CHECKBOX3, 'y')));
+    await waitForQuery(screenDeleteAccount.CHECKBOX4.visible().prop(
         'isChecked', false));
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.CHECKBOX4_CB.visible());
-    await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
+    await waitForQueryAndClick(
+        screenDeleteAccount.CHECKBOX4_CB.visible());
+    await waitForQuery(screenDeleteAccount.CHECKBOX4.visible().prop(
         'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenDeleteAccount.BUTTON.visible().enabled());
+    await waitForQuery(
+        screenDeleteAccount.BUTTON.visible().enabled());
 
     this.ctx.fxaDestroyCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].status = 200;
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.wait();
+    await wait();
 
-    await vpn.waitForQueryAndClick(
-        queries.screenDeleteAccount.BUTTON.visible().enabled());
+    await waitForQueryAndClick(
+        screenDeleteAccount.BUTTON.visible().enabled());
 
-    await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
-    await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
+    await waitForQuery(screenInitialize.GET_HELP_LINK.visible());
+    await waitForQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+    await waitForQuery(
+        screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
 
   async function clickSettingsIcon() {
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
   }
   async function openSubscriptionManagement() {
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
+    await waitForQueryAndClick(
+        screenSettings.USER_PROFILE.visible());
   }
 
   it('Shows annual upgrade UI based on billing interval and purchase type',
@@ -1421,15 +1421,15 @@ describe('Subscription view', function() {
                  .body = SUBSCRIPTION_DETAILS_MONTHLY
            };
 
-       if (!(await vpn.isFeatureFlippedOn('annualUpgrade'))) {
-         await vpn.flipFeatureOn('annualUpgrade');
+       if (!(await isFeatureFlippedOn('annualUpgrade'))) {
+         await flipFeatureOn('annualUpgrade');
        }
 
        await clickSettingsIcon();
        await openSubscriptionManagement();
 
-       await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.visible());
+       await waitForQuery(
+           screenSettings.subscriptionView.ANNUAL_UPGRADE.visible());
      });
 
   it('Hides upgrade UI based on billing interval and purchase type',
@@ -1452,21 +1452,21 @@ describe('Subscription view', function() {
              .body = SUBSCRIPTION_DETAILS;
        };
 
-       if (!(await vpn.isFeatureFlippedOn('annualUpgrade'))) {
-         await vpn.flipFeatureOn('annualUpgrade');
+       if (!(await isFeatureFlippedOn('annualUpgrade'))) {
+         await flipFeatureOn('annualUpgrade');
        }
 
        await clickSettingsIcon();
        await openSubscriptionManagement();
 
-       await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
+       await waitForQuery(
+           screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
      });
 
   it('Hides annual upgrade UI when the "annualUpgrade" feature flag is off',
      async () => {
-       if ((await vpn.isFeatureFlippedOn('annualUpgrade'))) {
-         await vpn.flipFeatureOff('annualUpgrade');
+       if ((await isFeatureFlippedOn('annualUpgrade'))) {
+         await flipFeatureOff('annualUpgrade');
        }
 
        this.ctx.fxaLoginCallback = (req) => {
@@ -1489,7 +1489,7 @@ describe('Subscription view', function() {
        await clickSettingsIcon();
        await openSubscriptionManagement();
 
-       await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
+       await waitForQuery(
+           screenSettings.subscriptionView.ANNUAL_UPGRADE.hidden());
      });
 });

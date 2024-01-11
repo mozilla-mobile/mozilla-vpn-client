@@ -2,84 +2,84 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
-const {SubscriptionDetails} = require('./servers/guardian_endpoints.js');
-const {env, TestingEnvironments} = require('./helper.js');
+import assert, { equal } from 'assert';
+import { navBar, global, screenSettings, screenMessaging } from './queries.js';
+import { resetAddons, waitForCondition, getMozillaProperty, fetchAddons, setVersionOverride, messages, isFeatureFlippedOn, flipFeatureOn, flipFeatureOff, waitForQueryAndClick, waitForQuery, setSetting, getQueryProperty } from './helper.js';
+import { SubscriptionDetails } from './servers/guardian_endpoints.js';
+import { env, TestingEnvironments } from './helper.js';
 
 describe('Addons', function() {
   this.timeout(3000000);
   this.ctx.authenticationNeeded = true;
 
   it('Empty addon index', async () => {
-    await vpn.resetAddons('01_empty_manifest');
-    await vpn.waitForCondition(async () => {
+    await resetAddons('01_empty_manifest');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 0;
     });
   });
 
   it('Broken addon index', async () => {
-    await vpn.resetAddons('03_single_addon');
-    await vpn.waitForCondition(async () => {
+    await resetAddons('03_single_addon');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
-    await vpn.fetchAddons('02_broken_manifest');
-    await vpn.waitForCondition(async () => {
+    await fetchAddons('02_broken_manifest');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
   });
 
   it('Addons are loaded', async () => {
-    await vpn.resetAddons('03_single_addon');
-    await vpn.waitForCondition(async () => {
+    await resetAddons('03_single_addon');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
 
-    await vpn.fetchAddons('01_empty_manifest');
-    await vpn.waitForCondition(async () => {
+    await fetchAddons('01_empty_manifest');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 0;
     });
 
-    await vpn.fetchAddons('03_single_addon');
-    await vpn.waitForCondition(async () => {
+    await fetchAddons('03_single_addon');
+    await waitForCondition(async () => {
       return parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) === 1;
     });
   });
 
   it('test only a single update message exists at a time', async () => {
-    await vpn.setVersionOverride('1.0.0');
+    await setVersionOverride('1.0.0');
 
     // Load all production addons.
     // These are loaded all together, so we don't know the exact number of
     // addons.
-    await vpn.resetAddons('prod');
-    await vpn.waitForCondition(
+    await resetAddons('prod');
+    await waitForCondition(
         async () =>
             (parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) > 0));
-    const loadedMessages = await vpn.messages();
+    const loadedMessages = await messages();
     const updateMessages =
         loadedMessages.filter(message => message.startsWith('message_update_'));
 
@@ -177,22 +177,22 @@ describe('Addons', function() {
     testCases.forEach(([_1, _2, shouldBeAvailable, testCase]) => {
       it(`message display is correct when subscription expiration ${testCase}`,
          async () => {
-           await vpn.setVersionOverride('101.0.0');
+           await setVersionOverride('101.0.0');
 
            // Load all production addons.
            // These are loaded all together, so we don't know the exact number
            // of addons.
-           await vpn.resetAddons('prod');
-           await vpn.waitForCondition(
+           await resetAddons('prod');
+           await waitForCondition(
                async () =>
                    (parseInt(
-                        await vpn.getMozillaProperty(
+                        await getMozillaProperty(
                             'Mozilla.Shared', 'MZAddonManager', 'count'),
                         10) > 0));
 
            // Check if the message is there or not.
-           await vpn.waitForCondition(async () => {
-             const loadedMessages = await vpn.messages();
+           await waitForCondition(async () => {
+             const loadedMessages = await messages();
              const isSubscriptionExpiringMessageAvailable =
                  loadedMessages.includes('message_subscription_expiring');
              return shouldBeAvailable ? isSubscriptionExpiringMessageAvailable :
@@ -203,21 +203,21 @@ describe('Addons', function() {
 
     it(`message display is correct when subscription expiration (no addon reload)`,
        async () => {
-         if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
-           await vpn.flipFeatureOn('subscriptionManagement');
+         if (!(await isFeatureFlippedOn('subscriptionManagement'))) {
+           await flipFeatureOn('subscriptionManagement');
          }
-         if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
-           await vpn.flipFeatureOff('accountDeletion');
+         if ((await isFeatureFlippedOn('accountDeletion'))) {
+           await flipFeatureOff('accountDeletion');
          }
 
          // Load all production addons.
          // These are loaded all together, so we don't know the exact number of
          // addons.
-         await vpn.resetAddons('prod');
-         await vpn.waitForCondition(
+         await resetAddons('prod');
+         await waitForCondition(
              async () =>
                  (parseInt(
-                      await vpn.getMozillaProperty(
+                      await getMozillaProperty(
                           'Mozilla.Shared', 'MZAddonManager', 'count'),
                       10) > 0));
 
@@ -239,23 +239,23 @@ describe('Addons', function() {
                  .body = mockDetails;
            };
 
-           await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+           await waitForQueryAndClick(navBar.SETTINGS.visible());
+           await waitForQuery(global.SCREEN_LOADER.ready());
 
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE.visible());
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
+           await waitForQuery(
+               screenSettings.USER_PROFILE.visible());
+           await waitForQuery(
+               screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
                    'text', 'Test'));
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
+           await waitForQuery(
+               screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
                    'text', 'test@mozilla.com'));
-           await vpn.waitForQueryAndClick(
-               queries.screenSettings.USER_PROFILE.visible());
-           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+           await waitForQueryAndClick(
+               screenSettings.USER_PROFILE.visible());
+           await waitForQuery(screenSettings.STACKVIEW.ready());
 
-           await vpn.waitForQuery(
-               queries.screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
+           await waitForQuery(
+               screenSettings.SUBSCRIPTION_MANAGMENT_VIEW.visible());
 
            // TODO: Uncomment the assertion below once we re-enable
            // "Subscription expiring" message
@@ -264,46 +264,46 @@ describe('Addons', function() {
            //      shouldBeAvailable,
            //      loadedMessages.includes('message_subscription_expiring'));
 
-           await vpn.waitForQueryAndClick(
-               queries.screenSettings.BACK.visible());
-           await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+           await waitForQueryAndClick(
+               screenSettings.BACK.visible());
+           await waitForQuery(screenSettings.STACKVIEW.ready());
 
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE.visible());
+           await waitForQuery(
+               screenSettings.USER_PROFILE.visible());
 
-           await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-           await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+           await waitForQueryAndClick(navBar.HOME.visible());
+           await waitForQuery(global.SCREEN_LOADER.ready());
          }
        });
   });
 
   it('test message dismiss when the addon is disabled', async () => {
-    await vpn.resetAddons('08_message_disabled');
-    await vpn.waitForCondition(
+    await resetAddons('08_message_disabled');
+    await waitForCondition(
         async () =>
             (parseInt(
-                 await vpn.getMozillaProperty(
+                 await getMozillaProperty(
                      'Mozilla.Shared', 'MZAddonManager', 'count'),
                  10) > 0));
-    const loadedMessages = await vpn.messages();
+    const loadedMessages = await messages();
     const updateMessages = loadedMessages.filter(
         message => message.startsWith('message_disabled'));
 
-    await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-    await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenMessaging.messageItem('message_disabled').visible());
-    await vpn.waitForQuery(
-        queries.screenMessaging.messageView('message_disabled').visible());
+    await waitForQueryAndClick(navBar.MESSAGES.visible());
+    await waitForQuery(screenMessaging.SCREEN.visible());
+    await waitForQueryAndClick(
+        screenMessaging.messageItem('message_disabled').visible());
+    await waitForQuery(
+        screenMessaging.messageView('message_disabled').visible());
 
     // Changing the language to change the addon condition state.
-    await vpn.setSetting('languageCode', 'it');
-    await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+    await setSetting('languageCode', 'it');
+    await waitForQuery(screenMessaging.SCREEN.visible());
 
     // Resetting the language to 'en' to show the message again
-    await vpn.setSetting('languageCode', 'en');
-    await vpn.waitForQueryAndClick(
-        queries.screenMessaging.messageItem('message_disabled').visible());
+    await setSetting('languageCode', 'en');
+    await waitForQueryAndClick(
+        screenMessaging.messageItem('message_disabled').visible());
   });
 
   describe('test message_upgrade_to_annual_plan addon condition', async () => {
@@ -369,21 +369,21 @@ describe('Addons', function() {
 
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
       it.only(`message display is correct when subscription started at ${testCase}`, async () => {
-        await vpn.resetAddons('prod');
+        await resetAddons('prod');
 
         //Load messages
-        const loadedMessages = await vpn.messages();
+        const loadedMessages = await messages();
 
         //If the message is supposed to be enabled, lets check the timestamp
         if (shouldBeAvailable) {
-            await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
+            await waitForCondition(async () => (parseInt(await getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
             
-            await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-            await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+            await waitForQueryAndClick(navBar.MESSAGES.visible());
+            await waitForQuery(screenMessaging.SCREEN.visible());
 
             //Check timestamp
             let expectedTimestamp
-            let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
+            let actualTimestamp = await getQueryProperty(screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
             //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
             const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0;
 
@@ -397,9 +397,9 @@ describe('Addons', function() {
               expectedTimestamp = "Yesterday";
             }
 
-            assert.equal(actualTimestamp, expectedTimestamp);
+            equal(actualTimestamp, expectedTimestamp);
         }
-        assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
+        equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
 
       });
     });

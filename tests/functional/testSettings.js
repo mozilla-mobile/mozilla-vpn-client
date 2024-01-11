@@ -2,73 +2,73 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const queries = require('./queries.js');
-const vpn = require('./helper.js');
-const setup = require('./setupVpn.js');
+import { equal, strictEqual } from 'assert';
+import { navBar, screenSettings, screenGetHelp, global, screenDeveloperMenu } from './queries.js';
+import { waitForQueryAndClick, isFeatureFlippedOff, flipFeatureOff, waitForQuery, getQueryProperty, getSetting, setSetting, clickOnQuery, waitForCondition, getLastUrl, scrollToQuery, setQueryProperty, waitForInitialView, clickOnQueryAndAcceptAnyResults, authenticateInApp, setGleanAutomationHeader, activateViaToggle, awaitSuccessfulConnection, gleanTestGetValue } from './helper.js';
+import { vpnIsInactive, startAndConnect } from './setupVpn.js';
 
 describe('Settings', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
 
-    if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.flipFeatureOff('subscriptionManagement');
+    if (!(await isFeatureFlippedOff('subscriptionManagement'))) {
+      await flipFeatureOff('subscriptionManagement');
     }
   });
 
   async function checkSetting(query, settingKey) {
-    await vpn.waitForQuery(query.visible());
-    assert.equal(
-        (await vpn.getQueryProperty(query, 'isChecked') === 'true'),
-        await vpn.getSetting(settingKey));
+    await waitForQuery(query.visible());
+    equal(
+        (await getQueryProperty(query, 'isChecked') === 'true'),
+        await getSetting(settingKey));
 
-    await vpn.setSetting(settingKey, true);
-    assert.equal((await vpn.getSetting(settingKey)), true);
-    assert.equal((await vpn.getQueryProperty(query, 'isChecked')), 'true');
+    await setSetting(settingKey, true);
+    equal((await getSetting(settingKey)), true);
+    equal((await getQueryProperty(query, 'isChecked')), 'true');
 
-    await vpn.setSetting(settingKey, false);
-    assert.equal((await vpn.getSetting(settingKey)), false);
-    assert.equal((await vpn.getQueryProperty(query, 'isChecked')), 'false');
+    await setSetting(settingKey, false);
+    equal((await getSetting(settingKey)), false);
+    equal((await getQueryProperty(query, 'isChecked')), 'false');
   }
 
   async function getToGetHelpView() {
-    await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
-    await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(screenSettings.GET_HELP.visible());
+    await waitForQuery(screenGetHelp.BACK_BUTTON.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
   }
 
   it('Checking settings entries', async () => {
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
 
-    if ((await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.clickOnQuery(queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
+    if ((await isFeatureFlippedOff('subscriptionManagement'))) {
+      await clickOnQuery(screenSettings.USER_PROFILE.visible());
+      await waitForCondition(async () => {
+        const url = await getLastUrl();
         return url.includes('https://accounts.stage.mozaws.net') &&
             url.includes('?email=test@mozilla.com');
       });
     }
 
-    await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
-    await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
-    await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
-    await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
-    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
+    await waitForQuery(screenSettings.PRIVACY.visible());
+    await waitForQuery(screenSettings.APP_EXCLUSIONS.visible());
+    await waitForQuery(screenSettings.TIPS_AND_TRICKS.visible());
+    await waitForQuery(screenSettings.MY_DEVICES.visible());
+    await waitForQuery(screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.GET_HELP.visible());
+    await waitForQuery(screenSettings.ABOUT_US.visible());
+    await waitForQuery(screenSettings.SIGN_OUT.visible());
   });
 
   it('Checking the tips and tricks settings', async () => {
-    await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.TIPS_AND_TRICKS);
+    await waitForQuery(screenSettings.TIPS_AND_TRICKS.visible());
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.TIPS_AND_TRICKS);
 
-    await vpn.clickOnQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.waitForQuery(queries.screenSettings.tipsAndTricksView.SCREEN);
+    await clickOnQuery(screenSettings.TIPS_AND_TRICKS.visible());
+    await waitForQuery(screenSettings.tipsAndTricksView.SCREEN);
 
 
     // TODO: (VPN-2749)
@@ -97,744 +97,744 @@ describe('Settings', function() {
     //   await vpn.waitForElement('settingsTipsAndTricksPage');
     // }
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.tipsAndTricksView.BACK.visible());
+    await waitForQueryAndClick(
+        screenSettings.tipsAndTricksView.BACK.visible());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   it('Checking the privacy settings', async () => {
-    await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
+    await waitForQuery(screenSettings.PRIVACY.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.PRIVACY);
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.PRIVACY);
 
-    await vpn.clickOnQuery(queries.screenSettings.PRIVACY.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await clickOnQuery(screenSettings.PRIVACY.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // Checking that the `These changes may affect...` warning is visible
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.INFORMATION_CARD.visible());
+    await waitForQuery(
+        screenSettings.privacyView.INFORMATION_CARD.visible());
 
     // Checking if the checkboxes are correctly set based on the settings prop
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 0);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 2);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', false));
 
-    await vpn.setSetting('dnsProviderFlags', 4);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 2);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
+            'isChecked', true));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 6);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', false));
 
-    await vpn.setSetting('dnsProviderFlags', 8);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 4);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+            'isChecked', true));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+
+    await setSetting('dnsProviderFlags', 6);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
+            'isChecked', true));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+            'isChecked', true));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+            'isChecked', false));
+
+    await setSetting('dnsProviderFlags', 8);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
+            'isChecked', false));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+            'isChecked', false));
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', true));
 
-    await vpn.setSetting('dnsProviderFlags', 10);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 10);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
             'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', true));
 
-    await vpn.setSetting('dnsProviderFlags', 12);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 12);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
             'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
             'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', true));
 
-    await vpn.setSetting('dnsProviderFlags', 14);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+    await setSetting('dnsProviderFlags', 14);
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_ADS.visible().prop(
             'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
             'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+    await waitForQuery(
+        screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
             'isChecked', true));
 
     // Tests the clicks
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
+    await setSetting('dnsProviderFlags', 0);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 2);
 
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
+    await setSetting('dnsProviderFlags', 0);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 4);
 
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
+    await setSetting('dnsProviderFlags', 0);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 8);
 
     // Let's test the modal
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
+    await setSetting('dnsProviderFlags', 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 2);
 
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
+    await setSetting('dnsProviderFlags', 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 4);
 
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
+    await setSetting('dnsProviderFlags', 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+    equal(await getSetting('dnsProviderFlags'), 1);
+    await waitForQueryAndClick(
+        screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+    await waitForQuery(
+        screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+    equal(await getSetting('dnsProviderFlags'), 8);
 
     // Let's go back
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
 
     // Reset
-    await vpn.setSetting('dnsProviderFlags', 0);
+    await setSetting('dnsProviderFlags', 0);
   });
 
   it('Checking the DNS settings', async () => {
-    await vpn.setSetting('userDNS', '');
-    await vpn.setSetting('dnsProviderFlags', 0);
+    await setSetting('userDNS', '');
+    await setSetting('dnsProviderFlags', 0);
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // Checking if the checkboxes are correctly set based on the settings prop
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.HOME.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.setSetting('dnsProviderFlags', 1);
+    await setSetting('dnsProviderFlags', 1);
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', true));
-    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+    await waitForQuery(screenSettings.appPreferencesView
                                .dnsSettingsView.CUSTOM_DNS_INPUT.visible()
                                .prop('hasError', false));
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', 'wow');
-    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+    await waitForQuery(screenSettings.appPreferencesView
                                .dnsSettingsView.CUSTOM_DNS_INPUT.visible()
                                .prop('hasError', true));
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', '1.2.3.4');
-    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+    await waitForQuery(screenSettings.appPreferencesView
                                .dnsSettingsView.CUSTOM_DNS_INPUT.visible()
                                .prop('hasError', false));
 
     // Check the warning message
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenSettings.appPreferencesView.dnsSettingsView
+    equal(
+        await getQueryProperty(
+            screenSettings.appPreferencesView.dnsSettingsView
                 .INFORMATION_CARD_LOADER,
             'active'), 'false');
 
     // Check the click
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.HOME.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
+    equal(await getSetting('dnsProviderFlags'), 0);
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.HOME.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+    equal(await getSetting('dnsProviderFlags'), 1);
 
     // Check the modal
-    await vpn.setSetting('dnsProviderFlags', 2);
+    await setSetting('dnsProviderFlags', 2);
 
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(navBar.SETTINGS.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', true));
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_LOADER.prop('active', false));
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
+    await waitForQueryAndClick(screenSettings.appPreferencesView
                                        .dnsSettingsView.CUSTOM_DNS.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_LOADER.prop('active', false));
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
+    await waitForQueryAndClick(screenSettings.appPreferencesView
                                        .dnsSettingsView.CUSTOM_DNS.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView
             .MODAL_LOADER.prop('active', false));
 
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', '1.2.3.4');
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+    equal(await getSetting('dnsProviderFlags'), 1);
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   it('Checking the DNS settings reset', async () => {
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.setSetting('userDNS', '');
+    await setSetting('dnsProviderFlags', 0);
+    await setSetting('userDNS', '');
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // Checking if the checkboxes are correctly set based on the settings prop
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
     // Click on "Custom DNS" but leaving the input field empty.
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', '');
 
     // Going back...
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // .. the DNS setting is reset to the default value.
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
+    equal(await getSetting('dnsProviderFlags'), 0);
 
     // Same test as before...
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', false));
 
     // But with a valid DNS value...
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', '1.2.3.4');
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // We keep the custom DNS.
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+    equal(await getSetting('dnsProviderFlags'), 1);
 
     // Write something invalid...
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
             .visible()
             .prop('checked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
+    await waitForQuery(
+        screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
             .visible()
             .prop('checked', true));
 
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenSettings.appPreferencesView.dnsSettingsView
+    equal(
+        await getQueryProperty(
+            screenSettings.appPreferencesView.dnsSettingsView
                 .CUSTOM_DNS_INPUT.visible(),
             'text'),
         '1.2.3.4');
 
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.dnsSettingsView
+    await setQueryProperty(
+        screenSettings.appPreferencesView.dnsSettingsView
             .CUSTOM_DNS_INPUT.visible(),
         'text', '1.2.3.4aabbcc');
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
     // We keep the custom DNS.
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+    equal(await getSetting('dnsProviderFlags'), 1);
   });
 
   it('Checking the languages settings', async () => {
-    await vpn.setSetting('languageCode', '');
+    await setSetting('languageCode', '');
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.LANGUAGE.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.languageSettingsView
             .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .checked());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await scrollToQuery(
+        screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+        screenSettings.appPreferencesView.languageSettingsView
             .languageItem('it'));
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.languageSettingsView
             .languageItemLabel('it'));
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.languageSettingsView
             .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .unchecked());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.LANGUAGE.visible().prop(
             'settingTitle', 'Lingua'));
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQuery(screenSettings.BACK.visible());
+    await waitForQuery(
+        screenSettings.appPreferencesView.languageSettingsView
             .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .unchecked());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await scrollToQuery(
+        screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+        screenSettings.appPreferencesView.languageSettingsView
             .languageItem('en'));
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.languageSettingsView
             .languageItemLabel('en')
             .visible());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.APP_PREFERENCES.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(
+        screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.LANGUAGE.visible().prop(
             'settingTitle', 'Language'));
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.setQueryProperty(
-        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+    await setQueryProperty(
+        screenSettings.appPreferencesView.languageSettingsView.SCREEN,
         'contentY', 0);
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQueryAndClick(
+        screenSettings.appPreferencesView.languageSettingsView
             .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .unchecked());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.languageSettingsView
+    await waitForQuery(
+        screenSettings.appPreferencesView.languageSettingsView
             .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
             .checked());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   // TODO: app-permission
 
   it('Checking the about us', async () => {
-    await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
+    await waitForQuery(screenSettings.ABOUT_US.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.ABOUT_US);
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.ABOUT_US);
 
-    await vpn.clickOnQuery(queries.screenSettings.ABOUT_US.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await clickOnQuery(screenSettings.ABOUT_US.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.BACK.visible());
 
-    await vpn.waitForQuery(queries.screenSettings.aboutUsView.SCREEN);
-    await vpn.waitForQuery(queries.screenSettings.aboutUsView.LIST);
-    await vpn.waitForQuery(queries.screenSettings.aboutUsView.TOS.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.aboutUsView.PRIVACY.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.aboutUsView.LICENSE.visible());
+    await waitForQuery(screenSettings.aboutUsView.SCREEN);
+    await waitForQuery(screenSettings.aboutUsView.LIST);
+    await waitForQuery(screenSettings.aboutUsView.TOS.visible());
+    await waitForQuery(
+        screenSettings.aboutUsView.PRIVACY.visible());
+    await waitForQuery(
+        screenSettings.aboutUsView.LICENSE.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.aboutUsView.TOS.visible());
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
+    await waitForQueryAndClick(
+        screenSettings.aboutUsView.TOS.visible());
+    await waitForCondition(async () => {
+      const url = await getLastUrl();
       return url.endsWith('/r/vpn/terms');
     });
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.aboutUsView.PRIVACY.visible());
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
+    await waitForQueryAndClick(
+        screenSettings.aboutUsView.PRIVACY.visible());
+    await waitForCondition(async () => {
+      const url = await getLastUrl();
       return url.endsWith('/r/vpn/privacy');
     });
 
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.aboutUsView.LICENSE.visible());
+    await waitForQueryAndClick(
+        screenSettings.aboutUsView.LICENSE.visible());
 
-    await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await clickOnQuery(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await clickOnQuery(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   it('Checking the get help', async () => {
-    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
+    await waitForQuery(screenSettings.GET_HELP.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.GET_HELP);
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.GET_HELP);
 
-    await vpn.clickOnQuery(queries.screenSettings.GET_HELP.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await clickOnQuery(screenSettings.GET_HELP.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+    await waitForQuery(screenGetHelp.LINKS.visible());
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.LOGS.visible());
+    await waitForQueryAndClick(screenGetHelp.LOGS.visible());
 
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
+    await waitForCondition(async () => {
+      const url = await getLastUrl();
       return url.startsWith('file://') && url.includes('mozillavpn') &&
           url.endsWith('.log');
     });
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.HELP_CENTER.visible());
-    await vpn.waitForCondition(async () => {
-      const url = await vpn.getLastUrl();
+    await waitForQueryAndClick(screenGetHelp.HELP_CENTER.visible());
+    await waitForCondition(async () => {
+      const url = await getLastUrl();
       return url.endsWith('/firefox-private-network-vpn');
     });
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(screenGetHelp.BACK_BUTTON.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
+    await waitForQuery(screenSettings.GET_HELP.visible());
   });
 
   it('Get help is opened and closed', async () => {
     await getToGetHelpView();
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await waitForQueryAndClick(screenGetHelp.BACK_BUTTON.visible());
+    await waitForQuery(global.SCREEN_LOADER.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
+    await waitForQuery(screenSettings.GET_HELP.visible());
   });
 
   it('Contact us is opened and closed', async () => {
     await getToGetHelpView();
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
+    await waitForQueryAndClick(screenGetHelp.SUPPORT.visible());
 
-    await vpn.waitForQueryAndClick(
-        queries.screenGetHelp.contactSupportView.USER_INFO.visible());
+    await waitForQueryAndClick(
+        screenGetHelp.contactSupportView.USER_INFO.visible());
   });
 
   it('Checking the preferences settings', async () => {
-    await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.APP_PREFERENCES.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.APP_PREFERENCES);
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.APP_PREFERENCES);
 
-    await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
-
-    await checkSetting(
-        queries.screenSettings.appPreferencesView.START_AT_BOOT, 'startAtBoot');
+    await clickOnQuery(screenSettings.APP_PREFERENCES.visible());
 
     await checkSetting(
-        queries.screenSettings.appPreferencesView.DATA_COLLECTION,
+        screenSettings.appPreferencesView.START_AT_BOOT, 'startAtBoot');
+
+    await checkSetting(
+        screenSettings.appPreferencesView.DATA_COLLECTION,
         'gleanEnabled');
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+    await waitForQuery(
+        screenSettings.appPreferencesView.LANGUAGE.visible());
+    await waitForQuery(
+        screenSettings.appPreferencesView.DNS_SETTINGS.visible());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   it('Checking the notifications settings', async () => {
-    await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
+    await waitForQuery(screenSettings.APP_PREFERENCES.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.APP_PREFERENCES);
+    await scrollToQuery(
+        screenSettings.SCREEN, screenSettings.APP_PREFERENCES);
 
-    await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
+    await clickOnQuery(screenSettings.APP_PREFERENCES.visible());
 
-    await vpn.waitForQuery(
-        queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+    await waitForQuery(
+        screenSettings.appPreferencesView.NOTIFICATIONS.visible());
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN,
-        queries.screenSettings.appPreferencesView.NOTIFICATIONS);
+    await scrollToQuery(
+        screenSettings.SCREEN,
+        screenSettings.appPreferencesView.NOTIFICATIONS);
 
-    await vpn.clickOnQuery(
-        queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+    await clickOnQuery(
+        screenSettings.appPreferencesView.NOTIFICATIONS.visible());
 
     await checkSetting(
-        queries.screenSettings.appPreferencesView.notificationView
+        screenSettings.appPreferencesView.notificationView
             .UNSECURE_NETWORK_ALERT,
         'unsecuredNetworkAlert');
     await checkSetting(
-        queries.screenSettings.appPreferencesView.notificationView
+        screenSettings.appPreferencesView.notificationView
             .SWITCH_SERVER_ALERT,
         'serverSwitchNotification');
     await checkSetting(
-        queries.screenSettings.appPreferencesView.notificationView
+        screenSettings.appPreferencesView.notificationView
             .CONNECTION_CHANGE_ALERT,
         'connectionChangeNotification');
     await checkSetting(
-        queries.screenSettings.appPreferencesView.notificationView
+        screenSettings.appPreferencesView.notificationView
             .SERVER_UNAVAILABLE_ALERT,
         'serverUnavailableNotification');
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await waitForQueryAndClick(screenSettings.BACK.visible());
+    await waitForQuery(screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await waitForQuery(screenSettings.USER_PROFILE.visible());
   });
 
   it('Checking the logout', async () => {
-    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN,
-        queries.screenSettings.SIGN_OUT.visible());
+    await waitForQuery(screenSettings.SIGN_OUT.visible());
+    await scrollToQuery(
+        screenSettings.SCREEN,
+        screenSettings.SIGN_OUT.visible());
 
-    await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
-    await vpn.waitForInitialView();
+    await clickOnQuery(screenSettings.SIGN_OUT.visible());
+    await waitForInitialView();
   });
 
   it('Checking Developer Menu Reset and Quit', async () => {
@@ -844,54 +844,54 @@ describe('Settings', function() {
     }
 
     // magically unlock dev menu
-    await vpn.setSetting('developerUnlock', 'true');
+    await setSetting('developerUnlock', 'true');
 
     // navigate to Developer Menu
     await getToGetHelpView();
-    await vpn.waitForQueryAndClick(
-        queries.screenGetHelp.DEVELOPER_MENU.visible());
+    await waitForQueryAndClick(
+        screenGetHelp.DEVELOPER_MENU.visible());
 
     // click "reset and quit" 6 times, test will fail if app quits early
-    await vpn.waitForQuery(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.scrollToQuery(
-        queries.screenDeveloperMenu.SCREEN,
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON);
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await waitForQuery(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await scrollToQuery(
+        screenDeveloperMenu.SCREEN,
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON);
+    await waitForQueryAndClick(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await waitForQueryAndClick(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
     // can't use waitForQueryAndClick for final click because it returns an
     // error - as expected, we crashed the app - but that causes test to fail
-    await vpn.clickOnQueryAndAcceptAnyResults(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
+    await clickOnQueryAndAcceptAnyResults(
+        screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
 
     // Confirm the app quit
-    assert.equal(setup.vpnIsInactive(), true);
+    equal(vpnIsInactive(), true);
 
     // relaunch app
-    await setup.startAndConnect();
-    await vpn.setSetting('tipsAndTricksIntroShown', 'true');
-    await vpn.setSetting('localhostRequestsOnly', 'true');
-    await vpn.authenticateInApp(true, true);
-    await vpn.setGleanAutomationHeader();
+    await startAndConnect();
+    await setSetting('tipsAndTricksIntroShown', 'true');
+    await setSetting('localhostRequestsOnly', 'true');
+    await authenticateInApp(true, true);
+    await setGleanAutomationHeader();
 
     // turn on VPN
-    await vpn.activateViaToggle();
-    await vpn.awaitSuccessfulConnection();
+    await activateViaToggle();
+    await awaitSuccessfulConnection();
   });
 
   describe('telemetry in the settings menu', function () {
     this.ctx.authenticationNeeded = true;
 
     beforeEach(async () => {
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await waitForQueryAndClick(navBar.SETTINGS.visible());
     });
 
     it("record telemetry when user clicks on their account details", async () => {
@@ -899,12 +899,12 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
-        await vpn.waitForQueryAndClick(queries.screenSettings.USER_PROFILE.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "accountSelected", "main");
+        await waitForQueryAndClick(screenSettings.USER_PROFILE.visible());
+        const events = await gleanTestGetValue("interaction", "accountSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on Privacy features", async () => {
@@ -912,12 +912,12 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
-        await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
+        await waitForQueryAndClick(screenSettings.PRIVACY.visible());
+        const events = await gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on Tips and tricks", async () => {
@@ -925,12 +925,12 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
-        await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
+        await waitForQueryAndClick(screenSettings.TIPS_AND_TRICKS.visible());
+        const events = await gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on My devices", async () => {
@@ -938,12 +938,12 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
-        await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "myDevicesSelected", "main");
+        await waitForQueryAndClick(screenSettings.MY_DEVICES.visible());
+        const events = await gleanTestGetValue("interaction", "myDevicesSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on App preferences", async () => {
@@ -951,12 +951,12 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
-        await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "appPreferencesSelected", "main");
+        await waitForQueryAndClick(screenSettings.APP_PREFERENCES.visible());
+        const events = await gleanTestGetValue("interaction", "appPreferencesSelected", "main");
 
-        assert.equal(events.length, 1);
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on Sign out in the Settings screen", async () => {
@@ -965,17 +965,17 @@ describe('Settings', function() {
             return;
         }
 
-        await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
-        await vpn.scrollToQuery(
-            queries.screenSettings.SCREEN,
-            queries.screenSettings.SIGN_OUT.visible());
+        await waitForQuery(screenSettings.SIGN_OUT.visible());
+        await scrollToQuery(
+            screenSettings.SCREEN,
+            screenSettings.SIGN_OUT.visible());
     
-        await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
+        await clickOnQuery(screenSettings.SIGN_OUT.visible());
 
-        const events = await vpn.gleanTestGetValue("interaction", "signOutSelected", "main");
-        assert.equal(events.length, 1);
+        const events = await gleanTestGetValue("interaction", "signOutSelected", "main");
+        equal(events.length, 1);
         var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+        equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user goes to the Settings screen", async () => {
@@ -984,11 +984,11 @@ describe('Settings', function() {
             return;
         }
         
-        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+        await waitForQueryAndClick(navBar.SETTINGS.visible());
 
-        const settingsScreenEvent = await vpn.gleanTestGetValue("impression", "settingsScreen", "main");
+        const settingsScreenEvent = await gleanTestGetValue("impression", "settingsScreen", "main");
         const settingsScreenEventExtras = settingsScreenEvent[0].extra;
-        assert.strictEqual("settings", settingsScreenEventExtras.screen);
+        strictEqual("settings", settingsScreenEventExtras.screen);
     });
   });
 });

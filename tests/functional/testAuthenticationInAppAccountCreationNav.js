@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');  // TODO: add asserts to each block
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
-const fxaEndpoints = require('./servers/fxa_endpoints.js')
+import assert from 'assert';  // TODO: add asserts to each block
+import { isFeatureFlippedOn, flipFeatureOn, waitForInitialView, clickOnQuery, waitForQuery, waitForQueryAndClick, setQueryProperty, copyToClipboard } from './helper.js';
+import { screenInitialize, global, screenAuthenticationInApp, screenGetHelp } from './queries.js';
+import { validators } from './servers/fxa_endpoints.js';
 
 describe('User authentication', function() {
   this.timeout(300000);
@@ -16,14 +16,14 @@ describe('User authentication', function() {
       POSTs: {
         '/v1/account/status': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaStatus,
+          bodyValidator: validators.fxaStatus,
           body: null,
           callback: (req) => this.ctx.fxaStatusCallback(req)
         },
 
         '/v1/account/login': {
           status: 200,
-          bodyValidator: fxaEndpoints.validators.fxaLogin,
+          bodyValidator: validators.fxaLogin,
           body: null,
           callback: (req) => this.ctx.fxaLoginCallback(req)
         },
@@ -32,30 +32,30 @@ describe('User authentication', function() {
     };
 
     it('Back and forward', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
+      if (!(await isFeatureFlippedOn('inAppAuthentication'))) {
+        await flipFeatureOn('inAppAuthentication');
+        await flipFeatureOn('inAppAccountCreate');
       }
 
       // Step 1: main -> start -> main
-      await vpn.waitForInitialView();
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
-      await vpn.waitForInitialView();
+      await waitForInitialView();
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
+      await waitForInitialView();
 
       // Step 2: main -> start -> help -> start
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
       // Step 3: start -> sign-up -> help -> sign-up
       this.ctx.fxaStatusCallback = (req) => {
@@ -63,27 +63,27 @@ describe('User authentication', function() {
           exists: false
         }
       };
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await waitForQuery(global.SCREEN_LOADER.ready());
 
-      await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
+      await waitForQueryAndClick(screenAuthenticationInApp
                                          .AUTH_SIGNUP_GET_HELP_LINK.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
 
       // Step 4: sign-up -> start
-      await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await clickOnQuery(
+          screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
       // Step 5: start -> sign-in -> help -> sign-in
       this.ctx.fxaStatusCallback = (req) => {
@@ -91,26 +91,26 @@ describe('User authentication', function() {
           exists: true, hasPassword: true
         }
       };
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
+      await waitForQueryAndClick(screenAuthenticationInApp
                                          .AUTH_SIGNIN_GET_HELP_LINK.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
 
       // Step 6: sign-in -> start
-      await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await clickOnQuery(
+          screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
       // Step 7: start -> sign-in -> email verification -> help -> email
       // verification
@@ -121,39 +121,39 @@ describe('User authentication', function() {
           verificationMethod: 'email-otp'
         }
       };
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
 
-      await vpn.copyToClipboard('pa$$vv0rd');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_PASTE_BUTTON
+      await copyToClipboard('pa$$vv0rd');
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_PASTE_BUTTON
               .visible());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK
               .visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
 
       // Step 8: email verification -> start
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
               .visible());
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
       // Step 9: start -> sign-in -> totp -> help -> totp
       this.ctx.fxaLoginCallback = (req) => {
@@ -163,36 +163,36 @@ describe('User authentication', function() {
           verificationMethod: 'totp-2fa'
         }
       };
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
 
       // Step 10: totp -> main
-      await vpn.clickOnQuery(
-          queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
-      await vpn.waitForInitialView();
+      await clickOnQuery(
+          screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
+      await waitForInitialView();
 
       // Step 11: main -> start -> sign-in -> unblock code -> help -> unblock
       // code
@@ -203,41 +203,41 @@ describe('User authentication', function() {
         };
         this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 400;
       };
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
+      await clickOnQuery(screenInitialize.SIGN_UP_BUTTON.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
           'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
+      await setQueryProperty(
+          screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
               .visible(),
           'text', 'P4ass0rd!!');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .enabled());
 
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK
+      await waitForQueryAndClick(
+          screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK
               .visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQueryAndClick(screenGetHelp.BACK_BUTTON);
+      await waitForQuery(global.SCREEN_LOADER.ready());
+      await waitForQuery(screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_BACK_BUTTON.visible());
 
       // Step 12: unblock code -> start
-      await vpn.clickOnQuery(queries.screenAuthenticationInApp
+      await clickOnQuery(screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_BACK_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
+      await waitForQuery(
+          screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     });
   });
 });

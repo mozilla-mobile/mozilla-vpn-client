@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-(function(exports) {
-
 const UserData = {
   avatar: '',
   display_name: 'Test',
@@ -39,7 +37,8 @@ const SubscriptionDetails = {
   },
 };
 
-exports.SubscriptionDetails = SubscriptionDetails;
+const _SubscriptionDetails = SubscriptionDetails;
+export { _SubscriptionDetails as SubscriptionDetails };
 
 const VALIDATORS = {
   guardianLoginVerify: {
@@ -59,9 +58,9 @@ const VALIDATORS = {
   },
 };
 
-exports.validators = VALIDATORS;
+export const validators = VALIDATORS;
 
-exports.endpoints = {
+export const endpoints = {
   GETs: {
     '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
 
@@ -287,4 +286,3 @@ exports.endpoints = {
     },
   },
 };
-})(typeof exports === 'undefined' ? this['guardianEndpoints'] = {} : exports);

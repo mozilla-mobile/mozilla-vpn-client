@@ -2,58 +2,58 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const assert = require('assert');
-const vpn = require('./helper.js');
-const queries = require('./queries.js');
+import assert from 'assert';
+import { flipFeatureOn, flipFeatureOff, resetAddons, setSetting, authenticateInApp, waitForQueryAndClick, waitForQuery, servers as _servers, scrollToQuery, getQueryProperty, clickOnQuery } from './helper.js';
+import { screenHome } from './queries.js';
 
 describe('Addon content replacer', function() {
   this.timeout(60000);
 
   beforeEach(async () => {
-    await vpn.flipFeatureOn('replacerAddon');
+    await flipFeatureOn('replacerAddon');
   });
 
   afterEach(async () => {
-    await vpn.flipFeatureOff('replacerAddon');
+    await flipFeatureOff('replacerAddon');
   });
 
   describe('Addon replacer', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('07_replacer');
+      await resetAddons('07_replacer');
     });
 
     it('Replace the country/city names', async () => {
       // In this way we disable the 'home-replacement' addon.
-      await vpn.setSetting('languageCode', 'it');
-      await vpn.authenticateInApp(true, true);
+      await setSetting('languageCode', 'it');
+      await authenticateInApp(true, true);
 
-      await vpn.waitForQueryAndClick(
-          queries.screenHome.SERVER_LIST_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
+      await waitForQueryAndClick(
+          screenHome.SERVER_LIST_BUTTON.visible());
+      await waitForQuery(screenHome.STACKVIEW.ready());
+      await waitForQueryAndClick(
+          screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
-      const servers = await vpn.servers();
+      const servers = await _servers();
 
       for (let server of servers) {
         const countryId =
-            queries.screenHome.serverListView.generateCountryId(server.code);
-        await vpn.waitForQuery(countryId.visible());
+            screenHome.serverListView.generateCountryId(server.code);
+        await waitForQuery(countryId.visible());
 
-        await vpn.scrollToQuery(
-            queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
+        await scrollToQuery(
+            screenHome.serverListView.COUNTRY_VIEW, countryId);
 
-        if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
+        if (await getQueryProperty(countryId, 'cityListVisible') ===
             'false') {
-          await vpn.clickOnQuery(countryId);
+          await clickOnQuery(countryId);
         }
 
         for (let city of server.cities) {
-          const cityId = queries.screenHome.serverListView.generateCityId(
+          const cityId = screenHome.serverListView.generateCityId(
               countryId, city.name);
-          await vpn.waitForQuery(cityId.visible());
+          await waitForQuery(cityId.visible());
           const cityName =
-              await vpn.getQueryProperty(cityId, 'radioButtonLabelText');
+              await getQueryProperty(cityId, 'radioButtonLabelText');
           assert(
               cityName.length > 0 && !cityName.includes('a') &&
               !cityName.includes('A') && !cityName.includes('e') &&
@@ -63,7 +63,7 @@ describe('Addon content replacer', function() {
         }
       }
 
-      await vpn.setSetting('languageCode', '');
+      await setSetting('languageCode', '');
     });
   });
 });
