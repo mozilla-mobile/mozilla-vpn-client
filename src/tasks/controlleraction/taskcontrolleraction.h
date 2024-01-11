@@ -10,7 +10,7 @@
 
 #include "controller.h"
 #include "models/serverdata.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 // The purpose of this task is to block any other task when
 // activating/deactivating the VPN. It doesn't relay on the Controller state,

@@ -8,7 +8,7 @@
 #include <QObject>
 
 #include "errorhandler.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class TaskCaptivePortalLookup final : public Task {
   Q_DISABLE_COPY_MOVE(TaskCaptivePortalLookup)

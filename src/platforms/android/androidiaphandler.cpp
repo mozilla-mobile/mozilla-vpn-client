@@ -17,7 +17,7 @@
 #include "networking/networkrequest.h"
 #include "platforms/android/androidcommons.h"
 #include "tasks/purchase/taskpurchase.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

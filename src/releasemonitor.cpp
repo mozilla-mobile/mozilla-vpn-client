@@ -9,7 +9,7 @@
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/release/taskrelease.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "update/updater.h"
 #include "utilities/leakdetector.h"
 

@@ -16,7 +16,7 @@
 #include "frontend/navigatorreloader.h"
 #include "logging/logger.h"
 #include "networking/networkrequest.h"
-#include "tasks/function/taskfunction.h"
+#include "taskscheduler/taskfunction.h"
 
 namespace {
 Logger logger("QMLHotReload");

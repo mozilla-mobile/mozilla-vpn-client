@@ -98,16 +98,16 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     # Setup default output directories.
-    workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent
+    workspace_root = Path(os.path.dirname(os.path.realpath(__file__))).parent.parent.parent.parent
     if args.outdir is None:
-        args.outdir = os.path.join(workspace_root, "qtglean", "prebuilt", "glean", "generated")
+        args.outdir = os.path.join(workspace_root, "telemetry" "glean", "qtglean", "prebuilt", "glean", "generated")
 
     if args.filename is None:
         print("Generating Mozilla VPN Glean files.")
 
         os.makedirs(args.outdir, exist_ok=True)
 
-        telemetry_path = os.path.join(workspace_root, "src", "telemetry")
+        telemetry_path = os.path.join(workspace_root, "telemetry")
 
         pings_files = [
             os.path.join(telemetry_path, "pings.yaml"),

@@ -16,7 +16,7 @@
 #include "app.h"
 #include "context/qmlengineholder.h"
 #include "logging/logger.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 const QString HTTP_RESPONSE(

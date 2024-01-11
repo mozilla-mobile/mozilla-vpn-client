@@ -27,7 +27,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE lottie nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -151,8 +151,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
@@ -187,19 +185,12 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/task.h
-    ${MZ_SOURCE_DIR}/taskscheduler.cpp
-    ${MZ_SOURCE_DIR}/taskscheduler.h
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp

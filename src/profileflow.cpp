@@ -12,7 +12,7 @@
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

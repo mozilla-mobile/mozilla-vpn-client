@@ -10,7 +10,7 @@
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
 #include "tasks/purchase/taskpurchase.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 #include <QJsonDocument>

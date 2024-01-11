@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class AdjustTaskSubmission final : public Task {
   Q_OBJECT

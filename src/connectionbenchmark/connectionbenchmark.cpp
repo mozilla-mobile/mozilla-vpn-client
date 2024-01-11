@@ -13,7 +13,7 @@
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

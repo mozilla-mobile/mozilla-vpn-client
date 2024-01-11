@@ -152,12 +152,12 @@ else()
     )
 endif()
 
-list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml)
+list(APPEND PINGS_LIST ${CMAKE_CURRENT_SOURCE_DIR}/../../pings.yaml)
 list(APPEND METRICS_LIST
-    ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml
-    ${CMAKE_SOURCE_DIR}/src/telemetry/interaction_metrics.yaml
-    ${CMAKE_SOURCE_DIR}/src/telemetry/impression_metrics.yaml
-    ${CMAKE_SOURCE_DIR}/src/telemetry/outcome_metrics.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../metrics.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../interaction_metrics.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../impression_metrics.yaml
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../outcome_metrics.yaml
 )
 
 ## Generate metrics and pings files

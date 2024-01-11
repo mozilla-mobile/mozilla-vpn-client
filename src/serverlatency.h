@@ -10,7 +10,7 @@
 #include <QTimer>
 
 #include "pingsender.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class ServerCity;
 

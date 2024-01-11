@@ -16,10 +16,10 @@
 #endif
 #if defined(MZ_ANDROID)
 #  include "../platforms/android/androidvpnactivity.h"
-#  include "platforms/android/androidcommons.h"
+#  include "androidglean.h"
 #endif
 #if defined(MZ_IOS)
-#  include "platforms/ios/iosgleanbridge.h"
+#  include "iosgleanbridge.h"
 #endif
 
 #include <QCoreApplication>

@@ -165,11 +165,7 @@ mozillavpnnp.exe
 mozillavpnnp.vcxproj*
 
 # glean
-/glean/libglean.a
-/glean/glean_autogen/
-/glean/telemetry/*
-!/glean/telemetry/.keepme
-qtglean/prebuilt/
+src/telemetry/glean/qtglean/prebuilt/
 
 # For users compiling QT per the README
 /qt/

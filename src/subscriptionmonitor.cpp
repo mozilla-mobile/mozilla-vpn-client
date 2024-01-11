@@ -11,7 +11,7 @@
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/account/taskaccount.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

@@ -9,7 +9,7 @@
 #include "logging/logger.h"
 #include "networking/networkrequest.h"
 #include "settings/settingsholder.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 #include "utilities/leakdetector.h"
 
 namespace {

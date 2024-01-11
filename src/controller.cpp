@@ -31,9 +31,9 @@
 #include "serverlatency.h"
 #include "settings/settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
-#include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskfunction.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 #if defined(MZ_FLATPAK)

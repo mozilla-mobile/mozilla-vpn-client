@@ -17,7 +17,7 @@
 #include "mozillavpn.h"
 #include "purchasehandler.h"
 #include "tasks/products/taskproducts.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

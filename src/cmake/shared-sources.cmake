@@ -21,6 +21,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/context)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/crypto)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utilities)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/networking)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/taskscheduler)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 
 target_link_libraries(shared-sources INTERFACE
     mz_context
@@ -30,6 +32,8 @@ target_link_libraries(shared-sources INTERFACE
     mz_utilities
     mz_crypto
     mz_networking
+    mz_taskscheduler
+    mz_telemetry
 )
 
 # Shared components
@@ -107,8 +111,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.cpp
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
-    ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
-    ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhotreloader.cpp
@@ -147,9 +149,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
-    ${CMAKE_SOURCE_DIR}/src/task.h
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp
@@ -160,10 +159,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
     ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp
     ${CMAKE_SOURCE_DIR}/src/theme.h
 )

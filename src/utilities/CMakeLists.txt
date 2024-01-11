@@ -15,9 +15,6 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.h
-    ANDROID_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/android/androidhelper.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/android/androidhelper.cpp
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.h

@@ -5,7 +5,6 @@
 get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
 include_directories(${MZ_SOURCE_DIR}/glean)
@@ -32,7 +31,7 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE  lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -193,8 +192,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
@@ -229,19 +226,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/task.h
-    ${MZ_SOURCE_DIR}/taskscheduler.cpp
-    ${MZ_SOURCE_DIR}/taskscheduler.h
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp

@@ -9,7 +9,7 @@
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/authenticate/taskauthenticate.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

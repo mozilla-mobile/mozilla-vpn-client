@@ -6,7 +6,7 @@
 #define TASKGETSUBSCRIPTIONDETAILS_H
 
 #include "errorhandler.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class AuthenticationInAppSession;
 

@@ -26,8 +26,8 @@
 #include "settings/settingsholder.h"
 #include "tasks/addon/taskaddon.h"
 #include "tasks/addonindex/taskaddonindex.h"
-#include "tasks/function/taskfunction.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskfunction.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =

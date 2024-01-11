@@ -6,7 +6,7 @@
 
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 #include "utilities/leakdetector.h"
 #include "utilities/urlopener.h"
 

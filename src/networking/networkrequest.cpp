@@ -16,7 +16,7 @@
 #include "logging/logger.h"
 #include "networkmanager.h"
 #include "settings/settingsholder.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 #include "utilities/leakdetector.h"
 
 // Timeout for the network requests.

@@ -6,7 +6,7 @@
 #define TASKGETLOCATION_H
 
 #include "errorhandler.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class TaskGetLocation final : public Task {
   Q_OBJECT

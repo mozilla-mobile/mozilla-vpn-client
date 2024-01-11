@@ -12,7 +12,7 @@
 #include "errorhandler.h"
 #include "logging/logger.h"
 #include "networking/networkrequest.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

@@ -9,7 +9,7 @@
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
 #include "settings/settingsmanager.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
 #ifdef MZ_WASM

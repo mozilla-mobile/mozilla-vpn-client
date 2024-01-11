@@ -6,7 +6,7 @@
 #define TASKAUTHENTICATE_H
 
 #include "authenticationlistener.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class QByteArray;
 

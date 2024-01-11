@@ -8,7 +8,7 @@
 #include <QNetworkReply>
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class TaskPurchase final : public Task {
   Q_OBJECT

@@ -64,6 +64,7 @@ mz_add_new_module(
         Network
     MZ_DEPENDENCIES
         mz_logging
+        mz_utilities
     RUST_DEPENDENCIES
         ${RUST_DEPENDENCIES}
 )
