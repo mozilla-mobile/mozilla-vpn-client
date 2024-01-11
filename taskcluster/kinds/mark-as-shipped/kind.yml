@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.from_deps
+    - mozillavpn_taskgraph.transforms.set_name
+    - mozilla_taskgraph.transforms.scriptworker.shipit.mark_as_shipped
+    - taskgraph.transforms.task
+
+kind-dependencies:
+    - beetmover-ship
+
+tasks:
+    mark-as-shipped:
+        worker-type: shipit
+        from-deps:
+            group-by:
+                attribute: shipping-phase
+            copy-attributes: true
+            unique-kinds: false
+            set-name: false
+        shipit-product:
+            by-build-type:
+                addons/opt: Mozilla-vpn-addons
+                default: Mozilla-vpn-client
+        run-on-tasks-for: [action]

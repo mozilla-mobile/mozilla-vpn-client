@@ -105,6 +105,11 @@ workers:
             implementation: beetmover-import-from-gcs-to-artifact-registry
             os: scriptworker
             worker-type: 'mozillavpn-{level}-beetmover'
+        shipit:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-shipit
+            os: scriptworker
+            worker-type: 'mozillavpn-{level}-shipit'
         succeed:
             provisioner: built-in
             implementation: succeed
@@ -126,3 +131,6 @@ release-promotion:
         - fetch
         - toolchain
         - toolchain-openssl
+
+shipit:
+    scope-prefix: project:mozillavpn:releng:ship-it
