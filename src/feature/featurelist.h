@@ -202,6 +202,13 @@ FEATURE(superDooperMetrics,      // Feature ID
         QStringList(),           // feature dependencies
         FeatureCallback_true)
 
+FEATURE(swipeToGoBack,      // Feature ID
+        "Swipe to go back",  // Feature name
+        FeatureCallback_true,    // Can be flipped on
+        FeatureCallback_true,    // Can be flipped off
+        QStringList(),           // feature dependencies
+        FeatureCallback_swipeToGoBack)
+
 FEATURE(unsecuredNetworkNotification,      // Feature ID
         "Unsecured network notification",  // Feature name
         FeatureCallback_true,              // Can be flipped on

@@ -174,6 +174,16 @@ bool FeatureCallback_shareLogs() {
 #endif
 }
 
+bool FeatureCallback_swipeToGoBack() {
+  return false; //while the feature is still unreleased
+#if defined(MZ_IOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
+
 bool FeatureCallback_webPurchase() {
 #if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
   return false;
