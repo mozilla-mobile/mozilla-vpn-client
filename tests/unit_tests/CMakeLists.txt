@@ -88,8 +88,6 @@ target_sources(app_unit_tests PRIVATE
     testcomposer.h
     testdaemonaccesscontrol.cpp
     testdaemonaccesscontrol.h
-    testenv.cpp
-    testenv.h
     testipaddress.cpp
     testipaddress.h
     testlanguagei18n.cpp
