@@ -4,6 +4,7 @@
 
 #include "networkmanagercontroller.h"
 
+#include <QDBusConnection>
 #include <QFile>
 #include <QScopeGuard>
 #include <QUuid>
@@ -52,10 +53,6 @@ NetworkManagerController::NetworkManagerController() {
     g_error_free(err);
   }
 
-  m_activeStateTimer.setSingleShot(true);
-  connect(&m_activeStateTimer, &QTimer::timeout, this,
-          &NetworkManagerController::checkActiveState);
-
   m_wireguard = nm_setting_wireguard_new();
   m_cancellable = g_cancellable_new();
 }
@@ -64,6 +61,9 @@ NetworkManagerController::~NetworkManagerController() {
   MZ_COUNT_DTOR(NetworkManagerController);
   logger.debug() << "Destroying NetworkManagerController";
   g_cancellable_cancel(m_cancellable);
+
+  // Clear the active connection, if any.
+  setActiveConnection(nullptr);
 
   if (m_remote) {
     nm_remote_connection_delete_async(
@@ -80,9 +80,6 @@ NetworkManagerController::~NetworkManagerController() {
         m_remote);
   }
 
-  if (m_active != nullptr) {
-    g_object_unref(m_remote);
-  }
   if (m_ipv6config != nullptr) {
     g_object_unref(m_ipv6config);
   }
@@ -176,7 +173,7 @@ void NetworkManagerController::initialize(const Device* device,
     for (guint i = 0; i < connections->len; i++) {
       NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
       if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
-        m_active = active;
+        setActiveConnection(active);
         break;
       }
     }
@@ -354,20 +351,60 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
 
 void NetworkManagerController::activateCompleted(void* result) {
   GError* err = nullptr;
-  if (m_active != nullptr) {
-    g_object_unref(m_active);
-  }
-  m_active = nm_client_activate_connection_finish(m_client,
-                                                  G_ASYNC_RESULT(result), &err);
-  if (!m_active) {
+  NMActiveConnection* active;
+  active = nm_client_activate_connection_finish(m_client,
+                                                G_ASYNC_RESULT(result), &err);
+
+  if (!active) {
     logger.error() << "peer activation failed:" << err->message;
     g_error_free(err);
   } else {
-    m_activeStateRetries = 16;
-    checkActiveState();
+    setActiveConnection(active);
   }
 
   g_object_unref(result);
+}
+
+void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
+  if (m_active == active) {
+    // No change - do nothing.
+    return;
+  }
+
+  // If there is an existing active connection, discard it.
+  if (m_active != nullptr) {
+    QString oldPath(nm_object_get_path(NM_OBJECT(m_active)));
+    QDBusConnection::systemBus().disconnect(
+          "org.freedesktop.NetworkManager", oldPath,
+          "org.freedesktop.NetworkManager.Connection.Active",
+          "StateChanged", this, SLOT(stateChanged(uint, uint)));
+    g_object_unref(m_active);
+    m_active = nullptr;
+  }
+
+  // Start monitoring the new connection for state changes.
+  m_active = active;
+  if (m_active) {
+    QString newPath(nm_object_get_path(NM_OBJECT(m_active)));
+    QDBusConnection::systemBus().connect(
+          "org.freedesktop.NetworkManager", newPath,
+          "org.freedesktop.NetworkManager.Connection.Active",
+          "StateChanged", this, SLOT(stateChanged(uint, uint)));
+    
+    // Invoke the state changed signal with the current state.
+    stateChanged(nm_active_connection_get_state(m_active),
+                 nm_active_connection_get_state_reason(m_active));
+  }
+}
+
+void NetworkManagerController::stateChanged(uint state, uint reason) {
+  logger.debug() << "DBus state changed" << state << reason;
+
+  if (state == NM_ACTIVE_CONNECTION_STATE_ACTIVATED) {
+    emit connected(m_serverPublicKey);
+  } else if (state == NM_ACTIVE_CONNECTION_STATE_DEACTIVATED) {
+    emit disconnected();
+  }
 }
 
 void NetworkManagerController::deactivate(Controller::Reason reason) {
@@ -392,10 +429,9 @@ void NetworkManagerController::deactivateCompleted(void* result) {
     logger.error() << "Connection deactivation failed:" << err->message;
     g_error_free(err);
   }
-  g_object_unref(m_active);
   g_object_unref(result);
-  m_active = nullptr;
 
+  setActiveConnection(nullptr);
   emit disconnected();
 }
 
@@ -416,23 +452,6 @@ void NetworkManagerController::checkStatus() {
   logger.debug() << "A";
   NMSettingIPConfig* ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
   NMIPAddress* nmAddress = nm_setting_ip_config_get_address(ipcfg, 0);
-
-#if 0
-  if (m_active == nullptr) {
-    return;
-  }
-
-  NMIPConfig* ipv4cfg = nm_active_connection_get_ip4_config(m_active);
-  if (ipv4cfg == nullptr) {
-    return;
-  }
-  GPtrArray* addrcfg = nm_ip_config_get_addresses(ipv4cfg);
-  if (addrcfg->len < 1) {
-    return;
-  }
-  nmAddress = (NMIPAddress*)(addrcfg->pdata[0]);
-#endif
-
   QString deviceAddress(nm_ip_address_get_address(nmAddress));
 
   QString txPath =
@@ -443,33 +462,6 @@ void NetworkManagerController::checkStatus() {
   uint64_t rxBytes = readSysfsFile(rxPath);
   logger.info() << "Status:" << deviceAddress << txBytes << rxBytes;
   emit statusUpdated(m_serverIpv4Gateway, deviceAddress, txBytes, rxBytes);
-}
-
-// Debug: Check the state of the active connection.
-void NetworkManagerController::checkActiveState() {
-  if (m_active == nullptr) {
-    return;
-  }
-
-  NMActiveConnectionState state = nm_active_connection_get_state(m_active);
-  NMActivationStateFlags flags = nm_active_connection_get_state_flags(m_active);
-  NMActiveConnectionStateReason reason =
-      nm_active_connection_get_state_reason(m_active);
-  logger.debug() << "Active connection state:" << state << flags << reason;
-
-  // If the connection is active, emit the handshake completion signal.
-  if ((state == NM_ACTIVE_CONNECTION_STATE_ACTIVATED) &&
-      (flags & NM_ACTIVATION_STATE_FLAG_LAYER2_READY) &&
-      (flags & NM_ACTIVATION_STATE_FLAG_IP4_READY) &&
-      (flags & NM_ACTIVATION_STATE_FLAG_IP6_READY)) {
-    emit connected(m_serverPublicKey);
-    m_activeStateTimer.stop();
-  } else if (m_activeStateRetries == 0) {
-    m_activeStateTimer.stop();
-  } else {
-    m_activeStateRetries--;
-    m_activeStateTimer.start(100);
-  }
 }
 
 void NetworkManagerController::getBackendLogs(
