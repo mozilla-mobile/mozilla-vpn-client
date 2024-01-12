@@ -6,10 +6,10 @@
 
 #include <QJsonObject>
 
-#include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "logging/logger.h"
 #include "models/subscriptiondata.h"

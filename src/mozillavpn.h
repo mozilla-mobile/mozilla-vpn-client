@@ -10,8 +10,8 @@
 #include <QObject>
 #include <QTimer>
 
-#include "app.h"
 #include "authenticationlistener.h"
+#include "context/app.h"
 #include "errorhandler.h"
 #include "frontend/navigator.h"
 

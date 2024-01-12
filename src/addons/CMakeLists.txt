@@ -89,6 +89,5 @@ mz_add_new_module(
         mz_logging
         mz_utilities
         mz_telemetry
-    RUST_DEPENDENCIES
-        ${RUST_DEPENDENCIES}
+        mz_translations
 )

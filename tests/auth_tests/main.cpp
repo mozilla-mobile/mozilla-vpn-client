@@ -7,8 +7,8 @@
 #include <QRandomGenerator>
 #include <QtTest/QtTest>
 
-#include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "glean/mzglean.h"
 #include "logging/loghandler.h"

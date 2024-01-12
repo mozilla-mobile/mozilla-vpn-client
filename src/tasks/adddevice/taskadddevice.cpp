@@ -8,7 +8,7 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-#include "app.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "crypto/curve25519.h"
 #include "errorhandler.h"

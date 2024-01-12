@@ -4,7 +4,7 @@
 
 #include "platforms/ios/iosiaphandler.h"
 
-#include "app.h"
+#include "context/app.h"
 #include "errorhandler.h"
 #include "iosutils.h"
 #include "logging/logger.h"

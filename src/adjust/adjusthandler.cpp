@@ -5,7 +5,7 @@
 #include "adjusthandler.h"
 
 #include "adjustproxy.h"
-#include "app.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"

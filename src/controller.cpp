@@ -6,9 +6,9 @@
 
 #include <QNetworkInformation>
 
-#include "app.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"

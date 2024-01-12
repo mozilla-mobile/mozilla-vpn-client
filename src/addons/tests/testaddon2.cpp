@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testaddon.h"
+#include "testaddon2.h"
 
 #include <QQmlApplicationEngine>
 #include <QTemporaryFile>
@@ -31,7 +31,7 @@
 #include "settings/settingsholder.h"
 #include "systemtraynotificationhandler.h"
 
-void TestAddon::init() {
+void TestAddon2::init() {
   m_settingsHolder = new SettingsHolder();
 
   // Glean needs to be initialized for every test because this test suite
@@ -46,9 +46,9 @@ void TestAddon::init() {
   MZGlean::initialize();
 }
 
-void TestAddon::cleanup() { delete m_settingsHolder; }
+void TestAddon2::cleanup() { delete m_settingsHolder; }
 
-void TestAddon::message_notification_data() {
+void TestAddon2::message_notification_data() {
   SettingsHolder settingsHolder;
   Localizer l;
 
@@ -159,7 +159,7 @@ void TestAddon::message_notification_data() {
   App::instance()->setUserState(App::UserNotAuthenticated);
 }
 
-void TestAddon::message_notification() {
+void TestAddon2::message_notification() {
   QFETCH(QString, title);
   QFETCH(QString, message);
   QFETCH(QString, actual_title);
@@ -169,4 +169,4 @@ void TestAddon::message_notification() {
   QCOMPARE(actual_message, message);
 }
 
-static TestAddon s_testAddon;
+QTEST_MAIN(TestAddon2)

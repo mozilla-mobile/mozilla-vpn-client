@@ -13,7 +13,7 @@
 
 #include "adjustfiltering.h"
 #include "adjusttasksubmission.h"
-#include "app.h"
+#include "context/app.h"
 #include "context/qmlengineholder.h"
 #include "logging/logger.h"
 #include "taskscheduler/taskscheduler.h"

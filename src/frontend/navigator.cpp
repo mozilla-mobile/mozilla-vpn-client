@@ -7,7 +7,7 @@
 #include <QCoreApplication>
 #include <QQuickItem>
 
-#include "app.h"
+#include "context/app.h"
 #include "context/qmlengineholder.h"
 #include "errorhandler.h"
 #include "feature/feature.h"

@@ -4,7 +4,7 @@
 
 #include "logoutobserver.h"
 
-#include "app.h"
+#include "context/app.h"
 #include "utilities/leakdetector.h"
 
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {

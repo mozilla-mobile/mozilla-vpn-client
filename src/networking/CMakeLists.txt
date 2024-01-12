@@ -11,6 +11,9 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/networkrequest.h
         ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/simplenetworkmanager.h
+    WASM_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/wasmnetworkrequest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/wasmnetworkrequest.h
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testnetworkmanager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testnetworkmanager.h

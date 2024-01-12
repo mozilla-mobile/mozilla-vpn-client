@@ -12,25 +12,11 @@
 #include "taskscheduler/taskscheduler.h"
 #include "utilities/leakdetector.h"
 
-#ifdef MZ_WASM
-#  include "networkrequest.h"
-#  include "platforms/wasm/wasmnetworkrequest.h"
-#endif
-
 namespace {
 Logger logger("App");
 }
 
-App::App(QObject* parent) : QObject(parent) {
-  MZ_COUNT_CTOR(App);
-
-#ifdef MZ_WASM
-  NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
-                                    WasmNetworkRequest::getResource,
-                                    WasmNetworkRequest::postResource,
-                                    WasmNetworkRequest::postResourceIODevice);
-#endif
-}
+App::App(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(App); }
 
 App::~App() { MZ_COUNT_DTOR(App); }
 

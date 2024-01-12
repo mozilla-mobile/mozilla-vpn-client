@@ -4,6 +4,11 @@
 
 #include "testaddonindex.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSignalSpy>
+
 #include "addons/manager/addondirectory.h"
 #include "addons/manager/addonindex.h"
 #include "feature/feature.h"
@@ -153,4 +158,4 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   QTRY_COMPARE(indexUpdatedSpy.count(), 3);
 }
 
-static TestAddonIndex s_testAddonIndex;
+QTEST_MAIN(TestAddonIndex)

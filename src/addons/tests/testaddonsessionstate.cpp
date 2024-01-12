@@ -94,4 +94,4 @@ void TestAddonSessionState::testClearAll() {
   QCOMPARE(state.get("prop3"), 12);
 }
 
-static TestAddonSessionState s_testAddonSessionState;
+QTEST_MAIN(TestAddonSessionState)

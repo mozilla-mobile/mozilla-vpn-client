@@ -8,6 +8,8 @@ configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 mz_add_new_module(
     TARGET_NAME mz_context
     SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/app.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/app.h
         ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
         ${CMAKE_CURRENT_SOURCE_DIR}/env.cpp
@@ -27,4 +29,5 @@ mz_add_new_module(
         mz_settings
         mz_utilities
         mz_networking
+        mz_taskscheduler
 )

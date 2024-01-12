@@ -4,7 +4,7 @@
 
 #include "taskaccount.h"
 
-#include "app.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"

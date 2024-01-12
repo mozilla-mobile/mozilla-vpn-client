@@ -24,7 +24,6 @@
 #include "feature/featuremodel.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
-#include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
 #include "settings/settingsholder.h"
@@ -859,4 +858,4 @@ void TestAddon::telemetry_status_change() {
   QCOMPARE(postDisableValues.length(), 3);
 }
 
-static TestAddon s_testAddon;
+QTEST_MAIN(TestAddon)

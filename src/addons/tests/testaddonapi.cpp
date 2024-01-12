@@ -226,4 +226,4 @@ void TestAddonApi::settimedcallback() {
   QCOMPARE(spy.count(), 1);
 }
 
-static TestAddonApi s_testAddonApi;
+QTEST_MAIN(TestAddonApi)

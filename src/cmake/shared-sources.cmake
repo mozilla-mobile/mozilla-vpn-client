@@ -42,8 +42,6 @@ target_link_libraries(shared-sources INTERFACE
 
 # Shared components
 target_sources(shared-sources INTERFACE
-    ${CMAKE_SOURCE_DIR}/src/app.cpp
-    ${CMAKE_SOURCE_DIR}/src/app.h
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.cpp
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.h
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapplistener.cpp

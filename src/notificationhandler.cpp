@@ -6,7 +6,7 @@
 
 #include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
-#include "app.h"
+#include "context/app.h"
 #include "context/constants.h"
 #include "controller.h"
 #include "i18nstrings.h"

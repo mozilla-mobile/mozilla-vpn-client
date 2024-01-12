@@ -364,4 +364,4 @@ void TestAddonStateBase::testClear() {
   QCOMPARE(state.clearInternalCalled, clearInternalCalled);
 }
 
-static TestAddonStateBase s_testAddonStateBase;
+QTEST_MAIN(TestAddonStateBase)

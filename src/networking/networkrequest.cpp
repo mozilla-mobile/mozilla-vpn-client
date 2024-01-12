@@ -19,6 +19,10 @@
 #include "taskscheduler/task.h"
 #include "utilities/leakdetector.h"
 
+#ifdef MZ_WASM
+#  include "wasmnetworkrequest.h"
+#endif
+
 // Timeout for the network requests.
 constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 constexpr int REQUEST_MAX_REDIRECTS = 4;
@@ -36,6 +40,13 @@ std::function<bool(NetworkRequest*, const QByteArray&)> s_postResourceCallback =
     nullptr;
 std::function<bool(NetworkRequest*, QIODevice*)>
     s_postResourceIODeviceCallback = nullptr;
+
+#ifdef MZ_WASM
+NetworkRequest::setRequestHandler(WasmNetworkRequest::deleteResource,
+                                  WasmNetworkRequest::getResource,
+                                  WasmNetworkRequest::postResource,
+                                  WasmNetworkRequest::postResourceIODevice);
+#endif
 
 }  // namespace
 
