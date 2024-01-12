@@ -92,8 +92,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
-    ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
-    ${CMAKE_SOURCE_DIR}/src/resourceloader.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.cpp

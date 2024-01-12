@@ -15,11 +15,15 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.h
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testurlopener.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testurlopener.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testresourceloader.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testresourceloader.h
     QT_DEPENDENCIES
         Core
         Gui

@@ -14,9 +14,9 @@
 #include "context/constants.h"
 #include "localizer.h"
 #include "logging/logger.h"
-#include "resourceloader.h"
 #include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
+#include "utilities/resourceloader.h"
 
 namespace {
 Logger logger("LanguageI18N");

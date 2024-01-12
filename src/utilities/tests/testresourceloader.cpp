@@ -12,7 +12,6 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
-#include "helper.h"
 #include "languagei18n.h"
 #include "localizer.h"
 #include "models/licensemodel.h"
@@ -218,4 +217,4 @@ void TestResourceLoader::addon() {
       ->maybeFlipOnOrOff();
 }
 
-static TestResourceLoader s_testResourceLoader;
+QTEST_MAIN(TestResourceLoader)

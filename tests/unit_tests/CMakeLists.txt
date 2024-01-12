@@ -82,8 +82,6 @@ target_sources(app_unit_tests PRIVATE
     testnavigator.h
     testqmlpath.cpp
     testqmlpath.h
-    testresourceloader.cpp
-    testresourceloader.h
     testtasksentry.cpp
     testtasksentry.h
     testthemes.cpp

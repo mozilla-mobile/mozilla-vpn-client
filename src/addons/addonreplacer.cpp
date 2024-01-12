@@ -14,8 +14,8 @@
 
 #include "context/qmlengineholder.h"
 #include "logging/logger.h"
-#include "resourceloader.h"
 #include "utilities/leakdetector.h"
+#include "utilities/resourceloader.h"
 
 namespace {
 Logger logger("AddonReplacer");

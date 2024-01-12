@@ -8,7 +8,7 @@
 #include <QFontDatabase>
 
 #include "logging/logger.h"
-#include "resourceloader.h"
+#include "utilities/resourceloader.h"
 
 namespace {
 Logger logger("FontLoader");
