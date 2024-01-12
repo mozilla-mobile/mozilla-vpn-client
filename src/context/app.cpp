@@ -16,6 +16,19 @@ namespace {
 Logger logger("App");
 }
 
+#ifdef UNIT_TEST
+// static
+App* App::instance() {
+  static App* app = nullptr;
+
+  if (!app) {
+    app = new App(qApp);
+  }
+
+  return app;
+}
+#endif
+
 App::App(QObject* parent) : QObject(parent) { MZ_COUNT_CTOR(App); }
 
 App::~App() { MZ_COUNT_DTOR(App); }

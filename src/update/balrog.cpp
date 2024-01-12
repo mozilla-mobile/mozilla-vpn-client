@@ -13,10 +13,10 @@
 #include <QSslKey>
 
 #include "context/constants.h"
-#include "errorhandler.h"
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
 #include "networking/networkrequest.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 // Implemented in rust. See the `signature` folder.

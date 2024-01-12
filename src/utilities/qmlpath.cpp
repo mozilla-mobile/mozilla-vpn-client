@@ -8,7 +8,6 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QRegularExpression>
-#include <QTest>
 
 QmlPath::QmlPath(const QString& path) {
   if (path.isEmpty()) {

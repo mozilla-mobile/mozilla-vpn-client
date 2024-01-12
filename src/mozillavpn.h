@@ -12,8 +12,8 @@
 
 #include "authenticationlistener.h"
 #include "context/app.h"
-#include "errorhandler.h"
 #include "navigator/navigator.h"
+#include "utilities/errorhandler.h"
 
 struct MozillaVPNPrivate;
 class CaptivePortal;

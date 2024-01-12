@@ -7,8 +7,8 @@
 
 #include <QObject>
 
-#include "errorhandler.h"
 #include "taskscheduler/task.h"
+#include "utilities/errorhandler.h"
 
 class TaskServers final : public Task {
   Q_DISABLE_COPY_MOVE(TaskServers)

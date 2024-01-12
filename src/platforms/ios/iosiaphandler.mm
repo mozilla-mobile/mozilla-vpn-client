@@ -5,12 +5,12 @@
 #include "platforms/ios/iosiaphandler.h"
 
 #include "context/app.h"
-#include "errorhandler.h"
 #include "iosutils.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler/taskscheduler.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 #include <QJsonDocument>

@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QTimer>
 
-#include "errorhandler.h"
+#include "utilities/errorhandler.h"
 
 class ReleaseMonitor final : public QObject {
   Q_OBJECT

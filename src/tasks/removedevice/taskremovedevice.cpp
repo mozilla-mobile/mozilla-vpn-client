@@ -6,11 +6,11 @@
 
 #include "context/app.h"
 #include "context/constants.h"
-#include "errorhandler.h"
 #include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networking/networkrequest.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

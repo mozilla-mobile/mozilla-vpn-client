@@ -9,8 +9,8 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "errorhandler.h"
 #include "logging/logger.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 #ifdef MZ_MACOS

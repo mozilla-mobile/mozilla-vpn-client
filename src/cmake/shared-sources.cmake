@@ -56,8 +56,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
     ${CMAKE_SOURCE_DIR}/src/collator.cpp
     ${CMAKE_SOURCE_DIR}/src/collator.h
-    ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
@@ -82,8 +80,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
-    ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp
-    ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.cpp

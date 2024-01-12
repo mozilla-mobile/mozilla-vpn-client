@@ -9,11 +9,11 @@
 
 #include "context/app.h"
 #include "context/qmlengineholder.h"
-#include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
 #include "logging/loglevel.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

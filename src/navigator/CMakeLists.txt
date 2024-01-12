@@ -22,4 +22,7 @@ mz_add_new_module(
         mz_logging
         mz_utilities
         mz_telemetry
+        mz_context
+    TEST_DEPENDENCIES
+        mz_translations
 )

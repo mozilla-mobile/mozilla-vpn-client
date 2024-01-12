@@ -10,10 +10,10 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
-#include "errorhandler.h"
 #include "logging/logger.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler/taskscheduler.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

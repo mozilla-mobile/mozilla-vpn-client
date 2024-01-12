@@ -11,9 +11,9 @@
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "navigator/navigator.h"
-#include "qmlpath.h"
 #include "settings/settingsholder.h"
 #include "translations/localizer.h"
+#include "utilities/qmlpath.h"
 
 void TestNavigator::init() {
   m_settingsHolder = new SettingsHolder();

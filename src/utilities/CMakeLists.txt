@@ -17,6 +17,10 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/versionutils.h
         ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/resourceloader.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/errorhandler.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/errorhandler.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/qmlpath.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/qmlpath.h
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testtemporarydir.h
@@ -24,6 +28,8 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testurlopener.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testresourceloader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testresourceloader.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testqmlpath.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testqmlpath.h
     QT_DEPENDENCIES
         Core
         Gui
@@ -32,4 +38,5 @@ mz_add_new_module(
         mz_logging
         mz_settings
         mz_context
+        mz_telemetry
 )

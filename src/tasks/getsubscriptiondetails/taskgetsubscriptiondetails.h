@@ -5,8 +5,8 @@
 #ifndef TASKGETSUBSCRIPTIONDETAILS_H
 #define TASKGETSUBSCRIPTIONDETAILS_H
 
-#include "errorhandler.h"
 #include "taskscheduler/task.h"
+#include "utilities/errorhandler.h"
 
 class AuthenticationInAppSession;
 

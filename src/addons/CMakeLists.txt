@@ -90,4 +90,5 @@ mz_add_new_module(
         mz_utilities
         mz_telemetry
         mz_translations
+        mz_navigator
 )

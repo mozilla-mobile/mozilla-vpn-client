@@ -15,7 +15,6 @@
 #include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "controller.h"
-#include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
@@ -27,6 +26,7 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "settings/settingsholder.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 namespace {

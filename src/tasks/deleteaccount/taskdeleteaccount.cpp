@@ -9,10 +9,10 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
-#include "errorhandler.h"
 #include "logging/logger.h"
 #include "networking/networkrequest.h"
 #include "taskscheduler/taskscheduler.h"
+#include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 
 namespace {
