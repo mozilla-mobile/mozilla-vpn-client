@@ -16,7 +16,7 @@ StackView {
     onBusyChanged: if (!busy && previousItem) previousItem.data.push(dimmedOverlay.createObject(stackView))
 
     onCurrentItemChanged: {
-        //Ensures that views out of the viewport go invisible
+        //Ensures that only the top view on the stack is visible (unless transitioning)
         currentItem.StackView.visible = Qt.binding(() => { return currentItem.x >= 0 || currentItem.x + currentItem.width <= stackView.width || currentItem.StackView.status !== StackView.Inactive  })
         if (depth > 1) {
             previousItem = get(depth - 2)
@@ -25,6 +25,7 @@ StackView {
     }
 
     onDepthChanged: {
+        //Destroying the dimmer overlay
         const lastIndex = currentIndex
         currentIndex = depth - 1
         if (currentIndex >= 0 && lastIndex > currentIndex) {
@@ -45,6 +46,8 @@ StackView {
         }
     }
 
+    //Pops the top most view on the stack after the swipe-to-go-back animation
+    //Does not happen when popping the stack regularly
     function popAfterSlide() {
         const enterTrans = stackView.popEnter
         const popTrans = stackView.popExit
@@ -115,7 +118,7 @@ StackView {
             swipeToGoBackMouseArea.mouseXOnRelease = mouseX
 
             //Inertia swipe to the right
-            if(mouse.x - swipeToGoBackMouseArea.currentMouseX >= 5 && timer.running) {
+            if(mouse.x - swipeToGoBackMouseArea.currentMouseX >= 5 && initertiaTimer.running) {
                 currentItemAnimation.to = stackView.width
                 previousItemAnimation.to = 0
                 currentItemAnimation.start()
@@ -125,7 +128,7 @@ StackView {
             }
 
             //Inertia swipe to the left
-            if(swipeToGoBackMouseArea.currentMouseX - mouse.x >= 5 && timer.running) {
+            if(swipeToGoBackMouseArea.currentMouseX - mouse.x >= 5 && initertiaTimer.running) {
                 currentItemAnimation.to = 0
                 previousItemAnimation.to = -stackView.width
                 currentItemAnimation.start()
@@ -140,7 +143,7 @@ StackView {
         }
 
         onMouseXChanged: {
-            timer.start()
+            initertiaTimer.start()
 
             var offset = mouseX - swipeToGoBackMouseArea.pressedPosition
 
@@ -174,7 +177,7 @@ StackView {
     }
 
     Timer {
-        id: timer
+        id: initertiaTimer
         interval: 100
     }
 
