@@ -148,7 +148,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
-add_subdirectory(translations)
 add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING)

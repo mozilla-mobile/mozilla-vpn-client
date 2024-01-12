@@ -16,8 +16,8 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.h
         ${CMAKE_CURRENT_BINARY_DIR}/version.h
     TEST_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/testenv.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/testenv.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.h
     QT_DEPENDENCIES
         Core
         Network
@@ -26,4 +26,5 @@ mz_add_new_module(
     MZ_DEPENDENCIES
         mz_settings
         mz_utilities
+        mz_networking
 )

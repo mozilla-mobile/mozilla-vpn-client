@@ -156,8 +156,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasewebhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settingswatcher.cpp

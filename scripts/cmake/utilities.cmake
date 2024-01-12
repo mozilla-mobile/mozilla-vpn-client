@@ -474,3 +474,36 @@ function(mz_add_the_apple_stuff)
         ${APPLE_SPECIFIC_TARGET_NAME}
     )
 endfunction()
+
+function(mz_add_test_target)
+    cmake_parse_arguments(
+        MZ_ADD_TEST # prefix
+        "" # options
+        "" # single-value args
+        "TARGET_NAME;TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES" # multi-value args
+        ${ARGN})
+
+    # Test targets are executable targets.
+    qt_add_executable(${MZ_ADD_TEST_TARGET_NAME}
+        ${MZ_ADD_TEST_SOURCES}
+    )
+    set_target_properties(${MZ_ADD_TEST_TARGET_NAME} PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+    )
+
+    add_test(
+        NAME ${MZ_ADD_TEST_TARGET_NAME}
+        COMMAND ${MZ_ADD_TEST_TEST_COMMAND}
+    )
+
+    target_compile_definitions(${MZ_ADD_TEST_TARGET_NAME} PRIVATE
+        UNIT_TEST
+        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+        "$<$<CONFIG:Debug>:MZ_DEBUG>"
+    )
+
+    add_dependencies(${MZ_ADD_TEST_PARENT_TARGET}-alltests ${MZ_ADD_TEST_TARGET_NAME})
+
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PRIVATE Qt6::Test)
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC ${MZ_ADD_TEST_DEPENDENCIES})
+endfunction()

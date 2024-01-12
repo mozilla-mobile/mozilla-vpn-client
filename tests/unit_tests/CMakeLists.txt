@@ -44,13 +44,9 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
-generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
-
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
-    translations-unit-tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -70,16 +66,6 @@ target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
     mocmozillavpn.cpp
-    testaddon.cpp
-    testaddon.h
-    testaddonapi.cpp
-    testaddonapi.h
-    testaddonindex.cpp
-    testaddonindex.h
-    testaddonsessionstate.cpp
-    testaddonsessionstate.h
-    testaddonstatebase.cpp
-    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
     testcheckedint.cpp
@@ -90,12 +76,8 @@ target_sources(app_unit_tests PRIVATE
     testdaemonaccesscontrol.h
     testipaddress.cpp
     testipaddress.h
-    testlanguagei18n.cpp
-    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
-    testlocalizer.cpp
-    testlocalizer.h
     testnavigator.cpp
     testnavigator.h
     testqmlpath.cpp
@@ -156,8 +138,6 @@ endforeach()
 
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
-    addons/addons.qrc
-    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc

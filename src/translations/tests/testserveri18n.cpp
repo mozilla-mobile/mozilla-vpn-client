@@ -34,4 +34,4 @@ void TestServerI18n::basic() {
            "Sydney_EN");
 }
 
-static TestServerI18n s_testServerI18n;
+QTEST_MAIN(TestServerI18n);

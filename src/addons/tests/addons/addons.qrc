@@ -16,5 +16,9 @@
         <file>api_settimedcallback.js</file>
         <file>api_settings.js</file>
         <file>api_urlopener.js</file>
+        <file>message1.json</file>
+        <file>message2.json</file>
+        <file>message3.json</file>
+        <file>message4.json</file>
     </qresource>
 </RCC>

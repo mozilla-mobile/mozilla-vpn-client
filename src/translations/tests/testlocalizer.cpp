@@ -4,9 +4,10 @@
 
 #include "testlocalizer.h"
 
+#include <QTimeZone>
+
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
-#include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
 #include "settings/settingsholder.h"
@@ -368,4 +369,4 @@ void TestLocalizer::formattedDate() {
   QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
 }
 
-static TestLocalizer s_testLocalizer;
+QTEST_MAIN(TestLocalizer);

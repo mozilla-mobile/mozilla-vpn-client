@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
+#include <QTest>
 
-class TestLanguageI18n : public TestHelper {
+class TestServerI18n : public QObject {
   Q_OBJECT
 
  private slots:
-  void translations();
-  void currencies();
+  void basic();
 };

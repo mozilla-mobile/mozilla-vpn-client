@@ -95,8 +95,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/releasemonitor.h
-    ${MZ_SOURCE_DIR}/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/serveri18n.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/statusicon.cpp
@@ -122,52 +120,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/update/versionapi.h
     ${MZ_SOURCE_DIR}/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/update/webupdater.h
-    ${MZ_SOURCE_DIR}/addons/addon.cpp
-    ${MZ_SOURCE_DIR}/addons/addon.h
-    ${MZ_SOURCE_DIR}/addons/addonapi.cpp
-    ${MZ_SOURCE_DIR}/addons/addonapi.h
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.h
-    ${MZ_SOURCE_DIR}/addons/addoni18n.cpp
-    ${MZ_SOURCE_DIR}/addons/addoni18n.h
-    ${MZ_SOURCE_DIR}/addons/addonmessage.cpp
-    ${MZ_SOURCE_DIR}/addons/addonmessage.h
-    ${MZ_SOURCE_DIR}/addons/addonproperty.cpp
-    ${MZ_SOURCE_DIR}/addons/addonproperty.h
-    ${MZ_SOURCE_DIR}/addons/addonpropertylist.cpp
-    ${MZ_SOURCE_DIR}/addons/addonpropertylist.h
-    ${MZ_SOURCE_DIR}/addons/addonreplacer.cpp
-    ${MZ_SOURCE_DIR}/addons/addonreplacer.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcher.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherfeaturesenabled.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchergroup.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherjavascript.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatcherlocales.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertime.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimeend.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertimestart.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertranslationthreshold.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertranslationthreshold.h
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.cpp
-    ${MZ_SOURCE_DIR}/addons/conditionwatchers/addonconditionwatchertriggertimesecs.h
-    ${MZ_SOURCE_DIR}/addons/manager/addondirectory.cpp
-    ${MZ_SOURCE_DIR}/addons/manager/addondirectory.h
-    ${MZ_SOURCE_DIR}/addons/manager/addonindex.cpp
-    ${MZ_SOURCE_DIR}/addons/manager/addonindex.h
-    ${MZ_SOURCE_DIR}/addons/manager/addonmanager.cpp
-    ${MZ_SOURCE_DIR}/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/addons/state/addonstate.h
-    ${MZ_SOURCE_DIR}/addons/state/addonstatebase.cpp
-    ${MZ_SOURCE_DIR}/addons/state/addonstatebase.h
-    ${MZ_SOURCE_DIR}/addons/state/addonsessionstate.cpp
-    ${MZ_SOURCE_DIR}/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/app.cpp
     ${MZ_SOURCE_DIR}/app.h
     ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp
@@ -208,10 +160,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/languagei18n.cpp
-    ${MZ_SOURCE_DIR}/languagei18n.h
-    ${MZ_SOURCE_DIR}/localizer.cpp
-    ${MZ_SOURCE_DIR}/localizer.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/models/licensemodel.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
@@ -226,10 +174,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
-    ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp
-    ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.h
-    ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
-    ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/theme.cpp
@@ -268,8 +212,6 @@ target_sources(unit_tests PRIVATE
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h
-    testaddon.cpp
-    testaddon.h
     testconnectionhealth.cpp
     testconnectionhealth.h
     testcommandlineparser.cpp
@@ -284,8 +226,6 @@ target_sources(unit_tests PRIVATE
     testmodels.h
     testreleasemonitor.cpp
     testreleasemonitor.h
-    testserveri18n.cpp
-    testserveri18n.h
     testserverlatency.cpp
     testserverlatency.h
     teststatusicon.cpp
@@ -294,7 +234,6 @@ target_sources(unit_tests PRIVATE
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
-    addons/addons.qrc
     servers/servers.qrc
 )
 

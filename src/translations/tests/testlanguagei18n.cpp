@@ -42,4 +42,4 @@ void TestLanguageI18n::currencies() {
            "€");
 }
 
-static TestLanguageI18n s_testLanguageI18n;
+QTEST_MAIN(TestLanguageI18n);
