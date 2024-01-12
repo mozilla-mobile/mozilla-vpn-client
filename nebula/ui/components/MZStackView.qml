@@ -10,13 +10,26 @@ import Mozilla.Shared 1.0
 StackView {
     id: stackView
 
-    onCurrentItemChanged: {
-        if (depth > 1) {
-            const previousItem = stackView.get(depth - 2)
-            previousItem.StackView.visible =  Qt.binding(() => { return swipeToGoBackMouseArea.isPressed || currentItemAnimation.running || previousItemAnimation.running || (previousItem.StackView.status !== StackView.Inactive) })
-        }
+    property var previousItem
+    property int currentIndex: -1
 
-        currentItem.StackView.visible = swipeToGoBackMouseArea.isPressed || currentItemAnimation.running || previousItemAnimation.running || (currentItem.StackView.status !== StackView.Inactive)
+    onBusyChanged: if (!busy && previousItem) previousItem.data.push(dimmedOverlay.createObject(stackView))
+
+    onCurrentItemChanged: {
+        //Ensures that views out of the viewport go invisible
+        currentItem.StackView.visible = Qt.binding(() => { return currentItem.x >= 0 || currentItem.x + currentItem.width <= stackView.width || currentItem.StackView.status !== StackView.Inactive  })
+        if (depth > 1) {
+            previousItem = get(depth - 2)
+            previousItem.StackView.visible = Qt.binding(() => { return previousItem.x > -stackView.width || previousItem.StackView.status !== StackView.Inactive })
+        }
+    }
+
+    onDepthChanged: {
+        const lastIndex = currentIndex
+        currentIndex = depth - 1
+        if (currentIndex >= 0 && lastIndex > currentIndex) {
+            previousItem.children[previousItem.children.length - 1].destroy()
+        }
     }
 
     Component.onCompleted: function(){
@@ -32,7 +45,7 @@ StackView {
         }
     }
 
-    function popStack() {
+    function popAfterSlide() {
         const enterTrans = stackView.popEnter
         const popTrans = stackView.popExit
         stackView.popEnter = null
@@ -40,6 +53,18 @@ StackView {
         stackView.pop()
         stackView.popEnter = enterTrans
         stackView.popExit = popTrans
+    }
+
+    Component {
+        id: dimmedOverlay
+
+        Rectangle {
+            width: stackView.width
+            height: stackView.height + 4
+            color: "black"
+
+            opacity: (1.0 - stackView.currentItem.x / (stackView.width) ) / 8
+        }
     }
 
     PropertyAnimation {
@@ -50,7 +75,7 @@ StackView {
 
         onFinished: {
             if (stackView.currentItem.x >= stackView.width) {
-                stackView.popStack()
+                stackView.popAfterSlide()
             }
         }
     }
