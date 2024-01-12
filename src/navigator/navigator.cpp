@@ -14,7 +14,6 @@
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"
 #include "logging/loglevel.h"
-#include "mozillavpn.h"
 #include "utilities/leakdetector.h"
 
 namespace {
@@ -172,7 +171,7 @@ void Navigator::requestScreenFromBottomBar(
   mozilla::glean::sample::bottom_navigation_bar_click.record(
       mozilla::glean::sample::BottomNavigationBarClickExtra{
           ._barButton = QVariant::fromValue(
-              static_cast<MozillaVPN::CustomScreen>(requestedScreen))});
+              static_cast<Navigator::Screen>(requestedScreen))});
 
   // Record navbar button interaction telemetry with "screen" extra key which
   // denotes the source view
@@ -200,19 +199,19 @@ void Navigator::requestScreenFromBottomBar(
       // Record telemetry based on which screen was requested (aka which navbar
       // button pressed)
       switch (requestedScreen) {
-        case MozillaVPN::ScreenHome:
+        case Navigator::ScreenHome:
           mozilla::glean::interaction::home_selected.record(
               mozilla::glean::interaction::HomeSelectedExtra{
                   ._screen = telemetryScreenId,
               });
           break;
-        case MozillaVPN::ScreenMessaging:
+        case Navigator::ScreenMessaging:
           mozilla::glean::interaction::messages_selected.record(
               mozilla::glean::interaction::MessagesSelectedExtra{
                   ._screen = telemetryScreenId,
               });
           break;
-        case MozillaVPN::ScreenSettings:
+        case Navigator::ScreenSettings:
           mozilla::glean::interaction::settings_selected.record(
               mozilla::glean::interaction::SettingsSelectedExtra{
                   ._screen = telemetryScreenId,
@@ -265,7 +264,7 @@ void Navigator::requestDeepLink(const QUrl& url) {
   // Quick and dirty navigation handler for testing.
   // This will be expanded upon as we implement VPN-4412.
 
-  // Lookup the screen name by iterating over the keys in the CustomScreens
+  // Lookup the screen name by iterating over the keys in the Screen
   // enumeration and finding the screen whose name matches the first path
   // segment.
   QString topPath = url.path().section('/', 0, 0, QString::SectionSkipEmpty);
@@ -273,7 +272,7 @@ void Navigator::requestDeepLink(const QUrl& url) {
     return;
   }
   QString name = QString("Screen%1").arg(topPath);
-  const QMetaEnum meta = QMetaEnum::fromType<MozillaVPN::CustomScreen>();
+  const QMetaEnum meta = QMetaEnum::fromType<Navigator::Screen>();
   for (int index = 0; index < meta.keyCount(); index++) {
     const char* key = meta.key(index);
     if ((key != nullptr) && (name.compare(key, Qt::CaseInsensitive) == 0)) {

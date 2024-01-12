@@ -4,9 +4,9 @@
 
 #include "testserveri18n.h"
 
-#include "localizer.h"
 #include "serveri18n.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 
 void TestServerI18n::basic() {
   SettingsHolder settingsHolder;

@@ -134,14 +134,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/collator.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
-    ${MZ_SOURCE_DIR}/frontend/navigator.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigator.h
-    ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.h
-    ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
-    ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h

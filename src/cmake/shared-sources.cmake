@@ -25,6 +25,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/taskscheduler)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/addons)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/translations)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/navigator)
 
 target_link_libraries(shared-sources INTERFACE
     mz_context
@@ -38,6 +39,7 @@ target_link_libraries(shared-sources INTERFACE
     mz_telemetry
     mz_addons
     mz_translations
+    mz_navigator
 )
 
 # Shared components
@@ -60,14 +62,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
     ${CMAKE_SOURCE_DIR}/src/fontloader.h
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigator.cpp
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigator.h
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarbutton.cpp
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarbutton.h
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.cpp
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.h
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.cpp
-    ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhotreloader.cpp

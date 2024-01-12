@@ -13,11 +13,11 @@
 
 #include "androidutils.h"
 #include "context/constants.h"
-#include "frontend/navigator.h"
 #include "jni.h"
 #include "logging/logger.h"
 #include "logoutobserver.h"
 #include "mozillavpn.h"
+#include "navigator/navigator.h"
 #include "platforms/android/androidcommons.h"
 #include "settings/settingsholder.h"
 

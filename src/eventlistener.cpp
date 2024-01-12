@@ -16,8 +16,8 @@
 
 #include "context/constants.h"
 #include "context/qmlengineholder.h"
-#include "frontend/navigator.h"
 #include "logging/logger.h"
+#include "navigator/navigator.h"
 
 #if defined(MZ_WINDOWS)
 #  include <windows.h>

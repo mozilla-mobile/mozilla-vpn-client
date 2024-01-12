@@ -8,14 +8,12 @@
 #include <QQuickItem>
 
 #include "context/qmlengineholder.h"
-#include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
-#include "helper.h"
-#include "localizer.h"
-#include "mozillavpn.h"
+#include "navigator/navigator.h"
 #include "qmlpath.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 
 void TestNavigator::init() {
   m_settingsHolder = new SettingsHolder();
@@ -43,26 +41,26 @@ void TestNavigator::testNavbarButtonTelemetry() {
 
   // Register screens
   Navigator::registerScreen(
-      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      Navigator::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
       "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
       [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
+      Navigator::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
       "qrc:/ui/screens/ScreenMessaging.qml", QVector<int>{},
       [](int*) -> int8_t { return 0; },
       []() -> bool {
-        Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
+        Navigator::instance()->requestScreen(Navigator::ScreenHome,
                                              Navigator::ForceReload);
         return true;
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
+      Navigator::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
       "qrc:/ui/screens/ScreenSettings.qml", QVector<int>{},
       [](int*) -> int8_t { return 0; },
       []() -> bool {
-        Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
+        Navigator::instance()->requestScreen(Navigator::ScreenHome,
                                              Navigator::ForceReload);
         return true;
       });
@@ -72,11 +70,11 @@ void TestNavigator::testNavbarButtonTelemetry() {
   int expectedSettingsSelectedEventsCount = 0;
 
   // Setup UI - doesn't really matter what screen we start in
-  navigator->requestScreen(MozillaVPN::ScreenHome);
+  navigator->requestScreen(Navigator::ScreenHome);
 
   // Create QQuickItem that acts as a mock view and add it to the screens stack
   QQuickItem* view = new QQuickItem;
-  navigator->addView(MozillaVPN::ScreenHome, QVariant::fromValue(view));
+  navigator->addView(Navigator::ScreenHome, QVariant::fromValue(view));
 
   // Test homeSelected event
   // Verify number of events is 0 before the test
@@ -86,7 +84,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
-  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+  Navigator::instance()->requestScreenFromBottomBar(Navigator::ScreenHome);
 
   // Verify number of events is still 0 after the test
   // because the view does not have a telemetryScreenId property
@@ -109,7 +107,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   QCOMPARE(homeSelectedEvents.length(), expectedHomeSelectedEventsCount);
 
   // Click the navbar home button
-  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenHome);
+  Navigator::instance()->requestScreenFromBottomBar(Navigator::ScreenHome);
   expectedHomeSelectedEventsCount++;
 
   homeSelectedEvents =
@@ -142,8 +140,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
            expectedMessagesSelectedEventsCount);
 
   // Click the navbar messages button
-  Navigator::instance()->requestScreenFromBottomBar(
-      MozillaVPN::ScreenMessaging);
+  Navigator::instance()->requestScreenFromBottomBar(Navigator::ScreenMessaging);
   expectedMessagesSelectedEventsCount++;
 
   messagesSelectedEvents =
@@ -171,7 +168,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
 
   // Go back to ScreenHome which has the mock view stacked on top of it before
   // starting the next test
-  navigator->requestScreen(MozillaVPN::ScreenHome);
+  navigator->requestScreen(Navigator::ScreenHome);
 
   // Test settingsSelected event
   // Verify number of events is 0 before the test
@@ -182,7 +179,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
            expectedSettingsSelectedEventsCount);
 
   // Click the navbar settings button
-  Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenSettings);
+  Navigator::instance()->requestScreenFromBottomBar(Navigator::ScreenSettings);
   expectedSettingsSelectedEventsCount++;
 
   settingsSelectedEvents =
@@ -220,12 +217,12 @@ void TestNavigator::testNavbarButtonTelemetryNoLayers() {
 
   // Register screen
   Navigator::registerScreen(
-      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      Navigator::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
       "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
       [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
 
   // Click the home nav bar button to go to ScreenHome again
-  navigator->requestScreen(MozillaVPN::ScreenHome);
+  navigator->requestScreen(Navigator::ScreenHome);
 
   // Test homeSelected event and verify number of events is 0 because telemetry
   // is not recorded when there are no layers on the screen
@@ -234,4 +231,4 @@ void TestNavigator::testNavbarButtonTelemetryNoLayers() {
   QCOMPARE(homeSelectedEvents.length(), 0);
 }
 
-static TestNavigator s_testNavigator;
+QTEST_MAIN(TestNavigator)

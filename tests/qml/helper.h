@@ -10,11 +10,11 @@
 #include <QtQuickTest>
 
 #include "i18nstrings.h"
-#include "localizer.h"
 #include "mozillavpn.h"
 #include "settings/settinggroup.h"
 #include "settings/settingsholder.h"
 #include "theme.h"
+#include "translations/localizer.h"
 
 class TestHelper final : public QObject {
   Q_OBJECT

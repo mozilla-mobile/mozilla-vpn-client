@@ -7,11 +7,11 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "settings/settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 #ifdef _WIN32  // Avoid using MZ_WINDOWS here as it conflicts with MZ_DUMMY on

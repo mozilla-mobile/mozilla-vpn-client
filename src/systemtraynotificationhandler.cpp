@@ -12,10 +12,10 @@
 #include "context/constants.h"
 #include "context/qmlengineholder.h"
 #include "controller.h"
-#include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
+#include "navigator/navigator.h"
 #include "statusicon.h"
 #include "utilities/leakdetector.h"
 

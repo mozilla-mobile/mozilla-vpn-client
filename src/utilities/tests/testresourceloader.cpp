@@ -13,10 +13,10 @@
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "languagei18n.h"
-#include "localizer.h"
 #include "models/licensemodel.h"
 #include "resourceloader.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 
 class Interceptor final : public QQmlAbstractUrlInterceptor {
  public:

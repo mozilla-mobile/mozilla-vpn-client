@@ -15,8 +15,8 @@
 #include "composerblocktitle.h"
 #include "composerblockunorderedlist.h"
 #include "helper.h"
-#include "localizer.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 
 void TestComposer::generic_data() {
   QTest::addColumn<QJsonObject>("json");

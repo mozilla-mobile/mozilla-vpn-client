@@ -26,10 +26,10 @@
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
-#include "localizer.h"
 #include "qtglean.h"
 #include "settings/settingsholder.h"
 #include "systemtraynotificationhandler.h"
+#include "translations/localizer.h"
 
 void TestAddon2::init() {
   m_settingsHolder = new SettingsHolder();

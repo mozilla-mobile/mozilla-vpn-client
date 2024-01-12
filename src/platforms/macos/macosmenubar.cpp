@@ -6,10 +6,10 @@
 
 #include "context/qmlengineholder.h"
 #include "controller.h"
-#include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "logging/logger.h"
 #include "mozillavpn.h"
+#include "navigator/navigator.h"
 #include "utilities/leakdetector.h"
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosutils.h"

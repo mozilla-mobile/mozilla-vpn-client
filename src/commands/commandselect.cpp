@@ -6,13 +6,13 @@
 
 #include <QTextStream>
 
-#include "localizer.h"
 #include "models/servercity.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 CommandSelect::CommandSelect(QObject* parent)

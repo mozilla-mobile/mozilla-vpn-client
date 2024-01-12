@@ -10,7 +10,6 @@
 
 #include "context/constants.h"
 #include "helper.h"
-#include "localizer.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -23,6 +22,7 @@
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

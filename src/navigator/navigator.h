@@ -37,9 +37,37 @@ class Navigator final : public QObject {
   };
   Q_ENUM(LoadingFlags);
 
-  enum Screen : int {
-    // This enum will be populated with shareable screens when ready.
-    ScreenCustom = 1000
+  enum Screen {
+    ScreenAuthenticating = 1001,
+    ScreenAuthenticationInApp,
+    ScreenBackendFailure,
+    ScreenBillingNotAvailable,
+    ScreenCaptivePortal,
+    ScreenCrashReporting,
+    ScreenDeleteAccount,
+    ScreenDeviceLimit,
+    ScreenGetHelp,
+    ScreenHome,
+    ScreenInitialize,
+    ScreenMessaging,
+    ScreenNoSubscriptionFoundError,
+    ScreenPostAuthentication,
+    ScreenSettings,
+    ScreenSubscriptionBlocked,
+    ScreenSubscriptionExpiredError,
+    ScreenSubscriptionGenericError,
+    ScreenSubscriptionInProgressIAP,
+    ScreenSubscriptionInProgressWeb,
+    ScreenSubscriptionInUseError,
+    ScreenSubscriptionNeeded,
+    ScreenSubscriptionNotValidated,
+    ScreenTelemetryPolicy,
+    ScreenTipsAndTricks,
+    ScreenUpdateRecommended,
+    ScreenUpdateRequired,
+    ScreenViewLogs,
+    ScreenRemovingDevice,
+    ScreenOnboarding,
   };
   Q_ENUM(Screen);
 

@@ -93,14 +93,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/feature/feature.h
     ${MZ_SOURCE_DIR}/filterproxymodel.cpp
     ${MZ_SOURCE_DIR}/filterproxymodel.h
-    ${MZ_SOURCE_DIR}/frontend/navigator.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigator.h
-    ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.h
-    ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
-    ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
-    ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h

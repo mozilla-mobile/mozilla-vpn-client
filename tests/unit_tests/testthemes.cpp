@@ -7,9 +7,9 @@
 #include <QQmlApplicationEngine>
 
 #include "context/qmlengineholder.h"
-#include "localizer.h"
 #include "settings/settingsholder.h"
 #include "theme.h"
+#include "translations/localizer.h"
 
 void TestThemes::loadTheme_data() {
   QTest::addColumn<QString>("theme");

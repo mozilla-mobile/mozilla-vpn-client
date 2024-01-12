@@ -8,9 +8,9 @@
 #include <QQmlApplicationEngine>
 
 #include "context/qmlengineholder.h"
-#include "localizer.h"
 #include "settings/settingsholder.h"
 #include "statusicon.h"
+#include "translations/localizer.h"
 
 void TestStatusIcon::basic() {
   StatusIcon si;

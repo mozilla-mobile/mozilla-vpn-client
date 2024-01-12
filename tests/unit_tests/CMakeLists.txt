@@ -78,8 +78,6 @@ target_sources(app_unit_tests PRIVATE
     testipaddress.h
     testlicense.cpp
     testlicense.h
-    testnavigator.cpp
-    testnavigator.h
     testqmlpath.cpp
     testqmlpath.h
     testtasksentry.cpp

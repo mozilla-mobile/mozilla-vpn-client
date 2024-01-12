@@ -4,8 +4,8 @@
 
 #include "addonconditionwatcherlocales.h"
 
-#include "localizer.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 // static

@@ -10,9 +10,9 @@
 
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
-#include "localizer.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 namespace {

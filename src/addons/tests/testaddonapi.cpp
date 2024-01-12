@@ -13,8 +13,8 @@
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "helper.h"
-#include "localizer.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 #include "utilities/urlopener.h"
 
 void TestAddonApi::env() {

@@ -9,7 +9,7 @@
 
 #include "addonconditionwatcherlocales.h"
 #include "addons/addon.h"
-#include "localizer.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 // static

@@ -4,7 +4,7 @@
 
 #include "collator.h"
 
-#include "localizer.h"
+#include "translations/localizer.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

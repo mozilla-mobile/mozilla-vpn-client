@@ -10,9 +10,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "localizer.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 #include "utilities/resourceloader.h"
 

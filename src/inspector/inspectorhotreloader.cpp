@@ -12,9 +12,9 @@
 #include <QWindow>
 
 #include "context/qmlengineholder.h"
-#include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
 #include "logging/logger.h"
+#include "navigator/navigator.h"
+#include "navigator/navigatorreloader.h"
 #include "networking/networkrequest.h"
 #include "taskscheduler/taskfunction.h"
 

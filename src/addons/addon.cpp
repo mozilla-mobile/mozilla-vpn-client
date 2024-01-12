@@ -28,11 +28,11 @@
 #include "context/qmlengineholder.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
-#include "localizer.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
 #include "settings/settingsmanager.h"
 #include "state/addonsessionstate.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 #include "utilities/versionutils.h"
 

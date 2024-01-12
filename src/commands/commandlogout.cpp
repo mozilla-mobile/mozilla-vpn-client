@@ -8,11 +8,11 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "localizer.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 
 CommandLogout::CommandLogout(QObject* parent)
