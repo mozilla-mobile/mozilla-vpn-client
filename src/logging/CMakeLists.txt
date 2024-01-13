@@ -20,4 +20,7 @@ mz_add_new_module(
     QT_DEPENDENCIES
         Core
         Widgets
+    MZ_DEPENDENCIES
+        mz_utilities
+        mz_feature
 )

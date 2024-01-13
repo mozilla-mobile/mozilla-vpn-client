@@ -4,6 +4,7 @@
 
 #include "testresourceloader.h"
 
+#include <QJsonArray>
 #include <QQmlAbstractUrlInterceptor>
 #include <QQmlApplicationEngine>
 #include <QUrl>

@@ -21,5 +21,3 @@ class TestSettingGroup final : public QObject {
 
   void testRemove();
 };
-
-#include "testsettinggroup.moc"

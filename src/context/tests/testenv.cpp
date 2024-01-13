@@ -27,4 +27,4 @@ void TestEnv::architecture() {
   QCOMPARE(actual, expected);
 }
 
-static TestEnv s_testEnv;
+QTEST_MAIN(TestEnv);

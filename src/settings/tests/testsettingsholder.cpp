@@ -4,6 +4,8 @@
 
 #include "testsettingsholder.h"
 
+#include <QSignalSpy>
+
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 ...)                                                           \
   void TestSettingsHolder::testGetSetCheckRemove_##getter() {                  \
@@ -138,4 +140,4 @@
 #include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
-static TestSettingsHolder s_testSettingsHolder;
+QTEST_MAIN(TestSettingsHolder);

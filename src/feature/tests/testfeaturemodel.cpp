@@ -4,10 +4,13 @@
 
 #include "testfeaturemodel.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "adjust/adjustfiltering.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
-#include "helper.h"
 #include "settings/settingsholder.h"
 
 namespace {

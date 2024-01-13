@@ -39,4 +39,6 @@ mz_add_new_module(
         mz_settings
         mz_context
         mz_telemetry
+    TEST_DEPENDENCIES
+        mz_translations
 )

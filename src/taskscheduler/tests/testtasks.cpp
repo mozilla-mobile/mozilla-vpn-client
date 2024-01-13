@@ -4,10 +4,12 @@
 
 #include "testtasks.h"
 
+#include <QTimer>
+
 #include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
-#include "tasks/function/taskfunction.h"
-#include "tasks/group/taskgroup.h"
+#include "taskfunction.h"
+#include "taskgroup.h"
 #include "taskscheduler.h"
 
 void TestTasks::function() {
@@ -232,4 +234,4 @@ void TestTasks::forceDeleteTasks() {
   QCOMPARE(sequence.at(0), "t3");
 }
 
-static TestTasks s_testTasks;
+QTEST_MAIN(TestTasks);

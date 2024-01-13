@@ -21,5 +21,3 @@ class TestSettingsManager final : public QObject {
   void testCreateNewSetting();
   void testCreateNewSettingButSettingAlreadyExists();
 };
-
-#include "testsettingsmanager.moc"
