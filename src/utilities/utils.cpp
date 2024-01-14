@@ -12,7 +12,7 @@
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
+#  include "androidutils.h"
 #endif
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
@@ -60,6 +60,6 @@ void Utils::crashTest() {
 // static
 void Utils::launchPlayStore() {
   logger.debug() << "Launch Play Store";
-  AndroidCommons::launchPlayStore();
+  AndroidUtils::launchPlayStore();
 }
 #endif

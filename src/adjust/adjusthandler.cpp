@@ -16,7 +16,7 @@
 #ifdef MZ_ANDROID
 #  include <QJniObject>
 
-#  include "platforms/android/androidcommons.h"
+#  include "utilities/androidutils.h"
 #endif
 
 #include <QCoreApplication>
@@ -150,7 +150,7 @@ void AdjustHandler::forget() {
   }
 
 #ifdef MZ_ANDROID
-  QJniObject activity = AndroidCommons::getActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   QJniObject::callStaticMethod<void>(CORE_APPLICATION, "forget",
                                      "(Landroid/app/Activity;)V",
                                      activity.object());

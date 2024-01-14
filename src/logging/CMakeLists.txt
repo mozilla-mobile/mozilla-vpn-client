@@ -10,6 +10,9 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/loghandler.h
         ${CMAKE_CURRENT_SOURCE_DIR}/loglevel.h
+    ANDROID_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidlogger.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidlogger.cpp
     IOS_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/ioslogger.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ioslogger.mm

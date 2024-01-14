@@ -6,7 +6,7 @@
 #define FEATURELISTCALLBACK_H
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
+#  include "utilities/androidutils.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -159,7 +159,7 @@ bool FeatureCallback_shareLogs() {
     defined(MZ_IOS) || defined(MZ_DUMMY)
   return true;
 #elif defined(MZ_ANDROID)
-  return AndroidCommons::getSDKVersion() >=
+  return AndroidUtils::getSDKVersion() >=
          29;  // Android Q (10) is required for this
 #else
   return false;

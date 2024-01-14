@@ -12,7 +12,6 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-#include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "controller.h"
 #include "feature/feature.h"
@@ -26,6 +25,7 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "settings/settingsholder.h"
+#include "utilities/androidutils.h"
 #include "utilities/errorhandler.h"
 #include "utilities/leakdetector.h"
 

@@ -7,11 +7,20 @@
 #include "context/app.h"
 #include "utilities/leakdetector.h"
 
+#ifdef MZ_ANDROID
+#  include "context/androidvpnactivity.h"
+#endif
+
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);
 
   connect(App::instance(), &App::userStateChanged, this,
           &LogoutObserver::userStateChanged);
+
+#ifdef MZ_ANDROID
+  QObject::connect(lo, &LogoutObserver::ready, this,
+                   &AndroidVPNActivity::onLogout);
+#endif
 }
 
 LogoutObserver::~LogoutObserver() { MZ_COUNT_DTOR(LogoutObserver); }

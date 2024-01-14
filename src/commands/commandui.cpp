@@ -80,9 +80,8 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
-#  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidvpnactivity.h"
+#  include "context/androidvpnactivity.h"
+#  include "utilities/androidutils.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -242,7 +241,7 @@ int CommandUI::run(QStringList& tokens) {
 #  if QT_VERSION >= 0x060800
 #    error We have forgotten to remove this Huawei hack!
 #  endif
-    if (AndroidCommons::GetManufacturer() == "Huawei") {
+    if (AndroidUtils::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif

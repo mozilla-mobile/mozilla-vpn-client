@@ -17,6 +17,10 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/qmlengineholder.h
         ${CMAKE_CURRENT_BINARY_DIR}/version.h
+    ANDROID_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidconstants.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.h
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.h
@@ -30,4 +34,6 @@ mz_add_new_module(
         mz_utilities
         mz_networking
         mz_taskscheduler
+    ANDROID_DEPENDENCIES
+        mz_navigator
 )

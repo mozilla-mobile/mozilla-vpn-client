@@ -98,7 +98,7 @@ class AndroidVPNActivity : public QObject {
    * @return QUrl
    */
   static QUrl getOpenerURL();
-  void onAppStateChange();
+  void onAppStateChange(int state);
 
  signals:
   void serviceConnected();

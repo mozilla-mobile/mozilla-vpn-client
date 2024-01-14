@@ -284,6 +284,9 @@ void MozillaVPN::initialize() {
 #ifdef MZ_ANDROID
   AndroidVPNActivity::maybeInit();
   AndroidUtils::instance();
+
+  QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
+                   [&]() { AndroidVPNActivity::onAppStateChang(state()) });
 #endif
 
   m_private->m_captivePortalDetection.initialize();

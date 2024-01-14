@@ -15,8 +15,8 @@
 #  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID)
-#  include "../platforms/android/androidvpnactivity.h"
-#  include "androidglean.h"
+#  include "androidgleanbridge.h"
+#  include "context/androidvpnactivity.h"
 #endif
 #if defined(MZ_IOS)
 #  include "iosgleanbridge.h"
@@ -110,7 +110,7 @@ void MZGlean::initialize() {
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
                        Constants::inProduction() ? "production" : "staging");
 #elif defined(MZ_ANDROID)
-    AndroidCommons::initializeGlean(
+    AndroidGleanBridge::initializeGlean(
         SettingsHolder::instance()->gleanEnabled(),
         Constants::inProduction() ? "production" : "staging");
 #else

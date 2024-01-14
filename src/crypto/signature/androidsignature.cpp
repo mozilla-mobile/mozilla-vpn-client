@@ -13,7 +13,7 @@
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
 #include "signature.h"
-#include "utilities/android/androidhelper.h"
+#include "utilities/androidutils.h"
 
 namespace {
 Logger logger("AndroidVerifySignature");
@@ -26,8 +26,9 @@ bool Signature::verifyInternal(const QByteArray& publicKey,
   QJniEnvironment env;
   auto out = (bool)QJniObject::callStaticMethod<jboolean>(
       AndroidConstants::COMMON_UTILS_CLASS, "verifyContentSignature",
-      "([B[B[B)Z", AndroidUtils::tojByteArray(publicKey), tojByteArray(content),
-      tojByteArray(signature));
+      "([B[B[B)Z", AndroidUtils::tojByteArray(publicKey),
+      AndroidUtils::tojByteArray(content),
+      AndroidUtils::tojByteArray(signature));
   logger.info() << "Android Signature Response" << out;
   return out;
 }

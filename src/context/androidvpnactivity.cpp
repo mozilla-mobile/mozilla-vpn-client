@@ -11,15 +11,14 @@
 #include <QJsonObject>
 #include <QUrl>
 
-#include "androidutils.h"
-#include "context/constants.h"
+#include "app.h"
+#include "constants.h"
 #include "jni.h"
 #include "logging/logger.h"
 #include "logoutobserver.h"
-#include "mozillavpn.h"
 #include "navigator/navigator.h"
-#include "platforms/android/androidcommons.h"
 #include "settings/settingsholder.h"
+#include "utilities/androidutils.h"
 
 namespace {
 AndroidVPNActivity* s_instance = nullptr;
@@ -28,7 +27,7 @@ Logger logger("AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {
-  AndroidCommons::runOnAndroidThreadSync([]() {
+  AndroidUtils::runOnAndroidThreadSync([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{
         {"handleBackButton", "()Z", reinterpret_cast<bool*>(handleBackButton)},
@@ -53,13 +52,6 @@ AndroidVPNActivity::AndroidVPNActivity() {
   QObject::connect(SettingsHolder::instance(),
                    &SettingsHolder::startAtBootChanged, this,
                    &AndroidVPNActivity::startAtBootChanged);
-
-  LogoutObserver* lo = new LogoutObserver(this);
-  QObject::connect(lo, &LogoutObserver::ready, this,
-                   &AndroidVPNActivity::onLogout);
-
-  QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
-                   &AndroidVPNActivity::onAppStateChange);
 }
 
 void AndroidVPNActivity::maybeInit() {
@@ -112,7 +104,7 @@ void AndroidVPNActivity::onServiceMessage(JNIEnv* env, jobject thiz,
   }
   QString parcelBody(buffer);
   env->ReleaseStringUTFChars(body, buffer);
-  AndroidCommons::dispatchToMainThread([messageType, parcelBody] {
+  AndroidUtils::dispatchToMainThread([messageType, parcelBody] {
     AndroidVPNActivity::instance()->handleServiceMessage(messageType,
                                                          parcelBody);
   });
@@ -178,7 +170,7 @@ void AndroidVPNActivity::onLogout() {
   sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
 }
 
-void AndroidVPNActivity::onAppStateChange() {
+void AndroidVPNActivity::onAppStateChange(int state) {
   if (!Constants::inProduction()) {
     // Do not restrict screencap on debug
     return;
@@ -186,9 +178,8 @@ void AndroidVPNActivity::onAppStateChange() {
   // When the App State changes, check if we are doing Authentication
   // if so, mark the content as sensitive, so no screenshots can be taken from
   // those screens.
-  auto state = MozillaVPN::instance()->state();
   bool isSensitive = state == App::StateAuthenticating;
-  AndroidCommons::runOnAndroidThreadSync([isSensitive]() {
+  AndroidUtils::runOnAndroidThreadSync([isSensitive]() {
     QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",
                                        "(Z)V", isSensitive);
   });

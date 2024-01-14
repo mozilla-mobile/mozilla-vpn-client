@@ -54,6 +54,21 @@ class AndroidUtils final : public QObject {
 
   static QJsonObject getQJsonObjectFromJString(JNIEnv* env, jstring data);
 
+  // Creates a copy of the passed QByteArray in the JVM and passes back a ref
+  static jbyteArray tojByteArray(const QByteArray& data);
+
+  static void runOnAndroidThreadSync(const std::function<void()> runnable);
+
+  static void dispatchToMainThread(std::function<void()> callback);
+
+  static QJniObject getActivity();
+
+  static int getSDKVersion();
+
+  static QString GetManufacturer();
+
+  static void launchPlayStore();
+
  private:
   static QString readStaticString(const char* classname,
                                   const char* propertyName);

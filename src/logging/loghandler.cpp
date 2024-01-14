@@ -24,7 +24,7 @@
 #ifdef MZ_ANDROID
 #  include <android/log.h>
 
-#  include "platforms/android/androidcommons.h"
+#  include "androidlogger.h"
 #endif
 
 #ifdef MZ_IOS
@@ -435,7 +435,7 @@ bool LogHandler::viewLogs() {
     Q_ASSERT(buffer);
 
 #  if defined(MZ_ANDROID)
-    ok = AndroidCommons::shareText(*buffer);
+    ok = AndroidLogger::shareText(*buffer);
 #  else
     IOSLogger::shareLogs(*buffer);
 #  endif

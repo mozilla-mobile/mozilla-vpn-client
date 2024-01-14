@@ -10,7 +10,6 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
-#include "androidcommons.h"
 #include "cryptosettings.h"
 #include "logging/logger.h"
 

@@ -10,14 +10,14 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkCookieJar>
+#include <QTimer>
 #include <QUrlQuery>
 
+#include "context/androidconstants.h"
 #include "context/qmlengineholder.h"
 #include "jni.h"
 #include "logging/logger.h"
-#include "mozillavpn.h"
 #include "networking/networkrequest.h"
-#include "platforms/android/androidcommons.h"
 #include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 
@@ -27,6 +27,15 @@ Logger logger("AndroidUtils");
 
 constexpr auto UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 }  // namespace
+
+// static
+jbyteArray AndroidUtils::tojByteArray(const QByteArray& data) {
+  QJniEnvironment env;
+  jbyteArray out = env->NewByteArray(data.size());
+  env->SetByteArrayRegion(out, 0, data.size(),
+                          reinterpret_cast<const jbyte*>(data.constData()));
+  return out;
+}
 
 // static
 QString AndroidUtils::getDeviceCodename() {
@@ -134,6 +143,67 @@ QJsonObject AndroidUtils::getQJsonObjectFromJString(JNIEnv* env, jstring data) {
   return json.object();
 }
 
+// static
+void AndroidUtils::runOnAndroidThreadSync(
+    const std::function<void()> runnable) {
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(runnable)
+      .waitForFinished();
+}
+
+// static
+void AndroidUtils::dispatchToMainThread(std::function<void()> callback) {
+  QTimer* timer = new QTimer();
+  timer->moveToThread(qApp->thread());
+  timer->setSingleShot(true);
+  QObject::connect(timer, &QTimer::timeout, [=]() {
+    callback();
+    timer->deleteLater();
+  });
+  QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
+}
+
+// static
+QJniObject AndroidUtils::getActivity() {
+  return QNativeInterface::QAndroidApplication::context();
+}
+
+// static
+int AndroidUtils::getSDKVersion() {
+  QJniEnvironment env;
+  jclass versionClass = env->FindClass("android/os/Build$VERSION");
+  jfieldID sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I");
+  int sdk = env->GetStaticIntField(versionClass, sdkIntFieldID);
+  return sdk;
+}
+
+// static
+QString AndroidUtils::GetManufacturer() {
+  QJniEnvironment env;
+  jclass buildClass = env->FindClass("android/os/Build");
+  jfieldID manuFacturerField =
+      env->GetStaticFieldID(buildClass, "MANUFACTURER", "Ljava/lang/String;");
+  jstring value =
+      (jstring)env->GetStaticObjectField(buildClass, manuFacturerField);
+
+  const char* buffer = env->GetStringUTFChars(value, nullptr);
+  if (!buffer) {
+    logger.error() << "Failed to fetch MANUFACTURER";
+    return QByteArray();
+  }
+  QString res(buffer);
+  logger.info() << "MANUFACTURER: " << res;
+  env->ReleaseStringUTFChars(value, buffer);
+  return res;
+}
+
+// static
+void AndroidUtils::launchPlayStore() {
+  auto appActivity = AndroidUtils::getActivity();
+  QJniObject::callStaticMethod<void>(
+      AndroidConstants::COMMON_UTILS_CLASS, "launchPlayStore",
+      "(Landroid/app/Activity;)V", appActivity.object());
+}
+
 QByteArray AndroidUtils::DeviceId() {
   /*
    * On Android 8.0 (API level 26) and higher versions of the platform,
@@ -144,7 +214,7 @@ QByteArray AndroidUtils::DeviceId() {
    * APK signing key changes.
    */
   QJniEnvironment env;
-  QJniObject activity = AndroidCommons::getActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   QJniObject string = QJniObject::callStaticObjectMethod(
       UTILS_CLASS, "getDeviceID",
       "(Landroid/content/Context;)Ljava/lang/String;", activity.object());

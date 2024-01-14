@@ -11,7 +11,6 @@
 
 #include "logging/logger.h"
 #include "networkwatcherimpl.h"
-#include "platforms/android/androidcommons.h"
 #include "utilities/leakdetector.h"
 
 namespace {
