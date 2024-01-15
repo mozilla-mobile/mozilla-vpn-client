@@ -9,8 +9,7 @@ if (NOT ${MZ_PLATFORM_NAME} STREQUAL "wasm")
 endif()
 
 if (${MZ_PLATFORM_NAME} STREQUAL "ios")
-    include(${CMAKE_SOURCE_DIR}/glean/qtglean/ios.cmake)
-    list(APPEND EXTRA_DEPENDENCIES iosglean)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/glean/qtglean/ios.cmake)
 endif()
 
 mz_add_new_module(
@@ -34,6 +33,8 @@ mz_add_new_module(
         mz_utilities
         mz_feature
         mz_context
+    IOS_DEPENDENCIES
+        iosglean
     EXTRA_DEPENDENCIES
         ${EXTRA_DEPENDENCIES}
 )

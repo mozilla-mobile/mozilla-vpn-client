@@ -56,8 +56,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
     ${CMAKE_SOURCE_DIR}/src/collator.cpp
     ${CMAKE_SOURCE_DIR}/src/collator.h
-    ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature/feature.h
+    ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
+    ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
     ${CMAKE_SOURCE_DIR}/src/fontloader.h
     ${CMAKE_SOURCE_DIR}/src/inspector/inspectorhandler.cpp

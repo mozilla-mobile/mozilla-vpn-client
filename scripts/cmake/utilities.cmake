@@ -502,8 +502,147 @@ function(mz_add_test_target)
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )
 
-    add_dependencies(${MZ_ADD_TEST_PARENT_TARGET}-alltests ${MZ_ADD_TEST_TARGET_NAME})
-
     target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PRIVATE Qt6::Test)
-    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC ${MZ_ADD_TEST_DEPENDENCIES})
+    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC
+        ${MZ_ADD_TEST_PARENT_TARGET}
+        ${MZ_ADD_TEST_DEPENDENCIES}
+    )
+
+    target_include_directories(${TEST_TARGET_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_SOURCE_DIR}/src
+    )
+endfunction()
+
+# Sets the following new variables in the parent scope:
+#
+# LINK_LIBRARIES
+# TEST_LINK_LIBRARIES
+function(mz_generate_link_libraries)
+    cmake_parse_arguments(
+        MZ_GENERATE_LINK_LIBRARIES # prefix
+        "" # options
+        "" # single-value args
+        "QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
+        ${ARGN})
+
+    set(LOCAL_LINK_LIBRARIES)
+
+    # 1. Qt dependencies handling
+
+    # Get list of required Qt dependencies
+    find_package(Qt6 REQUIRED COMPONENTS ${MZ_GENERATE_LINK_LIBRARIES_QT_DEPENDENCIES})
+    foreach(QT_DEPENDENCY ${MZ_GENERATE_LINK_LIBRARIES_QT_DEPENDENCIES})
+        list(APPEND LOCAL_LINK_LIBRARIES "Qt6::${QT_DEPENDENCY}")
+    endforeach()
+
+    # 2. MZ dependencies handling
+
+    list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_MZ_DEPENDENCIES})
+
+    # 3. Rust dependencies handling
+
+    # Build Rust creates and add to list of linkd targets.
+    foreach(RUST_CRATE_PATH ${MZ_GENERATE_LINK_LIBRARIES_RUST_DEPENDENCIES})
+        # The name of the crate target is expected to be the name of the crate folder
+        get_filename_component(CRATE_NAME ${RUST_CRATE_PATH} NAME)
+
+        include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+        add_rust_library(${CRATE_NAME}
+            PACKAGE_DIR ${RUST_CRATE_PATH}
+            BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            CRATE_NAME ${CRATE_NAME}
+        )
+
+        list(APPEND LOCAL_LINK_LIBRARIES ${CRATE_NAME})
+    endforeach()
+
+    # 4. Platform specific dependencies handling
+
+    if(${MZ_PLATFORM_NAME} STREQUAL "ios")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_IOS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_ANDROID_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_MACOS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_LINUX_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_WINDOWS_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_WASM_DEPENDENCIES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "dummy")
+        list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_DUMMY_DEPENDENCIES})
+    else()
+        message(FATAL_ERROR "MZ_PLATFORM_NAME must be set before creating modules.")
+    endif()
+
+    # 5. Finalize the list of all dependencies
+
+    list(APPEND LOCAL_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_EXTRA_DEPENDENCIES})
+
+    # 6. Test dependency handling
+
+    set(LOCAL_TEST_LINK_LIBRARIES ${LOCAL_LINK_LIBRARIES})
+
+    # Replace dependencies for test dependencies that start with `replace-`
+    set(REPLACER_DEPENDENCIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
+    list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
+    foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
+        # Get the name of the original dependency
+        string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
+        # Remove it  from the list
+        list(REMOVE_ITEM LOCAL_TEST_LINK_LIBRARIES ${ORIGINAL_DEPENDENCY})
+    endforeach()
+
+    # Tests always need Qt6::Test
+    find_package(Qt6 REQUIRED COMPONENTS Test)
+    list(APPEND LOCAL_TEST_LINK_LIBRARIES Qt6::Test)
+
+    # Finalize the list of test dependencies.
+    list(APPEND LOCAL_TEST_LINK_LIBRARIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
+
+    # 7. Set the lists in the parent scope.
+
+    set(LINK_LIBRARIES ${LOCAL_LINK_LIBRARIES} PARENT_SCOPE)
+    set(TEST_LINK_LIBRARIES ${LOCAL_TEST_LINK_LIBRARIES} PARENT_SCOPE)
+endfunction()
+
+# Sets the following new variables in the parent scope:
+#
+# ALL_SOURCES
+function(mz_generate_sources_list)
+    cmake_parse_arguments(
+    MZ_GENERATE_SOURCES_LIST # prefix
+    "" # options
+    "" # single-value args
+    "SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES" # multi-value args
+    ${ARGN})
+
+    set(LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_SOURCES})
+
+    # 1. Handle platform specific sources
+
+    if(${MZ_PLATFORM_NAME} STREQUAL "ios")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_IOS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "android")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_ANDROID_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "macos")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_MACOS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "linux")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_LINUX_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "windows")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_WINDOWS_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "wasm")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_WASM_SOURCES})
+    elseif(${MZ_PLATFORM_NAME} STREQUAL "dummy")
+        list(APPEND LOCAL_ALL_SOURCES ${MZ_GENERATE_SOURCES_LIST_DUMMY_SOURCES})
+    else()
+        message(FATAL_ERROR "MZ_PLATFORM_NAME must be set before creating modules.")
+    endif()
+
+    # 2. Set the list in the parent scope.
+
+    set(ALL_SOURCES ${LOCAL_ALL_SOURCES} PARENT_SCOPE)
 endfunction()

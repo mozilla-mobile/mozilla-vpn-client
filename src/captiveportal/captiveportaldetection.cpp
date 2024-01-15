@@ -169,7 +169,7 @@ void CaptivePortalDetection::captivePortalDetected() {
     return;
   }
   emit captivePortalPresent();
-  Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
+  Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
