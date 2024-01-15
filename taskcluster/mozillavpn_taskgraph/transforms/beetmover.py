@@ -103,7 +103,7 @@ def add_beetmover_worker_config(config, tasks):
 
         upstream_artifacts = []
         for dep in task["dependencies"]:
-            if dep not in ("build", "signing"):
+            if dep not in ("build", "repackage-signing", "signing"):
                 continue
             upstream_artifacts.append(
                 {
