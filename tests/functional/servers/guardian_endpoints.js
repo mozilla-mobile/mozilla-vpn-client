@@ -63,8 +63,6 @@ exports.validators = VALIDATORS;
 
 exports.endpoints = {
   GETs: {
-    '/api/v1/vpn/featurelist': {status: 200, body: {features: {}}},
-
     '/api/v1/vpn/crashreporting': {status: 404, body: {}},
 
     '/api/v1/vpn/versions': {status: 200, body: {}},
@@ -259,6 +257,8 @@ exports.endpoints = {
   },
 
   POSTs: {
+    '/api/v1/vpn/featurelist': {status: 200, body: {features: {}, experimentalFeatures: {}}},
+
     '/api/v2/vpn/login/verify': {
       status: 200,
       bodyValidator: VALIDATORS.guardianLoginVerify,
