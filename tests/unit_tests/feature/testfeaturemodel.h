@@ -8,6 +8,19 @@ class TestFeatureModel final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
+
   void flipOnOff();
-  void enableByAPI();
+
+  void updateFeatureListOverwriteFeatures();
+
+  void updateFeatureListExperimentalFeaturesEmpty();
+  void updateFeatureListExperimentalFeaturesNotObject();
+  void updateFeatureListExperimentalFeaturesUnknownExperiment();
+  void updateFeatureListExperimentalFeaturesNonObjectExperiment();
+  void updateFeatureListExperimentalFeaturesNoSettings();
+  void updateFeatureListExperimentalFeaturesInvalidSettings();
+  void updateFeatureListExperimentalFeaturesValidSettings();
+  void updateFeatureListExperimentalFeaturesToggleOnOff();
 };

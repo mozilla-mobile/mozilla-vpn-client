@@ -67,6 +67,18 @@ void featureToggleOn(const QString& feature, bool add_to_on) {
   }
 }
 
+// Comprehensive list of experimental feature ids.
+//
+// This is required due to the format of the object parsed by
+// FeatureModel::parseExperimentalFeatures. The object only contains the
+// features that must be enabled. Feature not in the object must be disabled,
+// this list is used to check what is not in the list.
+QStringList experimentalFeatureIds({
+#define EXPERIMENTAL_FEATURE(id, ...) #id,
+#include "experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
+});
+
 }  // namespace
 
 FeatureModel* FeatureModel::instance() {
@@ -157,144 +169,152 @@ QObject* FeatureModel::get(const QString& feature) {
   return obj;
 }
 
+// static
+QPair<QStringList, QStringList> FeatureModel::parseFeatures(
+    const QJsonValue& features) {
+  QPair<QStringList, QStringList> result;
+
+  if (!features.isObject()) {
+    logger.error() << "Error in the features json format";
+    return result;
+  }
+
+  QStringList featuresFlippedOn;
+  QStringList featuresFlippedOff;
+
+  QJsonObject featuresObj = features.toObject();
+  for (const QString& key : featuresObj.keys()) {
+    QJsonValue value = featuresObj.value(key);
+    if (!value.isBool()) {
+      logger.error() << "Error in parsing feature enabling:" << key;
+      continue;
+    }
+
+    const Feature* feature = Feature::getOrNull(key);
+    if (!feature) {
+      logger.error() << "No feature named" << key;
+      continue;
+    }
+
+    if (value.toBool()) {
+      if (!feature->isFlippableOn()) {
+        logger.error() << "Feature" << key << "cannot be flipped on";
+        continue;
+      }
+
+      featuresFlippedOn.append(key);
+    } else {
+      if (!feature->isFlippableOff()) {
+        logger.error() << "Feature" << key << "cannot be flipped off";
+        continue;
+      }
+
+      featuresFlippedOff.append(key);
+    }
+  }
+
+  result.first = featuresFlippedOn;
+  result.second = featuresFlippedOff;
+  return result;
+}
+
+// static
+QPair<QStringList, QStringList> FeatureModel::parseExperimentalFeatures(
+    const QJsonValue& experimentalFeatures) {
+  QPair<QStringList, QStringList> result;
+  if (!experimentalFeatures.isObject()) {
+    logger.error() << "Error in the json format: experimentalFeatures is"
+                      "not an object.";
+    return result;
+  }
+
+  QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
+
+  QStringList experimentalFeaturesToToggleOn = experimentalFeaturesObj.keys();
+
+  // Starts with all features. As experimentalFeaturesToToggleOn are parsed,
+  // they are removed from this list.
+  QStringList experimentalFeaturesToToggleOff = experimentalFeatureIds;
+
+  for (const QString& key : experimentalFeaturesToToggleOn) {
+    const Feature* experimentalFeature = Feature::getOrNull(key);
+    if (!experimentalFeature) {
+      logger.warning() << "Got" << key
+                       << "but experimental feature doesn't exist. Ignoring.";
+      experimentalFeaturesToToggleOn.removeAll(key);
+      continue;
+    }
+
+    QJsonValue experimentalFeatureSettings = experimentalFeaturesObj[key];
+    if (!experimentalFeatureSettings.isObject()) {
+      logger.error() << "Error in the json format: experimentalFeature" << key
+                     << "is not an object.";
+      experimentalFeaturesToToggleOn.removeAll(key);
+      continue;
+    }
+
+    QJsonObject experimentalFeatureSettingsObj =
+        experimentalFeatureSettings.toObject();
+    for (const QString& settingKey : experimentalFeatureSettingsObj.keys()) {
+      auto value = experimentalFeatureSettingsObj[settingKey].toVariant();
+      if (!value.isValid() || value.isNull()) {
+        logger.warning()
+            << "Received null value for experimental feature setting"
+            << settingKey;
+        continue;
+      }
+
+      logger.debug() << "Setting experimental feature setting" << settingKey;
+
+      experimentalFeature->settingGroup()->set(settingKey, value);
+    }
+
+    experimentalFeaturesToToggleOff.removeAll(key);
+  }
+
+  result.first = experimentalFeaturesToToggleOn;
+  result.second = experimentalFeaturesToToggleOff;
+  return result;
+}
+
 void FeatureModel::updateFeatureList(const QByteArray& data) {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
   QJsonObject json = QJsonDocument::fromJson(data).object();
+
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  QStringList featuresToToggleOn = settingsHolder->featuresFlippedOn();
+  QStringList featuresToToggleOff = settingsHolder->featuresFlippedOff();
+
   if (json.contains("featuresOverwrite")) {
-    QJsonValue featuresValue = json["featuresOverwrite"];
-    if (!featuresValue.isObject()) {
-      logger.error() << "Error in the json format";
-      return;
-    }
+    QJsonValue features = json["featuresOverwrite"];
+    auto parsedFeatures = parseFeatures(features);
 
-    QStringList featuresFlippedOn;
-    QStringList featuresFlippedOff;
+    featuresToToggleOn = parsedFeatures.first;
+    featuresToToggleOff = parsedFeatures.second;
+  }
 
-    QJsonObject featuresObj = featuresValue.toObject();
-    for (const QString& key : featuresObj.keys()) {
-      QJsonValue value = featuresObj.value(key);
-      if (!value.isBool()) {
-        logger.error() << "Error in parsing feature enabling:" << key;
-        continue;
-      }
+  if (json.contains("experimentalFeatures")) {
+    QJsonValue experimentalFeatures = json["experimentalFeatures"];
+    auto parsedExperimentalFeatures =
+        parseExperimentalFeatures(experimentalFeatures);
+    auto experimentalFeaturesToToggleOn = parsedExperimentalFeatures.first;
+    auto experimentalFeaturesToToggleOff = parsedExperimentalFeatures.second;
 
-      const Feature* feature = Feature::getOrNull(key);
-      if (!feature) {
-        logger.error() << "No feature named" << key;
-        continue;
-      }
-
-      if (value.toBool()) {
-        if (!feature->isFlippableOn()) {
-          logger.error() << "Feature" << key << "cannot be flipped on";
-          continue;
-        }
-
-        featuresFlippedOn.append(key);
-      } else {
-        if (!feature->isFlippableOff()) {
-          logger.error() << "Feature" << key << "cannot be flipped off";
-          continue;
-        }
-
-        featuresFlippedOff.append(key);
+    // Disable features that should be toggled off.
+    foreach (const QString& feature, featuresToToggleOn) {
+      if (experimentalFeaturesToToggleOff.contains(feature)) {
+        featuresToToggleOn.removeAll(feature);
       }
     }
 
-    settingsHolder->setFeaturesFlippedOn(featuresFlippedOn);
-    settingsHolder->setFeaturesFlippedOff(featuresFlippedOff);
-  }
-
-#ifdef MZ_ADJUST
-  QJsonValue adjustFieldsValue = json["adjustFields"];
-  if (adjustFieldsValue.isUndefined()) {
-    logger.debug() << "No adjust fields found in feature list";
-    return;
-  }
-
-  if (!adjustFieldsValue.isObject()) {
-    logger.error()
-        << "Error in the json format; adjust fields is not an object";
-    return;
-  }
-
-  QJsonValue allowParameterValue = adjustFieldsValue["allowParameters"];
-  if (!allowParameterValue.isArray()) {
-    logger.error()
-        << "Error in the json format; allow parameters are not an array";
-    return;
-  }
-
-  QJsonArray allowParametersArray = allowParameterValue.toArray();
-  for (const QJsonValue& param : allowParametersArray) {
-    if (!param.isString()) {
-      logger.error()
-          << "Error in the json format; allowlist parameter is not a string";
-      continue;
+    // Enable features that should be toggled on.
+    foreach (const QString& feature, experimentalFeaturesToToggleOn) {
+      if (!featuresToToggleOn.contains(feature)) {
+        featuresToToggleOn.append(feature);
+      }
     }
-    AdjustFiltering::instance()->allowField(param.toString());
   }
 
-  QJsonValue denyParameterValue = adjustFieldsValue["denyParameters"];
-  if (!denyParameterValue.isObject()) {
-    logger.error()
-        << "Error in the json format; deny parameters in not an object";
-    return;
-  }
-
-  QJsonObject denyParameterObject = denyParameterValue.toObject();
-  for (const QString& key : denyParameterObject.keys()) {
-    QJsonValue value = denyParameterObject.value(key);
-    if (!value.isString()) {
-      logger.error()
-          << "Error in the json format; deny list parameter is not a string";
-      continue;
-    }
-
-    AdjustFiltering::instance()->denyField(key, value.toString());
-  }
-
-  QJsonValue mirrorParameterValue = adjustFieldsValue["mirrorParameters"];
-  if (!mirrorParameterValue.isObject()) {
-    logger.error()
-        << "Error in the json format; mirror parameters are not an object";
-    return;
-  }
-
-  QJsonObject mirrorParameterObject = mirrorParameterValue.toObject();
-  for (const QString& key : mirrorParameterObject.keys()) {
-    QJsonValue values = mirrorParameterObject.value(key);
-    if (!values.isArray()) {
-      logger.error() << "Error in the json format; mirror parameters value is "
-                        "not an array";
-      continue;
-    }
-
-    QJsonArray valuesArray = values.toArray();
-    if (valuesArray.size() != 2) {
-      logger.error()
-          << "Error in the json format; mirror value is not an array";
-      continue;
-    }
-
-    QJsonValue mirrorParamValue = valuesArray.first();
-    if (!mirrorParamValue.isString()) {
-      logger.error()
-          << "Error in the json format; mirroring field is not a string";
-      continue;
-    }
-
-    QJsonValue defaultValue = valuesArray.last();
-    if (!defaultValue.isString()) {
-      logger.error()
-          << "Error in the json format; mirror default value is not a string";
-      continue;
-    }
-
-    AdjustFiltering::instance()->mirrorField(
-        key, {mirrorParamValue.toString(), defaultValue.toString()});
-  }
-#endif
+  settingsHolder->setFeaturesFlippedOff(featuresToToggleOff);
+  settingsHolder->setFeaturesFlippedOn(featuresToToggleOn);
 }
