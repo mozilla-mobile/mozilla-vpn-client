@@ -17,149 +17,66 @@ kind-dependencies:
     - mac-notarization
     - repackage-signing
 
+task-defaults:
+    beetmover-action: "push-to-candidates"
+    run-on-tasks-for: [action]
+    worker-type: beetmover
+
 tasks:
     android-arm64:
         requires-level: 3
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-arm64-v8a-release.apk]
         dependencies:
             signing: signing-android-arm64/release
-        if-dependencies: [signing]
         attributes:
             build-type: android/arm64-v8a
-        treeherder:
-            symbol: BM(android)
-            kind: build
-            tier: 1
-            platform: android/arm64-v8a
     android-armv7:
         requires-level: 3
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-armeabi-v7a-release.apk]
         dependencies:
             signing: signing-android-armv7/release
-        if-dependencies: [signing]
         attributes:
             build-type: android/armv7
-        treeherder:
-            symbol: BM(android)
-            kind: build
-            tier: 1
-            platform: android/armv7
     android-x86:
         requires-level: 3
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-x86-release.apk]
         dependencies:
             signing: signing-android-x86/release
-        if-dependencies: [signing]
         attributes:
             build-type: android/x86
-        treeherder:
-            symbol: BM(android)
-            kind: build
-            tier: 1
-            platform: android/x86
     android-x64:
         requires-level: 3
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [mozillavpn-x86_64-release.apk]
         dependencies:
             signing: signing-android-x64/release
-        if-dependencies: [signing]
         attributes:
             build-type: android/x64
-        treeherder:
-            symbol: BM(android)
-            kind: build
-            tier: 1
-            platform: android/x64
     macos:
         requires-level: 3
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.pkg]
         dependencies:
             signing: signing-macos/opt
             mac-notarization: mac-notarization-macos/opt
-        if-dependencies: [signing]
         attributes:
             build-type: macos/opt
-        treeherder:
-            symbol: BM(macos)
-            kind: build
-            tier: 1
-            platform: macos/opt
     windows:
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.msi]
         dependencies:
             repackage-signing: repackage-signing-msi
-        if-dependencies: [repackage-signing]
         attributes:
             build-type: windows/opt
-        treeherder:
-            symbol: BM(windows)
-            kind: build
-            tier: 1
-            platform: windows/x86_64
     addons-bundle:
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
         release-artifacts: []
         dependencies:
             build: build-addons-bundle
-        if-dependencies: [build]
         attributes:
             build-type: addons/opt
-        treeherder:
-            symbol: BM(addons-bundle)
-            kind: build
-            tier: 1
-            platform: addons/opt
     addons-manifest:
-        worker-type: beetmover
-        worker:
-            chain-of-trust: true
-            max-run-time: 1800
-        run-on-tasks-for: [action]
         release-artifacts:
             - manifest.json
             - manifest.json.sig
         dependencies:
             signing: signing-addons-bundle
-        if-dependencies: [signing]
         attributes:
             build-type: addons/opt
-        treeherder:
-            symbol: BM(addons-manifest)
-            kind: build
-            tier: 1
-            platform: addons/opt

@@ -131,7 +131,7 @@ def format_message(config, tasks):
 
         dirs = set()
         for label, dep_task in config.kind_dependencies_tasks.items():
-            if label not in task["dependencies"] or dep_task.kind != "beetmover":
+            if label not in task["dependencies"] or not dep_task.kind.startswith("beetmover"):
                 continue
 
             platform = dep_task.attributes["build-type"].rsplit("/")[0]
