@@ -43,3 +43,7 @@ void IOSWidgets::saveSecondRecent(QString data) {
 void IOSWidgets::saveCurrent(QString data) {
     [impl saveCurrentWithData:data.toNSString()];
 }
+
+void IOSWidgets::reloadWidgets() {
+    [impl reloadWidgets];
+}

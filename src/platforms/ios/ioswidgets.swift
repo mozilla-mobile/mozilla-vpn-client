@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import Foundation
+import WidgetKit
 
 public class IOSWidgetsImpl : NSObject {
     
@@ -37,5 +38,9 @@ public class IOSWidgetsImpl : NSObject {
     func retrieveCurrent() -> String {
         let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
         return defaults!.string(forKey: Constants.UserDefaultKeys.current)!
+    }
+    
+    @objc func reloadWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

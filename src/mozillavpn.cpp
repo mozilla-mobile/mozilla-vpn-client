@@ -384,12 +384,41 @@ void MozillaVPN::initialize() {
 
   impl->saveCurrent(m_private->m_serverData.localizedExitCityName());
     
+  impl->reloadWidgets();
+
+  connect(qApp, &QApplication::applicationStateChanged, this,
+          &MozillaVPN::updateWidgets);
+    
 
 #endif
 
   scheduleRefreshDataTasks();
   setUserState(UserAuthenticated);
   maybeStateMain();
+}
+
+void MozillaVPN::updateWidgets() {
+#ifdef MZ_IOS
+
+  IOSWidgets* impl = new IOSWidgets();
+
+  const RecentConnectionModel* model = RecentConnections::instance()->singleHopModel();
+  QVariant lastItem = model->data(model->index(0), RecentConnectionModel::LocalizedExitCityNameRole);
+
+  QVariant secondToLastItem = model->data(model->index(1), RecentConnectionModel::LocalizedExitCityNameRole);
+
+  QString lastItemString = lastItem.toString();
+
+  QString secondToLastItemString = secondToLastItem.toString();
+
+  impl->saveFirstRecent(lastItemString);
+  impl->saveSecondRecent(secondToLastItemString);
+
+  impl->saveCurrent(m_private->m_serverData.localizedExitCityName());
+
+  impl->reloadWidgets();
+#endif
+
 }
 
 void MozillaVPN::maybeStateMain() {

@@ -18,6 +18,7 @@ class IOSWidgets {
   void saveFirstRecent(QString data);
   void saveSecondRecent(QString data);
   void saveCurrent(QString data);
+  void reloadWidgets();
 
 
 };

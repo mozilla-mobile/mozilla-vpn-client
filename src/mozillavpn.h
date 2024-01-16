@@ -175,6 +175,8 @@ class MozillaVPN final : public App {
     m_startMinimized = startMinimized;
   }
 
+  void updateWidgets();
+
   [[nodiscard]] bool setServerList(const QByteArray& serverData);
 
   Q_INVOKABLE void reset(bool forceInitialState);
@@ -280,6 +282,8 @@ class MozillaVPN final : public App {
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;
+
+
 };
 
 #endif  // MOZILLAVPN_H
