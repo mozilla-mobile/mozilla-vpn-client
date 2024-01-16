@@ -81,7 +81,7 @@
 #endif
 
 #ifdef MZ_IOS
-#  include "platforms/ios/ioswidgets.h"
+#include "platforms/ios/ioswidgets.h"
 #endif
 
 #include <QApplication>
@@ -228,11 +228,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &MozillaVPN::errorHandled);
 
   ensureApplicationIdExists();
-
-#ifdef MZ_IOS
-  IOSWidgets* impl = new IOSWidgets();
-  impl->saveToUserDefaults();
-#endif
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -371,6 +366,26 @@ void MozillaVPN::initialize() {
     m_private->m_serverData.update(list[0], list[1]);
     Q_ASSERT(m_private->m_serverData.hasServerData());
   }
+
+#ifdef MZ_IOS
+  IOSWidgets* impl = new IOSWidgets();
+
+  const RecentConnectionModel* model = RecentConnections::instance()->singleHopModel();
+  QVariant lastItem = model->data(model->index(0), RecentConnectionModel::LocalizedExitCityNameRole);
+    
+  QVariant secondToLastItem = model->data(model->index(1), RecentConnectionModel::LocalizedExitCityNameRole);
+    
+  QString lastItemString = lastItem.toString();
+    
+  QString secondToLastItemString = secondToLastItem.toString();
+
+  impl->saveFirstRecent(lastItemString);
+  impl->saveSecondRecent(secondToLastItemString);
+
+  impl->saveCurrent(m_private->m_serverData.localizedExitCityName());
+    
+
+#endif
 
   scheduleRefreshDataTasks();
   setUserState(UserAuthenticated);

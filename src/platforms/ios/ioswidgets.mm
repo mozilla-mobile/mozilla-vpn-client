@@ -5,8 +5,11 @@
 #include "ioswidgets.h"
 #include "Mozilla-Swift.h"
 #include "leakdetector.h"
+#include "logger.h"
 
 namespace {
+
+Logger logger("IOSWidgets");
 
 // Our Swift singleton.
 IOSWidgetsImpl* impl = nullptr;
@@ -29,7 +32,14 @@ IOSWidgets::~IOSWidgets() {
   }
 }
 
-void IOSWidgets::saveToUserDefaults() {
-    [impl saveToUserDefaults];
+void IOSWidgets::saveFirstRecent(QString data) {
+    [impl saveFirstRecentWithData:data.toNSString()];
 }
 
+void IOSWidgets::saveSecondRecent(QString data) {
+    [impl saveSecondRecentWithData:data.toNSString()];
+}
+
+void IOSWidgets::saveCurrent(QString data) {
+    [impl saveCurrentWithData:data.toNSString()];
+}

@@ -45,15 +45,67 @@ struct widgetsEntryView : View {
     var impl = IOSWidgetsImpl()
     
     var entry: Provider.Entry
+    
+    @State private var isOn = false
 
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                Text(Date.now, style: .timer)
-//                Spacer()  
+            VStack {
+                HStack(alignment: .top) {
+                    Image("Off")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 40, height: 40)
+                    VStack(alignment: .leading) {
+                        Text("VPN is off")
+                            .bold()
+                        Text(impl.retrieveCurrent())
+                            .foregroundColor(Color(red: 109/255, green: 109/255, blue: 110/255))
+                            .opacity(0.8)
+                    }
+                    Spacer()
+                    Image("Logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 24, height: 24)
+                }
+                .padding(16)
             }
-            Text(impl.retrieveFromUserDefaults())
+            .background(Color.white)
+            .padding(-16)
+            
+            Spacer()
+            
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Recent connections")
+                        .font(.system(size: 11))
+                        .bold()
+                        .padding(.top, 16)
+                    
+                    Spacer()
+                }
+                Spacer()
+                
+                HStack(spacing: 16) {
+                    VStack {
+                        Text(impl.retrieveFirstRecent())
+                            .font(.system(size: 11))
+                    }
+                    .frame(width: 108, height: 48)
+                    .background(Color.white)
+                    .clipShape(.rect(cornerRadius: 8))
+
+                    VStack {
+                        Text(impl.retrieveSecondRecent())
+                            .font(.system(size: 11))
+                    }
+                    .frame(width: 108, height: 48)
+                    .background(Color.white)
+                    .clipShape(.rect(cornerRadius: 8))
+                }
+            }
+            
         }
     }
 }

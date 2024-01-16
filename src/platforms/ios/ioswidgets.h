@@ -15,7 +15,11 @@ class IOSWidgets {
   IOSWidgets();
   ~IOSWidgets();
 
-  void saveToUserDefaults();
+  void saveFirstRecent(QString data);
+  void saveSecondRecent(QString data);
+  void saveCurrent(QString data);
+
+
 };
 
 #endif  // IOSLOGGER_H

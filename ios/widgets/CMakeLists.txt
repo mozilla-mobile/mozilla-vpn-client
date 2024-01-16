@@ -33,7 +33,6 @@ set_target_properties(widgets PROPERTIES
 #    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_SOURCE_DIR}/src/Widgets-Bridging-Header.h"
 )
 
-
 #target_link_libraries(widgets PRIVATE
 #    Qt6::Core
 #)
@@ -48,6 +47,11 @@ target_sources(widgets PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/widgetsBundle.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioswidgets.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
+    ${CMAKE_SOURCE_DIR}/ios/widgets/Assets.xcassets
+)
+
+set_property(TARGET widgets APPEND PROPERTY RESOURCE
+    ${CMAKE_SOURCE_DIR}/ios/widgets/Assets.xcassets
 )
 
 target_include_directories(widgets PRIVATE ${CMAKE_SOURCE_DIR})

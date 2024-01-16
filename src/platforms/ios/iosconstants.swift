@@ -9,6 +9,10 @@ struct Constants {
   struct UserDefaultKeys {
     static let telemetryEnabled = "TELEMETRY_ENABLED"
     static let appChannel = "APP_CHANNEL"
-    static let test = "TEST"
+    static let firstRecent = "firstRecent"
+    static let secondRecent = "secondRecent"
+    static let current = "current"
+
+
   }
 }
