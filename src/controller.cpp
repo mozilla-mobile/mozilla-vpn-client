@@ -762,6 +762,9 @@ void Controller::maybeEnableDisconnectInConfirming() {
 }
 
 bool Controller::silentServerSwitchingSupported() const {
+  if (!m_impl) {
+    return false;
+  }
   return m_impl->silentServerSwitchingSupported();
 }
 

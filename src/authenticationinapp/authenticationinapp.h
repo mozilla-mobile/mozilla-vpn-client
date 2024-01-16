@@ -155,8 +155,8 @@ class AuthenticationInApp final : public QObject {
   static int sessionEmailCodeLength() { return 6; }
   static int unblockCodeLength() { return 8; }
 
-  const QString& emailAddress() const;
-  const QStringList& attachedClients() const;
+  const QString emailAddress() const;
+  const QStringList attachedClients() const;
 
   void terminateSession();
 

@@ -28,7 +28,7 @@ class CommandHandler : public QObject {
   /**
   * Must be called when there is an incoming command. 
   */
-  Q_INVOKABLE void recv(const QByteArray& buffer);
+  Q_INVOKABLE const QByteArray recv(const QByteArray& buffer);
 
   void send(const QByteArray& buffer) { emit onSend(buffer);}
   /**
@@ -47,7 +47,7 @@ class CommandHandler : public QObject {
   /**
    * @brief Register a new command.
    */
-  void registerCommand(const Command& command);
+  void registerCommand(const Command command);
 
   // Unregister a Command
   void unregisterCommand(const QString& commandName);

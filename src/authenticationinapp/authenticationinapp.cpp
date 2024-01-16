@@ -106,7 +106,7 @@ void AuthenticationInApp::signIn() {
   m_session->signIn();
 }
 
-const QString& AuthenticationInApp::emailAddress() const {
+const QString AuthenticationInApp::emailAddress() const {
   if (!m_session){
     return QString();
   }
@@ -116,7 +116,7 @@ const QString& AuthenticationInApp::emailAddress() const {
   return m_session->emailAddress();
 }
 
-const QStringList& AuthenticationInApp::attachedClients() const {
+const QStringList AuthenticationInApp::attachedClients() const {
   if (!m_session) {
     return QStringList();
   }

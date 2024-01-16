@@ -24,6 +24,7 @@ endif()
 target_link_libraries(dummyvpn PRIVATE
     shared-sources
     mozillavpn-sources
+    inspector
     lottie
     nebula
     translations

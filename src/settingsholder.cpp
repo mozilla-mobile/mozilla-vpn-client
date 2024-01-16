@@ -36,10 +36,10 @@ SettingsHolder* SettingsHolder::instance() {
 
 SettingsHolder::SettingsHolder()
     : m_settings(MozFormat, QSettings::UserScope,
-#ifndef UNIT_TEST
-                 "mozilla",
-#else
+#if defined(UNIT_TEST) || defined(MZ_DUMMY)
                  "mozilla_testing",
+#else
+                 "mozilla",
 #endif
                  Constants::SETTINGS_APP_NAME) {
   MZ_COUNT_CTOR(SettingsHolder);

@@ -18,11 +18,11 @@ CommandHandler::CommandHandler(QObject* parent) : QObject(parent) {
 
 CommandHandler::~CommandHandler() { }
 
-void CommandHandler::recv(const QByteArray& command) {
+const QByteArray CommandHandler::recv(const QByteArray& command) {
   qInfo() << "command received:" << command;
 
   if (command.isEmpty()) {
-    return;
+    return "";
   }
 
   QList<QByteArray> parts = command.split(' ');
@@ -40,21 +40,19 @@ void CommandHandler::recv(const QByteArray& command) {
         obj["type"] = command.m_commandName;
         obj["error"] = QString("too many arguments (%1 expected)")
                            .arg(command.m_arguments);
-        send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-        return;
+        return QJsonDocument(obj).toJson(QJsonDocument::Compact);
       }
 
       QJsonObject obj = command.m_callback(parts);
       obj["type"] = command.m_commandName;
-      send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-      return;
+      return QJsonDocument(obj).toJson(QJsonDocument::Compact);
     }
   }
 
   QJsonObject obj;
   obj["type"] = "unknown";
   obj["error"] = "invalid command";
-  send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }
 
 // static
@@ -69,8 +67,8 @@ void CommandHandler::registerCommand(
   );
 }
 //static
-void CommandHandler::registerCommand(const Command& command){
-  s_commands.append(std::move(command));
+void CommandHandler::registerCommand(const Command command){
+  s_commands.append(command);
 }
 
 

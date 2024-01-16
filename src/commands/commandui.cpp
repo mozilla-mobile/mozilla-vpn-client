@@ -465,7 +465,7 @@ int CommandUI::run(QStringList& tokens) {
 
     QScopedPointer<Inspector> inspector;
     #ifndef MZ_FORCE_INSPECOR 
-    #  define MZ_FORCE_INSPECOR false
+    #  define MZ_FORCE_INSPECOR true
     #endif 
     if (MZ_FORCE_INSPECOR  || !Constants::inProduction()) {
       // TODO: use the new setting.
@@ -504,8 +504,10 @@ int CommandUI::run(QStringList& tokens) {
 
           }),
           "Mozilla.Shared", 1, 0);
+      inspector->exportObject(
+          "MZNetwork", NetworkManager::instance()->networkAccessManager());
 
-      InspectorLegacyCommands::registerCommands(inspector.data());
+      InspectorLegacyCommands::registerCommands(inspector.get());
     }
 
 
