@@ -16,7 +16,6 @@ class InspectorWebsocketClient {
    * @param {URL | string } url - The Websocket URL to connect to. 
    */
   constructor (url=DEFAULT_URL) {
-    console.log("constructor")
     this.isConnected = signal(false)
     this.qWebChannel = signal()
 
@@ -35,9 +34,7 @@ class InspectorWebsocketClient {
       this._setupWebSocket(WebSocket,url);
     }else {
       // Node i guess. 
-      console.log("ws")
       import('ws').then(ws => {
-        console.log("WS DONE")
         this._setupWebSocket(ws.WebSocket,url)
       }
        

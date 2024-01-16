@@ -275,18 +275,15 @@ export async function getLastUrl() {
 }
 export async function waitForCondition(condition, waitTimeInMilliSecs = 500) {
   // If the condition takes longer than 15 seconds, give up.
-  console.log(`Wait For Condition -> ${condition.toString()}`)
   let active = true;
   let timeout = setTimeout(() => { active = false; }, 15000);
   while (true) {
     if (await condition()) {
       clearTimeout(timeout);
-      process.stdout.moveCursor(0, -1) // up one line
-      process.stdout.clearLine(1) // from cursor to end
       return;
     }
     // Asserting here produces a more useful backtrace for diagnosing tests.
-    assert(active, "Condition timed out");
+    assert(active, "Timeout")
     await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   }
 }

@@ -33,7 +33,6 @@ let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
-  console.log("startAndConnect")
   if(vpnProcessTerminatePromise){
     console.log("vpnProcessTerminatePromise exits, awaiting exit.")
     await vpnProcessTerminatePromise;
@@ -59,7 +58,6 @@ async function startAndConnect() {
   await waitFor(200);
   const inspector = await connectToWebsocket( {hostname: '127.0.0.1'});
   // Connect to VPN
-  console.log("setInspectorClient")
   await setInspectorClient(inspector);
 }
 
