@@ -14,7 +14,7 @@
 #include <QtDBus/QtDBus>
 
 #ifndef MZ_FLATPAK
-# include "dbusclient.h"
+#  include "dbusclient.h"
 #endif
 #include "logger.h"
 

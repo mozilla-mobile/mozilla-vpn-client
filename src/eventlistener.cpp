@@ -8,10 +8,10 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
+#include <QRegularExpression>
 #include <QUrl>
 #ifndef MZ_WINDOWS
 #  include <QStandardPaths>
-#  include <QRegularExpression>
 #endif
 
 #include "constants.h"

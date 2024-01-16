@@ -150,7 +150,7 @@ void NetworkManagerController::initialize(const Device* device,
   g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
                qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
                WG_FIREWALL_MARK, NM_SETTING_WIREGUARD_PEER_ROUTES, false,
-               NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE, true, 
+               NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE, true,
                NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE, true, NULL);
 
   // Check if the connection already exists.
@@ -375,9 +375,9 @@ void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
   if (m_active != nullptr) {
     QString oldPath(nm_object_get_path(NM_OBJECT(m_active)));
     QDBusConnection::systemBus().disconnect(
-          "org.freedesktop.NetworkManager", oldPath,
-          "org.freedesktop.NetworkManager.Connection.Active",
-          "StateChanged", this, SLOT(stateChanged(uint, uint)));
+        "org.freedesktop.NetworkManager", oldPath,
+        "org.freedesktop.NetworkManager.Connection.Active", "StateChanged",
+        this, SLOT(stateChanged(uint, uint)));
     g_object_unref(m_active);
     m_active = nullptr;
   }
@@ -387,10 +387,10 @@ void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
   if (m_active) {
     QString newPath(nm_object_get_path(NM_OBJECT(m_active)));
     QDBusConnection::systemBus().connect(
-          "org.freedesktop.NetworkManager", newPath,
-          "org.freedesktop.NetworkManager.Connection.Active",
-          "StateChanged", this, SLOT(stateChanged(uint, uint)));
-    
+        "org.freedesktop.NetworkManager", newPath,
+        "org.freedesktop.NetworkManager.Connection.Active", "StateChanged",
+        this, SLOT(stateChanged(uint, uint)));
+
     // Invoke the state changed signal with the current state.
     stateChanged(nm_active_connection_get_state(m_active),
                  nm_active_connection_get_state_reason(m_active));
@@ -455,7 +455,7 @@ void NetworkManagerController::checkStatus() {
 
   QString txPath =
       QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
-  QString rxPath = 
+  QString rxPath =
       QString("/sys/class/net/%1/statistics/rx_bytes").arg(WG_INTERFACE_NAME);
   uint64_t txBytes = readSysfsFile(txPath);
   uint64_t rxBytes = readSysfsFile(rxPath);

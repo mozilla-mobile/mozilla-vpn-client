@@ -12,7 +12,8 @@ class TcpPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(TcpPingSender)
 
  public:
-  TcpPingSender(const QHostAddress& source, quint16 port = 80, QObject* parent = nullptr);
+  TcpPingSender(const QHostAddress& source, quint16 port = 80,
+                QObject* parent = nullptr);
   ~TcpPingSender();
 
   void sendPing(const QHostAddress& dest, quint16 sequence) override;

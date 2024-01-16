@@ -97,9 +97,9 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
   uint32_t replacesId = 0;  // Don't replace.
   QMap<QString, QVariant> hints;
 
-  QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId,
-                                  Constants::LINUX_APP_ID, title, message,
-                                  actions, hints, timerMsec);
+  QDBusReply<uint> reply =
+      n.call("Notify", "Mozilla VPN", replacesId, Constants::LINUX_APP_ID,
+             title, message, actions, hints, timerMsec);
   if (!reply.isValid()) {
     logger.warning() << "Failed to show the notification";
   }

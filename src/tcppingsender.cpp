@@ -29,8 +29,10 @@ void TcpPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 
   // Cleanup the socket upon completion.
   connect(socket, &QAbstractSocket::connected, socket, &QObject::deleteLater);
-  connect(socket, &QAbstractSocket::disconnected, socket, &QObject::deleteLater);
-  connect(socket, &QAbstractSocket::errorOccurred, socket, &QObject::deleteLater);
+  connect(socket, &QAbstractSocket::disconnected, socket,
+          &QObject::deleteLater);
+  connect(socket, &QAbstractSocket::errorOccurred, socket,
+          &QObject::deleteLater);
 
   // Try to connect
   socket->connectToHost(dest, m_port);
