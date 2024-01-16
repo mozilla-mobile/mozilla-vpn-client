@@ -305,6 +305,8 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
 // TODO: #endif
 
+constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
+
 };  // namespace Constants
 
 #endif  // CONSTANTS_H

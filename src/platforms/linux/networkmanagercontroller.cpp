@@ -449,7 +449,6 @@ uint64_t NetworkManagerController::readSysfsFile(const QString& path) {
 }
 
 void NetworkManagerController::checkStatus() {
-  logger.debug() << "A";
   NMSettingIPConfig* ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
   NMIPAddress* nmAddress = nm_setting_ip_config_get_address(ipcfg, 0);
   QString deviceAddress(nm_ip_address_get_address(nmAddress));

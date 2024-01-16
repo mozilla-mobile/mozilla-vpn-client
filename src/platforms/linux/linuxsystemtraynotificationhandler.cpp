@@ -6,6 +6,7 @@
 
 #include <QtDBus/QtDBus>
 
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -97,8 +98,8 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
   QMap<QString, QVariant> hints;
 
   QDBusReply<uint> reply = n.call("Notify", "Mozilla VPN", replacesId,
-                                  "org.mozilla.vpn", title, message, actions,
-                                  hints, timerMsec);
+                                  Constants::LINUX_APP_ID, title, message,
+                                  actions, hints, timerMsec);
   if (!reply.isValid()) {
     logger.warning() << "Failed to show the notification";
   }

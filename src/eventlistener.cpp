@@ -35,10 +35,10 @@ EventListener::EventListener() {
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
 
 #if defined(MZ_WINDOWS)
-  m_pipeLocation = QString("\\\\.\\pipe\\%1.ui").arg(pipeName());
+  m_pipeLocation = pipeName();
 #else
   QDir dir(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
-  m_pipeLocation = dir.filePath(QString("%1.ui.sock").arg(pipeName()));
+  m_pipeLocation = dir.filePath(pipeName());
 #endif
 
   logger.debug() << "Server path:" << m_pipeLocation;
@@ -145,10 +145,10 @@ bool EventListener::checkForInstances(const QString& windowName) {
 
 bool EventListener::sendCommand(const QString& message) {
 #if defined(MZ_WINDOWS)
-  QString path = QString("\\\\.\\pipe\\%1.ui").arg(pipeName());
+  QString path = pipeName();
 #else
   QString path = QStandardPaths::locate(QStandardPaths::RuntimeLocation,
-                                        QString("%1.ui.sock").arg(pipeName()));
+                                        pipeName());
   if (path.isEmpty()) {
     return false;
   }
@@ -181,5 +181,13 @@ bool EventListener::sendDeepLink(const QUrl& url) {
 // static
 QString EventListener::pipeName() {
   QString appName = qApp->applicationName().toLower();
-  return appName.remove(QRegularExpression("[^a-z]"));
+  QString simplified = appName.remove(QRegularExpression("[^a-z]"));
+
+#if defined(MZ_WINDOWS)
+  return QString("\\\\.\\pipe\\%1.ui").arg(simplified);
+#elif defined(MZ_FLATPAK)
+  return QString("app/%1/%2.ui.sock").arg(Constants::LINUX_APP_ID).arg(simplified);
+#else
+  return QString("%1.ui.sock").arg(simplified);
+#endif
 }
