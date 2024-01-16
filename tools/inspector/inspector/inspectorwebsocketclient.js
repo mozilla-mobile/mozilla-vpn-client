@@ -13,9 +13,10 @@ import { signal } from '@lit-labs/preact-signals';
 class InspectorWebsocketClient {
   /**
    * Creates a new InspectorClient
-   * @param {URL} url - The Websocket URL to connect to. 
+   * @param {URL | string } url - The Websocket URL to connect to. 
    */
   constructor (url=DEFAULT_URL) {
+    console.log("constructor")
     this.isConnected = signal(false)
     this.qWebChannel = signal()
 
@@ -31,39 +32,61 @@ class InspectorWebsocketClient {
     this.url = url;
     if(globalThis.WebSocket){
       // We're running in the browser or Deno
-      this.setupWebSocket(WebSocket,url);
+      this._setupWebSocket(WebSocket,url);
     }else {
       // Node i guess. 
-      import('ws').then(ws => this.setupWebSocket(ws.WebSocket,url));
+      console.log("ws")
+      import('ws').then(ws => {
+        console.log("WS DONE")
+        this._setupWebSocket(ws.WebSocket,url)
+      }
+       
+        );
     }
-    this.isConnected.subscribe(connected =>{
-       if(connected){
-        new QWebChannel(this.websocketConnection, (channel)=> {
-          this.qWebChannel.value = channel;
-        });
-       }
-    })
-
   }
-  setupWebSocket(websocketImpl,url){
-  this.websocketConnection = new websocketImpl(url.toString());
-  // 
-  this.websocketConnection.onopen = () => {
-    this.isConnected.value = true;
-  }
-  this.websocketConnection.onerror = () => { 
-    this.isConnected.value = false;
-  }
-  this.websocketConnection.onclose = () => { 
-    this.isConnected.value = false;
-  }
+  close(){
+    this.isClosed = true;
+    if(this.websocketConnection){
+      this.websocketConnection.close()
+    }
   }
 
+
+  _setupWebSocket(websocketImpl,url){
+    this.websocketConnection = new websocketImpl(url.toString());
+    // 
+    this.websocketConnection.onopen = () => {
+      new QWebChannel(this.websocketConnection, (channel)=> {
+        this.qWebChannel.value = channel;
+        this.isConnected.value = true;
+      });
+    }
+    this.websocketConnection.onerror = () => { 
+      this.isConnected.value = false;
+    }
+    this.websocketConnection.onclose = () => { 
+      this.isConnected.value = false;
+      if(this.isClosed){
+        return;
+      }
+      // If we're not closed by the calling code
+      // retry to re-setup the connection. 
+      setTimeout(()=>{
+        this._setupWebSocket(websocketImpl,url);
+      },200)
+    }
+  }
+  /**
+   * @type {WebSocket}
+   */
+  websocketConnection = null;
 
   /**
    * Signals whether the Inspector is connected.
    */
   isConnected = signal(false)
+
+  isClosed= false;
 
    /**
    * The current qWebChannel

@@ -15,35 +15,52 @@ beforeEach applies to running before every test.
 import { config } from 'dotenv';
 config();
 
-import { readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
-import { execSync, spawn } from 'child_process';
-import { connect, reset, setSetting, authenticateInApp, settingsFileName, quit, gleanTestReset, setGleanAutomationHeader, screenCapture, hardReset, disconnect } from './helper.js';
-import vpnWS from './helperWS.js';
+import { readFileSync, writeFileSync, unlinkSync} from 'fs';
+import { execSync, spawn } from 'node:child_process';
+import { setInspectorClient , reset, setSetting, authenticateInApp, settingsFileName, quit, gleanTestReset, setGleanAutomationHeader, hardReset, waitFor } from './helper.js';
+import {connect as connectToWebsocket} from './helperWS.js';
+import { env, exit } from 'process'
 
-import { start, url, stop, throwExceptionsIfAny, overrideEndpoints } from './servers/fxa.js';
-import { start as _start, url as _url, stop as _stop, throwExceptionsIfAny as _throwExceptionsIfAny, overrideEndpoints as _overrideEndpoints } from './servers/guardian.js';
-import { start as __start, url as __url, stop as __stop, throwExceptionsIfAny as __throwExceptionsIfAny } from './servers/addon.js';
-import { start as ___start, url as ___url, stop as ___stop, throwExceptionsIfAny as ___throwExceptionsIfAny, overrideEndpoints as __overrideEndpoints } from './servers/networkBenchmark.js';
-import { start as ____start, port, stop as ____stop, throwExceptionsIfAny as ____throwExceptionsIfAny } from './servers/captivePortalServer.js';
+import { fxa } from './servers/fxa.js';
+import { guardian } from './servers/guardian.js';
+import { addonServer  } from './servers/addon.js';
+import { networkBenchmark  } from './servers/networkBenchmark.js';
+import { captivePortal  } from './servers/captivePortalServer.js';
 
-const app = process.env.MVPN_BIN;
+const app = env["MVPN_BIN"];
 let vpnProcess = null;
 let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
+  console.log("startAndConnect")
+  if(vpnProcessTerminatePromise){
+    console.log("vpnProcessTerminatePromise exits, awaiting exit.")
+    await vpnProcessTerminatePromise;
+  }
+
+ 
   vpnProcess = spawn(app, ['ui', '--testing']);
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
   });
-
+  vpnProcess.stdout.on('data', (data) => {
+    console.log(data);
+  });
   vpnProcessTerminatePromise = new Promise(r => {
-    vpnProcess.on('exit', (code) => r());
+    vpnProcess.on('exit', () =>{
+      console.log("App exited");
+      r();
+    });
   });
 
+  console.log("connectToWebsocket")
+  await waitFor(200);
+  const inspector = await connectToWebsocket( {hostname: '127.0.0.1'});
   // Connect to VPN
-  await connect(vpnWS, {hostname: '127.0.0.1'});
+  console.log("setInspectorClient")
+  await setInspectorClient(inspector);
 }
 
 function vpnIsInactive() {
@@ -55,8 +72,8 @@ function vpnIsInactive() {
   }
 }
 
-const _startAndConnect = startAndConnect;
-export { _startAndConnect as startAndConnect };
+const startGuardianAndConnect = startAndConnect;
+export { startGuardianAndConnect as startAndConnect };
 const _vpnIsInactive = vpnIsInactive;
 export { _vpnIsInactive as vpnIsInactive };
 
@@ -69,51 +86,49 @@ export const mochaHooks = {
     } catch (error) {
       console.error(`Could not run "${app}".`);
       console.error('Have you set MVPN_BIN in .env or environment?');
-      console.error(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
-      process.exit(1);
+      exit(1);
     }
 
-    await _start();
-    await start(_url);
-    await __start();
-    await ___start();
-    await ____start();
+    await guardian.start();
+    await fxa.start(guardian.url);
+    await addonServer.start();
+    await networkBenchmark.start();
+    await captivePortal.start();
 
-    process.env['MVPN_API_BASE_URL'] = _url;
-    process.env['MZ_FXA_API_BASE_URL'] = url;
-    process.env['MZ_ADDON_URL'] = `${__url}/01_empty_manifest/`;
-    process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
+    env['MVPN_API_BASE_URL'] = guardian.url;
+    env['MZ_FXA_API_BASE_URL'] = fxa.url;
+    env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
+    env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
-    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = ___url;
-    process.env['MZ_BENCHMARK_UPLOAD_URL'] = ___url;
+    env['MZ_BENCHMARK_DOWNLOAD_URL'] = networkBenchmark.url;
+    env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
 
-    process.env['MZ_CAPTIVE_PORTAL_URL'] =
-      `http://%1:${port}/success.txt`;
+    env['MZ_CAPTIVE_PORTAL_URL'] =
+      `http://%1:${captivePortal.port}/success.txt`;
   },
 
   async afterAll() {
-    _stop();
-    stop();
-    __stop();
-    ___stop();
-    ____stop();
+    guardian.stop();
+    fxa.stop();
+    addonServer.stop();
+    networkBenchmark.stop();
+    captivePortal.stop();
 
-    _throwExceptionsIfAny();
-    throwExceptionsIfAny();
-    __throwExceptionsIfAny();
-    ___throwExceptionsIfAny();
-    ____throwExceptionsIfAny();
+    guardian.throwExceptionsIfAny();
+    fxa.throwExceptionsIfAny();
+    addonServer.throwExceptionsIfAny();
+    networkBenchmark.throwExceptionsIfAny();
+    captivePortal.throwExceptionsIfAny();
   },
 
   async beforeEach() {
     if (this.currentTest.ctx.authenticationNeeded &&
       !this.currentTest.ctx.vpnSettings) {
       console.log('Retrieving the setting file...');
-
-      _overrideEndpoints = null;
-      overrideEndpoints = null;
-      __overrideEndpoints = null;
+      
+      if(vpnProcessTerminatePromise){
+          throw new Error("APP WAS NOT QUIT PROPERLY")
+      }
 
       await startAndConnect();
       await reset();
@@ -129,11 +144,11 @@ export const mochaHooks = {
       this.currentTest.ctx.vpnSettings = {fileName, content};
     }
 
-    _overrideEndpoints =
+    guardian.overrideEndpoints =
       this.currentTest.ctx.guardianOverrideEndpoints || null;
-    overrideEndpoints =
+    fxa.overrideEndpoints =
       this.currentTest.ctx.fxaOverrideEndpoints || null;
-    __overrideEndpoints =
+    networkBenchmark.overrideEndpoints =
       this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
@@ -167,19 +182,6 @@ export const mochaHooks = {
       console.log('::group::Error Logs');
       console.log(stdErr);
       console.log('::endgroup');
-
-      // Screenshot of failure state
-      if (('ARTIFACT_DIR' in process.env)) {
-        const dir = process.env.ARTIFACT_DIR + '/screencapture';
-        const data = await screenCapture();
-        const buffer = Buffer.from(data, 'base64');
-        const title = this.currentTest.title.toLowerCase();
-        const filename = title.replace(/[^a-z0-9]/g, '_');
-        if (!existsSync(dir)) {
-          mkdirSync(dir);
-        }
-        writeFileSync(`${dir}/${filename}.png`, buffer);
-      }
     }
     // Reset error logs
     stdErr = '';
@@ -193,11 +195,9 @@ export const mochaHooks = {
     } catch (error) {
       console.error(error);
     }
-    disconnect();
-
     vpnProcess.stdin.pause();
     vpnProcess.kill();
-
     await vpnProcessTerminatePromise;
+    vpnProcessTerminatePromise = undefined;
   },
 }

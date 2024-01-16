@@ -5,7 +5,7 @@ import Server from './server.js';
 import { generateEndpoints } from './fxa_endpoints.js';
 
 let server = null;
-export default {
+const fxa = {
   async start(guardianUrl, headerCheck = true) {
     server = new Server(
         'FxA', generateEndpoints(guardianUrl), headerCheck);
@@ -36,3 +36,8 @@ export default {
     server.throwExceptionsIfAny();
   },
 };
+
+
+export {
+  fxa
+}

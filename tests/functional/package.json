@@ -1,0 +1,30 @@
+{
+  "name": "functionaltests",
+  "version": "0.0.1",
+  "description": "A test bundle for the vpn client",
+  "main": "-",
+  "scripts": {
+    "test": "mocha --require setupVpn.js --timeout 30000",
+    "testWasm": "mocha --require wasm.js --timeout 30000",
+    "lint": "eslint ."
+  },
+  "type": "module",
+  "devDependencies": {
+    "appium-adb": "^9.14.4",
+    "body-parser": "^1.20.2",
+    "chokidar": "^3.5.3",
+    "command-line-args": "^5.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-mocha": "^10.2.0",
+    "express": "^4.18.1",
+    "jsonschema": "^1.4.1",
+    "mocha": "^10.2.0",
+    "selenium-webdriver": "^4.16.0",
+    "websocket": "^1.0.34"
+  },
+  "author": "Mozilla VPN Team",
+  "license": "MPL-2.0"
+}

@@ -28,6 +28,7 @@ import { Options, ServiceBuilder } from 'selenium-webdriver/firefox';
 
 import { tmpdir } from 'os';
 import { join } from 'path';
+import {env} from 'process'
 import { openSync, readFileSync, writeFileSync } from "fs";
 
 const stdout = join(tmpdir(), "stdout.txt")
@@ -37,8 +38,8 @@ let url;
 
 export const mochaHooks = {
   async beforeAll() {
-    if (process.env['MZ_WASM_URL']) {
-      url = process.env['MZ_WASM_URL'];
+    if (env['MZ_WASM_URL']) {
+      url = env['MZ_WASM_URL'];
     } else {
       await _____start(false);
       url = _____url;
@@ -59,7 +60,7 @@ export const mochaHooks = {
       'captivePortal', `http://%1:${port}/success.txt`);
     url = u.toString()
 
-    process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
+    env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
     const prefs = new logging.Preferences()
     prefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);

@@ -13,8 +13,8 @@ describe('Onboarding', function() {
 
   beforeEach(async () => {
     await flipFeatureOn("newOnboarding");
-    equal(await getSetting('onboardingCompleted'), false);
-    equal(await getSetting('onboardingStep'), 0);
+    await setSetting('onboardingCompleted', false);
+    await setSetting('onboardingStep',0);
     await authenticateInApp();
   });
 

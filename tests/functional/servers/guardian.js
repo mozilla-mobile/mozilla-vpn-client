@@ -5,7 +5,8 @@ import Server from './server.js';
 import { endpoints } from './guardian_endpoints.js';
 
 let server = null;
-export default {
+
+const guardian = {
   async start(headerCheck = true) {
     server = new Server('Guardian', endpoints, headerCheck);
     await server.start();
@@ -34,4 +35,10 @@ export default {
   throwExceptionsIfAny() {
     server.throwExceptionsIfAny();
   },
+};
+
+
+
+export {
+  guardian
 };

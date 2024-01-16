@@ -3,7 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import express from 'express';
-import { json } from 'body-parser';
+import pkg from 'body-parser';
+const { json } = pkg;
+
+
+
 import cors from 'cors';
 import { Validator } from 'jsonschema';
 import { register } from './ports.js';

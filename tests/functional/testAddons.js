@@ -6,7 +6,6 @@ import assert, { equal } from 'assert';
 import { navBar, global, screenSettings, screenMessaging } from './queries.js';
 import { resetAddons, waitForCondition, getMozillaProperty, fetchAddons, setVersionOverride, messages, isFeatureFlippedOn, flipFeatureOn, flipFeatureOff, waitForQueryAndClick, waitForQuery, setSetting, getQueryProperty } from './helper.js';
 import { SubscriptionDetails } from './servers/guardian_endpoints.js';
-import { env, TestingEnvironments } from './helper.js';
 
 describe('Addons', function() {
   this.timeout(3000000);

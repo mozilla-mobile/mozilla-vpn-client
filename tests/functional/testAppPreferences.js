@@ -5,7 +5,6 @@
 import { equal, strictEqual } from 'assert';
 import { navBar, screenSettings, screenGetHelp, global } from './queries.js';
 import { waitForQueryAndClick, isFeatureFlippedOff, flipFeatureOff, waitForQuery, getQueryProperty, getSetting, setSetting, gleanTestGetValue } from './helper.js';
-import setup from './setupVpn.js';
 
 describe('Settings', function() {
   this.timeout(60000);
@@ -18,27 +17,6 @@ describe('Settings', function() {
       await flipFeatureOff('subscriptionManagement');
     }
   });
-
-  async function checkSetting(query, settingKey) {
-    await waitForQuery(query.visible());
-    equal(
-        (await getQueryProperty(query, 'isChecked') === 'true'),
-        await getSetting(settingKey));
-
-    await setSetting(settingKey, true);
-    equal((await getSetting(settingKey)), true);
-    equal((await getQueryProperty(query, 'isChecked')), 'true');
-
-    await setSetting(settingKey, false);
-    equal((await getSetting(settingKey)), false);
-    equal((await getQueryProperty(query, 'isChecked')), 'false');
-  }
-
-  async function getToGetHelpView() {
-    await waitForQueryAndClick(screenSettings.GET_HELP.visible());
-    await waitForQuery(screenGetHelp.BACK_BUTTON.visible());
-    await waitForQuery(global.SCREEN_LOADER.ready());
-  }
 
   describe('telemetry in App preferences in Settings', function () {
     this.ctx.authenticationNeeded = true;

@@ -5,12 +5,15 @@
 import Server from './server.js';
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { join, dirname } from 'path';
+import {env} from 'process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // If not specified, assume the test addons can be found in the 'addons' subdir
 // under the MVPN_BIN binary
-const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in process.env) ?
-                         process.env.MVPN_ADDONS_PATH : 
-                         join(dirname(process.env.MVPN_BIN), 'addons');
+const TEST_ADDONS_PATH = ('MVPN_ADDONS_PATH' in env) ?
+                         env["MVPN_ADDONS_PATH"] : 
+                         join(dirname(env["MVPN_BIN"]), 'addons');
 
 // This function exposes all the files for a particular addon scenario through
 // the addon server.
@@ -54,7 +57,7 @@ function createScenario(scenario, addonPath) {
 }
 
 let server = null;
-export default {
+export const addonServer =  {
   async start(headerCheck = true) {
     let scenarios = {};
 

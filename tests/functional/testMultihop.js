@@ -4,7 +4,7 @@
 
 import assert, { strictEqual, equal } from 'assert';
 import { screenHome } from './queries.js';
-import { setQueryProperty, getQueryProperty, waitForQueryAndClick, waitForQuery, servers as _servers, getMozillaProperty, wait, clickOnQuery, setSetting, activate, waitForCondition, lastNotification, getElementProperty, clickOnElement, waitForElementProperty, waitForElementAndClick } from './helper.js';
+import { setQueryProperty, getQueryProperty, waitForQueryAndClick, waitForQuery, servers as _servers, getMozillaProperty, wait, clickOnQuery, setSetting, activate, waitForCondition, lastNotification, getElementProperty, waitForElementProperty, waitForElementAndClick } from './helper.js';
 
 async function selectCityFromList(cityId, countryId) {
   await setQueryProperty(
@@ -349,7 +349,7 @@ describe('Server list', function() {
     await wait();
     if (await getElementProperty(exitFirstCountryId, 'cityListVisible') ===
         'false') {
-      await clickOnElement(exitFirstCountryId);
+      await clickOnQuery(exitFirstCountryId);
     }
     await waitForElementProperty(
         exitFirstCountryId, 'cityListVisible', 'true');
@@ -420,7 +420,7 @@ describe('Server list', function() {
 
         if (await getElementProperty(entryCountryId, 'cityListVisible') ===
             'false') {
-          await clickOnElement(entryCountryId);
+          await clickOnQuery(entryCountryId);
         }
         await waitForElementProperty(
             entryCountryId, 'cityListVisible', 'true');
@@ -440,7 +440,7 @@ describe('Server list', function() {
         await wait();
         if (await getElementProperty(
                 exitFirstCountryId, 'cityListVisible') === 'false') {
-          await clickOnElement(exitFirstCountryId);
+          await clickOnQuery(exitFirstCountryId);
         }
         await waitForElementProperty(
             exitFirstCountryId, 'cityListVisible', 'true');
@@ -484,7 +484,7 @@ describe('Server list', function() {
         await wait();
         if (await getElementProperty(
                 exitThirdCountryId, 'cityListVisible') === 'false') {
-          await clickOnElement(exitThirdCountryId);
+          await clickOnQuery(exitThirdCountryId);
         }
         await waitForElementProperty(
             exitThirdCountryId, 'cityListVisible', 'true');

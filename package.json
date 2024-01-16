@@ -9,23 +9,11 @@
     "translationsreport:start": "cd ./tools/translationsreport/app && npm run start",
     "translationsreport:build": "cd ./tools/translationsreport/app && npm run build"
   },
-  "devDependencies": {
-    "appium-adb": "^9.14.4",
-    "body-parser": "^1.20.2",
-    "chokidar": "^3.5.3",
-    "command-line-args": "^5.2.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.1",
-    "jsonschema": "^1.4.1",
-    "mocha": "^10.2.0",
-    "selenium-webdriver": "^4.16.0",
-    "websocket": "^1.0.34"
-  },
   "workspaces":[
     "tools/languagelocalizer",
     "tools/translationsreport",
     "tools/inspector",
-    "tools/qml_hot_reload"
+    "tools/qml_hot_reload",
+    "tests/functional"
   ]
 }
