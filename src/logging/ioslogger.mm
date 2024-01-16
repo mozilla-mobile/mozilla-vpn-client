@@ -3,10 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ioslogger.h"
-#include "Mozilla-Swift.h"
+#import "MozillaVPN-Swift.h"
+
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "utilities/leakdetector.h"
 
 #import <UIKit/UIKit.h>
+#include <qpa/qplatformnativeinterface.h>
+#include <QGuiApplication>
 #include <QString>
 
 namespace {

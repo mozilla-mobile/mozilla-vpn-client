@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include "logging/logger.h"
+
 namespace {
 Logger logger("IOSVerifySignature");
 }

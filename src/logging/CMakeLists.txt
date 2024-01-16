@@ -2,8 +2,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+set(INCLUDE_DIRECTORIES)
+if(${MZ_PLATFORM_NAME} STREQUAL "ios")
+    find_package(Qt6::Gui)
+    set(INCLUDE_DIRECTORIES ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
+endif()
+
 mz_add_new_module(
     TARGET_NAME mz_logging
+    INCLUDE_DIRECTORIES
+        ${INCLUDE_DIRECTORIES}
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/logger.h
@@ -26,4 +34,6 @@ mz_add_new_module(
     MZ_DEPENDENCIES
         mz_utilities
         mz_feature
+    IOS_DEPENDECIES
+        Qt6::Gui
 )

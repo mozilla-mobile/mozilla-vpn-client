@@ -4,7 +4,6 @@
 import Foundation
 import NetworkExtension
 import os
-import IOSGlean
 
 class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = IOSLoggerImpl(tag: "Tunnel")

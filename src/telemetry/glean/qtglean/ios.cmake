@@ -6,44 +6,19 @@
 # Instead of using it out of the box, we want it to be linked to the qtglean_ffi target,
 # so we generate the SDK oursevels.
 
-enable_language(Swift)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-add_library(iosglean SHARED)
+target_include_directories(${SWIFT_TARGET_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(iosglean PRIVATE -Wall -Werror -Wno-conversion)
-endif()
-
-target_include_directories(iosglean PUBLIC ${CMAKE_SOURCE_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(iosglean PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
-
-set_target_properties(iosglean PROPERTIES
-    FRAMEWORK TRUE
-    MACOSX_FRAMEWORK_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.iosglean"
-    MACOSX_FRAMEWORK_BUNDLE_VERSION "${BUILD_ID}"
-    MACOSX_FRAMEWORK_COPYRIGHT "MPL-2.0"
-    MACOSX_FRAMEWORK_INFO_STRING "IOSGlean"
-    MACOSX_FRAMEWORK_LONG_VERSION_STRING "${CMAKE_PROJECT_VERSION}-${BUILD_ID}"
-    MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
-    MACOSX_FRAMEWORK_ICON_FILE "AppIcon"
-    OUTPUT_NAME "IOSGlean"
-    FOLDER "Libs"
-    XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
-    XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
+set_target_properties(${SWIFT_TARGET_NAME} PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
-    XCODE_ATTRIBUTE_SKIP_INSTALL "YES"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
-    # Do not strip debug symbols on copy
-    XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
-    XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
 )
 
-target_sources(iosglean PRIVATE
+target_sources(${SWIFT_TARGET_NAME} PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Config/Configuration.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Debug/GleanDebugTools.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Dispatchers.swift
@@ -75,7 +50,7 @@ target_sources(iosglean PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Unreachable.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Utils.swift
 )
-target_sources(iosglean PUBLIC
+target_sources(${SWIFT_TARGET_NAME} PUBLIC
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h
 )
 
@@ -94,12 +69,12 @@ execute_process(
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND_ERROR_IS_FATAL ANY
 )
-target_sources(iosglean PRIVATE
+target_sources(${SWIFT_TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.modulemap
     ${CMAKE_CURRENT_BINARY_DIR}/glean/glean.swift
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/Metrics.swift
 )
-target_sources(iosglean PUBLIC
+target_sources(${SWIFT_TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
@@ -113,18 +88,14 @@ list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
-    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
+    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh
         -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
     COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
 )
-set_source_files_properties(
-    ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
-    PROPERTIES GENERATED TRUE
-)
 
 add_custom_target(iosglean_telemetry DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift)
-add_dependencies(iosglean iosglean_telemetry)
+add_dependencies(${SWIFT_TARGET_NAME} iosglean_telemetry)
 
-target_link_libraries(iosglean PRIVATE qtglean_bindings)
+target_link_libraries(${SWIFT_TARGET_NAME} PUBLIC qtglean_bindings)

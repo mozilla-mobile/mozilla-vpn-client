@@ -8,22 +8,23 @@ import OSLog
 
 public class IOSLoggerImpl : NSObject {
     private let log: OSLog
-    
+
     private lazy var dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
         return dateFormatter
     }()
-    
+
     private static let logger = IOSLoggerImpl(tag: "IOSLoggerImpl")
     private static var appexLogFileURL: URL? {
         get {
+            return nil
             guard let containerURL = FileManager.default.containerURL(
                 forSecurityApplicationGroupIdentifier: Constants.appGroupIdentifier
             ) else {
                 return nil
             }
-            
+
             return containerURL.appendingPathComponent(Constants.networkExtensionLogFileName, isDirectory: false)
         }
     }
@@ -49,7 +50,7 @@ public class IOSLoggerImpl : NSObject {
 
     func log(_ message: String, type: OSLogType) {
         os_log("%{public}@", log: self.log, type: type, message)
-        
+
         if (Bundle.main.bundlePath.hasSuffix(".appex")) {
             let currentDate = Date()
             let formattedDateString = dateFormatter.string(from: currentDate)
@@ -62,7 +63,7 @@ public class IOSLoggerImpl : NSObject {
             }
         }
     }
-    
+
     @objc static func getAppexLogs(callback: @escaping (String) -> Void) {
         withAppexLogFile { logFileHandle in
             if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
@@ -70,20 +71,20 @@ public class IOSLoggerImpl : NSObject {
             }
         }
     }
-    
+
     @objc static func clearAppexLogs() {
         withAppexLogFile { logFileHandle in
             logFileHandle.truncateFile(atOffset: 0)
         }
     }
-    
+
     private static func withAppexLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
         guard let appexLogFileURL = IOSLoggerImpl.appexLogFileURL else {
             logger.error(message: "IMPOSSIBLE: No known app extension log file.")
             return
         }
 
-        
+
         do {
             if !FileManager.default.fileExists(atPath: appexLogFileURL.path) {
                 // Create an empty file
@@ -94,7 +95,7 @@ public class IOSLoggerImpl : NSObject {
                     return
                 }
             }
-            
+
             let fileHandle = try FileHandle(forUpdating: appexLogFileURL)
             try f(fileHandle)
             fileHandle.closeFile()
@@ -115,4 +116,3 @@ func wg_log(_ type: OSLogType, staticMessage: StaticString) {
 func wg_log(_ type: OSLogType, message: String) {
     wireguardLogger.log(message, type: type)
 }
-

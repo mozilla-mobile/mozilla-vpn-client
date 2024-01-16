@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosgleanbridge.h"
-#include "Mozilla-Swift.h"
 #include "settings/settingsholder.h"
 #include "utilities/leakdetector.h"
 

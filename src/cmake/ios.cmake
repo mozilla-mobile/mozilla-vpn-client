@@ -21,11 +21,6 @@ target_link_options(mozillavpn PRIVATE "-ObjC")
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 
-# We have to manually build the QtGlean bindings framework,
-# so we also have to manually add it.
-get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
-get_filename_component(QTGLEAN_FW_LOCATION ${QTGLEAN_LIB_LOCATION} DIRECTORY)
-
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
     OUTPUT_NAME "Mozilla VPN"
@@ -54,11 +49,6 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_EMBED_APP_EXTENSIONS networkextension
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
-    # Make sure Glean is added as a framework to the final bundle
-    XCODE_EMBED_FRAMEWORKS "${QTGLEAN_FW_LOCATION};iosglean"
-    XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
-    XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
-    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"
     # Do not strip debug symbols on copy
     XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
     XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
@@ -76,9 +66,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_FOUNDATION})
 target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
-
-## Hack: IOSUtils needs QtGui internals...
-target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
 
 # iOS platform source files
 target_sources(mozillavpn PRIVATE
@@ -125,9 +112,6 @@ target_compile_options(mozillavpn PRIVATE
 )
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscontroller.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosconstants.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmessage.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
 )
 
 target_sources(mozillavpn PRIVATE

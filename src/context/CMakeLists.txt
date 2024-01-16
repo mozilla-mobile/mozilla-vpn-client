@@ -7,6 +7,8 @@ configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 mz_add_new_module(
     TARGET_NAME mz_context
+    INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/app.h
@@ -21,6 +23,10 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/androidconstants.h
         ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/androidvpnactivity.h
+    IOS_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/iosconstants.swift
+        ${CMAKE_CURRENT_SOURCE_DIR}/iostunnelmanager.swift
+        ${CMAKE_CURRENT_SOURCE_DIR}/iostunnelmessage.swift
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testenv.h

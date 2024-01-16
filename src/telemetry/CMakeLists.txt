@@ -21,7 +21,6 @@ mz_add_new_module(
         ${CMAKE_CURRENT_SOURCE_DIR}/glean/androidgleanbridge.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/glean/androidgleanbridge.h
     IOS_SOURCES
-        ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
         ${CMAKE_CURRENT_SOURCE_DIR}/glean/iosgleanbridge.swift
         ${CMAKE_CURRENT_SOURCE_DIR}/glean/iosgleanbridge.mm
         ${CMAKE_CURRENT_SOURCE_DIR}/glean/iosgleanbridge.h
