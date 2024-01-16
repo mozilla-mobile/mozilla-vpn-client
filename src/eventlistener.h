@@ -38,7 +38,7 @@ class EventListener final : public QObject {
 
   static bool sendCommand(const QString& data);
 
-  static QString pipeName();
+  static QString pipeFileName();
 
  private:
   QString m_pipeLocation;
