@@ -14,7 +14,7 @@ MZFooterLink {
 
     onClicked: () => {
         preLogoutCallback();
-        Glean.interaction.signOutSelected.record({screen:telemetryScreenId})
+        Glean.interaction.signOutSelected.record({screen: typeof telemetryScreenId !== "undefined" ? telemetryScreenId : "" })
         VPNController.logout();
     }
 }
