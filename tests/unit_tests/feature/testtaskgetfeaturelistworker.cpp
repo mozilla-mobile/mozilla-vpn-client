@@ -140,8 +140,6 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
     initialListOfTasks = TaskScheduler::tasks();
   }
 
-  qDebug() << "Heer!";
-
   // Sleep more 250, if the timer hasn't stopped this will schedule more tasks.
   // But it shouldn't.
   QTest::qWait(250);
