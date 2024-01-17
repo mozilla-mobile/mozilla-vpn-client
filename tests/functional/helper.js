@@ -446,7 +446,10 @@ export async function getSetting(key) {
   return json.value;
 }
 export function lastNotification() {
-  return _lastNotification;
+  const notficiations = InspectorObjects.MZNotification;
+  return {
+    notficiations.
+  };
 }
 export function resetLastNotification() {
   _lastNotification.title = null;
@@ -561,4 +564,9 @@ export async function testLastInteractionEvent(options) {
 export async function _writeCommand(command) {
   const response = await InspectorObjects.inspector_cli.recv(`${command}`);
   return JSON.parse(response);
+}
+
+
+export function VPNState(){
+  return InspectorObjects
 }

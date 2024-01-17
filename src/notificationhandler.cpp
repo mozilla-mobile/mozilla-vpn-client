@@ -344,6 +344,8 @@ void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {
   m_lastMessage = type;
+  m_lastText = message;
+  m_lastTitle = title;
 
   emit notificationShown(title, message);
   notify(type, title, message, timerMsec);

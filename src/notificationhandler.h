@@ -6,6 +6,8 @@
 #define NOTIFICATIONHANDLER_H
 
 #include <QObject>
+#include <QProperty>
+#include <QBindable>
 
 class Addon;
 class QMenu;
@@ -28,6 +30,14 @@ class NotificationHandler : public QObject {
     NewInAppMessage,
     SubscriptionNotFound,
   };
+
+  
+  Q_PROPERTY(QString lastNotificationMessage BINDABLE lastText)
+  QBindable<QString> lastText() { return QBindable<QString>(&m_lastText); }
+  Q_PROPERTY(QString lastNotificationTitle BINDABLE lastNotificationTitle)
+  QBindable<QString> lastNotificationTitle() {
+    return QBindable<QString>(&m_lastTitle);
+  }
 
   static NotificationHandler* create(QObject* parent);
 
@@ -88,6 +98,9 @@ class NotificationHandler : public QObject {
   // We want to show a 'disconnected' notification only if we were actually
   // connected.
   bool m_connected = false;
+
+  QProperty<QString> m_lastText; 
+  QProperty<QString> m_lastTitle;
 
 #ifdef UNIT_TEST
   friend class TestAddon;

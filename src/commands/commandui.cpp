@@ -506,6 +506,8 @@ int CommandUI::run(QStringList& tokens) {
           "Mozilla.Shared", 1, 0);
       inspector->exportObject(
           "MZNetwork", NetworkManager::instance()->networkAccessManager());
+      inspector->exportObject(
+          "MZNotification", NotificationHandler::instance());
 
       InspectorLegacyCommands::registerCommands(inspector.get());
     }
