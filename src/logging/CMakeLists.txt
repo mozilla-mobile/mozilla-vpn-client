@@ -34,6 +34,4 @@ mz_add_new_module(
     MZ_DEPENDENCIES
         mz_utilities
         mz_feature
-    IOS_DEPENDECIES
-        Qt6::Gui
 )

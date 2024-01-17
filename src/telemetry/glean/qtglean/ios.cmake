@@ -10,15 +10,15 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
-target_include_directories(${SWIFT_TARGET_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
+target_include_directories(${APPLE_SPECIFIC_TARGET_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/glean)
 
-set_target_properties(${SWIFT_TARGET_NAME} PROPERTIES
+set_target_properties(${APPLE_SPECIFIC_TARGET_NAME} PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     PUBLIC_HEADER "${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h;${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h"
 )
 
-target_sources(${SWIFT_TARGET_NAME} PRIVATE
+target_sources(${APPLE_SPECIFIC_TARGET_NAME} PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Config/Configuration.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Debug/GleanDebugTools.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Dispatchers.swift
@@ -50,7 +50,7 @@ target_sources(${SWIFT_TARGET_NAME} PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Unreachable.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Utils.swift
 )
-target_sources(${SWIFT_TARGET_NAME} PUBLIC
+target_sources(${APPLE_SPECIFIC_TARGET_NAME} PUBLIC
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h
 )
 
@@ -69,12 +69,12 @@ execute_process(
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND_ERROR_IS_FATAL ANY
 )
-target_sources(${SWIFT_TARGET_NAME} PRIVATE
+target_sources(${APPLE_SPECIFIC_TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.modulemap
     ${CMAKE_CURRENT_BINARY_DIR}/glean/glean.swift
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/Metrics.swift
 )
-target_sources(${SWIFT_TARGET_NAME} PRIVATE
+target_sources(${APPLE_SPECIFIC_TARGET_NAME} PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
@@ -96,6 +96,6 @@ add_custom_command(
 )
 
 add_custom_target(iosglean_telemetry DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift)
-add_dependencies(${SWIFT_TARGET_NAME} iosglean_telemetry)
+add_dependencies(${APPLE_SPECIFIC_TARGET_NAME} iosglean_telemetry)
 
-target_link_libraries(${SWIFT_TARGET_NAME} PUBLIC qtglean_bindings)
+target_link_libraries(${APPLE_SPECIFIC_TARGET_NAME} PUBLIC qtglean_bindings)

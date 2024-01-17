@@ -23,6 +23,27 @@ function(mz_target_handle_warnings MZ_TARGET)
     target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
 endfunction()
 
+function(mz_add_library)
+    cmake_parse_arguments(
+        MZ_ADD_LIBRARY # prefix
+        "" # options
+        "" # single-value args
+        "NAME;TYPE" # multi-value args
+        ${ARGN})
+
+    add_library(${MZ_ADD_LIBRARY_NAME} ${MZ_ADD_LIBRARY_TYPE})
+    mz_target_handle_warnings(${MZ_ADD_LIBRARY_NAME})
+    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PRIVATE
+        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+        "$<$<CONFIG:Debug>:MZ_DEBUG>"
+    )
+    target_include_directories(${MZ_ADD_LIBRARY_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endfunction()
+
+
 # MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
 #
 # Targets added:
@@ -140,15 +161,6 @@ function(mz_add_new_module)
         DUMMY_SOURCES ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES}
     )
     target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE ${ALL_SOURCES})
-
-    # Swift sources are added to a separate target.
-    if(SWIFT_SOURCES)
-        mz_add_swift_sources(
-            TARGET_NAME
-                ${MZ_ADD_NEW_MODULE_TARGET_NAME}
-            SOURCES
-                ${SWIFT_SOURCES})
-    endif()
 
     # Generate dependencies lists
     mz_generate_link_libraries(
@@ -621,7 +633,7 @@ endfunction()
 # Sets the following new variables in the parent scope:
 #
 # ALL_SOURCES
-# SWIFT_SOURCES -- These are no included in ALL_SOURCES.
+# APPLE_SOURCES -- These are no included in ALL_SOURCES.
 function(mz_generate_sources_list)
     cmake_parse_arguments(
         MZ_GENERATE_SOURCES_LIST # prefix
@@ -654,40 +666,45 @@ function(mz_generate_sources_list)
 
     # 2. Separate out Swift and ObjC sources
 
-    set(LOCAL_SWIFT_SOURCES ${LOCAL_ALL_SOURCES})
-    list(FILTER LOCAL_SWIFT_SOURCES INCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
+    set(SWIFT_SOURCES ${LOCAL_ALL_SOURCES})
+    list(FILTER SWIFT_SOURCES INCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
 
-    set(LOCAL_OBJC_SOURCES ${LOCAL_ALL_SOURCES})
-    list(FILTER LOCAL_OBJC_SOURCES INCLUDE REGEX "(.*)\\m\\m$")
+    set(OBJC_SOURCES ${LOCAL_ALL_SOURCES})
+    list(FILTER OBJC_SOURCES INCLUDE REGEX "(.*)\\m\\m$")
 
     list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
     list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\m\\m$")
 
-    set(SWIFT_SOURCES ${LOCAL_SWIFT_SOURCES} PARENT_SCOPE)
-    list(APPEND SWIFT_SOURCES ${LOCAL_OBJC_SOURCES})
+    set(APPLE_SOURCES ${SWIFT_SOURCES} ${OBJC_SOURCES} PARENT_SCOPE)
 
     # 3. Set the list in the parent scope.
 
     set(ALL_SOURCES ${LOCAL_ALL_SOURCES} PARENT_SCOPE)
 endfunction()
 
-# Swift files are all added to a separate target that includes
-# all swift targets and one Obj-C bridging header.
+# Swift and Obj-C files are all added to a separate target that includes
+# all apple stuff and the Obj-C bridging header.
+#
 # I (Bea) could not figure out how to make a static lib into an
-# importable swift module, so this was easier.
-set(SWIFT_TARGET_NAME mz_swift)
-function(mz_add_swift_sources)
+# importable swift module, so this was easier. The ObjC stuff was added here as well,
+# because otherwise ObjC files don't find the brdiging header. Hacky include directories
+# shenanigans were considered, but we decided it was too hacky.
+set(APPLE_SPECIFIC_TARGET_NAME mz_apple_stuff)
+function(mz_add_the_apple_stuff)
     cmake_parse_arguments(
-        MZ_ADD_SWIFT_SOURCES # prefix
+        MZ_ADD_APPLE_STUFF # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;SOURCES;" # multi-value args
+        "TARGET_NAME;SOURCES;DEPENDENCIES;INCLUDE_DIRECTORIES" # multi-value args
         ${ARGN})
 
     # Create the Swift target if it doesn't exist.
-    if(NOT TARGET ${SWIFT_TARGET_NAME})
-        add_library(${SWIFT_TARGET_NAME} STATIC)
-        set_target_properties(${SWIFT_TARGET_NAME} PROPERTIES
+    if(NOT TARGET ${APPLE_SPECIFIC_TARGET_NAME})
+        mz_add_library(
+            NAME ${APPLE_SPECIFIC_TARGET_NAME}
+            TYPE STATIC
+        )
+        set_target_properties(${APPLE_SPECIFIC_TARGET_NAME} PROPERTIES
             XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
             XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
             XCODE_ATTRIBUTE_SWIFT_OBJC_INTERFACE_HEADER_NAME "MozillaVPN-Swift.h"
@@ -698,7 +715,18 @@ function(mz_add_swift_sources)
         )
     endif()
 
-    # Add the sources to the
-    target_sources(${SWIFT_TARGET_NAME} PRIVATE ${MZ_ADD_SWIFT_SOURCES_SOURCES})
-    target_link_libraries(${MZ_ADD_SWIFT_SOURCES_TARGET_NAME} PUBLIC ${SWIFT_TARGET_NAME})
+    target_sources(${APPLE_SPECIFIC_TARGET_NAME} PUBLIC
+        ${MZ_ADD_APPLE_STUFF_SOURCES}
+    )
+    target_include_directories(${APPLE_SPECIFIC_TARGET_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${MZ_ADD_APPLE_STUFF_INCLUDE_DIRECTORIES}
+    )
+    target_link_libraries(${APPLE_SPECIFIC_TARGET_NAME} PRIVATE
+        ${MZ_ADD_APPLE_STUFF_DEPENDENCIES}
+    )
+
+    target_link_libraries(${MZ_ADD_APPLE_STUFF_TARGET_NAME} PUBLIC
+        ${APPLE_SPECIFIC_TARGET_NAME}
+    )
 endfunction()
