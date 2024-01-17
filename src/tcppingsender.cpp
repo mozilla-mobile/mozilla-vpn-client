@@ -24,7 +24,7 @@ void TcpPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 
   // Consider the ping to be recieved once the TCP handshake is complete.
   connect(socket, &QAbstractSocket::connected, this,
-          [this, sequence]{ emit recvPing(sequence); });
+          [this, sequence] { emit recvPing(sequence); });
 
   // Cleanup the socket upon completion.
   connect(socket, &QAbstractSocket::connected, socket, &QObject::deleteLater);
