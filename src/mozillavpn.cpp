@@ -535,7 +535,6 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   }
 
   m_private->m_user.writeSettings();
-  m_private->m_deviceModel.writeSettings();
 
   SettingsHolder::instance()->setToken(token);
   setUserState(UserAuthenticated);
@@ -751,7 +750,6 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
   }
 
   m_private->m_user.writeSettings();
-  m_private->m_deviceModel.writeSettings();
 
   if (m_private->m_user.subscriptionNeeded() && state() == StateMain) {
     NotificationHandler::instance()->subscriptionNotFoundNotification();
