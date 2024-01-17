@@ -51,7 +51,9 @@ bool DeviceModel::fromJson(const Keys* keys, const QByteArray& s) {
   }
 
   m_rawJson = s;
+#if !defined(UNIT_TEST)
   writeSettings();
+#endif
   return true;
 }
 
