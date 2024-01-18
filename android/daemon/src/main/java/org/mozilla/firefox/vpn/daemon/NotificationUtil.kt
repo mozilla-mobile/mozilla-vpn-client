@@ -189,7 +189,7 @@ data class CannedNotification(
                         messages.getString("disconnectedBody"),
                     ),
                     messages.getString("productName"),
-                    messages.getString("requestedScreen"),
+                    messages.optString("requestedScreen"),
                 )
             } catch (e: Exception) {
                 Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
