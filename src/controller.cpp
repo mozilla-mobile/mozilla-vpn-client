@@ -290,8 +290,7 @@ void Controller::serverUnavailable() {
 
   m_nextStep = ServerUnavailable;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
+  if (m_state == StateSwitching || m_state == StateConnecting ||
       m_state == StateConfirming || m_state == StateCheckSubscription) {
     deactivate();
     return;
