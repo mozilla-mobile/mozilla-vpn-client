@@ -38,6 +38,11 @@ mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts
 
 ls /builds/worker/artifacts/
 
+# Zip up the 
+(cd .tmp/src/; zip -r android-build.zip android-build)
+cp .tmp/src/android-build.zip /builds/worker/artifacts/
+
+
 if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then
     echo "Output File not present, maybe build error?"
     exit -1
