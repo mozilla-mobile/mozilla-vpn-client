@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2018"
 
 [dependencies]
-mio = { version = "0.8.9", features = ["os-poll", "net"] }
-serde_json = "1.0.107"
+mio = { version = "0.8.10", features = ["os-poll", "net"] }
+serde_json = "1.0.111"
 byteorder = "1.5.0"

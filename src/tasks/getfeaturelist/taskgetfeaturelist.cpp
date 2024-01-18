@@ -8,9 +8,9 @@
 #include <QJsonObject>
 
 #include "constants.h"
+#include "feature/featuremodel.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/featuremodel.h"
 #include "networkrequest.h"
 
 namespace {

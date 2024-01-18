@@ -6,8 +6,11 @@
 
 #include "nebula.h"
 #include "qmlengineholder.h"
+#include "settings/settinggroup.h"
 
-TestHelper::TestHelper() {
+TestHelper::TestHelper()
+    : m_testSettingGroup(
+          SettingsManager::instance()->createSettingGroup("aGroup")) {
   m_i18nstrings = I18nStrings::instance();
   m_mozillavpn = MozillaVPN::instance();
 }
@@ -71,6 +74,15 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
       [](QQmlEngine*, QJSEngine* engine) -> QObject* {
         Theme::instance()->initialize(engine);
         QObject* obj = Theme::instance();
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+        return obj;
+      });
+
+  qmlRegisterSingletonType<SettingGroup>(
+      "Mozilla.Shared", 1, 0, "TestSettingGroup",
+      [this](QQmlEngine*, QJSEngine*) -> QObject* {
+        m_testSettingGroup->set("aKey", QVariant("Hello, QML!"));
+        QObject* obj = m_testSettingGroup;
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

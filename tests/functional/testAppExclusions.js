@@ -40,7 +40,12 @@ describe('Settings', function() {
        assert(await getNumDisabledApps() == '0');
      });
 
-  it('Clear all button removes all apps from exclusion list', async () => {
+  it('Clear all button removes all apps from exclusion list and records telemetry', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+    
     await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX1.visible());
     await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX2.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
@@ -50,6 +55,12 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(appExclusionsView.CLEAR_ALL.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     assert(await getNumDisabledApps() == '0');
+
+    // Check that we collect telemetry
+    const events = await vpn.gleanTestGetValue("interaction", "clearAppExclusionsSelected", "main");
+    assert.equal(events.length, 1);
+    var element = events[0];
+    assert.equal(element.extra.screen, "app_exclusions");
   });
 
   it('Excluded apps are at the top of the list on initial load', async () => {
@@ -68,5 +79,33 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(screenSettings.BACK.visible());
     await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
     await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
+  });
+
+  // Dummy VPN does not have the Add Application button so we cannot currently test this.
+  // Jira issue: https://mozilla-hub.atlassian.net/browse/VPN-5974
+  it('Record telemetry when user clicks on Add application', async () => {
+    // await vpn.waitForQueryAndClick(appExclusionsView.ADD_APPLICATION_BUTTON.visible());
+    // await vpn.waitForQuery(appExclusionsView.STACKVIEW.ready());
+
+    // const events = await vpn.gleanTestGetValue("interaction", "addApplicationSelected", "main")
+    // assert.equal(events.length, 1);
+    // var element = events[0];
+    // assert.equal(element.extra.screen, "app_exclusions");
+  });
+
+  it('Record telemetry when user clicks on App Exclusions', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+    await vpn.waitForQueryAndClick(navBar.SETTINGS.visible());
+    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
+    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+
+    // Check that we collect telemetry
+    const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
+    var element = events[0];
+    assert.equal(element.extra.screen, "settings");
   });
 });

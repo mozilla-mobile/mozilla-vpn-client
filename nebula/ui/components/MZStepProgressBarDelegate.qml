@@ -121,7 +121,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
 
         elide: Text.ElideRight
-        maximumLineCount: 2
+        maximumLineCount: 1
         font.pixelSize: MZTheme.theme.fontSizeSmallest
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight

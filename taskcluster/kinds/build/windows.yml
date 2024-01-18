@@ -1,0 +1,61 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Windows Build"
+    treeherder:
+        symbol: B
+        kind: build
+        tier: 1
+        platform: windows/x86_64
+    worker-type: b-win2022
+    dependencies:
+        build: build-source/vpn
+    fetches:
+        fetch:
+            - win-dev-env
+            - win-sentry-cli
+            - win-conda
+            - wintun
+        toolchain:
+            - conda-windows-x86_64
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+    worker:
+        taskcluster-proxy: true
+        chain-of-trust: true
+        max-run-time: 3600
+        artifacts:
+            - type: file
+              name: public/build/MozillaVPN.msi
+              path: artifacts/MozillaVPN.msi
+    release-artifacts:
+        - unsigned.zip
+    scopes:
+        by-level:
+            "3":
+                - secrets:get:project/mozillavpn/tokens
+            default: []
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows_clang_cl.ps1
+
+windows/opt:
+    fetches:
+        toolchain:
+            - qt-windows-x86_64-6.2.4
+    description: "Windows Build"
+    treeherder:
+        symbol: B
+
+windows/next:
+    fetches:
+        toolchain:
+            - qt-windows-x86_64-6.6.0
+    description: "Windows Build for Next Version of QT"
+    treeherder:
+        symbol: NEXT
+

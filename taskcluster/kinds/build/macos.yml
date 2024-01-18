@@ -1,0 +1,60 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+task-defaults:
+    treeherder:
+            symbol: BD
+            kind: build
+            tier: 1
+            platform: macos/universal
+    requires-level: 1
+    worker-type: b-macos
+    fetches:
+        fetch:
+            - miniconda-osx
+    worker:
+        taskcluster-proxy: true
+        chain-of-trust: true
+        max-run-time: 3600
+    release-artifacts:
+        - MozillaVPN.tar.gz
+    run:
+        using: run-task
+        use-caches: false
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/macos_build.sh
+
+macos/pr:
+    fetches:
+        fetch:
+            - qt-hotfix
+    description: "Mac Build"
+    treeherder:
+        symbol: BD
+    run:
+        command: ./taskcluster/scripts/build/macos_build.sh -d
+
+macos/next:
+    fetches:
+        toolchain:
+            - qt-macos-6.6
+    description: "Mac Build"
+    treeherder:
+        symbol: NEXT
+    run:
+        command: ./taskcluster/scripts/build/macos_build.sh -d
+
+
+macos/opt:
+    fetches:
+        fetch:
+            - qt-hotfix
+    description: "Mac Build"
+    treeherder:
+        symbol: B
+    requires-level: 3 
+    scopes:
+        - secrets:get:project/mozillavpn/level-1/sentry
+

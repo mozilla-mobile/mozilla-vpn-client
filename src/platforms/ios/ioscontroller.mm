@@ -5,7 +5,7 @@
 #include "ioscontroller.h"
 #include "Mozilla-Swift.h"
 #include "controller.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -121,14 +121,14 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";
-      
-    #if TARGET_OS_SIMULATOR
-      if (MozillaVPN::instance()->state() == App::StateOnboarding) {
-        logger.debug() << "Cannot activate VPN on a simulator. Completing onboarding.";
-        MozillaVPN::instance()->onboardingCompleted();
-      }
-    #endif
-      
+
+#if TARGET_OS_SIMULATOR
+    if (MozillaVPN::instance()->state() == App::StateOnboarding) {
+      logger.debug() << "Cannot activate VPN on a simulator. Completing onboarding.";
+      MozillaVPN::instance()->onboardingCompleted();
+    }
+#endif
+
     emit disconnected();
     return;
   }

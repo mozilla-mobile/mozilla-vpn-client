@@ -140,6 +140,29 @@ int CommandLogin::run(QStringList& tokens) {
           case AuthenticationInApp::StateVerifyingSessionTotpCode:
             break;
 
+          case AuthenticationInApp::StateIsStubAccount: {
+            QTextStream stream(stdout);
+            stream << "This account is a stub account, i.e. it does not yet "
+                      "have a password. Please check your email, and follow "
+                      "the verification link sent by Mozilla Accounts to set a "
+                      "password, and try again."
+                   << Qt::endl;
+            loop.exit();
+          } break;
+
+          case AuthenticationInApp::StateIsSsoAccount: {
+            QTextStream stream(stdout);
+            stream << "This account is linked to a third-party authentication "
+                      "provider (i.e. Google or Apple), but does not have a "
+                      "password associated with it. Mozilla VPN requires all "
+                      "accounts to be associated with a password before they "
+                      "can be used to authenticate with the client. Please "
+                      "visit https://accounts.firefox.com/settings/password to "
+                      "set a password, then try to log in again."
+                   << Qt::endl;
+            loop.exit();
+          } break;
+
           case AuthenticationInApp::StateAccountDeletionRequest:
             Q_ASSERT(false);
             break;
@@ -164,9 +187,6 @@ int CommandLogin::run(QStringList& tokens) {
             switch (error) {
               case AuthenticationInApp::ErrorAccountAlreadyExists:
                 [[fallthrough]];
-              case AuthenticationInApp::ErrorAccountHasNoPassword:
-                stream << "This Mozilla account has no password." << Qt::endl;
-                break;
               case AuthenticationInApp::ErrorUnknownAccount:
                 stream << "Unknown account" << Qt::endl;
                 break;

@@ -93,10 +93,6 @@ target_sources(app_unit_tests PRIVATE
     testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
-    testfeature.cpp
-    testfeature.h
-    testfeaturemodel.cpp
-    testfeaturemodel.h
     testipaddress.cpp
     testipaddress.h
     testlanguagei18n.cpp
@@ -107,14 +103,14 @@ target_sources(app_unit_tests PRIVATE
     testlocalizer.h
     testlogger.cpp
     testlogger.h
+    testnavigator.cpp
+    testnavigator.h
     testnetworkmanager.cpp
     testnetworkmanager.h
     testqmlpath.cpp
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testsettings.cpp
-    testsettings.h
     testtasks.cpp
     testtasks.h
     testtasksentry.cpp
@@ -125,6 +121,18 @@ target_sources(app_unit_tests PRIVATE
     testthemes.h
     testurlopener.cpp
     testurlopener.h
+    testsettingsholder.cpp
+    testsettingsholder.h
+    feature/testfeature.cpp
+    feature/testfeature.h
+    feature/testfeaturemodel.cpp
+    feature/testfeaturemodel.h
+    settings/testsetting.cpp
+    settings/testsetting.h
+    settings/testsettinggroup.cpp
+    settings/testsettinggroup.h
+    settings/testsettingsmanager.cpp
+    settings/testsettingsmanager.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp

@@ -19,14 +19,11 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "platforms/linux/linuxdependencies.h"
 
 namespace {
 Logger logger("DBusService");
 }
-
-constexpr const char* APP_STATE_ACTIVE = "active";
-constexpr const char* APP_STATE_EXCLUDED = "excluded";
-constexpr const char* APP_STATE_BLOCKED = "blocked";
 
 constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
 constexpr const char* DBUS_LOGIN_PATH = "/org/freedesktop/login1";
@@ -44,8 +41,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   }
 
   m_appTracker = new AppTracker(this);
-  connect(m_appTracker, SIGNAL(appLaunched(QString, QString, int)), this,
-          SLOT(appLaunched(QString, QString, int)));
+  connect(m_appTracker, SIGNAL(appLaunched(QString, QString)), this,
+          SLOT(appLaunched(QString, QString)));
   connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
           SLOT(appTerminated(QString, QString)));
 
@@ -138,11 +135,11 @@ bool DBusService::activate(const QString& jsonConfig) {
   }
 
   // (Re)load the split tunnelling configuration.
-  firewallClear();
+  clearAppStates();
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
-      firewallApp(app.toString(), APP_STATE_EXCLUDED);
+      setAppState(LinuxDependencies::desktopFileId(app.toString()), Excluded);
     }
   }
 
@@ -157,7 +154,7 @@ bool DBusService::deactivate(bool emitSignals) {
   }
 
   m_sessionUid = 0;
-  firewallClear();
+  clearAppStates();
   return Daemon::deactivate(emitSignals);
 }
 
@@ -224,119 +221,68 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
   m_appTracker->userRemoved(uid);
 }
 
-void DBusService::appLaunched(const QString& cgroup, const QString& appId,
-                              int rootpid) {
-  logger.debug() << "tracking:" << cgroup << "appId:" << appId
-                 << "PID:" << rootpid;
+void DBusService::appLaunched(const QString& cgroup,
+                              const QString& desktopFileId) {
+  logger.debug() << "tracking:" << cgroup << "id:" << desktopFileId;
 
-  // HACK: Quick and dirty split tunnelling.
-  // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  AppState state = m_excludedApps.value(desktopFileId, Active);
+  if (state == Active) {
+    // Nothing to do here.
+    return;
+  }
+
+  // Apply firewall rules to this control group.
+  m_excludedCgroups[cgroup] = state;
+  if (state == Excluded) {
     m_wgutils->excludeCgroup(cgroup);
   }
 }
 
-void DBusService::appTerminated(const QString& cgroup, const QString& appId) {
-  logger.debug() << "terminate:" << cgroup;
+void DBusService::appTerminated(const QString& cgroup,
+                                const QString& desktopFileId) {
+  logger.debug() << "terminate:" << cgroup << "id:" << desktopFileId;
 
-  // HACK: Quick and dirty split tunnelling.
-  // TODO: Apply filtering to currently-running apps too.
-  if (m_excludedApps.contains(appId)) {
+  // Remove any firewall rules applied to this control group.
+  if (m_excludedCgroups.remove(cgroup)) {
     m_wgutils->resetCgroup(cgroup);
   }
 }
 
-/* Get the list of running applications that the firewall knows about. */
-QString DBusService::runningApps() {
-  QJsonArray result;
+void DBusService::setAppState(const QString& desktopFileId, AppState state) {
+  logger.debug() << "Setting" << desktopFileId << "to firewall state" << state;
 
-  for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
-    const AppData* data = *i;
-    QJsonObject appObject;
-    QJsonArray pidList;
-    appObject.insert("appId", QJsonValue(data->appId));
-    appObject.insert("cgroup", QJsonValue(data->cgroup));
-    appObject.insert("rootpid", QJsonValue(data->rootpid));
-
-    for (int pid : data->pids()) {
-      pidList.append(QJsonValue(pid));
+  // When the App is "Active" there is no special manipulation to do.
+  if (state == Active) {
+    m_excludedApps.remove(desktopFileId);
+    for (const QString& cgroup :
+         m_appTracker->findByDesktopFileId(desktopFileId)) {
+      m_wgutils->resetCgroup(cgroup);
     }
-
-    appObject.insert("pids", pidList);
-    result.append(appObject);
+    return;
   }
 
-  return QJsonDocument(result).toJson(QJsonDocument::Compact);
-}
-
-/* Update the firewall for running applications matching the application ID. */
-bool DBusService::firewallApp(const QString& appName, const QString& state) {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
-  logger.debug() << "Setting" << appName << "to firewall state" << state;
-
-  // Update the split tunnelling state for any running apps.
-  for (auto i = m_appTracker->begin(); i != m_appTracker->end(); i++) {
-    const AppData* data = *i;
-    if (data->appId != appName) {
-      continue;
+  // Otherwise, apply special handling to any matching control groups.
+  m_excludedApps[desktopFileId] = state;
+  for (const QString& cgroup :
+       m_appTracker->findByDesktopFileId(desktopFileId)) {
+    if (m_excludedCgroups.contains(cgroup)) {
+      m_wgutils->resetCgroup(cgroup);
     }
-    if (state == APP_STATE_EXCLUDED) {
-      m_wgutils->excludeCgroup(data->cgroup);
-    } else {
-      m_wgutils->resetCgroup(data->cgroup);
+    m_excludedCgroups[cgroup] = state;
+    if (state == Excluded) {
+      // Excluded control groups are given special netfilter rules to direct
+      // their traffic outside of the VPN tunnel.
+      m_wgutils->excludeCgroup(cgroup);
     }
   }
-
-  // Update the list of apps to exclude from the VPN.
-  if (state != APP_STATE_EXCLUDED) {
-    m_excludedApps.removeAll(appName);
-  } else if (!m_excludedApps.contains(appName)) {
-    m_excludedApps.append(appName);
-  }
-  return true;
-}
-
-/* Update the firewall for the application matching the desired PID. */
-bool DBusService::firewallPid(int rootpid, const QString& state) {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
-#if 0
-  ProcessGroup* group = m_pidtracker->group(rootpid);
-  if (!group) {
-    return false;
-  }
-
-  group->state = state;
-  group->moveToCgroup(getAppStateCgroup(group->state));
-
-  logger.debug() << "Setting" << group->name << "PID:" << rootpid
-                 << "to firewall state" << state;
-  return true;
-#else
-  Q_UNUSED(rootpid);
-  Q_UNUSED(state);
-  return false;
-#endif
 }
 
 /* Clear the firewall and return all applications to the active state */
-bool DBusService::firewallClear() {
-  if (!isCallerAuthorized()) {
-    logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
+void DBusService::clearAppStates() {
   logger.debug() << "Clearing excluded app list";
   m_wgutils->resetAllCgroups();
+  m_excludedCgroups.clear();
   m_excludedApps.clear();
-  return true;
 }
 
 /* Drop root permissions from the daemon. */

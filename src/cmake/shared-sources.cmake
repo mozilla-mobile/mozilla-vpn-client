@@ -5,9 +5,7 @@
 # Library of sources shared between app and tests
 add_library(shared-sources INTERFACE)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(shared-sources INTERFACE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(shared-sources)
 
 # Generated version header file
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -24,7 +22,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.h
     ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
-    ${CMAKE_SOURCE_DIR}/src/featurelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/featurelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/experimentalfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -106,8 +105,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
-    ${CMAKE_SOURCE_DIR}/src/feature.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature.h
+    ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/feature.h
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
     ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
@@ -158,8 +157,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/logger.h
     ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
     ${CMAKE_SOURCE_DIR}/src/loghandler.h
-    ${CMAKE_SOURCE_DIR}/src/models/featuremodel.cpp
-    ${CMAKE_SOURCE_DIR}/src/models/featuremodel.h
+    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp
@@ -182,6 +181,14 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
     ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/setting.cpp
+    ${CMAKE_SOURCE_DIR}/src/settings/setting.h
     ${CMAKE_SOURCE_DIR}/src/settingsholder.cpp
     ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp

@@ -13,6 +13,9 @@ import components 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "settingsView"
+    _accessibleName: MZI18n.NavBarSettingsTab
+
+    readonly property string telemetryScreenId : "settings"
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
@@ -30,6 +33,7 @@ MZViewBase {
                     : "qrc:/nebula/resources/open-in-new.svg"
                 _iconMirror: subscriptionManagementEnabled && MZLocalizer.isRightToLeft
                 _buttonOnClicked: () => {
+                    Glean.interaction.accountSelected.record({screen:telemetryScreenId})
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
@@ -69,7 +73,10 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/privacy.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                onClicked: {
+                    Glean.interaction.privacyFeaturesSelected.record({screen:telemetryScreenId})
+                    stackview.push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                }
             }
 
             MZSettingsItem {
@@ -78,7 +85,10 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                onClicked: {
+                    Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
+                    stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                }
                 visible: MZFeatureList.get("splitTunnel").isSupported
             }
 
@@ -88,7 +98,10 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
+                onClicked: {
+                    Glean.interaction.tipsAndTricksSelected.record({screen:telemetryScreenId})
+                    MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
+                }
             }
 
             MZSettingsItem {
@@ -99,7 +112,10 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
+                onClicked: {
+                    Glean.interaction.myDevicesSelected.record({screen:telemetryScreenId})
+                    stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
+                }
             }
 
             MZSettingsItem {
@@ -109,12 +125,15 @@ MZViewBase {
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
+                onClicked: {
+                    Glean.interaction.appPreferencesSelected.record({screen:telemetryScreenId})
+                    stackview.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => MZI18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
                                                     _menuTitle: Qt.binding(() => preferencesSetting.settingTitle)
                                                   })
+                }
             }
             
             MZSettingsItem {
@@ -124,7 +143,7 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.sample.getHelpClickedViewSettings.record();
+                    Glean.interaction.getHelpSelected.record({screen:telemetryScreenId})
                     MZNavigator.requestScreen(VPN.ScreenGetHelp);
                 }
             }
@@ -136,7 +155,7 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.sample.settingsAboutUsOpened.record();
+                    Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
                 }
             }
@@ -192,6 +211,6 @@ MZViewBase {
         }
     }
     Component.onCompleted: {
-        Glean.sample.settingsViewOpened.record();
+        Glean.impression.settingsScreen.record({screen:telemetryScreenId});
     }
 }

@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QTranslator>
 
+#include "settings/settinggroup.h"
 #include "settingsholder.h"
 #include "state/addonstate.h"
 
@@ -16,8 +17,9 @@ class AddonConditionWatcher;
 class QJsonObject;
 
 class AddonApi;
+
+// A settings group that will contain all settings related to individual addons.
 constexpr const char* ADDON_SETTINGS_GROUP = "addon";
-constexpr const char* ADDON_DEFAULT_STATUS = "Unknown";
 constexpr const char* ADDON_SETTINGS_STATUS_KEY = "state";
 
 class Addon : public QObject {
@@ -91,13 +93,6 @@ class Addon : public QObject {
   bool evaluateJavascript(const QJsonObject& javascript);
   bool evaluateJavascriptInternal(const QString& javascript, QJSValue* value);
 
-  struct StatusQuery final : public SettingsHolder::AddonSettingQuery {
-    explicit StatusQuery(const QString& ai)
-        : SettingsHolder::AddonSettingQuery(ai, QString(ADDON_SETTINGS_GROUP),
-                                            QString(ADDON_SETTINGS_STATUS_KEY),
-                                            QString(ADDON_DEFAULT_STATUS)) {}
-  };
-
   void unloadTranslators();
   bool createTranslator(const QLocale& locale);
   void maybeLoadLanguageFallback(const QString& code);
@@ -120,6 +115,9 @@ class Addon : public QObject {
 
   QJSValue m_jsEnableFunction;
   QJSValue m_jsDisableFunction;
+
+  // Group of dynamic settings related to this specific addon.
+  SettingGroup* m_settingGroup;
 
   bool m_enabled = false;
 };

@@ -17,9 +17,7 @@ endif()
 
 add_library(lottie STATIC)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(lottie PRIVATE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(lottie)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Qml Quick QuickTest Test)
 target_link_libraries(lottie PUBLIC Qt6::Core Qt6::Qml)

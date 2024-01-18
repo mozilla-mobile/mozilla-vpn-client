@@ -886,4 +886,109 @@ describe('Settings', function() {
     await vpn.activateViaToggle();
     await vpn.awaitSuccessfulConnection();
   });
+
+  describe('telemetry in the settings menu', function () {
+    this.ctx.authenticationNeeded = true;
+
+    beforeEach(async () => {
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    });
+
+    it("record telemetry when user clicks on their account details", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        await vpn.waitForQueryAndClick(queries.screenSettings.USER_PROFILE.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "accountSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on Privacy features", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on Tips and tricks", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on My devices", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "myDevicesSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on App preferences", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
+        const events = await vpn.gleanTestGetValue("interaction", "appPreferencesSelected", "main");
+
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user clicks on Sign out in the Settings screen", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+
+        await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
+        await vpn.scrollToQuery(
+            queries.screenSettings.SCREEN,
+            queries.screenSettings.SIGN_OUT.visible());
+    
+        await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
+
+        const events = await vpn.gleanTestGetValue("interaction", "signOutSelected", "main");
+        assert.equal(events.length, 1);
+        var element = events[0];
+        assert.equal(element.extra.screen, "settings");
+    });
+
+    it("record telemetry when user goes to the Settings screen", async () => {
+        if (this.ctx.wasm) {
+            // This test cannot run in wasm
+            return;
+        }
+        
+        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+
+        const settingsScreenEvent = await vpn.gleanTestGetValue("impression", "settingsScreen", "main");
+        const settingsScreenEventExtras = settingsScreenEvent[0].extra;
+        assert.strictEqual("settings", settingsScreenEventExtras.screen);
+    });
+  });
 });

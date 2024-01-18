@@ -1,0 +1,39 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+kind-dependencies:
+    - fetch
+
+transforms:
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.cached_tasks:transforms
+    - taskgraph.transforms.task:transforms
+
+task-defaults:
+    run:
+        using: toolchain-script
+    treeherder:
+        kind: build
+        platform: toolchains/opt
+        symbol: TL(SSL)
+        tier: 1
+
+tasks:
+    openssl-win:
+        description: "Windows OpenSSL compile task"
+        label: toolchain-openssl-win
+        fetches:
+            fetch:
+                - win-dev-env
+                - win-perl
+        run:
+            script: compile_openssl.ps1
+            toolchain-artifact: public/build/open_ssl_win.zip
+        treeherder:
+            platform: toolchains/win
+        worker:
+            max-run-time: 14400
+        worker-type: b-win2022

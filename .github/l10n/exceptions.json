@@ -1,5 +1,8 @@
 {
-    "characters": ["vpn.inAppAuth.termsOfServiceAndPrivacyDisclaimer"],
+    "characters": [
+      "vpn.inAppAuth.termsOfServiceAndPrivacyDisclaimer",
+      "vpn.inAppAuth.ssoInstructionLine2a"
+    ],
     "comments": [],
     "empty": []
 }

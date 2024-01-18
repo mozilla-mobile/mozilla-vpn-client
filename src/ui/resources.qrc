@@ -11,11 +11,13 @@
         <file>resources/apple-active.svg</file>
         <file>resources/apple.svg</file>
         <file>resources/bandwidth.svg</file>
+        <file>resources/check-email.svg</file>
         <file>resources/connection-error-unstable.svg</file>
         <file>resources/connection-green.svg</file>
         <file>resources/connection-info.svg</file>
         <file>resources/connection-info-dark.svg</file>
         <file>resources/copy.svg</file>
+        <file>resources/create-password.svg</file>
         <file>resources/data-collection.svg</file>
         <file>resources/devices.svg</file>
         <file>resources/devicesLimit.svg</file>

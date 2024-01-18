@@ -26,6 +26,8 @@ from voluptuous import Any, Optional, Required
                 Required("paths"): [str],
                 # Signing formats to use on each of the paths
                 Required("formats"): [str],
+                # Only For MSI, optional for the signed Installer
+                Optional("authenticode_comment"): str,
             }
         ],
         # behavior for mac iscript

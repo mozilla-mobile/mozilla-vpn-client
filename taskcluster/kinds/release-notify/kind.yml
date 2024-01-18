@@ -1,0 +1,46 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.release_notify:transforms
+    - taskgraph.transforms.notify:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - beetmover-promote
+    - beetmover-ship
+
+task-defaults:
+    description: "Sends notifications to #mozilla-vpn-release in Slack"
+    worker-type: succeed
+    worker:
+        implementation: succeed
+    run-on-tasks-for: [action]
+    notify:
+        recipients:
+            by-level:
+                "3":
+                    - type: slack-channel
+                      channel-id: C01DCUKG95E  # mozilla-vpn-release
+                    - type: matrix-room
+                      room-id: "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
+                default:
+                    - type: matrix-room
+                      room-id: "!wGgsWXnVncJLSBYmuf:mozilla.org"  # #releaseduty-dev:mozilla.org
+
+tasks:
+    promote-addons:
+        attributes:
+            shipping-phase: promote-addons
+    ship-addons:
+        attributes:
+            shipping-phase: ship-addons
+    promote-client:
+        attributes:
+            shipping-phase: promote-client
+    ship-client:
+        attributes:
+            shipping-phase: ship-client

@@ -4,7 +4,7 @@
 
 #include "addonconditionwatcherfeaturesenabled.h"
 
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 
 // static

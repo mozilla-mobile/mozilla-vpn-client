@@ -762,3 +762,382 @@ interaction:
       - mlichtenstein@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
+  privacy_features_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The Privacy features button in the Settings screen was selected
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  tips_and_tricks_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The Tips and tricks button in the Settings screen was selected
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  my_devices_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The My devices button in the Settings screen was selected
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  app_preferences_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The App preferences button in the Settings screen was selected
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  about_us_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The About us button in the Settings screen was selected
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  home_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User has clicked on the Home button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  messages_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User has clicked on the Messages button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  account_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User has clicked on their Account in the Settings screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  settings_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      User has clicked on the Settings button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  vpn_on_startup_enabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Enabled VPN on startup
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  vpn_on_startup_disabled:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Disabled VPN on startup
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  notifications_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+        User clicked on Notifications in App preferences
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  language_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+        User clicked on Language in App preferences
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  dns_settings_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+    - main
+    description: |
+        User clicked on DNS settings in App preferences
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5269
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - gela@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  app_exclusions_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the button that opens
+      the app exclusions modal
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  clear_app_exclusions_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on Clear all to clear all App Exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  add_application_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on Add application in App Exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  search_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked on the search field in app exclusions
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5363
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8440#issuecomment-1791474783
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - gela@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys 
+  edit_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the "edit account" button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - mlichtenstein@mozilla.com
+    expires: never 
+    extra_keys: *interaction_extra_keys
+  manage_subscription_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “manage subscription” button from the subscription management view
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  change_plan_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the “change plan” button from the subscription management view (monthly web plan)
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5547
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8838#pullrequestreview-1789303235
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys

@@ -9,7 +9,7 @@
 #include <QJsonValue>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "location.h"
 #include "mozillavpn.h"

@@ -699,6 +699,31 @@ inAppAuth:
   pleaseWait:
     value: Please wait…
     comment: Headline on loading screen
+  ssoInstructionHeader:
+    value: Create a password
+    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding. This is the header on the error screen.
+  ssoInstructionLine1:
+    value: "To finish setting up your Mozilla account, create a password in your account settings:"
+    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
+  ssoInstructionLine2a:
+    value: 1. Go to <a href="open-account">Create password</a> in your Mozilla account settings.
+    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding. Do not remove or translate the markup '<a href="open-account">'.
+  ssoInstructionLine3:
+    value: 2. Create a password.
+    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
+  ssoInstructionLine4:
+    value: When your password is created, return to this screen and continue to sign in to Mozilla VPN.
+    comment: User has tried to log in using an SSO-linked account that does not have a password. The user needs to log in to their Mozilla Account to set a password before proceeding.
+  stubAccountVerificationHeader:
+    value: Check your email
+    comment: User has tried to log into a Mozilla account before setting their password, which happens after email verification. This is the header on the error screen.
+  stubAccountVerificationInstruction:
+    value: We’ve sent an email to %1 with the verification link. Please follow the directions to set up your password and finish setting up your account.
+    comment: User has tried to log into a Mozilla account before setting their password, which happens after email verification. %1 is the email address associated with the account.
+  continueToSignIn:
+    value: Continue to sign in
+    comment: Button a user clicks after updating their Mozilla account settings so that they can re-attempt sign-in
+
 
 postAuthentication:
   headline: Quick access

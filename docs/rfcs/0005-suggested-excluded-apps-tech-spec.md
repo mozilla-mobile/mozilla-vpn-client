@@ -18,11 +18,6 @@ Assumptions & Out-of-scope
 -   This is only for platforms that currently support split tunnel - Windows, Linux, and Android. We will not build split tunneling into macOS or iOS as part of this work.
 -   Notifications refer to system-level notifications. There are no additions to the messages tab considered in this tech spec.
 
-Open Question
---------------
-
--   What do we use to canonically track apps we may want to exclude? Is there a bundle ID? The name of app (fragile)? Something else? Do we use different IDs across platforms?
-
 Implementation (estimated 38-59 points total)
 ---------------------------------------------------
 
@@ -30,7 +25,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 
 ### Prerequisites (15-26 points total)
 
--   (3-5 points) Answer the open questions above
+-   (3-5 points) Answer the open questions above (section has been removed, as questions are all answered)
 -   (5-8 points) Create a well-structured file (for our own research, as well as one users can add to via GitHub pull requests on the client repo) w/ apps to exclude (and update the README in the repo to explain this new type of contribution). This JSON doc will live in our repo, and be bundled with the app. Add tests to ensure the doc's format integrity is maintained. This format should be designed to allow new platforms (like websites) to be added without breaking anything.
     - This file will only allow specific apps. It will not allow the inclusion of wildcards or entire directories.
     - The document format will be a single JSON file for all platforms. Within each platform there will be an array of IDs for the suggested apps. These will each be an array, and we'll only look at the first item in the array - if a second string exists in the array will be considered comments (as JSON doesn't have the concept of comments). (This is preferred to keys/values for binary/comments compactness/legibility.)
@@ -98,6 +93,21 @@ These are important components that we are committed to delivering, but are outs
     -   Add performance metrics around load time of the Excluded Apps screen.
     -   Create a metric for when the daily job was successful, and another one for when it fails.
     -   A metric should be recorded when the notification is sent
+
+Matching applications to list of suggested items
+---------------------
+
+**How do we currently track applications per platform?**
+
+This is how we save the applications that a user has excluded:
+- Android: Bundle ID, like `com.google.android.GoogleCamera`
+- Windows: Full path to executable, like `C:/Program Files/Firefox Nightly/firefox.exe`
+- Linux: Full path like `/usr/share/applications/firefox.desktop`
+
+**How we'll match to suggested list**
+- Android: Bundle ID. Suggested list for Android will have strings like this: `com.google.android.GoogleCamera`
+- Windows: Application folder + application name. Suggested list for Windows will have strings like this: `Firefox Nightly/firefox.exe`. This will not match if the user picks a non-standard install folder, but lowers chance of false or malicious positives that just call themselves `firefox.exe`. Additionally, if a user doesn’t use the default folder name, there is a good chance they are a more advanced user, for what that is worth.
+- Linux: Similar to Windows, application directory + name. Suggested list for Linux will have strings like this: `applications/firefox.desktop`. This has similar trade-offs as Windows, on the line above.
 
 Rolling back the JSON file
 ---------------------

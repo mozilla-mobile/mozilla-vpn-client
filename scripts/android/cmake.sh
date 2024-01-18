@@ -55,16 +55,6 @@ while [[ $# -gt 0 ]]; do
     RELEASE=
     shift
     ;;
-  --sentrydsn)
-    SENTRY_DSN="$2"
-    shift
-    shift
-    ;;
-  --sentryendpoint)
-    SENTRY_ENVELOPE_ENDPOINT="$2"
-    shift
-    shift
-    ;;
   -h | --help)
     helpFunction
     ;;
@@ -119,19 +109,12 @@ print Y "Patch Adjust files..."
 ./scripts/android/patch_adjust.sh
 
 printn Y "Computing the version... "
-export SHORTVERSION=$(scripts/utils/getversion.py) # Export so gradle can pick it up
+export SHORTVERSION=$(cat version.txt) # Export so gradle can pick it up
 export VERSIONCODE=$(date +%s | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
 export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
-if [[ "$ADJUST_SDK_TOKEN" ]]; then
-  print Y "Use adjust config"
-  ADJUST="CONFIG+=adjust"
-else
-  print Y "No adjust token found."
-  ADJUST="CONFIG-=adjust"
-fi
 
 # Warning: this is hacky.
 #
@@ -155,8 +138,6 @@ if [[ "$RELEASE" ]]; then
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
-    -DSENTRY_DSN=$SENTRY_DSN \
-    -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -GNinja \
     -S . -B .tmp/
 else
@@ -168,8 +149,6 @@ else
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DSENTRY_DSN=$SENTRY_DSN \
-    -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
     -GNinja \
     -S . -B .tmp/
 
@@ -190,7 +169,7 @@ cd .tmp/src/android-build/
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
-  ./gradlew assemble || die
+  ./gradlew assemble -Padjusttoken=$ADJUST_SDK_TOKEN || die
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"

@@ -20,7 +20,7 @@
 #include "addonindex.h"
 #include "addons/addonmessage.h"
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -431,7 +431,13 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
 void AddonManager::reinstateMessages() const {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
-  settingsHolder->clearAddonSettings(ADDON_MESSAGE_SETTINGS_GROUP);
+
+  // Group containing all the message settings.
+  // It only needs to live for the scope of this function.
+  SettingGroup* messageSettingGroup =
+      SettingsManager::instance()->createSettingGroup(
+          ADDON_MESSAGE_SETTINGS_GROUP);
+  messageSettingGroup->remove();
 }
 
 // static

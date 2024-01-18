@@ -22,7 +22,8 @@
 #include <functional>
 
 #include "constants.h"
-#include "feature.h"
+#include "feature/feature.h"
+#include "feature/featuremodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "inspectorhotreloader.h"
@@ -32,12 +33,12 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/featuremodel.h"
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "task.h"
 #include "urlopener.h"
@@ -479,7 +480,7 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        QJsonObject obj;
                        obj["value"] =
-                           SettingsHolder::instance()->settingsFileName();
+                           SettingsManager::instance()->settingsFileName();
                        return obj;
                      }},
 

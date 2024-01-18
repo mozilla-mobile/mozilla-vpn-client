@@ -39,3 +39,13 @@ def build_upstream_artifacts(config, tasks):
 
         task.setdefault("worker", {}).update(worker_definition)
         yield task
+
+@upstream_artifacts.add
+def add_authenticode_comment(config, tasks):
+    for task in tasks: 
+        artifacts = task["worker"]["upstream-artifacts"]
+        for artifact_dict in artifacts:
+            authenticode_comment = artifact_dict.get("authenticode_comment")
+            if not authenticode_comment and any(path.endswith(".msi") for path in artifact_dict["paths"]):
+                artifact_dict["authenticode_comment"]="Mozilla VPN Client installer"
+        yield task 

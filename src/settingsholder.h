@@ -6,14 +6,22 @@
 #define SETTINGSHOLDER_H
 
 #include <QDateTime>
-#include <QMap>
 #include <QObject>
-#include <QSettings>
-#include <QStringList>
+#include <QVariant>
 
-#include "loghandler.h"
+#include "constants.h"
+#include "feature/feature.h"
+#include "settings/setting.h"
+#include "settings/settingsmanager.h"
 
-class SettingsHolder final : public QObject, public LogSerializer {
+constexpr const char* EXPERIMENTS_SETTING_GROUP = "experiments";
+
+/**
+ * @brief The SettingsHolder class is a singleton that exposes the APIs to
+ * interact with build time declared static settings.
+ *
+ */
+class SettingsHolder final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(SettingsHolder)
 
@@ -28,11 +36,6 @@ class SettingsHolder final : public QObject, public LogSerializer {
   SettingsHolder();
   ~SettingsHolder();
 
-  // LogSerializer interface
-  void serializeLogs(
-      std::function<void(const QString& name, const QString& logs)>&& callback)
-      override;
-
   static SettingsHolder* instance();
 
   bool firstExecution() const { return m_firstExecution; }
@@ -46,67 +49,42 @@ class SettingsHolder final : public QObject, public LogSerializer {
   };
   Q_ENUM(DNSProviderFlags)
 
-  // Don't use this directly!
-  QVariant rawSetting(const QString& key) const;
-
-#ifdef UNIT_TEST
-  void setRawSetting(const QString& key, const QVariant& value);
-  void doNotClearOnDTOR() { m_doNotClearOnDTOR = true; }
-#endif
-
-  void clear();
-
-  void sync();
-
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
-  bool has() const;                                              \
-  type getter() const;                                           \
-  void setter(const type& value);                                \
-  void remover();
+  bool has() const { return m_##getter->isSet(); }               \
+  type getter() const { return m_##getter->get().toType(); }     \
+  void setter(const type& value) { m_##getter->set(value); }     \
+  void remover() { return m_##getter->remove(); }
 
 #include "settingslist.h"
 #undef SETTING
 
-  // Delete _ALL_ the settings. Probably this method is not what you want to
-  // use.
-  void hardReset();
+#define EXPERIMENTAL_FEATURE(experimentId, ...) \
+  SettingGroup* experimentId() { return m_##experimentId; }
 
-  QString settingsFileName() const;
-
-  // Addon specific
-
-  struct AddonSettingQuery {
-    QString m_addonId;
-    QString m_addonGroup;
-    QString m_setting;
-    QString m_defaultValue;
-
-    AddonSettingQuery(const QString& ai, const QString& ag, const QString& s,
-                      const QString& dv)
-        : m_addonId(ai), m_addonGroup(ag), m_setting(s), m_defaultValue(dv) {}
-  };
-  QString getAddonSetting(const AddonSettingQuery& query);
-  void setAddonSetting(const AddonSettingQuery& query, const QString& value);
-  void clearAddonSettings(const QString& group);
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 
  private:
-  explicit SettingsHolder(QObject* parent);
+#define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
+                removeWhenReset, isSensitive)                                  \
+  Setting* m_##getter = SettingsManager::instance()->createOrGetSetting(       \
+      key, []() -> type { return defaultValue; }, removeWhenReset,             \
+      isSensitive);
 
-  // Addon specific
+#include "settingslist.h"
+#undef SETTING
 
-  static QString getAddonSettingKey(const AddonSettingQuery& query);
+#define EXPERIMENTAL_FEATURE(experimentId, experimentDescription,             \
+                             experimentSettings)                              \
+  SettingGroup* m_##experimentId =                                            \
+      SettingsManager::instance()->createSettingGroup(                        \
+          QString("%1/%2").arg(EXPERIMENTS_SETTING_GROUP).arg(#experimentId), \
+          true, false, experimentSettings);
 
- signals:
-  void addonSettingsChanged();
-
- private:
-  QSettings m_settings;
+#include "feature/experimentalfeaturelist.h"
+#undef EXPERIMENTAL_FEATURE
 
   bool m_firstExecution = false;
-
-#ifdef UNIT_TEST
-  bool m_doNotClearOnDTOR = false;
-#endif
 };
 
 #endif  // SETTINGSHOLDER_H

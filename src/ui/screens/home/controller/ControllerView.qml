@@ -616,7 +616,7 @@ Item {
         MZHeadline {
             id: logoTitle
             objectName: "controllerTitle"
-            lineHeight: 22
+            lineHeight: MZTheme.theme.labelLineHeight
             font.pixelSize: 22
             Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
             width: parent.width

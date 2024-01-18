@@ -56,6 +56,10 @@ class AuthenticationInApp final : public QObject {
     StateVerificationSessionByTotpNeeded,
     // Verification in progress
     StateVerifyingSessionTotpCode,
+    // Account is a stub (i.e. has no password)
+    StateIsStubAccount,
+    // Account is SSO (i.e. has no password)
+    StateIsSsoAccount,
     // The account deletion request has started. The user needs to accept a few
     // things before proceeding.
     StateAccountDeletionRequest,
@@ -69,7 +73,6 @@ class AuthenticationInApp final : public QObject {
 
   enum ErrorType {
     ErrorAccountAlreadyExists,
-    ErrorAccountHasNoPassword,
     ErrorEmailCanNotBeUsedToLogin,
     ErrorEmailTypeNotSupported,
     ErrorFailedToSendEmail,

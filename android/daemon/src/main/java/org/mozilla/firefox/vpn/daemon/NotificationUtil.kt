@@ -11,6 +11,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import kotlinx.serialization.Serializable
@@ -39,8 +40,18 @@ class NotificationUtil(ctx: Service) {
         // Create the Intent that Should be Fired if the User Clicks the notification
         val activity = Class.forName(mainActivityName)
         val intent = Intent(context, activity)
+        try {
+            message.requestedScreen.let {
+                intent.data = Uri.parse(message.requestedScreen)
+            }
+        } catch (ex: Exception) {
+            // Uuuh let's just put a default one?
+            intent.data = Uri.parse("mozilla-vpn://home")
+        }
+
         val pendingIntent =
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
         // Build our notification
         mNotificationBuilder
             .setSmallIcon(R.drawable.icon_mozillavpn_notifiaction)
@@ -132,17 +143,20 @@ class NotificationUtil(ctx: Service) {
     }
 }
 
- /*
-  * ClientNotification
-  * Message sent from the client manually.
-  */
+  /*
+   * ClientNotification
+   * Message sent from the client manually.
+   */
 @Serializable
-data class ClientNotification(val header: String, val body: String)
+data class ClientNotification(
+    val header: String,
+    val body: String,
+)
 
- /*
-  * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
-  * and is provided by the controller when asking for a connection.
-  */
+  /*
+   * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
+   * and is provided by the controller when asking for a connection.
+   */
 @Serializable
 data class CannedNotification(
     // Message to be shown when the Client connects
@@ -151,6 +165,8 @@ data class CannedNotification(
     val disconnectedMessage: ClientNotification,
     // Product-Name -> Will be used as the Notification Header
     val productName: String,
+    // requestedScreen: a url -> mozilla-vpn://<my-string>
+    val requestedScreen: String?,
 ) {
     companion object {
         /**
@@ -173,6 +189,7 @@ data class CannedNotification(
                         messages.getString("disconnectedBody"),
                     ),
                     messages.getString("productName"),
+                    messages.getString("requestedScreen"),
                 )
             } catch (e: Exception) {
                 Log.e("NotificationUtil", "Failed to Parse Notification Object $value")

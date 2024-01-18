@@ -7,7 +7,7 @@
 #include <QDateTime>
 
 #include "controller.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"

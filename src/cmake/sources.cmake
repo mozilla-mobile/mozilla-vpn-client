@@ -6,9 +6,7 @@
 # This allows us to pull them into multiple builds like the dummy client.
 add_library(mozillavpn-sources INTERFACE)
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(mozillavpn-sources INTERFACE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(mozillavpn-sources)
 
 # VPN client include paths
 set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
@@ -25,8 +23,9 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 # VPN Client source files
 target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/accessiblenotification.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/featurelistcallback.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/featurelist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/feature/featurelistcallback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/feature/featurelist.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/feature/experimentalfeaturelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/appimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.cpp

@@ -114,4 +114,4 @@ int CommandExcludeIP::run(QStringList& tokens) {
   });
 }
 
-static Command::RegistrationProxy<CommandExcludeIP> s_commandDevice;
+static Command::RegistrationProxy<CommandExcludeIP> s_commandExcludeIP;

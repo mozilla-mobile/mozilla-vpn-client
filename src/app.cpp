@@ -8,6 +8,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "taskscheduler.h"
 
@@ -72,7 +73,7 @@ void App::quit() {
   // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
   // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
 
-  SettingsHolder::instance()->sync();
+  SettingsManager::instance()->sync();
   exit(0);
 #endif
 

@@ -1,0 +1,89 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.fetch:transforms
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.task:transforms
+
+task-defaults:
+    docker-image: {in-tree: base}
+
+tasks:
+    win-dev-env:
+        description: Windows Dev-Enviroment
+        fetch:
+            type: static-url
+            url: https://s3.nl-ams.scw.cloud/basti.data/vs_studio_sdk.zip
+            artifact-name: vs_studio_sdk.zip
+            sha256: 56ad52e56f61db57446ca2c1a3752b4d33bb7aadc4637eedbf67cfcaece25914
+            size: 1514372704
+        #artifact-prefix: vpn/win-dev-env
+        fetch-alias: win-dev-env
+
+    win-perl:
+        description: Strawberry Perl
+        fetch:
+            type: static-url
+            url: https://strawberryperl.com/download/5.32.1.1/strawberry-perl-5.32.1.1-64bit.zip
+            artifact-name: strawberry-perl.zip
+            sha256: aeb973da474f14210d3e1a1f942dcf779e2ae7e71e4c535e6c53ebabe632cc98
+            size: 158837368
+        #artifact-prefix: vpn/win-perl
+        fetch-alias: win-perl
+    win-sentry-cli:
+        description: Sentry-Cli.exe
+        fetch: 
+            type: static-url
+            url: https://github.com/getsentry/sentry-cli/releases/download/2.10.0/sentry-cli-Windows-x86_64.exe
+            sha256: 3d9e04ab5f1bea8709f8302a33e81b75aca0a93d1431dde56063549a335acfd0
+            size: 10361344
+    win-conda:
+        description: Miniconda Installer
+        fetch: 
+            type: static-url
+            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe
+            sha256: d4517212c8ac44fd8b5ccc2d4d9f38c2dd924c77a81c2be92c3a72e70dd3e907
+            artifact-name: miniconda_installer.exe
+            size: 55780192
+    wintun:
+        description: Wintun Driver
+        fetch: 
+            type: static-url 
+            url: https://www.wintun.net/builds/wintun-0.12.zip
+            sha256: eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df
+            size: 1192872
+    macos-miniconda:
+        description: MiniConda3 osx-x86 Python 3.10 
+        fetch:
+            type: static-url 
+            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_22.11.1-1-MacOSX-x86_64.sh
+            sha256: 7406579393427eaf9bc0e094dcd3c66d1e1b93ee9db4e7686d0a72ea5d7c0ce5
+            artifact-name: miniconda.sh
+            size: 46574107
+        fetch-alias: miniconda-osx
+    qt-source-tarball:
+        description: Qt 6.2.4 Source Tarball
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.tar.xz
+            sha256: cfe41905b6bde3712c65b102ea3d46fc80a44c9d1487669f14e4a6ee82ebb8fd
+            size: 661663792
+    qt-source-tarball-6.6.0:
+        description: Qt 6.6.0 Source Tarball
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.6/6.6.0/single/qt-everywhere-src-6.6.0.tar.xz
+            sha256: 652538fcb5d175d8f8176c84c847b79177c87847b7273dccaec1897d80b50002
+            size: 812361632
+    qt-hotfix:
+        description: Qt 6.2.4 Static build
+        fetch:
+            type: static-url
+            url: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/ZswGg-syTMWyn2UTOaMVQg/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip
+            size: 446046644
+            sha256: 68ec769ed98206784234c1c8dfae7ebb3f1be869cddfca984bb81104542a6721
+            artifact-name: qt.zip

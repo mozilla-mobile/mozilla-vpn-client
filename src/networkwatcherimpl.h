@@ -5,6 +5,7 @@
 #ifndef NETWORKWATCHERIMPL_H
 #define NETWORKWATCHERIMPL_H
 
+#include <QNetworkInformation>
 #include <QObject>
 
 class NetworkWatcherImpl : public QObject {
@@ -33,9 +34,6 @@ class NetworkWatcherImpl : public QObject {
   };
   Q_ENUM(TransportType);
 
-  // Returns the current type of Network Connection
-  virtual TransportType getTransportType() = 0;
-
  signals:
   // Fires when the Device Connects to an unsecured Network
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
@@ -43,9 +41,6 @@ class NetworkWatcherImpl : public QObject {
   // TODO: Only windows-networkwatcher has this, the other plattforms should
   // too.
   void networkChanged(QString newBSSID);
-
-  // Fired when the Device changed the Type of Transport
-  void transportChanged(NetworkWatcherImpl::TransportType transportType);
 
  private:
   bool m_active = false;

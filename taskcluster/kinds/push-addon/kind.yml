@@ -1,0 +1,46 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
+    - mozillavpn_taskgraph.transforms.release_index:transforms
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+tasks:
+    stage/deploy:
+        description: "Addons Stage Deploy"
+        treeherder:
+            symbol: D
+            kind: build
+            tier: 1
+            platform: addons/all
+        worker-type: b-linux
+        requires-level: 3
+        add-index-routes: addons  # Name of the index
+        scopes:
+            - 'secrets:get:project/mozillavpn/tokens'
+        dependencies:
+            build: "build-addons-bundle"
+        fetches:
+            build:
+                - artifact: addons.zip
+        worker:
+            docker-image: {in-tree: wasm}
+            max-run-time: 3600
+            chain-of-trust: true
+            artifacts:
+                - type: directory
+                  name: public/build
+                  path: /builds/worker/artifacts
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: ./taskcluster/scripts/push-addons/deploy.sh

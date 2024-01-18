@@ -8,12 +8,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -64,7 +66,8 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   public native void onServiceMessage(int actionCode, String body);
   public native void qtOnServiceConnected();
   public native void qtOnServiceDisconnected();
-  
+  public native void onIntentInternal();
+
   public static void connectService(){
     VPNActivity.getInstance().initServiceConnection();
   }
@@ -213,5 +216,41 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   protected void onDestroy() {
     unbindService(mConnection);
     super.onDestroy();
+  }
+
+  /**
+   * Checks the intent that opened the activtiy
+   * @return a mozilla-vpn://<screenID> url
+   */
+  public static String getOpenerURL() {
+    if (instance == null) {
+      return "";
+    }
+    Uri maybeURI = instance.getIntent().getData();
+    if (maybeURI == null) {
+      // Just a normal open
+      return "";
+    }
+    return maybeURI.toString();
+  }
+  @Override
+  protected void onNewIntent(Intent intent) {
+    // getIntent() always returns the
+    // original intent the app was opened with
+    // we however have no use for that
+    // so let's always keep the newest one
+    // and notify the Client of that Change
+    setIntent(intent);
+    if (nativeMethodsAvailable) {
+      onIntentInternal();
+    }
+  }
+
+  // Make sure we do Not Call Native Functions
+  // Until the Client has told us the
+  // registration of them is complete
+  private static boolean nativeMethodsAvailable = false;
+  private static void nativeMethodsRegistered() {
+    nativeMethodsAvailable = true;
   }
 }

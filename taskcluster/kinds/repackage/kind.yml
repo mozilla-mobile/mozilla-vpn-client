@@ -1,0 +1,45 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - signing
+
+tasks:
+    msi:
+        description: repackage mozillavpn msi
+        run-on-tasks-for: [github-push, github-release]
+        fetches:
+            signing:
+                - artifact: unsigned.zip
+                  # Workers are using an old version of PowerShell that doesn'tcontain the fix in
+                  # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
+                  # `fetch-content` script is not able to properly extract it. Until we can use a
+                  # newer PowerShell, we'll need to handle extraction ourselves.
+                  extract: false
+        dependencies:
+            signing: signing-windows/opt
+        if-dependencies: [signing]
+        worker-type: b-win2022
+        worker:
+            chain-of-trust: true
+            max-run-time: 3600
+        release-artifacts: [MozillaVPN.msi]
+        attributes:
+            build-type: windows/opt
+        run:
+            using: run-task
+            cwd: build/src/windows/installer
+            command: [cmd.exe, /c, build_prod.cmd]
+        treeherder:
+            symbol: rpk(msi)
+            kind: build
+            tier: 1
+            platform: windows/x86_64

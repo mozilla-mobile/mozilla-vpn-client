@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+set -eu
+
+APP_DIR="$2/Mozilla VPN.app"
+LOG_DIR=/var/log/mozillavpn
+
+CODESIGN_APP_IDENTIFIER="@BUILD_OSX_APP_IDENTIFIER@"
+CODESIGN_TEAM_IDENTIFIER="@BUILD_VPN_DEVELOPMENT_TEAM@"
+CODESIGN_CERT_SUBJECT="Developer ID Application: Mozilla Corporation (${CODESIGN_TEAM_IDENTIFIER})"
+
+mkdir -p $LOG_DIR
+exec 2>&1 > $LOG_DIR/postinstall.log
+
+echo "Running postinstall at $(date)"
+echo "Installing Mozilla VPN to ${APP_DIR}"
+
+DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
+
+DAEMON_PLIST=$(cat <<-EOM
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+        <dict>
+                <key>Label</key>
+                <string>${CODESIGN_APP_IDENTIFIER}.daemon</string>
+                <key>ProgramArguments</key>
+                <array>
+                        <string>${APP_DIR}/Contents/MacOS/Mozilla VPN</string>
+                        <string>macosdaemon</string>
+                </array>
+                <key>UserName</key>
+                <string>root</string>
+                <key>RunAtLoad</key>
+                <true/>
+                <key>KeepAlive</key>
+                <true/>
+                <key>SoftResourceLimits</key>
+                <dict>
+                        <key>NumberOfFiles</key>
+                        <integer>1024</integer>
+                </dict>
+                <key>StandardErrorPath</key>
+                <string>$LOG_DIR/stderr.log</string>
+        </dict>
+</plist>
+EOM
+)
+
+pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
+sleep 1
+
+## Before MacOS 13, take extra care to prevent tampering with the app.
+echo "Restrict App file permissions..."
+chown -R root "$APP_DIR"
+chmod -R go-w "$APP_DIR"
+
+echo "Validate application codesign..."
+CODESIGN_REQS="anchor apple generic"
+CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
+CODESIGN_REQS+=" and certificate leaf[subject.CN] = \"${CODESIGN_CERT_SUBJECT}\""
+if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
+  echo "Codesign failed! Aborting."
+  rm -rf "$APP_DIR"
+  exit 1
+fi
+echo "Codesign successful!"
+
+UPDATING=
+if [ -f "$DAEMON_PLIST_PATH" ]; then
+  UPDATING=1
+  # Load the daemon
+  echo "Update detected - Unloading the Daemon"
+  launchctl unload -w $DAEMON_PLIST_PATH
+fi
+
+echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
+echo "Loading the Daemon at $DAEMON_PLIST_PATH"
+launchctl load -w $DAEMON_PLIST_PATH
+
+if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
+  echo "Install the firefox native messaging manifest"
+  mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
+
+  echo "Install the chrome native messaging manifest"
+  mkdir -p "/Library/Google/Chrome/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Google/Chrome/NativeMessagingHosts/mozillavpn.json"
+
+  echo "Install the chromium native messaging manifest"
+  mkdir -p "/Library/Application Support/Chromium/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
+fi
+
+echo "Install Complete Run the app"
+if [ "$UPDATING" ]; then
+  open -a "$APP_DIR" --args ui --updated
+else
+  open -a "$APP_DIR"
+fi
+exit 0

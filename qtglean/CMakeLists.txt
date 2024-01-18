@@ -37,9 +37,7 @@ add_library(qtglean STATIC
 
 )
 
-if(NOT MSVC AND NOT IOS)
-  target_compile_options(qtglean PRIVATE -Wall -Werror -Wno-conversion)
-endif()
+mz_target_handle_warnings(qtglean)
 
 target_include_directories(qtglean PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

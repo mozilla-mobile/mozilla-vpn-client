@@ -90,6 +90,14 @@ class AndroidVPNActivity : public QObject {
   static bool handleBackButton(JNIEnv* env, jobject thiz);
   static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
+  /**
+   * @brief Checks if the Intent that opened the Activiy
+   * Contains a `mozilla-vpn://<something>` url
+   * returns an Empty url if none is found
+   *
+   * @return QUrl
+   */
+  static QUrl getOpenerURL();
   void onAppStateChange();
 
  signals:
@@ -103,6 +111,7 @@ class AndroidVPNActivity : public QObject {
   void eventOnboardingCompleted();
   void eventVpnConfigPermissionResponse(bool granted);
   void eventRequestGleanUploadEnabledState();
+  void onOpenedWithUrl(const QUrl& data);
 
  private:
   AndroidVPNActivity();
@@ -113,6 +122,9 @@ class AndroidVPNActivity : public QObject {
                                jstring body);
   static void onServiceConnected(JNIEnv* env, jobject thiz);
   static void onServiceDisconnected(JNIEnv* env, jobject thiz);
+
+  // We got a new Intent
+  static void onIntentInternal(JNIEnv* env, jobject thiz);
   void handleServiceMessage(int code, const QString& data);
 };
 

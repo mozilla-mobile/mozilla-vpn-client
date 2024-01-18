@@ -64,13 +64,17 @@ LINUX="
   -no-icu \
   -no-linuxfb \
   -bundled-xcb-xinput \
+  -feature-qdbus \
   -xcb \
 "
 
 MACOS="
-  -appstore-compliant \
+  -skip qtwayland  \
+  -no-feature-quickcontrols2-ios \
+  -no-feature-quickcontrols2-macos \
   -no-feature-qdbus \
-  -no-dbus \
+  -appstore-compliant \
+  -feature-texthtmlparser \ 
   -- \
   -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
 "
@@ -80,10 +84,19 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   PLATFORM=$LINUX
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
+
   PLATFORM=$MACOS
 else
   die "Unsupported platform (yet?)"
 fi
+
+# There is a QT-Linguist GUI tool that 
+# we cannot feature flag off, and itself does not properly 
+# check during configure if it can be built. 
+# so nuclear option here.
+rm -rf qttools/src/linguist/linguist
+mkdir qttools/src/linguist/linguist
+echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
 
 print Y "Wait..."
 bash ./configure \
@@ -97,16 +110,64 @@ bash ./configure \
   -silent \
   -nomake tests \
   -make libs \
-  -sql-sqlite \
-  -skip qt3d \
-  -skip webengine \
-  -skip qtmultimedia \
-  -skip qtserialport \
-  -skip qtsensors \
-  -skip qtgamepad \
-  -skip qtwebchannel \
-  -skip qtandroidextras \
+  -no-feature-sql-odbc \
+  -no-feature-pixeltool \
+  -no-feature-qtattributionsscanner \
+  -no-feature-qtdiag \
+  -no-feature-qtplugininfo \
+  -no-feature-pixeltool \
+  -no-feature-distancefieldgenerator \
+  -no-feature-designer \
+  -no-feature-assistant \
+  -no-feature-qml-xml-http-request \
+  -no-feature-tiff \
+  -no-feature-webp \
+  -no-feature-cups \
+  -no-feature-style-fusion \
+  -no-feature-style-mac \
+  -no-feature-style-windows \
+  -no-feature-textmarkdownwriter \
+  -no-feature-cssparser \
+  -no-feature-itemmodeltester \
+  -no-feature-sql-sqlite \
+  -no-feature-sql \
+  -no-feature-dbus \
+  -no-feature-xml \
+  -skip qt3d  \
+  -skip qtdoc \
+  -skip qtgrpc \
+  -skip qtconnectivity \
+  -skip qtquickeffectmaker \
+  -skip qtquicktimeline \
+  -skip qtwebengine  \
+  -skip qtlocation \
+  -skip qtmultimedia  \
+  -skip qtserialport  \
+  -skip qtsensors  \
+  -skip qtgamepad  \
+  -skip qtgraphs \
+  -skip qtandroidextras  \
+  -skip qtquick3dphysics \
+  -skip qtactiveqt  \
+  -skip qtcharts  \
+  -skip qtcoap  \
+  -skip qtdatavis3d  \
+  -skip qtgrpc  \
+  -skip qtremoteobjects  \
+  -skip qtlottie  \
+  -skip qtmqtt  \
+  -skip qtopcua  \
+  -skip qtpositioning  \
+  -skip qtquick3d  \
+  -skip qtscxml  \
+  -skip qtserialbus  \
+  -skip qtserialport  \
+  -skip qtspeech  \
+  -skip qtvirtualkeyboard  \
+  -skip qtweb \
   -feature-imageformat_png \
+  -feature-optimize_full \
+  -feature-xml \
   -qt-doubleconversion \
   -qt-libpng \
   -qt-zlib \

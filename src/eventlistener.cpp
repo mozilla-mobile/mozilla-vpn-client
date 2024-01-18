@@ -6,8 +6,10 @@
 
 #include <QFileInfo>
 #include <QLocalSocket>
+#include <QUrl>
 
 #include "constants.h"
+#include "frontend/navigator.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
@@ -49,21 +51,53 @@ EventListener::EventListener() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
-    connect(socket, &QLocalSocket::readyRead, socket, [socket]() {
-      QByteArray input = socket->readAll();
-      input = input.trimmed();
-
-      logger.debug() << "EventListener input:" << input;
-
-      // So far, just the show window signal, but in the future, we could have
-      // more.
-      if (input == "show") {
-        QmlEngineHolder* engine = QmlEngineHolder::instance();
-        engine->showWindow();
-        return;
-      }
-    });
+    connect(socket, &QLocalSocket::readyRead, this,
+            &EventListener::socketReadyRead);
+    connect(socket, &QLocalSocket::disconnected, socket, &QObject::deleteLater);
   });
+}
+
+void EventListener::socketReadyRead() {
+  QObject* obj = QObject::sender();
+  QLocalSocket* socket = qobject_cast<QLocalSocket*>(obj);
+  if (socket == nullptr) {
+    logger.warning() << "Signal sender is not a socket!";
+    return;
+  }
+
+  QString input = QString::fromUtf8(socket->readLine()).trimmed();
+  logger.debug() << "EventListener input:" << input;
+  QString command = input.section(' ', 0, 0);
+  QString payload = input.section(' ', 1, -1);
+
+  if (command == "show") {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  } else if (command == "link") {
+    handleLinkCommand(payload);
+  } else {
+    logger.info() << "Unknown UI command:" << command;
+  }
+}
+
+void EventListener::handleLinkCommand(const QString& payload) {
+  const QUrl url(payload);
+
+  // We only accept the mozilla-vpn scheme.
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return;
+  }
+
+  // The URL authority determines who handles this.
+  if (url.authority() == "nav") {
+    Navigator::instance()->requestDeepLink(url);
+  } else {
+    logger.info() << "Unknown deep link target:" << url.authority();
+  }
+
+  // Show the window after handling a deep link.
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  engine->showWindow();
 }
 
 EventListener::~EventListener() {
@@ -78,7 +112,7 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkOtherInstances(const QString& windowName) {
+bool EventListener::checkForInstances(const QString& windowName) {
   logger.debug() << "Checking other instances";
 
 #ifdef MZ_WINDOWS
@@ -87,33 +121,41 @@ bool EventListener::checkOtherInstances(const QString& windowName) {
       FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
   if (!window) {
     WindowsUtils::windowsLog("No other instances found");
-    return true;
+    return false;
   }
 #else
   if (!QFileInfo::exists(Constants::UI_PIPE)) {
     logger.warning() << "No other instances found - no unix socket";
-    return true;
+    return false;
   }
 #endif
 
+  // Try to wake the UI and bring it to the foreground.
   logger.debug() << "Try to communicate with the existing instance";
+  return sendCommand("show");
+}
 
+bool EventListener::sendCommand(const QString& message) {
   QLocalSocket socket;
   socket.connectToServer(Constants::UI_PIPE);
   if (!socket.waitForConnected(1000)) {
-    logger.error() << "Connection failed.";
-    return true;
+    logger.error() << "Connection failed:" << socket.errorString();
+    return false;
   }
 
-  logger.debug() << "Request to show up";
-  socket.write("show\n");
-
-  logger.debug() << "Disconnecting";
+  QByteArray data = message.toUtf8();
+  if (!message.endsWith('\n')) {
+    data.append('\n');
+  }
+  socket.write(data);
   socket.disconnectFromServer();
   if (socket.state() != QLocalSocket::UnconnectedState) {
     socket.waitForDisconnected(1000);
   }
+  return true;
+}
 
-  logger.debug() << "Terminating the current process";
-  return false;
+bool EventListener::sendDeepLink(const QUrl& url) {
+  QString message = QString("link %1").arg(url.toString(QUrl::FullyEncoded));
+  return sendCommand(message);
 }

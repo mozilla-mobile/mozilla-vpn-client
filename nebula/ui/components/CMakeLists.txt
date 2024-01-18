@@ -13,6 +13,7 @@ qt_add_qml_module(components
          MZAvatar.qml
          MZBoldInterLabel.qml
          MZBoldLabel.qml
+         MZBottomSheet.qml
          MZButtonBase.qml
          MZButtonLoader.qml
          MZButton.qml
@@ -34,6 +35,7 @@ qt_add_qml_module(components
          MZGuideCard.qml
          MZHeaderLink.qml
          MZHeadline.qml
+         MZHelpSheet.qml
          MZLottieAnimation.qml
          MZIconAndLabel.qml
          MZIconButton.qml

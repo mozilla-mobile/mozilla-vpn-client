@@ -4,14 +4,15 @@
 
 qt_add_qml_module(inAppAuth
     VERSION 0.1
-    URI components.inAppAuth 
+    URI components.inAppAuth
     STATIC
     RESOURCE_PREFIX /nebula
     QML_FILES
         MZInAppAuthenticationBase.qml
         MZInAppAuthenticationErrorPopup.qml
         MZInAppAuthenticationInputs.qml
-        MZInAppAuthenticationPasswordCondition.qml
         MZInAppAuthenticationLegalDisclaimer.qml
+        MZInAppAuthenticationPasswordCondition.qml
+        MZInAppAuthenticationThirdParty.qml
 )
 set_target_properties(inAppAuth PROPERTIES FOLDER "Libs")

@@ -1,0 +1,33 @@
+{
+  "api_version": "0.1",
+  "id": "message_whats_new_v2.20",
+  "name": "What's new message",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.20.0",
+    "max_client_version": "2.20.0"
+  },
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "date": 1675040400,
+    "id": "message_whats_new_v2.20",
+    "title": "You’ve updated to Mozilla VPN 2.20",
+    "subtitle": "You’re using the latest version of Mozilla VPN.",
+    "badge": "whats_new",
+    "notify": false,
+    "blocks": [
+      {
+        "id": "c_1-1",
+        "type": "text",
+        "content": "This update includes minor bug fixes, UI adjustments and other performance improvements."
+      },
+      {
+        "id": "c_3",
+        "type": "text",
+        "content": "Thank you for installing the latest version!"
+      }
+    ]
+  }
+}

@@ -1,0 +1,99 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    worker:
+        env:
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
+        max-run-time: 14400
+
+qt-macos-6.6:
+    description: "Mac QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball-6.6.0
+    run:
+        use-caches: false
+        script: compile_qt_6_mac.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-macos-6.6
+        toolchain-artifact: public/build/qt6_mac.zip
+    treeherder:
+        symbol: TL(qt-mac-6.6)
+    worker-type: b-macos
+
+qt-windows-x86_64-6.2.4:
+    description: "Windows QT compile Task"
+    fetches:
+        fetch:
+            - win-dev-env
+        openssl:
+            - artifact: open_ssl_win.zip
+              extract: false  # For some reason unzip exits with 1 even tho the file is okay
+    dependencies:
+        openssl: toolchain-openssl-win
+    run:
+        script: compile_qt_6.ps1
+        resources:
+            - taskcluster/scripts/toolchain/configure_qt.ps1
+        toolchain-alias: qt-win-x86_64-6.2.4
+        toolchain-artifact: public/build/qt6_win.zip
+    treeherder:
+        symbol: TL(qt-win)
+        platform: windows/x86_64
+    worker-type: b-win2022
+
+qt-windows-x86_64-6.6.0:
+    description: "Windows QT compile Task"
+    fetches:
+        fetch:
+            - win-dev-env
+    run:
+        script: compile_qt_6.ps1
+        resources:
+            - taskcluster/scripts/toolchain/configure_qt.ps1
+        toolchain-alias: qt-windows-x86_64-6.6.0
+        toolchain-artifact: public/build/qt6_win.zip
+    treeherder:
+        symbol: TL(qt-win-6.6.0)
+        platform: windows/x86_64
+    worker-type: b-win2022
+    worker:
+        env:
+            QT_VERSION: "6.6.0"
+            QT_MAJOR: "6.6"
+
+
+qt-ios:
+    description: "QT ios bundle Task"
+    run:
+        script: bundle_qt_ios.sh
+        resources:
+            - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+        toolchain-alias: qt-ios
+        toolchain-artifact: public/build/qt6_ios.zip
+    treeherder:
+        symbol: TL(qt-ios)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}
+
+qt-linux:
+    description: "Linux QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball
+    run:
+        script: compile_qt_6_linux.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-linux
+        toolchain-artifact: public/build/qt6_linux.tar.xz
+    treeherder:
+        symbol: TL(qt-linux)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}

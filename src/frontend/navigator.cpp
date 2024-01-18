@@ -9,7 +9,7 @@
 
 #include "app.h"
 #include "errorhandler.h"
-#include "feature.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -168,10 +168,63 @@ void Navigator::computeComponent() {
 void Navigator::requestScreenFromBottomBar(
     int requestedScreen, Navigator::LoadingFlags loadingFlags) {
   // Exists so we can add glean metric for screen changes only from bottom bar
+  // "bar_button" extra key denotes destination screen
   mozilla::glean::sample::bottom_navigation_bar_click.record(
       mozilla::glean::sample::BottomNavigationBarClickExtra{
           ._barButton = QVariant::fromValue(
               static_cast<MozillaVPN::CustomScreen>(requestedScreen))});
+
+  // Record navbar button interaction telemetry with "screen" extra key which
+  // denotes the source view
+  // This is done by finding the screen we are currently on, and getting the
+  // "telemetryScreenId" QML property of the top (layers.last()) layer of this
+  // screens stack view, which would be the view currently being displayed
+  for (ScreenData& screen : s_screens) {
+    if (screen.m_screen == m_currentScreen) {
+      // Make sure the screen has a layer (stack or view added via
+      // Navigator::addView() or Navigator::addStackView())
+      if (screen.m_layers.isEmpty()) {
+        break;
+      }
+
+      QString telemetryScreenId = screen.m_layers.last()
+                                      .m_layer->property("telemetryScreenId")
+                                      .toString();
+
+      // Make sure the layer has a "telemetryScreenId" property
+      // If it doesn't, telemetryScreenId will be an empty string
+      if (telemetryScreenId.isEmpty()) {
+        break;
+      }
+
+      // Record telemetry based on which screen was requested (aka which navbar
+      // button pressed)
+      switch (requestedScreen) {
+        case MozillaVPN::ScreenHome:
+          mozilla::glean::interaction::home_selected.record(
+              mozilla::glean::interaction::HomeSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        case MozillaVPN::ScreenMessaging:
+          mozilla::glean::interaction::messages_selected.record(
+              mozilla::glean::interaction::MessagesSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        case MozillaVPN::ScreenSettings:
+          mozilla::glean::interaction::settings_selected.record(
+              mozilla::glean::interaction::SettingsSelectedExtra{
+                  ._screen = telemetryScreenId,
+              });
+          break;
+        default:
+          logger.warning() << "Requested screen" << requestedScreen
+                           << "is not a screen from the navbar";
+          break;
+      }
+    }
+  }
 
   requestScreen(requestedScreen, loadingFlags);
 }
@@ -204,6 +257,30 @@ void Navigator::requestScreen(int requestedScreen,
   }
 
   logger.debug() << "Unable to show the requested screen";
+}
+
+void Navigator::requestDeepLink(const QUrl& url) {
+  logger.debug() << "Received nav link:" << url.toString();
+
+  // Quick and dirty navigation handler for testing.
+  // This will be expanded upon as we implement VPN-4412.
+
+  // Lookup the screen name by iterating over the keys in the CustomScreens
+  // enumeration and finding the screen whose name matches the first path
+  // segment.
+  QString topPath = url.path().section('/', 0, 0, QString::SectionSkipEmpty);
+  if (topPath.isEmpty()) {
+    return;
+  }
+  QString name = QString("Screen%1").arg(topPath);
+  const QMetaEnum meta = QMetaEnum::fromType<MozillaVPN::CustomScreen>();
+  for (int index = 0; index < meta.keyCount(); index++) {
+    const char* key = meta.key(index);
+    if ((key != nullptr) && (name.compare(key, Qt::CaseInsensitive) == 0)) {
+      requestScreen(meta.value(index));
+      break;
+    }
+  }
 }
 
 void Navigator::requestPreviousScreen() {

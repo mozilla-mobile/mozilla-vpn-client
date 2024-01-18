@@ -206,8 +206,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
-    ${MZ_SOURCE_DIR}/feature.cpp
-    ${MZ_SOURCE_DIR}/feature.h
+    ${MZ_SOURCE_DIR}/feature/feature.cpp
+    ${MZ_SOURCE_DIR}/feature/feature.h
     ${MZ_SOURCE_DIR}/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/frontend/navigator.h
     ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp
@@ -252,8 +252,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/logger.h
     ${MZ_SOURCE_DIR}/loghandler.cpp
     ${MZ_SOURCE_DIR}/loghandler.h
-    ${MZ_SOURCE_DIR}/models/featuremodel.cpp
-    ${MZ_SOURCE_DIR}/models/featuremodel.h
+    ${MZ_SOURCE_DIR}/feature/featuremodel.cpp
+    ${MZ_SOURCE_DIR}/feature/featuremodel.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
     ${MZ_SOURCE_DIR}/models/licensemodel.h
     ${MZ_SOURCE_DIR}/networkmanager.cpp
@@ -275,6 +275,14 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/rfc/rfc4291.h
     ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc5735.h
+    ${MZ_SOURCE_DIR}/settings/settinggroup.cpp
+    ${MZ_SOURCE_DIR}/settings/settinggroup.h
+    ${MZ_SOURCE_DIR}/settings/settingsmanager.cpp
+    ${MZ_SOURCE_DIR}/settings/settingsmanager.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.h
+    ${CMAKE_SOURCE_DIR}/src/settings/settingsconnector.cpp
+    ${MZ_SOURCE_DIR}/settings/setting.cpp
+    ${MZ_SOURCE_DIR}/settings/setting.h
     ${MZ_SOURCE_DIR}/settingsholder.cpp
     ${MZ_SOURCE_DIR}/settingsholder.h
     ${MZ_SOURCE_DIR}/simplenetworkmanager.cpp

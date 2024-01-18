@@ -24,6 +24,7 @@
       InstallScope="perMachine"
       Description="Mozilla VPN"
       ReadOnly="yes" />
+
     <Condition Message="This application is only supported on Windows 10 or higher.">
       <![CDATA[Installed OR (VersionNT >= 603)]]>
     </Condition>
@@ -37,7 +38,7 @@
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
-    <Icon Id="MozillaVPNMainIcon" SourceFile="../../src/ui/resources/logo.ico" />
+    <Icon Id="MozillaVPNMainIcon" SourceFile="logo.ico" />
 
     <Property Id="ARPPRODUCTICON" Value="MozillaVPNMainIcon" />
     <Property Id="ARPURLINFOABOUT" Value="https://vpn.mozilla.org" />
@@ -73,21 +74,17 @@
     -->
     <ComponentGroup Id="MozillaVPNComponents">
       <Component Directory="MozillaVPNFolder" Id="MozillaVPNExecutable" Guid="EF353A73-A10B-4A2D-87AC-4389BBD9313B">
-        <File Id="MozillaVPNExecutable" Source="../../MozillaVPN.exe" KeyPath="yes">
+        <File Id="MozillaVPNExecutable" Source="Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
-        <File Source="../tunnel/$(var.Platform)/tunnel.dll" />
-        <File Source="../tunnel/.deps/wintun/bin/$(var.WintunPlatform)/wintun.dll" />
-        <File Source="../../libcrypto-1_1-x64.dll" />
-        <File Source="../../libssl-1_1-x64.dll" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.cat" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.inf" />
-        <File Source="../split-tunnel/mullvad-split-tunnel.sys" />
-        <File Source="../split-tunnel/WdfCoinstaller01011.dll" />
-
-
-        <File Source="../../extension/manifests/windows/mozillavpn.json" />
-        <File Source="../../mozillavpnnp.exe" />
+        <File Source="tunnel.dll" />
+        <File Source="wintun.dll" />
+        <File Source="mullvad-split-tunnel.cat" />
+        <File Source="mullvad-split-tunnel.inf" />
+        <File Source="mullvad-split-tunnel.sys" />
+        <File Source="WdfCoinstaller01011.dll" />
+        <File Source="mozillavpn.json" />
+        <File Source="mozillavpnnp.exe" />
 
         <!-- Broker Service -->
         <ServiceInstall
@@ -119,7 +116,7 @@
       Merge modules
     -->
     <DirectoryRef Id="MozillaVPNFolder">
-      <Merge Id="VCRedistModule" SourceFile="../../Microsoft_VC142_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+      <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
     <DirectoryRef Id="MozillaVPNFolder">
@@ -134,6 +131,16 @@
           <RegistryValue Type="string" Name="DumpFolder" Value="[LocalAppDataFolder]MozillaVPN\dumps" />
           <RegistryValue Type="integer" Name="DumpCount" Value="3" />
           <RegistryValue Type="integer" Name="DumpType" Value="1" />
+        </RegistryKey>
+        <RegistryKey Root="HKCR" Key="mozilla-vpn">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:Mozilla VPN"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[MozillaVPNFolder]\Mozilla VPN.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[MozillaVPNFolder]\Mozilla VPN.exe&quot; ui &quot;%1&quot;"/>
+          </RegistryKey>
         </RegistryKey>
       </Component>
     </DirectoryRef>
