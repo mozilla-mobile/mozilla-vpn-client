@@ -26,8 +26,8 @@ android-junit:
         use-caches: true
         cwd: '{checkout}'
         command: >-
-          source $TASK_WORKDIR/fetches/bin/activate
-          conda-unpack
-          cd $TASK_WORKDIR/android-build
-          ls
-          ./gradlew test
+          source $TASK_WORKDIR/fetches/bin/activate;
+          conda-unpack;
+          cd $TASK_WORKDIR/android-build;
+          ls;
+          ./gradlew test;
