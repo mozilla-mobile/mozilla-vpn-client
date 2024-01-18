@@ -970,7 +970,7 @@ helpSheets:
     value: Privacy features
     comment: Title label for the privacy features help sheet
   privacyHeader:
-    value: What do privacy features do for me?
+    value: What can privacy features do for me?
     comment: Header label for the privacy features help sheet
   privacyBody1:
     value: Privacy features give you greater control over the types of content you see, helping you stay safe online.

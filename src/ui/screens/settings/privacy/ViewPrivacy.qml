@@ -23,8 +23,6 @@ MZViewBase {
                 onClicked: helpSheetLoader.active = true
 
                 accessibleName: MZI18n.GlobalHelp
-                Accessible.ignored: !visible
-
                 Image {
                     anchors.centerIn: parent
 
