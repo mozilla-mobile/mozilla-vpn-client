@@ -1382,9 +1382,8 @@ void MozillaVPN::registerUrlOpenerLabels() {
     return Constants::upgradeToAnnualUrl();
   });
 
-  uo->registerUrlLabel("sumoDns", []() -> QString {
-    return Constants::SUMO_DNS;
-  });
+  uo->registerUrlLabel("sumoDns",
+                       []() -> QString { return Constants::SUMO_DNS; });
 }
 
 void MozillaVPN::errorHandled() {
