@@ -44,6 +44,11 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   Q_ASSERT(!s_instance);
   s_instance = this;
 
+  // If web purchases are supported, then we don't need to do anything.
+  if (Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    return;
+  }
+
   // On iAP make sure the Products are loaded in time.
   // If we Move into any State adjecent to iAP - load the
   // products if we don't have that already.

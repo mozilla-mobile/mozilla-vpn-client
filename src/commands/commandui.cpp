@@ -309,11 +309,6 @@ int CommandUI::run(QStringList& tokens) {
       engine->addImageProvider(QString("app"), provider);
     }
 
-    //if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    //  qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
-    //                               ProductsHandler::instance());
-    //}
-
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,
                                  "MZAccessibleNotification",
                                  AccessibleNotification::instance());

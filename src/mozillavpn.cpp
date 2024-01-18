@@ -191,9 +191,7 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    ProductsHandler::createInstance();
-  }
+  ProductsHandler::createInstance();
   PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
           &MozillaVPN::subscriptionStarted);

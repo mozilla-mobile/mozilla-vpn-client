@@ -31,6 +31,7 @@ qt_add_qml_module(mozillavpn-ui
         singletons/VPNCurrentServer.h
         singletons/VPNDeviceModel.h
         singletons/VPNIPAddressLookup.h
+        singletons/VPNProducts.h
         singletons/VPNProfileFlow.h
         singletons/VPNPurchase.h
         singletons/VPNRecentConnectionsModel.h
