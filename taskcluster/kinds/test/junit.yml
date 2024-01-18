@@ -28,6 +28,6 @@ android-junit:
         command: >-
           source $TASK_WORKDIR/fetches/bin/activate;
           conda-unpack;
-          cd $TASK_WORKDIR/android-build;
+          cd $TASK_WORKDIR/fetches/android-build;
           ls;
           ./gradlew test;
