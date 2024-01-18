@@ -46,6 +46,11 @@ android-arm64/debug:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
+        worker:
+            artifacts:
+                - type: file
+                  name: public/build/android-build.zip
+                  path: /builds/worker/artifacts/android-build.zip
 
 android-x64/debug:
         description: "Android Debug (x86_64)"

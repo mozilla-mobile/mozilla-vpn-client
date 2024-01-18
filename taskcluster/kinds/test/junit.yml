@@ -20,7 +20,7 @@ android-junit:
         toolchain: 
             - conda-android-arm64-6.2.4
         build:
-            - artifact: android-build.tar.gz
+            - artifact: android-build.zip
     run:
         using: run-task
         use-caches: true
