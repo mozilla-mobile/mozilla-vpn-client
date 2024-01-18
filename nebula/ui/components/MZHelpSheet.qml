@@ -23,7 +23,6 @@ import Mozilla.Shared 1.0
 /*
   MZHelpSheet {
       title: "MZHelpSheet"
-      iconSource: "qrc:/ui/resources/connection-info-dark.svg"
 
       model: [
           {type: MZHelpSheet.BlockType.Title, text: "title"},
@@ -39,7 +38,6 @@ import Mozilla.Shared 1.0
 MZBottomSheet {
     id: bottomSheet
 
-    property alias iconSource: icon.source
     property alias title: title.text
     required property var model
 
@@ -65,6 +63,7 @@ MZBottomSheet {
             id: headerLayout
 
             Layout.topMargin: 8
+            Layout.preferredWidth: parent.width
 
             spacing: 0
 
@@ -82,7 +81,8 @@ MZBottomSheet {
                         id: icon
                         anchors.centerIn: parent
 
-                        sourceSize.width: MZTheme.theme.iconSize
+                        source: "qrc:/nebula/resources/tip-filled.svg"
+                        sourceSize.width: MZTheme.theme.iconSize * 1.5
 
                         mirror: MZLocalizer.isRightToLeft
                         fillMode: Image.PreserveAspectFit
@@ -96,10 +96,12 @@ MZBottomSheet {
                     Layout.topMargin: MZTheme.theme.windowMargin / 2
                     Layout.leftMargin: 8
                     Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
 
                     verticalAlignment: Text.AlignVCenter
                     lineHeightMode: Text.FixedHeight
                     lineHeight: 24
+                    elide: Text.ElideRight
                 }
 
                 Item {
@@ -107,12 +109,17 @@ MZBottomSheet {
                 }
 
                 MZIconButton {
-                    id: iconButton
-
                     Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
                     Layout.preferredHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: MZTheme.theme.rowHeight
+
+                    //Hacky workaround because for some reason, when opening a sheet via
+                    //the right menu button in MZMenu, this close button is in a
+                    //"Hovered" state, even though it wasn't hovered
+                    //Likely something to do with both icon buttons being in the same position
+                    //Relative to their parent (top right corner)
+                    mouseArea.hoverEnabled: bottomSheet.opened
 
                     onClicked: bottomSheet.close()
 
@@ -133,7 +140,7 @@ MZBottomSheet {
             Rectangle {
                 Layout.topMargin: 8
                 Layout.preferredHeight: MZTheme.theme.dividerHeight
-                Layout.preferredWidth: parent.width
+                Layout.fillWidth: true
 
                 color: MZTheme.colors.grey10
             }
