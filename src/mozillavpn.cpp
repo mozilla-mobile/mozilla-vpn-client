@@ -1384,6 +1384,9 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
+
+  uo->registerUrlLabel("sumoMultihop",
+                       []() -> QString { return Constants::SUMO_MULTIHOP; });
 }
 
 void MozillaVPN::errorHandled() {
