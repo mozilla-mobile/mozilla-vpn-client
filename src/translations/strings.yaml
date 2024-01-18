@@ -966,6 +966,18 @@ helpSheets:
   dnsBody2:
     value: Mozilla VPN allows you to choose a custom DNS server if you prefer. If you use one, you won’t be able to use other privacy features in the VPN like tracker blocking.
     comment: Body text for the custom dns help sheet
+  devicesTitle:
+    value: Device management
+    comment: Title label for the devices help sheet
+  devicesHeader:
+    value: Adding and removing devices
+    comment: Header label for the devices help sheet
+  devicesBody1: 
+    value: "Adding a new device to your subscription is easy: just download and log in to Mozilla VPN on that device."
+    comment: Body label for the devices help sheet
+  devicesBody2:
+    value: To remove one of your added devices, select “Edit” on this screen and use the trash icon to remove the device you no longer want to use Mozilla VPN on.
+    comment: Body label for the devices help sheet
   locationTitle:
     value: Location selection
     comment: Title label for the location selection help sheet
