@@ -218,6 +218,10 @@ constexpr const char* SUMO_DEVICES =
     "https://support.mozilla.org/kb/"
     "how-add-devices-your-mozilla-vpn-subscription";
 
+constexpr const char* SUMO_MULTIHOP =
+    "https://support.mozilla.org/kb/"
+    "multi-hop-encrypt-your-data-twice-enhanced-security";
+
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 
