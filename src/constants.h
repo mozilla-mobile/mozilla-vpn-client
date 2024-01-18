@@ -214,6 +214,10 @@ constexpr const char* MOZILLA_VPN_SUMO_URL =
 constexpr const char* SUMO_DNS =
     "https://support.mozilla.org/kb/how-do-i-change-my-dns-settings";
 
+constexpr const char* SUMO_DEVICES =
+    "https://support.mozilla.org/kb/"
+    "how-add-devices-your-mozilla-vpn-subscription";
+
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 
