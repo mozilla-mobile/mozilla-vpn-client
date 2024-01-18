@@ -214,6 +214,9 @@ constexpr const char* MOZILLA_VPN_SUMO_URL =
 constexpr const char* SUMO_DNS =
     "https://support.mozilla.org/kb/how-do-i-change-my-dns-settings";
 
+constexpr const char* SUMO_EXCLUDED_APPS =
+    "https://support.mozilla.org/kb/split-tunneling-app-permissions";
+
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 

@@ -30,7 +30,6 @@ MZViewBase {
                 onClicked: helpSheetLoader.active = true
 
                 accessibleName: MZI18n.GlobalHelp
-                Accessible.ignored: !visible
 
                 Image {
                     anchors.centerIn: parent
@@ -96,8 +95,8 @@ MZViewBase {
             model: [
                 {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsExcludedAppsHeader},
                 {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: 8},
-                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsExcludedAppsBody2, margin: 16},
-                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsExcludedAppsBody3, margin: 16},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: 16},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: 16},
                 {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: 16, action: () => {
                         close()
                         getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")

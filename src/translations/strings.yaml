@@ -973,10 +973,10 @@ helpSheets:
     value: What are excluded apps? 
     comment: Header label for the excluded apps help sheet
   excludedAppsBody1:
-    value: Excluded apps let you turn off VPN protection for specific apps, without turning off your device’s VPN protection.
+    value: Excluded apps let you turn off VPN protection for specific apps, without turning off VPN protection for your entire device.
     comment: Body label for the excluded apps help sheet
   excludedAppsBody2:
-    value: When you exclude an app, your IP address and approximate location will be exposed to it.
+    value: When you exclude an app, it will have access to your IP address and approximate location.
     comment: Body label for the excluded apps help sheet
   excludedAppsBody3:
     value: You can use the settings under Settings > Privacy features to block ads, block trackers, and block malware, even on excluded apps.
