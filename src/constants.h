@@ -205,14 +205,14 @@ constexpr const char* APPLE_SUBSCRIPTIONS_URL =
 constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
     "https://play.google.com/store/account/subscriptions";
 
-constexpr const char* SUMO_DNS = "https://support.mozilla.org/en-US/kb/"
-    "how-do-i-change-my-dns-settings";
-
 #define PRODBETAEXPR(type, functionName, prod, beta) \
   inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
     "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+
+constexpr const char* SUMO_DNS =
+    "https://support.mozilla.org/kb/how-do-i-change-my-dns-settings";
 
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
