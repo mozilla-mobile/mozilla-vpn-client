@@ -978,6 +978,30 @@ helpSheets:
   privacyBody2:
     value: If you activate these features, they’ll overwrite any custom DNS you’re using. These protections are not a substitute for taking other security precautions — for example, while blocking malware you should still avoid downloading attachments in strange emails.
     comment: Body label for the privacy features help sheet
+  devicesTitle:
+    value: Device management
+    comment: Title label for the devices help sheet
+  devicesHeader:
+    value: Adding and removing devices
+    comment: Header label for the devices help sheet
+  devicesBody1: 
+    value: "Adding a new device to your subscription is easy: just download and log in to Mozilla VPN on that device."
+    comment: Body label for the devices help sheet
+  devicesBody2:
+    value: To remove one of your added devices, select “Edit” on this screen and use the trash icon to remove the device you no longer want to use Mozilla VPN on.
+    comment: Body label for the devices help sheet
+  locationTitle:
+    value: Location selection
+    comment: Title label for the location selection help sheet
+  locationHeader:
+    value: Single-hop vs multi-hop
+    comment: Header label for the location selection help sheet
+  locationBody1:
+    value: If you want maximum speed and reliability, choose one of the recommended locations in the “Single-hop” toggle. We’ve sorted them based on expected performance.
+    comment: Body label for the location selection help sheet
+  locationBody2:
+    value: If you want to add more privacy, switch to “Multi-hop” and add an additional server location. Multi-hop VPN routes your traffic through two server locations instead of one for extra security and privacy. This may also slow down your connection a bit.
+    comment: Body label for the location selection help sheet
 
 global:
   expand:

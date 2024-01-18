@@ -28,6 +28,24 @@ Item {
         title: defaultMenuTitle
         onActiveFocusChanged: if (focus) forceFocus = true
 
+        rightButtonComponent: Component {
+            Loader {
+                active: MZFeatureList.get("helpSheets").isSupported
+                sourceComponent: MZIconButton {
+                    onClicked: helpSheetLoader.active = true
+
+                    accessibleName: MZI18n.GlobalHelp
+
+                    Image {
+                        anchors.centerIn: parent
+
+                        source: "qrc:/nebula/resources/question.svg"
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+            }
+        }
+
         _menuOnBackClicked: () => {
             if (multiHopStackView && multiHopStackView.depth > 1) {
                 // User clicked back from either the Multi-hop entry or exit server list
@@ -128,6 +146,27 @@ Item {
         ViewMultiHop {
             id: multiHopStackView
             visible: MZFeatureList.get("multiHop").isSupported
+        }
+    }
+
+    Loader {
+        id: helpSheetLoader
+
+        active: false
+
+        onActiveChanged: if (active) item.open()
+
+        sourceComponent: MZHelpSheet {
+            title: MZI18n.HelpSheetsLocationTitle
+
+            model: [
+                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: 8},
+                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsLocationBody2, margin: 16},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") } },
+            ]
+
+            onClosed: helpSheetLoader.active = false
         }
     }
 

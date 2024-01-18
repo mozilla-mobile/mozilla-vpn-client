@@ -112,8 +112,6 @@ const screenHome = {
         '//segmentedNavToggle/segmentedToggleBtnLayout/tabMultiHop'),
     MULTIHOP_VIEW: new QmlQueryComposer('//multiHopStackView'),
     ALL_SERVERS_TAB: new QmlQueryComposer('//tabAllServers'),
-    VPN_MULTHOP_CHEVRON: new QmlQueryComposer('//vpnCollapsibleCardChevron'),
-    VPN_COLLAPSIBLE_CARD: new QmlQueryComposer('//vpnCollapsibleCard'),
   }
 };
 
