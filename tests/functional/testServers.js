@@ -273,14 +273,15 @@ describe('Server list', function() {
     }
 
     await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.serverListView.SERVER_HELP_SHEET.visible());
-    await vpn.waitForQuery(queries.screenHome.serverListView.SERVER_HELP_SHEET.opened());
-    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.SERVER_HELP_SHEET_LEARN_MORE_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.visible());
+    await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.opened());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
     await vpn.waitForCondition(async () => {
         const url = await vpn.getLastUrl();
         return url === 'https://support.mozilla.org/kb/multi-hop-encrypt-your-data-twice-enhanced-security';
     });
-    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.SERVER_HELP_SHEET_CLOSE_BUTTON.visible());
+    await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_SHEET_CLOSE_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.closed());
   });
 
   // TODO: server list disabled when reached the device limit

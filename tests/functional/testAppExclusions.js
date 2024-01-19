@@ -81,7 +81,7 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
   });
 
-  it.only('Checking the excluded apps help sheet', async () => {
+  it('Checking the excluded apps help sheet', async () => {
     if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
       await vpn.flipFeatureOn('helpSheets');
     }

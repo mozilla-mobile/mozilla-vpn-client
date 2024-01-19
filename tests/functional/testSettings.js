@@ -319,14 +319,15 @@ describe('Settings', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET.visible());
-      await vpn.waitForQuery(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET.opened());
-      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.visible());
+      await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
           const url = await vpn.getLastUrl();
           return url === 'https://support.mozilla.org/kb/how-do-i-change-my-privacy-features';
       });
-      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.closed());
     });
   });
 
@@ -578,14 +579,15 @@ describe('Settings', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.PRIVACY_HELP_SHEET.visible());
-      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.PRIVACY_HELP_SHEET.opened());
-      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
           const url = await vpn.getLastUrl();
           return url === 'https://support.mozilla.org/kb/how-do-i-change-my-dns-settings';
       });
-      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.PRIVACY_HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.closed());
     });
   });
 

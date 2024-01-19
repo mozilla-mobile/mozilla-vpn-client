@@ -110,9 +110,9 @@ const screenHome = {
 
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
     HELP_BUTTON: new QmlQueryComposer('//serverHelpButton'),
-    SERVER_HELP_SHEET: new QmlQueryComposer('//serverHelpSheet'),
-    SERVER_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//serverHelpSheet-closeButton'),
-    SERVER_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET: new QmlQueryComposer('//serverHelpSheet'),
+    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//serverHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     COUNTRY_VIEW: new QmlQueryComposer('//serverCountryView'),
     ENTRY_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
     EXIT_BUTTON: new QmlQueryComposer('//buttonSelectExit'),
@@ -309,9 +309,9 @@ const screenSettings = {
     VIEW_PRIVACY_WARNING: new QmlQueryComposer('//viewPrivacyWarning'),
 
     HELP_BUTTON: new QmlQueryComposer('//privacyHelpButton'),
-    PRIVACY_HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
-    PRIVACY_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
-    PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
+    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   appExclusionsView: {
@@ -340,9 +340,9 @@ const screenSettings = {
         '//deviceList/deviceListLayout/device-device_1/swipeActionLoader/swipeActionDelete'),
 
     HELP_BUTTON: new QmlQueryComposer('//devicesHelpButton'),
-    DEVICES_HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
-    DEVICES_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
-    DEVICES_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
+    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   tipsAndTricksView: {
@@ -376,9 +376,9 @@ const screenSettings = {
           new QmlQueryComposer('//dnsOverwritePopupGoBackButton'),
 
       HELP_BUTTON: new QmlQueryComposer('//dnsHelpButton'),
-      PRIVACY_HELP_SHEET: new QmlQueryComposer('//dnsHelpSheet'),
-      PRIVACY_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//dnsHelpSheet-closeButton'),
-      PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+      HELP_SHEET: new QmlQueryComposer('//dnsHelpSheet'),
+      HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//dnsHelpSheet-closeButton'),
+      HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     },
 
     languageSettingsView: {

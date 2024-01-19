@@ -23,14 +23,15 @@ describe('Devices', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.myDevicesView.DEVICES_HELP_SHEET.visible());
-      await vpn.waitForQuery(queries.screenSettings.myDevicesView.DEVICES_HELP_SHEET.opened());
-      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.DEVICES_HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
           const url = await vpn.getLastUrl();
           return url === 'https://support.mozilla.org/kb/how-add-devices-your-mozilla-vpn-subscription';
       });
-      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.DEVICES_HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.closed());
     });
   });
 
