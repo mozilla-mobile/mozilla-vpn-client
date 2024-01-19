@@ -978,6 +978,24 @@ helpSheets:
   privacyBody2:
     value: If you activate these features, they’ll overwrite any custom DNS you’re using. These protections are not a substitute for taking other security precautions — for example, while blocking malware you should still avoid downloading attachments in strange emails.
     comment: Body label for the privacy features help sheet
+  excludedAppsTitle:
+    value: Excluded apps
+    comment: Title label for the excluded apps help sheet
+  excludedAppsHeader:
+    value: What are excluded apps? 
+    comment: Header label for the excluded apps help sheet
+  excludedAppsBody1:
+    value: Excluded apps let you turn off VPN protection for specific apps, without turning off VPN protection for your entire device.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsBody2:
+    value: When you exclude an app, it will have access to your IP address and approximate location.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsBody3:
+    value: You can use the settings under Settings > Privacy features to block ads, block trackers, and block malware, even on excluded apps.
+    comment: Body label for the excluded apps help sheet
+  excludedAppsCTA:
+    value: Open “Privacy features”
+    comment: Label for button that opens the "Privacy features" view from the excluded apps help sheet
   devicesTitle:
     value: Device management
     comment: Title label for the devices help sheet

@@ -12,6 +12,9 @@ import components 0.1
 import components.forms 0.1
 
 MZViewBase {
+    id: vpnFlickable
+    objectName: "appPermissions"
+
     //% "Search apps"
     //: Search bar placeholder text
     property string searchApps: qsTrId("vpn.protectSelectedApps.searchApps")
@@ -20,8 +23,23 @@ MZViewBase {
     //: Button label
     property string addApplication: qsTrId("vpn.protectSelectedApps.addApplication")
 
-    id: vpnFlickable
-    objectName: "appPermissions"
+    property Component rightMenuButton: Component {
+        Loader {
+            active: MZFeatureList.get("helpSheets").isSupported
+            sourceComponent: MZIconButton {
+                onClicked: helpSheetLoader.active = true
+
+                accessibleName: MZI18n.GlobalHelp
+
+                Image {
+                    anchors.centerIn: parent
+
+                    source: "qrc:/nebula/resources/question.svg"
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+        }
+    }
 
     _menuTitle: MZI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
@@ -61,6 +79,32 @@ MZViewBase {
 
             searchBarPlaceholder: searchApps
             enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
+        }
+    }
+
+    Loader {
+        id: helpSheetLoader
+
+        active: false
+
+        onActiveChanged: if (active) item.open()
+
+        sourceComponent: MZHelpSheet {
+            title: MZI18n.HelpSheetsExcludedAppsTitle
+
+            model: [
+                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsExcludedAppsHeader},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: 8},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: 16},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: 16},
+                {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: 16, action: () => {
+                        close()
+                        getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                    }},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 8, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
+            ]
+
+            onClosed: helpSheetLoader.active = false
         }
     }
 
