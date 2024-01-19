@@ -288,6 +288,15 @@ void Controller::handshakeTimeout() {
 void Controller::serverUnavailable() {
   logger.error() << "server unavailable";
 
+  // If VPN is already active and server location becomes unavailable we do not
+  // deactivate the VPN or proceed with next steps. We specifically do not want
+  // to deactivate the VPN in the case of server location becoming unavailable
+  // because the user may not notice that they are no longer protected which can
+  // cause the traffic to leak outside the tunnel without their knowledge.
+  if (m_state == StateOn) {
+    return;
+  }
+
   m_nextStep = ServerUnavailable;
 
   if (m_state == StateSwitching || m_state == StateConnecting ||
