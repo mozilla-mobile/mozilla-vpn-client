@@ -48,6 +48,8 @@ MZBottomSheet {
         LinkButton
     }
 
+    sizeToContent: true
+
     contentItem: ColumnLayout {
 
         spacing: 0
@@ -140,7 +142,7 @@ MZBottomSheet {
         MZFlickable {
             id: flickable
 
-            readonly property int maxheight: bottomSheet.maxHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
+            readonly property int maxheight: bottomSheet.maxSheetHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
 
             Layout.fillWidth: true
             Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, maxheight)

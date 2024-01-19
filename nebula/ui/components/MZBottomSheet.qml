@@ -29,8 +29,9 @@ import Mozilla.Shared 1.0
 Loader {
     id: root
 
-    readonly property int maxHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
+    readonly property int maxSheetHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
     required default property var contentItem
+    property bool sizeToContent: false
 
     signal close
 
@@ -40,7 +41,7 @@ Loader {
 
     sourceComponent: Drawer {
         implicitWidth: window.width
-        implicitHeight: Math.min(contentItem.implicitHeight, maxHeight)
+        implicitHeight: root.sizeToContent ? Math.min(contentItem.implicitHeight, maxSheetHeight) : maxSheetHeight
 
         topPadding: 0
 
