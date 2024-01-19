@@ -67,9 +67,6 @@ Loader {
         Overlay.modal: Rectangle {
             color: MZTheme.theme.overlayBackground
         }
-
-        Component.onCompleted: console.log("Created XXX")
-        Component.onDestruction: console.log("Destroyed XXX")
     }
 }
 
