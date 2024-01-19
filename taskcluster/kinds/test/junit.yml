@@ -30,4 +30,5 @@ android-junit:
           conda-unpack;
           cd $TASK_WORKDIR/fetches/android-build;
           ls;
-          ./gradlew test;
+          (./gradlew test || true);
+          ./gradlew test

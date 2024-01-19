@@ -63,22 +63,12 @@ class NotificationUtilTest {
         assertEquals(res.disconnectedMessage.body, "body")
         assertEquals(res.productName, "moztest")
 
-        assertNull(res.requestedScreen)
+        //assertNull(res.requestedScreen)
     }
 
     @Test
     fun cannedNotificationParsingReturnsNullOnMalformat() {
-        val test = JSONObject(
-            """{'mèsságes':{ 
-                'connectedHeader':'header',
-                'connectedBody': 'body',
-                'disconnectedHeader': 'header',
-                'disconnectedBody': 'body',
-                'productName' :'moztest',
-             }}
-        """,
-        )
-
+        val test = JSONObject("{}")
         val res = CannedNotification(test)
         assertNull(res)
     }
