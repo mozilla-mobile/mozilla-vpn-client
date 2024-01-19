@@ -65,19 +65,19 @@ public class IOSControllerImpl : NSObject {
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
         case .connecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
-            self.onboardingDeactivateTunnelCallback?()
+            onboardingDeactivateTunnelCallback?()
             // Next line shouldn't be necessary as will be reset on next tunnel activation, but being defensive
-            self.onboardingDeactivateTunnelCallback = nil
+            onboardingDeactivateTunnelCallback = nil
         case .disconnected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
             // When the tunnel is initially saved, a disconnected notification is received. It's the following
             // disconnect notification - the one recevied because of a disconnection from
             // onboardingDeactivateTunnelCallback - that should cause the call to onboardingTunnelSavedCallback.
             // Thus, the check if deactivateTunnelCallback is null.
-            if deactivateTunnelCallback == nil {
-                self.onboardingTunnelSavedCallback?()
+            if onboardingDeactivateTunnelCallback == nil {
+                onboardingTunnelSavedCallback?()
                 // Next line shouldn't be necessary as will be reset on next tunnel activation, but being defensive
-                self.onboardingTunnelSavedCallback = nil
+                onboardingTunnelSavedCallback = nil
             }
         case .disconnecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnecting")
