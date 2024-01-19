@@ -57,6 +57,7 @@ class Controller : public QObject, public LogSerializer {
   void updateRequired();
   void deleteOSTunnelConfig();
   void startHandshakeTimer();
+  bool isDeviceConnected() const { return m_isDeviceConnected; }
 
   const ServerData& currentServer() const { return m_serverData; }
 
@@ -109,6 +110,8 @@ class Controller : public QObject, public LogSerializer {
                  NOTIFY enableDisconnectInConfirmingChanged);
   Q_PROPERTY(bool silentServerSwitchingSupported READ
                  silentServerSwitchingSupported CONSTANT);
+  Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
+                 isDeviceConnectedChanged);
 
 #ifdef MZ_DUMMY
   // This is just for testing purposes. Not exposed in prod.
@@ -141,6 +144,7 @@ class Controller : public QObject, public LogSerializer {
   void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
+  void isDeviceConnectedChanged();
 
 #ifdef MZ_DUMMY
   void currentServerChanged();
@@ -204,6 +208,7 @@ class Controller : public QObject, public LogSerializer {
 
   QScopedPointer<ControllerImpl> m_impl;
   bool m_portalDetected = false;
+  bool m_isDeviceConnected = true;
 
   // Server data can change while the controller is busy completing an
   // activation or a server switch because they are managed by the

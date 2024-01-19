@@ -6,6 +6,7 @@
 
 #include <QMetaEnum>
 #include <QNetworkInformation>
+#include <QtGlobal>
 
 #include "controller.h"
 #include "leakdetector.h"
@@ -86,6 +87,13 @@ void NetworkWatcher::initialize() {
   if (m_active) {
     m_impl->start();
   }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+  // This call creates an instance of QNetworkInformation which can be used
+  // later on to check other network related attributes such as network type, or
+  // whether or not the network is behind captive portal.
+  QNetworkInformation::loadDefaultBackend();
+#endif
 
   connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);
@@ -170,8 +178,14 @@ void NetworkWatcher::notificationClicked(NotificationHandler::Message message) {
 }
 
 QNetworkInformation::Reachability NetworkWatcher::getReachability() {
-  if (QNetworkInformation::instance()) {
+  if (m_simulatedDisconnection) {
+    return QNetworkInformation::Reachability::Disconnected;
+  } else if (QNetworkInformation::instance()) {
     return QNetworkInformation::instance()->reachability();
   }
   return QNetworkInformation::Reachability::Unknown;
+}
+
+void NetworkWatcher::simulateDisconnection(bool simulatedDisconnection) {
+  m_simulatedDisconnection = simulatedDisconnection;
 }

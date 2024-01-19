@@ -4,6 +4,8 @@
 
 #include "controller.h"
 
+#include <QNetworkInformation>
+
 #include "app.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
@@ -21,6 +23,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "networkwatcher.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -929,6 +932,23 @@ bool Controller::activate(const ServerData& serverData,
 
       m_portalDetected = false;
       return true;
+    }
+
+    if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
+            ->isSupported()) {
+      // Ensure that the device is connected to the Internet.
+      if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
+          QNetworkInformation::Reachability::Disconnected) {
+        logger.debug() << "Internet probe failed during controller activation. "
+                          "Device has no network connectivity.";
+        m_isDeviceConnected = false;
+        emit isDeviceConnectedChanged();
+        return false;
+      }
+      if (!m_isDeviceConnected) {
+        m_isDeviceConnected = true;
+        emit isDeviceConnectedChanged();
+      }
     }
 
     // Before attempting to enable VPN connection we should check that the

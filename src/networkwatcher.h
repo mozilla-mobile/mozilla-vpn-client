@@ -24,8 +24,11 @@ class NetworkWatcher final : public QObject {
 
   void initialize();
 
-  // public for the inspector.
+  // Public for the Inspector.
   void unsecuredNetwork(const QString& networkName, const QString& networkId);
+  // Used for the Inspector. simulateOffline = true to mock being disconnected,
+  // false to restore.
+  void simulateDisconnection(bool simulatedDisconnection);
 
   QNetworkInformation::Reachability getReachability();
 
@@ -48,6 +51,9 @@ class NetworkWatcher final : public QObject {
 
   // This is used to connect NotificationHandler lazily.
   bool m_firstNotification = true;
+
+  // Used to simulate network disconnection in the Inspector
+  bool m_simulatedDisconnection = false;
 };
 
 #endif  // NETWORKWATCHER_H

@@ -2163,6 +2163,20 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "force_no_network",
+      "Mock the internet connection being down by passing true, pass false to "
+      "restore",
+      1, [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QJsonObject obj;
+        QByteArray byteArray = arguments[1].toLower();
+        // Check if the byte array contains the string "true"
+        bool forceDisconnection = byteArray.contains("true");
+        MozillaVPN::instance()->networkWatcher()->simulateDisconnection(
+            forceDisconnection);
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "force_connection_health",
       "Force VPN connection health stability. Possible values are: stable, "
       "unstable, nosignal",
