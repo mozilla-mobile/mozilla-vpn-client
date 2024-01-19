@@ -25,6 +25,8 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
+                objectName: "dnsHelpButton"
+
                 onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
@@ -336,13 +338,15 @@ MZViewBase {
 
     MZHelpSheet {
         id: helpSheet
+        objectName: "dnsHelpSheet"
+
         title: MZI18n.HelpSheetsDnsTitle
 
         model: [
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }, objectName: "learnMoreLink"},
         ]
 
         onActiveChanged: if (active) item.open()

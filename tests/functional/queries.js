@@ -357,6 +357,11 @@ const screenSettings = {
           new QmlQueryComposer('//dnsOverwritePopupDiscoverNowButton'),
       MODAL_SECONDARY_BUTTON:
           new QmlQueryComposer('//dnsOverwritePopupGoBackButton'),
+
+      HELP_BUTTON: new QmlQueryComposer('//dnsHelpButton'),
+      PRIVACY_HELP_SHEET: new QmlQueryComposer('//dnsHelpSheet'),
+      PRIVACY_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//dnsHelpSheet-closeButton'),
+      PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     },
 
     languageSettingsView: {
