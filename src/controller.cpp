@@ -292,6 +292,8 @@ void Controller::serverUnavailable() {
 
   if (m_state == StateSwitching || m_state == StateConnecting ||
       m_state == StateConfirming || m_state == StateCheckSubscription) {
+    logger.info() << "Server location is unavailable and we are not in "
+                     "StateOn. Deactivate!";
     deactivate();
     return;
   }
