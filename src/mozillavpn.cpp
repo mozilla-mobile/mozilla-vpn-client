@@ -1385,6 +1385,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("sumoDns",
                        []() -> QString { return Constants::SUMO_DNS; });
 
+  uo->registerUrlLabel("sumoExcludedApps", []() -> QString {
+    return Constants::SUMO_EXCLUDED_APPS;
+  });
+
   uo->registerUrlLabel("sumoDevices",
                        []() -> QString { return Constants::SUMO_DEVICES; });
 
