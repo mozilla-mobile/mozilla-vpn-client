@@ -267,7 +267,7 @@ describe('Server list', function() {
         queries.screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
   });
 
-  it.only('check the help sheet', async () => {
+  it('check the help sheet', async () => {
     if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
       await vpn.flipFeatureOn('helpSheets');
     }
