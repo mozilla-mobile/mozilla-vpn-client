@@ -171,6 +171,12 @@ MZViewBase {
                 }
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                 Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
+
+                preLogoutCallback: () => {
+                    Glean.interaction.signOutSelected.record({
+                        screen: vpnFlickable.telemetryScreenId,
+                    });
+                }
             }
 
         }
