@@ -40,7 +40,7 @@
 
 // How often we notify the same unsecured network
 #ifndef UNIT_TEST
-    constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
+constexpr uint32_t NETWORK_WATCHER_TIMER_MSEC = 20000;
 #endif
 
 namespace {
@@ -86,6 +86,11 @@ void NetworkWatcher::initialize() {
   if (m_active) {
     m_impl->start();
   }
+
+  // This call creates an instance of QNetworkInformation which can be used
+  // later on to check other network related attributes such as network type, or
+  // whether or not the network is behind captive portal.
+  QNetworkInformation::loadDefaultBackend();
 
   connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);
