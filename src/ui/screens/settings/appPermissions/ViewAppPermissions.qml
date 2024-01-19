@@ -27,6 +27,8 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
+                objectName: "excludedAppsHelpButton"
+
                 onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
@@ -85,6 +87,7 @@ MZViewBase {
 
     MZHelpSheet {
         id: helpSheet
+        objectName: "excludedAppsHelpSheet"
 
         title: MZI18n.HelpSheetsExcludedAppsTitle
 
@@ -96,8 +99,8 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => {
                     close()
                     getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
-                }},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
+                }, objectName: "openPrivacyFeaturesButton"},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") }, objectName: "learnMoreLink"},
         ]
 
         onActiveChanged: if (active) item.open()

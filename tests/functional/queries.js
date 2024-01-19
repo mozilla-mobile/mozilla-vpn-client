@@ -58,6 +58,11 @@ class QmlQueryComposer {
     return this.prop('opened', true);
   }
 
+  closed() {
+    return this.prop('opened', false);
+  }
+
+
   prop(propName, propValue = undefined) {
     if (propValue === undefined) {
       return new QmlQueryComposer(`${this.path}{${propName}}`);
@@ -262,16 +267,6 @@ const screenDeveloperMenu = {
   RESET_AND_QUIT_BUTTON: new QmlQueryComposer('//resetAndQuitButton'),
 };
 
-const appExclusionsView = {
-  ADD_APPLICATION_BUTTON: new QmlQueryComposer('//addApplication'),
-  APP_LIST: new QmlQueryComposer('//appList'),
-  APP_ROW1: new QmlQueryComposer('//app-0'),
-  CHECKBOX1: new QmlQueryComposer('//app-0/checkbox'),
-  CHECKBOX2: new QmlQueryComposer('//app-1/checkbox'),
-  CLEAR_ALL: new QmlQueryComposer('//clearAll'),
-  SCREEN: new QmlQueryComposer('//appPermissions')
-};
-
 const screenSettings = {
   ABOUT_US: new QmlQueryComposer('//settingsAboutUs'),
   BACK: new QmlQueryComposer('//settings-back'),
@@ -292,6 +287,7 @@ const screenSettings = {
       new QmlQueryComposer('//settingsUserProfile-emailAddress'),
 
   privacyView: {
+    VIEW: new QmlQueryComposer('//privacySettingsView'),
     BLOCK_ADS: new QmlQueryComposer('//blockAds'),
     BLOCK_ADS_CHECKBOX: new QmlQueryComposer('//blockAds//checkbox'),
     BLOCK_TRACKERS: new QmlQueryComposer('//blockTrackers'),
@@ -316,6 +312,22 @@ const screenSettings = {
     PRIVACY_HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
     PRIVACY_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
     PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+  },
+
+  appExclusionsView: {
+    ADD_APPLICATION_BUTTON: new QmlQueryComposer('//addApplication'),
+    APP_LIST: new QmlQueryComposer('//appList'),
+    APP_ROW1: new QmlQueryComposer('//app-0'),
+    CHECKBOX1: new QmlQueryComposer('//app-0/checkbox'),
+    CHECKBOX2: new QmlQueryComposer('//app-1/checkbox'),
+    CLEAR_ALL: new QmlQueryComposer('//clearAll'),
+    SCREEN: new QmlQueryComposer('//appPermissions'),
+  
+    HELP_BUTTON: new QmlQueryComposer('//excludedAppsHelpButton'),
+    HELP_SHEET: new QmlQueryComposer('//excludedAppsHelpSheet'),
+    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/openPrivacyFeaturesButton'),
   },
 
   myDevicesView: {
@@ -540,7 +552,6 @@ const global = {
 };
 
 module.exports = {
-  appExclusionsView,
   screenHome,
   screenInitialize,
   screenPostAuthentication,

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const {appExclusionsView, navBar, screenSettings} = require('./queries.js');
+const queries = require('./queries.js');
 const vpn = require('./helper.js');
 const {appendFile} = require('fs');
 
@@ -12,10 +12,10 @@ describe('Settings', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    await vpn.waitForQueryAndClick(navBar.SETTINGS.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
   });
 
   const getNumDisabledApps =
@@ -28,15 +28,15 @@ describe('Settings', function() {
      async () => {
        // Clear all button is correctly disabled when there are no disabled apps
        await vpn.waitForQuery(
-           appExclusionsView.CLEAR_ALL.visible().prop('enabled', 'false'));
-       await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
-       await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX1.visible());
-       await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+           queries.screenSettings.appExclusionsView.CLEAR_ALL.visible().prop('enabled', 'false'));
+       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+       await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX1.visible());
+       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
        // Clear all button is enabled when disabledAppsList.length > 0
        await vpn.waitForQuery(
-           appExclusionsView.CLEAR_ALL.visible().prop('enabled', 'true'));
-       await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX1);
+           queries.screenSettings.appExclusionsView.CLEAR_ALL.visible().prop('enabled', 'true'));
+       await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX1);
        assert(await getNumDisabledApps() == '0');
      });
 
@@ -46,14 +46,14 @@ describe('Settings', function() {
       return;
     }
     
-    await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX1.visible());
-    await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX2.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX1.visible());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX2.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     assert(await getNumDisabledApps() == '2');
 
-    await vpn.waitForQueryAndClick(appExclusionsView.CLEAR_ALL.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CLEAR_ALL.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     assert(await getNumDisabledApps() == '0');
 
     // Check that we collect telemetry
@@ -64,21 +64,51 @@ describe('Settings', function() {
   });
 
   it('Excluded apps are at the top of the list on initial load', async () => {
-    await vpn.waitForQueryAndClick(appExclusionsView.CHECKBOX2);
-    await vpn.waitForQueryAndClick(screenSettings.BACK.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX2);
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     
-    await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     
-    await vpn.waitForQuery(appExclusionsView.APP_ROW1.visible().prop(
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.APP_ROW1.visible().prop(
         'appIdForFunctionalTests', 'com.example.two'));
   });
 
   it('Back button works', async () => {
-    await vpn.waitForQueryAndClick(screenSettings.BACK.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+  });
+
+  it.only('Checking the excluded apps help sheet', async () => {
+    if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+      await vpn.flipFeatureOn('helpSheets');
+    }
+
+    //Test the "Open privacy features" button
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.visible());
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.closed());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await vpn.waitForQuery(queries.screenSettings.privacyView.VIEW.visible());
+
+    //Go back to the app exclusions view
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    //Test the "Learn more" link
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.visible());
+    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+    await vpn.waitForCondition(async () => {
+        const url = await vpn.getLastUrl();
+        return url === 'https://support.mozilla.org/kb/split-tunneling-app-permissions';
+    });
+    await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_CLOSE_BUTTON.visible());
   });
 
   // Dummy VPN does not have the Add Application button so we cannot currently test this.
@@ -98,10 +128,10 @@ describe('Settings', function() {
       // This test cannot run in wasm
       return;
     }
-    await vpn.waitForQueryAndClick(navBar.SETTINGS.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     // Check that we collect telemetry
     const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
