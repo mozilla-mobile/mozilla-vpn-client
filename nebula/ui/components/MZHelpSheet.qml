@@ -223,6 +223,8 @@ MZBottomSheet {
                                 id: buttonBlock
 
                                 MZButton {
+                                    objectName: typeof loader.composerBlock.objectName !== "undefined" ? loader.composerBlock.objectName : null
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
 
@@ -238,6 +240,8 @@ MZBottomSheet {
                                 id: linkButtonBlock
 
                                 MZLinkButton {
+                                    objectName: typeof loader.composerBlock.objectName !== "undefined" ? loader.composerBlock.objectName : null
+
                                     anchors.left: parent.left
                                     anchors.right: parent.right
 

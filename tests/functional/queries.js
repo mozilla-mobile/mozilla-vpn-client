@@ -100,6 +100,10 @@ const screenHome = {
     },
 
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
+    HELP_BUTTON: new QmlQueryComposer('//serverHelpButton'),
+    SERVER_HELP_SHEET: new QmlQueryComposer('//serverHelpSheet'),
+    SERVER_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//serverHelpSheet-closeButton'),
+    SERVER_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     COUNTRY_VIEW: new QmlQueryComposer('//serverCountryView'),
     ENTRY_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
     EXIT_BUTTON: new QmlQueryComposer('//buttonSelectExit'),

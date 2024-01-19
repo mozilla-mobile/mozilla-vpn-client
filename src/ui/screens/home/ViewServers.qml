@@ -32,6 +32,8 @@ Item {
             Loader {
                 active: MZFeatureList.get("helpSheets").isSupported
                 sourceComponent: MZIconButton {
+                    objectName: "serverHelpButton"
+
                     onClicked: helpSheet.active = true
 
                     accessibleName: MZI18n.GlobalHelp
@@ -152,6 +154,7 @@ Item {
 
     MZHelpSheet {
         id: helpSheet
+        objectName: "serverHelpSheet"
 
         title: MZI18n.HelpSheetsLocationTitle
 
@@ -159,7 +162,7 @@ Item {
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }, objectName: "learnMoreLink"},
         ]
 
         onActiveChanged: if (active) item.open()
