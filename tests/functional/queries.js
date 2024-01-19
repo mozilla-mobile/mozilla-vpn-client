@@ -319,6 +319,7 @@ const screenSettings = {
   },
 
   myDevicesView: {
+    DEVICES_VIEW: new QmlQueryComposer('//devicesSettingsView'),
     BACK: new QmlQueryComposer('//deviceList-back'),
     CONFIRM_REMOVAL_BUTTON: new QmlQueryComposer('//confirmRemoveDeviceButton'),
     DEVICE_LIST: new QmlQueryComposer('//deviceList'),
@@ -326,6 +327,10 @@ const screenSettings = {
     REMOVE_DEVICE_BUTTON: new QmlQueryComposer(
         '//deviceList/deviceListLayout/device-device_1/swipeActionLoader/swipeActionDelete'),
 
+    HELP_BUTTON: new QmlQueryComposer('//devicesHelpButton'),
+    DEVICES_HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
+    DEVICES_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
+    DEVICES_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   tipsAndTricksView: {
