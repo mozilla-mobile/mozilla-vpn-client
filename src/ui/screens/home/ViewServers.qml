@@ -32,7 +32,7 @@ Item {
             Loader {
                 active: MZFeatureList.get("helpSheets").isSupported
                 sourceComponent: MZIconButton {
-                    onClicked: helpSheetLoader.active = true
+                    onClicked: helpSheet.active = true
 
                     accessibleName: MZI18n.GlobalHelp
 
@@ -149,25 +149,20 @@ Item {
         }
     }
 
-    Loader {
-        id: helpSheetLoader
 
-        active: false
+    MZHelpSheet {
+        id: helpSheet
+
+        title: MZI18n.HelpSheetsLocationTitle
+
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }},
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsLocationTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }},
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
 
     Component.onCompleted: {

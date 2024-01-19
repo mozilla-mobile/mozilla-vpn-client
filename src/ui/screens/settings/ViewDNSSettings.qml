@@ -25,7 +25,7 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
-                onClicked: helpSheetLoader.active = true
+                onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
 
@@ -334,25 +334,18 @@ MZViewBase {
         onActiveChanged: if (active) { item.open() }
     }
 
-    Loader {
-        id: helpSheetLoader
+    MZHelpSheet {
+        id: helpSheet
+        title: MZI18n.HelpSheetsDnsTitle
 
-        active: false
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }},
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsDnsTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }},
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
 }
 

@@ -20,7 +20,7 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
-                onClicked: helpSheetLoader.active = true
+                onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
                 Image {
@@ -124,25 +124,19 @@ MZViewBase {
         onActiveChanged: if (active) { item.open() }
     }
 
-    Loader {
-        id: helpSheetLoader
+    MZHelpSheet {
+        id: helpSheet
 
-        active: false
+        title: MZI18n.HelpSheetsPrivacyTitle
+
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsPrivacyHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoPrivacy") }},
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsPrivacyTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsPrivacyHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoPrivacy") }},
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
 }
 

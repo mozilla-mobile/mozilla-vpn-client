@@ -27,7 +27,7 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
-                onClicked: helpSheetLoader.active = true
+                onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
 
@@ -82,30 +82,25 @@ MZViewBase {
         }
     }
 
-    Loader {
-        id: helpSheetLoader
 
-        active: false
+    MZHelpSheet {
+        id: helpSheet
+
+        title: MZI18n.HelpSheetsExcludedAppsTitle
+
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsExcludedAppsHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => {
+                    close()
+                    getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                }},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsExcludedAppsTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsExcludedAppsHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => {
-                        close()
-                        getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
-                    }},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
 
     Component.onCompleted: {
@@ -113,5 +108,4 @@ MZViewBase {
         VPNAppPermissions.requestApplist();
         Glean.sample.appPermissionsViewOpened.record();
     }
-
 }

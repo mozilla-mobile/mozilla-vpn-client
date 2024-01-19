@@ -60,7 +60,7 @@ MZViewBase {
                 id: helpIconButtonLoader
                 active: MZFeatureList.get("helpSheets").isSupported
                 sourceComponent: MZIconButton {
-                    onClicked: helpSheetLoader.active = true
+                    onClicked: helpSheet.active = true
 
                     accessibleName: MZI18n.GlobalHelp
 
@@ -99,26 +99,20 @@ MZViewBase {
         }
     }
 
-    Loader {
-        id: helpSheetLoader
+    MZHelpSheet {
+        id: helpSheet
+        title: MZI18n.HelpSheetsDevicesTitle
 
-        active: false
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") }},
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsDevicesTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") }},
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
+
 
     Connections {
         target: deviceList
