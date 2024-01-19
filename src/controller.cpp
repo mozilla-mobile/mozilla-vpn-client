@@ -295,6 +295,8 @@ void Controller::serverUnavailable() {
     deactivate();
     return;
   }
+  logger.info() << "Server location is unavailable. Do not deactivate the VPN "
+                   "automatically.";
 }
 
 void Controller::updateRequired() {
