@@ -572,7 +572,7 @@ describe('Settings', function() {
       assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
     });
 
-    it.only('Checking the dns help sheet', async () => {
+    it('Checking the dns help sheet', async () => {
       if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
         await vpn.flipFeatureOn('helpSheets');
       }
