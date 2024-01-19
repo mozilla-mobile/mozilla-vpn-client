@@ -63,7 +63,7 @@ class NotificationUtilTest {
         assertEquals(res.disconnectedMessage.body, "body")
         assertEquals(res.productName, "moztest")
 
-        //assertNull(res.requestedScreen)
+        // assertNull(res.requestedScreen)
     }
 
     @Test
