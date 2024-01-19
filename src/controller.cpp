@@ -934,18 +934,21 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    // Ensure that the device is connected to the Internet.
-    if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
-        QNetworkInformation::Reachability::Disconnected) {
-      logger.debug() << "Internet probe failed during controller activation. "
-                        "Device has no network connectivity.";
-      m_isDeviceConnected = false;
-      emit isDeviceConnectedChanged();
-      return false;
-    }
-    if (!m_isDeviceConnected) {
-      m_isDeviceConnected = true;
-      emit isDeviceConnectedChanged();
+    if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
+            ->isSupported()) {
+      // Ensure that the device is connected to the Internet.
+      if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
+          QNetworkInformation::Reachability::Disconnected) {
+        logger.debug() << "Internet probe failed during controller activation. "
+                          "Device has no network connectivity.";
+        m_isDeviceConnected = false;
+        emit isDeviceConnectedChanged();
+        return false;
+      }
+      if (!m_isDeviceConnected) {
+        m_isDeviceConnected = true;
+        emit isDeviceConnectedChanged();
+      }
     }
 
     // Before attempting to enable VPN connection we should check that the

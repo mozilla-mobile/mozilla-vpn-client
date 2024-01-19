@@ -68,6 +68,13 @@ FEATURE(captivePortal,          // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_captivePortal)
 
+FEATURE(checkConnectivityOnActivation,       // Feature ID
+        "Check Connectivity On Activation",  // Feature name
+        FeatureCallback_true,                // Can be flipped on
+        FeatureCallback_true,                // Can be flipped off
+        QStringList(),                       // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(customDNS,              // Feature ID
         "Custom DNS",           // Feature name
         FeatureCallback_true,   // Can be flipped on
