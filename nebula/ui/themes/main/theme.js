@@ -87,6 +87,11 @@ theme.dividerHeight = 1
 
 theme.guideCardHeight = 172
 
+theme.helpSheetTitleBodySpacing = 8
+theme.helpSheetBodySpacing = 16
+theme.helpSheetBodyButtonSpacing = 16
+theme.helpSheetSecondaryButtonSpacing = 8
+
 theme.navBarHeight = 64;
 theme.navBarMaxWidth = 608;
 theme.navBarTopMargin = 48;

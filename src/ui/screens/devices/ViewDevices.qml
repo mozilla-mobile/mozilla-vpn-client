@@ -111,9 +111,9 @@ MZViewBase {
 
             model: [
                 {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: 8},
-                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsDevicesBody2, margin: 16},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") } },
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") }},
             ]
 
             onClosed: helpSheetLoader.active = false

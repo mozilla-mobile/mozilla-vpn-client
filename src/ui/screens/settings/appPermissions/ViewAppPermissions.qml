@@ -94,14 +94,14 @@ MZViewBase {
 
             model: [
                 {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsExcludedAppsHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: 8},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: 16},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: 16},
-                {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: 16, action: () => {
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: MZTheme.theme.helpSheetBodySpacing},
+                {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => {
                         close()
                         getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
                     }},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 8, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") } },
             ]
 
             onClosed: helpSheetLoader.active = false

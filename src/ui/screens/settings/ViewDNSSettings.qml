@@ -346,9 +346,9 @@ MZViewBase {
 
             model: [
                 {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: 8},
-                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsDnsBody2, margin: 16},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoDns") } },
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }},
             ]
 
             onClosed: helpSheetLoader.active = false
