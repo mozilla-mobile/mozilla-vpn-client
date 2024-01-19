@@ -103,211 +103,233 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
-  it('Checking the privacy settings', async () => {
-    await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
+  describe('Privacy settings tests', function () {
 
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.PRIVACY);
+    beforeEach(async () => {
+      await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
+  
+      await vpn.scrollToQuery(
+          queries.screenSettings.SCREEN, queries.screenSettings.PRIVACY);
+  
+      await vpn.clickOnQuery(queries.screenSettings.PRIVACY.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+  });
+  
+    it('Checking the privacy settings', async () => {
+      // Checking that the `These changes may affect...` warning is visible
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.INFORMATION_CARD.visible());
+  
+      // Checking if the checkboxes are correctly set based on the settings prop
+      await vpn.setSetting('dnsProviderFlags', 0);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', false));
+  
+      await vpn.setSetting('dnsProviderFlags', 2);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', false));
+  
+      await vpn.setSetting('dnsProviderFlags', 4);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', false));
+  
+      await vpn.setSetting('dnsProviderFlags', 6);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', false));
+  
+      await vpn.setSetting('dnsProviderFlags', 8);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', true));
+  
+      await vpn.setSetting('dnsProviderFlags', 10);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', true));
+  
+      await vpn.setSetting('dnsProviderFlags', 12);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', false));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', true));
+  
+      await vpn.setSetting('dnsProviderFlags', 14);
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
+              'isChecked', true));
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
+              'isChecked', true));
+  
+      // Tests the clicks
+      await vpn.setSetting('dnsProviderFlags', 0);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
+  
+      await vpn.setSetting('dnsProviderFlags', 0);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
+  
+      await vpn.setSetting('dnsProviderFlags', 0);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
+  
+      // Let's test the modal
+      await vpn.setSetting('dnsProviderFlags', 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
+  
+      await vpn.setSetting('dnsProviderFlags', 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
+  
+      await vpn.setSetting('dnsProviderFlags', 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
+      await vpn.waitForQuery(
+          queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
+      assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
+  
+      // Let's go back
+      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+  
+      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+  
+      // Reset
+      await vpn.setSetting('dnsProviderFlags', 0);
+    });
+  
+    it('Checking the privacy help sheet', async () => {
+      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+        await vpn.flipFeatureOn('helpSheets');
+      }
+  
+      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET.visible());
+      await vpn.waitForQuery(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForCondition(async () => {
+          const url = await vpn.getLastUrl();
+          return url === 'https://support.mozilla.org/kb/how-do-i-change-my-privacy-features';
+      });
+      await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.PRIVACY_HELP_SHEET_CLOSE_BUTTON.visible());
+    });
 
-    await vpn.clickOnQuery(queries.screenSettings.PRIVACY.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-    // Checking that the `These changes may affect...` warning is visible
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.INFORMATION_CARD.visible());
-
-    // Checking if the checkboxes are correctly set based on the settings prop
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 2);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 4);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 6);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', false));
-
-    await vpn.setSetting('dnsProviderFlags', 8);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', true));
-
-    await vpn.setSetting('dnsProviderFlags', 10);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', true));
-
-    await vpn.setSetting('dnsProviderFlags', 12);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', false));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', true));
-
-    await vpn.setSetting('dnsProviderFlags', 14);
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_ADS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS.visible().prop(
-            'isChecked', true));
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.BLOCK_MALWARE.visible().prop(
-            'isChecked', true));
-
-    // Tests the clicks
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
-
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
-
-    await vpn.setSetting('dnsProviderFlags', 0);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
-
-    // Let's test the modal
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
-
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 4);
-
-    await vpn.setSetting('dnsProviderFlags', 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_SECONDARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_CLOSE_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 1);
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.privacyView.MODAL_PRIMARY_BUTTON.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.privacyView.MODAL_LOADER.prop('active', false));
-    assert.equal(await vpn.getSetting('dnsProviderFlags'), 8);
-
-    // Let's go back
-    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-
-    // Reset
-    await vpn.setSetting('dnsProviderFlags', 0);
   });
 
   it('Checking the DNS settings', async () => {

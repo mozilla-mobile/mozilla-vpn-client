@@ -20,6 +20,8 @@ MZViewBase {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
+                objectName: "privacyHelpButton"
+
                 onClicked: helpSheet.active = true
 
                 accessibleName: MZI18n.GlobalHelp
@@ -126,6 +128,7 @@ MZViewBase {
 
     MZHelpSheet {
         id: helpSheet
+        objectName: "privacyHelpSheet"
 
         title: MZI18n.HelpSheetsPrivacyTitle
 
@@ -133,7 +136,7 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsPrivacyHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoPrivacy") }},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoPrivacy") }, objectName: "learnMoreLink"},
         ]
 
         onActiveChanged: if (active) item.open()

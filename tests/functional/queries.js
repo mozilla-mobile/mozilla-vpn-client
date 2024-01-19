@@ -54,6 +54,10 @@ class QmlQueryComposer {
     return this.prop('busy', false);
   }
 
+  opened() {
+    return this.prop('opened', true);
+  }
+
   prop(propName, propValue = undefined) {
     if (propValue === undefined) {
       return new QmlQueryComposer(`${this.path}{${propName}}`);
@@ -306,7 +310,12 @@ const screenSettings = {
     MODAL_SECONDARY_BUTTON:
         new QmlQueryComposer('//privacyOverwritePopupGoBackButton'),
 
-    VIEW_PRIVACY_WARNING: new QmlQueryComposer('//viewPrivacyWarning')
+    VIEW_PRIVACY_WARNING: new QmlQueryComposer('//viewPrivacyWarning'),
+
+    HELP_BUTTON: new QmlQueryComposer('//privacyHelpButton'),
+    PRIVACY_HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
+    PRIVACY_HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
+    PRIVACY_HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   myDevicesView: {
