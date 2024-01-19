@@ -28,7 +28,8 @@ public class IOSControllerImpl : NSObject {
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
-    private var tunnelSavedCallback: (() -> Void)?
+    private var onboardingTunnelSavedCallback: (() -> Void)?
+    private var onboardingDeactivateTunnelCallback: (() -> Void)?
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
@@ -64,11 +65,20 @@ public class IOSControllerImpl : NSObject {
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
         case .connecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
-            tunnelSavedCallback?()
+            self.onboardingDeactivateTunnelCallback?()
             // Next line shouldn't be necessary as will be reset on next tunnel activation, but being defensive
-            tunnelSavedCallback = nil
+            self.onboardingDeactivateTunnelCallback = nil
         case .disconnected:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
+            // When the tunnel is initially saved, a disconnected notification is received. It's the following
+            // disconnect notification - the one recevied because of a disconnection from
+            // onboardingDeactivateTunnelCallback - that should cause the call to onboardingTunnelSavedCallback.
+            // Thus, the check if deactivateTunnelCallback is null.
+            if deactivateTunnelCallback == nil {
+                self.onboardingTunnelSavedCallback?()
+                // Next line shouldn't be necessary as will be reset on next tunnel activation, but being defensive
+                self.onboardingTunnelSavedCallback = nil
+            }
         case .disconnecting:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnecting")
         case .invalid:
@@ -120,10 +130,11 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, onboardingTunnelSavedCallback: @escaping () -> Void, disconnectOnErrorCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isOnboarding: Bool, onboardingTunnelSavedCallback: @escaping () -> Void, onboardingDeactivateTunnelCallback: @escaping () -> Void, disconnectOnErrorCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
-        tunnelSavedCallback = isOnboarding ? onboardingTunnelSavedCallback : nil
+        self.onboardingTunnelSavedCallback = isOnboarding ? onboardingTunnelSavedCallback : nil
+        self.onboardingDeactivateTunnelCallback = isOnboarding ? onboardingDeactivateTunnelCallback : nil
 
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
