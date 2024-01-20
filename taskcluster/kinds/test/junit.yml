@@ -28,6 +28,7 @@ android-junit:
         command: >-
           source $TASK_WORKDIR/fetches/bin/activate;
           conda-unpack;
+          unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
           cd $TASK_WORKDIR/fetches/android-build;
           ls;
           (./gradlew test || true);
