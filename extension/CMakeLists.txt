@@ -25,7 +25,7 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
     add_custom_target(cargo_mozillavpnnp ALL
         COMMENT "Create a universal binary for mozillavpnp"
         DEPENDS cargo_mozillavpnnp_all
-        COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/bridge/release/mozillavpnnp ${MOZILLAVPNNP_TARGET_OUTPUTS}
+        COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp ${MOZILLAVPNNP_TARGET_OUTPUTS}
     )
 else()
     # Single Plattform 
