@@ -22,6 +22,7 @@ android-junit:
         use-caches: true
         cwd: '{checkout}'
         command: >-
+          git submodule update --init --recursive;
           source $TASK_WORKDIR/fetches/bin/activate;
           conda-unpack;
           unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
