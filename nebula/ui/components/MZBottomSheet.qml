@@ -32,7 +32,7 @@ Loader {
     readonly property int maxSheetHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
     required default property var contentItem
     property bool sizeToContent: false
-    property bool opened: item.opened
+    property bool opened: active ? item.opened : null
 
     signal close
 
