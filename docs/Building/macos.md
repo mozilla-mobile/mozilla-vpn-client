@@ -91,7 +91,7 @@ Use the `--target pkg` to build the MacOS installer.
 
 This will produce an unsigned installer package at `build-mac/macos/pkg/MozillaVPN-unsigned.pkg`
 and a signed installer at `build-mac/macos/pkg/MozillaVPN-signed.pkg` if a valid installer
-signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` [variable at configurationtime](./index.md).
+signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` [variable at configuration time](./index.md).
 
 # Building with Xcode
 

@@ -292,5 +292,5 @@ to be able to join the data on the backend. TODO: Let's uncomment this one this 
 [t-c-g-ffi](https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/ffi)
 [glean-bool-set](https://mozilla.github.io/glean/book/reference/metrics/boolean.html)
 [uniffi](https://mozilla.github.io/uniffi-rs/)
-[sarahs-doc](https://docs.google.com/document/d/1A2O_eACk0P3jDy0g2rRN5UTBOUj-iN-re6tVsRpxtDA/edit?usp=sharing)
-[beas-doc](https://docs.google.com/document/d/1jyNZ_g_cUpZZsEr2hYwnwZgkxlvqTmoFUJKp_LAOPts/edit?usp=sharing)
+[sarah's-doc](https://docs.google.com/document/d/1A2O_eACk0P3jDy0g2rRN5UTBOUj-iN-re6tVsRpxtDA/edit?usp=sharing)
+[bea's-doc](https://docs.google.com/document/d/1jyNZ_g_cUpZZsEr2hYwnwZgkxlvqTmoFUJKp_LAOPts/edit?usp=sharing)
