@@ -197,9 +197,9 @@ mozilla-repo-urls==0.1.1 \
     --hash=sha256:30510d3519479aa70211145d0ac9cf6e2fadcb8d30fa3b196bb957bd773502ba \
     --hash=sha256:7364da790751db2a060eb45adbf1d7db89a145ed279ba235f3425db9dd255915
     # via taskcluster-taskgraph
-mozilla-taskgraph==1.1.1 \
-    --hash=sha256:217e869bb48a5a0831e5aa17ce59a1af8107254e6c7cddfd243c7e46317c18d3 \
-    --hash=sha256:30c5d1aebf110906f3c9bccb033e5c71edb3261960153f6502ccf017e83ac9d4
+mozilla-taskgraph==1.2.1 \
+    --hash=sha256:ac687fe70a0c21bf2f5ab682e050dd5bec5fa64725f0f05fbe1c54187a0c5463 \
+    --hash=sha256:e5ae68b23a077b88dd5afdb269e51296ebe4a286fde8a887dd7af44c2940e92d
     # via -r requirements.in
 python-dateutil==2.8.2 \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
