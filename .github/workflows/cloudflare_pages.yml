@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - docusaurus # TODO: remove when ready to merge. 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
