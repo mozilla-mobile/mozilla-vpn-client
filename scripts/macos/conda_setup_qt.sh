@@ -45,7 +45,7 @@ chmod +x $CONDA_PREFIX/etc/conda/deactivate.d/vpn_ios_qt.sh
 ## Add a Helper script to call the right qt-cmake
 cat <<EOF > $CONDA_PREFIX/bin/qt-cmake
 #!/bin/bash
-$CONDA_PREFIX/Qt/$QT_VERSION/ios/bin/qt-cmake -DQT_HOST_PATH=$QT_HOST_PATH -GXcode "\$@"
+\$CONDA_PREFIX/Qt/$QT_VERSION/ios/bin/qt-cmake -DQT_HOST_PATH=\$QT_HOST_PATH -GXcode "\$@"
 EOF
 chmod +x $CONDA_PREFIX/bin/qt-cmake
 
