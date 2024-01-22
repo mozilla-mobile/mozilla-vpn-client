@@ -33,10 +33,7 @@ task-defaults:
     release-artifacts:
         - unsigned.zip
     scopes:
-        by-level:
-            "3":
-                - secrets:get:project/mozillavpn/tokens
-            default: []
+        - secrets:get:project/mozillavpn/level-1/sentry
     run:
         using: run-task
         cwd: '{checkout}'
