@@ -88,12 +88,21 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
+
+Get-command python
+python  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+$env:SENTRY_AUTH_TOKEN=$(Get-Content sentry_debug_file_upload_key)
+# Are we logged in?
+sentry-cli-Windows-x86_64.exe info 
+
+# This will ask sentry to scan all files in there and upload
+# missing debug info, for symbolification
+
+sentry-cli-Windows-x86_64.exe debug-files check "$BUILD_DIR\src\Mozilla VPN.pdb"
+Get-ChildItem $TASK_WORKDIR/unsigned/
 if ($env:MOZ_SCM_LEVEL -eq "3") {
-    Get-command python
-    python  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
-    sentry-cli-Windows-x86_64.exe login --auth-token $(Get-Content sentry_debug_file_upload_key)
-    # This will ask sentry to scan all files in there and upload
-    # missing debug info, for symbolification
-    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client $TASK_WORKDIR/unsigned/Mozilla\ VPN.pdb
+    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client --include-sources $BUILD_DIR
+} else{
+    sentry-cli-Windows-x86_64.exe --log-level info debug-files upload --org mozilla -p vpn-client --include-sources --no-upload $BUILD_DIR
 }
 
