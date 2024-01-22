@@ -2,13 +2,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-ios/debug/cmake:
+task-defaults:
     description: "IOS Debug Build"
     treeherder:
-        symbol: B
+        symbol: BD
         kind: build
         tier: 1
-        platform: ios/debug/cmake
+        platform: ios/arm64
     worker-type: b-macos
     fetches:
         fetch:
@@ -26,3 +26,19 @@ ios/debug/cmake:
         use-caches: false
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/ios_build_debug.sh
+
+ios-arm64-qt-next/debug:
+    description: "IOS Debug Build using Qt-Next"
+    treeherder:
+        symbol: NEXT
+    fetches:
+        toolchain:
+            - conda-ios-6.6.0
+
+ios-arm64/debug:
+    description: "IOS Debug Build using Qt-Next"
+    treeherder:
+        symbol: BD
+    fetches:
+        toolchain:
+            - conda-ios-6.2.4
