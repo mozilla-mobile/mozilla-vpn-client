@@ -12,10 +12,10 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
     foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
         string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
         add_custom_target(cargo_mozillavpnnp_${OSXARCH}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
-        COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_CURRENT_BINARY_DIR}/.cargo_home 
-             cargo build --release --target-dir "${CMAKE_CURRENT_BINARY_DIR}/bridge"
-             --target "${OSXARCH}-apple-darwin"
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
+            COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_CURRENT_BINARY_DIR}/.cargo_home 
+                cargo build --release --target-dir "${CMAKE_CURRENT_BINARY_DIR}/bridge"
+                --target "${OSXARCH}-apple-darwin"
         )
         list(APPEND MOZILLAVPNNP_TARGET_OUTPUTS "${CMAKE_CURRENT_BINARY_DIR}/bridge/${OSXARCH}-apple-darwin/release/mozillavpnnp")
         add_dependencies(cargo_mozillavpnnp_all cargo_mozillavpnnp_${OSXARCH})
@@ -27,6 +27,7 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
         DEPENDS cargo_mozillavpnnp_all
         COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp ${MOZILLAVPNNP_TARGET_OUTPUTS}
     )
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/)
 else()
     # Single Plattform 
     add_custom_target(cargo_mozillavpnnp ALL
@@ -35,9 +36,8 @@ else()
         COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_CURRENT_BINARY_DIR}/.cargo_home
                 cargo build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
     )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
 endif()
-set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
-
 
 ## Wrap the build artifacts as a CMake target.
 add_executable(mozillavpnnp IMPORTED GLOBAL)
