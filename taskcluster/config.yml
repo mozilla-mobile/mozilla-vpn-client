@@ -12,6 +12,7 @@ treeherder:
         'TL': 'Toolchain Tasks'
         'rpk': 'Re-Package Tasks'
         'BM': 'Beetmover Tasks'
+        'T': 'Test Tasks'
 
 task-priority:
     by-project:

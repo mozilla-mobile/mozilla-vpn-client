@@ -143,20 +143,20 @@ class NotificationUtil(ctx: Service) {
     }
 }
 
-  /*
-   * ClientNotification
-   * Message sent from the client manually.
-   */
+   /*
+    * ClientNotification
+    * Message sent from the client manually.
+    */
 @Serializable
 data class ClientNotification(
     val header: String,
     val body: String,
 )
 
-  /*
-   * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
-   * and is provided by the controller when asking for a connection.
-   */
+   /*
+    * A "Canned" Notification contains all strings needed for the "(dis-)/connected" flow
+    * and is provided by the controller when asking for a connection.
+    */
 @Serializable
 data class CannedNotification(
     // Message to be shown when the Client connects
@@ -177,7 +177,10 @@ data class CannedNotification(
             if (value == null) {
                 return null
             }
-            val messages = value.getJSONObject("messages")
+            val messages = value.optJSONObject("messages")
+            if (messages == null) {
+                return null
+            }
             return try {
                 CannedNotification(
                     ClientNotification(
@@ -189,7 +192,7 @@ data class CannedNotification(
                         messages.getString("disconnectedBody"),
                     ),
                     messages.getString("productName"),
-                    messages.getString("requestedScreen"),
+                    messages.optString("requestedScreen"),
                 )
             } catch (e: Exception) {
                 Log.e("NotificationUtil", "Failed to Parse Notification Object $value")
