@@ -27,7 +27,7 @@ MZViewBase {
             sourceComponent: MZIconButton {
                 onClicked: helpSheetLoader.active = true
 
-                accessibleName: MZI18n.GlobalHelp
+                accessibleName: MZI18n.GetHelpLinkTitle
 
                 Image {
                     anchors.centerIn: parent
