@@ -14,21 +14,19 @@ android-junit:
         kind: test
         platform: android/arm64-v8a
         tier: 1
-    dependencies:
-        build: build-android-arm64/debug
     fetches:
         toolchain: 
             - conda-android-arm64-6.2.4
-        build:
-            - artifact: android-build.zip
     run:
         using: run-task
         use-caches: true
         cwd: '{checkout}'
         command: >-
+          git submodule update --init --recursive;
           source $TASK_WORKDIR/fetches/bin/activate;
           conda-unpack;
-          cd $TASK_WORKDIR/fetches/android-build;
+          unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
+          ./scripts/android/cmake.sh -d;
+          cd .tmp/src/android-build/;
           ls;
-          (./gradlew test || true);
           ./gradlew test
