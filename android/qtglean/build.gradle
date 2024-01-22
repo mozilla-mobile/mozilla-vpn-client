@@ -28,7 +28,7 @@ plugins {
 // Copied from from 3rdparty/glean/build.gradle
 def versions = [
     android_gradle_plugin: '7.4.1',
-    coroutines: '1.6.4',
+    coroutines: '1.7.3',
     jna: '5.13.0',
     junit: '4.12',
     mockito: '3.11.2',
