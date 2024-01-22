@@ -9,14 +9,15 @@ echo pwd
 ls 
 cd vcs
 ls 
-
+BACKUP_QT_VERSION=${QT_VERSION}
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
 
 conda env create -f env.yml -n vpn
 conda activate vpn
-conda env config vars set QT_VERSION=${QT_VERSION}
+echo "SETTING QT_VERSION=${BACKUP_QT_VERSION}"
+conda env config vars set QT_VERSION=${BACKUP_QT_VERSION}
 ./scripts/macos/conda_install_extras.sh
 ./scripts/macos/conda_setup_qt.sh
 
