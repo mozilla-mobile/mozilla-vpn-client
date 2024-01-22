@@ -68,9 +68,6 @@ QString versionString();
 QString buildNumber();
 QString envOrDefault(const QString& name, const QString& defaultValue);
 
-// This is used by SettingsHolder to configure the QSetting file.
-constexpr const char* SETTINGS_APP_NAME = "vpn";
-
 // The prefix for the user-agent requests
 constexpr const char* NETWORK_USERAGENT_PREFIX = "MozillaVPN";
 

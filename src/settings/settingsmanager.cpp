@@ -10,7 +10,6 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "constants.h"
 #include "cryptosettings.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,6 +24,14 @@ SettingsManager* s_instance = nullptr;
 constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla";
 #else
 constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla_testing";
+#endif
+
+#if defined UNIT_TEST
+constexpr const char* SETTINGS_APP_NAME = "vpn_unit";
+#elif defined MZ_DUMMY
+constexpr const char* SETTINGS_APP_NAME = "vpn_dummy";
+#else
+constexpr const char* SETTINGS_APP_NAME = "vpn";
 #endif
 
 const QSettings::Format MozFormat = QSettings::registerFormat(
@@ -52,7 +59,7 @@ void SettingsManager::testCleanup() {
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
       m_settings(MozFormat, QSettings::UserScope, SETTINGS_ORGANIZATION_NAME,
-                 Constants::SETTINGS_APP_NAME),
+                 SETTINGS_APP_NAME),
       m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 
