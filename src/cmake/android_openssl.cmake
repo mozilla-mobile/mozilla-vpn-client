@@ -68,7 +68,7 @@ include(FetchContent)
     android_openssl
     DOWNLOAD_EXTRACT_TIMESTAMP true
     URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-    URL_HASH MD5=c97d6ad774fab16be63b0ab40f78d945
+    URL_HASH MD5=7c0736e84fc21d0d767ffc13876e5491
   )
   FetchContent_MakeAvailable(android_openssl)
   add_custom_command(
