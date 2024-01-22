@@ -45,7 +45,11 @@ if [ -d ${TASK_HOME}/build ]; then
 fi
 mkdir ${TASK_HOME}/build
 
-qt-cmake -S . -B ${TASK_HOME}/build -GXcode \
+env
+whereis qt-cmake
+cat $TASK_WORKDIR/fetches/bin/qt-cmake
+
+qt-cmake -S . -B ${TASK_HOME}/build \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
