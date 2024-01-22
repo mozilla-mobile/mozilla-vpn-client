@@ -7,7 +7,6 @@
 
 include(ExternalProject)
 
-
 ExternalProject_Add(ndk_openssl
   URL https://maven.google.com/com/android/ndk/thirdparty/openssl/1.1.1q-beta-1/openssl-1.1.1q-beta-1.aar
   URL_HASH SHA256=a5b05c4b362d35c022238ef9b2e4e2196248adea3bac9dd683845ee75a3a8d66
@@ -69,7 +68,7 @@ include(FetchContent)
     android_openssl
     DOWNLOAD_EXTRACT_TIMESTAMP true
     URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-  #      URL_HASH MD5=c97d6ad774fab16be63b0ab40f78d945 #optional
+    URL_HASH MD5=c97d6ad774fab16be63b0ab40f78d945
   )
   FetchContent_MakeAvailable(android_openssl)
   add_custom_command(
