@@ -5,7 +5,6 @@
 ## Custom target to build the web-extension bridge with Rust/Cargo
 
 if(APPLE AND CMAKE_OSX_ARCHITECTURES)
-
     add_custom_target(cargo_mozillavpnnp_all COMMENT "Build vpnnp for all Architectures")
     # For each requested Arch , create a new target and 
     # make it a dependency for cargo_mozillavpnnp_all
