@@ -740,14 +740,8 @@ sample:
     send_in_pings:
       - main
       - vpnsession
-      - daemonsession
     description: |
       The connection has no signal.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
 
       A no signal event event happens when the connection is showing issues,
       and a silent switch will not address the issue. On when the connection
@@ -770,14 +764,8 @@ sample:
     send_in_pings:
       - main
       - vpnsession
-      - daemonsession
     description: |
       The connection is unstable.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
 
       An unstable event happens when the connection is showing issues,
       but a silent switch may still address the issue and no previous
@@ -1688,7 +1676,6 @@ session:
     lifetime: ping
     send_in_pings:
       - vpnsession
-      - daemonsession
     description: |
       Count of times that the connection health check succeeds.
       Collected only on mobile apps.
@@ -1772,6 +1759,76 @@ session:
       - daemonsession
     data_sensitivity:
       - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_connection_health_no_signal:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      The connection has no signal.
+
+      These checks are only done on the Android daemon and not on the iOS
+      network extension.
+
+      A no signal event event happens when the connection is showing issues,
+      and a silent switch will not address the issue. On when the connection
+      is showing issues and there have been previous silent switches which
+      did not address the issue.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6129
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemon_connection_health_unstable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      The connection is unstable.
+
+      These checks are only done on the Android daemon and not on the
+      iOS network extension.
+
+      An unstable event happens when the connection is showing issues,
+      but a silent switch may still address the issue and no previous
+      silent switches have happened yet.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6129
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+
+  daemmon_connection_health_stable_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      Count of times that the connection health check succeeds.
+      Collected only on mobile apps.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6129
+    data_reviews:
+      - TBD
+    data_sensitivity:
+      - technical
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
