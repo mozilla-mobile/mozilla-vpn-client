@@ -44,6 +44,20 @@ StackView {
             anchors.rightMargin: MZTheme.theme.windowMargin / 2
             spacing: MZTheme.theme.vSpacing
 
+            MZCollapsibleCard {
+                title: MZI18n.MultiHopFeatureMultiHopCardHeader
+
+                iconSrc: "qrc:/ui/resources/tip.svg"
+                contentItem: MZTextBlock {
+                    text: MZI18n.MultiHopFeatureMultiHopCardBody
+                    textFormat: Text.StyledText
+                    Layout.fillWidth: true
+                }
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: parent.width - MZTheme.theme.windowMargin
+                visible: !MZFeatureList.get("helpSheets").isSupported
+            }
+
             RecentConnections {
                 Layout.fillWidth: true
                 showMultiHopRecentConnections: true
