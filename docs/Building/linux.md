@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for Linux
 
 ## Activate conda
 
@@ -34,7 +34,7 @@ Make the build directory
 
 Configure
 
-    cmake -S . -B build -DCMAKE_PREFIX_PATH=<Qt install path>/gcc_64/lib/cmake/
+    cmake -S . -B build -DCMAKE_PREFIX_PATH=$(Qt install path)/gcc_64/lib/cmake/
 
 Compile
 

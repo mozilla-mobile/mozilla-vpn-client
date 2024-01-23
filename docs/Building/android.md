@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for Android
 
 ## Setting up a new Conda Env
 See [here](./index.md#conda) for general conda environment instructions.
@@ -62,7 +62,7 @@ Make sure to Choose the apk-architecture of your env, all others apk's will not 
 Install with adb on device/[emulator](https://developer.android.com/studio/run/emulator#avd)
 
 
-    adb install .tmp/src/android-build/build/outputs/apk/debug/<ANDROID_BUILD_ARCHITECTURE>.apk
+    adb install .tmp/src/android-build/build/outputs/apk/debug/$ANDROID_BUILD_ARCHITECTURE.apk
 
 # Linting && Formatting Kotlin Code
 

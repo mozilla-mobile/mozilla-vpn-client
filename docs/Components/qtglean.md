@@ -1,11 +1,11 @@
 # Glean on the Mozilla VPN application
 
-This section of documentation deep dives into how [Glean](the-glean-book) is integrated
+This section of documentation deep dives into how [Glean](#2-Glossary) is integrated
 on the Mozilla VPN application. It is aimed at developers working on the Mozilla VPN.
 
 However, this is not a guide on how to add new data collection to the Mozilla VPN.
-For a step-by-step guide on that refer to ["Working on tickets with Glean instrumentation"](readme-glean).
-[The Glean book](the-glean-book) is also the source of truth for Glean API reference documentation.
+For a step-by-step guide on that refer to ["Working on tickets with Glean instrumentation"](#2-Glossary).
+[The Glean book](#2-Glossary) is also the source of truth for Glean API reference documentation.
 The Mozilla VPN follows the mozilla-central Glean integration implementation, so when looking at
 Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API will be the same.
 
@@ -17,7 +17,7 @@ Glean API docs on the book, choose the "Firefox Desktop" examples tab. The API w
 ## Background
 
 On a first attempt to integrate Glean on the VPN application,
-the [Glean JavaScript SDK](glean-js) was chosen, because QML provides a JavaScript runtime
+the [Glean JavaScript SDK](https://github.com/mozilla/glean.js/) was chosen, because QML provides a JavaScript runtime
 and the JavaScript SDK could be used on QML mostly "out-of-the-box". Unfortunately the limitations
 of having a data collection library based on the QML layer of the application outweigh the advantages.
 
@@ -37,7 +37,7 @@ completing the uploads.
 
 ## Solution
 
-Glean provides [a family of cross platform Rust based SDKs](glean-rs-sdks), including an iOS
+Glean provides [a family of cross platform Rust based SDKs](#2-Glossary), including an iOS
 and an Android SDK. These SDKs can be leveraged to collect telemetry from the backend
 of the VPN client i.e. from the C++, Kotlin and Swift layers.
 
@@ -47,7 +47,7 @@ How is that different from writing a Glean wrapper based on the Glean JavaScript
 Wouldn't it invite simplification of the Glean APIs just the same?
 
 That _would_ be the case. However the Glean team has already written a very similar wrapper for
-using Glean on C++, called [project FOG (Firefox on Glean)](fog). Which means a full C++ wrapper
+using Glean on C++, called [project FOG (Firefox on Glean)](#2-Glossary). Which means a full C++ wrapper
 doesn't need to be implemented from scratch and instead FOG can largely be used as a base,
 by removing the Firefox specific code and adding some Qt/QML sprinkles on top.
 
@@ -77,7 +77,7 @@ folder plus a small extension on the `src/glean` folder.
 ### `qtglean/glean_parser_ext`
 
 > **Note**: This part of the code is _heavily_ copy pasted from mozilla-central
-> [`t/c/glean/build_scripts/glean_parser_ext`](t-c-glean-parser).
+> [`t/c/glean/build_scripts/glean_parser_ext`](#2-Glossary).
 
 In order to be able to call Glean APIs from C++ and QML this glean_parser extension contains custom templates
 and extends the functionalities of glean_parser to generate C++ and Rust metrics and pings files that work together.
@@ -185,13 +185,13 @@ that is easy to pass through the FFI layer.
 ### `qtglean/src/ffi`
 
 > **Note**: This part of the code is _heavily_ copy pasted from mozilla-central
-> [`t/c/glean/api/src/ffi`](t-c-g-ffi).
+> [`t/c/glean/api/src/ffi`](#2-Glossary).
 
 The `ffi` module on the `qtglean` Rust crate exports all of the metrics and pings APIs to the FFI.
 These are standalone functions which receive the metric id as a first argument to be able to call
 the desired APIs on the correct metric instances.
 
-Continuing on the above example, this is what the boolean [`set`](glean-bool-set) API looks like.
+Continuing on the above example, this is what the boolean [`set`](#2-Glossary) API looks like.
 
 ```rust
 #[no_mangle]
@@ -254,7 +254,7 @@ from the same instance of Glean.
 Instead of consuming the Glean mobile SDKs through the normal channels, the `glean` repository is a
 submodule of this repository. When building for mobile, the Glean platform specific code is added
 to the Mozilla VPN sources -- it is worth noting that part of that code is generated using a tool
-called [UniFFI](uniffi) and Glean itself has internal metrics and pings which also require a generation step,
+called [UniFFI](#2-Glossary) and Glean itself has internal metrics and pings which also require a generation step,
 both generations steps are also added to the Mozilla VPN platform specific build setup.
 
 The `qtglean` library exposes the glean_core library symbols as well as the symbols used by the Mozilla VPN C++ code.
@@ -271,8 +271,8 @@ while backgrounded. This caveat is a big issue for telemetry.
 
 A normal usage pattern on mobile is to open the application, turn on the VPN, background it and not
 interact with it for a long time. All of this time of usage is not capture by the main application
-Glean instance. Read more about this issue on [Overview and implications of scheduled task behavior on mobile devices](sarahs-doc)
-and ["Mozilla VPN Telemetry Refactor](beas-doc).
+Glean instance. Read more about this issue on [Overview and implications of scheduled task behavior on mobile devices](#2-Glossary)
+and ["Mozilla VPN Telemetry Refactor](#2-Glossary).
 
 To deal with that, the mobile daemons (Android Daemon and iOS Network Extension, to be more precise)
 have a completely separate instance of Glean that permits telemetry collection while the application
@@ -281,15 +281,16 @@ telemetry between processes -- the daemons each run in a separate process from t
 
 <!-- A single [`installation_id`](installation-id) metric is shared between the two processes for analyzer
 to be able to join the data on the backend. TODO: Let's uncomment this one this metric is implemented. -->
-
-[the-glean-book]: https://mozilla.github.io/glean/book/index.html
-[readme-glean]: https://github.com/mozilla-mobile/mozilla-vpn-client#working-on-tickets-with-new-glean-instrumentation
-[glean-js]: https://mozilla.github.io/glean/book/language-bindings/javascript/index.html
-[glean-rs-sdks]: https://mozilla.github.io/glean/book/language-bindings/index.html#rust-core-based-sdks
-[fog]: https://firefox-source-docs.mozilla.org/toolkit/components/glean/index.html
-[t-c-glean-parser]: https://searchfox.org/mozilla-central/source/toolkit/components/glean/build_scripts/glean_parser_ext
-[t-c-g-ffi]: https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/ffi
-[glean-bool-set]: https://mozilla.github.io/glean/book/reference/metrics/boolean.html
-[uniffi]: https://mozilla.github.io/uniffi-rs/
-[sarahs-doc]: https://docs.google.com/document/d/1A2O_eACk0P3jDy0g2rRN5UTBOUj-iN-re6tVsRpxtDA/edit?usp=sharing
-[beas-doc]: https://docs.google.com/document/d/1jyNZ_g_cUpZZsEr2hYwnwZgkxlvqTmoFUJKp_LAOPts/edit?usp=sharing
+-----
+## Glossary 
+[the-glean-book](https://mozilla.github.io/glean/book/index.html)
+[readme-glean](https://github.com/mozilla-mobile/mozilla-vpn-client#working-on-tickets-with-new-glean-instrumentation)
+[glean-js](https://mozilla.github.io/glean/book/language-bindings/javascript/index.html)
+[glean-rs-sdks](https://mozilla.github.io/glean/book/language-bindings/index.html#rust-core-based-sdks)
+[fog](https://firefox-source-docs.mozilla.org/toolkit/components/glean/index.html)
+[t-c-glean-parser](https://searchfox.org/mozilla-central/source/toolkit/components/glean/build_scripts/glean_parser_ext)
+[t-c-g-ffi](https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/ffi)
+[glean-bool-set](https://mozilla.github.io/glean/book/reference/metrics/boolean.html)
+[uniffi](https://mozilla.github.io/uniffi-rs/)
+[sarah's-doc](https://docs.google.com/document/d/1A2O_eACk0P3jDy0g2rRN5UTBOUj-iN-re6tVsRpxtDA/edit?usp=sharing)
+[bea's-doc](https://docs.google.com/document/d/1jyNZ_g_cUpZZsEr2hYwnwZgkxlvqTmoFUJKp_LAOPts/edit?usp=sharing)

@@ -1,4 +1,4 @@
-# Mozilla VPN - command-line interface
+# Command-line interface
 
 This quick document describes the command-line interface of the latest Mozilla
 VPN client. The interface has not been stabilized yet and the commands, the

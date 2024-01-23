@@ -1,4 +1,4 @@
-# Mozilla VPN Accessibility -- Testing Resources
+# Testing Resources
 
 ## Summary
 

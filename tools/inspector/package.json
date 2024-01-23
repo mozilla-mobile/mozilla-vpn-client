@@ -1,10 +1,29 @@
 {
-  "name": "inspector",
+  "name": "@vpntools/inspector",
   "version": "1.0.0",
   "description": "",
+  "targets":{
+    "app": {
+      "context": "browser",
+      "sourceMap": true,
+      "includeNodeModules": {
+        "lit": true
+      },
+      "publicUrl":"/mozilla-vpn-client/inspector",
+      "source":"index.html"
+    },
+    "lib":{
+      "source":"index.js",
+      "context": "browser",
+      "includeNodeModules": {
+        "lit": true
+      },
+      "outputFormat":"esmodule"
+    }
+  },
   "scripts": {
     "dev": "parcel index.html",
-    "build": "parcel build index.html --public-url /mozilla-vpn-client/inspector",
+    "build": "parcel build",
     "lint": "eslint **/*.js"
   },
   "engines": {
@@ -29,14 +48,5 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "node-gyp-build": "^4.3.0"
-  },
-  "targets": {
-    "dist": {
-      "context": "browser",
-      "sourceMap": true,
-      "includeNodeModules": {
-        "lit": true
-      }
-    }
   }
 }

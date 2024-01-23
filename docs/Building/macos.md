@@ -1,4 +1,4 @@
-# Pre-requisites
+# Build for MacOS
 
 ## Xcode
 
@@ -31,7 +31,7 @@ If xcrun didn't work, default paths where you probably find your SDK:
 
 Add it to the conda env
 
-    conda env config vars set SDKROOT=<sdk path>
+    conda env config vars set SDKROOT=$SDK_PATH
 
 Reactivate your conda env
 
@@ -60,11 +60,11 @@ Make the build directory
 
 Configure
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/
 
 Compile
 
-    cmake --build build-mac -j <number of processes to use e.g. 8>
+    cmake --build build-mac -j (number of processes to use e.g. 8)
 
 # Run
 
@@ -91,8 +91,7 @@ Use the `--target pkg` to build the MacOS installer.
 
 This will produce an unsigned installer package at `build-mac/macos/pkg/MozillaVPN-unsigned.pkg`
 and a signed installer at `build-mac/macos/pkg/MozillaVPN-signed.pkg` if a valid installer
-signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` [variable at configuration
-time](./index.md#build-configure-flags).
+signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` [variable at configuration time](./index.md).
 
 # Building with Xcode
 
@@ -122,7 +121,7 @@ This step needs to be repeated each time Xcode updates.
 
 Use the same configure command above and add `-GXcode`:
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/ -GXcode
+    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/ -GXcode
 
 This will generate an Xcode project file at `build-mac/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:

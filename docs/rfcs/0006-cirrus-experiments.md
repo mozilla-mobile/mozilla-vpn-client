@@ -62,7 +62,7 @@ Server side will be responsible for hosting the Cirrus service and exposing its 
 
 Cirrus uses Glean internally. Therefore it requires a Glean application id. The process for requesting an application id can be found on[  Enabling data to be ingested by the data platform](https://mozilla.github.io/glean/book/user/adding-glean-to-your-project/enable-data-ingestion.html). We would want something like "mozillavpn_cirrus".
 
-Documentation of metrics and pings sent by the Cirrus service can be found at <https://github.com/mozilla/experimenter/blob/main/cirrus/server/telemetry/docs/metrics.md>.
+Documentation of metrics and pings sent by the Cirrus service can be found at https://github.com/mozilla/experimenter/blob/main/cirrus/server/telemetry/docs/metrics.md.
 
 > **Note** Cirrus also  requires a Remote Settings URL.  That will be provided by the Nimbus team and there is no action on our side required.
 

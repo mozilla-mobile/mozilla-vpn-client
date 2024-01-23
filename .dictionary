@@ -13,9 +13,11 @@ CSV
 Changelog
 Conda
 ConnectionDiagnostics
+Docusaurus
 DNS
 DevOps
 FFI
+ffi
 FeatureList
 Figma
 FreeDesktop
@@ -57,11 +59,13 @@ Qt's
 QtLottie
 RCC
 README
+readme
 RSA
 Replacer
 Rizental
 Rustup
 SDKs
+sdks
 SHA
 Serde
 SettingsHolder
@@ -73,6 +77,7 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+uniffi
 WebAssembly
 WebSockets
 WiX
@@ -97,8 +102,10 @@ att
 auth
 backend
 backgrounded
+bea's
 benchmarked
 benchmarking
+bool
 boolean
 bugfixes
 byteorder
@@ -196,6 +203,7 @@ runtime
 rustup
 scalable
 sdk
+sarah's
 serverData
 settingHolder
 shader
