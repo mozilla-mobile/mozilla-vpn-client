@@ -26,3 +26,4 @@ tasks-from:
     - qt.yml
     - conda_android.yml
     - conda_windows.yml
+    - conda_ios.yml
