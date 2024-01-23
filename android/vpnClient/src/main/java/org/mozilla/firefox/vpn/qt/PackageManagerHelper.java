@@ -40,9 +40,8 @@ public class PackageManagerHelper {
       PackageInfo p = packs.get(i);
       // Do not add ourselves and System Apps to the list, unless it might be a browser
       // or allowlisted
-      if ((!isSystemPackage(p,pm) || 
-            browsers.contains(p.packageName) ||
-            isAllowListed(p.packageName))
+      if ((!isSystemPackage(p, pm) || browsers.contains(p.packageName)
+              || isAllowListed(p.packageName))
           && !isSelf(p)) {
         String appid = p.packageName;
         String appName = p.applicationInfo.loadLabel(pm).toString();
@@ -89,10 +88,10 @@ public class PackageManagerHelper {
   }
 
   private static final String[] ALLOWLISTED_APPS = {
-          "com.google.android.projection.gearhead", // Android Auto
+      "com.google.android.projection.gearhead", // Android Auto
   };
 
-  public static boolean isAllowListed(String packageName){
+  public static boolean isAllowListed(String packageName) {
     return Arrays.stream(ALLOWLISTED_APPS).anyMatch(a -> a.equals(packageName));
   }
 
