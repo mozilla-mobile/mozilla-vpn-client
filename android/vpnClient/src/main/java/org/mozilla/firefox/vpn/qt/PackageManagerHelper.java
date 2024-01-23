@@ -39,7 +39,10 @@ public class PackageManagerHelper {
     for (int i = 0; i < packs.size(); i++) {
       PackageInfo p = packs.get(i);
       // Do not add ourselves and System Apps to the list, unless it might be a browser
-      if ((!isSystemPackage(p,pm) || browsers.contains(p.packageName))
+      // or allowlisted
+      if ((!isSystemPackage(p,pm) || 
+            browsers.contains(p.packageName) ||
+            isAllowListed(p.packageName))
           && !isSelf(p)) {
         String appid = p.packageName;
         String appName = p.applicationInfo.loadLabel(pm).toString();
@@ -84,6 +87,15 @@ public class PackageManagerHelper {
     }
     return false;
   }
+
+  private static final String[] ALLOWLISTED_APPS = {
+          "com.google.android.projection.gearhead", // Android Auto
+  };
+
+  public static boolean isAllowListed(String packageName){
+    return Arrays.stream(ALLOWLISTED_APPS).anyMatch(a -> a.equals(packageName));
+  }
+
   private static boolean isSelf(PackageInfo pkgInfo) {
     return pkgInfo.packageName.equals("org.mozilla.firefox.vpn")
         || pkgInfo.packageName.equals("org.mozilla.firefox.vpn.debug");
