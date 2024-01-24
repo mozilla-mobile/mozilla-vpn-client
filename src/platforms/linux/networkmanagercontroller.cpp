@@ -15,6 +15,7 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
+#include "networkmanagerconnection.h"
 #include "settingsholder.h"
 
 #if defined(__cplusplus)
@@ -194,7 +195,7 @@ void NetworkManagerController::initialize(const Device* device,
       }
     }
 
-    emit initialized(true, !m_activeConnectionPath.isEmpty(), QDateTime());
+    emit initialized(true, m_connection != nullptr, QDateTime());
     return;
   }
 
@@ -350,7 +351,7 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
   if (!okay) {
     logger.error() << "peer configuration failed:" << err->message;
     g_error_free(err);
-  } else if (m_activeConnectionPath.isEmpty()) {
+  } else if (m_connection == nullptr) {
     NMConnection* conn = NM_CONNECTION(m_remote);
     const char* ifname = nm_connection_get_interface_name(conn);
     NMDevice* device = nm_client_get_device_by_iface(m_client, ifname);
@@ -386,31 +387,24 @@ void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
 }
 
 void NetworkManagerController::setActiveConnection(const QString& path) {
-  if (m_activeConnectionPath == path) {
-    // No change - do nothing.
-    return;
-  }
-
   // If there is an existing active connection, discard it.
-  if (!m_activeConnectionPath.isEmpty()) {
-    QDBusConnection::systemBus().disconnect(
-        DBUS_NM_SERVICE, m_activeConnectionPath, DBUS_NM_ACTIVE, "StateChanged",
-        this, SLOT(stateChanged(uint, uint)));
+  if (m_connection != nullptr) {
+    if (m_connection->path() == path) {
+      // No change - do nothing.
+      return;
+    }
+    delete m_connection;
+    m_connection = nullptr;
   }
 
   // Start monitoring the new connection for state changes.
-  m_activeConnectionPath = path;
-  if (!m_activeConnectionPath.isEmpty()) {
-    QDBusConnection::systemBus().connect(
-        DBUS_NM_SERVICE, m_activeConnectionPath, DBUS_NM_ACTIVE, "StateChanged",
-        this, SLOT(stateChanged(uint, uint)));
-
-    // Fetch the connection state.
-    QDBusInterface conn(DBUS_NM_SERVICE, m_activeConnectionPath, DBUS_NM_ACTIVE,
-                        QDBusConnection::systemBus());
+  if (!path.isEmpty()) {
+    m_connection = new NetworkManagerConnection(path, this);
+    connect(m_connection, &NetworkManagerConnection::stateChanged,
+            this, &NetworkManagerController::stateChanged);
 
     // Invoke the state changed signal with the current state.
-    stateChanged(conn.property("State").toInt(),
+    stateChanged(m_connection->state(),
                  NM_ACTIVE_CONNECTION_STATE_REASON_NONE);
   }
 }
@@ -428,7 +422,7 @@ void NetworkManagerController::stateChanged(uint state, uint reason) {
 void NetworkManagerController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  if (m_activeConnectionPath.isEmpty()) {
+  if (m_connection == nullptr) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
     return;
@@ -437,16 +431,17 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
   QDBusMessage deactivateCall = QDBusMessage::createMethodCall(
       DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
       "DeactivateConnection");
-  deactivateCall << QDBusObjectPath(m_activeConnectionPath);
+  deactivateCall << QDBusObjectPath(m_connection->path());
 
   QDBusPendingReply<> reply = QDBusConnection::systemBus().asyncCall(deactivateCall);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    [&]{ emit disconnected(); });
-  QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this,
-                     SLOT(dnsCallCompleted(QDBusPendingCallWatcher*)));
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+                   &QObject::deleteLater);
 
-  m_activeConnectionPath.clear();
+  delete m_connection;
+  m_connection = nullptr;
 }
 
 void NetworkManagerController::propertyChanged(QString interface,

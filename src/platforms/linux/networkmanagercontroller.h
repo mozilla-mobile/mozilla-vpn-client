@@ -16,6 +16,7 @@ struct _NMActiveConnection;
 struct _NMCLient;
 struct _NMRemoteConnection;
 struct _NMSetting;
+class NetworkManagerConnection;
 
 class NetworkManagerController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(NetworkManagerController)
@@ -62,7 +63,7 @@ class NetworkManagerController final : public ControllerImpl {
   QString m_serverIpv4Gateway;
   QString m_tunnelUuid;
 
-  QString m_activeConnectionPath;
+  NetworkManagerConnection* m_connection = nullptr;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
