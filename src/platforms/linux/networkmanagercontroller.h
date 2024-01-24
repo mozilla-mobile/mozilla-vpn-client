@@ -42,12 +42,13 @@ class NetworkManagerController final : public ControllerImpl {
   void initializeCompleted(void*);
   void peerConfigCompleted(void*);
   void activateCompleted(void*);
-  void deactivateCompleted(void*);
   void stateChanged(uint state, uint reason);
+  void propertyChanged(QString interface, QVariantMap props, QStringList list);
 
  private:
   static uint64_t readSysfsFile(const QString& path);
-  void setActiveConnection(struct _NMActiveConnection*);
+  void setActiveConnection(const QString& path);
+  void setActiveConnection(struct _NMActiveConnection* active);
 
  private:
   struct _GCancellable* m_cancellable;
@@ -56,11 +57,12 @@ class NetworkManagerController final : public ControllerImpl {
   struct _NMSetting* m_ipv4config = nullptr;
   struct _NMSetting* m_ipv6config = nullptr;
   struct _NMRemoteConnection* m_remote = nullptr;
-  struct _NMActiveConnection* m_active = nullptr;
 
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
   QString m_tunnelUuid;
+
+  QString m_activeConnectionPath;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
