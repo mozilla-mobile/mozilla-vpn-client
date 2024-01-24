@@ -11,7 +11,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
