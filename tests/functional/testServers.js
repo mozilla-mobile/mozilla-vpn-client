@@ -273,7 +273,6 @@ describe('Server list', function() {
     }
 
     await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.visible());
     await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.opened());
     await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
     await vpn.waitForCondition(async () => {

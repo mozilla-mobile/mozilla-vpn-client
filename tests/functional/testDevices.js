@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 const guardianEndpoints = require('./servers/guardian_endpoints.js')
@@ -23,7 +24,6 @@ describe('Devices', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.visible());
       await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
@@ -33,6 +33,56 @@ describe('Devices', function() {
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.closed());
     });
+
+    describe('Checking devices screen telemetry', function () {
+      // No Glean on WASM.
+      if(vpn.runningOnWasm()) {
+        return;
+      }
+
+      const devicesTelemetryScreenId = "my_devices"
+
+      it('Checking devices screen impression telemetry', async () => {
+        const myDevicesScreenEvents = await vpn.gleanTestGetValue("impression", "myDevicesScreen", "main");
+        assert.equal(myDevicesScreenEvents.length, 1);
+        const myDevicesScreenEventsExtras = myDevicesScreenEvents[0].extra;
+        assert.equal(devicesTelemetryScreenId, myDevicesScreenEventsExtras.screen);
+      });
+
+      it('Checking devices screen help sheet telemetry', async () => {
+        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+          await vpn.flipFeatureOn('helpSheets');
+        }
+
+        const devicesHelpSheetTelemetryScreenId = "my_devices_info"
+        const devicesHelpSheetLinkTelemetryActionValue = "select"
+        const devicesHelpSheetLinkTelemetryElementIdValue = "learn_more"
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
+
+        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        assert.equal(helpTooltipSelectedEvents.length, 1);
+        const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
+        assert.equal(devicesTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
+
+        await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
+
+        const myDevicesInfoScreenEvents = await vpn.gleanTestGetValue("impression", "myDevicesInfoScreen", "main");
+        assert.equal(myDevicesInfoScreenEvents.length, 1);
+        const myDevicesInfoScreenEventsExtras = myDevicesInfoScreenEvents[0].extra;
+        assert.equal(devicesHelpSheetTelemetryScreenId, myDevicesInfoScreenEventsExtras.screen);
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+
+        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
+        assert.equal(learnMoreClickedEvents.length, 1);
+        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
+        assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
+        assert.equal(devicesHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
+        assert.equal(devicesHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+      });
+    });
+
   });
 
   describe('Device limit', function() {

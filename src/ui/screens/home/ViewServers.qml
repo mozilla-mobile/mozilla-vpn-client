@@ -16,6 +16,7 @@ import compat 0.1
 Item {
     id: root
     objectName: "viewServers"
+
     Accessible.name: qsTrId("vpn.servers.selectLocation")
     Accessible.role: Accessible.Pane
     Accessible.ignored: !visible
@@ -34,7 +35,7 @@ Item {
                 sourceComponent: MZIconButton {
                     objectName: "serverHelpButton"
 
-                    onClicked: helpSheet.active = true
+                    onClicked: helpSheet.open()
 
                     accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -162,7 +163,7 @@ Item {
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }, objectName: "learnMoreLink"},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }}
         ]
 
         onActiveChanged: if (active) item.open()

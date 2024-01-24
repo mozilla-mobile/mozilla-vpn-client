@@ -319,7 +319,6 @@ describe('Settings', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.visible());
       await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
@@ -328,6 +327,55 @@ describe('Settings', function() {
       });
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.closed());
+    });
+    
+    describe('Checking privacy screen telemetry', function () {
+      // No Glean on WASM.
+      if(vpn.runningOnWasm()) {
+        return;
+      }
+
+      const privacyTelemetryScreenId = "privacy_features"
+
+      it('Checking privacy screen impression telemetry', async () => {
+        const privacyFeaturesSreenEvents = await vpn.gleanTestGetValue("impression", "privacyFeaturesScreen", "main");
+        assert.equal(privacyFeaturesSreenEvents.length, 1);
+        const privacyFeaturesSreenEventsExtras = privacyFeaturesSreenEvents[0].extra;
+        assert.equal(privacyTelemetryScreenId, privacyFeaturesSreenEventsExtras.screen);
+      });
+
+      it('Checking privacy help sheet telemetry', async () => {
+        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+          await vpn.flipFeatureOn('helpSheets');
+        }
+
+        const privacyHelpSheetTelemetryScreenId = "privacy_features_info"
+        const privacyHelpSheetLinkTelemetryActionValue = "select"
+        const privacyHelpSheetLinkTelemetryElementIdValue = "learn_more"
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
+
+        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        assert.equal(helpTooltipSelectedEvents.length, 1);
+        const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
+        assert.equal(privacyTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
+
+        await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
+
+        const privacyFeaturesInfoScreenEvents = await vpn.gleanTestGetValue("impression", "privacyFeaturesInfoScreen", "main");
+        assert.equal(privacyFeaturesInfoScreenEvents.length, 1);
+        const privacyFeaturesInfoScreenEventsExtras = privacyFeaturesInfoScreenEvents[0].extra;
+        assert.equal(privacyHelpSheetTelemetryScreenId, privacyFeaturesInfoScreenEventsExtras.screen);
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+
+        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
+        assert.equal(learnMoreClickedEvents.length, 1);
+        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
+        assert.equal(privacyHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
+        assert.equal(privacyHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
+        assert.equal(privacyHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+      });
     });
   });
 
@@ -579,7 +627,6 @@ describe('Settings', function() {
       }
   
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.visible());
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
@@ -588,6 +635,55 @@ describe('Settings', function() {
       });
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.closed());
+    });
+
+    describe('Checking DNS screen telemetry', function () {
+      // No Glean on WASM.
+      if(vpn.runningOnWasm()) {
+        return;
+      }
+
+      const dnsTelemetryScreenId = "dns_settings"
+
+      it('Checking DNS screen impression telemetry', async () => {
+        const dnsSettingsScreenEvents = await vpn.gleanTestGetValue("impression", "dnsSettingsScreen", "main");
+        assert.equal(dnsSettingsScreenEvents.length, 1);
+        const dnsSettingsScreenEventExtras = dnsSettingsScreenEvents[0].extra;
+        assert.equal(dnsTelemetryScreenId, dnsSettingsScreenEventExtras.screen);
+      });
+
+      it('Checking DNS help sheet telemetry', async () => {
+        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+          await vpn.flipFeatureOn('helpSheets');
+        }
+
+        const dnsHelpSheetTelemetryScreenId = "dns_settings_info"
+        const dnsHelpSheetLinkTelemetryActionValue = "select"
+        const dnsHelpSheetLinkTelemetryElementIdValue = "learn_more"
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
+
+        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        assert.equal(helpTooltipSelectedEvents.length, 1);
+        const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
+        assert.equal(dnsTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
+
+        await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
+
+        const dnsSettingsInfoScreenEvents = await vpn.gleanTestGetValue("impression", "dnsSettingsInfoScreen", "main");
+        assert.equal(dnsSettingsInfoScreenEvents.length, 1);
+        const dnsSettingsInfoScreenEventsExtras = dnsSettingsInfoScreenEvents[0].extra;
+        assert.equal(dnsHelpSheetTelemetryScreenId, dnsSettingsInfoScreenEventsExtras.screen);
+
+        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+
+        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
+        assert.equal(learnMoreClickedEvents.length, 1);
+        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
+        assert.equal(dnsHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
+        assert.equal(dnsHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
+        assert.equal(dnsHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+      });
     });
   });
 

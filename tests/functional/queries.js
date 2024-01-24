@@ -55,11 +55,11 @@ class QmlQueryComposer {
   }
 
   opened() {
-    return this.prop('opened', true);
+    return this.prop('isOpen', true);
   }
 
   closed() {
-    return this.prop('opened', false);
+    return this.prop('isOpen', false);
   }
 
 

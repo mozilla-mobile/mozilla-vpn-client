@@ -530,3 +530,111 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys   
+  app_exclusions_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the app exclusions help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  dns_settings_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the dns settings help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  my_devices_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the devices settings 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  my_devices_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the devices help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  privacy_features_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the privacy features settings 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  privacy_features_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the privacy features help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

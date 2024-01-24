@@ -1141,3 +1141,48 @@ interaction:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
+  help_tooltip_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked a help tooltip button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *interaction_extra_keys
+  learn_more_clicked:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked a learn more link
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys:
+      screen:
+        description: The screen where the interaction happened
+        type: string
+      action:
+        description: TODO
+        type: string
+      element_id:
+        description: TODO
+        type: string
