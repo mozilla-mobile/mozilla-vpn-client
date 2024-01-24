@@ -738,7 +738,6 @@ sample:
     type: event
     lifetime: ping
     send_in_pings:
-      - main
       - vpnsession
     description: |
       The connection has no signal.
@@ -762,7 +761,6 @@ sample:
     type: event
     lifetime: ping
     send_in_pings:
-      - main
       - vpnsession
     description: |
       The connection is unstable.
