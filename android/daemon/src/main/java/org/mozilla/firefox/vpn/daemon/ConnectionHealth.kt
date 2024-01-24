@@ -189,7 +189,7 @@ class ConnectionHealth(service: VPNService) {
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
-                Session.daemonConnectionHealthStableCount.add()
+                Session.daemonConnHealthStable.add()
 
                 // Internet should be fine :)
                 mResetUsed = false
@@ -210,7 +210,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(endpoint).isReachable(PING_TIMEOUT)
             } != null
             if (anyNetworkCanConnect && canReachDNS && !mResetUsed) {
-                Session.daemonConnectionHealthUnstable.record()
+                Session.daemonConnHealthUnstable.record()
 
                 // The server seems to be online but the connection broke,
                 // Let's just try to force a reconnect ... but only once.
@@ -228,7 +228,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
-                Session.daemonConnectionHealthUnstable.record()
+                Session.daemonConnHealthUnstable.record()
 
                 Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
@@ -244,7 +244,7 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
 
-            Session.daemonConnectionHealthNoSignal.record()
+            Session.daemonConnHealthNoSignal.record()
             mPanicStateReached = true
             taskDone()
         }

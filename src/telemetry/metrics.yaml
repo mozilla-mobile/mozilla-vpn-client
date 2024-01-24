@@ -1762,7 +1762,7 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  daemon_connection_health_no_signal:
+  daemon_conn_health_no_signal:
     type: event
     lifetime: ping
     send_in_pings:
@@ -1788,7 +1788,7 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  daemon_connection_health_unstable:
+  daemon_conn_health_unstable:
     type: event
     lifetime: ping
     send_in_pings:
@@ -1813,7 +1813,7 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  daemmon_connection_health_stable_count:
+  daemon_conn_health_stable:
     type: counter
     lifetime: ping
     send_in_pings:
