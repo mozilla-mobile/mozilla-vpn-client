@@ -501,7 +501,7 @@ describe('Subscription view', function() {
         queries.screenSettings.subscriptionView.SCREEN.visible());
   });
 
-  it.only('Playing with the subscription view', async () => {
+  it('Playing with the subscription view', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
         sessionToken: 'session',
