@@ -25,7 +25,7 @@ object PackageManagerHelper {
     @Suppress("DEPRECATION")
     @SuppressLint("QueryPermissionsNeeded") // We have QUERY_ALL_PACKAGES permission
     @JvmStatic
-    internal fun getAllAppNames(ctx: Context): JsonAppMap {
+    fun getAllAppNames(ctx: Context): JsonAppMap {
         val output = JSONObject()
         val pm = ctx.packageManager
         val browsers = getBrowserIDs(pm)
@@ -53,7 +53,7 @@ object PackageManagerHelper {
     }
 
     @JvmStatic
-    private fun getAppIcon(ctx: Context, id: ApplicationId): Drawable {
+    fun getAppIcon(ctx: Context, id: ApplicationId): Drawable {
         try {
             return ctx.packageManager.getApplicationIcon(id)
         } catch (e: PackageManager.NameNotFoundException) {

@@ -10,10 +10,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.PERMISSION_DENIED
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.test.core.content.pm.ApplicationInfoBuilder
 import androidx.test.core.content.pm.PackageInfoBuilder
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.content.pm.PackageManager.PERMISSION_DENIED
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
