@@ -7,6 +7,34 @@ const vpn = require('./helper.js');
 const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Devices', function() {
+  describe('My devices tests', function() {
+    this.ctx.authenticationNeeded = true;
+
+    beforeEach(async () => {
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.DEVICES_VIEW.visible());
+    });
+
+    it('Checking the devices help sheet', async () => {
+      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+        await vpn.flipFeatureOn('helpSheets');
+      }
+  
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForCondition(async () => {
+          const url = await vpn.getLastUrl();
+          return url === 'https://support.mozilla.org/kb/how-add-devices-your-mozilla-vpn-subscription';
+      });
+      await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.closed());
+    });
+  });
+
   describe('Device limit', function() {
     this.ctx.authenticationNeeded = true;
 

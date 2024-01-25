@@ -38,7 +38,7 @@ import Mozilla.Shared 1.0
 MZBottomSheet {
     id: bottomSheet
 
-    property alias title: title.text
+    property string title
     required property var model
 
     enum BlockType {
@@ -48,201 +48,207 @@ MZBottomSheet {
         LinkButton
     }
 
-    implicitHeight: Math.min(contentItem.implicitHeight, maxHeight)
+    sizeToContent: true
 
-    contentItem: ColumnLayout {
+    //Only load the content if the drawer itself is loaded
+    contentItem: Loader {
 
-        spacing: 0
-
-        Accessible.role: Accessible.Grouping
-        Accessible.name: bottomSheet.title
-
-        Component.onCompleted: forceActiveFocus()
-
-        ColumnLayout {
-            id: headerLayout
-
-            Layout.topMargin: 8
-            Layout.preferredWidth: parent.width
+        active: bottomSheet.active
+        sourceComponent: ColumnLayout {
 
             spacing: 0
 
-            RowLayout {
-                spacing: 0
+            Accessible.role: Accessible.Grouping
+            Accessible.name: bottomSheet.title
 
-                Item {
-                    Layout.topMargin: MZTheme.theme.windowMargin / 2
-                    Layout.leftMargin: MZTheme.theme.windowMargin
-                    Layout.preferredHeight: MZTheme.theme.iconSize * 1.5
-                    Layout.preferredWidth: MZTheme.theme.iconSize * 1.5
-                    Layout.alignment: Qt.AlignTop
-
-                    Image {
-                        id: icon
-                        anchors.centerIn: parent
-
-                        source: "qrc:/nebula/resources/tip-filled.svg"
-                        sourceSize.width: MZTheme.theme.iconSize * 1.5
-
-                        mirror: MZLocalizer.isRightToLeft
-                        fillMode: Image.PreserveAspectFit
-                    }
-                }
-
-
-                MZBoldLabel {
-                    id: title
-
-                    Layout.topMargin: MZTheme.theme.windowMargin / 2
-                    Layout.leftMargin: 8
-                    Layout.alignment: Qt.AlignTop
-                    Layout.fillWidth: true
-
-                    verticalAlignment: Text.AlignVCenter
-                    lineHeightMode: Text.FixedHeight
-                    lineHeight: 24
-                    elide: Text.ElideRight
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                MZIconButton {
-                    Layout.rightMargin: MZTheme.theme.windowMargin / 2
-
-                    Layout.preferredHeight: MZTheme.theme.rowHeight
-                    Layout.preferredWidth: MZTheme.theme.rowHeight
-
-                    //Hacky workaround because for some reason, when opening a sheet via
-                    //the right menu button in MZMenu, this close button is in a
-                    //"Hovered" state, even though it wasn't hovered
-                    //Likely something to do with both icon buttons being in the same position
-                    //Relative to their parent (top right corner)
-                    mouseArea.hoverEnabled: bottomSheet.opened
-
-                    onClicked: bottomSheet.close()
-
-                    accessibleName: MZI18n.GlobalClose
-
-                    Image {
-                        anchors.centerIn: parent
-
-                        sourceSize.height: MZTheme.theme.iconSize
-                        sourceSize.width: MZTheme.theme.iconSize
-
-                        source: "qrc:/nebula/resources/close-dark.svg"
-                        fillMode: Image.PreserveAspectFit
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.topMargin: 8
-                Layout.preferredHeight: MZTheme.theme.dividerHeight
-                Layout.fillWidth: true
-
-                color: MZTheme.colors.grey10
-            }
-        }
-
-        MZFlickable {
-            id: flickable
-
-            readonly property int maxheight: bottomSheet.maxHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, maxheight)
-
-            flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
-
-            addNavbarHeightOffset: false
+            Component.onCompleted: forceActiveFocus()
 
             ColumnLayout {
-                id: layout
-                anchors.fill: parent
-                anchors.margins: MZTheme.theme.windowMargin * 1.5
+                id: headerLayout
 
-                Repeater {
-                    model: bottomSheet.model
-                    delegate: Loader {
-                        id: loader
+                Layout.topMargin: 8
+                Layout.preferredWidth: parent.width
 
-                        property var composerBlock: bottomSheet.model[index]
+                spacing: 0
 
-                        function getSourceComponent() {
-                            switch (composerBlock.type) {
-                            case MZHelpSheet.BlockType.Title:
-                                return titleBlock
-                            case MZHelpSheet.BlockType.Text:
-                                return textBlock
-                            case MZHelpSheet.BlockType.PrimaryButton:
-                                return buttonBlock
-                            case MZHelpSheet.BlockType.LinkButton:
-                                return linkButtonBlock
-                            default:
-                                return console.error("Unable to create view for composer block of type: " + modelData)
-                            }
+                RowLayout {
+                    spacing: 0
 
+                    Item {
+                        Layout.topMargin: MZTheme.theme.windowMargin / 2
+                        Layout.leftMargin: MZTheme.theme.windowMargin
+                        Layout.preferredHeight: MZTheme.theme.iconSize * 1.5
+                        Layout.preferredWidth: MZTheme.theme.iconSize * 1.5
+                        Layout.alignment: Qt.AlignTop
+
+                        Image {
+                            anchors.centerIn: parent
+
+                            source: "qrc:/nebula/resources/tip-filled.svg"
+                            sourceSize.width: MZTheme.theme.iconSize * 1.5
+
+                            mirror: MZLocalizer.isRightToLeft
+                            fillMode: Image.PreserveAspectFit
                         }
+                    }
 
+
+                    MZBoldLabel {
+                        id: title
+
+                        Layout.topMargin: MZTheme.theme.windowMargin / 2
+                        Layout.leftMargin: 8
+                        Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
-                        Layout.preferredHeight: item.implicitHeight
-                        Layout.topMargin: composerBlock.margin
 
-                        sourceComponent: getSourceComponent()
+                        text: bottomSheet.title
+                        verticalAlignment: Text.AlignVCenter
+                        lineHeightMode: Text.FixedHeight
+                        lineHeight: 24
+                        elide: Text.ElideRight
+                    }
 
-                        Component {
-                            id: titleBlock
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
-                            MZBoldInterLabel {
-                                Layout.fillWidth: true
+                    MZIconButton {
+                        objectName: bottomSheet.objectName + "-closeButton"
 
-                                text: loader.composerBlock.text
-                                font.pixelSize: MZTheme.theme.fontSize
-                                lineHeight: 24
-                                verticalAlignment: Text.AlignVCenter
-                            }
+                        Layout.rightMargin: MZTheme.theme.windowMargin / 2
+
+                        Layout.preferredHeight: MZTheme.theme.rowHeight
+                        Layout.preferredWidth: MZTheme.theme.rowHeight
+
+                        onClicked: bottomSheet.close()
+
+                        accessibleName: MZI18n.GlobalClose
+
+                        Image {
+                            anchors.centerIn: parent
+
+                            sourceSize.height: MZTheme.theme.iconSize
+                            sourceSize.width: MZTheme.theme.iconSize
+
+                            source: "qrc:/nebula/resources/close-dark.svg"
+                            fillMode: Image.PreserveAspectFit
                         }
+                    }
+                }
 
-                        Component {
-                            id: textBlock
+                Rectangle {
+                    Layout.topMargin: 8
+                    Layout.preferredHeight: MZTheme.theme.dividerHeight
+                    Layout.fillWidth: true
 
-                            MZInterLabel {
+                    color: MZTheme.colors.grey10
+                }
+            }
 
-                                text: loader.composerBlock.text
-                                font.pixelSize: MZTheme.theme.fontSizeSmall
-                                color: MZTheme.theme.fontColor
-                                lineHeight: 21
-                                horizontalAlignment: Text.AlignLeft
+            MZFlickable {
+                id: flickable
+
+                readonly property int maxheight: bottomSheet.maxSheetHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, maxheight)
+
+                flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
+
+                addNavbarHeightOffset: false
+
+                ColumnLayout {
+                    id: layout
+
+                    anchors.fill: parent
+                    anchors.margins: MZTheme.theme.windowMargin * 1.5
+
+                    Repeater {
+                        model: bottomSheet.model
+                        delegate: Loader {
+                            id: loader
+                            objectName: "helpSheetContentLoader"
+
+                            property var composerBlock: bottomSheet.model[index]
+
+                            function getSourceComponent() {
+                                switch (composerBlock.type) {
+                                case MZHelpSheet.BlockType.Title:
+                                    return titleBlock
+                                case MZHelpSheet.BlockType.Text:
+                                    return textBlock
+                                case MZHelpSheet.BlockType.PrimaryButton:
+                                    return buttonBlock
+                                case MZHelpSheet.BlockType.LinkButton:
+                                    return linkButtonBlock
+                                default:
+                                    return console.error("Unable to create view for composer block of type: " + modelData)
+                                }
+
                             }
-                        }
 
-                        Component {
-                            id: buttonBlock
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: item.implicitHeight
+                            Layout.topMargin: composerBlock.margin
 
-                            MZButton {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
+                            sourceComponent: getSourceComponent()
 
-                                implicitHeight: MZTheme.theme.rowHeight
+                            Component {
+                                id: titleBlock
 
-                                text: loader.composerBlock.text
+                                MZBoldInterLabel {
+                                    Layout.fillWidth: true
 
-                                onClicked: loader.composerBlock.action()
+                                    text: loader.composerBlock.text
+                                    font.pixelSize: MZTheme.theme.fontSize
+                                    lineHeight: 24
+                                    verticalAlignment: Text.AlignVCenter
+                                }
                             }
-                        }
 
-                        Component {
-                            id: linkButtonBlock
+                            Component {
+                                id: textBlock
 
-                            MZLinkButton {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
+                                MZInterLabel {
 
-                                labelText: loader.composerBlock.text
+                                    text: loader.composerBlock.text
+                                    font.pixelSize: MZTheme.theme.fontSizeSmall
+                                    color: MZTheme.theme.fontColor
+                                    lineHeight: 21
+                                    horizontalAlignment: Text.AlignLeft
+                                }
+                            }
 
-                                onClicked: loader.composerBlock.action()
+                            Component {
+                                id: buttonBlock
+
+                                MZButton {
+                                    objectName: typeof loader.composerBlock.objectName !== "undefined" ? loader.composerBlock.objectName : null
+
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+
+                                    implicitHeight: MZTheme.theme.rowHeight
+
+                                    text: loader.composerBlock.text
+
+                                    onClicked: loader.composerBlock.action()
+                                }
+                            }
+
+                            Component {
+                                id: linkButtonBlock
+
+                                MZLinkButton {
+                                    objectName: typeof loader.composerBlock.objectName !== "undefined" ? loader.composerBlock.objectName : null
+
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+
+                                    labelText: loader.composerBlock.text
+
+                                    onClicked: loader.composerBlock.action()
+                                }
                             }
                         }
                     }

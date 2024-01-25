@@ -12,6 +12,8 @@ import components 0.1
 
 MZViewBase {
     id: vpnFlickable
+    objectName: "devicesSettingsView"
+
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
     property string deviceCountLabelText: ""
@@ -60,7 +62,9 @@ MZViewBase {
                 id: helpIconButtonLoader
                 active: MZFeatureList.get("helpSheets").isSupported
                 sourceComponent: MZIconButton {
-                    onClicked: helpSheetLoader.active = true
+                    objectName: "devicesHelpButton"
+
+                    onClicked: helpSheet.active = true
 
                     accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -99,26 +103,22 @@ MZViewBase {
         }
     }
 
-    Loader {
-        id: helpSheetLoader
+    MZHelpSheet {
+        id: helpSheet
+        objectName: "devicesHelpSheet"
 
-        active: false
+        title: MZI18n.HelpSheetsDevicesTitle
+
+        model: [
+            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") }, objectName: "learnMoreLink"},
+        ]
 
         onActiveChanged: if (active) item.open()
-
-        sourceComponent: MZHelpSheet {
-            title: MZI18n.HelpSheetsDevicesTitle
-
-            model: [
-                {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
-                {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: 8},
-                {type: MZHelpSheet.BlockType.Text, text:MZI18n.HelpSheetsDevicesBody2, margin: 16},
-                {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: 16, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") } },
-            ]
-
-            onClosed: helpSheetLoader.active = false
-        }
     }
+
 
     Connections {
         target: deviceList

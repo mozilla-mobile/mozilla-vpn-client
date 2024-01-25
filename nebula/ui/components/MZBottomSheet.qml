@@ -26,32 +26,48 @@ import Mozilla.Shared 1.0
   }
 */
 
-Drawer {
-    id: drawer
+Loader {
+    id: root
 
-    readonly property int maxHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
+    readonly property int maxSheetHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
+    required default property var contentItem
+    property bool sizeToContent: false
+    property bool opened: active ? item.opened : null
 
-    implicitWidth: window.width
-    implicitHeight: maxHeight
+    signal close
 
-    topPadding: 0
+    active: false
 
-    dragMargin: 0
-    edge: Qt.BottomEdge
-    background: Rectangle {
+    onClose: item.close()
 
-        radius: 8
-        color: MZTheme.theme.bgColor
+    sourceComponent: Drawer {
+        implicitWidth: window.width
+        implicitHeight: root.sizeToContent ? Math.min(contentItem.implicitHeight, maxSheetHeight) : maxSheetHeight
 
-        Rectangle {
-            color: parent.color
-            anchors.bottom: parent.bottom
-            width: parent.width
-            height: parent.radius
+        topPadding: 0
+
+        dragMargin: 0
+        edge: Qt.BottomEdge
+        contentItem: root.contentItem
+
+        onClosed: root.active = false
+
+        background: Rectangle {
+
+            radius: 8
+            color: MZTheme.theme.bgColor
+
+            Rectangle {
+                color: parent.color
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: parent.radius
+            }
+        }
+
+        Overlay.modal: Rectangle {
+            color: MZTheme.theme.overlayBackground
         }
     }
-
-    Overlay.modal: Rectangle {
-        color: MZTheme.theme.overlayBackground
-    }
 }
+
