@@ -66,9 +66,9 @@ NetworkManagerController::NetworkManagerController() {
 
   // Watch for property changes
   QDBusConnection::systemBus().connect(
-        "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
-        "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
-        SLOT(propertyChanged(QString, QVariantMap, QStringList)));
+      "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
+      "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
+      SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 
   m_wireguard = nm_setting_wireguard_new();
   m_cancellable = g_cancellable_new();
@@ -400,12 +400,11 @@ void NetworkManagerController::setActiveConnection(const QString& path) {
   // Start monitoring the new connection for state changes.
   if (!path.isEmpty()) {
     m_connection = new NetworkManagerConnection(path, this);
-    connect(m_connection, &NetworkManagerConnection::stateChanged,
-            this, &NetworkManagerController::stateChanged);
+    connect(m_connection, &NetworkManagerConnection::stateChanged, this,
+            &NetworkManagerController::stateChanged);
 
     // Invoke the state changed signal with the current state.
-    stateChanged(m_connection->state(),
-                 NM_ACTIVE_CONNECTION_STATE_REASON_NONE);
+    stateChanged(m_connection->state(), NM_ACTIVE_CONNECTION_STATE_REASON_NONE);
   }
 }
 
@@ -428,15 +427,14 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
     return;
   }
 
-  QDBusMessage deactivateCall = QDBusMessage::createMethodCall(
-      DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
-      "DeactivateConnection");
-  deactivateCall << QDBusObjectPath(m_connection->path());
+  QDBusMessage call = QDBusMessage::createMethodCall(
+      DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE, "DeactivateConnection");
+  call << QDBusObjectPath(m_connection->path());
 
-  QDBusPendingReply<> reply = QDBusConnection::systemBus().asyncCall(deactivateCall);
+  QDBusPendingReply<> reply = QDBusConnection::systemBus().asyncCall(call);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
-                   [&]{ emit disconnected(); });
+                   [&] { emit disconnected(); });
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    &QObject::deleteLater);
 
@@ -452,14 +450,11 @@ void NetworkManagerController::propertyChanged(QString interface,
     return;
   }
 
-  for (auto i = props.cbegin(); i != props.cend(); i++) {
-    logger.debug() << "Property" << i.key() << "changed:" << i.value().toString();
-  }
-
   // If the ActivatingConnection changed, check to see if our interface was
   // activated externally.
   if (props.contains("ActivatingConnection")) {
-    QDBusObjectPath path = props.value("ActivatingConnection").value<QDBusObjectPath>();
+    QDBusObjectPath path =
+        props.value("ActivatingConnection").value<QDBusObjectPath>();
     
     // Is this the tunnel inteface?
     QDBusInterface conn(DBUS_NM_SERVICE, path.path(), DBUS_NM_ACTIVE,

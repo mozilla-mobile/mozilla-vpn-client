@@ -12,10 +12,11 @@ Logger logger("NetworkManagerConnection");
 }
 
 NetworkManagerConnection::NetworkManagerConnection(const QString& path,
-                                                   QObject* parent) :
-    QObject(parent), m_interface("org.freedesktop.NetworkManager", path,
-                                 "org.freedesktop.NetworkManager.Connection.Active",
-                                 QDBusConnection::systemBus(), parent) {
+                                                   QObject* parent)
+    : QObject(parent),
+      m_interface("org.freedesktop.NetworkManager", path,
+                  "org.freedesktop.NetworkManager.Connection.Active",
+                  QDBusConnection::systemBus(), parent) {
   MZ_COUNT_CTOR(NetworkManagerConnection);
 
   // Get the UUID.
@@ -23,9 +24,8 @@ NetworkManagerConnection::NetworkManagerConnection(const QString& path,
 
   // Report state changes.
   QDBusConnection::systemBus().connect(
-      "org.freedesktop.NetworkManager", path,
-      "org.freedesktop.NetworkManager.Connection.Active", "StateChanged", this,
-      SLOT(dbusStateChanged(uint, uint)));
+      m_interface.service(), path, m_interface.interface(), "StateChanged",
+      this, SLOT(dbusStateChanged(uint, uint)));
 }
 
 NetworkManagerConnection::~NetworkManagerConnection() {

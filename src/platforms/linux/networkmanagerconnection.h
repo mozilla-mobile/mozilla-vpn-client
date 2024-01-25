@@ -5,8 +5,8 @@
 #ifndef NETWORKMANAGERCONNECTION_H
 #define NETWORKMANAGERCONNECTION_H
 
-#include <QObject>
 #include <QDBusInterface>
+#include <QObject>
 
 class NetworkManagerConnection final : public QObject {
   Q_OBJECT
