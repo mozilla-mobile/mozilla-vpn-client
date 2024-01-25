@@ -91,6 +91,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: .
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: linux_unit_tests
           name: codecov-poc
           files: nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
@@ -183,6 +184,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           directory: .
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: macos_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info

@@ -164,6 +164,7 @@ jobs:
         if: steps.generateGrcov.outcome == 'success'
         with:
           directory: .
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: functional_tests
           name: codecov-poc
           files: ${{ runner.temp }}/artifacts/functional_lcov.info
