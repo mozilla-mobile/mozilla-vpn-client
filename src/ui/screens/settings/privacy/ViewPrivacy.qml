@@ -27,7 +27,7 @@ MZViewBase {
                     helpSheet.open()
 
                     Glean.interaction.helpTooltipSelected.record({
-                        screen: telemetryScreenId,
+                        screen: root.telemetryScreenId,
                     });
                 }
 
@@ -154,10 +154,8 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoPrivacy")
-                    Glean.interaction.learnMoreClicked.record({
-                        screen: telemetryScreenId,
-                        action: "select",
-                        element_id: "learn_more"
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
                     });
                 }}
         ]

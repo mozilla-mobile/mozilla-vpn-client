@@ -35,7 +35,7 @@ MZViewBase {
                     helpSheet.open()
 
                     Glean.interaction.helpTooltipSelected.record({
-                        screen: telemetryScreenId,
+                        screen: vpnFlickable.telemetryScreenId,
                     });
                 }
 
@@ -112,10 +112,8 @@ MZViewBase {
                 }},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoExcludedApps")
-                    Glean.interaction.learnMoreClicked.record({
-                        screen: telemetryScreenId,
-                        action: "select",
-                        element_id: "learn_more"
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
                     });
                 }}
         ]

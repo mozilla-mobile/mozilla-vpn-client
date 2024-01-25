@@ -142,8 +142,6 @@ describe('Settings', function() {
       }
 
       const appExclusionsHelpSheetTelemetryScreenId = "app_exclusions_info"
-      const appExclusionsHelpSheetLinkTelemetryActionValue = "select"
-      const appExclusionsHelpSheetLinkTelemetryElementIdValue = "learn_more"
 
       await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
 
@@ -161,15 +159,10 @@ describe('Settings', function() {
 
       await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-      const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
-      assert.equal(learnMoreClickedEvents.length, 1);
-      const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
-      assert.equal(appExclusionsHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
-      assert.equal(appExclusionsHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
-      assert.equal(appExclusionsHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
-
-      // PLACEHOLDER: IF THIS BUTTON GETS TELEMETRY (OTHERWISE REMOVE)
-      // await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON.visible());
+      const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+      assert.equal(learnMoreSelectedEvents.length, 1);
+      const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+      assert.equal(appExclusionsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
     });
 
     // Dummy VPN does not have the Add Application button so we cannot currently test this.

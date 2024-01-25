@@ -55,8 +55,6 @@ describe('Devices', function() {
         }
 
         const devicesHelpSheetTelemetryScreenId = "my_devices_info"
-        const devicesHelpSheetLinkTelemetryActionValue = "select"
-        const devicesHelpSheetLinkTelemetryElementIdValue = "learn_more"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
 
@@ -74,12 +72,10 @@ describe('Devices', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
-        assert.equal(learnMoreClickedEvents.length, 1);
-        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
-        assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
-        assert.equal(devicesHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
-        assert.equal(devicesHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        assert.equal(learnMoreSelectedEvents.length, 1);
+        const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+        assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
 

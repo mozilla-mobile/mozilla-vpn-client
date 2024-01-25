@@ -1159,7 +1159,7 @@ interaction:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
-  learn_more_clicked:
+  learn_more_selected:
     type: event
     lifetime: ping
     send_in_pings:

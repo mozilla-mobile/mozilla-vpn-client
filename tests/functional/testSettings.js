@@ -350,8 +350,6 @@ describe('Settings', function() {
         }
 
         const privacyHelpSheetTelemetryScreenId = "privacy_features_info"
-        const privacyHelpSheetLinkTelemetryActionValue = "select"
-        const privacyHelpSheetLinkTelemetryElementIdValue = "learn_more"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
 
@@ -369,12 +367,10 @@ describe('Settings', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
-        assert.equal(learnMoreClickedEvents.length, 1);
-        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
-        assert.equal(privacyHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
-        assert.equal(privacyHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
-        assert.equal(privacyHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        assert.equal(learnMoreSelectedEvents.length, 1);
+        const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+        assert.equal(privacyHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
   });
@@ -658,8 +654,6 @@ describe('Settings', function() {
         }
 
         const dnsHelpSheetTelemetryScreenId = "dns_settings_info"
-        const dnsHelpSheetLinkTelemetryActionValue = "select"
-        const dnsHelpSheetLinkTelemetryElementIdValue = "learn_more"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
 
@@ -677,12 +671,10 @@ describe('Settings', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreClickedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreClicked", "main");
-        assert.equal(learnMoreClickedEvents.length, 1);
-        const learnMoreClickedEventsExtras = learnMoreClickedEvents[0].extra;
-        assert.equal(dnsHelpSheetTelemetryScreenId, learnMoreClickedEventsExtras.screen);
-        assert.equal(dnsHelpSheetLinkTelemetryActionValue, learnMoreClickedEventsExtras.action);
-        assert.equal(dnsHelpSheetLinkTelemetryElementIdValue, learnMoreClickedEventsExtras.element_id);
+        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        assert.equal(learnMoreSelectedEvents.length, 1);
+        const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+        assert.equal(dnsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
   });

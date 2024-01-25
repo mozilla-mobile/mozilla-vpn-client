@@ -17,6 +17,8 @@ Item {
     id: root
     objectName: "viewServers"
 
+    property string telemetryScreenId
+
     Accessible.name: qsTrId("vpn.servers.selectLocation")
     Accessible.role: Accessible.Pane
     Accessible.ignored: !visible
@@ -35,7 +37,13 @@ Item {
                 sourceComponent: MZIconButton {
                     objectName: "serverHelpButton"
 
-                    onClicked: helpSheet.open()
+                    onClicked: {
+                        helpSheet.open()
+
+                        Glean.interaction.helpTooltipSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+                    }
 
                     accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -145,6 +153,25 @@ Item {
                             }
                         }
 
+        onSelectedSegmentChanged: {
+            root.telemetryScreenId = segmentedNav.selectedSegment.objectName === "tabSingleHop" ? "select_location_singlehop" : "select_location_multihop"
+
+            switch (segmentedNav.selectedSegment.objectName) {
+            case "tabSingleHop":
+                Glean.impression.selectLocationSinglehopScreen.record({
+                    screen: root.telemetryScreenId,
+                });
+                break
+            case "tabMultiHop":
+                Glean.impression.selectLocationMultihopScreen.record({
+                    screen: root.telemetryScreenId,
+                });
+                break
+            default:
+                console.log("Unrecognized selected segment")
+                break
+            }
+        }
 
         ViewMultiHop {
             id: multiHopStackView
@@ -157,16 +184,27 @@ Item {
         id: helpSheet
         objectName: "serverHelpSheet"
 
+        property string telemetryScreenId: "selection_location_info"
+
         title: MZI18n.HelpSheetsLocationTitle
 
         model: [
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsLocationHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => { MZUrlOpener.openUrlLabel("sumoMultihop") }}
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
+                    MZUrlOpener.openUrlLabel("sumoMultihop")
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
+                    });
+                }}
         ]
 
-        onActiveChanged: if (active) item.open()
+        onOpened: {
+            Glean.impression.selectLocationInfoScreen.record({
+                screen: telemetryScreenId,
+            });
+        }
     }
 
     Component.onCompleted: {
