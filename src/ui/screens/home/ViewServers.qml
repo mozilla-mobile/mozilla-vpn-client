@@ -154,16 +154,16 @@ Item {
                         }
 
         onSelectedSegmentChanged: {
-            root.telemetryScreenId = segmentedNav.selectedSegment.objectName === "tabSingleHop" ? "select_location_singlehop" : "select_location_multihop"
+            root.telemetryScreenId = segmentedNav.selectedSegment.objectName === "tabSingleHop" ? "location_singlehop" : "location_multihop"
 
             switch (segmentedNav.selectedSegment.objectName) {
             case "tabSingleHop":
-                Glean.impression.selectLocationSinglehopScreen.record({
+                Glean.impression.locationSinglehopScreen.record({
                     screen: root.telemetryScreenId,
                 });
                 break
             case "tabMultiHop":
-                Glean.impression.selectLocationMultihopScreen.record({
+                Glean.impression.locationMultihopScreen.record({
                     screen: root.telemetryScreenId,
                 });
                 break
@@ -184,7 +184,7 @@ Item {
         id: helpSheet
         objectName: "serverHelpSheet"
 
-        property string telemetryScreenId: "selection_location_info"
+        property string telemetryScreenId: "location_info"
 
         title: MZI18n.HelpSheetsLocationTitle
 
@@ -201,7 +201,7 @@ Item {
         ]
 
         onOpened: {
-            Glean.impression.selectLocationInfoScreen.record({
+            Glean.impression.locationInfoScreen.record({
                 screen: telemetryScreenId,
             });
         }

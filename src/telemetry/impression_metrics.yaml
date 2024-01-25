@@ -638,7 +638,7 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
-  select_location_singlehop_screen:
+  location_singlehop_screen:
     type: event
     lifetime: ping
     send_in_pings:
@@ -656,7 +656,7 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
-  select_location_multihop_screen:
+  location_multihop_screen:
     type: event
     lifetime: ping
     send_in_pings:
@@ -674,13 +674,13 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
-  select_location_info_screen:
+  location_info_screen:
     type: event
     lifetime: ping
     send_in_pings:
       - main
     description: |
-      The user has opened the selection location help sheet
+      The user has opened the select location help sheet
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5092
     data_reviews:

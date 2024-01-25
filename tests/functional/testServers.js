@@ -268,7 +268,7 @@ describe('Server', function() {
           queries.screenHome.serverListView.SEARCH_BAR_ERROR.hidden());
     });
   
-    it('check the selection location help sheet', async () => {
+    it('check the location help sheet', async () => {
       if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
         await vpn.flipFeatureOn('helpSheets');
       }
@@ -286,45 +286,43 @@ describe('Server', function() {
   });
 
 
-  describe('checking select location screen telemetry', function () {
+  describe('checking location screen telemetry', function () {
     // No Glean on WASM.
     if(vpn.runningOnWasm()) {
       return;
     }
 
-    const selectLocationSheetTelemetryScreenId = "selection_location_info"
+    const locationSheetTelemetryScreenId = "location_info"
 
-    // const multiHopTelemetryScreenId = "select_location_multihop"
+    describe('checking location screen telemetry (singlehop)', function () {
+      const singleHopTelemetryScreenId = "location_singlehop"
 
-    describe('checking select location screen telemetry (singlehop)', function () {
-      const singleHopTelemetryScreenId = "select_location_singlehop"
-
-      it('checking select location screen impression telemetry on server view open', async () => {
+      it('checking location screen impression telemetry on server view open', async () => {
         //Ensures the server view opens to multihop
         await vpn.setSetting('serverData', '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Melbourne","exit_country_code":"au"}');
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-        const selectionLocationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "selectLocationSinglehopScreen", "main");
-        assert.equal(selectionLocationSinglehopScreenEvents.length, 1);
-        const selectionLocationSinglehopScreenEventsExtras = selectionLocationSinglehopScreenEvents[0].extra;
-        assert.equal(singleHopTelemetryScreenId, selectionLocationSinglehopScreenEventsExtras.screen);
+        const locationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "locationSinglehopScreen", "main");
+        assert.equal(locationSinglehopScreenEvents.length, 1);
+        const locationSinglehopScreenEventsExtras = locationSinglehopScreenEvents[0].extra;
+        assert.equal(singleHopTelemetryScreenId, locationSinglehopScreenEventsExtras.screen);
       });
 
-      it('checking select location screen impression telemetry on segment change', async () => {
+      it('checking location screen impression telemetry on segment change', async () => {
         //Open's the server view to multihop
         await vpn.setSetting('serverData', '{"enter_city_name":"Atlanta","enter_country_code":"us","exit_city_name":"Melbourne","exit_country_code":"au"}');
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.SINGLEHOP_SELECTOR_TAB.visible());
 
-        const selectionLocationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "selectLocationSinglehopScreen", "main");
-        assert.equal(selectionLocationSinglehopScreenEvents.length, 1);
-        const selectionLocationSinglehopScreenEventsExtras = selectionLocationSinglehopScreenEvents[0].extra;
-        assert.equal(singleHopTelemetryScreenId, selectionLocationSinglehopScreenEventsExtras.screen);
+        const locationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "locationSinglehopScreen", "main");
+        assert.equal(locationSinglehopScreenEvents.length, 1);
+        const locationSinglehopScreenEventsExtras = locationSinglehopScreenEvents[0].extra;
+        assert.equal(singleHopTelemetryScreenId, locationSinglehopScreenEventsExtras.screen);
       });
 
-      it('checking select location help tooltip telemetry', async () => {
+      it('checking location help tooltip telemetry', async () => {
         if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
           await vpn.flipFeatureOn('helpSheets');
         }
@@ -341,46 +339,46 @@ describe('Server', function() {
 
         await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.opened());
 
-        const selectLocationInfoScreenEvents = await vpn.gleanTestGetValue("impression", "selectLocationInfoScreen", "main");
-        assert.equal(selectLocationInfoScreenEvents.length, 1);
-        const selectLocationInfoScreenEventsExtras = selectLocationInfoScreenEvents[0].extra;
-        assert.equal(selectLocationSheetTelemetryScreenId, selectLocationInfoScreenEventsExtras.screen);
+        const locationInfoScreenEvents = await vpn.gleanTestGetValue("impression", "locationInfoScreen", "main");
+        assert.equal(locationInfoScreenEvents.length, 1);
+        const locationInfoScreenEventsExtras = locationInfoScreenEvents[0].extra;
+        assert.equal(locationSheetTelemetryScreenId, locationInfoScreenEventsExtras.screen);
 
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
         const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
         assert.equal(learnMoreSelectedEvents.length, 1);
         const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
-        assert.equal(selectLocationSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
+        assert.equal(locationSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
 
-    describe('checking select location screen telemetry (multihop)', function () {
-      const multiHopTelemetryScreenId = "select_location_multihop"
+    describe('checking location screen telemetry (multihop)', function () {
+      const multiHopTelemetryScreenId = "location_multihop"
 
-      it('checking select location screen impression telemetry on server view open', async () => {
+      it('checking location screen impression telemetry on server view open', async () => {
         //Ensures the server view opens to multihop
         await vpn.setSetting('serverData', '{"enter_city_name":"Atlanta","enter_country_code":"us","exit_city_name":"Melbourne","exit_country_code":"au"}');
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-        const selectionLocationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "selectLocationMultihopScreen", "main");
-        assert.equal(selectionLocationMultihopScreenEvents.length, 1);
-        const selectionLocationMultihopScreenEventsExtras = selectionLocationMultihopScreenEvents[0].extra;
-        assert.equal(multiHopTelemetryScreenId, selectionLocationMultihopScreenEventsExtras.screen);
+        const locationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "locationMultihopScreen", "main");
+        assert.equal(locationMultihopScreenEvents.length, 1);
+        const locationMultihopScreenEventsExtras = locationMultihopScreenEvents[0].extra;
+        assert.equal(multiHopTelemetryScreenId, locationMultihopScreenEventsExtras.screen);
       });
 
-      it('checking select location screen impression telemetry on segment change', async () => {
+      it('checking location screen impression telemetry on segment change', async () => {
         //Open's the server view to singlehop
         await vpn.setSetting('serverData', '{"enter_city_name":"","enter_country_code":"","exit_city_name":"Melbourne","exit_country_code":"au"}');
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
 
-        const selectionLocationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "selectLocationMultihopScreen", "main");
-        assert.equal(selectionLocationMultihopScreenEvents.length, 1);
-        const selectionLocationMultihopScreenEventsExtras = selectionLocationMultihopScreenEvents[0].extra;
-        assert.equal(multiHopTelemetryScreenId, selectionLocationMultihopScreenEventsExtras.screen);
+        const locationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "locationMultihopScreen", "main");
+        assert.equal(locationMultihopScreenEvents.length, 1);
+        const locationMultihopScreenEventsExtras = locationMultihopScreenEvents[0].extra;
+        assert.equal(multiHopTelemetryScreenId, locationMultihopScreenEventsExtras.screen);
       });
 
       it('checking select location help tooltip telemetry', async () => {
