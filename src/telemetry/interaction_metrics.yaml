@@ -1176,13 +1176,4 @@ interaction:
       - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
-    extra_keys:
-      screen:
-        description: The screen where the interaction happened
-        type: string
-      action:
-        description: TODO
-        type: string
-      element_id:
-        description: TODO
-        type: string
+    extra_keys: *interaction_extra_keys
