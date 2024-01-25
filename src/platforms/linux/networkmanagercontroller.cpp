@@ -455,7 +455,7 @@ void NetworkManagerController::propertyChanged(QString interface,
   if (props.contains("ActivatingConnection")) {
     QDBusObjectPath path =
         props.value("ActivatingConnection").value<QDBusObjectPath>();
-    
+
     // Is this the tunnel inteface?
     QDBusInterface conn(DBUS_NM_SERVICE, path.path(), DBUS_NM_ACTIVE,
                         QDBusConnection::systemBus());
