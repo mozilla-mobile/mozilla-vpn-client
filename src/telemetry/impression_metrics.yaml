@@ -663,6 +663,13 @@ impression:
       - main
     description: |
       The user has opened to the multihop screen
+
+      Note: When recorded, the `screen` extra key may have the value 
+      `unexpected`. That value is used if this event is recorded 
+      when an unexpected segment is clicked (not singlehop or multihop)
+      Although that is theoretically not possible, the code path for
+      such a situation exists. Large number of this event with this
+      value for the `screen` extra key would mean a bug in the code.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5092
     data_reviews:

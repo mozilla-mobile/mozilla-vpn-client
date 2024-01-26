@@ -168,7 +168,9 @@ Item {
                 });
                 break
             default:
-                console.log("Unrecognized selected segment")
+                Glean.impression.locationSinglehopScreen.record({
+                    screen: "unexpected",
+                });
                 break
             }
         }
