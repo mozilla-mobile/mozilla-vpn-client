@@ -168,7 +168,7 @@ Item {
                 });
                 break
             default:
-                Glean.impression.locationSinglehopScreen.record({
+                Glean.impression.locationMultihopScreen.record({
                     screen: "unexpected",
                 });
                 break
