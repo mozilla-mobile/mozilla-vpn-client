@@ -20,137 +20,136 @@ ColumnLayout {
     property int availableHeight: 0;
 
     spacing: MZTheme.theme.vSpacing
-
     Layout.preferredWidth: parent.width
 
-    MZSearchBar {
-        property bool sorted: false;
-        id: searchBarWrapper
-        _filterProxySource: VPNAppPermissions
-        _filterProxyCallback: obj => {
-             const filterValue = getSearchBarText();
-             return obj.appName.toLowerCase().includes(filterValue);
-         }
-        _searchBarHasError: applist.count === 0
-        _searchBarPlaceholderText: searchBarPlaceholder
-        Layout.fillWidth: true
+    Component {
+        id: appListHeader
+
+        ColumnLayout {
+            id: col2
+            property var getProxyModel: searchBarWrapper.getProxyModel
+
+            Layout.preferredWidth: parent.width
+
+            MZSearchBar {
+                property bool sorted: false;
+                id: searchBarWrapper
+                _filterProxySource: VPNAppPermissions
+                _filterProxyCallback: obj => {
+                    const filterValue = getSearchBarText();
+                    return obj.appName.toLowerCase().includes(filterValue);
+                }
+                _searchBarHasError: applist.count === 0
+                _searchBarPlaceholderText: searchBarPlaceholder
+                Layout.fillWidth: true
+            }
+
+            MZLinkButton {
+                property int numDisabledApps: MZSettings.vpnDisabledApps.length
+
+                id: clearAllButton
+                objectName: "clearAll"
+
+                Layout.alignment: Qt.AlignLeft
+
+                // Hack to horizontally align the text
+                // with column of checkboxes.
+                Layout.leftMargin: -4
+
+                textAlignment: Text.AlignLeft
+                labelText: MZI18n.SettingsAppExclusionClearAllApps
+                fontSize: MZTheme.theme.fontSize
+                fontName: MZTheme.theme.fontInterSemiBoldFamily
+
+                onClicked: {
+                    Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
+                    VPNAppPermissions.protectAll();
+                }
+                enabled: MZSettings.vpnDisabledApps.length > 0
+                visible: applist.count > 0
+                width: parent.width
+            }
+        }
     }
 
-    ColumnLayout {
-        id: col2
-        objectName: "appExclusionsList"
+    ListView {
+        id: applist
 
-        spacing: MZTheme.theme.windowMargin / 2
+        objectName: "appList"
+        model: headerItem.getProxyModel()
+        height: availableHeight // $TODO: Can this be replaced by layout values in https://doc.qt.io/qt-6/qml-qtquick-layouts-columnlayout.html#details
+        Layout.fillWidth: true
+        spacing: MZTheme.theme.windowMargin
+        delegate: RowLayout {
+            property string appIdForFunctionalTests: appID
+            id: appRow
 
-        Layout.preferredWidth: parent.width
-
-        MZLinkButton {
-            property int numDisabledApps: MZSettings.vpnDisabledApps.length
-
-            id: clearAllButton
-            objectName: "clearAll"
-
-            Layout.alignment: Qt.AlignLeft
-
-            // Hack to horizontally align the text
-            // with column of checkboxes. This is
-            // repeated on L132
-            Layout.leftMargin: -4
-
-            textAlignment: Text.AlignLeft
-            labelText: MZI18n.SettingsAppExclusionClearAllApps
-            fontSize: MZTheme.theme.fontSize
-            fontName: MZTheme.theme.fontInterSemiBoldFamily
-
-            onClicked: {
-                Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
-                VPNAppPermissions.protectAll();
-            }
-            enabled: MZSettings.vpnDisabledApps.length > 0
-            visible: applist.count > 0
-            width: parent.width
-        }
-
-        ListView {
-            id: applist
-
-            objectName: "appList"
-            model: searchBarWrapper.getProxyModel()
-            height: availableHeight - itemSpacer.height - addApp.height
-            width: parent.width
-            interactive: true
+            objectName: `app-${index}`
             spacing: MZTheme.theme.windowMargin
-            delegate: RowLayout {
-                property string appIdForFunctionalTests: appID
-                id: appRow
+            opacity: enabled ? 1.0 : 0.5
+            Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
-                objectName: `app-${index}`
-                spacing: MZTheme.theme.windowMargin
-                opacity: enabled ? 1.0 : 0.5
-                Layout.preferredHeight: MZTheme.theme.navBarTopMargin
+            function handleClick() {
+                VPNAppPermissions.flip(appID)
+            }
 
-                function handleClick() {
-                    VPNAppPermissions.flip(appID)
-                }
+            MZCheckBox {
+                id: checkBox
+                objectName: "checkbox"
+                onClicked: () => appRow.handleClick()
+                checked: !appIsEnabled
+                Layout.alignment: Qt.AlignVCenter
+                Accessible.name: appID
+            }
 
-                MZCheckBox {
-                    id: checkBox
-                    objectName: "checkbox"
-                    onClicked: () => appRow.handleClick()
-                    checked: !appIsEnabled
-                    Layout.alignment: Qt.AlignVCenter
-                    Accessible.name: appID
-                }
+            Rectangle {
+                Layout.preferredWidth: MZTheme.theme.windowMargin * 2
+                Layout.preferredHeight: MZTheme.theme.windowMargin * 2
+                Layout.maximumHeight: MZTheme.theme.windowMargin * 2
+                Layout.maximumWidth: MZTheme.theme.windowMargin * 2
+                Layout.alignment: Qt.AlignVCenter
+                color: MZTheme.theme.transparent
 
-                Rectangle {
-                    Layout.preferredWidth: MZTheme.theme.windowMargin * 2
-                    Layout.preferredHeight: MZTheme.theme.windowMargin * 2
-                    Layout.maximumHeight: MZTheme.theme.windowMargin * 2
-                    Layout.maximumWidth: MZTheme.theme.windowMargin * 2
-                    Layout.alignment: Qt.AlignVCenter
-                    color: MZTheme.theme.transparent
-
-                    Image {
-                        height: MZTheme.theme.windowMargin * 2
-                        width: MZTheme.theme.windowMargin * 2
-                        sourceSize.width: MZTheme.theme.windowMargin * 2
-                        sourceSize.height: MZTheme.theme.windowMargin * 2
-                        anchors.centerIn: parent
-                        fillMode:  Image.PreserveAspectFit
-                        Component.onCompleted: {
-                            if (appID !== "") {
-                                source = "image://app/"+appID
-                            }
+                Image {
+                    height: MZTheme.theme.windowMargin * 2
+                    width: MZTheme.theme.windowMargin * 2
+                    sourceSize.width: MZTheme.theme.windowMargin * 2
+                    sourceSize.height: MZTheme.theme.windowMargin * 2
+                    anchors.centerIn: parent
+                    fillMode:  Image.PreserveAspectFit
+                    Component.onCompleted: {
+                        if (appID !== "") {
+                            source = "image://app/"+appID
                         }
-                        
                     }
+                    
                 }
+            }
 
-                MZInterLabel {
-                    id: label
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    text: appName
-                    color: MZTheme.theme.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
-                    width: parent.width
+            MZInterLabel {
+                id: label
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                Layout.fillWidth: true
+                text: appName
+                color: MZTheme.theme.fontColorDark
+                horizontalAlignment: Text.AlignLeft
+                width: parent.width
 
-                    MZMouseArea {
-                        anchors.fill: undefined
-                        width: parent.implicitWidth
-                        height: parent.implicitHeight
-                        propagateClickToParent: false
-                        onClicked: () => appRow.handleClick()
-                    }
+                MZMouseArea {
+                    anchors.fill: undefined
+                    width: parent.implicitWidth
+                    height: parent.implicitHeight
+                    propagateClickToParent: false
+                    onClicked: () => appRow.handleClick()
                 }
             }
         }
+        header: appListHeader
+        footer: appListFooter
+    }
 
-        Item {
-            id: itemSpacer
-            height: MZTheme.theme.vSpacing
-            width: parent.width
-        }
+    Component {
+        id: appListFooter
 
         MZLinkButton {
             objectName: "addApplication"

@@ -88,11 +88,10 @@ MZViewBase {
         Layout.fillHeight: false
         Layout.leftMargin: MZTheme.theme.vSpacing
         Layout.rightMargin: MZTheme.theme.vSpacing
-        width: parent.width
 
         searchBarPlaceholder: searchApps
         enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
-        availableHeight: navbar.mapToItem(null, 0, 0).y - vpnFlickable.mapToItem(null, 0, 0).y - 200 // This needs to be fixed.
+        availableHeight: window.height - MZTheme.theme.navBarHeight // This needs to be fixed.
     }
 
 
