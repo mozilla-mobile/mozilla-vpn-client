@@ -104,9 +104,9 @@ fi
 # we cannot feature flag off, and itself does not properly 
 # check during configure if it can be built. 
 # so nuclear option here.
-rm -rf qttools/src/linguist/linguist
-mkdir qttools/src/linguist/linguist
-echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
+# rm -rf qttools/src/linguist/linguist
+# mkdir qttools/src/linguist/linguist
+# echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
 
 # Create the installation prefix, and convert to an absolute path.
 mkdir -p $PREFIX
