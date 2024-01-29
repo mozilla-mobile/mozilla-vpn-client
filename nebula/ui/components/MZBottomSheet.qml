@@ -32,13 +32,21 @@ Loader {
     readonly property int maxSheetHeight: (Qt.platform.os === "ios" ? window.safeContentHeight : window.height) -  MZTheme.theme.sheetTopMargin
     required default property var contentItem
     property bool sizeToContent: false
-    property bool opened: active ? item.opened : null
+    property bool isOpen: active ? item.opened : null
 
-    signal close
+    signal opened
+    signal closed
+
+    function open() {
+        active = true
+        item.open()
+    }
+
+    function close() {
+        item.close()
+    }
 
     active: false
-
-    onClose: item.close()
 
     sourceComponent: Drawer {
         implicitWidth: window.width
@@ -50,7 +58,12 @@ Loader {
         edge: Qt.BottomEdge
         contentItem: root.contentItem
 
-        onClosed: root.active = false
+        onOpened:  root.opened()
+
+        onClosed: {
+            root.closed()
+            root.active = false
+        }
 
         background: Rectangle {
 

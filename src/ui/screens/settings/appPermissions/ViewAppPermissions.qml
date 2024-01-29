@@ -15,6 +15,8 @@ MZViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
 
+    readonly property string telemetryScreenId : "app_exclusions"
+
     //% "Search apps"
     //: Search bar placeholder text
     property string searchApps: qsTrId("vpn.protectSelectedApps.searchApps")
@@ -29,7 +31,13 @@ MZViewBase {
             sourceComponent: MZIconButton {
                 objectName: "excludedAppsHelpButton"
 
-                onClicked: helpSheet.active = true
+                onClicked: {
+                    helpSheet.open()
+
+                    Glean.interaction.helpTooltipSelected.record({
+                        screen: vpnFlickable.telemetryScreenId,
+                    });
+                }
 
                 accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -89,6 +97,8 @@ MZViewBase {
         id: helpSheet
         objectName: "excludedAppsHelpSheet"
 
+        property string telemetryScreenId: "app_exclusions_info"
+
         title: MZI18n.HelpSheetsExcludedAppsTitle
 
         model: [
@@ -96,19 +106,29 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => {
+            {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "openPrivacyFeaturesButton", action: () => {
                     close()
                     getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
-                }, objectName: "openPrivacyFeaturesButton"},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoExcludedApps") }, objectName: "learnMoreLink"},
+                }},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, objectName: "learnMoreLink", action: () => {
+                    MZUrlOpener.openUrlLabel("sumoExcludedApps")
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
+                    });
+                }}
         ]
 
-        onActiveChanged: if (active) item.open()
+        onOpened: {
+            Glean.impression.appExclusionsInfoScreen.record({
+                screen: telemetryScreenId,
+            });
+        }
     }
 
     Component.onCompleted: {
-        console.log("Component ready");
         VPNAppPermissions.requestApplist();
-        Glean.sample.appPermissionsViewOpened.record();
+        Glean.impression.appExclusionsScreen.record({
+            screen: telemetryScreenId,
+        });
     }
 }

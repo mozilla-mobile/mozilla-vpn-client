@@ -88,7 +88,6 @@ describe('Settings', function() {
 
     //Test the "Open privacy features" button
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.visible());
     await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON.visible());
     await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.closed());
@@ -101,7 +100,6 @@ describe('Settings', function() {
 
     //Test the "Learn more" link
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.visible());
     await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
     await vpn.waitForCondition(async () => {
@@ -111,9 +109,65 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_CLOSE_BUTTON.visible());
   });
 
-  // Dummy VPN does not have the Add Application button so we cannot currently test this.
-  // Jira issue: https://mozilla-hub.atlassian.net/browse/VPN-5974
-  it('Record telemetry when user clicks on Add application', async () => {
+  describe('Checking app exclusions screen telemetry', function () {
+    // No Glean on WASM.
+    if(vpn.runningOnWasm()) {
+      return;
+    }
+
+    const appExclusionsTelemetryScreenId = "app_exclusions"
+
+    it('Record telemetry when user clicks on App Exclusions', async () => {
+      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+      await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      // Check that we collect telemetry
+      const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
+      var element = events[0];
+      assert.equal(element.extra.screen, "settings");
+    });
+
+    it('Checking app exclusions screen impression telemetry', async () => {
+      const appExclusionsSreenEvents = await vpn.gleanTestGetValue("impression", "appExclusionsScreen", "main");
+      assert.equal(appExclusionsSreenEvents.length, 1);
+      const appExclusionsSreenEventsExtras = appExclusionsSreenEvents[0].extra;
+      assert.equal(appExclusionsTelemetryScreenId, appExclusionsSreenEventsExtras.screen);
+    });
+
+    it('Checking privacy help sheet telemetry', async () => {
+      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+        await vpn.flipFeatureOn('helpSheets');
+      }
+
+      const appExclusionsHelpSheetTelemetryScreenId = "app_exclusions_info"
+
+      await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
+
+      const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+      assert.equal(helpTooltipSelectedEvents.length, 1);
+      const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
+      assert.equal(appExclusionsTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
+
+      await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
+
+      const appExclusionsInfoScreenEvents = await vpn.gleanTestGetValue("impression", "appExclusionsInfoScreen", "main");
+      assert.equal(appExclusionsInfoScreenEvents.length, 1);
+      const appExclusionsInfoScreenEventsExtras = appExclusionsInfoScreenEvents[0].extra;
+      assert.equal(appExclusionsHelpSheetTelemetryScreenId, appExclusionsInfoScreenEventsExtras.screen);
+
+      await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+
+      const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+      assert.equal(learnMoreSelectedEvents.length, 1);
+      const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+      assert.equal(appExclusionsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
+    });
+
+    // Dummy VPN does not have the Add Application button so we cannot currently test this.
+    // Jira issue: https://mozilla-hub.atlassian.net/browse/VPN-5974
+    it('Record telemetry when user clicks on Add application', async () => {
     // await vpn.waitForQueryAndClick(appExclusionsView.ADD_APPLICATION_BUTTON.visible());
     // await vpn.waitForQuery(appExclusionsView.STACKVIEW.ready());
 
@@ -121,21 +175,6 @@ describe('Settings', function() {
     // assert.equal(events.length, 1);
     // var element = events[0];
     // assert.equal(element.extra.screen, "app_exclusions");
-  });
-
-  it('Record telemetry when user clicks on App Exclusions', async () => {
-    if (this.ctx.wasm) {
-      // This test cannot run in wasm
-      return;
-    }
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-    await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-    // Check that we collect telemetry
-    const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
-    var element = events[0];
-    assert.equal(element.extra.screen, "settings");
+    });
   });
 });

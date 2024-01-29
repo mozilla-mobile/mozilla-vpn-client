@@ -14,6 +14,7 @@ MZViewBase {
     id: vpnFlickable
     objectName: "devicesSettingsView"
 
+    readonly property string telemetryScreenId : "my_devices"
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
     property string deviceCountLabelText: ""
@@ -64,7 +65,13 @@ MZViewBase {
                 sourceComponent: MZIconButton {
                     objectName: "devicesHelpButton"
 
-                    onClicked: helpSheet.active = true
+                    onClicked: {
+                        helpSheet.open()
+
+                        Glean.interaction.helpTooltipSelected.record({
+                            screen: vpnFlickable.telemetryScreenId,
+                        });
+                    }
 
                     accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -107,18 +114,28 @@ MZViewBase {
         id: helpSheet
         objectName: "devicesHelpSheet"
 
+        property string telemetryScreenId: "my_devices_info"
+
         title: MZI18n.HelpSheetsDevicesTitle
 
         model: [
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDevicesHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDevices") }, objectName: "learnMoreLink"},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
+                    MZUrlOpener.openUrlLabel("sumoDevices")
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
+                    });
+                }}
         ]
 
-        onActiveChanged: if (active) item.open()
+        onOpened: {
+            Glean.impression.myDevicesInfoScreen.record({
+                screen: telemetryScreenId,
+            });
+        }
     }
-
 
     Connections {
         target: deviceList
@@ -129,5 +146,9 @@ MZViewBase {
 
     Component.onCompleted: {
         VPN.refreshDevices()
+
+        Glean.impression.myDevicesScreen.record({
+            screen: telemetryScreenId,
+        });
     }
 }

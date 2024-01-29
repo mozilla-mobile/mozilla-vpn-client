@@ -530,3 +530,172 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys   
+  app_exclusions_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the app exclusions help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  dns_settings_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the dns settings help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  my_devices_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the devices settings 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  my_devices_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the devices help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  privacy_features_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the privacy features settings 
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  privacy_features_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the privacy features help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  location_singlehop_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened to the singlehop screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  location_multihop_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened to the multihop screen
+
+      Note: When recorded, the `screen` extra key may have the value 
+      `unexpected`. That value is used if this event is recorded 
+      when an unexpected segment is clicked (not singlehop or multihop)
+      Although that is theoretically not possible, the code path for
+      such a situation exists. Large number of this event with this
+      value for the `screen` extra key would mean a bug in the code.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys
+  location_info_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has opened the select location help sheet
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5092
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mlichtenstein@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

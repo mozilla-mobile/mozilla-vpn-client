@@ -93,8 +93,8 @@ MZViewBase {
             }
 
             Loader {
-                Layout.preferredHeight: item.Layout.preferredHeight
-                Layout.fillWidth: item.Layout.fillWidth
+                Layout.preferredHeight: active ? item.Layout.preferredHeight : 0
+                Layout.fillWidth: active ? item.Layout.fillWidth : false
 
                 visible: active
                 active: !MZFeatureList.get("helpSheets").isSupported

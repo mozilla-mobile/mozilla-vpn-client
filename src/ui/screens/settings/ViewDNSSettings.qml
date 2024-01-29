@@ -17,17 +17,23 @@ MZViewBase {
 
     _menuTitle: MZI18n.SettingsDnsSettings
 
+    readonly property string telemetryScreenId : "dns_settings"
     property bool customDNS: false
     property bool privacyDialogNeeded: true
     property bool dnsSelectionChanged: false
-    readonly property string telemetryScreenId : "dns_settings"
     property Component rightMenuButton: Component {
         Loader {
             active: MZFeatureList.get("helpSheets").isSupported
             sourceComponent: MZIconButton {
                 objectName: "dnsHelpButton"
 
-                onClicked: helpSheet.active = true
+                onClicked: {
+                    helpSheet.open()
+
+                    Glean.interaction.helpTooltipSelected.record({
+                        screen: root.telemetryScreenId,
+                    });
+                }
 
                 accessibleName: MZI18n.GetHelpLinkTitle
 
@@ -278,8 +284,8 @@ MZViewBase {
 
     Component.onCompleted: {
         Glean.impression.dnsSettingsScreen.record({
-                                                      screen: telemetryScreenId,
-                                                  });
+            screen: telemetryScreenId,
+        });
         reset();
     }
 
@@ -340,16 +346,27 @@ MZViewBase {
         id: helpSheet
         objectName: "dnsHelpSheet"
 
+        property string telemetryScreenId: "dns_settings_info"
+
         title: MZI18n.HelpSheetsDnsTitle
 
         model: [
             {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsDnsHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
-            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, action: () => { MZUrlOpener.openUrlLabel("sumoDns") }, objectName: "learnMoreLink"},
+            {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
+                    MZUrlOpener.openUrlLabel("sumoDns")
+                    Glean.interaction.learnMoreSelected.record({
+                        screen: telemetryScreenId
+                    });
+                }}
         ]
 
-        onActiveChanged: if (active) item.open()
+        onOpened: {
+            Glean.impression.dnsSettingsInfoScreen.record({
+                screen: telemetryScreenId,
+            });
+        }
     }
 }
 
