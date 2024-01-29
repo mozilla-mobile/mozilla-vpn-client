@@ -8,7 +8,7 @@
   "dependencies": {
     "chalk": "^5.2.0",
     "commander": "^11.1.0",
-    "inquirer": "^9.2.11",
+    "inquirer": "^9.2.13",
     "node-fetch": "^3.2.3",
     "wikibase-sdk": "^9.2.4"
   },
