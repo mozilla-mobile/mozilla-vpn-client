@@ -12,6 +12,7 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 ENV CURL='curl --location --retry 5' \
     DEBIAN_FRONTEND='noninteractive' \
     LANG='en_US.UTF-8' \
+    LC_ALL='en_US.UTF-8' \
     TERM='dumb'
 
 ## Ensure that we generate the default locale
