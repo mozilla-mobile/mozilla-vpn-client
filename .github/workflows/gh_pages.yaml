@@ -97,15 +97,14 @@ jobs:
       - name: Building
         shell: bash
         run: |
-          cd tools/inspector
           npm install
-          npm run build
+          npm run inspector:build
 
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
             name: Inspector Build
-            path: tools/inspector/dist
+            path: tools/inspector/dist/app
 
   translationsreport:
     name: Add Translations Report
