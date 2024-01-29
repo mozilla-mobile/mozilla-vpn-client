@@ -914,10 +914,8 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
 
-  shouldSkipSessionTelemetry =
-      (m_state == Controller::StateSwitching ||
-       m_state == Controller::StateSilentSwitching ||
-       App::instance()->state() == App::StateOnboarding);
+  shouldSkipSessionTelemetry = (m_state == Controller::StateSwitching ||
+                                m_state == Controller::StateSilentSwitching);
   logger.debug() << "Set shouldSkipSessionTelemetry to"
                  << shouldSkipSessionTelemetry;
 

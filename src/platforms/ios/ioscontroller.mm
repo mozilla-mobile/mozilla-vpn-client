@@ -154,15 +154,6 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                         : @""
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
       installationId:config.m_installationId.toNSString()
-      isOnboarding:MozillaVPN::instance()->state() == App::StateOnboarding
-      onboardingTunnelSavedCallback:^() {
-        logger.info() << "Onboarding: Onboarding completed";
-        MozillaVPN::instance()->onboardingCompleted();
-      }
-      onboardingDeactivateTunnelCallback:^() {
-        logger.info() << "Onboarding: Deactivating tunnel";
-        MozillaVPN::instance()->deactivate();
-      }
       disconnectOnErrorCallback:^() {
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();
@@ -172,6 +163,15 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
             logger.error() << "Error in tunnel creation, but finishing onboarding";
             MozillaVPN::instance()->onboardingCompleted();
           }
+        }
+      }
+      onboardingCompletedCallback:^() {
+        BOOL isOnboarding = MozillaVPN::instance()->state() == App::StateOnboarding;
+        if (isOnboarding) {
+          logger.debug() << "Onboarding completed";
+          MozillaVPN::instance()->onboardingCompleted();
+        } else {
+          logger.debug() << "Not onboarding";
         }
       }
       vpnConfigPermissionResponseCallback:^(BOOL granted) {

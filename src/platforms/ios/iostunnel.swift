@@ -28,16 +28,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         return tag
     }
 
-    private var isSuperDooperFeatureActive: Bool {
-        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
-    }
-
-    private var shouldSkipTelemetry: Bool {
-        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["shouldSkipTelemetry"] as? Bool) ?? false
-    }
-
     private var shouldSendTelemetry: Bool {
-        return !shouldSkipTelemetry && isSuperDooperFeatureActive
+        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
 
     override init() {
