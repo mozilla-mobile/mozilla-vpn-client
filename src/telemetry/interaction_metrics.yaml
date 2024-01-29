@@ -1151,7 +1151,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5092
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1169,7 +1169,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5092
     data_reviews:
-      - TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9023#pullrequestreview-1848707594
     data_sensitivity:
       - interaction
     notification_emails:
