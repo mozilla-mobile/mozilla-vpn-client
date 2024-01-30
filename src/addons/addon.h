@@ -9,14 +9,13 @@
 #include <QObject>
 #include <QTranslator>
 
-#include "settings/settinggroup.h"
-#include "settingsholder.h"
 #include "state/addonstate.h"
 
 class AddonConditionWatcher;
 class QJsonObject;
 
 class AddonApi;
+class SettingGroup;
 
 // A settings group that will contain all settings related to individual addons.
 constexpr const char* ADDON_SETTINGS_GROUP = "addon";

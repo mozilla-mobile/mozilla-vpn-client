@@ -61,9 +61,7 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
 endif()
 
-qt6_add_qml_module(mozillavpn
-  URI Mozilla.Shared.qmlcomponents
-  VERSION 1.0
-)
+add_subdirectory(ui)
+target_link_libraries(mozillavpn PRIVATE mozillavpn-ui mozillavpn-uiplugin)
 
 qt_finalize_target(mozillavpn)

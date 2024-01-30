@@ -24,6 +24,8 @@ endif()
 target_link_libraries(dummyvpn PRIVATE
     shared-sources
     mozillavpn-sources
+    mozillavpn-ui
+    mozillavpn-uiplugin
     lottie
     nebula
     translations
@@ -68,10 +70,5 @@ ExternalProject_Add(functional_test_addons
     INSTALL_COMMAND ""
 )
 add_dependencies(dummyvpn functional_test_addons)
-
-qt6_add_qml_module(dummyvpn
-  URI Mozilla.Shared.qmlcomponents
-  VERSION 1.0
-)
 
 qt_finalize_target(dummyvpn)

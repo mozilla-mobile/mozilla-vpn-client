@@ -5,7 +5,7 @@
 import QtQuick 2.3
 import QtTest 1.0
 
-import Mozilla.Shared.qmlcomponents 1.0
+import components 0.1
 
 Item {
     width: 600
@@ -48,7 +48,7 @@ Item {
     }
 
     TestCase {
-        name: "MZFilterPRoxyModel"
+        name: "MZFilterProxyModel"
         when: windowShown
 
         function test_source() {

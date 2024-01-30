@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
+#include "constants.h"
 #include "controller.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
@@ -261,4 +262,16 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
       break;
   }
 #endif
+}
+
+void ConnectionHealth::overwriteStabilityForInspector(
+    ConnectionStability stability) {
+  if (Constants::inProduction()) {
+    qFatal(
+        "Connection health stability mode can only be overwritten in Dev "
+        "mode!");
+  }
+  m_stabilityOverwritten = true;
+  m_stability = stability;
+  emit stabilityChanged();
 }

@@ -4,12 +4,9 @@
 
 #include "filterproxymodel.h"
 
-#include "logger.h"
-#include "qmlengineholder.h"
-
-namespace {
-Logger logger("FilterProxyModel");
-}
+#include <QDebug>
+#include <QQmlEngine>
+#include <QtQml>
 
 FilterProxyModel::FilterProxyModel(QObject* parent)
     : QSortFilterProxyModel(parent) {}
@@ -18,8 +15,7 @@ QJSValue FilterProxyModel::filterCallback() const { return m_filterCallback; }
 
 void FilterProxyModel::setFilterCallback(QJSValue filterCallback) {
   if (!filterCallback.isCallable()) {
-    logger.error()
-        << "FilterProxyModel.filterCallback must be a JS callable value";
+    qWarning() << "FilterProxyModel.filterCallback must be a JS callable value";
     return;
   }
 
@@ -33,8 +29,7 @@ QJSValue FilterProxyModel::sortCallback() const { return m_sortCallback; }
 
 void FilterProxyModel::setSortCallback(QJSValue sortCallback) {
   if (!sortCallback.isCallable()) {
-    logger.error()
-        << "FilterProxyModel.sortCallback must be a JS callable value";
+    qWarning() << "FilterProxyModel.sortCallback must be a JS callable value";
     return;
   }
 
@@ -81,7 +76,7 @@ bool FilterProxyModel::filterAcceptsRow(
   }
 
   if (m_filterCallback.isNull() || m_filterCallback.isUndefined()) {
-    logger.debug() << "No filter callback set!";
+    qDebug() << "No filter callback set!";
     return true;
   }
 
@@ -92,11 +87,6 @@ bool FilterProxyModel::filterAcceptsRow(
     return false;
   }
 
-  if (!QmlEngineHolder::exists()) {
-    logger.error() << "Something bad is happening. Are we shutting down?";
-    return false;
-  }
-
   QJSValue value = dataToJSValue(sourceModel(), index);
 
   QJSValueList arguments;
@@ -104,7 +94,7 @@ bool FilterProxyModel::filterAcceptsRow(
 
   QJSValue retValue = m_filterCallback.call(arguments);
   if (retValue.isError()) {
-    logger.debug() << "Execution throws an error:" << retValue.toString();
+    qDebug() << "Execution throws an error:" << retValue.toString();
     return false;
   }
 
@@ -123,11 +113,6 @@ bool FilterProxyModel::lessThan(const QModelIndex& left,
 
   Q_ASSERT(m_sortCallback.isCallable());
 
-  if (!QmlEngineHolder::exists()) {
-    logger.error() << "Something bad is happening. Are we shutting down?";
-    return false;
-  }
-
   QJSValue valueA = dataToJSValue(sourceModel(), left);
   QJSValue valueB = dataToJSValue(sourceModel(), right);
 
@@ -137,7 +122,7 @@ bool FilterProxyModel::lessThan(const QModelIndex& left,
 
   QJSValue retValue = m_sortCallback.call(arguments);
   if (retValue.isError()) {
-    logger.debug() << "Execution throws an error:" << retValue.toString();
+    qDebug() << "Execution throws an error:" << retValue.toString();
     return false;
   }
 
@@ -157,8 +142,10 @@ void FilterProxyModel::componentComplete() {
 
 QJSValue FilterProxyModel::dataToJSValue(const QAbstractItemModel* model,
                                          const QModelIndex& index) const {
-  QJSEngine* engine = QmlEngineHolder::instance()->engine();
-  Q_ASSERT(engine);
+  QQmlEngine* engine = qmlEngine(this);
+  if (engine == nullptr) {
+    return QJSValue(QJSValue::UndefinedValue);
+  }
 
   QJSValue value = engine->newObject();
   Q_ASSERT(value.isObject());

@@ -25,6 +25,7 @@ qt_add_qml_module(components
          MZChevron.qml
          MZClickableRow.qml
          MZCollapsibleCard.qml
+         MZComposerView.qml
          MZDropShadowWithStates.qml
          MZExternalLinkListItem.qml
          MZFlickable.qml
@@ -82,7 +83,6 @@ qt_add_qml_module(components
          MZSwipeDelegate.qml
          MZSwipeAction.qml
          MZBadge.qml
-         MZComposerView.qml
          MZPasteButton.qml
          MZInformationCard.qml
          MZStepProgressBar.qml
@@ -92,6 +92,9 @@ qt_add_qml_module(components
          navigationBar/MZBottomNavigationBarButton.qml
          navigator/MZNavigatorLoader.qml
          navigator/navigatorLoaderInternal.qml
+    SOURCES
+        filterproxymodel.cpp
+        filterproxymodel.h
 )
 
 add_subdirectory(forms)

@@ -83,20 +83,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
     ${CMAKE_SOURCE_DIR}/src/collator.cpp
     ${CMAKE_SOURCE_DIR}/src/collator.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composer.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composer.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblock.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblock.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockbutton.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockbutton.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockorderedlist.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockorderedlist.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktext.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktext.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblocktitle.h
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.cpp
-    ${CMAKE_SOURCE_DIR}/src/composer/composerblockunorderedlist.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
@@ -107,8 +93,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
-    ${CMAKE_SOURCE_DIR}/src/filterproxymodel.cpp
-    ${CMAKE_SOURCE_DIR}/src/filterproxymodel.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
     ${CMAKE_SOURCE_DIR}/src/fontloader.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigator.cpp
