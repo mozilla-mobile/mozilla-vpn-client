@@ -38,6 +38,8 @@ class DBusClient final : public QObject {
 
   QDBusPendingCallWatcher* cleanupLogs();
 
+  QString serviceName() const;
+
  signals:
   void connected(const QString& pubkey);
   void disconnected();

@@ -12,6 +12,7 @@
 
 class DBusClient;
 class QDBusPendingCallWatcher;
+class QDBusServiceWatcher;
 
 class LinuxController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(LinuxController)
@@ -39,9 +40,12 @@ class LinuxController final : public ControllerImpl {
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);
   void operationCompleted(QDBusPendingCallWatcher* call);
+  void dbusNameOwnerChanged(const QString& name, const QString& prevOwner,
+                            const QString& newOwner);
 
  private:
   DBusClient* m_dbus = nullptr;
+  QDBusServiceWatcher* m_serviceWatcher = nullptr;
 };
 
 #endif  // LINUXCONTROLLER_H

@@ -33,6 +33,13 @@ LinuxController::LinuxController() {
           [this](auto key) { emit connected(key, QDateTime()); });
   connect(m_dbus, &DBusClient::disconnected, this,
           &LinuxController::disconnected);
+
+  // Watch for restarts of the D-Bus service.
+  m_serviceWatcher = new QDBusServiceWatcher(this);
+  m_serviceWatcher->setConnection(QDBusConnection::systemBus());
+  m_serviceWatcher->addWatchedService("org.mozilla.vpn.dbus");
+  connect(m_serviceWatcher, &QDBusServiceWatcher::serviceOwnerChanged, this,
+          &LinuxController::dbusNameOwnerChanged);
 }
 
 LinuxController::~LinuxController() { MZ_COUNT_DTOR(LinuxController); }
@@ -66,6 +73,16 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
   Q_ASSERT(statusValue.isBool());
 
   emit initialized(true, statusValue.toBool(), QDateTime::currentDateTime());
+}
+
+void LinuxController::dbusNameOwnerChanged(const QString& name,
+                                           const QString& prevOwner,
+                                           const QString& newOwner) {
+  // If the daemon stops, or re-starts then we have been disconnected.
+  if (name == m_dbus->serviceName()) {
+    logger.info() << "DBus name" << name << "has changed owner to" << newOwner;
+    emit disconnected();
+  }
 }
 
 void LinuxController::activate(const InterfaceConfig& config,
