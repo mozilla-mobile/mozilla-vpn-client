@@ -2171,6 +2171,17 @@ void MozillaVPN::registerInspectorCommands() {
         bool forceDisconnection = byteArray.contains("true");
         MozillaVPN::instance()->networkWatcher()->simulateDisconnection(
             forceDisconnection);
+        if (forceDisconnection) {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::NoSignal);
+        } else {
+          MozillaVPN::instance()
+              ->connectionHealth()
+              ->overwriteStabilityForInspector(
+                  ConnectionHealth::ConnectionStability::Stable);
+        }
         return QJsonObject();
       });
 
