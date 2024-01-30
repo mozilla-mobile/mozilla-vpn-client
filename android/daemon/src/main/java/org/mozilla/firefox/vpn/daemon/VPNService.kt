@@ -269,7 +269,7 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null, shouldSkipMetricsBecauseReconnect = false) {
         if (json == null) {
             throw Error("no json config provided")
         }
@@ -349,7 +349,7 @@ class VPNService : android.net.VpnService() {
             Log.i(tag, "Setting Glean debug tag for daemon.")
             Glean.setDebugViewTag(gleanTag)
         }
-        if (shouldRecordMetrics) {
+        if (shouldRecordMetrics && !shouldSkipMetricsBecauseReconnect) {
             val installationIdString = json.getString("installationId")
             installationIdString?.let {
                 try {
@@ -400,7 +400,12 @@ class VPNService : android.net.VpnService() {
 
         Log.v(tag, "Try to reconnect tunnel with same conf")
         try {
-            this.turnOn(config, forceFallBack, source)
+            // When `reconnect` is called with `source = system`, it is a new activation.
+            // In all other cases - where source is null - this is called from a failed health
+            // check, and we're doing a silent server switch - which shouldn't record telemetry
+            // for a new session.
+            val shouldSkipMetrics = (source == null)
+            this.turnOn(config, forceFallBack, source, shouldSkipMetrics)
         } catch (e: Exception) {
             Log.e(tag, "VPN service - Reconnect failed")
             // TODO: If we end up here, we might have screwed up the connection.
