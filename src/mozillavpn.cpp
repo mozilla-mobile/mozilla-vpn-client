@@ -746,6 +746,9 @@ void MozillaVPN::accountChecked(const QByteArray& json) {
     return;
   }
 
+  // Must write settings *before* checkCurrentDevice, to prevent a
+  // bug when user already has 5 devices on launch. Details:
+  // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9011#issuecomment-1915795735
   m_private->m_user.writeSettings();
   m_private->m_deviceModel.writeSettings();
 
