@@ -24,8 +24,8 @@ qt_add_qml_module(components
          MZCheckBoxRow.qml
          MZChevron.qml
          MZClickableRow.qml
-         MZComposerView.qml
          MZCollapsibleCard.qml
+         MZComposerView.qml
          MZDropShadowWithStates.qml
          MZExternalLinkListItem.qml
          MZFlickable.qml
