@@ -28,7 +28,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         return tag
     }
 
-    private var isSuperDooperFeatureActive: Bool {
+    private var shouldSendTelemetry: Bool {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
 
@@ -74,7 +74,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
             return
         }
 
-        if isSuperDooperFeatureActive {
+        if shouldSendTelemetry {
             if let installationIdString = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["installationId"] as? String),
                 let installationId = UUID(uuidString: installationIdString) {
                 logger.info(message: "Setting installation ID in network extension")
@@ -93,7 +93,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
-                if self.isSuperDooperFeatureActive {
+                if self.shouldSendTelemetry {
                     GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
                     GleanMetrics.Session.daemonSessionId.generateAndSet()
                     GleanMetrics.Session.daemonSessionStart.set()
@@ -139,7 +139,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
-            if self.isSuperDooperFeatureActive {
+            if self.shouldSendTelemetry {
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
 

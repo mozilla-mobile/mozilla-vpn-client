@@ -194,7 +194,7 @@ void Telemetry::initialize() {
   });
 
   connect(
-      controller, &Controller::newConnectionSucceeded, this,
+      controller, &Controller::recordConnectionStartTelemetry, this,
       [this, controller]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
           if (controller->state() == Controller::StateOn) {
@@ -219,7 +219,7 @@ void Telemetry::initialize() {
       });
 
   connect(
-      controller, &Controller::controllerDisconnected, this,
+      controller, &Controller::recordConnectionEndTelemetry, this,
       [this, controller]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
           if (controller->state() == Controller::StateOff &&
