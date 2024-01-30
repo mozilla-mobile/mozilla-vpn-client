@@ -78,20 +78,19 @@ MZViewBase {
                 }
             }
         }
-    }
-    _contentHeight: _viewContentData.height;
 
-    AppPermissionsList {
-        id: enabledList
+        AppPermissionsList {
+            id: enabledList
 
-        Layout.fillWidth: true
-        Layout.fillHeight: false
-        Layout.leftMargin: MZTheme.theme.vSpacing
-        Layout.rightMargin: MZTheme.theme.vSpacing
+            Layout.fillWidth: true
+            Layout.fillHeight: false
+            Layout.leftMargin: MZTheme.theme.vSpacing
+            Layout.rightMargin: MZTheme.theme.vSpacing
 
-        searchBarPlaceholder: searchApps
-        enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
-        availableHeight: window.height - MZTheme.theme.navBarHeight // This needs to be fixed.
+            searchBarPlaceholder: searchApps
+            enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
+            availableHeight: window.height - vpnFlickable.y; 
+        }
     }
 
 

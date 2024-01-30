@@ -25,11 +25,12 @@ ColumnLayout {
     Component {
         id: appListHeader
 
-        ColumnLayout {
-            id: col2
+    ColumnLayout {
+            id: appListHeaderColumn
             property var getProxyModel: searchBarWrapper.getProxyModel
 
-            Layout.preferredWidth: parent.width
+            spacing: MZTheme.theme.vSpacingSmall
+            width: applist.width - (3 * MZTheme.theme.windowMargin)
 
             MZSearchBar {
                 property bool sorted: false;
@@ -67,7 +68,10 @@ ColumnLayout {
                 }
                 enabled: MZSettings.vpnDisabledApps.length > 0
                 visible: applist.count > 0
-                width: parent.width
+            }
+
+            MZVerticalSpacer {
+                height: MZTheme.theme.dividerHeight
             }
         }
     }
@@ -78,7 +82,7 @@ ColumnLayout {
         objectName: "appList"
         model: headerItem.getProxyModel()
         height: availableHeight // $TODO: Can this be replaced by layout values in https://doc.qt.io/qt-6/qml-qtquick-layouts-columnlayout.html#details
-        Layout.fillWidth: true
+        Layout.preferredWidth: parent.width
         spacing: MZTheme.theme.windowMargin
         delegate: RowLayout {
             property string appIdForFunctionalTests: appID
@@ -133,7 +137,6 @@ ColumnLayout {
                 text: appName
                 color: MZTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
-                width: parent.width
 
                 MZMouseArea {
                     anchors.fill: undefined
@@ -151,29 +154,40 @@ ColumnLayout {
     Component {
         id: appListFooter
 
-        MZLinkButton {
-            objectName: "addApplication"
-            id: addApp
-            labelText: addApplication
-            textAlignment: Text.AlignLeft
-            fontSize: MZTheme.theme.fontSize
-            fontName: MZTheme.theme.fontInterSemiBoldFamily
-            onClicked: {
-                Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
-                VPNAppPermissions.openFilePicker()
+        ColumnLayout {
+            id: appListFooterColumn
+
+            spacing: MZTheme.theme.vSpacingSmall
+            width: applist.width - (3 * MZTheme.theme.windowMargin)
+
+            MZVerticalSpacer {
+                height: MZTheme.theme.dividerHeight
             }
 
-            // Hack to horizontally align the "+" sign with the
-            // column of checkboxes
-            Layout.leftMargin: -1
+            MZLinkButton {
+                objectName: "addApplication"
+                id: addApp
+                labelText: addApplication
+                textAlignment: Text.AlignLeft
+                fontSize: MZTheme.theme.fontSize
+                fontName: MZTheme.theme.fontInterSemiBoldFamily
+                onClicked: {
+                    Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
+                    VPNAppPermissions.openFilePicker()
+                }
 
-            visible: Qt.platform.os === "windows"
-            iconComponent: Component {
-                MZIcon {
-                    source: "qrc:/nebula/resources/plus.svg"
-                    sourceSize.height: MZTheme.theme.iconSmallSize
-                    sourceSize.width: MZTheme.theme.iconSmallSize
-                    anchors.verticalCenter: parent.verticalCenter
+                // Hack to horizontally align the "+" sign with the
+                // column of checkboxes
+                Layout.leftMargin: -1
+
+                visible: Qt.platform.os === "windows"
+                iconComponent: Component {
+                    MZIcon {
+                        source: "qrc:/nebula/resources/plus.svg"
+                        sourceSize.height: MZTheme.theme.iconSmallSize
+                        sourceSize.width: MZTheme.theme.iconSmallSize
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
             }
         }
