@@ -70,9 +70,8 @@ void ConnectionHealth::stop() {
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
-  setStability(Stable);
-
   MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
+  setStability(Stable);
 }
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
