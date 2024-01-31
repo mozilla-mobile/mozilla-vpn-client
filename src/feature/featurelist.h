@@ -165,7 +165,7 @@ FEATURE(sentry,                     // Feature ID
         FeatureCallback_true,       // Can be flipped on
         FeatureCallback_true,       // Can be flipped off
         QStringList(),              // feature dependencies
-        FeatureCallback_sentry)
+        FeatureCallback_true)
 
 FEATURE(serverUnavailableNotification,      // Feature ID
         "Server unavailable notification",  // Feature name
