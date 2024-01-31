@@ -287,22 +287,16 @@ void Telemetry::startConnectionHealthTimer(
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   switch (stability) {
     case ConnectionHealth::Unstable:
-#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
       m_connectionHealthTimerId =
           mozilla::glean::connection_health::unstable_time.start();
-#  endif
       break;
     case ConnectionHealth::NoSignal:
-#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
       m_connectionHealthTimerId =
           mozilla::glean::connection_health::no_signal_time.start();
-#  endif
       break;
     default:
-#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
       m_connectionHealthTimerId =
           mozilla::glean::connection_health::stable_time.start();
-#  endif
   }
 #endif
 }
