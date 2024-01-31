@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
+import mozilla.telemetry.glean.GleanTimerId
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -31,7 +32,7 @@ class ConnectionHealth(service: VPNService) {
     private var mResetUsed = false
     private var mPanicStateReached = false
     private var lastHealthStatus = ConnectionStability.Stable
-    private var connectionHealthTimerId: GleanTimerId = -1
+    private var connectionHealthTimerId: GleanTimerId? = null
 
     var mActive = false
     var mVPNNetwork: Network? = null
@@ -268,10 +269,10 @@ class ConnectionHealth(service: VPNService) {
         }
 
         if (lastHealthStatus == stability) {
-            Log.d(TAG, "No change in health status.")
             return
         }
 
+        Log.i(TAG, "Health status changed.")
         when (stability) {
             ConnectionStability.Unstable -> ConnectionHealth.changedToUnstable.record()
             ConnectionStability.NoSignal -> ConnectionHealth.changedToNoSignal.record()
@@ -284,20 +285,19 @@ class ConnectionHealth(service: VPNService) {
     }
 
     private fun stopMetricsTimer(stability: ConnectionStability) {
-        if (connectionHealthTimerId == -1) {
+        connectionHealthTimerId?.let { timerId ->
+            when (stability) {
+                ConnectionStability.Unstable -> ConnectionHealth.unstableTime.stopAndAccumulate(timerId)
+                ConnectionStability.NoSignal -> ConnectionHealth.noSignalTime.stopAndAccumulate(timerId)
+                ConnectionStability.Stable -> ConnectionHealth.stableTime.stopAndAccumulate(timerId)
+            }
+
+            // Set to null to defensive ensure there is no
+            // erroenous attempt to turn it off
+            connectionHealthTimerId = null
+        } ?: run {
             Log.i(TAG, "No active health timer.")
-            return
         }
-
-        when (stability) {
-            ConnectionStability.Unstable -> ConnectionHealth.unstableTime.stopAndAccumulate(connectionHealthTimerId)
-            ConnectionStability.NoSignal -> ConnectionHealth.noSignalTime.stopAndAccumulate(connectionHealthTimerId)
-            ConnectionStability.Stable -> ConnectionHealth.stableTime.stopAndAccumulate(connectionHealthTimerId)
-        }
-
-        // Set to -1 to defensive ensure there is no
-        // erroenous attempt to turn it off
-        connectionHealthTimerId = -1
     }
 
     private fun startMetricsTimer(stability: ConnectionStability) {
