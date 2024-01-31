@@ -341,7 +341,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("server").getString("ipv4Gateway"),
                 json.getString("dns"),
                 fallbackIpv4,
-                shouldRecordSessionTelemetry ,
+                shouldRecordSessionTelemetry,
             )
         }
 

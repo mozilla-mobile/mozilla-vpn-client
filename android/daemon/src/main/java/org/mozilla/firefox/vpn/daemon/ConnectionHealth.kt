@@ -59,7 +59,7 @@ class ConnectionHealth(service: VPNService) {
         return "active-panic-state-reached"
     }
 
-    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String, isReconnect: Boolean) {
+    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String, shouldRecordTelemetry: Boolean) {
         if (Build.VERSION.SDK_INT < 31) {
             // Let's disable Daemon Connection health for anyone
             // Below android 12, that's roughly 50% of our users.
@@ -81,7 +81,7 @@ class ConnectionHealth(service: VPNService) {
         mConnectivityManager.registerNetworkCallback(vpnNetworkRequest, networkCallbackHandler)
         mActive = true
         mTaskTimer.start()
-        if (!isReconnect) {
+        if (shouldRecordTelemetry) {
             startMetricsTimer(lastHealthStatus)
         }
         Log.e(TAG, "Started ConnectionHealth")
