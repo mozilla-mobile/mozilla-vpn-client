@@ -23,8 +23,8 @@ ColumnLayout {
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.windowMargin * 1.5
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         Layout.fillWidth: true
 
@@ -34,8 +34,8 @@ ColumnLayout {
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
         text: MZUiUtils.isMobile() ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody2
@@ -44,9 +44,9 @@ ColumnLayout {
     }
 
     RowLayout {
-        Layout.topMargin: 16
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         MZBoldInterLabel {
             Layout.alignment: Qt.AlignVCenter

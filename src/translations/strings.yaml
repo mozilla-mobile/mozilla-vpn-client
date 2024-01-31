@@ -572,10 +572,10 @@ onboarding:
   progressBarAccessibilityStepIncomplete2:
     value: "Onboarding step “%1” (%2 of %3)"
     comment: Accessibility read out for incomplete future steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
-  dataSlideHeader: Data collection and use
-  dataSlideBody: We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing data with Mozilla is optional.
-  dataSlideCheckboxLabel: Mozilla may collect technical data about my use of Mozilla VPN.
-  dataSlideLearnMoreCaption: Learn more about what data Mozilla collects and how it’s used
+  dataSlideHeader2: Data collection
+  dataSlideBody2: Help us improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data. We never collect data about your online activity while using the VPN.
+  dataSlideToggleLabel: Share technical data
+  dataSlideLearnMoreCaption2: Learn more about data collection
   dataSlidePrivacyLinkLabel: Mozilla VPN Privacy Notice
   privacySlideHeader: Get more privacy
   privacySlideBody: Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings.
