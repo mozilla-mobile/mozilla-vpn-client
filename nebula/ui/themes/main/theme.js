@@ -118,6 +118,9 @@ theme.lightFocusBorder = '#d5d3e0';
 
 theme.maxZLevel = 10
 
+theme.toggleHeight = 24
+theme.toggleWidth = 45
+
 
 theme.onBoardingGradient = {
   'start': '#472C87',

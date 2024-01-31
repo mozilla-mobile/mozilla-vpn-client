@@ -24,8 +24,8 @@ CheckBox {
     // Prevents 'TypeError: Property 'styleFont' of object MZUIStates_QMLTYPE_14(0x600002d582a0) is not a function' 
     font.pixelSize: undefined
 
-    height: MZTheme.theme.vSpacing
-    width: 45
+    implicitHeight: MZTheme.theme.toggleHeight
+    implicitWidth: MZTheme.theme.toggleWidth
     states: [
         State {
             when: checked
@@ -57,12 +57,6 @@ CheckBox {
             }
         }
     ]
-
-    MZToolTip {
-        id: toolTip
-        text: accessibleName
-    }
-
 
     transitions: [
         Transition {
@@ -178,5 +172,6 @@ CheckBox {
         colorScheme: toggleColor
         radius: height / 2
         showFocusRings: false
+        startingState: checked ? MZTheme.theme.vpnToggleConnected.defaultColor : MZTheme.theme.vpnToggleDisconnected.defaultColor
     }
 }
