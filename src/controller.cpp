@@ -263,11 +263,6 @@ void Controller::handshakeTimeout() {
 
   emit handshakeFailed(hop.m_serverPublicKey);
 
-  if (m_nextStep != None) {
-    deactivate();
-    return;
-  }
-
   // Try again, again if there are sufficient retries left.
   ++m_connectionRetry;
   emit connectionRetryChanged();
@@ -695,11 +690,6 @@ void Controller::connected(const QString& pubkey,
     m_timer.start(TIMER_MSEC);
   } else {
     resetConnectedTime();
-  }
-
-  if (m_nextStep != None) {
-    deactivate();
-    return;
   }
 }
 
