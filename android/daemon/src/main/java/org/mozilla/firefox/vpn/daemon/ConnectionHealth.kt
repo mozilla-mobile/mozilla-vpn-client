@@ -11,12 +11,15 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Sample
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class ConnectionHealth(service: VPNService) {
+    enum class ConnectionStability {
+        NoSignal, Unstable, Stable
+    }
+
     private val TAG = "DaemonConnectionHealth"
     private val mService: VPNService = service
     private val PING_TIMEOUT = 3000 // ms
@@ -27,6 +30,8 @@ class ConnectionHealth(service: VPNService) {
     private var mAltEndpoint: String = ""
     private var mResetUsed = false
     private var mPanicStateReached = false
+    private var lastHealthStatus = ConnectionStability.Stable
+    private var connectionHealthTimerId: GleanTimerId = -1
 
     var mActive = false
     var mVPNNetwork: Network? = null
@@ -53,7 +58,7 @@ class ConnectionHealth(service: VPNService) {
         return "active-panic-state-reached"
     }
 
-    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String) {
+    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String, isReconnect: Boolean) {
         if (Build.VERSION.SDK_INT < 31) {
             // Let's disable Daemon Connection health for anyone
             // Below android 12, that's roughly 50% of our users.
@@ -75,6 +80,9 @@ class ConnectionHealth(service: VPNService) {
         mConnectivityManager.registerNetworkCallback(vpnNetworkRequest, networkCallbackHandler)
         mActive = true
         mTaskTimer.start()
+        if (!isReconnect) {
+            startMetricsTimer(lastHealthStatus)
+        }
         Log.e(TAG, "Started ConnectionHealth")
     }
     fun stop() {
@@ -87,6 +95,7 @@ class ConnectionHealth(service: VPNService) {
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
             as ConnectivityManager
         mConnectivityManager.unregisterNetworkCallback(networkCallbackHandler)
+        stopMetricsTimer(lastHealthStatus)
     }
 
     private fun taskDone() {
@@ -190,7 +199,7 @@ class ConnectionHealth(service: VPNService) {
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
-                Session.connectionHealthStableCount.add()
+                recordMetrics(ConnectionStability.Stable)
 
                 // Internet should be fine :)
                 mResetUsed = false
@@ -211,7 +220,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(endpoint).isReachable(PING_TIMEOUT)
             } != null
             if (anyNetworkCanConnect && canReachDNS && !mResetUsed) {
-                Sample.connectionHealthUnstable.record()
+                recordMetrics(ConnectionStability.Unstable)
 
                 // The server seems to be online but the connection broke,
                 // Let's just try to force a reconnect ... but only once.
@@ -229,7 +238,7 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
-                Sample.connectionHealthUnstable.record()
+                recordMetrics(ConnectionStability.Unstable)
 
                 Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
@@ -245,9 +254,57 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
 
-            Sample.connectionHealthNoSignal.record()
+            recordMetrics(ConnectionStability.NoSignal)
             mPanicStateReached = true
             taskDone()
+        }
+    }
+
+    private fun recordMetrics(stability: ConnectionStability) {
+        when (stability) {
+            ConnectionStability.Unstable -> ConnectionHealth.unstableCount.add()
+            ConnectionStability.NoSignal -> ConnectionHealth.noSignalCount.add()
+            ConnectionStability.Stable -> ConnectionHealth.stableCount.add()
+        }
+
+        if (lastHealthStatus == stability) {
+            Log.d(TAG, "No change in health status.")
+            return
+        }
+
+        when (stability) {
+            ConnectionStability.Unstable -> ConnectionHealth.changedToUnstable.record()
+            ConnectionStability.NoSignal -> ConnectionHealth.changedToNoSignal.record()
+            ConnectionStability.Stable -> ConnectionHealth.changedToStable.record()
+        }
+        stopMetricsTimer(lastHealthStatus)
+        startMetricsTimer(stability)
+
+        lastHealthStatus = stability
+    }
+
+    private fun stopMetricsTimer(stability: ConnectionStability) {
+        if (connectionHealthTimerId == -1) {
+            Log.i(TAG, "No active health timer.")
+            return
+        }
+
+        when (stability) {
+            ConnectionStability.Unstable -> ConnectionHealth.unstableTime.stopAndAccumulate(connectionHealthTimerId)
+            ConnectionStability.NoSignal -> ConnectionHealth.noSignalTime.stopAndAccumulate(connectionHealthTimerId)
+            ConnectionStability.Stable -> ConnectionHealth.stableTime.stopAndAccumulate(connectionHealthTimerId)
+        }
+
+        // Set to -1 to defensive ensure there is no
+        // erroenous attempt to turn it off
+        connectionHealthTimerId = -1
+    }
+
+    private fun startMetricsTimer(stability: ConnectionStability) {
+        when (stability) {
+            ConnectionStability.Unstable -> connectionHealthTimerId = ConnectionHealth.unstableTime.start()
+            ConnectionStability.NoSignal -> connectionHealthTimerId = ConnectionHealth.noSignalTime.start()
+            ConnectionStability.Stable -> connectionHealthTimerId = ConnectionHealth.stableTime.start()
         }
     }
 }

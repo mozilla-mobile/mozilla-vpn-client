@@ -60,7 +60,7 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
-    private val isChangingServers: Boolean
+    private val isAppChangingServers: Boolean
         get() {
             // could be user choosing new server or silent switching
             return (this.mConfig?.optInt("reason") ?: 0) == 1
@@ -68,7 +68,7 @@ class VPNService : android.net.VpnService() {
 
     private val shouldRecordMetrics: Boolean
         get() {
-            return isSuperDooperMetricsActive && !isChangingServers
+            return isSuperDooperMetricsActive && !isAppChangingServers
         }
 
     private val isUsingShortTimerSessionPing: Boolean
@@ -269,11 +269,12 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null, shouldSkipMetricsBecauseReconnect: Boolean = false) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null, isDaemonChangingServers: Boolean = false) {
         if (json == null) {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
+        val shouldRecordSessionTelemetry = shouldRecordMetrics && !isDaemonChangingServers
         val wireguard_conf = buildWireguardConfig(json, useFallbackServer)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
@@ -328,6 +329,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("server").getString("ipv4AddrIn"),
+                shouldRecordSessionTelemetry,
             )
         } else {
             var fallbackIpv4 = ""
@@ -339,6 +341,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("server").getString("ipv4Gateway"),
                 json.getString("dns"),
                 fallbackIpv4,
+                shouldRecordSessionTelemetry ,
             )
         }
 
@@ -349,7 +352,7 @@ class VPNService : android.net.VpnService() {
             Log.i(tag, "Setting Glean debug tag for daemon.")
             Glean.setDebugViewTag(gleanTag)
         }
-        if (shouldRecordMetrics && !shouldSkipMetricsBecauseReconnect) {
+        if (shouldRecordSessionTelemetry) {
             val installationIdString = json.getString("installationId")
             installationIdString?.let {
                 try {
