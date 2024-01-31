@@ -3,4 +3,4 @@ glean-parser==10.0.3
 oathtool==2.3.1
 pyrsistent==0.20.0
 yamllint==1.32.0
-aqtinstall==3.1.8
+aqtinstall==3.1.11
