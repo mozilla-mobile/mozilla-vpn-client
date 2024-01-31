@@ -1,5 +1,5 @@
 flask==3.0.0
-glean-parser==10.0.3
+glean-parser==11.0.1
 oathtool==2.3.1
 pyrsistent==0.20.0
 yamllint==1.32.0
