@@ -15,6 +15,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "telemetry.h"
 
 namespace {
 Logger logger("ConnectionHealth");
@@ -52,6 +53,9 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
 
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
+
+  // It is always started in the stable state.
+  mozilla::glean::connection_health::changed_to_stable.record();
 }
 
 ConnectionHealth::~ConnectionHealth() { MZ_COUNT_DTOR(ConnectionHealth); }
@@ -67,6 +71,8 @@ void ConnectionHealth::stop() {
   m_dnsPingTimer.stop();
 
   setStability(Stable);
+
+  MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
 }
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
@@ -86,6 +92,8 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
+
+  MozillaVPN::instance()->telemetry()->startConnectionHealthTimer(m_stability);
 }
 
 void ConnectionHealth::startIdle() {
@@ -107,6 +115,8 @@ void ConnectionHealth::startIdle() {
   m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
   m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                            m_dnsPingSequence);
+
+  MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -119,18 +129,17 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
+  // Pings will sometimes come between VPN sessions, triggering setStability. We
+  // do not want to record count metrics in these cases.
+  Controller::State state = MozillaVPN::instance()->controller()->state();
+  if (state == Controller::StateOn || state == Controller::StateSwitching ||
+      state == Controller::StateSilentSwitching) {
+    MozillaVPN::instance()->telemetry()->connectionHealthTelemetry(m_stability,
+                                                                   stability);
+  }
+
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
-
-    mozilla::glean::sample::connection_health_unstable.record();
-  } else if (stability == NoSignal) {
-    mozilla::glean::sample::connection_health_no_signal.record();
-  } else {
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-    // Count successful health checks only on mobile apps, as they
-    // only do health checks when foregrounded.
-    mozilla::glean::session::connection_health_stable_count.add();
-#endif
   }
 
   if (m_stability == stability) {

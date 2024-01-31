@@ -282,6 +282,94 @@ void Telemetry::stopTimeToFirstScreenTimer() {
       m_timeToFirstScreenTimerId);
 }
 
+void Telemetry::startConnectionHealthTimer(
+    ConnectionHealth::ConnectionStability stability) {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::unstable_time.start();
+#  endif
+      break;
+    case ConnectionHealth::NoSignal:
+#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::no_signal_time.start();
+#  endif
+      break;
+    default:
+#  if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::stable_time.start();
+#  endif
+  }
+#endif
+}
+
+void Telemetry::stopConnectionHealthTimer(
+    ConnectionHealth::ConnectionStability stability) {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  if (m_connectionHealthTimerId == -1) {
+    logger.info() << "No active health timer for state" << stability;
+    return;
+  }
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+      break;
+    default:
+      mozilla::glean::connection_health::stable_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+  }
+  m_connectionHealthTimerId =
+      -1;  // used as a signal to prevent turning it off twice when
+           // ConnectionHealth moves between idle and stop.
+#endif
+}
+
+void Telemetry::connectionHealthTelemetry(
+    ConnectionHealth::ConnectionStability oldStability,
+    ConnectionHealth::ConnectionStability newStability) {
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_count.add();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_count.add();
+      break;
+    default:
+      mozilla::glean::connection_health::stable_count.add();
+  }
+
+  if (oldStability == newStability) {
+    logger.debug() << "No stability change for telemetry.";
+    return;
+  }
+
+  logger.info() << "Recording telemetry for stability change from"
+                << oldStability << "to" << newStability;
+
+  stopConnectionHealthTimer(oldStability);
+  startConnectionHealthTimer(newStability);
+
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::changed_to_unstable.record();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::changed_to_no_signal.record();
+      break;
+    default:
+      mozilla::glean::connection_health::changed_to_stable.record();
+  }
+}
+
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
 void Telemetry::periodicStateRecorder() {
   // On mobile this is handled seperately in a background process
