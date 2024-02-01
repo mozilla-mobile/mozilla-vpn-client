@@ -59,7 +59,7 @@ ColumnLayout {
         }
 
         MZSettingsToggle {
-//            objectName: "startAtBootCheckBox"
+            objectName: "startAtBootToggle"
 
             implicitHeight: 24
             implicitWidth: 45

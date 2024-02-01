@@ -56,7 +56,7 @@ ColumnLayout {
         }
 
         MZSettingsToggle {
-            //        objectName: "dataCollectionCheckBox"
+            objectName: "dataCollectionToggle"
 
             implicitHeight: 24
             implicitWidth: 45

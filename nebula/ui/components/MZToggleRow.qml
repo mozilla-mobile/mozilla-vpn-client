@@ -61,6 +61,7 @@ RowLayout {
 
     MZSettingsToggle {
         id: toggle
+        objectName: "toggle"
 
         Layout.alignment: Qt.AlignTop
 
