@@ -118,6 +118,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${MZ_SOURCE_DIR}/telemetry.cpp
+    ${MZ_SOURCE_DIR}/telemetry.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp
