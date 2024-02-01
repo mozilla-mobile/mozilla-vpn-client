@@ -66,6 +66,7 @@ ColumnLayout {
                     Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
                     VPNAppPermissions.protectAll();
                 }
+                Keys.onTabPressed: applist.itemAtIndex(0).children[0].forceActiveFocus(Qt.TabFocusReason)
                 enabled: MZSettings.vpnDisabledApps.length > 0
                 visible: applist.count > 0
             }
@@ -104,6 +105,33 @@ ColumnLayout {
                 checked: !appIsEnabled
                 Layout.alignment: Qt.AlignVCenter
                 Accessible.name: appID
+
+                function handleTabPressed() {
+                    applist.positionViewAtIndex(applist.currentIndex + 1, ListView.Visible);
+
+                    if (applist.itemAtIndex(applist.currentIndex + 1)) {
+                        applist.currentIndex++;
+                        nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
+                    }
+                    else {
+                        applist.footerItem.forceActiveFocus(Qt.TabFocusReason);
+                    }
+                }
+
+                function handleBacktabPressed() {
+                    applist.positionViewAtIndex(applist.currentIndex - 1, ListView.Visible);
+
+                    if (applist.itemAtIndex(applist.currentIndex - 1)) {
+                        applist.currentIndex--;
+                        nextItemInFocusChain(false).forceActiveFocus(Qt.BacktabFocusReason);
+                    }
+                    else {
+                        applist.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
+                    }
+                }
+
+                Keys.onTabPressed: handleTabPressed()
+                Keys.onBacktabPressed: handleBacktabPressed()
             }
 
             Rectangle {
