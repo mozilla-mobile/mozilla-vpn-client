@@ -120,6 +120,7 @@ theme.maxZLevel = 10
 
 theme.toggleHeight = 24
 theme.toggleWidth = 45
+theme.toggleRowDividerSpacing = 16
 
 
 theme.onBoardingGradient = {

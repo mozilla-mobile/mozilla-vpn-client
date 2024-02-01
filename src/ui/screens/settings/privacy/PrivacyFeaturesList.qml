@@ -13,7 +13,8 @@ ColumnLayout {
 
     property bool isOnboarding: false
     property string telemetryScreenId
-    property int dividerSpacing: 16
+    property int dividerSpacing: MZTheme.theme.toggleRowDividerSpacing
+
 
     signal settingClicked(dnsProviderFlags: int, active: bool)
 
