@@ -156,8 +156,8 @@ Item {
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
             text: qsTrId("vpn.connectionStability.checkConnection")
-            // color: "#FFFFFF"
-            // opacity: 0.8
+            color: "#FFFFFF"
+            opacity: 0.8
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()
             lineHeight: grid.flow === Grid.LeftToRight ? MZTheme.theme.controllerInterLineHeight : 10
