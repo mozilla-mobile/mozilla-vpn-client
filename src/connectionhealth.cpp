@@ -15,7 +15,9 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#include "telemetry.h"
+#ifndef UNIT_TEST
+#  include "telemetry.h"
+#endif
 
 namespace {
 Logger logger("ConnectionHealth");
@@ -70,7 +72,9 @@ void ConnectionHealth::stop() {
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
+#ifndef UNIT_TEST
   MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
+#endif
   setStability(Stable);
 }
 
@@ -91,8 +95,9 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
-
+#ifndef UNIT_TEST
   MozillaVPN::instance()->telemetry()->startConnectionHealthTimer(m_stability);
+#endif
 }
 
 void ConnectionHealth::startIdle() {
@@ -115,7 +120,9 @@ void ConnectionHealth::startIdle() {
   m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                            m_dnsPingSequence);
 
+#ifndef UNIT_TEST
   MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
+#endif
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -128,6 +135,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
+#ifndef UNIT_TEST
   // Pings will sometimes come between VPN sessions, triggering setStability. We
   // do not want to record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
@@ -136,6 +144,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     MozillaVPN::instance()->telemetry()->connectionHealthTelemetry(m_stability,
                                                                    stability);
   }
+#endif
 
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
