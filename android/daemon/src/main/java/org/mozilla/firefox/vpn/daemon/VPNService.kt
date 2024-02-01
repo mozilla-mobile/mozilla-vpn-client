@@ -274,7 +274,6 @@ class VPNService : android.net.VpnService() {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
-        val shouldRecordSessionTelemetry = shouldRecordMetrics && !isDaemonChangingServers
         val wireguard_conf = buildWireguardConfig(json, useFallbackServer)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
@@ -315,6 +314,8 @@ class VPNService : android.net.VpnService() {
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
         mConfig = json
+        // shouldRecordSessionTelemetry must be calculated after mConfig is set (on prior line)
+        val shouldRecordSessionTelemetry = shouldRecordMetrics && !isDaemonChangingServers
         // Store the config in case the service gets
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
