@@ -14,10 +14,8 @@ CheckBox {
     property var toggleColor: MZTheme.theme.vpnToggleConnected
     property var uiState: MZTheme.theme.uiState
     property alias forceFocus: vpnSettingsToggle.focus
-    property var toolTipTitle
     property string accessibleName
 
-    onClicked: toolTip.hide()
     onActiveFocusChanged: if(activeFocus) MZUiUtils.scrollToComponent(vpnSettingsToggle)
 
     // Workaround for https://bugreports.qt.io/browse/QTBUG-101026
@@ -141,12 +139,12 @@ CheckBox {
     focusPolicy: Qt.StrongFocus
 
     Keys.onReleased: event => {
-        if (event.key === Qt.Key_Return)
+        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
             uiPlaceholder.state = uiState.stateDefault;
     }
 
     Keys.onPressed: event => {
-        if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+        if (event.key === Qt.Key_Return)
             uiPlaceholder.state = uiState.statePressed;
     }
 
