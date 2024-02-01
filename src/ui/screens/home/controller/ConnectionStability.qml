@@ -150,7 +150,8 @@ Item {
             visible: grid.flow === Grid.LeftToRight
         }
 
-        MZInterLabel {
+        // MZInterLabel {
+        MZLightLabel {
              id: stabilityLabelInstruction
             //% "Check Connection"
             //: Message displayed to the user when the connection is unstable or
