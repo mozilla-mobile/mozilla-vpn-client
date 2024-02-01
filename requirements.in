@@ -1,4 +1,4 @@
-flask==3.0.0
+flask==3.0.1
 glean-parser==10.0.3
 oathtool==2.3.1
 pyrsistent==0.20.0
