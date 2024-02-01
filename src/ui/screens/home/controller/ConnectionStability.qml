@@ -150,14 +150,13 @@ Item {
             visible: grid.flow === Grid.LeftToRight
         }
 
-        // MZInterLabel {
-        MZLightLabel {
+        MZInterLabel {
              id: stabilityLabelInstruction
             //% "Check Connection"
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
             text: qsTrId("vpn.connectionStability.checkConnection")
-            color: "#FFFFFF"
+            color: "#b03216"
             // opacity: 0.8
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()
