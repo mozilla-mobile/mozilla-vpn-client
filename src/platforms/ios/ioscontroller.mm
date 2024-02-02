@@ -149,6 +149,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       serverPort:config.m_serverPort
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason
+      excludeLocalNetworks:settingsHolder->localNetworkAccess()
       gleanDebugTag:settingsHolder->gleanDebugTagActive()
                         ? settingsHolder->gleanDebugTag().toNSString()
                         : @""

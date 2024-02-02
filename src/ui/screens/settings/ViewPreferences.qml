@@ -59,6 +59,7 @@ MZViewBase {
             anchors.right: parent.right
             anchors.leftMargin: MZTheme.theme.windowMargin
             anchors.rightMargin: MZTheme.theme.windowMargin
+            showDivider: false
 
             labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             subLabelText: MZI18n.SettingsDataCollectionDescription
@@ -66,6 +67,27 @@ MZViewBase {
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
         }
+
+        MZCheckBoxRow {
+                id: localNetwork
+                objectName: "settingLocalNetworkAccess"
+                visible: Qt.platform.os == "ios"
+                anchors {
+                    right: parent.right
+                    left: parent.left
+                    rightMargin: VPNTheme.theme.windowMargin
+                }
+
+                labelText: MZI18n.LocalNetworkAccessLabel
+                subLabelText: MZI18n.LocalNetworkAccessSubLabel
+                isChecked: MZSettings.localNetworkAccess
+                enabled: VPNController.StateOff
+                onClicked: {
+                    if (VPNController.StateOff) {
+                        MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
+                    }
+                }
+            }
 
         Column {
             spacing: MZTheme.theme.windowMargin / 2

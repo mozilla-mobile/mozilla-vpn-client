@@ -360,6 +360,10 @@ settings:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
 
+localNetworkAccess:
+  label: "Local network access"
+  subLabel: "Access printers, streaming sticks and all other devices on your local network"
+
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
   titlePrivacy: Override privacy features?

@@ -709,6 +709,18 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    false,                           // remove when reset
                    true                             // sensitive (do not log)
 )
+
+SETTING_BOOL(localNetworkAccess,        // getter
+             setLocalNetworkAccess,     // setter
+             removeLocalNetworkAccess,  // remover
+             hasLocalNetworkAccess,     // has
+             "localNetworkAccess",      // key
+             true,                      // default value
+             false,                     // user setting
+             true,                      // remove when reset
+             false                      // sensitive (do not log)
+)
+
 #endif
 
 SETTING_BOOL(gleanDebugTagActive,        // getter

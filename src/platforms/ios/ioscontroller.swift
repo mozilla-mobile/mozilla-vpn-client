@@ -166,7 +166,7 @@ public class IOSControllerImpl : NSObject {
             if #available(iOS 15.1, *) {
                 IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
-                proto!.excludeLocalNetworks = true
+                proto!.excludeLocalNetworks = excludeLocalNetworks
 
                 if #available(iOS 16.4, *) {
                     // By default, APNs is excluded from the VPN tunnel on 16.4 and later. We want to include it.
@@ -189,7 +189,7 @@ public class IOSControllerImpl : NSObject {
                 // the vpn configuration to be created, so it is safe to run activation retries via Controller::startHandshakeTimer()
                 // without the possibility or re-prompting (flickering) the modal while it is currently being displayed
                 vpnConfigPermissionResponseCallback(saveError == nil)
-                
+
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
                     disconnectOnErrorCallback()
@@ -246,7 +246,7 @@ public class IOSControllerImpl : NSObject {
 
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
         IOSControllerImpl.logger.info(message: "Check status")
-        
+
         TunnelManager.withTunnel { tunnel in
             let proto = tunnel.protocolConfiguration as? NETunnelProviderProtocol
             if proto == nil {
@@ -296,7 +296,7 @@ public class IOSControllerImpl : NSObject {
                 IOSControllerImpl.logger.error(message: "Failed to retrieve data from session. \(error)")
                 callback("", "", "")
             }
-            
+
             return
         }
     }
