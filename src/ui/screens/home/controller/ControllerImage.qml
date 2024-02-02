@@ -338,8 +338,8 @@ Rectangle {
         height: 32
         width: 32
         radius: 16
-        x: 43
-        y: 5
+        x: 44
+        y: 4
         antialiasing: true
         smooth: true
 
