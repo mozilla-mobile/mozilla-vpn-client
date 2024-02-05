@@ -112,7 +112,7 @@ void MacOSPingSender::socketReady() {
 
   ssize_t rc = recvmsg(m_socket, &msg, MSG_DONTWAIT);
   if (rc <= 0) {
-    logger.error() << "Recvmsg failed";
+    logger.error() << "Recvmsg failed:" << rc;
     return;
   }
 
