@@ -7,16 +7,19 @@
 
 #include <QTcpServer>
 
-class ServerHandler final : public QTcpServer {
+namespace WebExtension {
+
+class Server final : public QTcpServer {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(ServerHandler)
+  Q_DISABLE_COPY_MOVE(Server)
 
  public:
-  ServerHandler();
-  ~ServerHandler();
+  Server();
+  ~Server();
 
  private:
   void newConnectionReceived();
 };
 
+}  // namespace WebExtension
 #endif  // SERVERHANDLER_H

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "serverconnection.h"
+#include "webextension/connection.h"
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -26,7 +26,7 @@ constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
 
 namespace {
 
-Logger logger("ServerConnection");
+Logger logger("Connection");
 
 struct RequestType {
   QString m_name;
@@ -170,9 +170,11 @@ static QList<RequestType> s_types{
 
 }  // namespace
 
-ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
+namespace WebExtension {
+
+Connection::Connection(QObject* parent, QTcpSocket* connection)
     : QObject(parent), m_connection(connection) {
-  MZ_COUNT_CTOR(ServerConnection);
+  MZ_COUNT_CTOR(Connection);
 
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
   // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
@@ -185,22 +187,21 @@ ServerConnection::ServerConnection(QObject* parent, QTcpSocket* connection)
   logger.debug() << "New connection received";
 
   Q_ASSERT(m_connection);
-  connect(m_connection, &QTcpSocket::readyRead, this,
-          &ServerConnection::readData);
+  connect(m_connection, &QTcpSocket::readyRead, this, &Connection::readData);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  connect(vpn, &MozillaVPN::stateChanged, this, &ServerConnection::writeState);
+  connect(vpn, &MozillaVPN::stateChanged, this, &Connection::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,
-          &ServerConnection::writeState);
+          &Connection::writeState);
 }
 
-ServerConnection::~ServerConnection() {
-  MZ_COUNT_DTOR(ServerConnection);
+Connection::~Connection() {
+  MZ_COUNT_DTOR(Connection);
   logger.debug() << "Connection released";
 }
 
-void ServerConnection::readData() {
+void Connection::readData() {
   QByteArray input = m_connection->readAll();
   m_buffer.append(input);
 
@@ -249,7 +250,7 @@ void ServerConnection::readData() {
   }
 }
 
-void ServerConnection::writeData(const QByteArray& data) {
+void Connection::writeData(const QByteArray& data) {
   uint32_t length = (uint32_t)data.length();
   char* rawLength = reinterpret_cast<char*>(&length);
 
@@ -259,20 +260,20 @@ void ServerConnection::writeData(const QByteArray& data) {
   }
 }
 
-void ServerConnection::writeState() {
+void Connection::writeState() {
   QJsonObject obj = serializeStatus();
   obj["t"] = "status";
 
   writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void ServerConnection::writeInvalidRequest() {
+void Connection::writeInvalidRequest() {
   QJsonObject obj;
   obj["t"] = "invalidRequest";
   writeData(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void ServerConnection::processMessage(const QByteArray& message) {
+void Connection::processMessage(const QByteArray& message) {
   QJsonDocument json = QJsonDocument::fromJson(message);
   if (!json.isObject()) {
     writeInvalidRequest();
@@ -293,3 +294,5 @@ void ServerConnection::processMessage(const QByteArray& message) {
 
   writeInvalidRequest();
 }
+
+}  // namespace WebExtension

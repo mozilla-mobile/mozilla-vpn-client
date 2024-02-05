@@ -10,13 +10,15 @@
 
 class QTcpSocket;
 
-class ServerConnection final : public QObject {
+namespace WebExtension {
+
+class Connection final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(ServerConnection)
+  Q_DISABLE_COPY_MOVE(Connection)
 
  public:
-  ServerConnection(QObject* parent, QTcpSocket* connection);
-  ~ServerConnection();
+  Connection(QObject* parent, QTcpSocket* connection);
+  ~Connection();
 
  private:
   void readData();
@@ -44,4 +46,5 @@ class ServerConnection final : public QObject {
   uint32_t m_messageLength = 0;
 };
 
+}  // namespace WebExtension
 #endif  // SERVERCONNECTION_H

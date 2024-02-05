@@ -212,10 +212,10 @@ if(NOT CMAKE_CROSSCOMPILING)
      target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextension/connection.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextension/connection.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextension/server.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextension/server.h
        )
 endif()
 

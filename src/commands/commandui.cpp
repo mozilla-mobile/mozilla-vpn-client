@@ -91,7 +91,7 @@
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-#  include "server/serverhandler.h"
+#  include "webextension/server.h"
 #endif
 
 #include <QApplication>
@@ -394,9 +394,9 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    ServerHandler serverHandler;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
-                     &ServerHandler::close);
+    WebExtension::Server extensionServer;
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &extensionServer, &WebExtension::Server::close);
 #endif
 
 #ifdef MZ_ANDROID
