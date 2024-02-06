@@ -87,7 +87,6 @@ endfunction()
 # MZ_ADD_NEW_MODULE(
 #     TARGET_NAME MyModule
 #     INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
-#     GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/generated_sources.cpp
 #     SOURCES src/file1.cpp src/file2.cpp
 #     TEST_SOURCES tests/test_file.cpp
 #     MZ_DEPENDENCIES mz_module
