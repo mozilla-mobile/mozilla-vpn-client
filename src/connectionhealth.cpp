@@ -285,42 +285,40 @@ void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   switch (stability) {
     case ConnectionHealth::Unstable:
-      m_connectionHealthTimerId =
+      m_metricsTimerId =
           mozilla::glean::connection_health::unstable_time.start();
       break;
     case ConnectionHealth::NoSignal:
-      m_connectionHealthTimerId =
+      m_metricsTimerId =
           mozilla::glean::connection_health::no_signal_time.start();
       break;
     default:
-      m_connectionHealthTimerId =
-          mozilla::glean::connection_health::stable_time.start();
+      m_metricsTimerId = mozilla::glean::connection_health::stable_time.start();
   }
 #endif
 }
 
 void ConnectionHealth::stopMetricsTimer(ConnectionStability stability) {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
-  if (m_connectionHealthTimerId == -1) {
+  if (m_metricsTimerId == -1) {
     logger.info() << "No active health timer for state" << stability;
     return;
   }
   switch (stability) {
     case ConnectionHealth::Unstable:
       mozilla::glean::connection_health::unstable_time.stopAndAccumulate(
-          m_connectionHealthTimerId);
+          m_metricsTimerId);
       break;
     case ConnectionHealth::NoSignal:
       mozilla::glean::connection_health::no_signal_time.stopAndAccumulate(
-          m_connectionHealthTimerId);
+          m_metricsTimerId);
       break;
     default:
       mozilla::glean::connection_health::stable_time.stopAndAccumulate(
-          m_connectionHealthTimerId);
+          m_metricsTimerId);
   }
-  m_connectionHealthTimerId =
-      -1;  // used as a signal to prevent turning it off twice when
-           // ConnectionHealth moves between idle and stop.
+  m_metricsTimerId = -1;  // used as a signal to prevent turning it off twice
+                          // when ConnectionHealth moves between idle and stop.
 #endif
 }
 

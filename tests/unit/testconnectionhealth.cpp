@@ -5,6 +5,7 @@
 #include "testconnectionhealth.h"
 
 #include "connectionhealth.h"
+#include "glean/generated/metrics.h"
 
 void TestConnectionHealth::dnsPingReceived() {
   ConnectionHealth connectionHealth;
@@ -42,6 +43,9 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::NoSignal);
+  // This test setup doesn't have an initial state, so first period is the No
+  // Signal changed to in this healthCheckup
+  metricsTest(0, 0, 1, ConnectionHealth::ConnectionStability::NoSignal);
 
   // Signal timer is active, but recent pings were lost -> Unstable
   connectionHealth.startIdle();
@@ -53,6 +57,7 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::Unstable);
+  metricsTest(0, 1, 1, ConnectionHealth::ConnectionStability::Unstable);
 
   // Signal timer is active, recent pings not lost -> Stable
   for (int i = 0; i < connectionHealth.m_pingHelper.m_pingData.size(); i++) {
@@ -62,6 +67,7 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::Stable);
+  metricsTest(1, 1, 1, ConnectionHealth::ConnectionStability::Stable);
 
   // Signal timer is active, recent ping(s) took too long -> Unstable
   connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
@@ -69,6 +75,7 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::Unstable);
+  metricsTest(1, 2, 1, ConnectionHealth::ConnectionStability::Unstable);
 
   // Signal timer is active, recent ping(s) arrived on time -> Back to Stable
   connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
@@ -76,6 +83,68 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::Stable);
+  metricsTest(2, 2, 1, ConnectionHealth::ConnectionStability::Stable);
+}
+
+void TestConnectionHealth::metricsTest(
+    int expectedStablePeriods, int expectedUnstablePeriods,
+    int expectedNoSignalPeriods,
+    ConnectionHealth::ConnectionStability currentPeriod) {
+  // test for no errors
+  QCOMPARE(
+      mozilla::glean::connection_health::stable_time.testGetNumRecordedErrors(
+          ErrorType::InvalidState),
+      0);
+  QCOMPARE(
+      mozilla::glean::connection_health::unstable_time.testGetNumRecordedErrors(
+          ErrorType::InvalidState),
+      0);
+  QCOMPARE(mozilla::glean::connection_health::no_signal_time
+               .testGetNumRecordedErrors(ErrorType::InvalidState),
+           0);
+
+  // test the 3 timespans
+  // Expect one timespan for each period except the current one. Can't get count
+  // from the API, so just test if it's non-zero.
+  QCOMPARE(mozilla::glean::connection_health::stable_time.testGetValue().count,
+           expectedNoSignalPeriods -
+               ((currentPeriod == ConnectionHealth::ConnectionStability::Stable)
+                    ? 1
+                    : 0));
+  QCOMPARE(
+      mozilla::glean::connection_health::unstable_time.testGetValue().count,
+      expectedUnstablePeriods -
+          ((currentPeriod == ConnectionHealth::ConnectionStability::Unstable)
+               ? 1
+               : 0));
+  QCOMPARE(
+      mozilla::glean::connection_health::no_signal_time.testGetValue().count,
+      expectedNoSignalPeriods -
+          ((currentPeriod == ConnectionHealth::ConnectionStability::NoSignal)
+               ? 1
+               : 0));
+
+  // test the 3 events
+  // Expect a "change to" event for each period
+  auto changeToStableEvents =
+      mozilla::glean::connection_health::changed_to_stable.testGetValue();
+  auto changeToUnstableEvents =
+      mozilla::glean::connection_health::changed_to_unstable.testGetValue();
+  auto changeToNoSignalEvents =
+      mozilla::glean::connection_health::changed_to_no_signal.testGetValue();
+  QCOMPARE(changeToStableEvents.length(), expectedStablePeriods);
+  QCOMPARE(changeToUnstableEvents.length(), expectedUnstablePeriods);
+  QCOMPARE(changeToNoSignalEvents.length(), expectedNoSignalPeriods);
+
+  // test the 3 counters
+  // Expect a non-zero counter if there has been at least one period.
+  QCOMPARE(mozilla::glean::connection_health::stable_count.testGetValue() > 0,
+           expectedStablePeriods > 0);
+  QCOMPARE(mozilla::glean::connection_health::unstable_count.testGetValue() > 0,
+           expectedUnstablePeriods > 0);
+  QCOMPARE(
+      mozilla::glean::connection_health::no_signal_count.testGetValue() > 0,
+      expectedNoSignalPeriods > 0);
 }
 
 static TestConnectionHealth s_testConnectionHealth;
