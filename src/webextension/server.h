@@ -7,17 +7,19 @@
 
 #include <QTcpServer>
 
+#include "baseadapter.h"
+
 namespace WebExtension {
 
 class Server final : public QTcpServer {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(Server)
 
  public:
-  Server();
+  Server(BaseAdapter* adapter);
   ~Server();
 
  private:
+  BaseAdapter* m_adapter;
   void newConnectionReceived();
 };
 

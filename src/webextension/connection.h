@@ -8,7 +8,7 @@
 #include <QByteArray>
 #include <QObject>
 
-class QTcpSocket;
+class QIODevice;
 
 namespace WebExtension {
 
@@ -17,20 +17,23 @@ class Connection final : public QObject {
   Q_DISABLE_COPY_MOVE(Connection)
 
  public:
-  Connection(QObject* parent, QTcpSocket* connection);
+  Connection(QObject* parent, QIODevice* connection);
   ~Connection();
+
+  void writeMessage(QJsonObject& data);
+
+  Q_SIGNAL void onMessage(QJsonObject& message);
 
  private:
   void readData();
   void writeData(const QByteArray& data);
 
-  void writeState();
   void writeInvalidRequest();
 
   void processMessage(const QByteArray& message);
 
  private:
-  QTcpSocket* m_connection;
+  QIODevice* m_connection;
 
   enum {
     // Reading the length of the body. This step consists in the reading of 4
