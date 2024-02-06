@@ -114,11 +114,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
-          npm install
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
       - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      -run: npm install
+
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3

@@ -116,10 +116,15 @@ jobs:
           cache: 'pip'
       - run: pip install -r requirements.txt
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      -run: npm install
+
       - name: Install test dependecies
         run: |
           sudo apt install --no-upgrade firefox xvfb -y
-          npm install
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
