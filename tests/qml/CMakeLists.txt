@@ -87,8 +87,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/authenticationlistener.h
     ${MZ_SOURCE_DIR}/collator.cpp
     ${MZ_SOURCE_DIR}/collator.h
-    ${MZ_SOURCE_DIR}/filterproxymodel.cpp
-    ${MZ_SOURCE_DIR}/filterproxymodel.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
@@ -133,12 +131,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
-    ${MZ_SOURCE_DIR}/urlopener.cpp
-    ${MZ_SOURCE_DIR}/urlopener.h
-    ${MZ_SOURCE_DIR}/utils.cpp
-    ${MZ_SOURCE_DIR}/utils.h
-    ${MZ_SOURCE_DIR}/versionutils.cpp
-    ${MZ_SOURCE_DIR}/versionutils.h
 )
 
 # VPN Client UI resources

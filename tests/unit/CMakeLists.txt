@@ -176,12 +176,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
-    ${MZ_SOURCE_DIR}/urlopener.cpp
-    ${MZ_SOURCE_DIR}/urlopener.h
-    ${MZ_SOURCE_DIR}/utils.cpp
-    ${MZ_SOURCE_DIR}/utils.h
-    ${MZ_SOURCE_DIR}/versionutils.cpp
-    ${MZ_SOURCE_DIR}/versionutils.h
 )
 
 # VPN Client UI resources

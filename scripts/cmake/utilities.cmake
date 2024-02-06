@@ -23,27 +23,6 @@ function(mz_target_handle_warnings MZ_TARGET)
     target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
 endfunction()
 
-function(mz_add_library)
-    cmake_parse_arguments(
-        MZ_ADD_LIBRARY # prefix
-        "" # options
-        "" # single-value args
-        "NAME;TYPE" # multi-value args
-        ${ARGN})
-
-    add_library(${MZ_ADD_LIBRARY_NAME} ${MZ_ADD_LIBRARY_TYPE})
-    mz_target_handle_warnings(${MZ_ADD_LIBRARY_NAME})
-    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PRIVATE
-        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
-        "$<$<CONFIG:Debug>:MZ_DEBUG>"
-    )
-    target_include_directories(${MZ_ADD_LIBRARY_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}
-    )
-endfunction()
-
-
 # MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
 #
 # Targets added:

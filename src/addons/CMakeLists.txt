@@ -5,20 +5,6 @@
 mz_add_new_module(
     TARGET_NAME mz_addons
     SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.h
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcher.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcher.h
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
