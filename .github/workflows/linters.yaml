@@ -27,7 +27,9 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
       - run: pip install -r requirements.txt
+
       - name: Importing translation files
         shell: bash
         run: |

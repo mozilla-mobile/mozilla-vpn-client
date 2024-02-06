@@ -28,13 +28,15 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
+
       - name: Install build dependencies
         shell: bash
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
           
       - name: Cache grcov
         id: cache-grcov
