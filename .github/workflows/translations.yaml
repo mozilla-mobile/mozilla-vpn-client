@@ -36,8 +36,7 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip'
-      - name: Install python dependencies
-        run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt
 
       - name: Generating translations
         run: |
