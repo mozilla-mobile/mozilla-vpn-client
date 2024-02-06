@@ -20,14 +20,17 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
       - name: Install source dependencies
         shell: bash
         run: |
           sudo apt-get install golang debhelper -y
-          pip install -r requirements.txt
 
       - name: Build source bundle
         shell: bash
