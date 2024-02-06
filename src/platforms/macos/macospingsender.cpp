@@ -69,6 +69,7 @@ MacOSPingSender::~MacOSPingSender() {
 }
 
 void MacOSPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
+  logger.debug() << "Creating address";
   quint32 ipv4dest = dest.toIPv4Address();
   struct sockaddr_in addr;
   bzero(&addr, sizeof(addr));
@@ -76,6 +77,7 @@ void MacOSPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   addr.sin_len = sizeof(addr);
   addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4dest);
 
+  logger.debug() << "Creating packet";
   struct icmp packet;
   bzero(&packet, sizeof packet);
   packet.icmp_type = ICMP_ECHO;
@@ -83,6 +85,7 @@ void MacOSPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   packet.icmp_seq = htons(sequence);
   packet.icmp_cksum = inetChecksum(&packet, sizeof(packet));
 
+  logger.debug() << "Sending ping";
   if (sendto(m_socket, (char*)&packet, sizeof(packet), 0,
              (struct sockaddr*)&addr, sizeof(addr)) != sizeof(packet)) {
     logger.error() << "ping sending failed:" << strerror(errno);
@@ -109,7 +112,7 @@ void MacOSPingSender::socketReady() {
 
   ssize_t rc = recvmsg(m_socket, &msg, MSG_DONTWAIT);
   if (rc <= 0) {
-    logger.error() << "Recvmsg failed";
+    logger.error() << "Recvmsg failed:" << rc;
     return;
   }
 
