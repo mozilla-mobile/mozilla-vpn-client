@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "webextension/connection.h"
+#include "./connection.h"
 
 #include <QHostAddress>
 #include <QIODevice>
@@ -12,41 +12,19 @@
 #include <QMetaEnum>
 #include <functional>
 
-#include "connection.h"
-#include "controller.h"
-#include "leakdetector.h"
-#include "localizer.h"
-#include "logger.h"
-#include "models/servercity.h"
-#include "models/servercountrymodel.h"
-#include "models/serverdata.h"
-#include "mozillavpn.h"
-#include "settingsholder.h"
-
 constexpr uint32_t MAX_MSG_SIZE = 1024 * 1024;
-
-namespace {
-
-Logger logger("Connection");
-
-}  // namespace
 
 namespace WebExtension {
 
 Connection::Connection(QObject* parent, QIODevice* connection)
     : QObject(parent), m_connection(connection) {
-  MZ_COUNT_CTOR(Connection);
-
-  logger.debug() << "New connection received";
+  qInfo() << "New connection received";
 
   Q_ASSERT(m_connection);
-  connect(m_connection, &QTcpSocket::readyRead, this, &Connection::readData);
+  connect(m_connection, &QIODevice::readyRead, this, &Connection::readData);
 }
 
-Connection::~Connection() {
-  MZ_COUNT_DTOR(Connection);
-  logger.debug() << "Connection released";
-}
+Connection::~Connection() { qInfo() << "Connection released"; }
 
 void Connection::readData() {
   QByteArray input = m_connection->readAll();

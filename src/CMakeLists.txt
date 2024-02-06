@@ -40,8 +40,6 @@ endif()
 
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
-include(webextension/CMakeLists.txt)
-
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
@@ -51,6 +49,11 @@ target_link_libraries(mozillavpn PRIVATE
     translations
     qtglean
 )
+
+if(NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(webextension)
+    target_link_libraries(mozillavpn PRIVATE webextension)
+endif()
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 

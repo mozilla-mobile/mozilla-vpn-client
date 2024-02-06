@@ -4,37 +4,31 @@
 
 #include "./server.h"
 
+#include <QDebug>
 #include <QHostAddress>
 #include <QJsonObject>
 #include <QTcpSocket>
 
-#include "./connection.h"
-#include "leakdetector.h"
-#include "logger.h"
-
-namespace {
-Logger logger("Server");
-}
+#include "connection.h"
 
 constexpr int SERVER_PORT = 8754;
 
 namespace WebExtension {
 
 Server::Server(BaseAdapter* adapter) {
-  MZ_COUNT_CTOR(Server);
   m_adapter = adapter;
 
-  logger.debug() << "Creating the server";
+  qInfo() << "Creating the server";
 
   if (!listen(QHostAddress::LocalHost, SERVER_PORT)) {
-    logger.error() << "Failed to listen on port" << SERVER_PORT;
+    qCritical() << "Failed to listen on port" << SERVER_PORT;
     return;
   }
 
   connect(this, &Server::newConnection, this, &Server::newConnectionReceived);
 }
 
-Server::~Server() { MZ_COUNT_DTOR(Server); }
+Server::~Server() {}
 
 void Server::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();

@@ -1,19 +1,22 @@
-# Sources for desktop platforms.
-if(CMAKE_CROSSCOMPILING)
-    return()
-endif()
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+add_library(webextension STATIC
+    baseadapter.h
+    baseadapter.cpp
+    connection.cpp
+    connection.h
+    server.cpp
+    server.h
+)
+target_link_libraries(webextension PUBLIC 
+    Qt6::Core
+    Qt6::Network
+)
 
 target_sources(mozillavpn-sources INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/baseadapter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/baseadapter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/connection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/connection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/server.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/server.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/vpnadapter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/webextension/vpnadapter.cpp
+    vpnadapter.h
+    vpnadapter.cpp
 )
- 
-
-target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
-
+target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)

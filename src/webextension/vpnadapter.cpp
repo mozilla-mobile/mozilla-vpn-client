@@ -25,8 +25,7 @@
 
 namespace {
 
-Logger logger("Connection");
-
+Logger logger("VPNAdapter");
 }
 
 namespace WebExtension {
