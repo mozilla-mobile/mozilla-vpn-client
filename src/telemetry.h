@@ -8,8 +8,6 @@
 #include <QObject>
 #include <QTimer>
 
-#include "connectionhealth.h"
-
 class Telemetry final : public QObject {
  public:
   Telemetry();
@@ -19,13 +17,6 @@ class Telemetry final : public QObject {
 
   void startTimeToFirstScreenTimer();
   void stopTimeToFirstScreenTimer();
-  void startConnectionHealthTimer(
-      ConnectionHealth::ConnectionStability stability);
-  void stopConnectionHealthTimer(
-      ConnectionHealth::ConnectionStability stability);
-  void connectionHealthTelemetry(
-      ConnectionHealth::ConnectionStability oldStability,
-      ConnectionHealth::ConnectionStability newStability);
 
  private:
   void connectionStabilityEvent();
@@ -50,8 +41,6 @@ class Telemetry final : public QObject {
   QTimer m_vpnSessionPingTimer;
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
   QTimer m_gleanControllerUpTimer;
-  // The Glean timer id for the connection health metrics.
-  qint64 m_connectionHealthTimerId = -1;
 #endif
 
   // The Glean timer id for the performance.time_to_main_screen metric.

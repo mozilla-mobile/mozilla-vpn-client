@@ -15,9 +15,6 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
-#ifndef UNIT_TEST
-#  include "telemetry.h"
-#endif
 
 namespace {
 Logger logger("ConnectionHealth");
@@ -72,9 +69,7 @@ void ConnectionHealth::stop() {
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
-#ifndef UNIT_TEST
-  MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
-#endif
+  stopMetricsTimer(m_stability);
   setStability(Stable);
 }
 
@@ -95,9 +90,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
-#ifndef UNIT_TEST
-  MozillaVPN::instance()->telemetry()->startConnectionHealthTimer(m_stability);
-#endif
+  startMetricsTimer(m_stability);
 }
 
 void ConnectionHealth::startIdle() {
@@ -120,9 +113,7 @@ void ConnectionHealth::startIdle() {
   m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                            m_dnsPingSequence);
 
-#ifndef UNIT_TEST
-  MozillaVPN::instance()->telemetry()->stopConnectionHealthTimer(m_stability);
-#endif
+  stopMetricsTimer(m_stability);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -135,16 +126,13 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
-#ifndef UNIT_TEST
   // Pings will sometimes come between VPN sessions, triggering setStability. We
   // do not want to record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
       state == Controller::StateSilentSwitching) {
-    MozillaVPN::instance()->telemetry()->connectionHealthTelemetry(m_stability,
-                                                                   stability);
+    recordMetrics(m_stability, stability);
   }
-#endif
 
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
@@ -291,4 +279,83 @@ void ConnectionHealth::overwriteStabilityForInspector(
   m_stabilityOverwritten = true;
   m_stability = stability;
   emit stabilityChanged();
+}
+
+void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::unstable_time.start();
+      break;
+    case ConnectionHealth::NoSignal:
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::no_signal_time.start();
+      break;
+    default:
+      m_connectionHealthTimerId =
+          mozilla::glean::connection_health::stable_time.start();
+  }
+#endif
+}
+
+void ConnectionHealth::stopMetricsTimer(ConnectionStability stability) {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  if (m_connectionHealthTimerId == -1) {
+    logger.info() << "No active health timer for state" << stability;
+    return;
+  }
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+      break;
+    default:
+      mozilla::glean::connection_health::stable_time.stopAndAccumulate(
+          m_connectionHealthTimerId);
+  }
+  m_connectionHealthTimerId =
+      -1;  // used as a signal to prevent turning it off twice when
+           // ConnectionHealth moves between idle and stop.
+#endif
+}
+
+void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
+                                     ConnectionStability newStability) {
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_count.add();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_count.add();
+      break;
+    default:
+      mozilla::glean::connection_health::stable_count.add();
+  }
+
+  if (oldStability == newStability) {
+    logger.debug() << "No stability change for telemetry.";
+    return;
+  }
+
+  logger.info() << "Recording telemetry for stability change from"
+                << oldStability << "to" << newStability;
+
+  stopMetricsTimer(oldStability);
+  startMetricsTimer(newStability);
+
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::changed_to_unstable.record();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::changed_to_no_signal.record();
+      break;
+    default:
+      mozilla::glean::connection_health::changed_to_stable.record();
+  }
 }

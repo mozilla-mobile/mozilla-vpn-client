@@ -112,6 +112,15 @@ class ConnectionHealth final : public QObject {
   QString m_currentGateway;
   QString m_deviceAddress;
 
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  qint64 m_metricsTimerId = -1;
+#endif
+
+  void startMetricsTimer(ConnectionStability stability);
+  void stopMetricsTimer(ConnectionStability stability);
+  void recordMetrics(ConnectionStability oldStability,
+                     ConnectionStability newStability);
+
 #ifdef UNIT_TEST
   friend class TestConnectionHealth;
 #endif
