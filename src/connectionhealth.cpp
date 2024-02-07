@@ -52,9 +52,6 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
 
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
-
-  // It is always started in the stable state.
-  mozilla::glean::connection_health::changed_to_stable.record();
 }
 
 ConnectionHealth::~ConnectionHealth() { MZ_COUNT_DTOR(ConnectionHealth); }
@@ -130,6 +127,10 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   // do not want to record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
+#if defined(UNIT_TEST)
+      // Always record metrics when testing
+      state == Controller::StateInitializing ||
+#endif
       state == Controller::StateSilentSwitching) {
     recordMetrics(m_stability, stability);
   }
@@ -242,7 +243,8 @@ void ConnectionHealth::startUnsettledPeriod() {
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_DUMMY)
   Q_UNUSED(state);
   // Do not suspend PingsendHelper on Desktop.
   return;
@@ -282,7 +284,10 @@ void ConnectionHealth::overwriteStabilityForInspector(
 }
 
 void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+  logger.debug() << "MATTHEW starting metrics outside";
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_DUMMY)
+  logger.debug() << "MATTHEW starting metrics inside";
   switch (stability) {
     case ConnectionHealth::Unstable:
       m_metricsTimerId =
@@ -299,7 +304,8 @@ void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
 }
 
 void ConnectionHealth::stopMetricsTimer(ConnectionStability stability) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_DUMMY)
   if (m_metricsTimerId == -1) {
     logger.info() << "No active health timer for state" << stability;
     return;

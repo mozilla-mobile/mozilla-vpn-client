@@ -32,6 +32,8 @@ target_link_libraries(unit_tests PRIVATE
 )
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
+target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
+target_compile_definitions(unit_tests PRIVATE MZ_DUMMY)
 
 target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 

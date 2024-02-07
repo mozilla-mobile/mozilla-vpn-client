@@ -11,6 +11,8 @@ class TestConnectionHealth final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
   void dnsPingReceived();
   void healthCheckup();
   void updateDnsPingLatency();
@@ -36,4 +38,7 @@ class TestConnectionHealth final : public TestHelper {
     return weight * obs.back() +
            (1 - weight) * ewma(std::vector(obs.begin(), obs.end() - 1), weight);
   }
+
+ private:
+  SettingsHolder* m_settingsHolder = nullptr;
 };

@@ -112,7 +112,8 @@ class ConnectionHealth final : public QObject {
   QString m_currentGateway;
   QString m_deviceAddress;
 
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
+    defined(MZ_DUMMY)
   qint64 m_metricsTimerId = -1;
 #endif
 
