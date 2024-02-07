@@ -79,7 +79,7 @@ MZFlickable {
             id: buttons
 
             Layout.topMargin: flickable.isMobile ? 0 : 40
-            Layout.bottomMargin: flickable.isMobile ? 24 : 48 //58 for iPhones with safe area
+            Layout.bottomMargin: flickable.isMobile ? 36 : 48 //58 for iPhones with safe area
 
             spacing: 0
         }
