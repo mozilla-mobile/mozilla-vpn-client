@@ -23,6 +23,7 @@ function(mz_target_handle_warnings MZ_TARGET)
     target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
 endfunction()
 
+<<<<<<< HEAD
 # MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
 #
 # Targets added:
@@ -30,6 +31,34 @@ endfunction()
 # - <TARGET_NAME>-alltests -- Builds all tests for this target
 # - <TARGET_NAME>-<TESTFILENAME> -- Builds one specific test
 #
+=======
+
+
+
+function(mz_add_library)
+    cmake_parse_arguments(
+        MZ_ADD_LIBRARY # prefix
+        "" # options
+        "" # single-value args
+        "NAME;TYPE" # multi-value args
+        ${ARGN})
+
+    add_library(${MZ_ADD_LIBRARY_NAME} ${MZ_ADD_LIBRARY_TYPE})
+    mz_target_handle_warnings(${MZ_ADD_LIBRARY_NAME})
+    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PRIVATE
+        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+        "$<$<CONFIG:Debug>:MZ_DEBUG>"
+    )
+    target_include_directories(${MZ_ADD_LIBRARY_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+endfunction()
+
+
+# MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
+#
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 # Usage:
 # MZ_ADD_NEW_MODULE(
 #     TARGET_NAME <target_name>
@@ -84,9 +113,16 @@ endfunction()
 # - DUMMY_DEPENDENCIES: (Optional) List of dummy dependencies for the module.
 #
 # Example:
+<<<<<<< HEAD
 # mz_add_new_module(
 #     TARGET_NAME mz_mymodule
 #     INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+=======
+# MZ_ADD_NEW_MODULE(
+#     TARGET_NAME MyModule
+#     INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/generated_sources.cpp
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 #     SOURCES src/file1.cpp src/file2.cpp
 #     TEST_SOURCES tests/test_file.cpp
 #     MZ_DEPENDENCIES mz_module
@@ -96,6 +132,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
+<<<<<<< HEAD
         "TARGET_NAME;
          INCLUDE_DIRECTORIES;
          SOURCES;
@@ -119,6 +156,9 @@ function(mz_add_new_module)
          WINDOWS_DEPENDENCIES;
          WASM_DEPENDENCIES;
          DUMMY_DEPENDENCIES" # multi-value args
+=======
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
         ${ARGN})
 
 
@@ -182,13 +222,25 @@ function(mz_add_new_module)
     # and finally add this module's tests to the build_tests target which builds all tests.
     if(MZ_ADD_NEW_MODULE_TEST_SOURCES)
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
+<<<<<<< HEAD
+=======
+        set_target_properties(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests PROPERTIES
+            EXCLUDE_FROM_ALL TRUE
+        )
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
         set(CPP_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
+<<<<<<< HEAD
         list(FILTER CPP_TEST_FILES INCLUDE REGEX "\.cpp$")
         set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
         list(FILTER QRC_TEST_FILES INCLUDE REGEX "\.qrc$")
+=======
+        list(FILTER CPP_TEST_FILES INCLUDE REGEX "(.*)\\c\\p\\p$")
+        set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
+        list(FILTER QRC_TEST_FILES INCLUDE REGEX "(.*)\\q\\r\\c$")
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 
         foreach(TEST_FILE ${CPP_TEST_FILES})
             # The test executable name will be the name of the test file
@@ -211,16 +263,22 @@ function(mz_add_new_module)
                     ${TEST_LINK_LIBRARIES}
             )
 
+<<<<<<< HEAD
             add_dependencies(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests ${TEST_TARGET_NAME})
 
             # Check if the corresponding header file exists
             string(REGEX REPLACE "\.cpp$" ".h" HEADER_FILE ${TEST_FILE})
+=======
+            # Check if the corresponding header file exists
+            string(REGEX REPLACE ".cpp$" ".h" HEADER_FILE ${TEST_FILE})
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
             if(EXISTS ${HEADER_FILE})
                 # Add the header file to the executable if it exists.
                 target_sources(${TEST_TARGET_NAME} PRIVATE ${TEST_FILE})
             endif()
         endforeach()
     endif()
+<<<<<<< HEAD
 
     # Add Clang-tidy to that module
     mz_add_clang_tidy(${MZ_ADD_NEW_MODULE_TARGET_NAME})
@@ -244,6 +302,8 @@ function(mz_add_library)
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
+=======
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 endfunction()
 
 function(mz_add_test_target)
@@ -258,6 +318,12 @@ function(mz_add_test_target)
     qt_add_executable(${MZ_ADD_TEST_TARGET_NAME}
         ${MZ_ADD_TEST_SOURCES}
     )
+<<<<<<< HEAD
+=======
+    set_target_properties(${MZ_ADD_TEST_TARGET_NAME} PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+    )
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 
     add_test(
         NAME ${MZ_ADD_TEST_TARGET_NAME}
@@ -356,7 +422,11 @@ function(mz_generate_link_libraries)
 
     # Replace dependencies for test dependencies that start with `replace-`
     set(REPLACER_DEPENDENCIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
+<<<<<<< HEAD
     list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^replace-")
+=======
+    list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
     foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
         # Get the name of the original dependency
         string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
@@ -414,6 +484,7 @@ function(mz_generate_sources_list)
     # 2. Separate out Swift and ObjC sources
 
     set(SWIFT_SOURCES ${LOCAL_ALL_SOURCES})
+<<<<<<< HEAD
     list(FILTER SWIFT_SOURCES INCLUDE REGEX "\.swift$")
 
     set(OBJC_SOURCES ${LOCAL_ALL_SOURCES})
@@ -421,6 +492,15 @@ function(mz_generate_sources_list)
 
     list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "\.swift$")
     list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "\.mm$")
+=======
+    list(FILTER SWIFT_SOURCES INCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
+
+    set(OBJC_SOURCES ${LOCAL_ALL_SOURCES})
+    list(FILTER OBJC_SOURCES INCLUDE REGEX "(.*)\\m\\m$")
+
+    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
+    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\m\\m$")
+>>>>>>> 73303a5cb (04: Make it a module and add tests)
 
     set(APPLE_SOURCES ${SWIFT_SOURCES} ${OBJC_SOURCES} PARENT_SCOPE)
 
@@ -477,4 +557,7 @@ function(mz_add_the_apple_stuff)
         ${APPLE_SPECIFIC_TARGET_NAME}
     )
 endfunction()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 73303a5cb (04: Make it a module and add tests)

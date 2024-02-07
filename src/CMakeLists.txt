@@ -52,7 +52,7 @@ target_link_libraries(mozillavpn PRIVATE
 
 if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(webextension)
-    target_link_libraries(mozillavpn PRIVATE webextension)
+    target_link_libraries(mozillavpn PRIVATE mz_webextension)
 endif()
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})

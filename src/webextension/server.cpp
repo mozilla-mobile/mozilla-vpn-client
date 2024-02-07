@@ -30,14 +30,17 @@ Server::Server(BaseAdapter* adapter) {
 
 Server::~Server() {}
 
+bool Server::isAllowedToConnect(QHostAddress addr) {
+  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
+  // notation.
+  return addr == QHostAddress("::ffff:127.0.0.1") ||
+         addr == QHostAddress::LocalHost || addr == QHostAddress::LocalHostIPv6;
+}
+
 void Server::newConnectionReceived() {
   QTcpSocket* child = nextPendingConnection();
 
-  // `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
-  // notation.
-  if (child->localAddress() != QHostAddress("::ffff:127.0.0.1") &&
-      child->localAddress() != QHostAddress::LocalHost &&
-      child->localAddress() != QHostAddress::LocalHostIPv6) {
+  if (!isAllowedToConnect(child->localAddress())) {
     child->close();
     return;
   }

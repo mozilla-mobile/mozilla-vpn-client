@@ -18,6 +18,9 @@ class Server final : public QTcpServer {
   Server(BaseAdapter* adapter);
   ~Server();
 
+  // Checks if this socket May connect to the Client.
+  static bool isAllowedToConnect(QHostAddress sock);
+
  private:
   BaseAdapter* m_adapter;
   void newConnectionReceived();

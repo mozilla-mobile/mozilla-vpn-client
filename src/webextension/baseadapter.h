@@ -47,11 +47,12 @@ class BaseAdapter : public QObject {
    */
   Q_SIGNAL void onOutgoingMessage(QJsonObject& message);
 
- protected:
   struct RequestType {
     QString m_name;
     std::function<QJsonObject(const QJsonObject&)> m_callback;
   };
+
+ protected:
   QList<RequestType> m_commands;
 };
 
