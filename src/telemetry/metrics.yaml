@@ -1722,7 +1722,7 @@ connection_health:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - MUST ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1752,7 +1752,7 @@ connection_health:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - MUST ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1781,7 +1781,7 @@ connection_health:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - MUST ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1807,7 +1807,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
-      - NEED TO ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1833,7 +1833,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
-      - NEED TO ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1859,6 +1859,7 @@ connection_health:
       - https://mozilla-hub.atlassian.net/browse/VPN-4700
     data_reviews:
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6783#pullrequestreview-1407551157
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1881,7 +1882,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
-      - NEED TO ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1904,7 +1905,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
-      - NEED TO ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
@@ -1927,7 +1928,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
-      - NEED TO ADD IN
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
     data_sensitivity:
       - technical
     notification_emails:
