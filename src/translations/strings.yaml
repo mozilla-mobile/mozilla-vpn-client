@@ -1031,13 +1031,7 @@ resetSettings:
   body1:
     value: "This will reset all VPN settings, including:"
     comment: Body content of the screen where users go to reset the VPN to factory settings 
-  listItem1:
-    value: Privacy features
-    comment: Item in a bulleted list denoting what will be deleted if the user opts to factory reset the client
-  listItem2:
-    value: Recent connections
-    comment: Item in a bulleted list denoting what will be deleted if the user opts to factory reset the client
-  listItem3:
+  listItemPreferences:
     value: Preferences
     comment: Item in a bulleted list denoting what will be deleted if the user opts to factory reset the client
   body2:

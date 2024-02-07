@@ -49,36 +49,49 @@ ViewFullScreen {
             Layout.topMargin: 16
             Layout.fillWidth: true
 
-            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.ResetSettingsListItem1)
+            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.HelpSheetsPrivacyTitle)
             textFormat: Text.RichText
             color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
 
-            Accessible.name: MZI18n.ResetSettingsListItem1
+            Accessible.name: MZI18n.HelpSheetsPrivacyTitle
         }
 
         MZInterLabel {
             Layout.topMargin: 12
             Layout.fillWidth: true
 
-            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.ResetSettingsListItem2)
+            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.SettingsAppExclusionSettings)
             textFormat: Text.RichText
             color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
+            visible: MZFeatureList.get("splitTunnel").isSupported
 
-            Accessible.name: MZI18n.ResetSettingsListItem2
+            Accessible.name: MZI18n.SettingsAppExclusionSettings
         }
 
         MZInterLabel {
             Layout.topMargin: 12
             Layout.fillWidth: true
 
-            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.ResetSettingsListItem3)
+            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.MultiHopFeatureMultiHopConnectionsHeader)
             textFormat: Text.RichText
             color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
 
-            Accessible.name: MZI18n.ResetSettingsListItem3
+            Accessible.name: MZI18n.MultiHopFeatureMultiHopConnectionsHeader
+        }
+
+        MZInterLabel {
+            Layout.topMargin: 12
+            Layout.fillWidth: true
+
+            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.ResetSettingsListItemPreferences)
+            textFormat: Text.RichText
+            color: MZTheme.theme.fontColor
+            horizontalAlignment: Text.AlignLeft
+
+            Accessible.name: MZI18n.ResetSettingsListItemPreferences
         }
 
         MZInterLabel {
