@@ -34,8 +34,7 @@ class BaseAdapter : public QObject {
    * @brief Slot for the Adapter to receive Messages from the
    * WebExtension
    *
-   * @param messageType - The Type of the Message
-   * @param args - A Json Object Containing the arguments
+   * @param message -  The JSON Message
    */
   void onMessage(QJsonObject message);
 
