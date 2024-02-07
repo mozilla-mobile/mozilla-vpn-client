@@ -14,8 +14,6 @@ import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 //Desktop - we like to position the buttons right beneath the content
 //Mobile - we like to position the buttons at the bottom of the screen
 
-//TODO: handle navbar
-
 //USAGE: pass a component (recommended) or array of components (not recommended) to the content and buttons property
 
 /*
@@ -42,10 +40,6 @@ MZFlickable {
     //Weirdly get a "parent is null" warning when popping of a stackview without checking if parent is null
     implicitHeight: parent ? parent.height : 0
     flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
-
-    Component.onCompleted: navbar.visible = false
-    Component.onDestruction: navbar.visible = true
-
 
     ColumnLayout {
         id: layout

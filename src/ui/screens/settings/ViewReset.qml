@@ -14,6 +14,10 @@ import "qrc:/ui/sharedViews"
 
 ViewFullScreen {
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
+    property var _menuOnBackClicked:  () => {
+                                          getHelpStackView.pop();
+                                          navbar.visible = true
+                                      }
 
     content: ColumnLayout {
         spacing : 0
@@ -126,7 +130,10 @@ ViewFullScreen {
             implicitHeight: MZTheme.theme.rowHeight
             labelText: MZI18n.GlobalGoBack
 
-            onClicked: getHelpStackView.pop()
+            onClicked: {
+                getHelpStackView.pop();
+                navbar.visible = true
+            }
         }
     }
 
