@@ -25,7 +25,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
-          pip3 install -r requirements.txt
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
 
       - name: Building tests
         shell: bash
@@ -54,9 +59,13 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: |
-          pip3 install -r requirements.txt
-          brew install ninja
+        run: brew install ninja
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
 
       - name: Install Qt6
         shell: bash
@@ -111,10 +120,11 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - name: Install depedencies
-        shell: bash
-        run: |
-          pip3 install -r requirements.txt
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
 
       - name: Building tests
         run: |
