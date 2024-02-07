@@ -51,7 +51,12 @@ describe('Factory Reset', function() {
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.resetView.CANCEL_BUTTON.visible());
   });
 
-  it.only('reset app back to factory settings', async () => {
+  it('reset app back to factory settings', async () => {
+  	// WASM fails at relaunching the app, so skip this test on WASM
+    if (this.ctx.wasm) {
+      return;
+    }
+
   	//Set settings that we plan to reset
   	await vpn.setSetting('dnsProviderFlags', 14);
   	assert.equal(await vpn.getSetting('dnsProviderFlags'), 14);
