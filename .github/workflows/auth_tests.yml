@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - "releases/**"
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
 
 # Restrict tests to the most recent commit.
 concurrency:
