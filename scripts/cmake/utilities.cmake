@@ -96,7 +96,29 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
+        "TARGET_NAME;
+         INCLUDE_DIRECTORIES;
+         SOURCES;
+         IOS_SOURCES;
+         ANDROID_SOURCES;
+         MACOS_SOURCES;
+         LINUX_SOURCES;
+         WINDOWS_SOURCES;
+         WASM_SOURCES;
+         DUMMY_SOURCES;
+         TEST_SOURCES;
+         QT_DEPENDENCIES;
+         MZ_DEPENDENCIES;
+         RUST_DEPENDENCIES;
+         EXTRA_DEPENDENCIES;
+         TEST_DEPENDENCIES;
+         IOS_DEPENDENCIES;
+         ANDROID_DEPENDENCIES;
+         MACOS_DEPENDENCIES;
+         LINUX_DEPENDENCIES;
+         WINDOWS_DEPENDENCIES;
+         WASM_DEPENDENCIES;
+         DUMMY_DEPENDENCIES" # multi-value args
         ${ARGN})
 
 
@@ -167,9 +189,9 @@ function(mz_add_new_module)
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
         set(CPP_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
-        list(FILTER CPP_TEST_FILES INCLUDE REGEX "(.*)\\c\\p\\p$")
+        list(FILTER CPP_TEST_FILES INCLUDE REGEX "\.cpp$")
         set(QRC_TEST_FILES ${MZ_ADD_NEW_MODULE_TEST_SOURCES})
-        list(FILTER QRC_TEST_FILES INCLUDE REGEX "(.*)\\q\\r\\c$")
+        list(FILTER QRC_TEST_FILES INCLUDE REGEX "\.qrc$")
 
         foreach(TEST_FILE ${CPP_TEST_FILES})
             # The test executable name will be the name of the test file
@@ -192,8 +214,10 @@ function(mz_add_new_module)
                     ${TEST_LINK_LIBRARIES}
             )
 
+            add_dependencies(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests ${TEST_TARGET_NAME})
+
             # Check if the corresponding header file exists
-            string(REGEX REPLACE ".cpp$" ".h" HEADER_FILE ${TEST_FILE})
+            string(REGEX REPLACE "\.cpp$" ".h" HEADER_FILE ${TEST_FILE})
             if(EXISTS ${HEADER_FILE})
                 # Add the header file to the executable if it exists.
                 target_sources(${TEST_TARGET_NAME} PRIVATE ${TEST_FILE})
@@ -237,6 +261,7 @@ function(mz_add_test_target)
     set_target_properties(${MZ_ADD_TEST_TARGET_NAME} PROPERTIES
         EXCLUDE_FROM_ALL TRUE
     )
+
 
     add_test(
         NAME ${MZ_ADD_TEST_TARGET_NAME}
@@ -335,7 +360,7 @@ function(mz_generate_link_libraries)
 
     # Replace dependencies for test dependencies that start with `replace-`
     set(REPLACER_DEPENDENCIES ${MZ_GENERATE_LINK_LIBRARIES_TEST_DEPENDENCIES})
-    list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^\\r\\e\\p\\l\\a\\c\\e\\-")
+    list(FILTER REPLACER_DEPENDENCIES INCLUDE REGEX "^replace-")
     foreach(REPLACER_DEPENDENCY ${REPLACER_DEPENDENCIES})
         # Get the name of the original dependency
         string(REPLACE "replace-" "" ORIGINAL_DEPENDENCY ${REPLACER_DEPENDENCY})
@@ -393,13 +418,13 @@ function(mz_generate_sources_list)
     # 2. Separate out Swift and ObjC sources
 
     set(SWIFT_SOURCES ${LOCAL_ALL_SOURCES})
-    list(FILTER SWIFT_SOURCES INCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
+    list(FILTER SWIFT_SOURCES INCLUDE REGEX "\.swift$")
 
     set(OBJC_SOURCES ${LOCAL_ALL_SOURCES})
-    list(FILTER OBJC_SOURCES INCLUDE REGEX "(.*)\\m\\m$")
+    list(FILTER OBJC_SOURCES INCLUDE REGEX "\.mm$")
 
-    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\s\\w\\i\\f\\t$")
-    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "(.*)\\m\\m$")
+    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "\.swift$")
+    list(FILTER LOCAL_ALL_SOURCES EXCLUDE REGEX "\.mm$")
 
     set(APPLE_SOURCES ${SWIFT_SOURCES} ${OBJC_SOURCES} PARENT_SCOPE)
 

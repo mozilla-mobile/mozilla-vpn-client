@@ -2,10 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 3.20)
-
-# The source file GENERATED property is visible from all directory scopes when set.
-cmake_policy(SET CMP0118 NEW)
+cmake_minimum_required(VERSION 3.18)
 
 message("Configuring for ${CMAKE_GENERATOR}")
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
