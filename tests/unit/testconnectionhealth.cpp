@@ -7,7 +7,6 @@
 #include "connectionhealth.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
-#include "settingsholder.h"
 
 void TestConnectionHealth::init() {
   m_settingsHolder = new SettingsHolder();

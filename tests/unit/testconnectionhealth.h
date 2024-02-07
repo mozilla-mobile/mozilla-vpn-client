@@ -6,6 +6,7 @@
 #include "float.h"
 #include "helper.h"
 #include "pinghelper.h"
+#include "settingsholder.h"
 
 class TestConnectionHealth final : public TestHelper {
   Q_OBJECT
