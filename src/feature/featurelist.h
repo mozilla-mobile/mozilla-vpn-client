@@ -82,6 +82,13 @@ FEATURE(customDNS,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
+FEATURE(factoryReset,          // Feature ID
+        "Factory reset",       // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(freeTrial,              // Feature ID
         "Free trial",           // Feature name
         FeatureCallback_true,   // Can be flipped on
