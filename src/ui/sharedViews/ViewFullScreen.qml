@@ -39,10 +39,13 @@ MZFlickable {
 
     Layout.fillWidth: true
 
-    implicitHeight: parent.height - window.safeAreaHeightByDevice() - layout.anchors.topMargin
-    flickContentHeight: layout.implicitHeight + layout.anchors.topMargin /*+ layout.anchors.bottomMargin*/
+    //Weirdly get a "parent is null" warning when popping of a stackview without checking if parent is null
+    implicitHeight: parent ? parent.height : 0
+    flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
 
     Component.onCompleted: navbar.visible = false
+    Component.onDestruction: navbar.visible = true
+
 
     ColumnLayout {
         id: layout
@@ -82,7 +85,7 @@ MZFlickable {
             id: buttons
 
             Layout.topMargin: flickable.isMobile ? 0 : 40
-            Layout.bottomMargin: flickable.isMobile ? 24 : 0 //58 for iPhones with safe area
+            Layout.bottomMargin: flickable.isMobile ? 24 : 48 //58 for iPhones with safe area
 
             spacing: 0
         }
