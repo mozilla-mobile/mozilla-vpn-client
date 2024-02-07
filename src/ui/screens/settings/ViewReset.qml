@@ -113,16 +113,18 @@ ViewFullScreen {
         spacing: 0
 
         MZButton {
+            objectName: "resetVpnButton"
+
             Layout.fillWidth: true
 
             colorScheme: MZTheme.theme.redButton
             text: MZI18n.ResetSettingsResetButtonLabel
 
-            onClicked: confirmResetLoader.active = true
+            onClicked: confirmResetPopupLoader.active = true
         }
 
         MZLinkButton {
-            objectName: "privacyBackButton"
+            objectName: "goBackButton"
 
             Layout.topMargin: 16
             Layout.fillWidth: true
@@ -138,19 +140,25 @@ ViewFullScreen {
     }
 
     Loader {
-        id: confirmResetLoader
+        id: confirmResetPopupLoader
+        objectName: "confirmResetPopupLoader"
 
         active: false
         sourceComponent: MZSimplePopup {
             id: confirmResetPopup
 
             anchors.centerIn: Overlay.overlay
+
+            closeButtonObjectName: "confirmResetPopupCloseButton"
             imageSrc: "qrc:/ui/resources/confirm-reset.svg"
             imageSize: Qt.size(80, 80)
             title: MZI18n.ResetSettingsConfirmResetModalTitle
             description: MZI18n.ResetSettingsConfirmResetModalBody
+
             buttons: [
                 MZButton {
+                    objectName: "confirmResetButton"
+
                     Layout.fillWidth: true
 
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
@@ -159,6 +167,8 @@ ViewFullScreen {
                     onClicked: VPN.hardResetAndQuit()
                 },
                 MZLinkButton {
+                    objectName: "cancelButton"
+
                     Layout.alignment: Qt.AlignHCenter
 
                     labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText
@@ -168,10 +178,12 @@ ViewFullScreen {
             ]
 
             onClosed: {
-                confirmResetLoader.active = false
+                confirmResetPopupLoader.active = false
             }
         }
 
         onActiveChanged: if (active) { item.open() }
     }
+
+    Component.onCompleted: navbar.visible = false
 }

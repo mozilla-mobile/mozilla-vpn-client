@@ -254,6 +254,7 @@ const screenGetHelp = {
   HELP_CENTER: new QmlQueryComposer('//helpCenter'),
   LINKS: new QmlQueryComposer('//getHelpLinks'),
   LOGS: new QmlQueryComposer('//viewLogs'),
+  RESET: new QmlQueryComposer('//resetVpn'),
   DEVELOPER_MENU: new QmlQueryComposer('//developer'),
   STACKVIEW: new QmlQueryComposer('//getHelpStackView'),
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
@@ -261,6 +262,15 @@ const screenGetHelp = {
   contactSupportView: {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
+  },
+
+  resetView: {
+    RESET_BUTTON: new QmlQueryComposer('//resetVpnButton'),
+    BACK_BUTTON: new QmlQueryComposer('//goBackButton'),
+    POPUP_LOADER: new QmlQueryComposer('//confirmResetPopupLoader'),
+    CONFIRM_RESET_BUTTON: new QmlQueryComposer('//confirmResetButton'),
+    CANCEL_BUTTON: new QmlQueryComposer('//cancelButton'),
+    POPUP_CLOSE_BUTTON: new QmlQueryComposer('//confirmResetPopupCloseButton'),
   }
 };
 

@@ -66,6 +66,8 @@ MZViewBase {
         }
 
         MZExternalLinkListItem {
+            objectName: "resetVpn"
+
             title: MZI18n.ResetSettingsResetLabel
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: MZLocalizer.isRightToLeft
