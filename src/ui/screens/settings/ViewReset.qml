@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+import Mozilla.VPN 1.0
 import Mozilla.Shared 1.0
 import components 0.1
 import compat 0.1
@@ -135,14 +136,14 @@ ViewFullScreen {
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
                     colorScheme: MZTheme.theme.redButton
 
-                    onClicked: confirmResetPopup.close()
+                    onClicked: VPN.hardResetAndQuit()
                 },
                 MZLinkButton {
                     Layout.alignment: Qt.AlignHCenter
 
                     labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText
 
-                    onClicked: VPN.hardResetAndQuit()
+                    onClicked: confirmResetPopup.close()
                 }
             ]
 
