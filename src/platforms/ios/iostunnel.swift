@@ -9,6 +9,8 @@ import IOSGlean
 class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
 
+    private let connectionHealthMonitor = ConnectionHealth()
+
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
             switch logLevel {
@@ -100,6 +102,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
+                self.connectionHealthMonitor.start()
                 completionHandler(nil)
                 return
             }
@@ -139,6 +142,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
+            self.connectionHealthMonitor.stop()
             if self.shouldSendTelemetry {
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)

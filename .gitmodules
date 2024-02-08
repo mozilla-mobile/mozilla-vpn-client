@@ -27,3 +27,6 @@
 [submodule "3rdparty/sentry"]
 	path = 3rdparty/sentry
 	url = https://github.com/getsentry/sentry-native/
+[submodule "3rdparty/swiftyping"]
+	path = 3rdparty/swiftyping
+	url = https://github.com/samiyr/SwiftyPing.git
