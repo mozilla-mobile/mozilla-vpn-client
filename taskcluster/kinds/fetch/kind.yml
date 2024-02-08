@@ -45,10 +45,10 @@ tasks:
         description: Miniconda Installer
         fetch: 
             type: static-url
-            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe
-            sha256: d4517212c8ac44fd8b5ccc2d4d9f38c2dd924c77a81c2be92c3a72e70dd3e907
+            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-Windows-x86_64.exe
+            sha256: f242f98378691496851f78beaf466797fb20251ba5092840c794503594d37726
             artifact-name: miniconda_installer.exe
-            size: 55780192
+            size: 80281312
     wintun:
         description: Wintun Driver
         fetch: 
@@ -60,10 +60,10 @@ tasks:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:
             type: static-url 
-            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_22.11.1-1-MacOSX-x86_64.sh
-            sha256: 7406579393427eaf9bc0e094dcd3c66d1e1b93ee9db4e7686d0a72ea5d7c0ce5
+            url: https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-MacOSX-x86_64.sh
+            sha256: 07a6f46146993510d5d839ee014fc2229f7870d92aa73a52f11dd240833f08fb
             artifact-name: miniconda.sh
-            size: 46574107
+            size: 106401416
         fetch-alias: miniconda-osx
     qt-source-tarball:
         description: Qt 6.2.4 Source Tarball
