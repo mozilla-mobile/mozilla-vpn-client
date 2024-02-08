@@ -66,10 +66,6 @@ target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAM
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 
-if(NOT CMAKE_CROSSCOMPILING)
-    target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
-endif()
-
 add_subdirectory(ui)
 target_link_libraries(mozillavpn PRIVATE mozillavpn-ui mozillavpn-uiplugin)
 qt6_add_qml_module(mozillavpn
