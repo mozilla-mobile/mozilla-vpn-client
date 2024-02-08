@@ -16,8 +16,13 @@ ViewFullScreen {
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
     property var _menuOnBackClicked:  () => {
                                           getHelpStackView.pop();
-                                          navbar.visible = true
+                                          if (internal.wasNavbarVisible) navbar.visible = true
                                       }
+    //Internal properies
+    QtObject {
+      id: internal
+      property bool wasNavbarVisible: false
+    }
 
     content: ColumnLayout {
         spacing : 0
@@ -134,7 +139,7 @@ ViewFullScreen {
 
             onClicked: {
                 getHelpStackView.pop();
-                navbar.visible = true
+                if (internal.wasNavbarVisible) navbar.visible = true
             }
         }
     }
@@ -185,5 +190,10 @@ ViewFullScreen {
         onActiveChanged: if (active) { item.open() }
     }
 
-    Component.onCompleted: navbar.visible = false
+    Component.onCompleted: {
+        if(navbar.visible) {
+            internal.wasNavbarVisible = true
+            navbar.visible = false
+        }
+    }
 }
