@@ -66,10 +66,10 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
   });
 
-  it('Checking the tips and tricks settings', async () => {
+  it('Checking the tips and tricks settings', async function () {
     //tips and tricks feature is hidden when help sheets are enabled, so skip this test when help sheets are enabled
     if (await vpn.isFeatureEnabled('helpSheets')) {
-      return
+      this.skip();
     }
 
     await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
@@ -1049,14 +1049,15 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "settings");
     });
 
-    it("record telemetry when user clicks on Tips and tricks", async () => {
+    it("record telemetry when user clicks on Tips and tricks", async function () {
         if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
+          // This test cannot run in wasm
+          this.skip();
         }
 
+        //Skipping because tips and tricks is not available when help sheets are enabled
         if (await vpn.isFeatureEnabled('helpSheets')) {
-          return
+          this.skip();
         }
 
         await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());

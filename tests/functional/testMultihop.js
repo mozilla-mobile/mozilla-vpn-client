@@ -52,10 +52,10 @@ describe('Server list', function() {
         '| Current exit country code:', currentCountryCode);
   });
 
-  it('checking collapsible card', async () => {
+  it('checking collapsible card', async function () {
     //Collapsible card is only visible when help sheets are disabled, so skip this test if help sheets are enabled
     if (await vpn.isFeatureEnabled('helpSheets')) {
-        return
+      this.skip();
     }
 
     await vpn.waitForQueryAndClick(
