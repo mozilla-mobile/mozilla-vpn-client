@@ -4,9 +4,14 @@
 
 #include <QObject>
 
+#ifndef TESTSERVER_H
+#  define TESTSERVER_H
+
 class TestServer final : public QObject {
   Q_OBJECT
 
  private slots:
   void testCanConnect();
 };
+
+#endif

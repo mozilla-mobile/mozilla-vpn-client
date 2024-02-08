@@ -4,9 +4,14 @@
 
 #include <QObject>
 
+#ifndef TEST_BASE_ADAPTER_H
+#  define TEST_BASE_ADAPTER_H
+
 class TestBaseAdapter final : public QObject {
   Q_OBJECT
 
  private slots:
   void testOnMessage();
 };
+
+#endif

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef SERVERHANDLER_H
-#define SERVERHANDLER_H
+#ifndef WEBEXTENSION_SERVER_H
+#define WEBEXTENSION_SERVER_H
 
 #include <QTcpServer>
 
@@ -18,7 +18,7 @@ class Server final : public QTcpServer {
   Server(BaseAdapter* adapter);
   ~Server();
 
-  // Checks if this socket May connect to the Client.
+  // Checks if this socket may connect to the client.
   static bool isAllowedToConnect(QHostAddress sock);
 
  private:
@@ -27,4 +27,4 @@ class Server final : public QTcpServer {
 };
 
 }  // namespace WebExtension
-#endif  // SERVERHANDLER_H
+#endif  // WEBEXTENSION_SERVER_H

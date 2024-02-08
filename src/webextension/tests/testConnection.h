@@ -6,6 +6,9 @@
 #include <QObject>
 #include <QTest>
 
+#ifndef TEST_CONNECTION_H
+#  define TEST_CONNECTION_H
+
 class QByteArray;
 class QIODevice;
 class QJsonObject;
@@ -27,3 +30,5 @@ class TestConnection final : public QObject {
   void testEmitsJSONMessages();
   void testInvalidJSONEmitsInvalid();
 };
+
+#endif
