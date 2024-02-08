@@ -544,15 +544,14 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"is_feature_enabled",
-                     "Check if a feature is enabled", 1,
+    InspectorCommand{"is_feature_enabled", "Check if a feature is enabled", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        QString featureName = arguments[1];
                        auto featureModel = FeatureModel::instance();
                        QObject* featureObj = featureModel->get(featureName);
 
-                       if(!featureObj) {
+                       if (!featureObj) {
                          obj["error"] = "Feature does not exist";
                          return obj;
                        }
