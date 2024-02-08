@@ -54,7 +54,11 @@ describe('Settings', function() {
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
+
+    if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
+      await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
+    }
+
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
@@ -63,6 +67,11 @@ describe('Settings', function() {
   });
 
   it('Checking the tips and tricks settings', async () => {
+    //tips and tricks feature is hidden when help sheets are enabled, so skip this test when help sheets are enabled
+    if (await vpn.isFeatureFlippedOn('helpSheets')) {
+      return
+    }
+
     await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
     await vpn.scrollToQuery(
         queries.screenSettings.SCREEN, queries.screenSettings.TIPS_AND_TRICKS);
@@ -1045,6 +1054,11 @@ describe('Settings', function() {
             // This test cannot run in wasm
             return;
         }
+
+        if (await vpn.isFeatureFlippedOn('helpSheets')) {
+          return
+        }
+
         await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
         const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
 

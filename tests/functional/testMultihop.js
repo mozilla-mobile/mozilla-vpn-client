@@ -52,7 +52,12 @@ describe('Server list', function() {
         '| Current exit country code:', currentCountryCode);
   });
 
-  it('opening the entry and exit server list', async () => {
+  it('checking collapsible card', async () => {
+    //Collapsible card is only visible when help sheets are disabled, so skip this test if help sheets are enabled
+    if (await vpn.isFeatureFlippedOn('helpSheets')) {
+        return
+    }
+
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
     await vpn.waitForQuery(
@@ -62,12 +67,6 @@ describe('Server list', function() {
         await vpn.getQueryProperty(
             queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD,
             'expanded') === 'false');
-
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.ENTRY_BUTTON.visible());
-
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.EXIT_BUTTON.visible());
 
     await vpn.waitForQueryAndClick(
         queries.screenHome.serverListView.VPN_MULTHOP_CHEVRON.visible())
