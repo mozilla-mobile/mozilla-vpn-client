@@ -465,6 +465,15 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async isFeatureEnabled(key) {
+    const json = await this._writeCommand(
+      `is_feature_enabled ${encodeURIComponent(key)}`);
+    assert(
+      json.type === 'is_feature_enabled' && !('error' in json),
+      `Command failed: ${json.error}`);
+    return !!json.value;
+  },
+
   async isFeatureFlippedOn(key) {
     const json = await this._writeCommand(
         `is_feature_flipped_on ${encodeURIComponent(key)}`);

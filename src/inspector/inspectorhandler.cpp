@@ -544,6 +544,26 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
+    InspectorCommand{"is_feature_enabled",
+                     "Check if a feature is enabled", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString featureName = arguments[1];
+                       auto featureModel = FeatureModel::instance();
+                       QObject* featureObj = featureModel->get(featureName);
+
+                       if(!featureObj) {
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
+
+                       Feature* feature = static_cast<Feature*>(featureObj);
+                       bool featureEnabled = feature->isSupported();
+
+                       obj["value"] = featureEnabled;
+                       return obj;
+                     }},
+
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
