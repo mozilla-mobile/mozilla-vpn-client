@@ -117,8 +117,8 @@ class ConnectionHealth final : public QObject {
   qint64 m_metricsTimerId = -1;
 #endif
 
-  void startMetricsTimer(ConnectionStability stability);
-  void stopMetricsTimer(ConnectionStability stability);
+  void startTimingDistributionMetric(ConnectionStability stability);
+  void stopTimingDistributionMetric(ConnectionStability stability);
   void recordMetrics(ConnectionStability oldStability,
                      ConnectionStability newStability);
 

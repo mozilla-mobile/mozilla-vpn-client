@@ -51,6 +51,47 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::NoSignal);
+
+  // Signal timer is active, but recent pings were lost -> Unstable
+  connectionHealth.startIdle();
+  connectionHealth.m_noSignalTimer.start();
+  for (int i = 0; i < connectionHealth.m_pingHelper.m_pingData.size(); i++) {
+    connectionHealth.m_pingHelper.m_pingData[i].timestamp =
+        QDateTime::currentMSecsSinceEpoch() - (60 * 1000);
+  }
+  connectionHealth.healthCheckup();
+  QCOMPARE(connectionHealth.m_stability,
+           ConnectionHealth::ConnectionStability::Unstable);
+
+  // Signal timer is active, recent pings not lost -> Stable
+  for (int i = 0; i < connectionHealth.m_pingHelper.m_pingData.size(); i++) {
+    connectionHealth.m_pingHelper.m_pingData[i].timestamp =
+        QDateTime::currentMSecsSinceEpoch();
+  }
+  connectionHealth.healthCheckup();
+  QCOMPARE(connectionHealth.m_stability,
+           ConnectionHealth::ConnectionStability::Stable);
+
+  // Signal timer is active, recent ping(s) took too long -> Unstable
+  connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
+  connectionHealth.m_pingHelper.m_pingData[0].latency = INT_MAX;
+  connectionHealth.healthCheckup();
+  QCOMPARE(connectionHealth.m_stability,
+           ConnectionHealth::ConnectionStability::Unstable);
+
+  // Signal timer is active, recent ping(s) arrived on time -> Back to Stable
+  connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
+  connectionHealth.m_pingHelper.m_pingData[0].latency = 0;
+  connectionHealth.healthCheckup();
+  QCOMPARE(connectionHealth.m_stability,
+           ConnectionHealth::ConnectionStability::Stable);
+}
+
+void TestConnectionHealth::testTelemetry() {
+  ConnectionHealth connectionHealth;
+
+  // Signal timer is not active -> NoSignal
+  connectionHealth.healthCheckup();
   // This test setup doesn't have an initial state, so first period is the No
   // Signal changed to in this healthCheckup
   metricsTest(0, 0, 1, ConnectionHealth::ConnectionStability::NoSignal);
@@ -63,8 +104,6 @@ void TestConnectionHealth::healthCheckup() {
         QDateTime::currentMSecsSinceEpoch() - (60 * 1000);
   }
   connectionHealth.healthCheckup();
-  QCOMPARE(connectionHealth.m_stability,
-           ConnectionHealth::ConnectionStability::Unstable);
   metricsTest(0, 1, 1, ConnectionHealth::ConnectionStability::Unstable);
 
   // Signal timer is active, recent pings not lost -> Stable
@@ -73,24 +112,18 @@ void TestConnectionHealth::healthCheckup() {
         QDateTime::currentMSecsSinceEpoch();
   }
   connectionHealth.healthCheckup();
-  QCOMPARE(connectionHealth.m_stability,
-           ConnectionHealth::ConnectionStability::Stable);
   metricsTest(1, 1, 1, ConnectionHealth::ConnectionStability::Stable);
 
   // Signal timer is active, recent ping(s) took too long -> Unstable
   connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
   connectionHealth.m_pingHelper.m_pingData[0].latency = INT_MAX;
   connectionHealth.healthCheckup();
-  QCOMPARE(connectionHealth.m_stability,
-           ConnectionHealth::ConnectionStability::Unstable);
   metricsTest(1, 2, 1, ConnectionHealth::ConnectionStability::Unstable);
 
   // Signal timer is active, recent ping(s) arrived on time -> Back to Stable
   connectionHealth.dnsPingReceived(connectionHealth.m_dnsPingSequence);
   connectionHealth.m_pingHelper.m_pingData[0].latency = 0;
   connectionHealth.healthCheckup();
-  QCOMPARE(connectionHealth.m_stability,
-           ConnectionHealth::ConnectionStability::Stable);
   metricsTest(2, 2, 1, ConnectionHealth::ConnectionStability::Stable);
 }
 
@@ -112,30 +145,30 @@ void TestConnectionHealth::metricsTest(
            0);
 
   // test the 3 timespans
-
-  // .count is always returning 0, so commenting this out for now.
-  // Re-enable these after https://mozilla-hub.atlassian.net/browse/VPN-6186
-
-  // Expect one timespan for each period except the current one. Can't get count
-  // from the API, so just test if it's non-zero.
-  // QCOMPARE(mozilla::glean::connection_health::stable_time.testGetValue().count,
-  //          expectedStablePeriods -
-  //              ((currentPeriod ==
-  //              ConnectionHealth::ConnectionStability::Stable)
-  //                   ? 1
-  //                   : 0));
-  // QCOMPARE(
-  //     mozilla::glean::connection_health::unstable_time.testGetValue().count,
-  //     expectedUnstablePeriods -
-  //         ((currentPeriod == ConnectionHealth::ConnectionStability::Unstable)
-  //              ? 1
-  //              : 0));
-  // QCOMPARE(
-  //     mozilla::glean::connection_health::no_signal_time.testGetValue().count,
-  //     expectedNoSignalPeriods -
-  //         ((currentPeriod == ConnectionHealth::ConnectionStability::NoSignal)
-  //              ? 1
-  //              : 0));
+  // Expect one timespan for each period except the current one.
+  QCOMPARE(
+      getTimingDistCountFromValues(
+          mozilla::glean::connection_health::stable_time.testGetValue().values),
+      expectedStablePeriods -
+          ((currentPeriod == ConnectionHealth::ConnectionStability::Stable)
+               ? 1
+               : 0));
+  QCOMPARE(
+      getTimingDistCountFromValues(
+          mozilla::glean::connection_health::unstable_time.testGetValue()
+              .values),
+      expectedUnstablePeriods -
+          ((currentPeriod == ConnectionHealth::ConnectionStability::Unstable)
+               ? 1
+               : 0));
+  QCOMPARE(
+      getTimingDistCountFromValues(
+          mozilla::glean::connection_health::no_signal_time.testGetValue()
+              .values),
+      expectedNoSignalPeriods -
+          ((currentPeriod == ConnectionHealth::ConnectionStability::NoSignal)
+               ? 1
+               : 0));
 
   // test the 3 events
   // Expect a "change to" event for each period
@@ -158,6 +191,17 @@ void TestConnectionHealth::metricsTest(
   QCOMPARE(
       mozilla::glean::connection_health::no_signal_count.testGetValue() > 0,
       expectedNoSignalPeriods > 0);
+}
+
+// .count is always returning 0, so using this function for now.
+// Change after https://mozilla-hub.atlassian.net/browse/VPN-6186
+int TestConnectionHealth::getTimingDistCountFromValues(QHash<int, int> values) {
+  int count = 0;
+  for (auto i = values.constBegin(); i != values.constEnd(); ++i) {
+    count += i.value();
+  }
+
+  return count;
 }
 
 static TestConnectionHealth s_testConnectionHealth;

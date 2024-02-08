@@ -17,9 +17,7 @@ class TestConnectionHealth final : public TestHelper {
   void dnsPingReceived();
   void healthCheckup();
   void updateDnsPingLatency();
-  void metricsTest(int expectedStablePeriods, int expectedUnstablePeriods,
-                   int expectedNoSignalPeriods,
-                   ConnectionHealth::ConnectionStability currentPeriod);
+  void testTelemetry();
 
   /**
    * @brief Calculates the Exponentially Weighted Moving Average of the
@@ -42,4 +40,8 @@ class TestConnectionHealth final : public TestHelper {
 
  private:
   SettingsHolder* m_settingsHolder = nullptr;
+  int getTimingDistCountFromValues(QHash<int, int> values);
+  void metricsTest(int expectedStablePeriods, int expectedUnstablePeriods,
+                   int expectedNoSignalPeriods,
+                   ConnectionHealth::ConnectionStability currentPeriod);
 };

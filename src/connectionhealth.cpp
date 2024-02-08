@@ -66,7 +66,7 @@ void ConnectionHealth::stop() {
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
-  stopMetricsTimer(m_stability);
+  stopTimingDistributionMetric(m_stability);
   setStability(Stable);
 }
 
@@ -87,7 +87,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
-  startMetricsTimer(m_stability);
+  startTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::startIdle() {
@@ -110,7 +110,7 @@ void ConnectionHealth::startIdle() {
   m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                            m_dnsPingSequence);
 
-  stopMetricsTimer(m_stability);
+  stopTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -123,8 +123,8 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
-  // Pings will sometimes come between VPN sessions, triggering setStability. We
-  // do not want to record count metrics in these cases.
+  // Connection check pings sometimes come between VPN sessions, triggering
+  // setStability. Do not record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
 #if defined(UNIT_TEST)
@@ -135,9 +135,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     recordMetrics(m_stability, stability);
   }
 
+// Silent switch adds non-deterministic metrics when testing.
+#if not(defined(UNIT_TEST))
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
   }
+#endif
 
   if (m_stability == stability) {
     return;
@@ -283,11 +286,10 @@ void ConnectionHealth::overwriteStabilityForInspector(
   emit stabilityChanged();
 }
 
-void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
-  logger.debug() << "MATTHEW starting metrics outside";
+void ConnectionHealth::startTimingDistributionMetric(
+    ConnectionStability stability) {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_DUMMY)
-  logger.debug() << "MATTHEW starting metrics inside";
   switch (stability) {
     case ConnectionHealth::Unstable:
       m_metricsTimerId =
@@ -303,7 +305,8 @@ void ConnectionHealth::startMetricsTimer(ConnectionStability stability) {
 #endif
 }
 
-void ConnectionHealth::stopMetricsTimer(ConnectionStability stability) {
+void ConnectionHealth::stopTimingDistributionMetric(
+    ConnectionStability stability) {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_DUMMY)
   if (m_metricsTimerId == -1) {
@@ -349,8 +352,8 @@ void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
   logger.info() << "Recording telemetry for stability change from"
                 << oldStability << "to" << newStability;
 
-  stopMetricsTimer(oldStability);
-  startMetricsTimer(newStability);
+  stopTimingDistributionMetric(oldStability);
+  startTimingDistributionMetric(newStability);
 
   switch (newStability) {
     case ConnectionHealth::Unstable:

@@ -1713,8 +1713,8 @@ connection_health:
       is not the same. On the daemon this checks are only
       done on the Android daemon and not on the iOS network extension.
 
-      A no signal event event happens when the connection is showing issues,
-      and a silent switch will not address the issue. On when the connection
+      A no signal event happens when the connection is showing issues,
+      and a silent switch will not address the issue. Or when the connection
       is showing issues and there have been previous silent switches which
       did not address the issue.
     bugs:
@@ -1774,8 +1774,8 @@ connection_health:
       is not the same. On the daemon this checks are only
       done on the Android daemon and not on the iOS network extension.
 
-      Stable status is when pings are returning in an expected
-      timeframe.
+      Stable status is when the app is not in a no signal or unstable
+      connection state.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
@@ -1799,11 +1799,11 @@ connection_health:
       Count of times that the connection health check results
       in no signal.
 
-      The health check counters can be compared in relative terms, but should not be considered as
-      markers of time. There is a race condition in the health check (which calls the telemetry),
-      and we frequently have more than one count per second. This is because we conduct a health check
-      due to the timer timeout, and milliseconds later a ping returns and we do another health check
-      due to that ping returning. 
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1825,11 +1825,11 @@ connection_health:
       Count of times that the connection health check results
       in unstable.
 
-      The health check counters can be compared in relative terms, but should not be considered as
-      markers of time. There is a race condition in the health check (which calls the telemetry),
-      and we frequently have more than one count per second. This is because we conduct a health check
-      due to the timer timeout, and milliseconds later a ping returns and we do another health check
-      due to that ping returning. 
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1850,11 +1850,11 @@ connection_health:
     description: |
       Count of times that the connection health check succeeds.
 
-      The health check counters can be compared in relative terms, but should not be considered as
-      markers of time. There is a race condition in the health check (which calls the telemetry),
-      and we frequently have more than one count per second. This is because we conduct a health check
-      due to the timer timeout, and milliseconds later a ping returns and we do another health check
-      due to that ping returning. 
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4700
     data_reviews:
@@ -1874,11 +1874,11 @@ connection_health:
       - vpnsession
       - daemonsession
     description: |
-      Lengths of times spent in no signal state.
+      Time spent in no signal state.
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsessino, currently only on Android.
+      collected in daemonsession, currently only on Android.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1897,11 +1897,11 @@ connection_health:
       - vpnsession
       - daemonsession
     description: |
-      Lengths of times spent in unstable state.
+      Time spent in unstable state.
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsessino, currently only on Android.
+      collected in daemonsession, currently only on Android.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1920,11 +1920,11 @@ connection_health:
       - vpnsession
       - daemonsession
     description: |
-      Lengths of times spent in stable state.
+      Time spent in stable state.
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsessino, currently only on Android.
+      collected in daemonsession, currently only on Android.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:

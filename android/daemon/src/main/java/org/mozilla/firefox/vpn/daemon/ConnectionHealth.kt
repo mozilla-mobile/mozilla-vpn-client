@@ -82,7 +82,7 @@ class ConnectionHealth(service: VPNService) {
         mActive = true
         mTaskTimer.start()
         if (shouldRecordTelemetry) {
-            startMetricsTimer(lastHealthStatus)
+            startTimingDistributionMetric(lastHealthStatus)
         }
         Log.e(TAG, "Started ConnectionHealth")
     }
@@ -96,7 +96,7 @@ class ConnectionHealth(service: VPNService) {
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
             as ConnectivityManager
         mConnectivityManager.unregisterNetworkCallback(networkCallbackHandler)
-        stopMetricsTimer(lastHealthStatus)
+        stopTimingDistributionMetric(lastHealthStatus)
     }
 
     private fun taskDone() {
@@ -278,13 +278,13 @@ class ConnectionHealth(service: VPNService) {
             ConnectionStability.NoSignal -> ConnectionHealth.changedToNoSignal.record()
             ConnectionStability.Stable -> ConnectionHealth.changedToStable.record()
         }
-        stopMetricsTimer(lastHealthStatus)
-        startMetricsTimer(stability)
+        stopTimingDistributionMetric(lastHealthStatus)
+        startTimingDistributionMetric(stability)
 
         lastHealthStatus = stability
     }
 
-    private fun stopMetricsTimer(stability: ConnectionStability) {
+    private fun stopTimingDistributionMetric(stability: ConnectionStability) {
         connectionHealthTimerId?.let { timerId ->
             when (stability) {
                 ConnectionStability.Unstable -> ConnectionHealth.unstableTime.stopAndAccumulate(timerId)
@@ -300,7 +300,7 @@ class ConnectionHealth(service: VPNService) {
         }
     }
 
-    private fun startMetricsTimer(stability: ConnectionStability) {
+    private fun startTimingDistributionMetric(stability: ConnectionStability) {
         when (stability) {
             ConnectionStability.Unstable -> connectionHealthTimerId = ConnectionHealth.unstableTime.start()
             ConnectionStability.NoSignal -> connectionHealthTimerId = ConnectionHealth.noSignalTime.start()
