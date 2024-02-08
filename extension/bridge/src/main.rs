@@ -15,8 +15,9 @@ use std::env;
 
 const SERVER_AND_PORT: &str = "127.0.0.1:8754";
 
-const ALLOW_LISTED_WEBEXTENSIONS: [&str;1] = [
-    "@testpilot-containers"
+const ALLOW_LISTED_WEBEXTENSIONS: [&str;2] = [
+    "@testpilot-containers",
+    "vpn@mozilla.org"
 ];
 
 #[derive(PartialEq)]
