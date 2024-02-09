@@ -4,6 +4,8 @@
 
 cmake_minimum_required(VERSION 3.18)
 
+option(BUILD_TESTS "Whether or not to build test targets" ON)
+
 message("Configuring for ${CMAKE_GENERATOR}")
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
@@ -23,7 +25,7 @@ project("Mozilla VPN" VERSION ${APP_VERSION} LANGUAGES C CXX
 include(CTest)
 add_custom_target(build_tests)
 set_target_properties(build_tests PROPERTIES
-        EXCLUDE_FROM_ALL TRUE
+        EXCLUDE_FROM_ALL ${BUILD_TESTS}
         FOLDER "Tests"
 )
 

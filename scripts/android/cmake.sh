@@ -156,7 +156,7 @@ fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp -j$JOBS
+cmake --build .tmp -j$JOBS -DBUILD_TESTS=OFF
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"

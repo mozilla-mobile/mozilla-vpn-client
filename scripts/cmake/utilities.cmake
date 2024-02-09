@@ -182,9 +182,6 @@ function(mz_add_new_module)
     # and finally add this module's tests to the build_tests target which builds all tests.
     if(MZ_ADD_NEW_MODULE_TEST_SOURCES)
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
-        set_target_properties(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests PROPERTIES
-            EXCLUDE_FROM_ALL TRUE
-        )
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
@@ -258,10 +255,6 @@ function(mz_add_test_target)
     qt_add_executable(${MZ_ADD_TEST_TARGET_NAME}
         ${MZ_ADD_TEST_SOURCES}
     )
-    set_target_properties(${MZ_ADD_TEST_TARGET_NAME} PROPERTIES
-        EXCLUDE_FROM_ALL TRUE
-    )
-
 
     add_test(
         NAME ${MZ_ADD_TEST_TARGET_NAME}
