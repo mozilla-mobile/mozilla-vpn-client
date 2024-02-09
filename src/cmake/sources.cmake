@@ -213,6 +213,12 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
        )
+
+    target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.cpp
+    )
+    target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)
 endif()
 
 

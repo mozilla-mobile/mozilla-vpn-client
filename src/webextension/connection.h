@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef SERVERCONNECTION_H
-#define SERVERCONNECTION_H
+#ifndef WEBEXTENSION_CONNECTION_H
+#define WEBEXTENSION_CONNECTION_H
 
 #include <QByteArray>
 #include <QObject>
@@ -33,16 +33,16 @@ class Connection final : public QObject {
   ~Connection();
 
   /**
-   * @brief Writes a QJSON object to the device.
-   * 
+   * @brief Writes a JSON object to the device.
+   *
    * @param data - the object :)
    */
   void writeMessage(QJsonObject& data);
 
   /**
-   * @brief - Fired if a new JSON Message was recieved
+   * @brief - Fired if a new JSON Message was received
    */
-  Q_SIGNAL void onMessage(QJsonObject& message);
+  Q_SIGNAL void onMessageReceived(QJsonObject& message);
 
  private:
   void readData();
@@ -70,4 +70,4 @@ class Connection final : public QObject {
 };
 
 }  // namespace WebExtension
-#endif  // SERVERCONNECTION_H
+#endif  // WEBEXTENSION_CONNECTION_H

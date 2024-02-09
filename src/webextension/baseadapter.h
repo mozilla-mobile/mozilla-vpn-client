@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#pragma once
+#ifndef BASEADAPTER_H
+#define BASEADAPTER_H
 
 #include <QObject>
 
@@ -10,9 +11,8 @@ namespace WebExtension {
 /**
  * @brief - Base Adapter for WebExtension RPC Calls
  *
- * This Class should consume JSON messages some transport via
- * BaseAdapter::onMessage. If the Current adapter has info to send to the
- * extension it will fire the BaseAdapter::onOutGoingMessage signal.
+ * This Class should consume incoming messages via: BaseAdapter::onMessage.
+ * Outgoing messages are signalled via: BaseAdapter::onOutGoingMessage.
  *
  * All JSON Messages must follow the schema:
  *
@@ -53,6 +53,21 @@ class BaseAdapter : public QObject {
 
  protected:
   QList<RequestType> m_commands;
+
+  /**
+   * @brief Sends type=invalidRequest
+   *
+   */
+
+  void sendInvalidRequest();
+  /**
+   * @brief Send type=Error response
+   *
+   * @param msg - Text description of the error
+   */
+  void sendError(const QString& msg);
 };
 
 }  // namespace WebExtension
+
+#endif  // BASEADAPTER_H

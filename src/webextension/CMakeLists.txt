@@ -12,19 +12,13 @@ mz_add_new_module(
         server.cpp
         server.h
     TEST_SOURCES
-        tests/testBaseAdapter.cpp
-        tests/testBaseAdapter.h
-        tests/testConnection.cpp
-        tests/testConnection.h
-        tests/testServer.cpp
-        tests/testServer.h
+        tests/testbaseadapter.cpp
+        tests/testbaseadapter.h
+        tests/testconnection.cpp
+        tests/testconnection.h
+        tests/testserver.cpp
+        tests/testserver.h
     QT_DEPENDENCIES
         Core
         Network
 )
-
-target_sources(mozillavpn-sources INTERFACE
-    vpnadapter.h
-    vpnadapter.cpp
-)
-target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)

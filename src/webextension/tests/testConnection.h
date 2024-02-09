@@ -23,8 +23,6 @@ class TestConnection final : public QObject {
   static QList<QJsonObject> findObjects(const QByteArray);
 
  private slots:
-  void init();
-  void cleanup();
   void testEmptyBuffer();
   void testZeroSized();
   void testEmitsJSONMessages();

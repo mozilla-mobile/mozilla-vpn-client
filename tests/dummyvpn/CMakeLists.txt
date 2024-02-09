@@ -30,6 +30,7 @@ target_link_libraries(dummyvpn PRIVATE
     nebula
     translations
     qtglean
+    mz_webextension
 )
 
 target_sources(dummyvpn PRIVATE

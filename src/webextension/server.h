@@ -18,7 +18,10 @@ class Server final : public QTcpServer {
   Server(BaseAdapter* adapter);
   ~Server();
 
-  // Checks if this socket may connect to the client.
+  /**
+   * @brief returns true if the QHostAddress is allowed to connect.
+   * Right now only localhost addresses are allowed.
+   */
   static bool isAllowedToConnect(QHostAddress sock);
 
  private:

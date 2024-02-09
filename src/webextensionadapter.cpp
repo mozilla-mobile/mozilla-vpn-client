@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "vpnadapter.h"
+#include "webextensionadapter.h"
 
 #include <QHostAddress>
 #include <QJsonArray>
@@ -12,6 +12,7 @@
 #include <QTcpSocket>
 #include <functional>
 
+#include "WebExtensionAdapter.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -21,22 +22,22 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "vpnadapter.h"
 
 namespace {
 
-Logger logger("VPNAdapter");
+Logger logger("WebExtensionAdapter");
 }
 
-namespace WebExtension {
-VPNAdapter::VPNAdapter(QObject* parent) : BaseAdapter(parent) {
-  MZ_COUNT_CTOR(VPNAdapter);
+WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
+    : BaseAdapter(parent) {
+  MZ_COUNT_CTOR(WebExtensionAdapter);
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  connect(vpn, &MozillaVPN::stateChanged, this, &VPNAdapter::writeState);
+  connect(vpn, &MozillaVPN::stateChanged, this,
+          &WebExtensionAdapter::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,
-          &VPNAdapter::writeState);
+          &WebExtensionAdapter::writeState);
 
   m_commands = QList<RequestType>({
       RequestType{"activate",
@@ -78,9 +79,11 @@ VPNAdapter::VPNAdapter(QObject* parent) : BaseAdapter(parent) {
   });
 }
 
-VPNAdapter::~VPNAdapter() { MZ_COUNT_DTOR(VPNAdapter); }
+WebExtensionAdapter::~WebExtensionAdapter() {
+  MZ_COUNT_DTOR(WebExtensionAdapter);
+}
 
-void VPNAdapter::writeState() {
+void WebExtensionAdapter::writeState() {
   QJsonObject obj = serializeStatus();
   obj["t"] = "status";
 
@@ -88,7 +91,7 @@ void VPNAdapter::writeState() {
 }
 
 // TODO: Make it static.
-QJsonObject VPNAdapter::serializeStatus() {
+QJsonObject WebExtensionAdapter::serializeStatus() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
   QJsonObject locationObj;
@@ -127,8 +130,8 @@ QJsonObject VPNAdapter::serializeStatus() {
   return obj;
 }
 
-void VPNAdapter::serializeServerCountry(ServerCountryModel* model,
-                                        QJsonObject& obj) {
+void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,
+                                                 QJsonObject& obj) {
   QJsonArray countries;
 
   for (const ServerCountry& country : model->countries()) {
@@ -184,5 +187,3 @@ void VPNAdapter::serializeServerCountry(ServerCountryModel* model,
 
   obj["countries"] = countries;
 }
-
-}  // namespace WebExtension

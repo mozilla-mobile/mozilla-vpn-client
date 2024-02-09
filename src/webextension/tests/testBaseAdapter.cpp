@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testBaseAdapter.h"
+#include "testbaseadapter.h"
 
 #include <QHostAddress>
 #include <QJsonObject>
@@ -49,4 +49,67 @@ void TestBaseAdapter::testOnMessage() {
 
     QCOMPARE(command_run, testCase.expectedToRun);
   }
+}
+
+void TestBaseAdapter::testEmitsMessage() {
+  TestAdapter test;
+  QEventLoop loop;
+  QJsonObject inputArgs;
+  inputArgs["t"] = "testing";
+  test.addCommand(WebExtension::BaseAdapter::RequestType{
+      "testing", [&](const QJsonObject& args) {
+        QJsonObject out;
+        out["ok"] = true;
+        return out;
+      }});
+  bool gotOkMessage = false;
+  connect(&test, &WebExtension::BaseAdapter::onOutgoingMessage,
+          [&](QJsonObject val) { gotOkMessage = val["ok"].toBool(); });
+  test.onMessage(inputArgs);
+
+  loop.processEvents();
+
+  QCOMPARE(gotOkMessage, true);
+}
+
+void TestBaseAdapter::testEmptyMessageEmitsInvalidRequest() {
+  TestAdapter test;
+  QEventLoop loop;
+  QJsonObject emptyInputArgs;
+  connect(&test, &WebExtension::BaseAdapter::onOutgoingMessage,
+          [&](QJsonObject val) {
+            auto messageType = val["t"].toString();
+            QCOMPARE(messageType, "invalidRequest");
+          });
+  test.onMessage(emptyInputArgs);
+  loop.processEvents();
+}
+
+void TestBaseAdapter::testTypeViolationEmitsInvalidRequest() {
+  TestAdapter test;
+  QEventLoop loop;
+  QJsonObject typeViolationArgs;
+  // Add a "type" but have the property violate the type.
+  typeViolationArgs["t"] = 43;
+  connect(&test, &WebExtension::BaseAdapter::onOutgoingMessage,
+          [&](QJsonObject val) {
+            auto messageType = val["t"].toString();
+            QCOMPARE(messageType, "invalidRequest");
+          });
+  test.onMessage(typeViolationArgs);
+  loop.processEvents();
+}
+
+void TestBaseAdapter::testUnknownCommandEmitsError() {
+  TestAdapter test;
+  QEventLoop loop;
+  QJsonObject typeViolationArgs;
+  typeViolationArgs["t"] = "this-command-does-not-exist";
+  connect(&test, &WebExtension::BaseAdapter::onOutgoingMessage,
+          [&](QJsonObject val) {
+            auto messageType = val["t"].toString();
+            QCOMPARE(messageType, "error");
+          });
+  test.onMessage(typeViolationArgs);
+  loop.processEvents();
 }

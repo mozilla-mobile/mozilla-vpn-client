@@ -14,4 +14,4 @@ class TestServer final : public QObject {
   void testCanConnect();
 };
 
-#endif
+#endif  // TESTSERVER_H

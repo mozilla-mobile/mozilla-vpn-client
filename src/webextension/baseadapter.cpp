@@ -7,6 +7,15 @@
 #include <QJsonObject>
 
 void WebExtension::BaseAdapter::onMessage(QJsonObject message) {
+  if (!message.contains("t")) {
+    sendInvalidRequest();
+    return;
+  }
+  if (!message["t"].isString()) {
+    sendInvalidRequest();
+    return;
+  }
+
   QString typeName = message["t"].toString();
   for (const RequestType& type : m_commands) {
     if (typeName == type.m_name) {
@@ -16,4 +25,18 @@ void WebExtension::BaseAdapter::onMessage(QJsonObject message) {
       return;
     }
   }
+  sendError("Command not found");
+}
+
+void WebExtension::BaseAdapter::sendInvalidRequest() {
+  QJsonObject responseObj;
+  responseObj["t"] = "invalidRequest";
+  emit onOutgoingMessage(responseObj);
+}
+
+void WebExtension::BaseAdapter::sendError(const QString& msg) {
+  QJsonObject responseObj;
+  responseObj["t"] = "error";
+  responseObj["msg"] = msg;
+  emit onOutgoingMessage(responseObj);
 }

@@ -92,7 +92,7 @@
 
 #ifdef MVPN_WEBEXTENSION
 #  include "webextension/server.h"
-#  include "webextension/vpnadapter.h"
+#  include "webextensionadapter.h"
 #endif
 
 #include <QApplication>
@@ -395,7 +395,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    WebExtension::Server extensionServer(new WebExtension::VPNAdapter(qApp));
+    WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
     QObject::connect(vpn.controller(), &Controller::readyToQuit,
                      &extensionServer, &WebExtension::Server::close);
 #endif

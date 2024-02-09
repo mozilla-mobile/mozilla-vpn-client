@@ -104,7 +104,7 @@ void Connection::processMessage(const QByteArray& message) {
   }
 
   QJsonObject obj = json.object();
-  emit onMessage(obj);
+  emit onMessageReceived(obj);
 }
 
 }  // namespace WebExtension

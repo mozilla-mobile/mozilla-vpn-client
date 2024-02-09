@@ -12,6 +12,12 @@ class TestBaseAdapter final : public QObject {
 
  private slots:
   void testOnMessage();
+
+  void testEmitsMessage();
+
+  void testEmptyMessageEmitsInvalidRequest();
+  void testTypeViolationEmitsInvalidRequest();
+  void testUnknownCommandEmitsError();
 };
 
 #endif
