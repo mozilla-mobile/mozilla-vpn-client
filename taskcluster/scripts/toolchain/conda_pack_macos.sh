@@ -7,27 +7,27 @@ set -e
 cd ${TASK_WORKDIR}
 
 if [ -e ${TASK_WORKDIR}/miniconda ]; then
-    print Y "Conda already exist? Remove it."
+    echo "Conda already exist? Remove it."
     rm -rf ${TASK_WORKDIR}/miniconda
 fi
 
-print Y "Installing conda"
+echo "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_WORKDIR}/miniconda
 source ${TASK_WORKDIR}/miniconda/bin/activate
 
-print Y "Installing provided conda env..."
+echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env.yml
 conda activate VPN
 ${VCS_PATH}/scripts/macos/conda_install_extras.sh  
 conda info
 conda deactivate
 
-print Y "Installing conda-pack..."
+echo "Installing conda-pack..."
 conda install conda-pack -y
 
-print Y "Packing conda environment..."
+echo "Packing conda environment..."
 mkdir -p ${TASK_WORKDIR}/public/build
 conda-pack -p envs/vpn -o ${TASK_WORKDIR}/public/build/conda-macos.tar.gz
 
-print G "Done."
+echo "Done."
