@@ -26,6 +26,7 @@ ColumnLayout {
         id: appListHeader
 
         FocusScope {
+            id: appListHeaderFocusScope
             readonly property ListView listView: ListView.view
             readonly property var getProxyModel: searchBarWrapper.getProxyModel
 
@@ -142,113 +143,111 @@ ColumnLayout {
             implicitWidth: appRow.implicitWidth
 
             RowLayout {
-            id: appRow
+                id: appRow
 
+                objectName: `app-${index}`
+                spacing: MZTheme.theme.windowMargin
+                opacity: enabled ? 1.0 : 0.5
+                Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
-
-            objectName: `app-${index}`
-            spacing: MZTheme.theme.windowMargin
-            opacity: enabled ? 1.0 : 0.5
-            Layout.preferredHeight: MZTheme.theme.navBarTopMargin
-
-            function handleClick() {
-                //appList.currentIndex = index;
-                //checkBox.forceActiveFocus();
-                VPNAppPermissions.flip(appID)
-            }
-
-            MZCheckBox {
-                id: checkBox
-                objectName: "checkbox"
-                onClicked: () => appRow.handleClick()
-                checked: !appIsEnabled
-                Layout.alignment: Qt.AlignVCenter
-                Accessible.name: appName
-                focus: true
-
-                // Change list selection on focus change
-                onActiveFocusChanged: {
-                    if (activeFocus) { 
-                        listView.currentIndex = index;
-                    };
+                function handleClick() {
+                    //appList.currentIndex = index;
+                    //checkBox.forceActiveFocus();
+                    VPNAppPermissions.flip(appID)
                 }
 
-                function handleTabPressed() {
-                    if (listView.currentIndex < (listView.count - 1)) {
-                        // Move selection & focus to next item
-                        listView.incrementCurrentIndex();
-                        listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
-                    }
-                    else {
-                        // Currently at end of list. Move focus to footer
-                        listView.footerItem.forceActiveFocus(Qt.TabFocusReason);
-                    }
-                }
+                MZCheckBox {
+                    id: checkBox
+                    objectName: "checkbox"
+                    onClicked: () => appRow.handleClick()
+                    checked: !appIsEnabled
+                    Layout.alignment: Qt.AlignVCenter
+                    Accessible.name: appName
+                    focus: true
 
-                function handleBacktabPressed() {
-                    if (listView.currentIndex > 0) {
-                        // Move selection & focus to previous item and bring it into view if necessary
-                        listView.decrementCurrentIndex();
-                        listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
+                    // Change list selection on focus change
+                    onActiveFocusChanged: {
+                        if (activeFocus) { 
+                            listView.currentIndex = index;
+                        };
                     }
-                    else {
-                        listView.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
-                    }
-                }
 
-                Keys.onTabPressed: handleTabPressed()
-                Keys.onBacktabPressed: handleBacktabPressed()
-            }
-
-            Rectangle {
-                Layout.preferredWidth: MZTheme.theme.windowMargin * 2
-                Layout.preferredHeight: MZTheme.theme.windowMargin * 2
-                Layout.maximumHeight: MZTheme.theme.windowMargin * 2
-                Layout.maximumWidth: MZTheme.theme.windowMargin * 2
-                Layout.alignment: Qt.AlignVCenter
-                color: MZTheme.theme.transparent
-
-                Image {
-                    height: MZTheme.theme.windowMargin * 2
-                    width: MZTheme.theme.windowMargin * 2
-                    sourceSize.width: MZTheme.theme.windowMargin * 2
-                    sourceSize.height: MZTheme.theme.windowMargin * 2
-                    anchors.centerIn: parent
-                    fillMode:  Image.PreserveAspectFit
-                    Component.onCompleted: {
-                        if (appID !== "") {
-                            source = "image://app/"+appID
+                    function handleTabPressed() {
+                        if (listView.currentIndex < (listView.count - 1)) {
+                            // Move selection & focus to next item
+                            listView.incrementCurrentIndex();
+                            listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
+                        }
+                        else {
+                            // Currently at end of list. Move focus to footer
+                            listView.footerItem.forceActiveFocus(Qt.TabFocusReason);
                         }
                     }
-                    
+
+                    function handleBacktabPressed() {
+                        if (listView.currentIndex > 0) {
+                            // Move selection & focus to previous item and bring it into view if necessary
+                            listView.decrementCurrentIndex();
+                            listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
+                        }
+                        else {
+                            listView.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
+                        }
+                    }
+
+                    Keys.onTabPressed: handleTabPressed()
+                    Keys.onBacktabPressed: handleBacktabPressed()
                 }
 
-                Component.onCompleted: {
-                    //console.log("vc: ListView delegate component completed " + index);
+                Rectangle {
+                    Layout.preferredWidth: MZTheme.theme.windowMargin * 2
+                    Layout.preferredHeight: MZTheme.theme.windowMargin * 2
+                    Layout.maximumHeight: MZTheme.theme.windowMargin * 2
+                    Layout.maximumWidth: MZTheme.theme.windowMargin * 2
+                    Layout.alignment: Qt.AlignVCenter
+                    color: MZTheme.theme.transparent
+
+                    Image {
+                        height: MZTheme.theme.windowMargin * 2
+                        width: MZTheme.theme.windowMargin * 2
+                        sourceSize.width: MZTheme.theme.windowMargin * 2
+                        sourceSize.height: MZTheme.theme.windowMargin * 2
+                        anchors.centerIn: parent
+                        fillMode:  Image.PreserveAspectFit
+                        Component.onCompleted: {
+                            if (appID !== "") {
+                                source = "image://app/"+appID
+                            }
+                        }
+                        
+                    }
+
+                    Component.onCompleted: {
+                        //console.log("vc: ListView delegate component completed " + index);
+                    }
+
+                    Component.onDestruction: {
+                        //console.log("vc: ListView delegate component destroyed " + index);
+                    }
                 }
 
-                Component.onDestruction: {
-                    //console.log("vc: ListView delegate component destroyed " + index);
-                }
-            }
+                MZInterLabel {
+                    id: label
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                    Layout.fillWidth: true
+                    // TODO: The text doesn't wrap as before
+                    text: appName
+                    color: MZTheme.theme.fontColorDark
+                    horizontalAlignment: Text.AlignLeft
 
-            MZInterLabel {
-                id: label
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.fillWidth: true
-                // TODO: The text doesn't wrap as before
-                text: appName
-                color: MZTheme.theme.fontColorDark
-                horizontalAlignment: Text.AlignLeft
-
-                MZMouseArea {
-                    anchors.fill: undefined
-                    width: parent.implicitWidth
-                    height: parent.implicitHeight
-                    propagateClickToParent: false
-                    onClicked: () => appRow.handleClick()
+                    MZMouseArea {
+                        anchors.fill: undefined
+                        width: parent.implicitWidth
+                        height: parent.implicitHeight
+                        propagateClickToParent: false
+                        onClicked: () => appRow.handleClick()
+                    }
                 }
-            }
             }
         }
 
@@ -260,7 +259,7 @@ ColumnLayout {
         }
 
         Connections {
-            target: model
+            target: appList.model
 
             property Item previousFocusItem: null
             property int previousIndex: -1
