@@ -53,7 +53,7 @@ if [ -e ${TASK_HOME}/miniconda ]; then
     ls -al ${TASK_HOME}/miniconda/bin
 
     print Y "Remove it."
-    rm -rf ${TAKS_HOME}/miniconda
+    rm -rf ${TASK_HOME}/miniconda
 fi
 
 print Y "Installing conda"
