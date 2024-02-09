@@ -1021,6 +1021,35 @@ helpSheets:
     value: If you want to add more privacy, switch to “Multi-hop” and add an additional server location. Multi-hop VPN routes your traffic through two server locations instead of one for extra security and privacy. This may also slow down your connection a bit.
     comment: Body label for the location selection help sheet
 
+resetSettings: 
+  resetLabel:
+    value: Reset VPN
+    comment: Label for button that takes the user to the factory reset flow
+  title:
+    value: Reset Mozilla VPN
+    comment: Title of the screen where users go to reset the VPN to factory settings
+  body1:
+    value: "This will reset all VPN settings, including:"
+    comment: Body content of the screen where users go to reset the VPN to factory settings 
+  listItemPreferences:
+    value: Preferences
+    comment: Item in a bulleted list denoting what will be deleted if the user opts to factory reset the client
+  body2:
+    value: Resetting the VPN will sign you out, but your account will not be deleted.
+    comment: Body content of the screen where users go to reset the VPN to factory settings 
+  resetButtonLabel:
+    value: Reset VPN
+    comment: Label for button that initiates a restore to factory settings 
+  confirmResetModalTitle:
+    value: Confirm reset
+    comment: Title of the modal where users can confirm they want to restore back to factory settings
+  confirmResetModalBody:
+    value: Reset Mozilla VPN settings? This can’t be undone.
+    comment: Body of the modal where users can confirm they want to restore back to factory settings
+  confirmResetModalResetButtonLabel:
+    value: Reset and quit
+    comment: Label for button that finalizes a restore to factory settings 
+
 global:
   expand:
     value: Expand
