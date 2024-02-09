@@ -28,6 +28,6 @@ conda install conda-pack -y
 
 echo "Packing conda environment..."
 mkdir -p ${TASK_WORKDIR}/public/build
-conda-pack -p envs/vpn -o ${TASK_WORKDIR}/public/build/conda-macos.tar.gz
+conda-pack -p ${TASK_WORKDIR}/miniconda/envs/vpn -o ${TASK_WORKDIR}/public/build/conda-macos.tar.gz
 
 echo "Done."
