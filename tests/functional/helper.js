@@ -345,7 +345,13 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
+  async authenticateInBrowser(wasm, skipOnboarding = true) {
+    if (skipOnboarding) {
+      await this.setSetting('onboardingCompleted', 'true')
+      await this.setSetting('postAuthenticationShown', 'true')
+      await this.setSetting('telemetryPolicyShown', 'true')
+    }
+
     if (await this.isFeatureFlippedOn('inAppAuthentication')) {
       await this.flipFeatureOff('inAppAuthentication');
     }
@@ -395,24 +401,6 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
-
-    if (clickOnPostAuthenticate) {
-      await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
-    }
-    if (acceptTelemetry) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
-
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    }
   },
 
   async authenticateInApp(skipOnboarding = true) {

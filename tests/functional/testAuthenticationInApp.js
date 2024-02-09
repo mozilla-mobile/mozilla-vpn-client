@@ -43,6 +43,11 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
+
       await vpn.waitForInitialView();
 
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
@@ -145,11 +150,6 @@ describe('User authentication', function() {
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -191,6 +191,11 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
+
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
 
       await vpn.waitForInitialView();
 
@@ -254,11 +259,6 @@ describe('User authentication', function() {
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -300,6 +300,11 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
+
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
 
       await vpn.waitForInitialView();
 
@@ -364,11 +369,6 @@ describe('User authentication', function() {
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -394,6 +394,11 @@ describe('User authentication', function() {
         await vpn.flipFeatureOn('inAppAccountCreate');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
+      
       await vpn.waitForInitialView();
 
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
@@ -443,11 +448,6 @@ describe('User authentication', function() {
           'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

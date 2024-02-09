@@ -187,6 +187,11 @@ describe('Devices', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
+
       // This method must be called when the client is on the "Get Started"
       // view.
       await vpn.waitForInitialView();
@@ -231,14 +236,6 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      if (await vpn.isFeatureEnabled('newOnboarding')) {
-        await vpn.completeOnboarding();
-      }
-      else {
-        await vpn.completePostAuthentication();
-        await vpn.completeTelemetryPolicy();
-      }
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -452,6 +449,12 @@ describe('Devices', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.setSetting('onboardingCompleted', 'true')
+      await vpn.setSetting('postAuthenticationShown', 'true')
+      await vpn.setSetting('telemetryPolicyShown', 'true')
+
+
       // This method must be called when the client is on the "Get Started"
       // view.
       await vpn.waitForInitialView();
@@ -497,14 +500,6 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      if (await vpn.isFeatureEnabled('newOnboarding')) {
-        await vpn.completeOnboarding();
-      }
-      else {
-        await vpn.completePostAuthentication();
-        await vpn.completeTelemetryPolicy();
-      }
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
