@@ -90,7 +90,6 @@ void WebExtensionAdapter::writeState() {
   emit onOutgoingMessage(obj);
 }
 
-// TODO: Make it static.
 QJsonObject WebExtensionAdapter::serializeStatus() {
   MozillaVPN* vpn = MozillaVPN::instance();
 
