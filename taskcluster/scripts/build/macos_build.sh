@@ -52,8 +52,8 @@ if [ -e ${TASK_HOME}/miniconda ]; then
     print Y "Listing bin..."
     ls -al ${TASK_HOME}/miniconda/bin
 
-    print Y "Found version..."
-    ${TASK_HOME}/miniconda/bin/conda -V
+    print Y "Remove it."
+    rm -rf ${TAKS_HOME}/miniconda
 fi
 
 print Y "Installing conda"
