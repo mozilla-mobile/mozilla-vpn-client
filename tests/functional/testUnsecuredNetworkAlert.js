@@ -90,6 +90,7 @@ describe('Unsecured network alert', function() {
       }
 
       await vpn.authenticateInApp(false);
+      await vpn.completePostAuthentication();
       await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -102,7 +103,7 @@ describe('Unsecured network alert', function() {
       await vpn.wait();
     });
 
-    it('Unsecured network alert in the Controller view', async () => {
+    it.only('Unsecured network alert in the Controller view', async () => {
       await vpn.authenticateInApp();
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert.equal(

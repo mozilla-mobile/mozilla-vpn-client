@@ -58,8 +58,13 @@ describe('Captive portal', function() {
     assert.equal(vpn.lastNotification().title, null);
   });
 
-  it('Captive portal in the Post authentication view', async () => {
-    await vpn.authenticateInApp();
+  it('Captive portal in the Post authentication view', async function () {
+    //Post auth view does not exist in new onboarding
+    if (await vpn.isFeatureEnabled("newOnboarding")) {
+      this.skip();
+    }
+
+    await vpn.authenticateInApp(false);
     // Setup - end
 
     await vpn.forceCaptivePortalDetection();
@@ -76,6 +81,7 @@ describe('Captive portal', function() {
     }
 
     await vpn.authenticateInApp(false);
+    await vpn.completePostAuthentication();
     // Setup - end
 
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());

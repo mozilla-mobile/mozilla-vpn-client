@@ -449,17 +449,19 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+  },
 
-    if (!skipOnboarding && !await this.isFeatureEnabled('newOnboarding')) {
+  async completePostAuthentication() {
       await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
       await this.clickOnQuery(
           queries.screenPostAuthentication.BUTTON.visible());
       await this.wait();
+  },
 
+  async completeTelemetryPolicy() {
       await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
       await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
       await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    }
   },
 
   async logout() {

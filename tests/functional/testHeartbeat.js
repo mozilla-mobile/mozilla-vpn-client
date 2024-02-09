@@ -58,8 +58,13 @@ describe('Backend failure', function() {
     await vpn.waitForQuery(queries.screenInitialize.GET_HELP_LINK.visible());
   });
 
-  it('BackendFailure in the Post authentication view', async () => {
-    await vpn.authenticateInApp();
+  it('BackendFailure in the Post authentication view', async function () {
+    //Post auth view does not exist in new onboarding
+    if (await vpn.isFeatureEnabled("newOnboarding")) {
+      this.skip();
+    }
+
+    await vpn.authenticateInApp(false);
     await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
     await vpn.forceHeartbeatFailure();
     await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
@@ -72,6 +77,7 @@ describe('Backend failure', function() {
     }
 
     await vpn.authenticateInApp(false);
+    await vpn.completePostAuthentication();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     await vpn.forceHeartbeatFailure();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());

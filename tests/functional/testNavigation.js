@@ -63,6 +63,7 @@ describe('Navigation bar', async function() {
     }
 
     await vpn.authenticateInApp(false);
+    await vpn.completePostAuthentication();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     assert.equal(await navigationBarVisible(), 'false');
   });
