@@ -1008,7 +1008,7 @@ describe('Settings', function() {
     await setup.startAndConnect();
     await vpn.setSetting('tipsAndTricksIntroShown', 'true');
     await vpn.setSetting('localhostRequestsOnly', 'true');
-    await vpn.authenticateInApp(true, true);
+    await vpn.authenticateInApp();
     await vpn.setGleanAutomationHeader();
 
     // turn on VPN

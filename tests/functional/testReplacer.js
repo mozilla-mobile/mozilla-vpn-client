@@ -25,7 +25,7 @@ describe('Addon content replacer', function() {
     it('Replace the country/city names', async () => {
       // In this way we disable the 'home-replacement' addon.
       await vpn.setSetting('languageCode', 'it');
-      await vpn.authenticateInApp(true, true);
+      await vpn.authenticateInApp();
 
       await vpn.waitForQueryAndClick(
           queries.screenHome.SERVER_LIST_BUTTON.visible());

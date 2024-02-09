@@ -14,7 +14,7 @@ describe('Onboarding', function() {
     await vpn.flipFeatureOn("newOnboarding");
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    await vpn.authenticateInApp();
+    await vpn.authenticateInApp(false);
   });
 
  async function completeOnboarding() {

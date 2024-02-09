@@ -415,8 +415,13 @@ module.exports = {
     }
   },
 
-  async authenticateInApp(
-      clickOnPostAuthenticate = false, acceptTelemetry = false) {
+  async authenticateInApp(skipOnboarding = true) {
+    if (skipOnboarding) {
+      await this.setSetting('onboardingCompleted', 'true')
+      await this.setSetting('postAuthenticationShown', 'true')
+      await this.setSetting('telemetryPolicyShown', 'true')
+    }
+    
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForInitialView();
 
@@ -445,13 +450,12 @@ module.exports = {
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
-    if (clickOnPostAuthenticate) {
+    if (!skipOnboarding && !await this.isFeatureEnabled('newOnboarding')) {
       await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
       await this.clickOnQuery(
           queries.screenPostAuthentication.BUTTON.visible());
       await this.wait();
-    }
-    if (acceptTelemetry) {
+
       await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
       await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
       await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

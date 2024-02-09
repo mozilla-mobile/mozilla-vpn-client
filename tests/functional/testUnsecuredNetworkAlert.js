@@ -63,8 +63,13 @@ describe('Unsecured network alert', function() {
       await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
     });
 
-    it('Unsecured network alert in the Post authentication view', async () => {
-      await vpn.authenticateInApp(false, false);
+    it('Unsecured network alert in the Post authentication view', async function () {
+      //Post auth view does not exist in new onboarding
+      if (await vpn.isFeatureEnabled('newOnboarding')) {
+        this.skip();
+      }
+
+      await vpn.authenticateInApp(false);
       await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -78,8 +83,13 @@ describe('Unsecured network alert', function() {
       await vpn.wait();
     });
 
-    it('Unsecured network alert in the Telemetry policy view', async () => {
-      await vpn.authenticateInApp(true, false);
+    it('Unsecured network alert in the Telemetry policy view', async function () {
+      //Telemetry view does not exist in new onboarding
+      if (await vpn.isFeatureEnabled('newOnboarding')) {
+        this.skip();
+      }
+
+      await vpn.authenticateInApp(false);
       await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.forceUnsecuredNetworkAlert();
@@ -93,7 +103,7 @@ describe('Unsecured network alert', function() {
     });
 
     it('Unsecured network alert in the Controller view', async () => {
-      await vpn.authenticateInApp(true, true);
+      await vpn.authenticateInApp();
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
       assert.equal(
           await vpn.getQueryProperty(

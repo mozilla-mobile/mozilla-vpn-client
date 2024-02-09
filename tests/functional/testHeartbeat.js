@@ -65,8 +65,13 @@ describe('Backend failure', function() {
     await vpn.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
   });
 
-  it('BackendFailure in the Telemetry policy view', async () => {
-    await vpn.authenticateInApp(true, false);
+  it('BackendFailure in the Telemetry policy view', async function () {
+    //Telemetry policy view does not exist in new onboarding
+    if (await vpn.isFeatureEnabled('newOnboarding')) {
+      this.skip();
+    }
+
+    await vpn.authenticateInApp(false);
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     await vpn.forceHeartbeatFailure();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());

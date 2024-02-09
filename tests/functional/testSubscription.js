@@ -114,7 +114,7 @@ describe('Subscription manager', function() {
          // When they try to turn the VPN on, they get the
          // "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp(true, true);
+         await vpn.authenticateInApp();
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription.
@@ -142,7 +142,7 @@ describe('Subscription manager', function() {
          // redirected back to the controller home screen.
 
          if (!this.ctx.wasm) {
-           await vpn.authenticateInApp(true, true);
+           await vpn.authenticateInApp();
 
            // Mark the user subscription as inactive
            this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
@@ -222,7 +222,7 @@ describe('Subscription manager', function() {
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
              userDataActive;
 
-         await vpn.authenticateInApp(true, true);
+         await vpn.authenticateInApp();
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription. Set the error status to 500.
@@ -251,7 +251,7 @@ describe('Subscription manager', function() {
          // They enter No Signal, and once they toggle the VPN off
          // they get the "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp(true, true);
+         await vpn.authenticateInApp();
 
          // toggle on VPN here
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

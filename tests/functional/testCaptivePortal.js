@@ -69,8 +69,13 @@ describe('Captive portal', function() {
     assert.equal(vpn.lastNotification().title, null);
   });
 
-  it('Captive portal in the Telemetry policy view', async () => {
-    await vpn.authenticateInApp(true, false);
+  it('Captive portal in the Telemetry policy view', async function () {
+    //Telemetry policy view does not exist in new onboarding
+    if (await vpn.isFeatureEnabled('newOnboarding')) {
+      this.skip();
+    }
+
+    await vpn.authenticateInApp(false);
     // Setup - end
 
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
