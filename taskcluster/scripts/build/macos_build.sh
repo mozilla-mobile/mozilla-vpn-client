@@ -40,6 +40,9 @@ export PYTHONIOENCODING="UTF-8"
 print Y "Checking conda hash..."
 shasum -a 256 ${MOZ_FETCHES_DIR}/miniconda.sh
 
+print Y "What's in ${TASK_HOME}?"
+ls -al ${TASK_HOME}
+
 if [ -e ${TASK_HOME}/miniconda ]; then
     print Y "Conda already exist?"
 
