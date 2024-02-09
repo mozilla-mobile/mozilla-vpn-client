@@ -11,13 +11,11 @@ ListView {
     id: list
 
     property var accessibleName: ""
-    property alias listActiveFocusOnTab : list.activeFocusOnTab
 
     height:contentHeight
     Accessible.role: Accessible.List
     Accessible.name: accessibleName
     Accessible.ignored: !visible
-    activeFocusOnTab: true
     boundsBehavior: Flickable.StopAtBounds
     highlightFollowsCurrentItem: true
     clip: true
@@ -87,15 +85,15 @@ ListView {
         const itemHeight = item.height + bottomMargin;
         let scrollY;
 
-        // Scroll down to bring item into view. Occurs if the item is beyond the navbar's top (with a visible navbar) or beyond
-        // the window height (without a visible navbar).
+        // Scroll the item upwards into view. Occurs if the item is beyond the navbar's top while navbar is visible. Or if the
+        // item is beyond the window height while navbar is not visible.
         if((navbar.visible && isItemBeyondNavBarTop) || (!navbar.visible && isItemBeyondWindowHeight)) {
             const scrollDistance = item.mapToItem(window.contentItem, 0, 0).y + item.height - (window.height - bottomMargin);
 
             scrollY = list.contentY + scrollDistance;
         }
         else {
-            // Scroll up to bring item into view
+            // Scroll the item downwards into view
             if (itemY < list.contentY) {
                 scrollY = itemY - bottomMargin;
             }

@@ -18,6 +18,7 @@ FocusScope {
     property alias _searchBarPlaceholderText: searchBar._placeholderText
     property bool _searchBarHasError: false
     readonly property bool isEmpty: searchBar.length === 0
+    property var _getNextTabItem: () => { return null; }
 
     implicitHeight: searchBarColumn.implicitHeight
     implicitWidth: searchBarColumn.implicitWidth
@@ -50,6 +51,16 @@ FocusScope {
                     _editCallback();
                 }
             }
+
+            function handleTabPressed() {
+                let nextTabItem = _getNextTabItem();
+                if (!nextTabItem) {
+                    nextTabItem = searchBar.nextItemInFocusChain();
+                }
+                nextTabItem.forceActiveFocus(Qt.TabFocusReason);
+            }
+
+            Keys.onTabPressed: handleTabPressed()
 
             MZIcon {
                 anchors {

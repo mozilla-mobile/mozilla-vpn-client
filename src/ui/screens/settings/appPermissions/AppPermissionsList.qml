@@ -27,6 +27,7 @@ ColumnLayout {
 
         FocusScope {
             id: appListHeaderFocusScope
+
             readonly property ListView listView: ListView.view
             readonly property var getProxyModel: searchBarWrapper.getProxyModel
 
@@ -48,30 +49,31 @@ ColumnLayout {
                         const filterValue = getSearchBarText();
                         return obj.appName.toLowerCase().includes(filterValue);
                     }
+                    _editCallback: () => {
+                        // Clear the list selection when editing the SearchBar to prevent the focus from moving
+                        // from the SearchBar to the selected list item.
+                        listView.currentIndex = -1; 
+                    }
+                    _getNextTabItem: () => {
+                        // Return next item to be tabbed to
+                        if (clearAllButton.enabled) {
+                            return clearAllButton;
+                        } else if (listView.count > 0) {
+                            // First item in the list
+                            listView.currentIndex = 0;
+                            return listView.itemAtIndex(0);
+                        } else {
+                            // Next item in focus order
+                            return null;
+                        }
+                    }
                     _searchBarHasError: listView.count === 0
                     _searchBarPlaceholderText: searchBarPlaceholder
                     Layout.fillWidth: true
-
-                    //$TODO: Will not be called because MZSearchBar is not a Text field
-                    function handleTabPressed() {
-                        if (clearAllButton.enabled) {
-                            clearAllButton.forceActiveFocus(Qt.TabFocusReason);
-                        }
-                        else if (listView.count > 0) {
-                            listView.currentIndex = 0
-                            listView.itemAtIndex(0).forceActiveFocus(Qt.TabFocusReason);
-                        } else
-                        {
-                            navbar.nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
-                        }
-                    }
-
-                    Keys.onTabPressed: handleTabPressed()
                 }
 
                 MZLinkButton {
                     property int numDisabledApps: MZSettings.vpnDisabledApps.length
-                    //property bool skipEnsureVisible: true
 
                     id: clearAllButton
                     objectName: "clearAll"
@@ -97,7 +99,7 @@ ColumnLayout {
 
                     function handleTabPressed() {
                         if (listView.count > 0) {
-                            listView.currentIndex = 0
+                            listView.currentIndex = 0;
                             listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
                         } else {
                             navbar.nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
@@ -151,8 +153,6 @@ ColumnLayout {
                 Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
                 function handleClick() {
-                    //appList.currentIndex = index;
-                    //checkBox.forceActiveFocus();
                     VPNAppPermissions.flip(appID)
                 }
 
@@ -161,6 +161,10 @@ ColumnLayout {
                     objectName: "checkbox"
                     onClicked: () => appRow.handleClick()
                     checked: !appIsEnabled
+                    // Disable activeFocusOnTab as it relies on the order of element creation. The ListView lazily generates
+                    // list items when they come into view, so the order of creation is unpredicatable. Instead, this
+                    // checkbox manages Tab/Backtab to navigate by list item index.
+                    checkBoxActiveFocusOnTab: false
                     Layout.alignment: Qt.AlignVCenter
                     Accessible.name: appName
                     focus: true
@@ -220,14 +224,6 @@ ColumnLayout {
                             }
                         }
                         
-                    }
-
-                    Component.onCompleted: {
-                        //console.log("vc: ListView delegate component completed " + index);
-                    }
-
-                    Component.onDestruction: {
-                        //console.log("vc: ListView delegate component destroyed " + index);
                     }
                 }
 
