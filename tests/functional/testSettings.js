@@ -1051,7 +1051,7 @@ describe('Settings', function() {
 
     it("record telemetry when user clicks on Tips and tricks", async function () {
         // This test cannot run in wasm
-        if (vpn.runningOnWasm) {
+        if (vpn.runningOnWasm()) {
           this.skip();
         }
 
