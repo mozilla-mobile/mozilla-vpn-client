@@ -19,7 +19,7 @@ namespace WebExtension {
 Connection::Connection(QObject* parent, QIODevice* connection)
     : QObject(parent), m_connection(connection) {
   qInfo() << "New connection received";
-
+  Q_ASSERT(parent);
   Q_ASSERT(m_connection);
   connect(m_connection, &QIODevice::readyRead, this, &Connection::readData);
 }

@@ -12,7 +12,6 @@
 #include <QTcpSocket>
 #include <functional>
 
-#include "WebExtensionAdapter.h"
 #include "controller.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -22,6 +21,7 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "webextensionadapter.h"
 
 namespace {
 
@@ -30,6 +30,7 @@ Logger logger("WebExtensionAdapter");
 
 WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
     : BaseAdapter(parent) {
+  Q_ASSERT(parent);
   MZ_COUNT_CTOR(WebExtensionAdapter);
 
   MozillaVPN* vpn = MozillaVPN::instance();

@@ -18,7 +18,8 @@ constexpr auto LOCALHOST_V4_AS_V6 = "::ffff:127.0.0.1";
 
 namespace WebExtension {
 
-Server::Server(BaseAdapter* adapter) {
+Server::Server(BaseAdapter* adapter) : QTcpServer(adapter) {
+  Q_ASSERT(adapter);
   m_adapter = adapter;
 
   qInfo() << "Creating the server";
