@@ -49,7 +49,7 @@ jobs:
     needs: source-bundle
     runs-on: ubuntu-latest
     container:
-      image: fedora:37
+      image: fedora:39
 
     steps:
       - name: Download Source Package
@@ -59,8 +59,8 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          yum -y install rpm-build rpmdevtools yum-utils
-          yum-builddep -y mozillavpn.spec
+          dnf -y install rpmdevtools 'dnf-command(builddep)'
+          dnf -y builddep mozillavpn.spec
 
       - name: Building package
         shell: bash
