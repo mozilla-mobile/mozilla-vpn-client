@@ -1050,8 +1050,8 @@ describe('Settings', function() {
     });
 
     it("record telemetry when user clicks on Tips and tricks", async function () {
-        if (this.ctx.wasm) {
-          // This test cannot run in wasm
+        // This test cannot run in wasm
+        if (vpn.runningOnWasm) {
           this.skip();
         }
 
