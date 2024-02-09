@@ -14,6 +14,8 @@ task-defaults:
     fetches:
         fetch:
             - miniconda-osx
+        toolchain:
+            - conda-macos
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
