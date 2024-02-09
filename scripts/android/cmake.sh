@@ -138,6 +138,7 @@ if [[ "$RELEASE" ]]; then
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
+    -DBUILD_TESTS=OFF \
     -GNinja \
     -S . -B .tmp/
 else
@@ -149,6 +150,7 @@ else
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_TESTS=OFF \
     -GNinja \
     -S . -B .tmp/
 
@@ -156,7 +158,7 @@ fi
 
 print Y "Compiling apk_install_target in .tmp/"
 # This compiles the client and generates a mozillavpn.so
-cmake --build .tmp -j$JOBS -DBUILD_TESTS=OFF
+cmake --build .tmp -j$JOBS
 
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
