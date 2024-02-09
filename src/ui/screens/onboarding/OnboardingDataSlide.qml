@@ -58,8 +58,6 @@ ColumnLayout {
         MZSettingsToggle {
             objectName: "dataCollectionToggle"
 
-            implicitHeight: 24
-            implicitWidth: 45
             checked: MZSettings.onboardingDataCollectionEnabled
             onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
             accessibleName: shareDataLabel.text

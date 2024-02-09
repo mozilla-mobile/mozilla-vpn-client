@@ -61,8 +61,6 @@ ColumnLayout {
         MZSettingsToggle {
             objectName: "startAtBootToggle"
 
-            implicitHeight: 24
-            implicitWidth: 45
             checked: MZSettings.startAtBoot
             onClicked: {
                 MZSettings.startAtBoot = !MZSettings.startAtBoot
