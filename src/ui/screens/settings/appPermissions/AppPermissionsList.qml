@@ -25,69 +25,126 @@ ColumnLayout {
     Component {
         id: appListHeader
 
-    ColumnLayout {
-            id: appListHeaderColumn
-            property var getProxyModel: searchBarWrapper.getProxyModel
+        FocusScope {
+            readonly property ListView listView: ListView.view
+            readonly property var getProxyModel: searchBarWrapper.getProxyModel
 
-            spacing: MZTheme.theme.vSpacingSmall
-            width: applist.width - (3 * MZTheme.theme.windowMargin)
+            implicitHeight: appListHeaderColumn.implicitHeight
+            implicitWidth: appListHeaderColumn.implicitWidth
 
-            MZSearchBar {
-                property bool sorted: false;
-                id: searchBarWrapper
-                _filterProxySource: VPNAppPermissions
-                _filterProxyCallback: obj => {
-                    const filterValue = getSearchBarText();
-                    return obj.appName.toLowerCase().includes(filterValue);
+            ColumnLayout {
+                id: appListHeaderColumn
+
+                spacing: MZTheme.theme.vSpacingSmall
+                width: listView.width - (3 * MZTheme.theme.windowMargin)
+                // 'Layout.preferredWidth: parent.width' was too small. It seemed to use implicit width, which is smaller.
+
+                MZSearchBar {
+                    property bool sorted: false;
+                    id: searchBarWrapper
+                    _filterProxySource: VPNAppPermissions
+                    _filterProxyCallback: obj => {
+                        const filterValue = getSearchBarText();
+                        return obj.appName.toLowerCase().includes(filterValue);
+                    }
+                    _searchBarHasError: listView.count === 0
+                    _searchBarPlaceholderText: searchBarPlaceholder
+                    Layout.fillWidth: true
+
+                    //$TODO: Will not be called because MZSearchBar is not a Text field
+                    function handleTabPressed() {
+                        if (clearAllButton.enabled) {
+                            clearAllButton.forceActiveFocus(Qt.TabFocusReason);
+                        }
+                        else if (listView.count > 0) {
+                            listView.currentIndex = 0
+                            listView.itemAtIndex(0).forceActiveFocus(Qt.TabFocusReason);
+                        } else
+                        {
+                            navbar.nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
+                        }
+                    }
+
+                    Keys.onTabPressed: handleTabPressed()
                 }
-                _searchBarHasError: applist.count === 0
-                _searchBarPlaceholderText: searchBarPlaceholder
-                Layout.fillWidth: true
-            }
 
-            MZLinkButton {
-                property int numDisabledApps: MZSettings.vpnDisabledApps.length
+                MZLinkButton {
+                    property int numDisabledApps: MZSettings.vpnDisabledApps.length
+                    //property bool skipEnsureVisible: true
 
-                id: clearAllButton
-                objectName: "clearAll"
+                    id: clearAllButton
+                    objectName: "clearAll"
 
-                Layout.alignment: Qt.AlignLeft
+                    Layout.alignment: Qt.AlignLeft
 
-                // Hack to horizontally align the text
-                // with column of checkboxes.
-                Layout.leftMargin: -4
+                    // Hack to horizontally align the text
+                    // with column of checkboxes.
+                    Layout.leftMargin: -4
 
-                textAlignment: Text.AlignLeft
-                labelText: MZI18n.SettingsAppExclusionClearAllApps
-                fontSize: MZTheme.theme.fontSize
-                fontName: MZTheme.theme.fontInterSemiBoldFamily
+                    textAlignment: Text.AlignLeft
+                    labelText: MZI18n.SettingsAppExclusionClearAllApps
+                    fontSize: MZTheme.theme.fontSize
+                    fontName: MZTheme.theme.fontInterSemiBoldFamily
+                    focus: enabled
 
-                onClicked: {
-                    Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
-                    VPNAppPermissions.protectAll();
+                    onClicked: {
+                        Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
+                        VPNAppPermissions.protectAll();
+                    }
+                    enabled: MZSettings.vpnDisabledApps.length > 0
+                    visible: listView.count > 0
+
+                    function handleTabPressed() {
+                        if (listView.count > 0) {
+                            listView.currentIndex = 0
+                            listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
+                        } else {
+                            navbar.nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
+                        }
+                    }
+
+                    Keys.onTabPressed: handleTabPressed()
                 }
-                Keys.onTabPressed: applist.itemAtIndex(0).children[0].forceActiveFocus(Qt.TabFocusReason)
-                enabled: MZSettings.vpnDisabledApps.length > 0
-                visible: applist.count > 0
-            }
 
-            MZVerticalSpacer {
-                height: MZTheme.theme.dividerHeight
+                MZVerticalSpacer {
+                    height: MZTheme.theme.dividerHeight
+                }
             }
         }
     }
 
-    ListView {
-        id: applist
+    MZList {
+        id: appList
 
         objectName: "appList"
         model: headerItem.getProxyModel()
         height: availableHeight // $TODO: Can this be replaced by layout values in https://doc.qt.io/qt-6/qml-qtquick-layouts-columnlayout.html#details
-        Layout.preferredWidth: parent.width
+        width: 250
+        //Layout.preferredWidth: parent.width
+        //contentWidth: parent.width
+        // Layout.fillWidth: true
+        //Layout.fillHeight: true
+        // anchors.fill: parent
         spacing: MZTheme.theme.windowMargin
-        delegate: RowLayout {
+        // Using the following may cause a jiggle when checkbox is selected and model is changed
+        //highlightRangeMode: ListView.ApplyRange
+        //preferredHighlightBegin: height * 0.4
+        //preferredHighlightEnd: height - (height * 0.4)
+        //cacheBuffer: 4000 // Pixel size taken by all items. (Otherwise delegates will be removed causing tab order changes)
+
+        delegate: FocusScope {
+            id: appRowFocusScope
+
             property string appIdForFunctionalTests: appID
+            readonly property ListView listView: ListView.view
+
+            implicitHeight: appRow.implicitHeight
+            implicitWidth: appRow.implicitWidth
+
+            RowLayout {
             id: appRow
+
+
 
             objectName: `app-${index}`
             spacing: MZTheme.theme.windowMargin
@@ -95,6 +152,8 @@ ColumnLayout {
             Layout.preferredHeight: MZTheme.theme.navBarTopMargin
 
             function handleClick() {
+                //appList.currentIndex = index;
+                //checkBox.forceActiveFocus();
                 VPNAppPermissions.flip(appID)
             }
 
@@ -104,29 +163,36 @@ ColumnLayout {
                 onClicked: () => appRow.handleClick()
                 checked: !appIsEnabled
                 Layout.alignment: Qt.AlignVCenter
-                Accessible.name: appID
+                Accessible.name: appName
+                focus: true
+
+                // Change list selection on focus change
+                onActiveFocusChanged: {
+                    if (activeFocus) { 
+                        listView.currentIndex = index;
+                    };
+                }
 
                 function handleTabPressed() {
-                    applist.positionViewAtIndex(applist.currentIndex + 1, ListView.Visible);
-
-                    if (applist.itemAtIndex(applist.currentIndex + 1)) {
-                        applist.currentIndex++;
-                        nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
+                    if (listView.currentIndex < (listView.count - 1)) {
+                        // Move selection & focus to next item
+                        listView.incrementCurrentIndex();
+                        listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
                     }
                     else {
-                        applist.footerItem.forceActiveFocus(Qt.TabFocusReason);
+                        // Currently at end of list. Move focus to footer
+                        listView.footerItem.forceActiveFocus(Qt.TabFocusReason);
                     }
                 }
 
                 function handleBacktabPressed() {
-                    applist.positionViewAtIndex(applist.currentIndex - 1, ListView.Visible);
-
-                    if (applist.itemAtIndex(applist.currentIndex - 1)) {
-                        applist.currentIndex--;
-                        nextItemInFocusChain(false).forceActiveFocus(Qt.BacktabFocusReason);
+                    if (listView.currentIndex > 0) {
+                        // Move selection & focus to previous item and bring it into view if necessary
+                        listView.decrementCurrentIndex();
+                        listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
                     }
                     else {
-                        applist.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
+                        listView.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
                     }
                 }
 
@@ -156,12 +222,21 @@ ColumnLayout {
                     }
                     
                 }
+
+                Component.onCompleted: {
+                    //console.log("vc: ListView delegate component completed " + index);
+                }
+
+                Component.onDestruction: {
+                    //console.log("vc: ListView delegate component destroyed " + index);
+                }
             }
 
             MZInterLabel {
                 id: label
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.fillWidth: true
+                // TODO: The text doesn't wrap as before
                 text: appName
                 color: MZTheme.theme.fontColorDark
                 horizontalAlignment: Text.AlignLeft
@@ -174,48 +249,106 @@ ColumnLayout {
                     onClicked: () => appRow.handleClick()
                 }
             }
+            }
         }
+
         header: appListHeader
         footer: appListFooter
+
+        Component.onCompleted: {
+            appList.positionViewAtBeginning();
+        }
+
+        Connections {
+            target: model
+
+            property Item previousFocusItem: null
+            property int previousIndex: -1
+            property real diffY: -1
+
+            function onModelAboutToBeReset() {
+                previousFocusItem = window.activeFocusItem;
+                previousIndex = appList.currentIndex;
+                diffY = appList.contentY - appList.originY;
+            }
+
+            function onModelReset() {
+                appList.currentIndex = previousIndex;
+                previousFocusItem.forceActiveFocus();
+                appList.contentY =  appList.originY + diffY;
+            }
+
+            function onDataChanged() {
+                 appList.currentIndex = previousIndex;
+                 previousFocusItem.forceActiveFocus();
+                 appList.contentY =  appList.originY + diffY;
+            }
+        }
     }
 
     Component {
         id: appListFooter
 
-        ColumnLayout {
-            id: appListFooterColumn
+        FocusScope
+        {
+            id: appListFooterFocusScope
+            readonly property ListView listView: ListView.view
 
-            spacing: MZTheme.theme.vSpacingSmall
-            width: applist.width - (3 * MZTheme.theme.windowMargin)
+            implicitHeight: appListFooterColumn.implicitHeight
+            implicitWidth: appListFooterColumn.implicitWidth
 
-            MZVerticalSpacer {
-                height: MZTheme.theme.dividerHeight
-            }
+            ColumnLayout {
+                id: appListFooterColumn
+                readonly property ListView listView: ListView.view
 
-            MZLinkButton {
-                objectName: "addApplication"
-                id: addApp
-                labelText: addApplication
-                textAlignment: Text.AlignLeft
-                fontSize: MZTheme.theme.fontSize
-                fontName: MZTheme.theme.fontInterSemiBoldFamily
-                onClicked: {
-                    Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
-                    VPNAppPermissions.openFilePicker()
+                spacing: MZTheme.theme.vSpacingSmall
+                width: listView.width - (3 * MZTheme.theme.windowMargin)
+
+                MZVerticalSpacer {
+                    height: MZTheme.theme.dividerHeight
                 }
 
-                // Hack to horizontally align the "+" sign with the
-                // column of checkboxes
-                Layout.leftMargin: -1
-
-                visible: Qt.platform.os === "windows"
-                iconComponent: Component {
-                    MZIcon {
-                        source: "qrc:/nebula/resources/plus.svg"
-                        sourceSize.height: MZTheme.theme.iconSmallSize
-                        sourceSize.width: MZTheme.theme.iconSmallSize
-                        anchors.verticalCenter: parent.verticalCenter
+                MZLinkButton {
+                    objectName: "addApplication"
+                    id: addApp
+                    labelText: addApplication
+                    textAlignment: Text.AlignLeft
+                    fontSize: MZTheme.theme.fontSize
+                    fontName: MZTheme.theme.fontInterSemiBoldFamily
+                    focus: true
+                    onClicked: {
+                        Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
+                        VPNAppPermissions.openFilePicker()
                     }
+
+                    function handleBacktabPressed() {
+                        if (listView.count > 0) {
+                            listView.currentIndex = listView.count - 1;
+                            listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
+                        }
+                    }
+
+                    Keys.onTabPressed: navbar.nextItemInFocusChain().forceActiveFocus(Qt.TabFocusReason);
+                    Keys.onBacktabPressed: handleBacktabPressed()
+
+                    // Hack to horizontally align the "+" sign with the
+                    // column of checkboxes
+                    Layout.leftMargin: -1
+
+                    visible: Qt.platform.os === "windows"
+                    iconComponent: Component {
+                        MZIcon {
+                            source: "qrc:/nebula/resources/plus.svg"
+                            sourceSize.height: MZTheme.theme.iconSmallSize
+                            sourceSize.width: MZTheme.theme.iconSmallSize
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                // Spacer to allow end of list to scroll up above the navbar
+                MZVerticalSpacer {
+                    height: MZTheme.theme.navBarHeightWithMargins 
                 }
             }
         }

@@ -14,6 +14,8 @@ import components.forms 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
+    // The ListView in AppPermissionsList is flickable, so this one need not be.
+     _interactive: false
 
     readonly property string telemetryScreenId : "app_exclusions"
 
@@ -81,6 +83,8 @@ MZViewBase {
 
         AppPermissionsList {
             id: enabledList
+            // The list provides its own code to ensure visibility of a child item
+            // property bool skipEnsureVisible: true
 
             Layout.fillWidth: true
             Layout.fillHeight: false
@@ -89,7 +93,13 @@ MZViewBase {
 
             searchBarPlaceholder: searchApps
             enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
-            availableHeight: window.height - vpnFlickable.y; 
+            availableHeight: {
+                const yPosition = enabledList.mapToItem(null, 0, 0).y;
+                console.log("appList yPosition = ", yPosition);
+                //return window.height - yPosition;
+                return 584;
+            }
+            //anchors.fill: parent
         }
     }
 
