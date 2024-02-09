@@ -231,11 +231,14 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      if (await vpn.isFeatureEnabled('newOnboarding')) {
+        await vpn.completeOnboarding();
+      }
+      else {
+        await vpn.completePostAuthentication();
+        await vpn.completeTelemetryPolicy();
+      }
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -494,11 +497,14 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
 
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
+      if (await vpn.isFeatureEnabled('newOnboarding')) {
+        await vpn.completeOnboarding();
+      }
+      else {
+        await vpn.completePostAuthentication();
+        await vpn.completeTelemetryPolicy();
+      }
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

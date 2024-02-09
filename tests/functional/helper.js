@@ -464,6 +464,27 @@ module.exports = {
       await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
   },
 
+  async completeOnboarding() {
+    await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    switch(await this.getSetting('onboardingStep')) {
+    case 0:
+      await this.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 1:
+      await this.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 2:
+      await this.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 3:
+      await this.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenHome.SCREEN.visible());
+      assert.equal(await this.getSetting('onboardingCompleted'), true);
+    default:
+      break;
+    }
+ },
+
   async logout() {
     const json = await this._writeCommand('logout');
     assert(
