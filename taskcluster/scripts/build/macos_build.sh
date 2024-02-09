@@ -40,12 +40,26 @@ export PYTHONIOENCODING="UTF-8"
 print Y "Checking conda hash..."
 shasum -a 256 ${MOZ_FETCHES_DIR}/miniconda.sh
 
+if [ -e ${TASK_HOME}/miniconda ]; then
+    print Y "Conda already exist?"
+
+    print Y "Listing prefix..."
+    ls -al ${TASK_HOME}/miniconda
+
+    print Y "Listing bin..."
+    ls -al ${TASK_HOME}/miniconda/bin
+
+    print Y "Found version..."
+    ${TASK_HOME}/miniconda/bin/conda -V
+fi
+
 print Y "Installing conda"
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_HOME}/miniconda
 source ${TASK_HOME}/miniconda/bin/activate
 
 print Y "Conda version is..."
+which conda
 conda -V
 
 print Y "Installing provided conda env..."
