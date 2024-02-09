@@ -54,7 +54,11 @@ describe('Settings', function() {
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
-    await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
+
+    if (!(await vpn.isFeatureEnabled('helpSheets'))) {
+      await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
+    }
+
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
@@ -62,7 +66,12 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
   });
 
-  it('Checking the tips and tricks settings', async () => {
+  it('Checking the tips and tricks settings', async function () {
+    //tips and tricks feature is hidden when help sheets are enabled, so skip this test when help sheets are enabled
+    if (await vpn.isFeatureEnabled('helpSheets')) {
+      this.skip();
+    }
+
     await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
     await vpn.scrollToQuery(
         queries.screenSettings.SCREEN, queries.screenSettings.TIPS_AND_TRICKS);
@@ -1040,11 +1049,17 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "settings");
     });
 
-    it("record telemetry when user clicks on Tips and tricks", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
+    it("record telemetry when user clicks on Tips and tricks", async function () {
+        // This test cannot run in wasm
+        if (vpn.runningOnWasm()) {
+          this.skip();
         }
+
+        //Skipping because tips and tricks is not available when help sheets are enabled
+        if (await vpn.isFeatureEnabled('helpSheets')) {
+          this.skip();
+        }
+
         await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
         const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
 

@@ -544,6 +544,26 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
+    // Differs from "is_feature_flipped_on" because here we don't care if the
+    // feature has or has not been manually toggled AKA "flipped"  (via UI,
+    // inspector, etc) we just care if it is enabled or not
+    InspectorCommand{"is_feature_enabled", "Check if a feature is enabled", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       QJsonObject obj;
+                       QString featureName = arguments[1];
+                       const Feature* feature = Feature::getOrNull(featureName);
+
+                       if (!feature) {
+                         obj["error"] = "Feature does not exist";
+                         return obj;
+                       }
+
+                       bool featureEnabled = feature->isSupported();
+
+                       obj["value"] = featureEnabled;
+                       return obj;
+                     }},
+
     InspectorCommand{"is_feature_flipped_on",
                      "Check if a feature is flipped on", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
