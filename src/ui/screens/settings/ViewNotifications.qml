@@ -19,87 +19,73 @@ MZViewBase {
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5
+        Layout.leftMargin: MZTheme.theme.windowMargin
+        Layout.rightMargin: MZTheme.theme.windowMargin
 
-        MZCheckBoxRow {
-            id: captivePortalAlert
+        MZToggleRow {
             objectName: "settingCaptivePortalAlert"
-            visible: MZFeatureList.get("captivePortal").isSupported
+
             //% "Guest Wi-Fi portal alert"
             labelText: qsTrId("vpn.settings.guestWifiAlert")
             //% "Get notified if a guest Wi-Fi portal is blocked due to VPN connection"
             subLabelText: qsTrId("vpn.settings.guestWifiAlert.description")
-            isChecked: (MZSettings.captivePortalAlert)
-            showDivider: false
-            onClicked: {
-                MZSettings.captivePortalAlert = !MZSettings.captivePortalAlert
-            }
-            Layout.rightMargin: MZTheme.theme.windowMargin
+            checked: MZSettings.captivePortalAlert
+            visible: MZFeatureList.get("captivePortal").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: MZSettings.captivePortalAlert = !MZSettings.captivePortalAlert
         }
 
-        MZCheckBoxRow {
-            id: unsecuredNetworkAlert
+        MZToggleRow {
             objectName: "settingUnsecuredNetworkAlert"
-            visible: MZFeatureList.get("unsecuredNetworkNotification").isSupported
+
             //% "Unsecured network alert"
             labelText: qsTrId("vpn.settings.unsecuredNetworkAlert")
             //% "Get notified if you connect to an unsecured Wi-Fi network"
             subLabelText: qsTrId("vpn.settings.unsecuredNetworkAlert.description")
-            isChecked: (MZSettings.unsecuredNetworkAlert)
-            enabled: true
-            showDivider: !enabled
-            onClicked: {
-                MZSettings.unsecuredNetworkAlert = !MZSettings.unsecuredNetworkAlert
-            }
-            Layout.rightMargin: MZTheme.theme.windowMargin
+            checked: MZSettings.unsecuredNetworkAlert
+            visible: MZFeatureList.get("unsecuredNetworkNotification").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: MZSettings.unsecuredNetworkAlert = !MZSettings.unsecuredNetworkAlert
         }
 
-        MZCheckBoxRow {
-            id: switchServersAlert
+        MZToggleRow {
             objectName: "switchServersAlert"
-            visible: MZFeatureList.get("notificationControl").isSupported
+
             //% "Server switching notification"
             labelText: qsTrId("vpn.settings.notification.serverSwitch2")
             //% "Get notified when you successfully switched servers"
             subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
-            isChecked: (MZSettings.serverSwitchNotification)
-            showDivider: false
-            onClicked: {
-                MZSettings.serverSwitchNotification = !MZSettings.serverSwitchNotification
-            }
-            Layout.rightMargin: MZTheme.theme.windowMargin
+            checked: MZSettings.serverSwitchNotification
+            visible: MZFeatureList.get("notificationControl").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: MZSettings.serverSwitchNotification = !MZSettings.serverSwitchNotification
         }
 
-        MZCheckBoxRow {
-            id: connectionChangeAlert
+        MZToggleRow {
             objectName: "connectionChangeAlert"
-            visible: MZFeatureList.get("notificationControl").isSupported
 
             //% "Connection change notification"
             labelText: qsTrId("vpn.settings.notification.connectionChange2")
             //% "Get notified when the connection status changes"
             subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
-            isChecked: (MZSettings.connectionChangeNotification)
-            showDivider: false
-            onClicked: {
-                MZSettings.connectionChangeNotification = !MZSettings.connectionChangeNotification
-            }
-            Layout.rightMargin: MZTheme.theme.windowMargin
+            checked: MZSettings.connectionChangeNotification
+            visible: MZFeatureList.get("notificationControl").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: MZSettings.connectionChangeNotification = !MZSettings.connectionChangeNotification
         }
 
-        MZCheckBoxRow {
-            id: serverUnavailableNotification
+        MZToggleRow {
             objectName: "serverUnavailableNotification"
-            visible: MZFeatureList.get("serverUnavailableNotification").isSupported
+
             labelText: MZI18n.ServerUnavailableNotificationPreferencesLabel
             subLabelText: MZI18n.ServerUnavailableNotificationPreferencesSubLabel
-            isChecked: (MZSettings.serverUnavailableNotification)
-            showDivider: false
-            onClicked: {
-                MZSettings.serverUnavailableNotification = !MZSettings.serverUnavailableNotification
-            }
-            Layout.rightMargin: MZTheme.theme.windowMargin
+            checked: MZSettings.serverUnavailableNotification
+            visible: MZFeatureList.get("serverUnavailableNotification").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: MZSettings.serverUnavailableNotification = !MZSettings.serverUnavailableNotification
         }
     }
+
     Component.onCompleted: {
         Glean.sample.notificationsViewOpened.record();
     }

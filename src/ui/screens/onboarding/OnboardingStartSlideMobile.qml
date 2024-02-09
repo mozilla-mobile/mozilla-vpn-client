@@ -22,8 +22,8 @@ ColumnLayout {
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.windowMargin * 1.5
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         Layout.fillWidth: true
 
@@ -33,8 +33,8 @@ ColumnLayout {
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingStartSlideMobileBody

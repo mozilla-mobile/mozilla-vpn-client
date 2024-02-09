@@ -23,8 +23,8 @@ ColumnLayout {
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.windowMargin * 1.5
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         Layout.fillWidth: true
 
@@ -34,8 +34,8 @@ ColumnLayout {
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingPrivacySlideBody
@@ -44,12 +44,13 @@ ColumnLayout {
     }
 
     PrivacyFeaturesList {
-        Layout.topMargin: MZUiUtils.isMobile() ? MZTheme.theme.vSpacing * 1.5 : MZTheme.theme.vSpacing
-        Layout.leftMargin: 32
-        Layout.rightMargin: 32
+        Layout.topMargin: MZTheme.theme.vSpacing
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
         isOnboarding: true
+        dividerSpacing: 8
         telemetryScreenId: root.telemetryScreenId
     }
 

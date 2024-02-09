@@ -23,8 +23,8 @@ ColumnLayout {
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.windowMargin * 1.5
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
         Layout.fillWidth: true
 
@@ -34,8 +34,8 @@ ColumnLayout {
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingStartSlideBody
@@ -43,31 +43,41 @@ ColumnLayout {
         color: MZTheme.theme.fontColor
     }
 
-    MZCheckBoxRow {
-        objectName: "startAtBootCheckBox"
-
-        Layout.topMargin: MZTheme.theme.vSpacing
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+    RowLayout {
+        Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
-        subLabelText: MZI18n.SettingsStartAtBootTitle
-        leftMargin: 0
-        isChecked: MZSettings.startAtBoot
-        showDivider: false
-        onClicked: {
-            MZSettings.startAtBoot = !MZSettings.startAtBoot
+        MZBoldInterLabel {
+            id: connectOnStartupLabel
+            Layout.fillWidth: true
 
-            if (MZSettings.startAtBoot) {
-                Glean.interaction.connectOnStartupEnabled.record({
-                    screen: root.telemetryScreenId,
-                });
+            text: MZI18n.SettingsStartAtBootTitle
+            font.pixelSize: MZTheme.theme.fontSize
+            lineHeight: MZTheme.theme.labelLineHeight
+        }
+
+        MZSettingsToggle {
+            objectName: "startAtBootToggle"
+
+            checked: MZSettings.startAtBoot
+            onClicked: {
+                MZSettings.startAtBoot = !MZSettings.startAtBoot
+
+                if (MZSettings.startAtBoot) {
+                    Glean.interaction.connectOnStartupEnabled.record({
+                        screen: root.telemetryScreenId,
+                    });
+                }
+                else {
+                    Glean.interaction.connectOnStartupDisabled.record({
+                        screen: root.telemetryScreenId,
+                    });
+                }
             }
-            else {
-                Glean.interaction.connectOnStartupDisabled.record({
-                    screen: root.telemetryScreenId,
-                });
-            }
+
+            accessibleName: connectOnStartupLabel.text
         }
     }
 
