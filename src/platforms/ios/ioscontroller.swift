@@ -60,19 +60,19 @@ public class IOSControllerImpl : NSObject {
 
         switch session.status {
         case .connected:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: connected")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: connected")
         case .connecting:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: connecting")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: connecting")
         case .disconnected:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnected")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: disconnected")
         case .disconnecting:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: disconnecting")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: disconnecting")
         case .invalid:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: invalid")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: invalid")
         case .reasserting:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: reasserting")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: reasserting")
         default:
-            IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
+            IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: STATE CHANGED: unknown status")
         }
 
         // We care about "unknown" state changes.
@@ -117,7 +117,7 @@ public class IOSControllerImpl : NSObject {
     }
 
     @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
-        IOSControllerImpl.logger.debug(message: "Connecting")
+        IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: Connecting")
 
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
@@ -164,7 +164,7 @@ public class IOSControllerImpl : NSObject {
             proto!.serverAddress = serverName;
 
             if #available(iOS 15.1, *) {
-                IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
+                IOSControllerImpl.logger.debug(message: "(IOSSwiftController) Debug: Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
                 proto!.excludeLocalNetworks = true
 
@@ -191,27 +191,27 @@ public class IOSControllerImpl : NSObject {
                 vpnConfigPermissionResponseCallback(saveError == nil)
                 
                 if let error = saveError {
-                    IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
+                    IOSControllerImpl.logger.error(message: "(IOSSwiftController) Debug: Connect Tunnel Save Error: \(error)")
                     disconnectOnErrorCallback()
                     return
                 }
 
-               IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
+               IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Saving the tunnel succeeded")
 
                tunnel.loadFromPreferences { error in
                     if let error = error {
-                        IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
+                        IOSControllerImpl.logger.error(message: "(IOSSwiftController) Debug: Connect Tunnel Load Error: \(error)")
                         disconnectOnErrorCallback()
                         return
                     }
 
-                    IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
+                    IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Loading the tunnel succeeded")
 
                     do {
                         if (reason == 1 /* ReasonSwitching */) {
                             let settings = config.asWgQuickConfig()
                             let message = TunnelMessage.configurationSwitch(settings)
-                            IOSControllerImpl.logger.info(message: "Sending new message \(message)")
+                            IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Sending new message \(message)")
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
                             try TunnelManager.session?.startTunnel(options: ["source":"app"])
@@ -219,7 +219,7 @@ public class IOSControllerImpl : NSObject {
                         // If `try` didn't throw, run onboarding callback. This callback only matters when onboarding.
                         onboardingCompletedCallback()
                     } catch let error {
-                        IOSControllerImpl.logger.error(message: "Something went wrong: \(error)")
+                        IOSControllerImpl.logger.error(message: "(IOSSwiftController) Debug: Something went wrong: \(error)")
                         disconnectOnErrorCallback()
                         return
                     }
@@ -229,23 +229,23 @@ public class IOSControllerImpl : NSObject {
     }
 
     @objc func disconnect() {
-        IOSControllerImpl.logger.info(message: "Disconnecting")
+        IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Disconnecting")
         TunnelManager.session?.stopTunnel()
     }
 
     @objc func deleteOSTunnelConfig() {
-      IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")
+      IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Removing tunnel from iOS System Preferences")
       TunnelManager.withTunnel { tunnel in
         tunnel.removeFromPreferences(completionHandler: { error in
           if let error = error {
-            IOSControllerImpl.logger.info(message: "Error when removing tunnel \(error.localizedDescription)")
+            IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Error when removing tunnel \(error.localizedDescription)")
           }
         })
       }
     }
 
     @objc func checkStatus(callback: @escaping (String, String, String) -> Void) {
-        IOSControllerImpl.logger.info(message: "Check status")
+        IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Check status")
         
         TunnelManager.withTunnel { tunnel in
             let proto = tunnel.protocolConfiguration as? NETunnelProviderProtocol
@@ -280,12 +280,12 @@ public class IOSControllerImpl : NSObject {
 
             do {
                 let message = TunnelMessage.getRuntimeConfiguration;
-                IOSControllerImpl.logger.info(message: "Sending new message \(message)");
+                IOSControllerImpl.logger.info(message: "(IOSSwiftController) Debug: Sending new message \(message)");
                 try session.sendProviderMessage(message.encode()) { [callback] data in
                     guard let data = data,
                           let configString = String(data: data, encoding: .utf8)
                     else {
-                        IOSControllerImpl.logger.error(message: "Failed to convert data to string")
+                        IOSControllerImpl.logger.error(message: "(IOSSwiftController) Debug: Failed to convert data to string")
                         callback("", "", "")
                         return
                     }
@@ -293,7 +293,7 @@ public class IOSControllerImpl : NSObject {
                     callback("\(serverIpv4Gateway!)", "\(deviceIpv4Address!)", configString)
                 }
             } catch {
-                IOSControllerImpl.logger.error(message: "Failed to retrieve data from session. \(error)")
+                IOSControllerImpl.logger.error(message: "(IOSSwiftController) Debug: Failed to retrieve data from session. \(error)")
                 callback("", "", "")
             }
             

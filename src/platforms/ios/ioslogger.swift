@@ -50,7 +50,7 @@ public class IOSLoggerImpl : NSObject {
     func log(_ message: String, type: OSLogType) {
         os_log("%{public}@", log: self.log, type: type, message)
         
-        if (Bundle.main.bundlePath.hasSuffix(".appex")) {
+      if (Bundle.main.bundlePath.hasSuffix(".appex") || message.contains("(IOSSwiftController)")) {
             let currentDate = Date()
             let formattedDateString = dateFormatter.string(from: currentDate)
 
