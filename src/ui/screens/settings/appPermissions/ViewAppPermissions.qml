@@ -55,54 +55,18 @@ MZViewBase {
 
     _menuTitle: MZI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
-
-        Layout.preferredWidth: parent.width
-
-        Loader {
-            Layout.leftMargin: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.bottomMargin: 24
-            Layout.fillWidth: true
-
-            active: Qt.platform.os === "linux" && VPNController.state !== VPNController.StateOff
-            visible: active
-
-            sourceComponent: MZInformationCard {
-                width: parent.width
-                implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
-                _infoContent: MZTextBlock {
-                    id: textBlock
-                    Layout.fillWidth: true
-
-
-                    text: MZI18n.SplittunnelInfoCardDescription
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-        }
-
         AppPermissionsList {
             id: enabledList
-            // The list provides its own code to ensure visibility of a child item
-            // property bool skipEnsureVisible: true
 
             Layout.fillWidth: true
             Layout.fillHeight: false
             Layout.leftMargin: MZTheme.theme.vSpacing
-            Layout.rightMargin: MZTheme.theme.vSpacing
 
             searchBarPlaceholder: searchApps
             enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
-            availableHeight: {
-                const yPosition = enabledList.mapToItem(null, 0, 0).y;
-                console.log("appList yPosition = ", yPosition);
-                //return window.height - yPosition;
-                return 584;
-            }
-            //anchors.fill: parent
+            availableHeight: window.height - MZTheme.theme.menuHeight
         }
     }
-
 
     MZHelpSheet {
         id: helpSheet

@@ -18,7 +18,6 @@ ListView {
     Accessible.ignored: !visible
     boundsBehavior: Flickable.StopAtBounds
     highlightFollowsCurrentItem: true
-    clip: true
     Keys.onDownPressed: list.incrementCurrentIndex()
     Keys.onUpPressed: list.decrementCurrentIndex()
 

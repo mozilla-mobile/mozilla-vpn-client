@@ -45,7 +45,7 @@ Item {
                 top: parent.top
                 left: parent.left
                 right: parent.right
-                topMargin: MZTheme.theme.viewBaseTopMargin
+                topMargin: vpnFlickable.interactive ? MZTheme.theme.viewBaseTopMargin : 0
                 bottomMargin: navbar.visible ? 0 : MZTheme.theme.rowHeight
             }
         }

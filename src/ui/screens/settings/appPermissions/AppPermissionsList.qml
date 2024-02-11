@@ -12,6 +12,11 @@ import Mozilla.VPN 1.0
 import components.forms 0.1
 import components 0.1
 
+// AppPermissionsList displays the list of installed applications, allowing users to exclude applications from VPN tunneling
+// (split tunneling). It uses a ListView (MZList) for better performance, because that control supports lazy loading of list items.
+// The ListView header contains controls preceding the list items, such as the Search Bar and Clear All buttons. The  footer
+// contains controls appearing after the list items, such as the Add Application button.
+
 ColumnLayout {
     id: appListContainer
     objectName: "appListContainer"
@@ -19,9 +24,7 @@ ColumnLayout {
     readonly property string telemetryScreenId : "app_exclusions"
     property int availableHeight: 0;
 
-    spacing: MZTheme.theme.vSpacing
-    Layout.preferredWidth: parent.width
-
+    // ListView Header
     Component {
         id: appListHeader
 
@@ -38,8 +41,31 @@ ColumnLayout {
                 id: appListHeaderColumn
 
                 spacing: MZTheme.theme.vSpacingSmall
-                width: listView.width - (3 * MZTheme.theme.windowMargin)
-                // 'Layout.preferredWidth: parent.width' was too small. It seemed to use implicit width, which is smaller.
+                width: listView.width - MZTheme.theme.vSpacing
+
+                Loader {
+                    Layout.fillWidth: true
+
+                    active: Qt.platform.os === "linux" && VPNController.state !== VPNController.StateOff
+                    visible: active
+
+                    sourceComponent: MZInformationCard {
+                        width: parent.width
+                        implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
+                        _infoContent: MZTextBlock {
+                            id: textBlock
+                            Layout.fillWidth: true
+
+
+                            text: MZI18n.SplittunnelInfoCardDescription
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+
+                MZVerticalSpacer {
+                    height: MZTheme.theme.dividerHeight
+                }
 
                 MZSearchBar {
                     property bool sorted: false;
@@ -121,19 +147,9 @@ ColumnLayout {
 
         objectName: "appList"
         model: headerItem.getProxyModel()
-        height: availableHeight // $TODO: Can this be replaced by layout values in https://doc.qt.io/qt-6/qml-qtquick-layouts-columnlayout.html#details
-        width: 250
-        //Layout.preferredWidth: parent.width
-        //contentWidth: parent.width
-        // Layout.fillWidth: true
-        //Layout.fillHeight: true
-        // anchors.fill: parent
+        height: availableHeight
+        Layout.fillWidth: true
         spacing: MZTheme.theme.windowMargin
-        // Using the following may cause a jiggle when checkbox is selected and model is changed
-        //highlightRangeMode: ListView.ApplyRange
-        //preferredHighlightBegin: height * 0.4
-        //preferredHighlightEnd: height - (height * 0.4)
-        //cacheBuffer: 4000 // Pixel size taken by all items. (Otherwise delegates will be removed causing tab order changes)
 
         delegate: FocusScope {
             id: appRowFocusScope
@@ -231,7 +247,6 @@ ColumnLayout {
                     id: label
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
-                    // TODO: The text doesn't wrap as before
                     text: appName
                     color: MZTheme.theme.fontColorDark
                     horizontalAlignment: Text.AlignLeft
@@ -254,6 +269,7 @@ ColumnLayout {
             appList.positionViewAtBeginning();
         }
 
+        // Restore scroll position, selected item and focus when the model changes
         Connections {
             target: appList.model
 
@@ -281,6 +297,7 @@ ColumnLayout {
         }
     }
 
+    // Footer
     Component {
         id: appListFooter
 
@@ -297,7 +314,7 @@ ColumnLayout {
                 readonly property ListView listView: ListView.view
 
                 spacing: MZTheme.theme.vSpacingSmall
-                width: listView.width - (3 * MZTheme.theme.windowMargin)
+                width: listView.width - MZTheme.theme.vSpacing
 
                 MZVerticalSpacer {
                     height: MZTheme.theme.dividerHeight
