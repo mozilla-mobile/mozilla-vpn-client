@@ -80,6 +80,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/connectionbenchmark.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectionchecker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/connectionchecker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.h
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp

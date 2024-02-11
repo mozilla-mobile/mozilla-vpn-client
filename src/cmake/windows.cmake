@@ -52,6 +52,8 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/dnsutilswindows.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsconnectionchecker.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsconnectionchecker.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.cpp

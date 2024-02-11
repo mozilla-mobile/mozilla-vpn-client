@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
+#include "connectionchecker.h"
 #include "controller.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
@@ -123,7 +124,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 
     mozilla::glean::sample::connection_health_unstable.record();
   } else if (stability == NoSignal) {
-    mozilla::glean::sample::connection_health_no_signal.record();
+    handleNoSignal();
   } else {
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
     // Count successful health checks only on mobile apps, as they
@@ -140,6 +141,11 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 
   m_stability = stability;
   emit stabilityChanged();
+}
+
+void ConnectionHealth::handleNoSignal() {
+  mozilla::glean::sample::connection_health_no_signal.record();
+  ConnectionChecker::instance()->checkConnectionAndReport();
 }
 
 void ConnectionHealth::connectionStateChanged() {

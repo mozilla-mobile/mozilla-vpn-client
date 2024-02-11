@@ -97,6 +97,7 @@ class ConnectionHealth final : public QObject {
 
   void healthCheckup();
   void startUnsettledPeriod();
+  void handleNoSignal();
 
  private:
   ConnectionStability m_stability = Stable;

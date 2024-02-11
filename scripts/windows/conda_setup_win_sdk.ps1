@@ -41,7 +41,7 @@ $XWIN_PATH="`$env:CONDA_PREFIX\xwin"
 $INCLUDE_ADDS =   `
                   "$XWIN_PATH\sdk\include;",`
                   "$XWIN_PATH\crt\include;",`
-                  "$XWIN_PATH\sdk\include\cppwinrt\winrt;",`
+                  "$XWIN_PATH\sdk\include\cppwinrt;",`
                   "$XWIN_PATH\sdk\include\shared;",`
                   "$XWIN_PATH\sdk\include\ucrt;" ,`
                   "$XWIN_PATH\sdk\include\um;",`
