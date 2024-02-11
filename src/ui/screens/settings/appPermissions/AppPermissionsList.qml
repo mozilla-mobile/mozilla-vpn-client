@@ -14,8 +14,12 @@ import components 0.1
 
 // AppPermissionsList displays the list of installed applications, allowing users to exclude applications from VPN tunneling
 // (split tunneling). It uses a ListView (MZList) for better performance, because that control supports lazy loading of list items.
-// The ListView header contains controls preceding the list items, such as the Search Bar and Clear All buttons. The  footer
-// contains controls appearing after the list items, such as the Add Application button.
+// The ListView header contains controls preceding the list items, such as the Search Bar and 'Clear All' buttons. The  ooter
+// contains controls appearing after the list items, such as the 'Add Application' button. 
+//
+// The ListView lazily generates list items when they come into view, so the order of creation is unpredictable. To handle this,
+// activeFocusOnTab is disabled on the list item checkbox, and tabbing between list items is implemented by making
+// Tab and Backtab to navigate by list item index.
 
 ColumnLayout {
     id: appListContainer
@@ -178,7 +182,7 @@ ColumnLayout {
                     onClicked: () => appRow.handleClick()
                     checked: !appIsEnabled
                     // Disable activeFocusOnTab as it relies on the order of element creation. The ListView lazily generates
-                    // list items when they come into view, so the order of creation is unpredicatable. Instead, this
+                    // list items when they come into view, so the order of creation is unpredictable. Instead, this
                     // checkbox manages Tab/Backtab to navigate by list item index.
                     checkBoxActiveFocusOnTab: false
                     Layout.alignment: Qt.AlignVCenter

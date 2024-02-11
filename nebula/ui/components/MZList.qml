@@ -7,6 +7,9 @@ import QtQuick.Controls
 
 import Mozilla.Shared 1.0
 
+// ListView with scroll bar and a ensureVisible() method that scrolls an item into the
+// ListView's visible viewport. (ensureVisible() is used by scrollToComponent())
+
 ListView {
     id: list
 
