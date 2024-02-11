@@ -8,11 +8,18 @@
 
 POSITIONAL=()
 JOBS=8
+BUILDDIR=
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <QT_source_folder> <destination_folder> [-j|--jobs <jobs>] [anything else will be use as argument for the QT configure script]"
+  print N "\t$0 <QT_source_folder> <destination_folder> [options]"
   print N ""
+  print N "Build options:"
+  print N "  -j, --jobs NUM   Parallelize build across NUM processes. (default: 8)"
+  print N "  -b, --build DIR  Build in DIR. (default: <QT_source_folder>/build)"
+  print N "  -h, --help       Display this message and exit."
+  print N ""
+  print N "Any other arguments will be passed to the Qt configure script."
   exit 0
 }
 
@@ -25,6 +32,11 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -j | --jobs)
     JOBS="$2"
+    shift
+    shift
+    ;;
+  -b | --build)
+    BUILDDIR="$2"
     shift
     shift
     ;;
@@ -45,20 +57,19 @@ if [[ $# -lt 2 ]]; then
 fi
 
 [ -d "$1" ] || die "Unable to find the QT source folder."
-
-cd "$1" || die "Unable to enter into the QT source folder"
-
+SRCDIR=$(cd $1 && pwd)
 shift
 
 PREFIX=$1
 shift
 
-printn Y "Cleaning the folder... "
-make distclean -j $JOBS &>/dev/null;
-print G "done."
+if [[ -z "$BUILDDIR" ]]; then
+  BUILDDIR=$SRCDIR/build
+fi
 
 LINUX="
   -platform linux-clang \
+  -openssl-linked \
   -egl \
   -opengl es2 \
   -no-icu \
@@ -66,6 +77,8 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -xcb \
+  -- \
+  -DOPENSSL_USE_STATIC_LIBS=ON \
 "
 
 MACOS="
@@ -94,12 +107,17 @@ fi
 # we cannot feature flag off, and itself does not properly 
 # check during configure if it can be built. 
 # so nuclear option here.
-rm -rf qttools/src/linguist/linguist
-mkdir qttools/src/linguist/linguist
-echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
+# rm -rf qttools/src/linguist/linguist
+# mkdir qttools/src/linguist/linguist
+# echo "return()" > qttools/src/linguist/linguist/CMakeLists.txt
+
+# Create the installation prefix, and convert to an absolute path.
+mkdir -p $PREFIX
+PREFIX=(cd $PREFIX && pwd)
 
 print Y "Wait..."
-bash ./configure \
+mkdir -p $BUILDDIR
+(cd $BUILDDIR && bash $SRCDIR/configure \
   $* \
   --prefix=$PREFIX \
   -opensource \
@@ -111,13 +129,11 @@ bash ./configure \
   -nomake tests \
   -make libs \
   -no-feature-sql-odbc \
-  -no-feature-pixeltool \
   -no-feature-qtattributionsscanner \
   -no-feature-qtdiag \
   -no-feature-qtplugininfo \
   -no-feature-pixeltool \
   -no-feature-distancefieldgenerator \
-  -no-feature-designer \
   -no-feature-assistant \
   -no-feature-qml-xml-http-request \
   -no-feature-tiff \
@@ -127,7 +143,6 @@ bash ./configure \
   -no-feature-style-mac \
   -no-feature-style-windows \
   -no-feature-textmarkdownwriter \
-  -no-feature-cssparser \
   -no-feature-itemmodeltester \
   -no-feature-sql-sqlite \
   -no-feature-sql \
@@ -140,6 +155,7 @@ bash ./configure \
   -skip qtquickeffectmaker \
   -skip qtquicktimeline \
   -skip qtwebengine  \
+  -skip qtwebview \
   -skip qtlocation \
   -skip qtmultimedia  \
   -skip qtserialport  \
@@ -173,12 +189,12 @@ bash ./configure \
   -qt-zlib \
   -qt-pcre \
   -qt-freetype \
-  $PLATFORM || die "Configuration error."
+  $PLATFORM) || die "Configuration error."
 
 print Y "Compiling..."
-cmake --build . --parallel $JOBS || die "Make failed"
+cmake --build $BUILDDIR --parallel $JOBS || die "Make failed"
 
 print Y "Installing..."
-cmake --install . || die "Make install failed"
+cmake --install $BUILDDIR || die "Make install failed"
 
 print G "All done!"

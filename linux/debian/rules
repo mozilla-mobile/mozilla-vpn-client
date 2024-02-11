@@ -11,6 +11,11 @@ ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && 
 	export PATH := $(GODIR)/bin:$(PATH)
 endif
 
+# Bring in some extras if building within a conda environment.
+ifneq ($(CONDA_PREFIX),)
+	export PKG_CONFIG_PATH := $(CONDA_PREFIX)/lib/pkgconfig
+endif
+
 %:
 	dh $@ --with=systemd --buildsystem=cmake+ninja --warn-missing
 
@@ -31,3 +36,6 @@ override_dh_systemd_start:
 
 override_dh_systemd_enable:
 	dh_systemd_enable debian/mozillavpn/lib/systemd/system/mozillavpn.service
+
+override_dh_builddeb:
+	dh_builddeb -- -Zgzip
