@@ -18,11 +18,15 @@ import org.json.JSONObject
 import java.util.ArrayList
 import java.util.Arrays
 
-// Gets used by /platforms/android/androidAppListProvider.cpp
+/**
+ * PackageManagerHelper offers JNI bindings to 
+ * query the Installed apps and fetch their icons
+ * it's used in 
+ * /platforms/android/androidapplistprovider.cpp
+ */
 object PackageManagerHelper {
     const val TAG = "PackageManagerHelper"
 
-    @Suppress("DEPRECATION")
     @SuppressLint("QueryPermissionsNeeded") // We have QUERY_ALL_PACKAGES permission
     @JvmStatic
     fun getAllAppNames(ctx: Context): JsonAppMap {
@@ -62,6 +66,12 @@ object PackageManagerHelper {
         return ColorDrawable(Color.TRANSPARENT)
     }
 
+
+    // A package is considered a system package if it meets any of the following conditions:  
+    // 1. It is not flagged as a system app.  
+    // 2. It does not use the Internet.  
+    // 3. It has not had any updates.  
+    // 4. It has no launchable activity (i.e., it's likely a system service).  
     private fun isSystemPackage(pkgInfo: PackageInfo, pm: PackageManager): Boolean {
         if (pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
             // no system app
