@@ -158,7 +158,6 @@ ColumnLayout {
         delegate: FocusScope {
             id: appRowFocusScope
 
-            property string appIdForFunctionalTests: appID
             readonly property ListView listView: ListView.view
 
             implicitHeight: appRow.implicitHeight
@@ -166,6 +165,8 @@ ColumnLayout {
 
             RowLayout {
                 id: appRow
+
+                property string appIdForFunctionalTests: appID
 
                 objectName: `app-${index}`
                 spacing: MZTheme.theme.windowMargin
@@ -271,6 +272,12 @@ ColumnLayout {
 
         Component.onCompleted: {
             appList.positionViewAtBeginning();
+
+            // Sometimes appList is not scrolled to the beginning despite the previous request. Try again after
+            // a delay to allow for layout to complete.
+            scrollTimer.setTimeout(function() {
+                appList.positionViewAtBeginning();
+                }, 300);
         }
 
         // Restore scroll position, selected item and focus when the model changes
@@ -368,5 +375,9 @@ ColumnLayout {
                 }
             }
         }
+    }
+
+    MZTimer {
+        id: scrollTimer
     }
 }
