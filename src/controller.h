@@ -150,6 +150,16 @@ class Controller : public QObject, public LogSerializer {
   void currentServerChanged();
 #endif
 
+  /// @TODO merge this private secrtion to the existing one
+ private:
+  enum NoSignalReason {
+    Unknown,
+    NoInternetConnection,
+    CaptivePortalDetected,
+    FirewallDetected,
+    ServerLocationUnavailable
+  };
+
  public:
   Controller();
   ~Controller();
@@ -164,6 +174,19 @@ class Controller : public QObject, public LogSerializer {
 
   bool silentSwitchServers(
       ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
+
+  /// @TODO Move these definitions to the cpp file
+  void setNoSignalReason(NoSignalReason noSignalReason) {
+    m_noSignalReason = noSignalReason;
+  }
+
+  NoSignalReason getNoSignalReason() const { return m_noSignalReason; }
+
+  // Placeholder methods for activation logic
+  bool noInternetConnection() { return false; }
+  bool captivePortalDetected() { return false; }
+  bool firewallDetected() { return false; }
+  bool serverLocationUnavailable() { return false; }
 
  private:
   enum NextStep {
@@ -181,6 +204,14 @@ class Controller : public QObject, public LogSerializer {
     ForceDNSPort,
     DoNotForceDNSPort,
   };
+
+  //  enum NoSignalReason {
+  //      Unknown,
+  //      NoInternetConnection,
+  //      CaptivePortalDetected,
+  //      FirewallDetected,
+  //      ServerLocationUnavailable
+  //  };
 
   void activateInternal(DNSPortPolicy dnsPort,
                         ServerSelectionPolicy serverSelectionPolicy);
@@ -209,6 +240,8 @@ class Controller : public QObject, public LogSerializer {
   QScopedPointer<ControllerImpl> m_impl;
   bool m_portalDetected = false;
   bool m_isDeviceConnected = true;
+
+  NoSignalReason m_noSignalReason;
 
   // Server data can change while the controller is busy completing an
   // activation or a server switch because they are managed by the

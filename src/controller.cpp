@@ -941,6 +941,27 @@ bool Controller::activate(const ServerData& serverData,
 #endif
 
   if (m_state == Controller::StateOff) {
+    if (noInternetConnection()) {
+      setNoSignalReason(NoSignalReason::NoInternetConnection);
+      //      return false;
+    } else if (captivePortalDetected()) {
+      setNoSignalReason(NoSignalReason::CaptivePortalDetected);
+      //      return false;
+    } else if (firewallDetected()) {
+      setNoSignalReason(NoSignalReason::FirewallDetected);
+      //      return false;
+    } else if (serverLocationUnavailable()) {
+      setNoSignalReason(NoSignalReason::ServerLocationUnavailable);
+      //      return false;
+    }
+
+    // If no issues were detected
+    setNoSignalReason(NoSignalReason::Unknown);
+    //    return true;
+    //  }
+
+    ///@TODO remove this captive portal stuff since it's being replaced with the
+    /// new logic
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
       Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
