@@ -173,3 +173,18 @@ def build_scriptworker_beetmover_payload(config, task, task_def):
             "upstreamArtifacts": worker["upstream-artifacts"],
             "upload_date": int(datetime.now().timestamp()),
         }
+
+@payload_builder(
+    "beetmover-import-from-gcs-to-artifact-registry",
+    schema={
+        Required("max-run-time"): int,
+        Required("gcs-sources"): [str],
+        Required("product"): str,
+    },
+)
+def build_import_from_gcs_to_artifact_registry_payload(config, task, task_def):
+    task_def["tags"]["worker-implementation"] = "scriptworker"
+    task_def["payload"] = {
+        "product": task["worker"]["product"],
+        "gcs_sources": task["worker"]["gcs-sources"],
+    }

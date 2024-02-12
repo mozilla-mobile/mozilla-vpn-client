@@ -100,3 +100,5 @@ rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
 
 # Gather the build artifacts for export
 tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes *.dsc *.debian.tar.xz
+mv $(find . -name '*.deb' | tr -d '\n') /builds/worker/artifacts/mozillavpn.deb
+mv $(find . -name '*.ddeb' | tr -d '\n') /builds/worker/artifacts/mozillavpn.ddeb
