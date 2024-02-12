@@ -1142,7 +1142,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked the button to confirm a reset of the VPN
+      The user has clicked the button to confirm a reset of the VPN settings
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5234
     data_reviews:

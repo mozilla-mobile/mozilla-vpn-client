@@ -642,7 +642,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has just reached the "get help" screen
+      The user has just opened the "get help" screen
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5234
     data_reviews:
