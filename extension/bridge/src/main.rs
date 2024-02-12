@@ -17,7 +17,7 @@ const SERVER_AND_PORT: &str = "127.0.0.1:8754";
 
 const ALLOW_LISTED_WEBEXTENSIONS: [&str;2] = [
     "@testpilot-containers",
-    "vpn@mozilla.org"
+    "vpn@mozilla.com"
 ];
 
 #[derive(PartialEq)]
