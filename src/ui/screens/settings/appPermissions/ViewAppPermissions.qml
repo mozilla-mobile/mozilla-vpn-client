@@ -14,8 +14,10 @@ import components.forms 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
-    // The ListView in AppPermissionsList is flickable, so this one need not be.
+    // The ListView Flickable in AppPermissionsList is interactive, so prevent conflict by turning off this one
      _interactive: false
+    // Turn off top margin because ListView in AppPermissionsList fills the content area, so additional margin is unecessary
+    _useTopMargin: false
 
     readonly property string telemetryScreenId : "app_exclusions"
 

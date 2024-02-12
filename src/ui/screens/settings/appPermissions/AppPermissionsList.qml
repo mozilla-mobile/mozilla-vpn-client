@@ -277,7 +277,7 @@ ColumnLayout {
             // a delay to allow for layout to complete.
             scrollTimer.setTimeout(function() {
                 appList.positionViewAtBeginning();
-                }, 300);
+                }, 10);
         }
 
         // Restore scroll position, selected item and focus when the model changes

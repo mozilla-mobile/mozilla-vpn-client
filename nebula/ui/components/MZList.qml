@@ -13,11 +13,11 @@ import Mozilla.Shared 1.0
 ListView {
     id: list
 
-    property var accessibleName: ""
+    property var _accessibleName: ""
 
     height:contentHeight
     Accessible.role: Accessible.List
-    Accessible.name: accessibleName
+    Accessible.name: _accessibleName
     Accessible.ignored: !visible
     boundsBehavior: Flickable.StopAtBounds
     highlightFollowsCurrentItem: true

@@ -15,6 +15,7 @@ Item {
    property string _menuTitle: ""
    property string _accessibleName: ""
    property var _menuOnBackClicked
+   property bool _useTopMargin: true
    property alias _viewContentData: viewContent.data
    property alias _interactive: vpnFlickable.interactive
    property alias _contentHeight: vpnFlickable.contentHeight
@@ -45,7 +46,7 @@ Item {
                 top: parent.top
                 left: parent.left
                 right: parent.right
-                topMargin: vpnFlickable.interactive ? MZTheme.theme.viewBaseTopMargin : 0
+                topMargin: _useTopMargin ? MZTheme.theme.viewBaseTopMargin : 0
                 bottomMargin: navbar.visible ? 0 : MZTheme.theme.rowHeight
             }
         }
