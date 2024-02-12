@@ -16,13 +16,13 @@ namespace WebExtension {
  * @brief Connection consumes a QIODevice and implements the WebExt Protocol
  * It's a simple Length Prefixed JSON string:
  * 0x00 - 0x03 - A u_int32 setting message message length
- * 0x04 - 0x{Message Length} - A UTF-8 encoded json string. 
- * 
- * It ready on the QIODevice until it's closed or it send's 
- * invalid things. 
- * 
+ * 0x04 - 0x{Message Length} - A UTF-8 encoded json string.
+ *
+ * It ready on the QIODevice until it's closed or it send's
+ * invalid things.
+ *
  * It emit's Q_SIGNAL onMessage if a JSON message was recieved
- * 
+ *
  */
 class Connection final : public QObject {
   Q_OBJECT

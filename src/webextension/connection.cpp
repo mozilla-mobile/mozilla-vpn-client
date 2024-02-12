@@ -89,7 +89,6 @@ void Connection::writeData(const QByteArray& data) {
   }
 }
 
-
 void Connection::writeInvalidRequest() {
   QJsonObject obj;
   obj["t"] = "invalidRequest";
