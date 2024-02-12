@@ -182,11 +182,11 @@ class Controller : public QObject, public LogSerializer {
 
   NoSignalReason getNoSignalReason() const { return m_noSignalReason; }
 
-  // Placeholder methods for activation logic
-  bool noInternetConnection() { return false; }
-  bool captivePortalDetected() { return false; }
-  bool firewallDetected() { return false; }
-  bool serverLocationUnavailable() { return false; }
+  // Checks for activation logic
+  bool noInternetConnection();
+  bool captivePortalDetected();
+  bool firewallDetected();
+  bool serverLocationUnavailable();
 
  private:
   enum NextStep {

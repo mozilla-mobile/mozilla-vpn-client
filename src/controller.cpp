@@ -970,23 +970,6 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
-            ->isSupported()) {
-      // Ensure that the device is connected to the Internet.
-      if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
-          QNetworkInformation::Reachability::Disconnected) {
-        logger.debug() << "Internet probe failed during controller activation. "
-                          "Device has no network connectivity.";
-        m_isDeviceConnected = false;
-        emit isDeviceConnectedChanged();
-        return false;
-      }
-      if (!m_isDeviceConnected) {
-        m_isDeviceConnected = true;
-        emit isDeviceConnectedChanged();
-      }
-    }
-
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
     setState(StateCheckSubscription);
@@ -1076,3 +1059,27 @@ bool Controller::deactivate() {
   m_impl->deactivate(stateToReason(m_state));
   return true;
 }
+
+bool Controller::noInternetConnection() {
+//  if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
+//          ->isSupported()) {
+    // Ensure that the device is connected to the Internet.
+    if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
+        QNetworkInformation::Reachability::Disconnected) {
+      logger.debug() << "Internet probe failed during controller activation. "
+                        "Device has no network connectivity.";
+      m_isDeviceConnected = false;
+      emit isDeviceConnectedChanged();
+      return false;
+    }
+    if (!m_isDeviceConnected) {
+      m_isDeviceConnected = true;
+      emit isDeviceConnectedChanged();
+    }
+  return true;
+//  }
+}
+
+bool Controller::captivePortalDetected() { return false; } /// @TODO
+bool Controller::firewallDetected() { return false; } /// @TODO
+bool Controller::serverLocationUnavailable() { return false; } /// @TODO
