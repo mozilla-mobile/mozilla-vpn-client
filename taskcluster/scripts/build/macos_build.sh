@@ -37,23 +37,9 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
 
-if [ -e ${TASK_HOME}/miniconda ]; then
-    print Y "Conda already exist?"
-    print Y "Remove it."
-    rm -rf ${TASK_HOME}/miniconda
-fi
-
 print Y "Installing conda"
-chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
-bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_HOME}/miniconda
-source ${TASK_HOME}/miniconda/bin/activate
-
-print Y "Installing provided conda env..."
-# TODO: Check why --force is needed if we install into TASK_HOME?
-conda env create --force -f env.yml
-conda activate VPN
-./scripts/macos/conda_install_extras.sh  
-conda info
+source ${TASK_WORKDIR}/fetches/bin/activate
+conda-unpack
 
 # Conda Cannot know installed MacOS SDK'S
 # and as we use conda'provided clang/llvm
