@@ -14,8 +14,8 @@ import components 0.1
 
 // AppPermissionsList displays the list of installed applications, allowing users to exclude applications from VPN tunneling
 // (split tunneling). It uses a ListView (MZList) for better performance, because that control supports lazy loading of list items.
-// The ListView header contains controls preceding the list items, such as the Search Bar and 'Clear All' buttons. The  ooter
-// contains controls appearing after the list items, such as the 'Add Application' button. 
+// The ListView header contains controls preceding the list items, such as the Search Bar and 'Clear All' buttons. The footer
+// contains controls appearing after the list items, such as the 'Add Application' button.
 //
 // The ListView lazily generates list items when they come into view, so the order of creation is unpredictable. To handle this,
 // activeFocusOnTab is disabled on the list item checkbox, and tabbing between list items is implemented by making
@@ -211,11 +211,12 @@ ColumnLayout {
 
                     function handleBacktabPressed() {
                         if (listView.currentIndex > 0) {
-                            // Move selection & focus to previous item and bring it into view if necessary
+                            // Move selection & focus to previous item
                             listView.decrementCurrentIndex();
                             listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
                         }
                         else {
+                            // Currently at top of list. Move focus to header
                             listView.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
                         }
                     }
@@ -308,7 +309,7 @@ ColumnLayout {
         }
     }
 
-    // Footer
+    // ListView Footer
     Component {
         id: appListFooter
 
@@ -322,7 +323,6 @@ ColumnLayout {
 
             ColumnLayout {
                 id: appListFooterColumn
-                readonly property ListView listView: ListView.view
 
                 spacing: MZTheme.theme.vSpacingSmall
                 width: listView.width - MZTheme.theme.vSpacing
@@ -345,6 +345,7 @@ ColumnLayout {
                     }
 
                     function handleBacktabPressed() {
+                        // Move focus back to last item in list
                         if (listView.count > 0) {
                             listView.currentIndex = listView.count - 1;
                             listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);

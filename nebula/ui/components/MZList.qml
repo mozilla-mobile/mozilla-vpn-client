@@ -7,7 +7,7 @@ import QtQuick.Controls
 
 import Mozilla.Shared 1.0
 
-// ListView with scroll bar and a ensureVisible() method that scrolls an item into the
+// ListView with scroll bar and an ensureVisible() method that scrolls an item into the
 // ListView's visible viewport. (ensureVisible() is used by scrollToComponent())
 
 ListView {
@@ -69,7 +69,7 @@ ListView {
         }
     }
 
-    // Scroll item into ListView's visible viewport region if necessary
+    // Scroll item into ListView's visible viewport region, if necessary
     function ensureVisible(item) {
         if(ensureVisAnimation.running) {
             ensureVisAnimation.stop();
