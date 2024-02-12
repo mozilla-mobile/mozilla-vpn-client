@@ -42,7 +42,7 @@ def get_gcs_sources(dependent_task):
 
 
 ALLOWED_SHIPPING_PHASES = [
-    "ship-client",
+#    "ship-client", - TODO: Disabled until https://mozilla-hub.atlassian.net/browse/VPN-6208 is resolved
 #    "promote-client" - candidates are not setup yet.
 ]
 
