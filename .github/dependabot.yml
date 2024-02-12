@@ -68,10 +68,10 @@ updates:
     labels:
       - "dependencies"
   # Functional Tests etc
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+  #- package-ecosystem: "npm"
+  #  directory: "/"
+  #  schedule:
+  #    interval: "weekly"
   # Inspector
   #- package-ecosystem: "npm"
   #  directory: "/tools/inspector"
