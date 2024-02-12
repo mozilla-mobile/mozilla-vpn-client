@@ -878,6 +878,18 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
   });
 
+  it('Get help impression telemetry is recorded', async () => {
+    const getHelpTelemetryScreenId = "get_help"
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+
+    const helpScreenEvents = await vpn.gleanTestGetValue("impression", "helpScreen", "main");
+    assert.equal(helpScreenEvents.length, 1);
+    const helpScreenEventsExtras = helpScreenEvents[0].extra;
+    assert.equal(getHelpTelemetryScreenId, helpScreenEventsExtras.screen);
+  });
+
   it('Contact us is opened and closed', async () => {
     await getToGetHelpView();
     await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
