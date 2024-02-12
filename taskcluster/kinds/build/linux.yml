@@ -45,16 +45,6 @@ linux/jammy:
         name: linux-jammy
         type: build
 
-linux/lunar:
-    description: "Linux Build (Ubuntu/Lunar)"
-    treeherder:
-        platform: linux/lunar
-    worker:
-        docker-image: {in-tree: linux-build-lunar}
-    add-index-routes:
-        name: linux-lunar
-        type: build
-
 linux/mantic:
     description: "Linux Build (Ubuntu/Mantic)"
     treeherder:
@@ -63,6 +53,16 @@ linux/mantic:
         docker-image: {in-tree: linux-build-mantic}
     add-index-routes:
         name: linux-mantic
+        type: build
+
+linux/noble:
+    description: "Linux Build (Ubuntu/Noble)"
+    treeherder:
+        platform: linux/noble
+    worker:
+        docker-image: {in-tree: linux-build-noble}
+    add-index-routes:
+        name: linux-noble
         type: build
 
 linux/fedora-fc37:
