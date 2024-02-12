@@ -10,7 +10,7 @@ describe('Telemetry view', function() {
   beforeEach(async function () {
     //Telemetry policy view does not exist in new onboarding
     if (await vpn.isFeatureEnabled('newOnboarding')) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
     
     await vpn.waitForInitialView();
