@@ -188,9 +188,7 @@ describe('Devices', function() {
       }
 
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
-      await vpn.setSetting('onboardingCompleted', 'true')
-      await vpn.setSetting('postAuthenticationShown', 'true')
-      await vpn.setSetting('telemetryPolicyShown', 'true')
+      await vpn.skipOnboarding();
 
       // This method must be called when the client is on the "Get Started"
       // view.
@@ -450,10 +448,7 @@ describe('Devices', function() {
       }
 
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
-      await vpn.setSetting('onboardingCompleted', 'true')
-      await vpn.setSetting('postAuthenticationShown', 'true')
-      await vpn.setSetting('telemetryPolicyShown', 'true')
-
+      await vpn.skipOnboarding();
 
       // This method must be called when the client is on the "Get Started"
       // view.

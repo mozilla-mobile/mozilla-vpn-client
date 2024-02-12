@@ -347,9 +347,7 @@ module.exports = {
   // move these hardcoded urls out if testing in alternate environments.
   async authenticateInBrowser(wasm, skipOnboarding = true) {
     if (skipOnboarding) {
-      await this.setSetting('onboardingCompleted', 'true')
-      await this.setSetting('postAuthenticationShown', 'true')
-      await this.setSetting('telemetryPolicyShown', 'true')
+      this.skipOnboarding();
     }
 
     if (await this.isFeatureFlippedOn('inAppAuthentication')) {
@@ -405,9 +403,7 @@ module.exports = {
 
   async authenticateInApp(skipOnboarding = true) {
     if (skipOnboarding) {
-      await this.setSetting('onboardingCompleted', 'true')
-      await this.setSetting('postAuthenticationShown', 'true')
-      await this.setSetting('telemetryPolicyShown', 'true')
+      this.skipOnboarding();
     }
     
     // This method must be called when the client is on the "Get Started" view.
@@ -438,6 +434,12 @@ module.exports = {
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
   },
+
+  async skipOnboarding() {
+    await this.setSetting('onboardingCompleted', 'true');
+    await this.setSetting('postAuthenticationShown', 'true');
+    await this.setSetting('telemetryPolicyShown', 'true');
+  }, 
 
   async completePostAuthentication() {
       await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
