@@ -59,7 +59,7 @@ describe('Navigation bar', async function() {
   it('Is not visible over telemetry screen', async function () {
     //Telemetry policy view does not exist in new onboarding
     if (await vpn.isFeatureEnabled('newOnboarding')) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
 
     await vpn.authenticateInApp(false);

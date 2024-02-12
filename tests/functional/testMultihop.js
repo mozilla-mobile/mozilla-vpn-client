@@ -53,9 +53,9 @@ describe('Server list', function() {
   });
 
   it('checking collapsible card', async function () {
-    //Collapsible card is only visible when help sheets are disabled, so skip this test if help sheets are enabled
+    //Collapsible card is only visible when help sheets are disabled
     if (await vpn.isFeatureEnabled('helpSheets')) {
-      this.skip();
+      await vpn.flipFeatureOff("helpSheets");
     }
 
     await vpn.waitForQueryAndClick(

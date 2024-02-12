@@ -61,7 +61,7 @@ describe('Backend failure', function() {
   it('BackendFailure in the Post authentication view', async function () {
     //Post auth view does not exist in new onboarding
     if (await vpn.isFeatureEnabled("newOnboarding")) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
 
     await vpn.authenticateInApp(false);
@@ -73,7 +73,7 @@ describe('Backend failure', function() {
   it('BackendFailure in the Telemetry policy view', async function () {
     //Telemetry policy view does not exist in new onboarding
     if (await vpn.isFeatureEnabled('newOnboarding')) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
 
     await vpn.authenticateInApp(false);

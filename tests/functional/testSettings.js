@@ -67,9 +67,9 @@ describe('Settings', function() {
   });
 
   it('Checking the tips and tricks settings', async function () {
-    //tips and tricks feature is hidden when help sheets are enabled, so skip this test when help sheets are enabled
+    //tips and tricks feature is hidden when help sheets are enabled
     if (await vpn.isFeatureEnabled('helpSheets')) {
-      this.skip();
+      await vpn.flipFeatureOff("helpSheets");
     }
 
     await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
@@ -1055,9 +1055,9 @@ describe('Settings', function() {
           this.skip();
         }
 
-        //Skipping because tips and tricks is not available when help sheets are enabled
+        //tips and tricks is not available when help sheets are enabled
         if (await vpn.isFeatureEnabled('helpSheets')) {
-          this.skip();
+          await vpn.flipFeatureOff("helpSheets");
         }
 
         await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());

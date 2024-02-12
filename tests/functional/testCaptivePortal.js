@@ -61,7 +61,7 @@ describe('Captive portal', function() {
   it('Captive portal in the Post authentication view', async function () {
     //Post auth view does not exist in new onboarding
     if (await vpn.isFeatureEnabled("newOnboarding")) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
 
     await vpn.authenticateInApp(false);
@@ -77,7 +77,7 @@ describe('Captive portal', function() {
   it('Captive portal in the Telemetry policy view', async function () {
     //Telemetry policy view does not exist in new onboarding
     if (await vpn.isFeatureEnabled('newOnboarding')) {
-      this.skip();
+      await vpn.flipFeatureOff("newOnboarding");
     }
 
     await vpn.authenticateInApp(false);
