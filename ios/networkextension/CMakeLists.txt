@@ -73,6 +73,7 @@ target_sources(networkextension PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmessage.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iostunnelmanager.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ConnectionHealth.swift
+    ${CMAKE_SOURCE_DIR}/src/platforms/ios/PingTest.swift
 )
 
 ## Build wireguard-go-version.h

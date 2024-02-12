@@ -102,7 +102,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
-                self.connectionHealthMonitor.start()
+                // The internal DNS endpoint results is in the 10.x.x.x restricted IP range. For reasons I couldn't
+                // determine, pinging restricted IP addresses failed. Thus, using other ones.
+                let endpointIP = String(describing: tunnelConfiguration.peers.first?.endpoint?.host ?? "8.8.8.8")
+                self.connectionHealthMonitor.start(for: endpointIP)
+
                 completionHandler(nil)
                 return
             }
