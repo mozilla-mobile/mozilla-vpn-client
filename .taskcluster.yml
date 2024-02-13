@@ -213,6 +213,7 @@ tasks:
                   MOZILLAVPN_HEAD_REV: "${head_sha}"
                   MOZILLAVPN_HEAD_TAG: "${head_tag}"
                   MOZILLAVPN_REPOSITORY_TYPE: git
+                  # This project depends on mozilla-taskgraph, so we still install requirements during decision task
                   MOZILLAVPN_PIP_REQUIREMENTS: taskcluster/requirements.txt
                   REPOSITORIES: { $json: { mozillavpn: "MozillaVPN" } }
                   ANDROID_SDK_ROOT: /builds/worker/android-sdk
@@ -231,12 +232,12 @@ tasks:
 
             # Note: This task is built server side without the context or tooling that
             # exist in tree so we must hard code the hash
-            image: mozillareleases/taskgraph:decision-c4ac262880970ca484105929e02dd12f00214d5f2603ab6ce4c0d17de5cd0280@sha256:2dd667994aa13fccdcdcede85c570a5eb4a5247e42875a9e95a135ef774ee469
+            image: mozillareleases/taskgraph:decision-v7.3.0@sha256:f954e54d427d08b18954a4ff4541d43c76c476d0738f341e4fa82a959939d3fa
 
             maxRunTime: 1800
 
             command:
-              - /usr/local/bin/run-task
+              - run-task
               - "--mozillavpn-checkout=/builds/worker/checkouts/src"
               - "--task-cwd=/builds/worker/checkouts/src"
               - "--"
@@ -253,10 +254,10 @@ tasks:
                   $if: 'tasks_for == "action"'
                   then: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    ~/.local/bin/taskgraph action-callback
+                    taskgraph action-callback
                   else: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    ~/.local/bin/taskgraph decision
+                    taskgraph decision
                     --pushlog-id='0'
                     --pushdate='0'
                     --project='${project}'
