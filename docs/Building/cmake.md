@@ -72,7 +72,7 @@ mz_add_new_module(
     - **`QT_DEPENDENCIES`**: Qt-specific dependencies. The `Qt::` prefix should be skipped from target names added to this list e.g. `Qt::Core`, becomes `Core`.
     - **`MZ_DEPENDENCIES`**: Other modules the current module depends on.
     - **`<PLATFORM>_DEPENDENCIES`**: Platform specific dependencies.
-    - **`TEST_DEPENDENCIES`**: Test specific dependencies. If the target name startes with `replace-<dep>`, test executables will replace `<dep>` with it.
+    - **`TEST_DEPENDENCIES`**: Test specific dependencies. If the target name starts with `replace-<dep>`, test executables will replace `<dep>` with it.
     - **`RUST_DEPENDENCIES`**: Rust crates the current module depends on. This expects the path to the directory that contains the crate's `Cargo.toml` file. `mz_add_new_module` will add steps to build and link to this crate automatically.
     - **`EXTRA_DEPENDENCIES`**: Any other dependency that doesn't fit in one of the above types.
 
