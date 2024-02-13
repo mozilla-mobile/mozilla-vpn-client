@@ -879,7 +879,7 @@ describe('Settings', function() {
   });
 
   it('Get help impression telemetry is recorded', async () => {
-    const getHelpTelemetryScreenId = "get_help"
+    const getHelpTelemetryScreenId = "help"
 
     await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
