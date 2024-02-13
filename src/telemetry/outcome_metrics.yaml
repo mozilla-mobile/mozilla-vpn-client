@@ -153,6 +153,40 @@ outcome:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
     expires: never
+  subscription_failed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The subscription process has errored.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6116
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
+  subscription_already_present:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The subscription was blocked because the user is already a subscriber.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6116
+    data_reviews:
+      - TODO
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - brizental@mozilla.com
+    expires: never
   onboarding_started:
     type: event
     lifetime: ping

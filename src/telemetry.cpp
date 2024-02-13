@@ -82,20 +82,6 @@ void Telemetry::initialize() {
       mozilla::glean::sample::max_device_reached.record();
     }
 
-    if (state == App::StateSubscriptionNotValidated) {
-      mozilla::glean::sample::iap_subscription_failed.record(
-          mozilla::glean::sample::IapSubscriptionFailedExtra{
-              ._error = "not-validated",
-              ._sku = PurchaseHandler::instance()->currentSKU()});
-    }
-
-    if (state == App::StateSubscriptionBlocked) {
-      mozilla::glean::sample::iap_subscription_failed.record(
-          mozilla::glean::sample::IapSubscriptionFailedExtra{
-              ._error = "alrady-subscribed",
-          });
-    }
-
     if (state == App::StateOnboarding) {
       if (!SettingsHolder::instance()->onboardingStarted()) {
         mozilla::glean::outcome::onboarding_started.record();
@@ -165,28 +151,6 @@ void Telemetry::initialize() {
         bool currentSetting = SettingsHolder::instance()->startAtBoot();
         mozilla::glean::settings::connect_on_startup_active.set(currentSetting);
       });
-
-  PurchaseHandler* purchaseHandler = PurchaseHandler::instance();
-  connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
-          [](const QString& productIdentifier) {
-            mozilla::glean::sample::iap_subscription_started.record(
-                mozilla::glean::sample::IapSubscriptionStartedExtra{
-                    ._sku = productIdentifier});
-          });
-
-  connect(MozillaVPN::instance(), &MozillaVPN::logSubscriptionCompleted, this,
-          []() {
-            mozilla::glean::sample::iap_subscription_completed.record(
-                mozilla::glean::sample::IapSubscriptionCompletedExtra{
-                    ._sku = PurchaseHandler::instance()->currentSKU()});
-          });
-
-  connect(purchaseHandler, &PurchaseHandler::subscriptionFailed, this, []() {
-    mozilla::glean::sample::iap_subscription_failed.record(
-        mozilla::glean::sample::IapSubscriptionFailedExtra{
-            ._error = "failed",
-            ._sku = PurchaseHandler::instance()->currentSKU()});
-  });
 
   connect(
       controller, &Controller::recordConnectionStartTelemetry, this,

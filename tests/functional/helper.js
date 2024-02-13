@@ -362,6 +362,40 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 
+  async mockInBrowserAuthentication() {
+    await this.waitForCondition(async () => {
+      const url = await this.getLastUrl();
+      return url.includes('/api/v2/vpn/login');
+    });
+    await this.wait();
+
+    // We don't really want to go through the authentication flow because we
+    // are mocking everything. So this next chunk of code manually
+    // makes a call to the DesktopAuthenticationListener to mock
+    // a successful authentication in browser.
+    const url = await this.getLastUrl();
+    const authListenerPort = (new URL(url)).searchParams.get('port');
+    const options = {
+      // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+      // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+      hostname: '127.0.0.1',
+      port: parseInt(authListenerPort, 10),
+      path: '/?code=the_code',
+      method: 'GET',
+    };
+
+    await new Promise(resolve => {
+      const req = http.request(options, res => {});
+      req.on('close', resolve);
+      req.on('error', error => {
+        throw new Error(
+            `Unable to connect to ${urlObj.hostname} to complete the
+            auth. ${error.name}, ${error.message}, ${error.stack}`);
+      });
+      req.end();
+    });
+  },
+
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
   async authenticateInBrowser(wasm, skipOnboarding = true) {
@@ -382,37 +416,7 @@ module.exports = {
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
-      await this.waitForCondition(async () => {
-        const url = await this.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-      await this.wait();
-
-      // We don't really want to go through the authentication flow because we
-      // are mocking everything. So this next chunk of code manually
-      // makes a call to the DesktopAuthenticationListener to mock
-      // a successful authentication in browser.
-      const url = await this.getLastUrl();
-      const authListenerPort = (new URL(url)).searchParams.get('port');
-      const options = {
-        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
-        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-        hostname: '127.0.0.1',
-        port: parseInt(authListenerPort, 10),
-        path: '/?code=the_code',
-        method: 'GET',
-      };
-
-      await new Promise(resolve => {
-        const req = http.request(options, res => {});
-        req.on('close', resolve);
-        req.on('error', error => {
-          throw new Error(
-              `Unable to connect to ${urlObj.hostname} to complete the
-              auth. ${error.name}, ${error.message}, ${error.stack}`);
-        });
-        req.end();
-      });
+      await mockInBrowserAuthentication();
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
