@@ -148,10 +148,10 @@ are also built when building all tests for the project.
 
 ```mermaid
 graph TD;
-    build_tests -->|Builds all tests| module1-alltests;
-    build_tests -->|Builds all tests| module2-alltests;
-    module1-alltests -->|Includes all tests| module1-test1;
-    module1-alltests -->|Includes all tests| module1-test2;
-    module2-alltests -->|Includes all tests| module2-test1;
-    module2-alltests -->|Includes all tests| module2-test2;
+    build_tests -->|depends on| module1-alltests;
+    build_tests -->|depends on| module2-alltests;
+    module1-alltests -->|depends on| module1-test1;
+    module1-alltests -->|depends on| module1-test2;
+    module2-alltests -->|depends on| module2-test1;
+    module2-alltests -->|depends on| module2-test2;
 ```
