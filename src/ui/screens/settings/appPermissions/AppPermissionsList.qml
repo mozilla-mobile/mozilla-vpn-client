@@ -56,10 +56,12 @@ ColumnLayout {
                     sourceComponent: MZInformationCard {
                         width: parent.width
                         implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
+                        anchors.top: parent.top
+                        anchors.topMargin: MZTheme.theme.viewBaseTopMargin
+
                         _infoContent: MZTextBlock {
                             id: textBlock
                             Layout.fillWidth: true
-
 
                             text: MZI18n.SplittunnelInfoCardDescription
                             verticalAlignment: Text.AlignVCenter
@@ -84,8 +86,8 @@ ColumnLayout {
                         // from the SearchBar to the selected list item.
                         listView.currentIndex = -1; 
                     }
+                    // Return next item to be tabbed to
                     _getNextTabItem: () => {
-                        // Return next item to be tabbed to
                         if (clearAllButton.enabled) {
                             return clearAllButton;
                         } else if (listView.count > 0) {

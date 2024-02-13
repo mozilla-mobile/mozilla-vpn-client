@@ -16,8 +16,8 @@ MZViewBase {
     objectName: "appPermissions"
     // The ListView Flickable in AppPermissionsList is interactive, so prevent conflict by turning off this one
      _interactive: false
-    // Turn off top margin because ListView in AppPermissionsList fills the content area, so additional margin is unecessary
-    _useTopMargin: false
+    // Turn off top & bottom margins because ListView in AppPermissionsList fills the vertical content area, so additional margins are unecessary
+    _useMargins: false
 
     readonly property string telemetryScreenId : "app_exclusions"
 
