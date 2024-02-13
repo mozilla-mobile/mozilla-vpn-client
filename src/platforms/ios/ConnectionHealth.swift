@@ -64,9 +64,13 @@ class ConnectionHealth {
                 return
             }
 
-            self.logger.info(message: "ConnectionHeatlh connectivity: \(connectivity)")
+            self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
             // TODO: record metrics
-            // TODO: if unstable, do silent switch
+
+            // TODO: Add silent server switch
+            // if connectivity == .unstable {
+                // self.logger.info(message: "Unstable, starting silent switch from network extension")
+            // }
         }
 
         // Timer set to repeat until stop() is run, so no need to call any repeat step here.
