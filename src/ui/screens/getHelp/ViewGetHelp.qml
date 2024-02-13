@@ -13,7 +13,7 @@ import components 0.1
 MZViewBase {
     id: vpnFlickable
 
-    property string telemetryScreenId: "get_help"
+    property string telemetryScreenId: "help"
 
     _menuTitle: MZI18n.GetHelpLinkTitle
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
