@@ -84,8 +84,8 @@ endfunction()
 # - DUMMY_DEPENDENCIES: (Optional) List of dummy dependencies for the module.
 #
 # Example:
-# MZ_ADD_NEW_MODULE(
-#     TARGET_NAME MyModule
+# mz_add_new_module(
+#     TARGET_NAME mz_mymodule
 #     INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
 #     SOURCES src/file1.cpp src/file2.cpp
 #     TEST_SOURCES tests/test_file.cpp
