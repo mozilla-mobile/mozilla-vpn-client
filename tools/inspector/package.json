@@ -35,7 +35,7 @@
   "dependencies": {
     "@parcel/compressor-raw": "^2.11.0",
     "json-schema": ">=0.4.0",
-    "lit": "^2.1.2",
+    "lit": "^3.1.2",
     "parcel": "^2.8.3",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.7.0"
