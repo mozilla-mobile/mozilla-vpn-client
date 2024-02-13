@@ -292,7 +292,8 @@ class ConnectionHealth(service: VPNService) {
                 ConnectionStability.Stable -> ConnectionHealth.stableTime.stopAndAccumulate(timerId)
             }
 
-            // Set to null to defensive ensure there is no
+            // Set to null to defensively ensure there is no
+
             // erroenous attempt to turn it off
             connectionHealthTimerId = null
         } ?: run {
