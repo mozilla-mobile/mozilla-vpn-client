@@ -175,6 +175,19 @@ EOF
   rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
 }
 
+## Update the flatpak manifest to use the source tarball.
+build_flatpak_manifest() {
+# Copy recipies for dependent modules.
+cp $WORKDIR/linux/flatpak-*.yaml .
+
+# Truncate the YAML at the sources, and replace it with the tarball archive
+sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
+cat << EOF >> org.mozilla.vpn.yml
+      - type: archive
+        path: mozillavpn_$SHORTVERSION.orig.tar.gz
+EOF
+}
+
 ## Build the DSC and debian tarball.
 build_deb_source() {
   print Y "Building sources for $distro..."
@@ -203,6 +216,9 @@ if [ "$SOURCEONLY" == "Y" ]; then
   print Y "Building Debian sources"
   build_deb_source
 
+  print Y "Building Flatpak sources"
+  build_flatpak_manifest
+
   print Y "Cleaning up working directory..."
   rm -rf $WORKDIR || die "Failed"
 
@@ -215,6 +231,11 @@ case $RELEASE in
   fedora|rpm)
     print Y "Building RPM packages for $distro"
     build_rpm_source
+    ;;
+  
+  flatpak)
+    print Y "Building Flatpak sources"
+    build_flatpak_manifest
     ;;
 
   *)

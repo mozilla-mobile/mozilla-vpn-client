@@ -15,6 +15,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
+#include "tcppingsender.h"
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
@@ -87,6 +88,13 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+  if (!m_pingSender->isValid()) {
+    // Fallback to using TCP handshake times for pings if we can't create an
+    // ICMP socket on this platform, this probes at the ports used for Wireguard
+    // over TCP.
+    delete m_pingSender;
+    m_pingSender = new TcpPingSender(QHostAddress(), 80, this);
+  }
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);

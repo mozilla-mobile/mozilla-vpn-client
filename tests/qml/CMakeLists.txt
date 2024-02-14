@@ -71,6 +71,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
+    ${MZ_SOURCE_DIR}/tcppingsender.cpp
+    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp
