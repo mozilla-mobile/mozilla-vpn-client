@@ -21,6 +21,12 @@ class TaskScheduler final : public QObject {
   // that the current tasks do not conflict with this one.
   static void scheduleTaskNow(Task* task);
 
+#ifdef UNIT_TEST
+  static void stop();
+  static QList<Task*> tasks();
+  static void reset();
+#endif
+
  private:
   explicit TaskScheduler(QObject* parent);
   ~TaskScheduler();
@@ -37,6 +43,10 @@ class TaskScheduler final : public QObject {
  private:
   Task* m_running_task = nullptr;
   QList<Task*> m_tasks;
+
+#ifdef UNIT_TEST
+  bool m_stopped = false;
+#endif
 };
 
 #endif  // TASKSCHEDULER_H

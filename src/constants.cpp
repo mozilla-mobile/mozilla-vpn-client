@@ -85,7 +85,7 @@ QString Constants::apiUrl(ApiEndpoint endpoint) {
       {ApiEndpoint::Device, "/api/v1/vpn/device"},
       {ApiEndpoint::DeviceWithPublicKeyArgument, "/api/v1/vpn/device/%1"},
       {ApiEndpoint::DNSDetectPortal, "/api/v1/vpn/dns/detectportal"},
-      {ApiEndpoint::FeatureList, "/api/v1/vpn/featurelist"},
+      {ApiEndpoint::FeatureList, "/api/v2/vpn/featurelist"},
       {ApiEndpoint::Heartbeat, "/__heartbeat__"},
       {ApiEndpoint::IPInfo, "/api/v1/vpn/ipinfo"},
       {ApiEndpoint::LoginVerify, "/api/v2/vpn/login/verify"},

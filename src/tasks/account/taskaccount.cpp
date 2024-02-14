@@ -4,7 +4,6 @@
 
 #include "taskaccount.h"
 
-#include "app.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,7 +24,7 @@ TaskAccount::~TaskAccount() { MZ_COUNT_DTOR(TaskAccount); }
 
 void TaskAccount::run() {
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->get(Constants::apiUrl(Constants::Account));
 
   connect(request, &NetworkRequest::requestFailed, this,

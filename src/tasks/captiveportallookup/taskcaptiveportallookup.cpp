@@ -4,7 +4,6 @@
 
 #include "taskcaptiveportallookup.h"
 
-#include "app.h"
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
 #include "leakdetector.h"
@@ -31,7 +30,7 @@ void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->get(Constants::apiUrl(Constants::DNSDetectPortal));
 
   connect(request, &NetworkRequest::requestFailed, this,

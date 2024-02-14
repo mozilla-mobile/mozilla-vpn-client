@@ -53,18 +53,6 @@ void App::setUserState(UserState state) {
   }
 }
 
-// static
-QByteArray App::authorizationHeader() {
-  if (SettingsHolder::instance()->token().isEmpty()) {
-    logger.error() << "INVALID TOKEN! This network request is going to fail.";
-    Q_ASSERT(false);
-  }
-
-  QByteArray authorizationHeader = "Bearer ";
-  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
-  return authorizationHeader;
-}
-
 void App::quit() {
   logger.debug() << "quit";
   TaskScheduler::forceDeleteTasks();

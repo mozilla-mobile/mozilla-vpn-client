@@ -11,7 +11,6 @@
 #include <QJsonValue>
 #include <QUrl>
 
-#include "app.h"
 #include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
@@ -103,7 +102,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
   url.setPath("/api/v1/vpn/ipinfo");
 
   NetworkRequest* request = new NetworkRequest(this, 200);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);
   request->get(url);
