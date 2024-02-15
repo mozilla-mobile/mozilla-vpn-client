@@ -7,6 +7,7 @@ import os.path
 
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
+from taskgraph.util.dependencies import get_dependencies
 from taskgraph.util.schema import Schema
 from voluptuous import Extra, Optional, Required
 
@@ -77,7 +78,7 @@ def add_beetmover_worker_config(config, tasks):
         "android/x64": "android",
         "android/armv7": "android",
         "android/arm64-v8a": "android",
-        "linux64/release-deb": "linux"
+        "linux64/release-deb": "linux",
     }
 
     if config.params["version"]:
@@ -94,7 +95,7 @@ def add_beetmover_worker_config(config, tasks):
     archive_url = (
         "https://ftp.mozilla.org/" if is_production else "https://ftp.stage.mozaws.net/"
     )
-    short_phase = config.kind[len("beetmover-"):]
+    short_phase = config.kind[len("beetmover-") :]
 
     for task in tasks:
         worker_type = task["worker-type"]
@@ -129,7 +130,7 @@ def add_beetmover_worker_config(config, tasks):
                 "build-id": build_id,
                 "platform": build_type,
             },
-            "upstream-artifacts": upstream_artifacts
+            "upstream-artifacts": upstream_artifacts,
         }
 
         destination_paths = []
@@ -167,14 +168,12 @@ def add_beetmover_worker_config(config, tasks):
                 )
             )
         elif phase == "ship-client":
-            assert build_os
             destination_paths.append(
                 os.path.join(
                     "pub",
                     "vpn",
                     "releases",
                     app_version,
-                    build_os,
                 )
             )
 
@@ -203,9 +202,7 @@ def add_beetmover_worker_config(config, tasks):
         }
 
         dest = (
-            f"{archive_url}{destination_paths[0]}"
-            if destination_paths
-            else archive_url
+            f"{archive_url}{destination_paths[0]}" if destination_paths else archive_url
         )
         if build_type == "addons/opt":
             task_description = (
@@ -216,11 +213,25 @@ def add_beetmover_worker_config(config, tasks):
         else:
             task_description = f"This {worker_type} task will upload a {build_os} release candidate for v{app_version} to {dest}/"
 
-        extra = {
-            "release_destinations": [
-                f"{archive_url}{dest}/" for dest in destination_paths
-            ]
-        }
+        if task["beetmover-action"] == "push-to-releases":
+            extra = {"release_destinations": {}}
+            for dep in get_dependencies(config, task):
+                extra["release_destinations"].update(
+                    {
+                        platform: f"{dest}/{platform}/"
+                        for platform in dep.task["extra"]["release_destinations"]
+                    }
+                )
+        else:
+            key = "addons" if "addons" in phase else build_os
+            extra = {
+                "release_destinations": {
+                    key: f"{archive_url}{dest}/"
+                    for dest in destination_paths
+                    if "latest" not in dest
+                }
+            }
+
         task_def = {
             "name": task["name"],
             "description": task_description,

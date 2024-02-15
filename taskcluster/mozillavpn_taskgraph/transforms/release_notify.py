@@ -129,24 +129,23 @@ def format_message(config, tasks):
         }
         matrix_context = slack_context.copy()
 
-        dirs = set()
+        dirs = {}
         for label, dep_task in config.kind_dependencies_tasks.items():
             if label not in task["dependencies"] or not dep_task.kind.startswith("beetmover"):
                 continue
 
-            platform = dep_task.attributes["build-type"].rsplit("/")[0]
-            dirs.add((dep_task.task["extra"]["release_destinations"][0], platform))
+            dirs.update(dep_task.task["extra"]["release_destinations"])
 
-        for i, d in enumerate(dirs):
+        for i, (platform, dest) in enumerate(dirs.items()):
             slack_context["destinations"] += dedent(
                 f"""
                 {{
                     "type": "mrkdwn",
-                    "text": "<{d[0]}|{d[1]}>"
+                    "text": "<{dest}|{platform}>"
                 }}{"," if i != len(dirs) - 1 else ""}
             """.lstrip()
             )
-            matrix_context["destinations"] += f'\t<a href="{d[0]}">{d[1]}</a>'
+            matrix_context["destinations"] += f'\t<a href="{dest}">{platform}</a>'
 
         slack_message = json.loads(SLACK_TEMPLATE.substitute(**slack_context))
         task.setdefault("notify", {}).setdefault("content", {}).setdefault("slack", {})[
