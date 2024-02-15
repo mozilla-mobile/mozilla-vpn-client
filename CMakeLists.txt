@@ -4,6 +4,11 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+# The source file GENERATED property is visible from all directory scopes when set.
+cmake_policy(SET CMP0118 NEW)
+
+option(BUILD_TESTS "Whether or not to build test targets" ON)
+
 message("Configuring for ${CMAKE_GENERATOR}")
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))

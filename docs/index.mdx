@@ -25,7 +25,7 @@ export const Grid = ({children}) => (
     {children}
   </span>
 );
-export const Preview = ({children}) =>(<iframe 
+export const Preview = ({children}) =>(<iframe
     src="https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.wasm/artifacts/public%2Fbuild%2Fembedded.html"
     style={{
       width: "390px",
@@ -102,10 +102,10 @@ to manually installed. (For example, using Homebrew on macOS:
 When built for any one of the desktop platforms, this project will also generate
 a suite of unit tests.
 
-The tests are built manually specifying the `build_tests` target.
+The tests are built by default.
 
 ```bash
-cmake --build build --target build_tests -j $(nproc)
+cmake --build build -j $(nproc)
 ```
 
 Once built, you can run them with `ctest` as follows:

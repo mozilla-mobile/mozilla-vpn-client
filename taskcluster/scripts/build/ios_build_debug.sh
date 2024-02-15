@@ -54,7 +54,8 @@ qt-cmake -S . -B ${TASK_HOME}/build \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED="NO" \
-  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_TESTS=OFF
 
 print Y "Building the client..."
 cmake --build ${TASK_HOME}/build --config Release || die

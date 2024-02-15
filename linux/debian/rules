@@ -15,7 +15,7 @@ endif
 	dh $@ --with=systemd --buildsystem=cmake+ninja --warn-missing
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTING=OFF
+	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF
 
 override_dh_auto_test:
 

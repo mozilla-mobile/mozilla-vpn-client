@@ -15,8 +15,11 @@ include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
-qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
-set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
+qt_add_executable(unit_tests)
+set_target_properties(unit_tests PROPERTIES
+    EXCLUDE_FROM_ALL ${BUILD_TESTS}
+    FOLDER "Tests"
+)
 add_dependencies(build_tests unit_tests)
 target_link_libraries(unit_tests PRIVATE
     Qt6::Core
