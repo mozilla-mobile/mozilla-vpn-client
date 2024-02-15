@@ -7,7 +7,7 @@
 
 #include "addon.h"
 #include "addonproperty.h"
-#include "composer.h"
+#include "composer/composer.h"
 
 class QJsonObject;
 

@@ -13,8 +13,8 @@
 #include "location.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
+#include "translations/serveri18n.h"
 #include "utilities/leakdetector.h"
 
 // Latency threshold for excellent connections, set intentionally very low.

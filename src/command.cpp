@@ -7,7 +7,6 @@
 #include "captiveportal/captiveportal.h"
 #include "commandlineparser.h"
 #include "context/constants.h"
-#include "glean/mzglean.h"
 #include "logging/logger.h"
 #include "logging/loghandler.h"
 #include "models/devicemodel.h"
@@ -18,6 +17,7 @@
 #include "mozillavpn.h"
 #include "networking/simplenetworkmanager.h"
 #include "settings/settingsholder.h"
+#include "telemetry/glean/mzglean.h"
 #include "translations/localizer.h"
 #include "utilities/leakdetector.h"
 

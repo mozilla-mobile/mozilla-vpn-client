@@ -13,8 +13,8 @@
 #include "logging/logger.h"
 #include "mozillavpn.h"
 #include "serverdata.h"
-#include "serveri18n.h"
 #include "settings/settingsholder.h"
+#include "translations/serveri18n.h"
 #include "utilities/leakdetector.h"
 
 namespace {

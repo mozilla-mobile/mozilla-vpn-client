@@ -27,13 +27,13 @@
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settings/settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler/taskfunction.h"
 #include "taskscheduler/taskscheduler.h"
+#include "translations/serveri18n.h"
 #include "utilities/leakdetector.h"
 
 #if defined(MZ_FLATPAK)

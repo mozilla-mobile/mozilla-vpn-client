@@ -5,6 +5,20 @@
 mz_add_new_module(
     TARGET_NAME mz_addons
     SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblock.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockbutton.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockorderedlist.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktext.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblocktitle.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/composer/composerblockunorderedlist.h
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcher.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcher.h
         ${CMAKE_CURRENT_SOURCE_DIR}/conditionwatchers/addonconditionwatcherfeaturesenabled.cpp
@@ -57,18 +71,20 @@ mz_add_new_module(
     TEST_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/addons/addons.qrc
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/guides/guides.qrc
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon2.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonapi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddon2.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonapi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonindex.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonapi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonindex.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonsessionstate.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonindex.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonsessionstate.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonstatebase.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonsessionstate.h
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonstatebase.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testaddonstatebase.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testcomposer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/testcomposer.h
     QT_DEPENDENCIES
         Core
     MZ_DEPENDENCIES

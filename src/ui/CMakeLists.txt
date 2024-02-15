@@ -8,20 +8,6 @@ qt_add_qml_module(mozillavpn-ui
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
     SOURCES
-        composer/composer.cpp
-        composer/composer.h
-        composer/composerblock.cpp
-        composer/composerblock.h
-        composer/composerblockbutton.cpp
-        composer/composerblockbutton.h
-        composer/composerblockorderedlist.cpp
-        composer/composerblockorderedlist.h
-        composer/composerblocktext.cpp
-        composer/composerblocktext.h
-        composer/composerblocktitle.cpp
-        composer/composerblocktitle.h
-        composer/composerblockunorderedlist.cpp
-        composer/composerblockunorderedlist.h
         singletons/VPN.h
         singletons/VPNAppPermissions.h
         singletons/VPNCaptivePortal.h
@@ -45,6 +31,11 @@ qt_add_qml_module(mozillavpn-ui
         types/MZAddonMessage.h
 )
 
+target_compile_definitions(mozillavpn-ui PUBLIC
+    "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+    "$<$<CONFIG:Debug>:MZ_DEBUG>"
+)
+
 target_link_libraries(mozillavpn-ui PRIVATE
     Qt6::Quick
     Qt6::Widgets
@@ -55,7 +46,6 @@ target_include_directories(mozillavpn-ui PRIVATE
 )
 
 target_include_directories(mozillavpn-ui PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/composer
     ${CMAKE_CURRENT_SOURCE_DIR}/singletons
     ${CMAKE_CURRENT_SOURCE_DIR}/types
 )

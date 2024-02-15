@@ -15,7 +15,7 @@
 #include "context/constants.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"
-#include "signature/signature.h"
+#include "crypto/signature/signature.h"
 #include "utilities/leakdetector.h"
 
 namespace {

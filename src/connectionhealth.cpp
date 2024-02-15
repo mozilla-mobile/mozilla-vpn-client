@@ -8,7 +8,7 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "controller.h"
 #include "glean/generated/metrics.h"
 #include "logging/logger.h"

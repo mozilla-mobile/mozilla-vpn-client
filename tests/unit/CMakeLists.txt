@@ -162,20 +162,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
-    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composer.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
 
 # VPN Client UI resources

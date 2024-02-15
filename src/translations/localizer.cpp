@@ -15,7 +15,7 @@
 
 #include "context/constants.h"
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
+#include "telemetry/glean/mzglean.h"
 #include "languagei18n.h"
 #include "logging/logger.h"
 #include "settings/settingsholder.h"

@@ -75,20 +75,6 @@ target_sources(app_auth_tests PRIVATE
     testpasswordvalidation.h
     testsignupandin.cpp
     testsignupandin.h
-    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composer.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
 
 ## Add the tests to be run, one for each test class.
