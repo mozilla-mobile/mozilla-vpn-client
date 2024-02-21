@@ -47,7 +47,6 @@ target_link_libraries(mozillavpn PRIVATE
     lottie
     nebula
     translations
-    qtglean
 )
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})

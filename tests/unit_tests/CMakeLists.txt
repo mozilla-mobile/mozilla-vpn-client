@@ -22,10 +22,6 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/glean)
-include_directories(${MZ_SOURCE_DIR}/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
-include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
@@ -48,13 +44,9 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
-generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
-
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
-    translations-unit-tests
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -74,86 +66,26 @@ target_sources(app_unit_tests PRIVATE
     helper.h
     main.cpp
     mocmozillavpn.cpp
-    testaddon.cpp
-    testaddon.h
-    testaddonapi.cpp
-    testaddonapi.h
-    testaddonindex.cpp
-    testaddonindex.h
-    testaddonsessionstate.cpp
-    testaddonsessionstate.h
-    testaddonstatebase.cpp
-    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
     testcheckedint.cpp
     testcheckedint.h
-    testcomposer.cpp
-    testcomposer.h
     testdaemonaccesscontrol.cpp
     testdaemonaccesscontrol.h
-    testenv.cpp
-    testenv.h
     testipaddress.cpp
     testipaddress.h
-    testlanguagei18n.cpp
-    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
-    testlocalizer.cpp
-    testlocalizer.h
-    testlogger.cpp
-    testlogger.h
-    testnavigator.cpp
-    testnavigator.h
-    testnetworkmanager.cpp
-    testnetworkmanager.h
-    testqmlpath.cpp
-    testqmlpath.h
-    testresourceloader.cpp
-    testresourceloader.h
-    testtasks.cpp
-    testtasks.h
     testtasksentry.cpp
     testtasksentry.h
-    testtemporarydir.cpp
-    testtemporarydir.h
     testthemes.cpp
     testthemes.h
-    testurlopener.cpp
-    testurlopener.h
-    testsettingsholder.cpp
-    testsettingsholder.h
-    feature/testfeature.cpp
-    feature/testfeature.h
-    feature/testfeaturemodel.cpp
-    feature/testfeaturemodel.h
-    settings/testsetting.cpp
-    settings/testsetting.h
-    settings/testsettinggroup.cpp
-    settings/testsettinggroup.h
-    settings/testsettingsmanager.cpp
-    settings/testsettingsmanager.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composer.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
-    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
 
 if(NOT BUILD_ADJUST_SDK_TOKEN)
@@ -184,8 +116,6 @@ endforeach()
 
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
-    addons/addons.qrc
-    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc

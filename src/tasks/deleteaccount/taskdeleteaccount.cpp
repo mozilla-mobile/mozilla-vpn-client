@@ -9,11 +9,11 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "taskscheduler.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "taskscheduler/taskscheduler.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskDeleteAccount");

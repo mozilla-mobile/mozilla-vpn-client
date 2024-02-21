@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "errorhandler.h"
+#include "utilities/errorhandler.h"
 
 class Task;
 

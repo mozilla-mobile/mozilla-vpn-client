@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "iosutils.h"
-#include "logger.h"
-#include "qmlengineholder.h"
+#include "context/qmlengineholder.h"
+#include "logging/logger.h"
 
 #include <QDateTime>
 #include <QString>

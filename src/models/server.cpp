@@ -10,7 +10,7 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 Server::Server() { MZ_COUNT_CTOR(Server); }
 

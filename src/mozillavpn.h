@@ -10,10 +10,10 @@
 #include <QObject>
 #include <QTimer>
 
-#include "app.h"
 #include "authenticationlistener.h"
-#include "errorhandler.h"
-#include "frontend/navigator.h"
+#include "context/app.h"
+#include "navigator/navigator.h"
+#include "utilities/errorhandler.h"
 
 struct MozillaVPNPrivate;
 class CaptivePortal;
@@ -48,40 +48,6 @@ class MozillaVPN final : public App {
     StateUpdateRequired,
   };
   Q_ENUM(CustomState);
-
-  enum CustomScreen {
-    ScreenAuthenticating = Navigator::ScreenCustom + 1,
-    ScreenAuthenticationInApp,
-    ScreenBackendFailure,
-    ScreenBillingNotAvailable,
-    ScreenCaptivePortal,
-    ScreenCrashReporting,
-    ScreenDeleteAccount,
-    ScreenDeviceLimit,
-    ScreenGetHelp,
-    ScreenHome,
-    ScreenInitialize,
-    ScreenMessaging,
-    ScreenNoSubscriptionFoundError,
-    ScreenPostAuthentication,
-    ScreenSettings,
-    ScreenSubscriptionBlocked,
-    ScreenSubscriptionExpiredError,
-    ScreenSubscriptionGenericError,
-    ScreenSubscriptionInProgressIAP,
-    ScreenSubscriptionInProgressWeb,
-    ScreenSubscriptionInUseError,
-    ScreenSubscriptionNeeded,
-    ScreenSubscriptionNotValidated,
-    ScreenTelemetryPolicy,
-    ScreenTipsAndTricks,
-    ScreenUpdateRecommended,
-    ScreenUpdateRequired,
-    ScreenViewLogs,
-    ScreenRemovingDevice,
-    ScreenOnboarding,
-  };
-  Q_ENUM(CustomScreen);
 
  private:
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)

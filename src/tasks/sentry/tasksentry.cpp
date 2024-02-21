@@ -9,12 +9,12 @@
 #include <QJsonValue>
 #include <QStringList>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
 #include "sentry/sentryadapter.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskSentry");

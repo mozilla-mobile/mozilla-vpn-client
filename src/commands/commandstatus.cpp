@@ -9,14 +9,14 @@
 
 #include "commandlineparser.h"
 #include "controller.h"
-#include "leakdetector.h"
 #include "models/devicemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include "networking/simplenetworkmanager.h"
+#include "settings/settingsholder.h"
 #include "tasks/account/taskaccount.h"
+#include "utilities/leakdetector.h"
 
 CommandStatus::CommandStatus(QObject* parent)
     : Command(parent, "status", "Show the current VPN status.") {

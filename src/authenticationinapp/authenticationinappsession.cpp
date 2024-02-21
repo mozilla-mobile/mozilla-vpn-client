@@ -12,14 +12,14 @@
 
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
-#include "constants.h"
+#include "context/constants.h"
+#include "crypto/hawkauth.h"
+#include "crypto/hkdf.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
-#include "hawkauth.h"
-#include "hkdf.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AuthenticationInAppSession");

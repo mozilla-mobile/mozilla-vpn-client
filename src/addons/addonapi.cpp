@@ -8,14 +8,14 @@
 #include <QQmlEngine>
 
 #include "addon.h"
-#include "env.h"
+#include "context/env.h"
+#include "context/qmlengineholder.h"
 #include "feature/featuremodel.h"
-#include "frontend/navigator.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
-#include "urlopener.h"
+#include "logging/logger.h"
+#include "navigator/navigator.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
+#include "utilities/urlopener.h"
 
 namespace {
 Logger logger("AddonApi");

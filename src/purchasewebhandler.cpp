@@ -5,12 +5,12 @@
 #include "purchasewebhandler.h"
 
 #include "authenticationlistener.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "context/constants.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "tasks/authenticate/taskauthenticate.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("PurchaseWebHandler");

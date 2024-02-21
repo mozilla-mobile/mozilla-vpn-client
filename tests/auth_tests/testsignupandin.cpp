@@ -14,11 +14,11 @@
 #include <QTest>
 
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
-#include "networkrequest.h"
+#include "context/constants.h"
+#include "networking/networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
-#include "tasks/function/taskfunction.h"
+#include "taskscheduler/taskfunction.h"
 
 constexpr const char* PASSWORD = "12345678";
 

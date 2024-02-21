@@ -10,9 +10,9 @@
 #include <QJniEnvironment>
 #include <QJniObject>
 
-#include "leakdetector.h"
-#include "logger.h"
-#include "platforms/android/androidcommons.h"
+#include "logging/logger.h"
+#include "utilities/androidutils.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AndroidAppImageProvider");
@@ -31,7 +31,7 @@ AndroidAppImageProvider::~AndroidAppImageProvider() {
 // from QQuickImageProvider
 QImage AndroidAppImageProvider::requestImage(const QString& id, QSize* size,
                                              const QSize& requestedSize) {
-  QJniObject activity = AndroidCommons::getActivity();
+  QJniObject activity = AndroidUtils::getActivity();
   Q_ASSERT(activity.isValid());
 
   auto jniString = QJniObject::fromString(id);

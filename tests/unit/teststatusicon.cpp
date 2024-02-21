@@ -7,10 +7,10 @@
 #include <QEventLoop>
 #include <QQmlApplicationEngine>
 
-#include "localizer.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
+#include "context/qmlengineholder.h"
+#include "settings/settingsholder.h"
 #include "statusicon.h"
+#include "translations/localizer.h"
 
 void TestStatusIcon::basic() {
   StatusIcon si;

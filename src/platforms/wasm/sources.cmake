@@ -5,7 +5,6 @@
 target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmauthenticationlistener.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmauthenticationlistener.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmfontloader.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkrequest.h

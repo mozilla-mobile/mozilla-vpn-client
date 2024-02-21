@@ -8,11 +8,11 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "versionutils.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "utilities/leakdetector.h"
+#include "utilities/versionutils.h"
 
 namespace {
 Logger logger("VersionApi");

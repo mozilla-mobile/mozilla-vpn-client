@@ -9,11 +9,11 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
 #include "uploaddatagenerator.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("BenchmarkTaskTransfer");

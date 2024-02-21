@@ -8,9 +8,9 @@
 #include <QCryptographicHash>
 #include <QNetworkReply>
 
-#include "errorhandler.h"
-#include "temporarydir.h"
 #include "updater.h"
+#include "utilities/errorhandler.h"
+#include "utilities/temporarydir.h"
 
 class NetworkRequest;
 

@@ -4,14 +4,14 @@
 
 #include <QCoreApplication>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
-#include "loghandler.h"
-#include "networkrequest.h"
-#include "settingsholder.h"
+#include "logging/loghandler.h"
+#include "networking/networkrequest.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;

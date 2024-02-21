@@ -13,9 +13,6 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/addons
     ${CMAKE_CURRENT_SOURCE_DIR}/composer
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
     ${CMAKE_CURRENT_SOURCE_DIR}/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -30,7 +27,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/applistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/apppermission.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/settingslist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportaldetection.cpp
@@ -82,8 +78,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.h
@@ -162,8 +156,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasewebhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settingswatcher.cpp

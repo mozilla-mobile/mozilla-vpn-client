@@ -4,10 +4,10 @@
 
 #include "captiveportalnotifier.h"
 
-#include "leakdetector.h"
-#include "logger.h"
+#include "context/qmlengineholder.h"
+#include "logging/logger.h"
 #include "notificationhandler.h"
-#include "qmlengineholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortalNotifier");

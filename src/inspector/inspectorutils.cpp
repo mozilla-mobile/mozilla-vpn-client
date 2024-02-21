@@ -7,8 +7,8 @@
 #include <QQmlApplicationEngine>
 #include <QQuickItem>
 
-#include "qmlengineholder.h"
-#include "qmlpath.h"
+#include "context/qmlengineholder.h"
+#include "utilities/qmlpath.h"
 
 // static
 QObject* InspectorUtils::findObject(const QString& name) {

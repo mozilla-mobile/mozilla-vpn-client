@@ -9,15 +9,15 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 #if MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
+#  include "utilities/androidutils.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -304,7 +304,7 @@ void DeviceModel::serializeLogs(
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 #endif
 #ifdef MZ_ANDROID
-  out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
+  out << "SDK Version -> " << AndroidUtils::getSDKVersion() << Qt::endl;
 #endif
 
   out << "APP Version -> " << Constants::versionString() << Qt::endl;

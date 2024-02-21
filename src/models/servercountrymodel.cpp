@@ -10,17 +10,17 @@
 #include <QRandomGenerator>
 
 #include "collator.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "recommendedlocationmodel.h"
 #include "servercountry.h"
 #include "serverdata.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "translations/serveri18n.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("ServerCountryModel");

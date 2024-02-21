@@ -9,9 +9,9 @@
 #include <QJsonValue>
 #include <QTextStream>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "keys.h"
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 #ifndef QT_NO_SSL
 #  include <QSslSocket>

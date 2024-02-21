@@ -9,15 +9,15 @@
 #include <QSystemTrayIcon>
 #include <QWindow>
 
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "controller.h"
-#include "frontend/navigator.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
-#include "qmlengineholder.h"
+#include "navigator/navigator.h"
 #include "statusicon.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");

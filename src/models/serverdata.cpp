@@ -8,13 +8,13 @@
 #include <QJsonObject>
 
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "translations/serveri18n.h"
+#include "utilities/leakdetector.h"
 
 constexpr const char* EXIT_COUNTRY_CODE = "exit_country_code";
 constexpr const char* EXIT_COUNTRY_NAME = "exit_country_name";

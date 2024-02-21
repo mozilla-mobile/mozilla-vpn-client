@@ -9,7 +9,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 /**
  * @brief TaskSentryConfig fetches Sentry Configuration

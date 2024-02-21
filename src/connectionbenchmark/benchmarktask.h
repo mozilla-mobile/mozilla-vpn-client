@@ -6,7 +6,7 @@
 #define BENCHMARKTASK_H
 
 #include "benchmarktasksentinel.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class BenchmarkTask : public Task {
   Q_OBJECT

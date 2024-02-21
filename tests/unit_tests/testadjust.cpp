@@ -6,7 +6,7 @@
 
 #include "adjust/adjustfiltering.h"
 #include "adjust/adjustproxypackagehandler.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "helper.h"
 
 // We need this since QFETCH has a problem with a comma in the type

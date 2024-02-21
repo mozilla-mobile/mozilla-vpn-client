@@ -7,11 +7,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/featuremodel.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("TaskGetFeatureList");

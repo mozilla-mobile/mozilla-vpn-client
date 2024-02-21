@@ -6,8 +6,8 @@
 
 #include "helper.h"
 #include "ipaddresslookup.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include "networking/simplenetworkmanager.h"
+#include "settings/settingsholder.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
   SettingsHolder settingsHolder;

@@ -10,7 +10,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-#include "constants.h"
+#include "context/constants.h"
 
 class AdjustFiltering final {
  public:

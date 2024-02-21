@@ -7,9 +7,9 @@
 #include <QCoreApplication>
 #include <QFile>
 
-#include "leakdetector.h"
-#include "logger.h"
-#include "resourceloader.h"
+#include "logging/logger.h"
+#include "utilities/leakdetector.h"
+#include "utilities/resourceloader.h"
 
 namespace {
 Logger logger("LicenseModel");

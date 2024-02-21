@@ -6,14 +6,14 @@
 
 #include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
-#include "app.h"
-#include "constants.h"
+#include "context/app.h"
+#include "context/constants.h"
 #include "controller.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 #if defined(MZ_IOS)
 #  include "platforms/ios/iosnotificationhandler.h"

@@ -126,7 +126,7 @@ print Y "Configuring the android build"
 #
 # Here we go
 mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
-cp $WORKSPACE_ROOT/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
+cp $WORKSPACE_ROOT/src/telemetry/glean/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
 
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"

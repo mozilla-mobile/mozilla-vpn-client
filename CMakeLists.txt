@@ -144,13 +144,10 @@ message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
-# Glean -- this must be added before src/
-add_subdirectory(qtglean)
 # VPN Client build targets
 add_subdirectory(src)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
-add_subdirectory(translations)
 add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING)

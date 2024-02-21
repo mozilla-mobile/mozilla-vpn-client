@@ -12,11 +12,11 @@
 
 #include "addondirectory.h"
 #include "addonmanager.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "settingsholder.h"
-#include "signature.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "settings/settingsholder.h"
+#include "crypto/signature/signature.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AddonIndex");

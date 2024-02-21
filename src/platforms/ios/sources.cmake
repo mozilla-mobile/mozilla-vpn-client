@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(shared-sources INTERFACE
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.mm
 )

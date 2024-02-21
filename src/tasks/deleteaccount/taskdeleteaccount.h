@@ -5,7 +5,7 @@
 #ifndef TASKDELETEACCOUNT_H
 #define TASKDELETEACCOUNT_H
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class AuthenticationInAppSession;
 

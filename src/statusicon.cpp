@@ -10,11 +10,11 @@
 #include <QPixmap>
 #include <array>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "controller.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("StatusIcon");

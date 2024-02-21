@@ -10,11 +10,11 @@
 #include <QRandomGenerator>
 #include <QTimer>
 
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "tasks/purchase/taskpurchase.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("WasmIAPHandler");

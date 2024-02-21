@@ -7,7 +7,7 @@
 
 #include <QFontDatabase>
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("WasmFontLoader");

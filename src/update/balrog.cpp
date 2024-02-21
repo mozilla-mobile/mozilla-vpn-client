@@ -12,12 +12,12 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
-#include "constants.h"
-#include "errorhandler.h"
+#include "context/constants.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
 
 // Implemented in rust. See the `signature` folder.
 // TODO (VPN-5708): We should really generate this with cbindgen.

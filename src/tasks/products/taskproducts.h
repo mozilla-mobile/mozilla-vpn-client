@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class TaskProducts final : public Task {
   Q_DISABLE_COPY_MOVE(TaskProducts)

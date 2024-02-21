@@ -13,10 +13,10 @@
 #include <QTimer>
 
 #include "commandlineparser.h"
-#include "constants.h"
+#include "context/constants.h"
 #include "daemon/daemonlocalserver.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
+#include "utilities/leakdetector.h"
 #include "windowsdaemon.h"
 
 #define SERVICE_NAME (wchar_t*)L"Mozilla  VPN"

@@ -13,25 +13,29 @@
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
+#include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
-#include "constants.h"
+#include "context/constants.h"
+#include "context/env.h"
+#include "context/qmlengineholder.h"
 #include "controller.h"
 #include "feature/feature.h"
+#include "feature/featuremodel.h"
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "models/devicemodel.h"
+#include "models/licensemodel.h"
 #include "models/recentconnections.h"
 #include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
@@ -39,18 +43,26 @@
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "navigator/navigationbarmodel.h"
+#include "navigator/navigator.h"
+#include "networking/networkrequest.h"
 #include "notificationhandler.h"
 #include "productshandler.h"
 #include "profileflow.h"
 #include "purchasehandler.h"
-#include "qmlengineholder.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "telemetry.h"
-#include "temporarydir.h"
+#include "telemetry/glean/mzglean.h"
+#include "theme.h"
+#include "translations/localizer.h"
 #include "update/updater.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
+#include "utilities/temporarydir.h"
+#include "utilities/urlopener.h"
+#include "utilities/utils.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -68,9 +80,8 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
-#  include "platforms/android/androidutils.h"
-#  include "platforms/android/androidvpnactivity.h"
+#  include "context/androidvpnactivity.h"
+#  include "utilities/androidutils.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -93,6 +104,10 @@
 
 #ifdef MVPN_WEBEXTENSION
 #  include "server/serverhandler.h"
+#endif
+
+#ifdef SENTRY_ENABLED
+#  include "sentry/sentryadapter.h"
 #endif
 
 #include <QApplication>
@@ -226,7 +241,7 @@ int CommandUI::run(QStringList& tokens) {
 #  if QT_VERSION >= 0x060800
 #    error We have forgotten to remove this Huawei hack!
 #  endif
-    if (AndroidCommons::GetManufacturer() == "Huawei") {
+    if (AndroidUtils::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
@@ -307,6 +322,100 @@ int CommandUI::run(QStringList& tokens) {
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
+    }
+
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
+                                 __DONOTUSE__GleanPings::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "Glean",
+                                 __DONOTUSE__GleanMetrics::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAddonManager",
+                                 AddonManager::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",
+                                 AuthenticationInApp::instance());
+#ifdef SENTRY_ENABLED
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZCrashReporter",
+                                 SentryAdapter::instance());
+#endif
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZErrorHandler",
+                                 ErrorHandler::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZEnv",
+                                 Env::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZFeatureList",
+                                 FeatureModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLicenseModel",
+                                 LicenseModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLocalizer",
+                                 Localizer::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZLog",
+                                 LogHandler::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZNavigator",
+                                 Navigator::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZNavigationBarModel",
+                                 NavigationBarModel::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
+                                 SettingsHolder::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
+                                 UrlOpener::instance());
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
+                                 Utils::instance());
+
+    Theme::instance()->initialize(engine);
+    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme",
+                                 Theme::instance());
+
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPN",
+                                 MozillaVPN::instance());
+    qmlRegisterSingletonInstance(
+        "Mozilla.VPN", 1, 0, "VPNCaptivePortal",
+        MozillaVPN::instance()->captivePortalDetection());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNController",
+                                 MozillaVPN::instance()->controller());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNUser",
+                                 MozillaVPN::instance()->user());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNDeviceModel",
+                                 MozillaVPN::instance()->deviceModel());
+
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
+                                 "VPNRecentConnectionsModel",
+                                 RecentConnections::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0,
+                                 "VPNRecommendedLocationModel",
+                                 RecommendedLocationModel::instance());
+    qmlRegisterSingletonInstance(
+        "Mozilla.VPN", 1, 0, "VPNSupportCategoryModel",
+        MozillaVPN::instance()->supportCategoryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerCountryModel",
+                                 MozillaVPN::instance()->serverCountryModel());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNSubscriptionData",
+                                 MozillaVPN::instance()->subscriptionData());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProfileFlow",
+                                 MozillaVPN::instance()->profileFlow());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNCurrentServer",
+                                 MozillaVPN::instance()->serverData());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNServerLatency",
+                                 MozillaVPN::instance()->serverLatency());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionHealth",
+                                 MozillaVPN::instance()->connectionHealth());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNReleaseMonitor",
+                                 MozillaVPN::instance()->releaseMonitor());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAppPermissions",
+                                 AppPermission::instance());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNConnectionBenchmark",
+                                 MozillaVPN::instance()->connectionBenchmark());
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNIPAddressLookup",
+                                 MozillaVPN::instance()->ipAddressLookup());
+
+#ifdef MZ_ANDROID
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNAndroidUtils",
+                                 AndroidUtils::instance());
+#endif
+
+    qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNPurchase",
+                                 PurchaseHandler::instance());
+
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+      qmlRegisterSingletonInstance("Mozilla.VPN", 1, 0, "VPNProducts",
+                                   ProductsHandler::instance());
     }
 
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,

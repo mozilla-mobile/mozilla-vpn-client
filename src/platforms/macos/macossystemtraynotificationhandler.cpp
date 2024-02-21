@@ -8,13 +8,13 @@
 #include <QMenu>
 #include <QWindow>
 
+#include "context/qmlengineholder.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "macosutils.h"
 #include "mozillavpn.h"
-#include "qmlengineholder.h"
 #include "statusicon.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("MacosSystemTrayNotificationHandler");

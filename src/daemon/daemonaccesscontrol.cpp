@@ -11,8 +11,8 @@
 
 #include <QLocalSocket>
 
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("DaemonAccessControl");

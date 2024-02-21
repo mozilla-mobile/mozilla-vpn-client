@@ -11,13 +11,13 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/location.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("SubscriptionData");

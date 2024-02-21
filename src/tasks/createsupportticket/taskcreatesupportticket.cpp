@@ -6,16 +6,16 @@
 
 #include <QJsonObject>
 
-#include "app.h"
-#include "constants.h"
-#include "env.h"
-#include "errorhandler.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "context/app.h"
+#include "context/constants.h"
+#include "context/env.h"
+#include "logging/logger.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "networkmanager.h"
-#include "networkrequest.h"
+#include "networking/networkmanager.h"
+#include "networking/networkrequest.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
 
 constexpr uint32_t SUPPORT_TICKET_SUBJECT_MAX_LENGTH = 300;
 

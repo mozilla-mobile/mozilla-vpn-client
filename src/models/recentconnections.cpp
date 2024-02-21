@@ -9,13 +9,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "context/constants.h"
+#include "logging/logger.h"
 #include "mozillavpn.h"
 #include "serverdata.h"
-#include "serveri18n.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "translations/serveri18n.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("RecentConnections");

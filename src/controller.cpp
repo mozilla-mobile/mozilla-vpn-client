@@ -6,35 +6,35 @@
 
 #include <QNetworkInformation>
 
-#include "app.h"
 #include "apppermission.h"
 #include "captiveportal/captiveportal.h"
-#include "constants.h"
+#include "context/app.h"
+#include "context/constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
-#include "frontend/navigator.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
+#include "navigator/navigator.h"
+#include "networking/networkrequest.h"
 #include "networkwatcher.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
-#include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskfunction.h"
+#include "taskscheduler/taskscheduler.h"
+#include "translations/serveri18n.h"
+#include "utilities/leakdetector.h"
 
 #if defined(MZ_FLATPAK)
 #  include "platforms/linux/networkmanagercontroller.h"
@@ -844,7 +844,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }
@@ -947,7 +947,7 @@ bool Controller::activate(const ServerData& serverData,
   if (m_state == Controller::StateOff) {
     if (m_portalDetected) {
       emit activationBlockedForCaptivePortal();
-      Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
+      Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
 
       m_portalDetected = false;
       return true;
@@ -1039,7 +1039,7 @@ bool Controller::deactivate() {
   // the underlying issue.
   if (m_portalDetected) {
     emit activationBlockedForCaptivePortal();
-    Navigator::instance()->requestScreen(MozillaVPN::ScreenCaptivePortal);
+    Navigator::instance()->requestScreen(Navigator::ScreenCaptivePortal);
 
     m_portalDetected = false;
   }

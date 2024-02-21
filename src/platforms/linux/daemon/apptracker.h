@@ -9,7 +9,7 @@
 #include <QHash>
 #include <QString>
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 class QDBusInterface;
 

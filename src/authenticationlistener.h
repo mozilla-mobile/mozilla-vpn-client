@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QUrl>
 
-#include "errorhandler.h"
+#include "utilities/errorhandler.h"
 
 constexpr const char* CODE_CHALLENGE_METHOD = "S256";
 

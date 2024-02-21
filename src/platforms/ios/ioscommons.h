@@ -21,7 +21,6 @@ class IOSCommons final {
                               const QByteArray& content,
                               const QByteArray& signature);
 
-  static void shareLogs(const QString& logs);
 };
 
 #endif  // IOSCOMMONS_H

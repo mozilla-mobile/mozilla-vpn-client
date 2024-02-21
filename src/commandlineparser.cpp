@@ -7,8 +7,8 @@
 #include <QTextStream>
 
 #include "command.h"
-#include "constants.h"
-#include "leakdetector.h"
+#include "context/constants.h"
+#include "utilities/leakdetector.h"
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 

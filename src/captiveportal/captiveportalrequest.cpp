@@ -5,12 +5,12 @@
 #include "captiveportalrequest.h"
 
 #include "captiveportal.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "settingsholder.h"
-#include "task.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "networking/networkrequest.h"
+#include "settings/settingsholder.h"
+#include "taskscheduler/task.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortalRequest");

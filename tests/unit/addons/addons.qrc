@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/addons_test">
-        <file>message1.json</file>
-        <file>message2.json</file>
-        <file>message3.json</file>
-        <file>message4.json</file>
-    </qresource>
-</RCC>

@@ -4,7 +4,7 @@
 
 #include <QString>
 
-#include "constants.h"
+#include "context/constants.h"
 
 namespace {
 bool s_productionMode = true;

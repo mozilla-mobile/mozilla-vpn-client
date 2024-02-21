@@ -6,20 +6,20 @@
 
 #include "captiveportal/captiveportal.h"
 #include "commandlineparser.h"
-#include "constants.h"
-#include "glean/mzglean.h"
-#include "leakdetector.h"
-#include "localizer.h"
-#include "logger.h"
-#include "loghandler.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include "networking/simplenetworkmanager.h"
+#include "settings/settingsholder.h"
+#include "telemetry/glean/mzglean.h"
+#include "translations/localizer.h"
+#include "utilities/leakdetector.h"
 
 #ifdef MZ_WINDOWS
 #  include <Windows.h>

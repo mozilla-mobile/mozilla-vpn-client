@@ -15,9 +15,9 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "constants.h"
-#include "leakdetector.h"
+#include "context/constants.h"
 #include "signalhandler.h"
+#include "utilities/leakdetector.h"
 
 MacOSDnsManager::MacOSDnsManager(QObject* parent)
     : Command(parent, "macosdnsmanager",

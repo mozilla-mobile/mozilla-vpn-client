@@ -3,11 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosnotificationhandler.h"
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
-#import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface IOSNotificationDelegate
     : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate> {

@@ -9,11 +9,11 @@
 #include <QJsonObject>
 
 #include "helper.h"
+#include "networking/simplenetworkmanager.h"
 #include "releasemonitor.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include "settings/settingsholder.h"
 #include "update/versionapi.h"
-#include "versionutils.h"
+#include "utilities/versionutils.h"
 
 void TestReleaseMonitor::failure() {
   SettingsHolder settingsHolder;

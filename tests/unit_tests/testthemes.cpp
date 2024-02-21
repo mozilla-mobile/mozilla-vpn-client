@@ -6,10 +6,10 @@
 
 #include <QQmlApplicationEngine>
 
-#include "localizer.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
+#include "context/qmlengineholder.h"
+#include "settings/settingsholder.h"
 #include "theme.h"
+#include "translations/localizer.h"
 
 void TestThemes::loadTheme_data() {
   QTest::addColumn<QString>("theme");

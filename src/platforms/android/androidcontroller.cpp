@@ -12,22 +12,22 @@
 #include <QJsonObject>
 #include <QRandomGenerator>
 
-#include "androidutils.h"
 #include "androidvpnactivity.h"
 #include "controller.h"
-#include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
+#include "utilities/androidutils.h"
+#include "utilities/errorhandler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("AndroidController");

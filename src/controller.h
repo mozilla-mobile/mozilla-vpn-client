@@ -13,7 +13,7 @@
 #include "controller.h"
 #include "interfaceconfig.h"
 #include "ipaddress.h"
-#include "loghandler.h"
+#include "logging/loghandler.h"
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"

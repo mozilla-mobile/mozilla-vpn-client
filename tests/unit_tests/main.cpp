@@ -4,26 +4,15 @@
 
 #include <QCoreApplication>
 
-#include "app.h"
-#include "constants.h"
+#include "context/app.h"
+#include "context/constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
-#include "loghandler.h"
-#include "settingsholder.h"
+#include "logging/loghandler.h"
+#include "settings/settingsholder.h"
+#include "utilities/leakdetector.h"
 
 QVector<QObject*> TestHelper::testList;
-
-// static
-App* App::instance() {
-  static App* app = nullptr;
-
-  if (!app) {
-    app = new App(qApp);
-  }
-
-  return app;
-}
 
 QObject* TestHelper::findTest(const QString& name) {
   for (QObject* obj : TestHelper::testList) {

@@ -8,14 +8,14 @@
 
 #include "controller.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mfbt/checkedint.h"
 #include "models/location.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 #include "tcppingsender.h"
+#include "utilities/leakdetector.h"
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 

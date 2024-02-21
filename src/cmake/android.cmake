@@ -15,8 +15,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidiaphandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnetworkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnotificationhandler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidvpnactivity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidappimageprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidapplistprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
@@ -24,8 +22,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidiaphandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnotificationhandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidvpnactivity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidappimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidapplistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
@@ -42,10 +38,10 @@ get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CM
 # Qt requires this to be set on the "app" target.
 set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ## --- PILE OF SHAME --- ##
-    # android-deploy-qt is bad and randomly decides to not deploy 
-    # some lib's we are linking to. 
+    # android-deploy-qt is bad and randomly decides to not deploy
+    # some lib's we are linking to.
     # So as long as qt is behaving bad, let's force the deployment.
-    # Feel free to add libs that are breaking on your build locally. 
+    # Feel free to add libs that are breaking on your build locally.
     ${Qt6_DIR}/../../libQt6Test_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6WebSockets_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Widgets_${ANDROID_ABI}.so
@@ -53,7 +49,7 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${Qt6_DIR}/../../libQt6Test_${ANDROID_ABI}.so
     ${Qt6_DIR}/../../libQt6Svg_${ANDROID_ABI}.so
      ## --- END PILE OF SHAME --- ##
-    
+
     ${OPENSSL_LIBS_DIR}/libcrypto.so
     ${OPENSSL_LIBS_DIR}/libssl.so
     ${OPENSSL_LIBS_DIR}/libcrypto_1_1.so

@@ -4,18 +4,18 @@
 
 #include "keyregenerator.h"
 
-#include "constants.h"
+#include "context/constants.h"
 #include "controller.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "mfbt/checkedint.h"
 #include "models/device.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 Logger logger("KeyRegenerator");

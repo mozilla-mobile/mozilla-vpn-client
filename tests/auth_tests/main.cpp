@@ -7,17 +7,17 @@
 #include <QRandomGenerator>
 #include <QtTest/QtTest>
 
-#include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "constants.h"
+#include "context/app.h"
+#include "context/constants.h"
 #include "glean/mzglean.h"
-#include "leakdetector.h"
-#include "loghandler.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include "logging/loghandler.h"
+#include "networking/simplenetworkmanager.h"
+#include "settings/settingsholder.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
+#include "utilities/leakdetector.h"
 
 // static
 App* App::instance() {

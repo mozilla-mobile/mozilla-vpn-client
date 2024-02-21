@@ -6,7 +6,7 @@
 
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
-#include "logger.h"
+#include "logging/logger.h"
 #include "platforms/windows/windowsutils.h"
 #include "windowsfirewall.h"
 

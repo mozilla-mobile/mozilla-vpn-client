@@ -11,12 +11,12 @@
 #include <QStandardPaths>
 #include <QWindow>
 
-#include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
-#include "logger.h"
-#include "networkrequest.h"
-#include "qmlengineholder.h"
-#include "tasks/function/taskfunction.h"
+#include "context/qmlengineholder.h"
+#include "logging/logger.h"
+#include "navigator/navigator.h"
+#include "navigator/navigatorreloader.h"
+#include "networking/networkrequest.h"
+#include "taskscheduler/taskfunction.h"
 
 namespace {
 Logger logger("QMLHotReload");

@@ -8,10 +8,10 @@
 #include <QFileOpenEvent>
 #include <QUrlQuery>
 
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "urlopener.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "utilities/leakdetector.h"
+#include "utilities/urlopener.h"
 
 namespace {
 

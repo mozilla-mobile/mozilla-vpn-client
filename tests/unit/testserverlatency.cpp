@@ -7,12 +7,12 @@
 #include <QDateTime>
 #include <QJsonObject>
 
-#include "constants.h"
+#include "context/constants.h"
 #include "feature/feature.h"
 #include "models/location.h"
 #include "models/servercity.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
+#include "settings/settingsholder.h"
 
 void TestServerLatency::init() {
   SettingsHolder settingsHolder;

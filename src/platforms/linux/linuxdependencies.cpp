@@ -16,7 +16,7 @@
 #ifndef MZ_FLATPAK
 #  include "dbusclient.h"
 #endif
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 

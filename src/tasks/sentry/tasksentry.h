@@ -9,7 +9,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 // Task to get user consent and send crash report to
 // Sentry (https://github.com/getsentry/sentry-native)

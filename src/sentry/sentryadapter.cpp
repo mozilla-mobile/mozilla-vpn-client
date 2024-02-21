@@ -14,16 +14,16 @@
 #include <QQuickItem>
 #include <QStandardPaths>
 
-#include "constants.h"
+#include "context/constants.h"
+#include "context/qmlengineholder.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
+#include "logging/logger.h"
+#include "logging/loghandler.h"
+#include "settings/settingsholder.h"
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"
-#include "taskscheduler.h"
+#include "taskscheduler/taskscheduler.h"
+#include "utilities/leakdetector.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;

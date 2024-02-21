@@ -10,7 +10,7 @@
 #include <QSettings>
 #include <QSysInfo>
 
-#include "logger.h"
+#include "logging/logger.h"
 
 namespace {
 Logger logger("WindowsUtils");
@@ -41,19 +41,6 @@ QString WindowsUtils::getErrorMessage() {
 void WindowsUtils::windowsLog(const QString& msg) {
   QString errmsg = getErrorMessage();
   logger.error() << msg << "-" << errmsg;
-}
-
-// Static
-QString WindowsUtils::windowsVersion() {
-  QSettings regCurrentVersion(
-      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-      QSettings::NativeFormat);
-
-  int buildNr = regCurrentVersion.value("CurrentBuild").toInt();
-  if (buildNr >= WINDOWS_11_BUILD) {
-    return "11";
-  }
-  return QSysInfo::productVersion();
 }
 
 // static

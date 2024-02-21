@@ -4,7 +4,7 @@
 
 #include "addonconditionwatchergroup.h"
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 AddonConditionWatcherGroup::AddonConditionWatcherGroup(
     QObject* parent, const QList<AddonConditionWatcher*>& group)

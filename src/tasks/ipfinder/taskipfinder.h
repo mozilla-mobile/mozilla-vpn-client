@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class QHostAddress;
 class QHostInfo;

@@ -7,8 +7,8 @@
 
 #include <QObject>
 
-#include "errorhandler.h"
-#include "task.h"
+#include "taskscheduler/task.h"
+#include "utilities/errorhandler.h"
 
 class TaskRelease final : public Task {
   Q_OBJECT

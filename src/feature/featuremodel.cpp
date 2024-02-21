@@ -4,10 +4,10 @@
 
 #include "featuremodel.h"
 
+#include "context/qmlengineholder.h"
 #include "feature.h"
-#include "logger.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
+#include "logging/logger.h"
+#include "settings/settingsholder.h"
 
 #ifdef MZ_ADJUST
 #  include "adjust/adjustfiltering.h"

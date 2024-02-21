@@ -5,10 +5,10 @@
 #include "authenticationlistener.h"
 
 #include "authenticationinapp/authenticationinapplistener.h"
-#include "constants.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "networkmanager.h"
+#include "context/constants.h"
+#include "logging/logger.h"
+#include "networking/networkmanager.h"
+#include "utilities/leakdetector.h"
 
 #if defined(MZ_MACOS)
 #  include "platforms/macos/macosauthenticationlistener.h"

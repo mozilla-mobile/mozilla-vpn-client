@@ -4,7 +4,7 @@
 
 #include "addonproperty.h"
 
-#include "leakdetector.h"
+#include "utilities/leakdetector.h"
 
 AddonProperty::AddonProperty() { MZ_COUNT_CTOR(AddonProperty); }
 

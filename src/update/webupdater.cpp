@@ -5,10 +5,10 @@
 #include "webupdater.h"
 
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
-#include "logger.h"
-#include "task.h"
-#include "urlopener.h"
+#include "logging/logger.h"
+#include "taskscheduler/task.h"
+#include "utilities/leakdetector.h"
+#include "utilities/urlopener.h"
 
 namespace {
 Logger logger("WebUpdater");

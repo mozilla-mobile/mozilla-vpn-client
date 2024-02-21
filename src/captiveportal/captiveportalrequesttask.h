@@ -8,7 +8,7 @@
 #include <QObject>
 
 #include "captiveportalrequest.h"
-#include "task.h"
+#include "taskscheduler/task.h"
 
 class CaptivePortalRequestTask final : public Task {
   Q_OBJECT
