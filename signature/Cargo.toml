@@ -10,7 +10,7 @@ data-encoding = "2.5.0"
 ffi-support = "0.4.4"
 thiserror = "1.0.57"
 hex = "0.4"
-ring = "0.17.7"
+ring = "0.17.8"
 x509-parser = { version = "0.15.1", features = ["verify", "validate"] }
 
 [lib]
