@@ -20,6 +20,8 @@
 #include <QFile>
 #include <QHostAddress>
 #include <QScopeGuard>
+#include <chrono>
+#include <thread>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -189,6 +191,12 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     goIpv6Address.n = slashPos;
   }
   NetfilterIsolateIpv6(goIfname, goIpv6Address);
+
+  // BIG HACK: We can only set this route once the moz0 interface is up.
+  // We need to wait for it to go up. There is probably a better way to do this,
+  // but for now this is what we got.
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  setupWireguardRoutingTable();
 
   return true;
 }
@@ -360,79 +368,38 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
-  logger.debug() << "Adding route to" << prefix.toString();
-
-  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-  return rtmSendRoute(RTM_NEWROUTE, flags, RTN_UNICAST, prefix);
-}
-
-bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
-  logger.debug() << "Removing route to" << logger.sensitive(prefix.toString());
-
-  const int flags = NLM_F_REQUEST | NLM_F_ACK;
-  return rtmSendRoute(RTM_DELROUTE, flags, RTN_UNICAST, prefix);
-}
-
-bool WireguardUtilsLinux::addExclusionRoute(const IPAddress& prefix) {
-  logger.debug() << "Adding exclusion route for"
-                 << logger.sensitive(prefix.toString());
-  const int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-  return rtmSendRoute(RTM_NEWROUTE, flags, RTN_THROW, prefix);
-}
-
-bool WireguardUtilsLinux::deleteExclusionRoute(const IPAddress& prefix) {
-  logger.debug() << "Removing exclusion route for"
-                 << logger.sensitive(prefix.toString());
-  const int flags = NLM_F_REQUEST | NLM_F_ACK;
-  return rtmSendRoute(RTM_DELROUTE, flags, RTN_THROW, prefix);
-}
-
-bool WireguardUtilsLinux::rtmSendRoute(int action, int flags, int type,
-                                       const IPAddress& prefix) {
+bool WireguardUtilsLinux::setupWireguardRoutingTable() {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
-  wg_allowedip ip;
-  if (!buildAllowedIp(&ip, prefix)) {
-    logger.warning() << "Invalid destination prefix";
-    return false;
-  }
 
   char buf[NLMSG_SPACE(rtm_max_size)];
   struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
   struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
 
+  /* Create a routing policy rule that for all packets sent to the Wireguard
+   * routing table to just go to the Wireguard interface. This is
+   * equivalent to:
+   *    ip route add default dev moz0 proto static table $WG_ROUTE_TABLE
+   */
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
-  nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = flags;
+  nlmsg->nlmsg_type = RTM_NEWROUTE;
+  nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_EXCL | NLM_F_CREATE;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_dst_len = ip.cidr;
-  rtm->rtm_family = ip.family;
-  rtm->rtm_type = type;
+  rtm->rtm_family = AF_INET;
+  rtm->rtm_type = RTN_UNICAST;
   rtm->rtm_table = RT_TABLE_UNSPEC;
-  rtm->rtm_protocol = RTPROT_BOOT;
-  rtm->rtm_scope = RT_SCOPE_UNIVERSE;
-
-  // Place all routes in their own table.
+  rtm->rtm_protocol = RTPROT_STATIC;
+  rtm->rtm_scope = RT_SCOPE_LINK;
   nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
-
-  if (rtm->rtm_family == AF_INET6) {
-    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
-  } else {
-    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
+  int index = if_nametoindex(WG_INTERFACE);
+  if (index <= 0) {
+    logger.error() << "if_nametoindex() failed:" << strerror(errno);
+    return false;
   }
-
-  if (rtm->rtm_type == RTN_UNICAST) {
-    int index = if_nametoindex(WG_INTERFACE);
-    if (index <= 0) {
-      logger.error() << "if_nametoindex() failed:" << strerror(errno);
-      return false;
-    }
-    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
-  }
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
