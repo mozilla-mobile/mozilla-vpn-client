@@ -81,7 +81,7 @@ MZViewBase {
                 labelText: MZI18n.LocalNetworkAccessLabel
                 subLabelText: MZI18n.LocalNetworkAccessSubLabel
                 isChecked: MZSettings.localNetworkAccess
-                enabled: VPNController.StateOff
+                enabled: VPNController.state === VPNController.StateOff
                 onClicked: {
                     if (VPNController.StateOff) {
                         MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
