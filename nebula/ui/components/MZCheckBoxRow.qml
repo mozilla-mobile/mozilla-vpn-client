@@ -30,7 +30,6 @@ RowLayout {
         opacity: checkBoxRow.enabled ? 1 : 0.5
         accessibleName: labelText
         Layout.leftMargin: leftMargin
-        enabled: checkBoxRow.enabled
     }
 
     ColumnLayout {
