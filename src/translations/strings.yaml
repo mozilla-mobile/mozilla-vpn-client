@@ -361,8 +361,8 @@ settings:
     comment: Button label to clear all apps from the exclusions list
 
 localNetworkAccess:
-  label: "Local network access"
-  subLabel: "Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers."
+  label: Local network access
+  subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?

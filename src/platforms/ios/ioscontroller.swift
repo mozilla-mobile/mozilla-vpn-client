@@ -156,7 +156,7 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, excludeLocalNetworks: Bool, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
