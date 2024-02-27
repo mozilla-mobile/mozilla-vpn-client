@@ -78,9 +78,9 @@ class xliff_language:
     # Perform variable substitution and return the transformed text.
     def transform(self, text):
         start = 0
-        ac_regex = re.compile('@[\w.]+@') ## Autoconf style match: @VARNAME@
-        cm_regex = re.compile('\${[\w.]+}')  ## CMake style match: ${VARNAME}
-        qt_regex = re.compile('qtTrId("[\w.]+")') ## Qt match: qtTrId("VARNAME")
+        ac_regex = re.compile('@[\\w.]+@') ## Autoconf style match: @VARNAME@
+        cm_regex = re.compile('\\${[\\w.]+}')  ## CMake style match: ${VARNAME}
+        qt_regex = re.compile('qtTrId\\("[\\w.]+"\\)') ## Qt match: qtTrId("VARNAME")
 
         while start < len(text):
             ## Search for the first thing that we can translate
@@ -99,7 +99,7 @@ class xliff_language:
                 match = cm_match
                 trid = cm_match.group(0)[2:-1]
             elif qt_match and (qt_start < ac_start) and (qt_start < cm_start):
-                match = cm_match
+                match = qt_match
                 trid = qt_match.group(0)[8:-2] ## TODO: Won't handle whitespace well.
             else:
                 break
