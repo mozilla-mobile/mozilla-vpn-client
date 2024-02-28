@@ -116,7 +116,7 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  excludeLocalNetworks: Bool, allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         TunnelManager.withTunnel { tunnel in
@@ -142,7 +142,7 @@ public class IOSControllerImpl : NSObject {
             var peerConfigurations: [PeerConfiguration] = []
             peerConfigurations.append(peerConfiguration)
 
-            var interface = InterfaceConfiguration(privateKey: privateKey!)
+            var interface = InterfaceConfiguration(privateKey: self.privateKey!)
 
             if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
                let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
@@ -152,7 +152,7 @@ public class IOSControllerImpl : NSObject {
 
             let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 

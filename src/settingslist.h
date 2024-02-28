@@ -705,7 +705,7 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    removeSubscriptionTransactions,  // remover
                    hasSubscriptionTransactions,     // has
                    "subscriptionTransactions",      // key
-                   QStringList(),                   // efault value
+                   QStringList(),                   // default value
                    false,                           // remove when reset
                    true                             // sensitive (do not log)
 )
@@ -716,7 +716,6 @@ SETTING_BOOL(localNetworkAccess,        // getter
              hasLocalNetworkAccess,     // has
              "localNetworkAccess",      // key
              false,                     // default value
-             false,                     // user setting
              true,                      // remove when reset
              false                      // sensitive (do not log)
 )
