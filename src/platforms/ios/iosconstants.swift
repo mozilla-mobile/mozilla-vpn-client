@@ -5,6 +5,7 @@
 struct Constants {
   static let appGroupIdentifier = "group.org.mozilla.ios.Guardian"
   static let networkExtensionLogFileName = "networkextension.log"
+  static let appLogFileName = "mozillavpnswift.log"
 
   struct UserDefaultKeys {
     static let telemetryEnabled = "TELEMETRY_ENABLED"

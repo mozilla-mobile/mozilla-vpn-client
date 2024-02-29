@@ -32,10 +32,16 @@ IOSLogger::~IOSLogger() {
 }
 
 // static
-void IOSLogger::debug(const QString& message) { [impl debugWithMessage:message.toNSString()]; }
+void IOSLogger::debug(const QString& message) {
+  [impl debugToConsoleWithMessage:message.toNSString()];
+}
 
 // static
-void IOSLogger::info(const QString& message) { [impl infoWithMessage:message.toNSString()]; }
+void IOSLogger::info(const QString& message) {
+  [impl infoToConsoleWithMessage:message.toNSString()];
+}
 
 // static
-void IOSLogger::error(const QString& message) { [impl errorWithMessage:message.toNSString()]; }
+void IOSLogger::error(const QString& message) {
+  [impl errorToConsoleWithMessage:message.toNSString()];
+}
