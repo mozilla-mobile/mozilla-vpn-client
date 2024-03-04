@@ -46,7 +46,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   WireguardUtils* wgutils() const override { return m_wgutils; }
   bool supportIPUtils() const override { return true; }
   IPUtils* iputils() override;
-  bool supportDnsUtils() const override { return true; }
   DnsUtils* dnsutils() override;
 
  private:
