@@ -18,7 +18,6 @@
 struct MozillaVPNPrivate;
 class CaptivePortal;
 class CaptivePortalDetection;
-class ConnectionBenchmark;
 class ConnectionHealth;
 class Controller;
 class DeviceModel;
@@ -130,7 +129,6 @@ class MozillaVPN final : public App {
   // Private object getters:
   CaptivePortal* captivePortal() const;
   CaptivePortalDetection* captivePortalDetection() const;
-  ConnectionBenchmark* connectionBenchmark() const;
   ConnectionHealth* connectionHealth() const;
   Controller* controller() const;
   ServerData* serverData() const;
