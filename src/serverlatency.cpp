@@ -65,6 +65,9 @@ void ServerLatency::initialize() {
   if (feature->isSupported()) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
   }
+
+  connect(qApp, &QApplication::applicationStateChanged, this,
+          &ServerLatency::applicationStateChanged);
 }
 
 void ServerLatency::start() {
@@ -249,6 +252,26 @@ void ServerLatency::stateChanged() {
     // If the VPN has been deactivated, start a refresh if desired.
     start();
   }
+}
+
+// iOS kills the socket shortly after the device is turned off, and possibly if
+// the app is backgrounded. This was causing a crash when the device was turned
+// back on. By only refreshing the server list when the app is active, we
+// prevent this crash. More details in VPN-5766.
+void ServerLatency::applicationStateChanged() {
+#ifdef MZ_IOS
+  if (QGuiApplication::applicationState() !=
+      Qt::ApplicationState::ApplicationActive) {
+    if (m_pingSender != nullptr) {
+      m_wantRefresh = true;
+      stop();
+    }
+  } else {
+    if (m_wantRefresh) {
+      refresh();
+    }
+  }
+#endif
 }
 
 void ServerLatency::recvPing(quint16 sequence) {

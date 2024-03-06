@@ -96,6 +96,7 @@ class ServerLatency final : public QObject {
 
  private slots:
   void stateChanged();
+  void applicationStateChanged();
   void recvPing(quint16 sequence);
   void criticalPingError();
 };
