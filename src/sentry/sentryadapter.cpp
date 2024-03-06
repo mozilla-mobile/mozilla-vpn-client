@@ -132,7 +132,7 @@ void SentryAdapter::onLoglineAdded(const QByteArray& line) {
 
 sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
                                       sentry_value_t event, void* closure) {
-  logger.info() << "Sentry ON CRASH";
+  logger.info() << "Sentry ON CRASH:" << uctx->siginfo->si_signo;
   captureQMLStacktrace("Client Crashed, Current QML Stack:");
   return event;
 }
