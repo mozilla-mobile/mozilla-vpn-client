@@ -78,12 +78,6 @@ class QmlQueryComposer {
 const screenHome = {
   BACK: new QmlQueryComposer('//screenHome-back'),
   CAP_PORTAL_BUTTON: new QmlQueryComposer('//captivePortalAlertActionButton'),
-  CONNECTION_INFO_ERROR: new QmlQueryComposer('//connectionInfoError'),
-  CONNECTION_INFO_RETRY:
-      new QmlQueryComposer('//connectionInfoErrorRetryButton'),
-  CONNECTION_INFO_RESTART:
-      new QmlQueryComposer('//connectionInfoRestartButton'),
-  CONNECTION_INFO_TOGGLE: new QmlQueryComposer('//connectionInfoToggleButton'),
   CONTROLLER_SUBTITLE: new QmlQueryComposer('//controllerSubTitle'),
   CONTROLLER_TITLE: new QmlQueryComposer('//controllerTitle'),
   CONTROLLER_TOGGLE: new QmlQueryComposer('//controllerToggle'),

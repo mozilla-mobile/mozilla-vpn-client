@@ -91,11 +91,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -254,11 +249,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: true
-            }
-
-            PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: !ipInfoPanel.isOpen
             }
 
             PropertyChanges {
