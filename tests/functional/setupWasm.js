@@ -19,7 +19,6 @@ const vpnWasm = require('./helperWasm.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./servers/networkBenchmark.js');
 const captivePortalServer = require('./servers/captivePortalServer.js');
 const wasm = require('./wasm.js');
 
@@ -47,14 +46,12 @@ exports.mochaHooks = {
     await guardian.start(false);
     await fxaServer.start(guardian.url, false);
     await addonServer.start(false);
-    await networkBenchmark.start(false);
     await captivePortalServer.start(false);
 
     const u = new URL(`${url}/test.html`);
     u.searchParams.set('guardian', guardian.url);
     u.searchParams.set('fxa', fxaServer.url);
     u.searchParams.set('addon', `${addonServer.url}/01_empty_manifest/`);
-    u.searchParams.set('benchmark', networkBenchmark.url);
     u.searchParams.set(
       'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
     url = u.toString()
@@ -86,14 +83,12 @@ exports.mochaHooks = {
     guardian.stop();
     fxaServer.stop();
     addonServer.stop();
-    networkBenchmark.stop();
     captivePortalServer.stop();
     wasm.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
-    networkBenchmark.throwExceptionsIfAny();
     captivePortalServer.throwExceptionsIfAny();
 
     await driver.quit();
@@ -106,8 +101,6 @@ exports.mochaHooks = {
       this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
       this.currentTest.ctx.fxaOverrideEndpoints || null;
-    networkBenchmark.overrideEndpoints =
-      this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     await driver.get(url);
     await vpn.connect(vpnWasm, { url, driver });
@@ -122,7 +115,6 @@ exports.mochaHooks = {
     // middle of the tests
     this.currentTest.ctx.guardianServer = guardian;
     this.currentTest.ctx.fxaServer = fxaServer;
-    this.currentTest.ctx.networkBenchmarkServer = networkBenchmark;
 
     console.log('Starting test:', this.currentTest.title);
   },
