@@ -25,7 +25,6 @@ qt_add_qml_module(mozillavpn-ui
         singletons/VPN.h
         singletons/VPNAppPermissions.h
         singletons/VPNCaptivePortal.h
-        singletons/VPNConnectionBenchmark.h
         singletons/VPNConnectionHealth.h
         singletons/VPNController.h
         singletons/VPNCurrentServer.h
