@@ -600,7 +600,6 @@ Item {
 
         onOpacityChanged: {
             // We only want to record this event when the opacity has _just_ changed.
-            // This seems like the wrong ping???
             if (opacity !== previousOpacity && opacity === 1) {
                 Glean.impression.connectionInfoScreen.record({
                     screen: "connection_info",
