@@ -38,8 +38,8 @@ WindowsTunnelService::WindowsTunnelService(QObject* parent) : QObject(parent) {
   }
 
   // Is the service already running? Terminate it.
-  SC_HANDLE service = OpenService((SC_HANDLE)m_scm, TUNNEL_SERVICE_NAME,
-                                  SERVICE_ALL_ACCESS);
+  SC_HANDLE service =
+      OpenService((SC_HANDLE)m_scm, TUNNEL_SERVICE_NAME, SERVICE_ALL_ACCESS);
   if (service != nullptr) {
     logger.info() << "Tunnel already exists. Terminating it.";
     stopAndDeleteTunnelService(service);
