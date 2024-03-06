@@ -107,7 +107,6 @@ MZFlickable {
 
             disableRowWhen: (VPNController.state !== VPNController.StateOn
                              && VPNController.state !== VPNController.StateOff)
-                            || box.connectionInfoScreenVisible
             Layout.topMargin: 12
             contentChildren: [
 
