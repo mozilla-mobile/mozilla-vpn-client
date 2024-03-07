@@ -79,7 +79,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
 
-      if (supportDnsUtils() && !dnsutils()->restoreResolvers()) {
+      if (!dnsutils()->restoreResolvers()) {
         return false;
       }
 
@@ -161,10 +161,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
-  if (!supportDnsUtils()) {
-    return true;
-  }
-
   if ((config.m_hopType == InterfaceConfig::MultiHopExit) ||
       (config.m_hopType == InterfaceConfig::SingleHop)) {
     QList<QHostAddress> resolvers;
@@ -348,13 +344,8 @@ bool Daemon::deactivate(bool emitSignals) {
   }
 
   // Cleanup DNS
-  if (supportDnsUtils() && !dnsutils()->restoreResolvers()) {
-    return false;
-  }
-
-  if (!wgutils()->interfaceExists()) {
-    logger.warning() << "Wireguard interface does not exist.";
-    return false;
+  if (!dnsutils()->restoreResolvers()) {
+    logger.warning() << "Failed to restore DNS resolvers.";
   }
 
   // Cleanup peers and routing
@@ -366,14 +357,10 @@ bool Daemon::deactivate(bool emitSignals) {
     }
     wgutils()->deletePeer(config);
   }
+  m_connections.clear();
 
   // Delete the interface
-  if (!wgutils()->deleteInterface()) {
-    return false;
-  }
-
-  m_connections.clear();
-  return true;
+  return wgutils()->deleteInterface();
 }
 
 QString Daemon::logs() {
