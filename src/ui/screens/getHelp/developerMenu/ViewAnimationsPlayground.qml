@@ -97,10 +97,6 @@ Item {
                     value: ":/ui/resources/animations/vpnlogo-drop_animation.json"
                 }
                 ListElement {
-                    name: "VPN Logo (kinetic)"
-                    value: ":/ui/resources/animations/vpnlogo-kinetic_animation.json"
-                }
-                ListElement {
                     name: "Lock"
                     value: ":/ui/resources/animations/lock_animation.json"
                 }
@@ -111,10 +107,6 @@ Item {
                 ListElement {
                     name: "VPN Active"
                     value: ":/ui/resources/animations/vpnactive_animation.json"
-                }
-                ListElement {
-                    name: "Speedometer"
-                    value: ":/ui/resources/animations/speedometer_animation.json"
                 }
             }
 
