@@ -13,10 +13,12 @@ ColumnLayout {
 
     property bool isOnboarding: false
     property string telemetryScreenId
+    property int dividerSpacing: MZTheme.theme.toggleRowDividerSpacing
+
 
     signal settingClicked(dnsProviderFlags: int, active: bool)
 
-    spacing: MZTheme.theme.vSpacingSmall
+    spacing: dividerSpacing
 
     Repeater {
         id: repeater
@@ -40,15 +42,15 @@ ColumnLayout {
             }
         ];
 
-        delegate: MZCheckBoxRow {
+        delegate: MZToggleRow {
             objectName: modelData.objectName
-
-            leftMargin: 0
 
             labelText: modelData.settingTitle
             subLabelText: modelData.settingDescription
-            isChecked: MZSettings.dnsProviderFlags & modelData.settingValue
-            showDivider: false
+            checked: MZSettings.dnsProviderFlags & modelData.settingValue
+            dividerTopMargin: dividerSpacing
+            showDivider: !isOnboarding || index + 1 !== repeater.model.length
+
             onClicked: {
                 let dnsProviderFlags = MZSettings.dnsProviderFlags;
                 dnsProviderFlags &= ~MZSettings.Custom;

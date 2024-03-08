@@ -353,5 +353,7 @@
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
         <file>resources/warning-crash.svg</file>
+        <file>resources/reset.svg</file>
+        <file>resources/confirm-reset.svg</file>
     </qresource>
 </RCC>

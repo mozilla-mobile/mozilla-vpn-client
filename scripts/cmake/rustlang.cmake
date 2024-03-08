@@ -124,19 +124,16 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV LD=${ANDROID_TOOLCHAIN_ROOT_BIN}/lld)
     endif()
 
-    if(CMAKE_GENERATOR MATCHES "Ninja")
+    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
         ## If we are building with Ninja, then we can improve build times by
         # specifying a DEPFILE to let CMake know when the library needs
         # building and when we can skip it.
-        #
-        # TODO: Since CMake 3.20 can also set a DEPFILE for Unix Makefiles too.
         set(RUST_BUILD_DEPENDENCY_FILE
             ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
         )
         cmake_policy(PUSH)
-        if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
-            cmake_policy(SET CMP0116 NEW)
-        endif()
+        cmake_policy(SET CMP0116 NEW)
+
         ## Outputs for the release build
         add_custom_command(
             OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}

@@ -13,8 +13,8 @@ Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
 
-# We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :) 
-# TODO: We need to handle this at some point. 
+# We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :)
+# TODO: We need to handle this at some point.
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
 # TODO: Remove this and change all to Microsoft_VC143 once we know there is no cavecat building with msvcv143
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm -Destination $REPO_ROOT_PATH\\Microsoft_VC142_CRT_x64.msm
@@ -38,29 +38,29 @@ tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -
 $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
-## Setup the conda environment 
+## Setup the conda environment
 . $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
 conda-unpack
 
-# Conda Pack excpets to be run under cmd. therefore it will 
+# Conda Pack excpets to be run under cmd. therefore it will
 # (unlike conda) ignore activate.d powershell scripts.
-# So let's manually run the activation scripts. 
+# So let's manually run the activation scripts.
 #
-$CONDA_PREFIX = $env:CONDA_PREFIX 
+$CONDA_PREFIX = $env:CONDA_PREFIX
 
 $ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CONDA_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
 foreach ($script in  $ACTIVATION_SCRIPTS)  {
     Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
     . "$CONDA_PREFIX\etc\conda\activate.d\$script"
 }
-# This is a wierd bug `PREFIX/bin` does not seem to be on the PATH 
-# when we run the activate.bat :shrugs: 
-# This will cause go to be missing. 
+# This is a wierd bug `PREFIX/bin` does not seem to be on the PATH
+# when we run the activate.bat :shrugs:
+# This will cause go to be missing.
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
 gci env:* | sort-object name
 
 
-# Okay We are ready to build! 
+# Okay We are ready to build!
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
@@ -70,7 +70,8 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
         -DWINTUN_FOLDER="$FETCHES_PATH\wintun" `
-        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake"
+        -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
+        -DBUILD_TESTS=OFF
 
 cmake --build $BUILD_DIR
 
@@ -93,7 +94,7 @@ Get-command python
 python  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 $env:SENTRY_AUTH_TOKEN=$(Get-Content sentry_debug_file_upload_key)
 # Are we logged in?
-sentry-cli-Windows-x86_64.exe info 
+sentry-cli-Windows-x86_64.exe info
 
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
@@ -105,4 +106,3 @@ if ($env:MOZ_SCM_LEVEL -eq "3") {
 } else{
     sentry-cli-Windows-x86_64.exe --log-level info debug-files upload --org mozilla -p vpn-client --include-sources --no-upload $BUILD_DIR
 }
-

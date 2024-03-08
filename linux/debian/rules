@@ -11,11 +11,13 @@ ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && 
 	export PATH := $(GODIR)/bin:$(PATH)
 endif
 
+CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
+
 %:
-	dh $@ --with=systemd --buildsystem=cmake+ninja --warn-missing
+	dh $@ --with=systemd --buildsystem=cmake+ninja --builddirectory=$(CMAKE_BUILD_DIR) --warn-missing
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTING=OFF
+	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF
 
 override_dh_auto_test:
 
@@ -24,10 +26,10 @@ override_dh_installdocs:
 override_dh_installinfo:
 
 override_dh_installsystemd:
-	dh_installsystemd debian/mozillavpn/lib/systemd/system/mozillavpn.service
+	dh_installsystemd $(CMAKE_BUILD_DIR)/src/mozillavpn.service
 
 override_dh_systemd_start:
-	dh_systemd_start debian/mozillavpn/lib/systemd/system/mozillavpn.service
+	dh_systemd_start $(CMAKE_BUILD_DIR)/src/mozillavpn.service
 
 override_dh_systemd_enable:
-	dh_systemd_enable debian/mozillavpn/lib/systemd/system/mozillavpn.service
+	dh_systemd_enable $(CMAKE_BUILD_DIR)/src/mozillavpn.service

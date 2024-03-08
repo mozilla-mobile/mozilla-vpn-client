@@ -6,6 +6,7 @@
 # Publishes builds of openSSL for android on maven. 
 
 include(ExternalProject)
+
 ExternalProject_Add(ndk_openssl
   URL https://maven.google.com/com/android/ndk/thirdparty/openssl/1.1.1q-beta-1/openssl-1.1.1q-beta-1.aar
   URL_HASH SHA256=a5b05c4b362d35c022238ef9b2e4e2196248adea3bac9dd683845ee75a3a8d66
@@ -54,6 +55,26 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E copy ${_OPENSSL_CRYPTO_MODULE}/libs/android.${ANDROID_ABI}/libcrypto.so ${_OPENSSL_LIBS}/libcrypto.so)
 
 
-get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
-get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
-get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
+# In case of newer versions of QT, for QtSLL we need to 
+# have 3.x.x bundled alongside.
+# Some rust crates seem to need 1.x? so ugh. both i guess. 
+# This piece just add's the _3.so libs into the merged folder.
+find_package(Qt6 COMPONENTS Core)
+if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
+include(FetchContent)
+# Google does not provide openssl v 3.0
+# so let's use the builds from kdab
+  FetchContent_Declare(
+    android_openssl
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
+    URL_HASH MD5=7c0736e84fc21d0d767ffc13876e5491
+  )
+  FetchContent_MakeAvailable(android_openssl)
+  add_custom_command(
+    TARGET ndk_openssl_merged
+    COMMAND ${CMAKE_COMMAND} -E copy ${android_openssl_SOURCE_DIR}/ssl_3/${ANDROID_ABI}/libssl_3.so ${_OPENSSL_LIBS}/libssl_3.so
+    COMMAND ${CMAKE_COMMAND} -E copy ${android_openssl_SOURCE_DIR}/ssl_3/${ANDROID_ABI}/libcrypto_3.so ${_OPENSSL_LIBS}/libcrypto_3.so
+  )
+endif()
+

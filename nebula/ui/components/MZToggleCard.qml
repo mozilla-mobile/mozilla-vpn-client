@@ -13,7 +13,6 @@ Item {
     property alias sublabelText: sublabel.text
     property alias toggleEnabled: toggle.enabled
     property alias toggleChecked: toggle.checked
-    property alias toolTipTitleText: toggle.toolTipTitle
     property alias toggleObjectName: toggle.objectName
 
     MZDropShadowWithStates {

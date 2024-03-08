@@ -3,5 +3,5 @@
   "description": "A fast, secure and easy to use VPN. Built by the makers of Firefox. ",
   "path": "@WEBEXT_INSTALL_LIBDIR@/mozillavpn/mozillavpnnp",
   "type": "stdio",
-  "allowed_extensions": [ "vpn@mozilla.org", "@testpilot-containers" ]
+  "allowed_extensions": [ "vpn@mozilla.com", "@testpilot-containers" ]
 }

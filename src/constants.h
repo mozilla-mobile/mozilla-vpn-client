@@ -300,13 +300,6 @@ constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 constexpr const wchar_t* WINDOWS_CRED_KEY = L"Mozilla VPN";
 #endif
 
-// Communication pipe between instances
-#if defined(MZ_WINDOWS)
-constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
-#else
-constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
-#endif
-
 #ifdef MZ_ANDROID
 constexpr const char* ANDROID_LOG_NAME = "mozillavpn";
 
@@ -325,6 +318,8 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
 constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
 // TODO: #endif
+
+constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
 
 };  // namespace Constants
 

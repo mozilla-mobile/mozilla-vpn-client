@@ -31,12 +31,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install python dependencies
-        run: |
-          pip install -r requirements.txt
+          cache: 'pip'
+      - run: pip install -r requirements.txt
 
       - name: Generating translations
         run: |

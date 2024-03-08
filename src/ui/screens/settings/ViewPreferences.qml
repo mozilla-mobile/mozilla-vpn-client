@@ -26,14 +26,19 @@ MZViewBase {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignHCenter
 
-        MZCheckBoxRow {
-            id: startAtBootCheckBox
-            objectName: "settingStartAtBoot"
+        MZToggleRow {
+            objectName: "startAtBootToogle"
+
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: MZTheme.theme.windowMargin
+            anchors.rightMargin: MZTheme.theme.windowMargin
 
             labelText: _startAtBootTitle
             subLabelText: MZI18n.SettingsStartAtBootSubtitle
-            isChecked: MZSettings.startAtBoot
-            showDivider: false
+            checked: MZSettings.startAtBoot
+            visible: MZFeatureList.get("startOnBoot").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: {
                 MZSettings.startAtBoot = !MZSettings.startAtBoot
                 if (MZSettings.startAtBoot)
@@ -45,28 +50,20 @@ MZViewBase {
                     Glean.interaction.vpnOnStartupDisabled.record({screen:telemetryScreenId})
                 }
             }
-            visible: MZFeatureList.get("startOnBoot").isSupported
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: MZTheme.theme.windowMargin
-            }
         }
 
-        MZCheckBoxRow {
-            id: dataCollection
-            objectName: "dataCollection"
-            width: parent.width - MZTheme.theme.windowMargin
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: MZTheme.theme.windowMargin
-            }
+        MZToggleRow {
+            objectName: "dataCollectionToggle"
 
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: MZTheme.theme.windowMargin
+            anchors.rightMargin: MZTheme.theme.windowMargin
 
             labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             subLabelText: MZI18n.SettingsDataCollectionDescription
-            isChecked: MZSettings.gleanEnabled
+            checked: MZSettings.gleanEnabled
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
         }
 

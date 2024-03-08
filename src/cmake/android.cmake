@@ -60,3 +60,11 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${OPENSSL_LIBS_DIR}/libssl_1_1.so
     ${QTGLEAN_LIB_LOCATION}
     APPEND)
+
+
+if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
+    set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
+        ${OPENSSL_LIBS_DIR}/libcrypto_3.so
+        ${OPENSSL_LIBS_DIR}/libssl_3.so
+    APPEND)
+endif()

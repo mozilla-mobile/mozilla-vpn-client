@@ -1,0 +1,51 @@
+base_ref: origin/main
+base_repository: https://github.com/mozilla-releng/staging-mozilla-vpn-client
+base_rev: 293aa12b2d6ee022f18cadb2f239be0a5f84d5f6
+build_date: 1692049433
+build_number: 1
+do_not_optimize: []
+enable_always_target: true
+existing_tasks:
+  build-addons-bundle: O5HYr5kcR2Og9dTqxnZWFg
+  build-android-arm64/debug: FatrFwiXSgqHNKLQbmo2EQ
+  build-android-arm64/release: LrM8vfBwToWoyUyEZY75iQ
+  build-android-x64/debug: BEdBMoxpRH-leSCwQyokUg
+  build-ios/debug/cmake: SXk_sq61TGmeQAt-aMEOOA
+  build-linux/fedora-fc36: a0XHF5AUTqGH6tJ3I-ewqg
+  build-linux/fedora-fc37: A5v7lco5SPy7h-8Bu3NS3w
+  build-linux/focal: bKHeWPQRR7e0SSnZoctS3g
+  build-linux/jammy: WHbuNlHLSqW2Yix62ncH2A
+  build-linux/kinetic: XBCTT6b9RAm_lZbdVbmoxQ
+  build-linux/lunar: fXNvfFAuSBWQnxRGAREmWQ
+  build-linux64/release-deb: RYwRkChTTqSP-YsJrzW_ZA
+  build-macos/pr: ZMxnxgT_SImzRMn27DDyXg
+  build-source/vpn: HjtImOLUQV6dFIoIqUfpcQ
+  build-wasm/opt: bSjKBM0qSISH7kQ1UIVJdQ
+  build-windows/opt: ajetqRIORX2GnwiKy8bifQ
+  repackage-msi: G9UcKDAGTRKiiqic9kIrxQ
+  repackage-signing-msi: f7OS87xwQwGerLFCHn7C7w
+  signing-addons-bundle: YhdzN2BnQBy5ZHXMEystPA
+  signing-android-arm64/release: cbQmLU2FT-GQ7tTvQD6FQA
+  signing-windows/opt: UGL3O7yPRZe4vlO20fbpQg
+  test-taskgraph-definition: O4LTEpGISkGGMMqKKCBtrg
+filters:
+- target_tasks_method
+head_ref: refs/heads/releases/basti_test_bm
+head_repository: https://github.com/mozilla-releng/staging-mozilla-vpn-client
+head_rev: 041d557e101b83c3e3e152e6ff11c7d938f43b72
+head_tag: ''
+level: '1'
+moz_build_date: '20230814214353'
+next_version: null
+optimize_strategies: null
+optimize_target_tasks: true
+owner: strseb@users.noreply.github.com
+project: staging-mozilla-vpn-client
+pull_request_number: null
+pushdate: 0
+pushlog_id: '0'
+repository_type: git
+shipping_phase: promote-client
+target_tasks_method: client-target-tasks
+tasks_for: action
+version: ''

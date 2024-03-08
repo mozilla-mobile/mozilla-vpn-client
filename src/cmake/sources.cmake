@@ -198,6 +198,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp

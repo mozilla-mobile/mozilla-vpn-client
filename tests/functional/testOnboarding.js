@@ -69,12 +69,12 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'false');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
-    //Check data collection checkbox
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
+    //Check data collection toggle
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'true');
 
     //Check privacy link
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
@@ -93,24 +93,24 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 1);
     assert.equal(await vpn.getSetting('onboardingStep'), 1);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'false');
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'false');
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE, 'checked'), 'false');
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
 
-    //Clicks block ads checkbox
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'true');
+    //Clicks block ads toggle
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 2);
 
-    //Clicks block trackers checkbox
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
+    //Clicks block trackers toggle
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 6);
 
-    //Clicks block trackers checkbox
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    //Clicks block trackers toggle
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE, 'checked'), 'true');
     //dnsProviderFlags is a bitfield mapping of hex flags that can handle bitwise operations to combine multiple flags
     //here, we combine blockAds (0x02), blockTrackers (0x04), and blockMalware (0x08) which totals to 0xE or 14 in decimal
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 14);
@@ -122,7 +122,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 0);
 
     //Ensure all selections on previous slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'true');
 
     //Return to privacy slide
     await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
@@ -168,9 +168,9 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 1);
 
     //Ensure all selections on previous slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX, 'checked'), 'true');
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE, 'checked'), 'true');
 
     //Return to devices slide
     await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
@@ -192,12 +192,12 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
     assert.equal(await vpn.getSetting('onboardingStep'), 3);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'false');
     assert.equal(await vpn.getSetting('startAtBoot'), false);
 
-    //Check start at boot checkbox
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
+    //Check start at boot toggle
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test back button
@@ -211,7 +211,7 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Ensure all selections on start slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test going back one slide via progress bar
@@ -243,18 +243,18 @@ describe('Onboarding', function() {
 
     //Check privacy settings
     await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_ADS_CHECKBOX, 'checked'), 'true');
-    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_TRACKERS_CHECKBOX, 'checked'), 'true');
-    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_MALWARE_CHECKBOX, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_ADS_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_TRACKERS_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.privacyView.BLOCK_MALWARE_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('dnsProviderFlags'), 14);
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     //Check data collection and start at boot
     await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.DATA_COLLECTION, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.DATA_COLLECTION_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
-    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.START_AT_BOOT, 'isChecked'), 'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('startAtBoot'), true);
 
   });
@@ -331,9 +331,9 @@ describe('Onboarding', function() {
     //Ensure we are in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Ensure that the data collection checkbox state is bound to onboardingDataCollectionEnabled, which defaults to false
-    //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'false');
+    //Ensure that the data collection toggle state is bound to onboardingDataCollectionEnabled, which defaults to false
+    //and that this toggles state does not affect gleanEnabled
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'false');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), false);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
@@ -349,10 +349,10 @@ describe('Onboarding', function() {
     //Ensure we are in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled when clicked
-    //and that this checkboxes state does not affect gleanEnabled
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
+    //Ensure that the data collection toggle state remains bound to onboardingDataCollectionEnabled when clicked
+    //and that this toggles state does not affect gleanEnabled
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_TOGGLE.visible());
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
@@ -363,7 +363,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
   });
 
-  it('Data collection checkbox state persists across app sessions', async () => {
+  it('Data collection toggle state persists across app sessions', async () => {
     // Skip WASM because this test involves quitting and relaunching
     if (this.ctx.wasm) {
       return;
@@ -371,8 +371,8 @@ describe('Onboarding', function() {
     //Ensure we are in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Click the data collection checkbox to set onboardingDataCollectionEnabled to true
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_CHECKBOX.visible());
+    //Click the data collection toggle to set onboardingDataCollectionEnabled to true
+    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_TOGGLE.visible());
 
     //Quit and relaunch the app
     await vpn.quit();
@@ -381,14 +381,14 @@ describe('Onboarding', function() {
     //Ensure we are still in onboarding
     await vpn.waitForQuery(queries.screenOnboarding.DATA_SLIDE.visible());
 
-    //Ensure that the data collection checkbox state remains bound to onboardingDataCollectionEnabled upon relaunch
-    //and that this checkboxes state does not affect gleanEnabled
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
+    //Ensure that the data collection toggle state remains bound to onboardingDataCollectionEnabled upon relaunch
+    //and that this toggles state does not affect gleanEnabled
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
-    //Ensure the data collection checkbox is checked and onboardingDataCollectionEnabled is set to true
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_CHECKBOX_ROW, 'isChecked'), 'true');
+    //Ensure the data collection toggle is checked and onboardingDataCollectionEnabled is set to true
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.DATA_TOGGLE, 'checked'), 'true');
     assert.equal(await vpn.getSetting('onboardingDataCollectionEnabled'), true);
   });
 
@@ -581,42 +581,42 @@ describe('Onboarding', function() {
       await vpn.waitForQuery(queries.screenOnboarding.PRIVACY_SLIDE.visible());
 
       //Verify that blockAdsEnabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE.visible());
       const blockAdsEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockAdsEnabled", "main");
       assert.equal(blockAdsEnabledEvents.length, 1);
       const blockAdsEnabledEventsExtras = blockAdsEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockAdsEnabledEventsExtras.screen);
 
       //Verify that blockAdsDisabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE.visible());
       const blockAdsDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockAdsDisabled", "main");
       assert.equal(blockAdsDisabledEvents.length, 1);
       const blockAdsDisabledEventsExtras = blockAdsDisabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockAdsDisabledEventsExtras.screen);
 
       //Verify that blockTrackersEnabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE.visible());
       const blockTrackersEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersEnabled", "main");
       assert.equal(blockTrackersEnabledEvents.length, 1);
       const blockTrackersEnabledEventsExtras = blockTrackersEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockTrackersEnabledEventsExtras.screen);
 
       //Verify that blockTrackersDisabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE.visible());
       const blockTrackersDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersDisabled", "main");
       assert.equal(blockTrackersDisabledEvents.length, 1);
       const blockTrackersDisabledEventsExtras = blockTrackersDisabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockTrackersDisabledEventsExtras.screen);
 
       //Verify that blockMalwareEnabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE.visible());
       const blockMalwareEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareEnabled", "main");
       assert.equal(blockMalwareEnabledEvents.length, 1);
       const blockMalwareEnabledEventsExtras = blockMalwareEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockMalwareEnabledEventsExtras.screen);
 
       //Verify that blockMalwareDisabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE.visible());
       const blockMalwareDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareDisabled", "main");
       assert.equal(blockMalwareDisabledEvents.length, 1);
       const blockMalwareDisabledEventsExtras = blockMalwareDisabledEvents[0].extra;
@@ -709,14 +709,14 @@ describe('Onboarding', function() {
       await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
 
       //Verify that connectOnStartupEnabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
       const connectOnStartupEnabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupEnabled", "main");
       assert.equal(connectOnStartupEnabledEvents.length, 1);
       const connectOnStartupEnabledEventsExtras = connectOnStartupEnabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupEnabledEventsExtras.screen);
 
       //Verify that connectOnStartupDisabled event is recorded
-      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_CHECKBOX.visible());
+      await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
       const connectOnStartupDisabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupDisabled", "main");
       assert.equal(connectOnStartupDisabledEvents.length, 1);
       const connectOnStartupDisabledEventsExtras = connectOnStartupDisabledEvents[0].extra;

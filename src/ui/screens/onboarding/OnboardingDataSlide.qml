@@ -21,39 +21,47 @@ ColumnLayout {
 
     MZHeadline {
         Layout.topMargin: MZTheme.theme.vSpacing
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingDataSlideHeader
+        text: MZI18n.OnboardingDataSlideHeader2
         horizontalAlignment: Text.AlignLeft
     }
 
     MZInterLabel {
         Layout.topMargin: 8
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingDataSlideBody
+        text: MZI18n.OnboardingDataSlideBody2
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
    }
 
-    MZCheckBoxRow {
-        objectName: "dataCollectionCheckBox"
-
-        Layout.topMargin: MZUiUtils.isMobile() ? MZTheme.theme.vSpacing * 1.5 : MZTheme.theme.vSpacing
-        Layout.leftMargin: MZTheme.theme.windowMargin * 2
-        Layout.rightMargin: MZTheme.theme.windowMargin * 2
+    RowLayout {
+        Layout.topMargin: MZTheme.theme.vSpacingSmall
+        Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+        Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
-        leftMargin: 0
-        subLabelText: MZI18n.OnboardingDataSlideCheckboxLabel
-        showDivider: false
-        isChecked: MZSettings.onboardingDataCollectionEnabled
+        MZBoldInterLabel {
+            id: shareDataLabel
+            Layout.fillWidth: true
 
-        onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
+            text: MZI18n.OnboardingDataSlideToggleLabel
+            font.pixelSize: MZTheme.theme.fontSize
+            lineHeight: MZTheme.theme.labelLineHeight
+        }
+
+        MZSettingsToggle {
+            objectName: "dataCollectionToggle"
+
+            checked: MZSettings.onboardingDataCollectionEnabled
+            onClicked: MZSettings.onboardingDataCollectionEnabled = !MZSettings.onboardingDataCollectionEnabled
+            accessibleName: shareDataLabel.text
+        }
     }
 
     Item {
@@ -95,7 +103,7 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 2
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingDataSlideLearnMoreCaption
+        text: MZI18n.OnboardingDataSlideLearnMoreCaption2
         color: MZTheme.theme.fontColor
    }
 
