@@ -76,6 +76,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+    logger.info() << "ConnectionHealth not starting because no connection";
     return;
   }
 
@@ -127,20 +128,13 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   // setStability. Do not record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
-#if defined(UNIT_TEST)
-      // Always record metrics when testing
-      state == Controller::StateInitializing ||
-#endif
       state == Controller::StateSilentSwitching) {
     recordMetrics(m_stability, stability);
   }
 
-// Silent switch adds non-deterministic metrics when testing.
-#if not(defined(UNIT_TEST))
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
   }
-#endif
 
   if (m_stability == stability) {
     return;

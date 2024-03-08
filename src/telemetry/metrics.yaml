@@ -1745,8 +1745,7 @@ connection_health:
       done on the Android daemon and not on the iOS network extension.
 
       An unstable event happens when the connection is showing issues,
-      but a silent switch may still address the issue and no previous
-      silent switches have happened yet.
+      but silent switches may still address the issue.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
       - https://mozilla-hub.atlassian.net/browse/VPN-5860

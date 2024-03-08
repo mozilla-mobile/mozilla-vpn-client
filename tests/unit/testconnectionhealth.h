@@ -41,7 +41,12 @@ class TestConnectionHealth final : public TestHelper {
  private:
   SettingsHolder* m_settingsHolder = nullptr;
   int getTimingDistCountFromValues(QHash<int, int> values);
-  void metricsTest(int expectedStablePeriods, int expectedUnstablePeriods,
-                   int expectedNoSignalPeriods,
-                   ConnectionHealth::ConnectionStability currentPeriod);
+  void metricsTestErrorAndChange(int expectedStablePeriods,
+                                 int expectedUnstablePeriods,
+                                 int expectedNoSignalPeriods);
+  void metricsTestCount(int expectedStablePeriods, int expectedUnstablePeriods,
+                        int expectedNoSignalPeriods);
+  void metricsTestTimespan(int expectedStablePeriods,
+                           int expectedUnstablePeriods,
+                           int expectedNoSignalPeriods);
 };
