@@ -54,13 +54,6 @@ FEATURE(appReview,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_iosOrAndroid)
 
-FEATURE(benchmarkUpload,       // Feature ID
-        "Benchmark Upload",    // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
 FEATURE(captivePortal,          // Feature ID
         "Captive Portal",       // Feature name
         FeatureCallback_true,   // Can be flipped on

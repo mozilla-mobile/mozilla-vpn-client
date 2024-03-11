@@ -7,35 +7,6 @@ $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 # "outcome" category metrics record the outcome of some user action
 outcome:
-  speed_test_completed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A speed test has just been completed,
-      this is a backend event and does not necessarily
-      mean the user has seen the speed test completed screen.
-      For that, there is the impression.speed_test_result_completed event.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5366
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      speed:
-        description: |
-          The speed bucket that the test resulted in, or if problem occurred:
-          Slow | Medium | Fast | Cancelled | Error
-        type: string
-      outcome: &outcome_extra_key
-        description: The outcome of a given feature
-        type: string
   login_started:
     type: event
     lifetime: ping

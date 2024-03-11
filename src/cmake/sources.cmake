@@ -69,17 +69,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandwgconf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandwgconf.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktask.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktaskping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktaskping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktasksentinel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktasktransfer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/benchmarktasktransfer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/connectionbenchmark.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/connectionbenchmark.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/connectionbenchmark/uploaddatagenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/connectionhealth.h
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp

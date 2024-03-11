@@ -23,7 +23,6 @@ const vpnWS = require('./helperWS.js');
 const fxaServer = require('./servers/fxa.js');
 const guardian = require('./servers/guardian.js');
 const addonServer = require('./servers/addon.js');
-const networkBenchmark = require('./servers/networkBenchmark.js');
 const captivePortalServer = require('./servers/captivePortalServer.js');
 
 const app = process.env.MVPN_BIN;
@@ -75,16 +74,12 @@ exports.mochaHooks = {
     await guardian.start();
     await fxaServer.start(guardian.url);
     await addonServer.start();
-    await networkBenchmark.start();
     await captivePortalServer.start();
 
     process.env['MVPN_API_BASE_URL'] = guardian.url;
     process.env['MZ_FXA_API_BASE_URL'] = fxaServer.url;
     process.env['MZ_ADDON_URL'] = `${addonServer.url}/01_empty_manifest/`;
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
-
-    process.env['MZ_BENCHMARK_DOWNLOAD_URL'] = networkBenchmark.url;
-    process.env['MZ_BENCHMARK_UPLOAD_URL'] = networkBenchmark.url;
 
     process.env['MZ_CAPTIVE_PORTAL_URL'] =
       `http://%1:${captivePortalServer.port}/success.txt`;
@@ -94,13 +89,11 @@ exports.mochaHooks = {
     guardian.stop();
     fxaServer.stop();
     addonServer.stop();
-    networkBenchmark.stop();
     captivePortalServer.stop();
 
     guardian.throwExceptionsIfAny();
     fxaServer.throwExceptionsIfAny();
     addonServer.throwExceptionsIfAny();
-    networkBenchmark.throwExceptionsIfAny();
     captivePortalServer.throwExceptionsIfAny();
   },
 
@@ -111,7 +104,6 @@ exports.mochaHooks = {
 
       guardian.overrideEndpoints = null;
       fxaServer.overrideEndpoints = null;
-      networkBenchmark.overrideEndpoints = null;
 
       await startAndConnect();
       await vpn.reset();
@@ -131,8 +123,6 @@ exports.mochaHooks = {
       this.currentTest.ctx.guardianOverrideEndpoints || null;
     fxaServer.overrideEndpoints =
       this.currentTest.ctx.fxaOverrideEndpoints || null;
-    networkBenchmark.overrideEndpoints =
-      this.currentTest.ctx.networkBenchmarkOverrideEndpoints || null;
 
     if (this.currentTest.ctx.authenticationNeeded) {
       fs.writeFileSync(
@@ -159,7 +149,6 @@ exports.mochaHooks = {
     // middle of the tests
     this.currentTest.ctx.guardianServer = guardian;
     this.currentTest.ctx.fxaServer = fxaServer;
-    this.currentTest.ctx.networkBenchmarkServer = networkBenchmark;
 
     console.log('Starting test:', this.currentTest.title);
   },
