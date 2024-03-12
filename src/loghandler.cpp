@@ -398,8 +398,10 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
 
   m_output = new QTextStream(m_logFile);
 
+#ifdef MZ_DEBUG
   addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(logFileName)),
          proofOfLock);
+#endif
 }
 
 void LogHandler::closeLogFile(const QMutexLocker<QMutex>& proofOfLock) {
@@ -501,7 +503,11 @@ void LogHandler::serializeLogs(QTextStream* out,
 bool LogHandler::writeLogsToLocation(
     QStandardPaths::StandardLocation location,
     std::function<void(const QString& filename)>&& a_callback) {
+#ifdef MZ_DEBUG
   logger.debug() << "Trying to save logs in:" << location;
+#else
+  logger.debug() << "Trying to save logs.";
+#endif
 
   std::function<void(const QString& filename)> callback = std::move(a_callback);
 
@@ -522,7 +528,11 @@ bool LogHandler::writeLogsToLocation(
   QString logFile = logDir.filePath(filename);
 
   if (QFileInfo::exists(logFile)) {
+#ifdef MZ_DEBUG
     logger.warning() << logFile << "exists. Let's try a new filename";
+#else
+    logger.warning() << "Logfile exists. Let's try a new filename";
+#endif
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
@@ -537,7 +547,7 @@ bool LogHandler::writeLogsToLocation(
     }
   }
 
-  logger.debug() << "Writing logs into: " << logFile;
+  logger.debug() << "Writing logs.";
 
   QFile* file = new QFile(logFile);
   if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -561,7 +571,7 @@ bool LogHandler::writeLogsToLocation(
 
 bool LogHandler::writeAndShowLogs(QStandardPaths::StandardLocation location) {
   return writeLogsToLocation(location, [](const QString& filename) {
-    logger.debug() << "Opening the logFile somehow:" << filename;
+    logger.debug() << "Opening the logFile somehow.";
     UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
   });
 }
