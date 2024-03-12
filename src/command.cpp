@@ -79,8 +79,6 @@ bool Command::loadModels() {
     return false;
   }
 
-  vpn->serverData()->initialize();
-
   if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
       !vpn->serverCountryModel()->fromSettings() ||
       !vpn->user()->fromSettings() || !vpn->serverData()->fromSettings() ||

@@ -27,7 +27,12 @@ namespace {
 Logger logger("ServerData");
 }
 
-ServerData::ServerData() { MZ_COUNT_CTOR(ServerData); }
+ServerData::ServerData() {
+  MZ_COUNT_CTOR(ServerData);
+
+  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
+          &ServerData::settingsChanged);
+}
 
 ServerData::ServerData(const ServerData& other) {
   MZ_COUNT_CTOR(ServerData);
@@ -37,7 +42,6 @@ ServerData::ServerData(const ServerData& other) {
 ServerData::~ServerData() { MZ_COUNT_DTOR(ServerData); }
 
 ServerData& ServerData::operator=(const ServerData& other) {
-  m_initialized = other.m_initialized;
   m_exitCountryCode = other.m_exitCountryCode;
   m_exitCityName = other.m_exitCityName;
   m_entryCountryCode = other.m_entryCountryCode;
@@ -50,16 +54,7 @@ ServerData& ServerData::operator=(const ServerData& other) {
   return *this;
 }
 
-void ServerData::initialize() {
-  m_initialized = true;
-
-  connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
-          &ServerData::settingsChanged);
-}
-
 bool ServerData::fromSettings() {
-  Q_ASSERT(m_initialized);
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -88,8 +83,6 @@ void ServerData::update(const QString& exitCountryCode,
                         const QString& exitCityName,
                         const QString& entryCountryCode,
                         const QString& entryCityName) {
-  Q_ASSERT(m_initialized);
-
   m_previousExitCountryCode = m_exitCountryCode;
   m_previousExitCountryName =
       MozillaVPN::instance()->serverCountryModel()->countryName(
@@ -117,8 +110,6 @@ void ServerData::update(const QString& exitCountryCode,
 }
 
 bool ServerData::settingsChanged() {
-  Q_ASSERT(m_initialized);
-
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -163,37 +154,31 @@ bool ServerData::settingsChanged() {
 }
 
 QString ServerData::localizedExitCityName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCityName(m_exitCountryCode,
                                                    m_exitCityName);
 }
 
 QString ServerData::localizedEntryCityName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCityName(m_entryCountryCode,
                                                    m_entryCityName);
 }
 
 QString ServerData::localizedPreviousExitCountryName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
                                                    m_previousExitCountryName);
 }
 
 QString ServerData::localizedPreviousExitCityName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
                                                    m_previousExitCityName);
 }
 
 QString ServerData::localizedEntryCountryName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCountryName(m_entryCountryCode,
                                                       m_entryCountryName);
 }
 
 QString ServerData::localizedExitCountryName() const {
-  Q_ASSERT(m_initialized);
   return ServerI18N::instance()->translateCountryName(m_exitCountryCode,
                                                       m_exitCountryName);
 }
@@ -244,8 +229,6 @@ void ServerData::changeServer(const QString& countryCode,
 }
 
 void ServerData::forget() {
-  Q_ASSERT(m_initialized);
-
   m_exitCountryCode.clear();
   m_exitCityName.clear();
   m_exitCountryName.clear();

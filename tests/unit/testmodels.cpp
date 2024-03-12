@@ -565,8 +565,6 @@ void TestModels::recentConnectionBasic() {
   QVERIFY(rcMultiHop->isEmpty());
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 0);
 
-  MozillaVPN::instance()->serverData()->initialize();
-
   // First entry (single hop)
   {
     MozillaVPN::instance()->serverData()->changeServer("a", "b");
@@ -874,8 +872,6 @@ void TestModels::recentConnectionSaveAndRestore() {
 
   QCOMPARE(rcMultiHop->rowCount(QModelIndex()), 0);
   QVERIFY(rcMultiHop->isEmpty());
-
-  MozillaVPN::instance()->serverData()->initialize();
 
   // Let's populate the models
   {
@@ -1662,9 +1658,7 @@ void TestModels::serverCountryModelPick() {
 
 void TestModels::serverDataBasic() {
   SettingsHolder settingsHolder;
-
   ServerData sd;
-  sd.initialize();
 
   QSignalSpy spy(&sd, &ServerData::changed);
 
@@ -1707,7 +1701,6 @@ void TestModels::serverDataBasic() {
 
     {
       ServerData sd2;
-      sd2.initialize();
 
       QVERIFY(sd2.fromSettings());
       QVERIFY(sd2.hasServerData());
@@ -1780,8 +1773,6 @@ void TestModels::serverDataMigrate() {
     settingsHolder.setCurrentServerCityDeprecated("bar");
 
     ServerData sd;
-    sd.initialize();
-
     QVERIFY(sd.fromSettings());
 
     QCOMPARE(sd.exitCountryCode(), "foo");
@@ -1797,8 +1788,6 @@ void TestModels::serverDataMigrate() {
     QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
 
     ServerData sd2;
-    sd2.initialize();
-
     QVERIFY(sd2.fromSettings());
 
     QCOMPARE(sd2.exitCountryCode(), "foo");
@@ -1822,8 +1811,6 @@ void TestModels::serverDataMigrate() {
     settingsHolder.setEntryServerCityDeprecated("bb");
 
     ServerData sd;
-    sd.initialize();
-
     QVERIFY(sd.fromSettings());
 
     QCOMPARE(sd.exitCountryCode(), "foo");
@@ -1839,8 +1826,6 @@ void TestModels::serverDataMigrate() {
     QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
 
     ServerData sd2;
-    sd2.initialize();
-
     QVERIFY(sd2.fromSettings());
 
     QCOMPARE(sd2.exitCountryCode(), "foo");
