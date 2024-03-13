@@ -365,29 +365,6 @@ sample:
         description: The language code chosen.
         type: string
 
-  push_message_received:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A device has been removed from the user's account.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2023-12-31
-    extra_keys:
-      type:
-        description: |
-          The message type.
-        type: string
-
   android_daemon_status:
     type: event
     lifetime: ping
@@ -1149,8 +1126,8 @@ sample:
         type: string
       transport:
         description: |
-             The Host network type (i.e wifi or 4g). 
-             Possible values are Unknown, Disconnected, Local, Site, Online
+          The Host network type (i.e wifi or 4g).
+          Possible values are Unknown, Disconnected, Local, Site, Online
         type: string
 
   server_unavailable_error:
