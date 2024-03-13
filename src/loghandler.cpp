@@ -439,6 +439,9 @@ bool LogHandler::viewLogs() {
 
 #  if defined(MZ_ANDROID)
     ok = AndroidCommons::shareText(*buffer);
+    if (ok) {
+      flushLogs();
+    }
 #  else
     IOSCommons::shareLogs(*buffer);
 #  endif
@@ -449,15 +452,10 @@ bool LogHandler::viewLogs() {
   return ok;
 #endif
 
-  if (writeAndShowLogs(QStandardPaths::DesktopLocation)) {
-    return true;
-  }
-
-  if (writeAndShowLogs(QStandardPaths::HomeLocation)) {
-    return true;
-  }
-
-  if (writeAndShowLogs(QStandardPaths::TempLocation)) {
+  if (writeAndShowLogs(QStandardPaths::DesktopLocation) ||
+      writeAndShowLogs(QStandardPaths::HomeLocation) ||
+      writeAndShowLogs(QStandardPaths::TempLocation)) {
+    flushLogs();
     return true;
   }
 
