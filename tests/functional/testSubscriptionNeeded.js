@@ -105,7 +105,26 @@ describe("subscription needed tests", function() {
             eventName: "alreadyASubscriberSelected",
             screen
         });
+      })
+
+      it("successfull outcome events are recorded", async () => {
+        // Click the "Subscribe now" button
+        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        const startedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionStarted", "main");
+        assert.strictEqual(startedEventsList.length, 1);
+
+        // Subscription, for Guardian, is the same as in-browser auth.
+        await vpn.mockInBrowserAuthentication();
+
+        const completedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionCompleted", "main");
+        assert.strictEqual(completedEventsList.length, 1);
       });
+
+      // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
+      // functional tests in mobile. Failure events only happen in mobile,
+      // desktop in browser subscription failure state is registered as a cancelation
+      // and we don't record cancelation events.
+      it.skip("failure outcome events are recorded");
     });
 
     describe('loading screens', function() {
