@@ -103,26 +103,30 @@ void TestConnectionHealth::testTelemetry() {
   metricsTestCount(0, 0, 0);
   metricsTestTimespan(0, 0, 0);
 
+  // Activate controller, which allows recording
   TestHelper::controllerState = Controller::StateOn;
 
+  // Currently unstable connection
   connectionHealth.setStability(ConnectionHealth::Unstable);
   connectionHealth.startActive("", "");
   metricsTestErrorAndChange(0, 1, 0);
   metricsTestCount(0, 1, 0);
   metricsTestTimespan(0, 0, 0);
 
+  // Connections changes to stable
   connectionHealth.setStability(ConnectionHealth::ConnectionStability::Stable);
   metricsTestErrorAndChange(1, 1, 0);
   metricsTestCount(1, 1, 0);
   metricsTestTimespan(0, 1, 0);
 
+  // Connections changes to no signal
   connectionHealth.setStability(
       ConnectionHealth::ConnectionStability::NoSignal);
   metricsTestErrorAndChange(1, 1, 1);
   metricsTestCount(1, 1, 1);
   metricsTestTimespan(1, 1, 0);
 
-  // stops and sets to stable
+  // Stops (stopping resets status to stable)
   connectionHealth.stop();
   metricsTestErrorAndChange(2, 1, 1);
   metricsTestCount(2, 1, 1);
