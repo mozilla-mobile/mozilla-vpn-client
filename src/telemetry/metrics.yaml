@@ -365,60 +365,6 @@ sample:
         description: The language code chosen.
         type: string
 
-  push_message_received:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A device has been removed from the user's account.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3982
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4275#issuecomment-1228532390
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2023-12-31
-    extra_keys:
-      type:
-        description: |
-          The message type.
-        type: string
-
-  android_daemon_status:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A status report of the Android Daemon. Contains information
-      if the daemon' connection health component.
-      This will help us understand if that component did activate,
-      and if so if it did help fix the connection.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3743
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5528#pullrequestreview-1262407370
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - sstreich@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2024-01-01
-    extra_keys:
-      connection_health_state:
-        description: |
-          The State of connection health. Possible values are:
-          deactivated-feature-flagged -> deactive due A/B testing.
-          deactivated -> vpn disconnected
-          active-not-silent-switched -> connection is healthy
-          active-silent-switched -> connection was unhealthy
-          active-panic-state-reached -> connection was unhealthy
-        type: string
-
   iap_g_no_sku_details:
     type: event
     lifetime: ping
@@ -1149,8 +1095,8 @@ sample:
         type: string
       transport:
         description: |
-             The Host network type (i.e wifi or 4g). 
-             Possible values are Unknown, Disconnected, Local, Site, Online
+          The Host network type (i.e wifi or 4g).
+          Possible values are Unknown, Disconnected, Local, Site, Online
         type: string
 
   server_unavailable_error:
