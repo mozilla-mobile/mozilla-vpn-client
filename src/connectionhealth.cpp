@@ -240,8 +240,7 @@ void ConnectionHealth::startUnsettledPeriod() {
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_DUMMY)
+#ifndef MZ_MOBILE
   Q_UNUSED(state);
   // Do not suspend PingsendHelper on Desktop.
   return;
@@ -282,8 +281,7 @@ void ConnectionHealth::overwriteStabilityForInspector(
 
 void ConnectionHealth::startTimingDistributionMetric(
     ConnectionStability stability) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_DUMMY)
+#ifndef MZ_MOBILE
   switch (stability) {
     case ConnectionHealth::Unstable:
       m_metricsTimerId =
@@ -301,8 +299,7 @@ void ConnectionHealth::startTimingDistributionMetric(
 
 void ConnectionHealth::stopTimingDistributionMetric(
     ConnectionStability stability) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_DUMMY)
+#ifndef MZ_MOBILE
   if (m_metricsTimerId == -1) {
     logger.info() << "No active health timer for state" << stability;
     return;
