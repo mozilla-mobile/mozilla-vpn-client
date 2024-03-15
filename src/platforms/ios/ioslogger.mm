@@ -33,15 +33,15 @@ IOSLogger::~IOSLogger() {
 
 // static
 void IOSLogger::debug(const QString& message) {
-  [impl debugToConsoleWithMessage:message.toNSString()];
+  [impl logToConsoleWithMessage:message.toNSString() level:MzLogLevelDebug];
 }
 
 // static
 void IOSLogger::info(const QString& message) {
-  [impl infoToConsoleWithMessage:message.toNSString()];
+  [impl logToConsoleWithMessage:message.toNSString() level:MzLogLevelInfo];
 }
 
 // static
 void IOSLogger::error(const QString& message) {
-  [impl errorToConsoleWithMessage:message.toNSString()];
+  [impl logToConsoleWithMessage:message.toNSString() level:MzLogLevelError];
 }

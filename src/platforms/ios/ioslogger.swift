@@ -7,6 +7,42 @@ import os.log
 import OSLog
 
 public class IOSLoggerImpl : NSObject {
+    enum LogType {
+        case swift
+        case networkExtension
+
+        var filename: String {
+            switch self {
+            case .swift: return "mozillavpnswift.log"
+            case .networkExtension: return "networkextension.log"
+            }
+        }
+
+        var fileUrl: URL? {
+            let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.appGroupIdentifier)
+            return containerURL?.appendingPathComponent(self.filename, isDirectory: false)
+        }
+
+        var newFileText: String {
+            switch self {
+            case .swift: return "\n\nApp Swift Logs\n==============\n"
+            case .networkExtension: return ""
+            }
+        }
+    }
+
+    @objc enum MzLogLevel: Int {
+        case debug, info, error
+
+        var swiftVersion: OSLogType {
+            switch self {
+            case .debug: return .debug
+            case .info: return .info
+            case .error: return .error
+            }
+        }
+    }
+
     private let log: OSLog
     
     private lazy var dateFormatter: DateFormatter = {
@@ -16,19 +52,6 @@ public class IOSLoggerImpl : NSObject {
     }()
     
     private static let logger = IOSLoggerImpl(tag: "IOSLoggerImpl")
-    private static var appexLogFileURL: URL? {
-        get {
-            let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.appGroupIdentifier)
-            return containerURL?.appendingPathComponent(Constants.networkExtensionLogFileName, isDirectory: false)
-        }
-    }
-
-    private static var appSwiftLogFileURL: URL? {
-        get {
-            let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.appGroupIdentifier)
-            return containerURL?.appendingPathComponent(Constants.appLogFileName, isDirectory: false)
-        }
-    }
 
     @objc init(tag: String) {
         self.log = OSLog(
@@ -37,16 +60,8 @@ public class IOSLoggerImpl : NSObject {
         )
     }
 
-    @objc func debugToConsole(message: String) {
-        os_log("%{public}@", log: self.log, type: .debug, message)
-    }
-
-    @objc func infoToConsole(message: String) {
-        os_log("%{public}@", log: self.log, type: .info, message)
-    }
-
-    @objc func errorToConsole(message: String) {
-        os_log("%{public}@", log: self.log, type: .error, message)
+    @objc func logToConsole(message: String, level: MzLogLevel) {
+        os_log("%{public}@", log: self.log, type: level.swiftVersion, message)
     }
 
     func debug(message: String) {
@@ -69,12 +84,12 @@ public class IOSLoggerImpl : NSObject {
 
         if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
             if (Bundle.main.bundlePath.hasSuffix(".appex")) {
-                let _ = IOSLoggerImpl.withAppexLogFile { logFileHandle in
+                let _ = IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
                     logFileHandle.seekToEndOfFile()
                     logFileHandle.write(data)
                 }
             } else {
-                let _ = IOSLoggerImpl.withAppSwiftLogFile { logFileHandle in
+                let _ = IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
                     logFileHandle.seekToEndOfFile()
                     logFileHandle.write(data)
                 }
@@ -86,12 +101,12 @@ public class IOSLoggerImpl : NSObject {
         var backendLogs: String = ""
         var swiftLogs: String = ""
 
-        withAppexLogFile { logFileHandle in
+        IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
             if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
                 backendLogs = contents
             }
         }
-        withAppSwiftLogFile { logFileHandle in
+        IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
             if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
                 swiftLogs = contents
             }
@@ -100,63 +115,37 @@ public class IOSLoggerImpl : NSObject {
     }
     
     @objc static func clearAppexLogs() {
-        withAppexLogFile { logFileHandle in
+        IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
             logFileHandle.truncateFile(atOffset: 0)
         }
 
-        withAppSwiftLogFile { logFileHandle in
+        IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
             logFileHandle.truncateFile(atOffset: 0)
         }
     }
-    
-    private static func withAppexLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
-        guard let appexLogFileURL = IOSLoggerImpl.appexLogFileURL else {
-            logger.error(message: "IMPOSSIBLE: No known app extension log file.")
-            return
-        }
 
-        
-        do {
-            if !FileManager.default.fileExists(atPath: appexLogFileURL.path) {
-                // Create an empty file
-                if let data = "".data(using: .utf8) {
-                    try data.write(to: appexLogFileURL)
-                } else {
-                    logger.error(message: "Unable to create log file at \(appexLogFileURL)")
-                    return
-                }
-            }
-            
-            let fileHandle = try FileHandle(forUpdating: appexLogFileURL)
-            try f(fileHandle)
-            fileHandle.closeFile()
-        } catch {
-            logger.error(message: "Unable to access log file at \(appexLogFileURL): \(error)")
-        }
-    }
-
-    private static func withAppSwiftLogFile(_ f: (_ handle: FileHandle) throws -> Void) {
-        guard let appSwiftLogFileURL = IOSLoggerImpl.appSwiftLogFileURL else {
-            logger.error(message: "IMPOSSIBLE: No known app log file.")
+    private static func withLogFile(for type: LogType, _ f: (_ handle: FileHandle) throws -> Void) {
+        guard let logFileURL = type.fileUrl else {
+            logger.error(message: "IMPOSSIBLE: No known log file.")
             return
         }
 
         do {
-            if !FileManager.default.fileExists(atPath: appSwiftLogFileURL.path) {
+            if !FileManager.default.fileExists(atPath: logFileURL.path) {
                 // Create an empty file with appropriate headers
-                if let data = "\n\nApp Swift Logs\n==============\n".data(using: .utf8) {
-                    try data.write(to: appSwiftLogFileURL)
+                if let data = type.newFileText.data(using: .utf8) {
+                    try data.write(to: logFileURL)
                 } else {
-                    logger.error(message: "Unable to create log file at \(appSwiftLogFileURL)")
+                    logger.error(message: "Unable to create log file at \(logFileURL)")
                     return
                 }
             }
 
-            let fileHandle = try FileHandle(forUpdating: appSwiftLogFileURL)
+            let fileHandle = try FileHandle(forUpdating: logFileURL)
             try f(fileHandle)
             fileHandle.closeFile()
         } catch {
-            logger.error(message: "Unable to access log file at \(appSwiftLogFileURL): \(error)")
+            logger.error(message: "Unable to access log file at \(logFileURL): \(error)")
         }
     }
 }
