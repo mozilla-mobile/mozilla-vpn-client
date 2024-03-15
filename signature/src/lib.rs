@@ -108,8 +108,23 @@ pub extern "C" fn verify_content_signature(
     #[cfg(test)]
     let now = test::mock_x5u_timestamp(x5u);
 
+    let pem_chain = match parse_pem_chain(x5u) {
+        Err(e) => {
+            logger.print(&e.to_string());
+            return false;
+        }
+        Ok(x) => x,
+    };
+    let balrog = match Balrog::new(&pem_chain) {
+        Err(e) => {
+            logger.print(&e.to_string());
+            return false;
+        }
+        Ok(x) => x,
+    };
+
     /* Perform the content signature validation. */
-    let _ = match parse_and_verify(&x5u, &input, &sig_str, now, root_hash_str, leaf_subject_str) {
+    let _ = match balrog.verify(&input, &sig_str, now, root_hash_str, leaf_subject_str) {
         Err(e) => {
             logger.print(&e.to_string());
             return false;
@@ -242,8 +257,10 @@ mod test {
 
     #[test]
     fn test_verify_prod_example() {
-        let r = parse_and_verify(
-            PROD_CERT_CHAIN,
+        let chain = parse_pem_chain(PROD_CERT_CHAIN).unwrap();
+        let balrog = Balrog::new(&chain).unwrap();
+
+        let r = balrog.verify(
             PROD_INPUT_DATA,
             PROD_SIGNATURE,
             mock_x5u_timestamp(PROD_CERT_CHAIN),

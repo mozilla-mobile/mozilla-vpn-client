@@ -81,28 +81,6 @@ pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, BalrogError> {
     Ok(Pem::iter_from_buffer(input).collect::<Result<Vec<Pem>, PEMError>>()?)
 }
 
-/* A one-and-done function that parses a signature chain and validates a content signature. */
-pub fn parse_and_verify(
-    x5u: &[u8],
-    input: &[u8],
-    signature: &str,
-    current_time: i64,
-    root_hash: &str,
-    leaf_subject: &str,
-) -> Result<(), BalrogError> {
-    /* Parse the certificate chain. */
-    let pem_chain = parse_pem_chain(x5u)?;
-    let balrog = Balrog::new(&pem_chain)?;
-
-    /* Verify things. */
-    balrog.verify_chain(current_time, root_hash)?;
-    balrog.verify_leaf_hostname(leaf_subject)?;
-    balrog.verify_content_signature(input, signature)?;
-
-    /* Success */
-    Ok(())
-}
-
 impl<'a> Balrog<'_> {
     pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, BalrogError> {
         if list.is_empty() {
@@ -361,6 +339,24 @@ impl<'a> Balrog<'_> {
             &pubkey, &algorithm, &sig_asn1, &message,
         )?)
     }
+
+    /* Wrapper function to verify everything at once. */
+    pub fn verify(
+        &self,
+        input: &[u8],
+        signature: &str,
+        current_time: i64,
+        root_hash: &str,
+        leaf_subject: &str,
+    ) -> Result<(), BalrogError> {
+        /* Verify things. */
+        self.verify_chain(current_time, root_hash)?;
+        self.verify_leaf_hostname(leaf_subject)?;
+        self.verify_content_signature(input, signature)?;
+    
+        /* Success */
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -382,6 +378,23 @@ nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.";
+
+    /* A one-and-done function that parses a signature chain and validates a content signature. */
+    #[cfg(test)]
+    fn parse_and_verify(
+        x5u: &[u8],
+        input: &[u8],
+        signature: &str,
+        current_time: i64,
+        root_hash: &str,
+        leaf_subject: &str,
+    ) -> Result<(), BalrogError> {
+        /* Parse the certificate chain. */
+        let pem_chain = parse_pem_chain(x5u)?;
+        let balrog = Balrog::new(&pem_chain)?;
+
+        balrog.verify(input, signature, current_time, root_hash, leaf_subject)
+    }
 
     #[test]
     fn test_verify_succeeds_if_valid() {
