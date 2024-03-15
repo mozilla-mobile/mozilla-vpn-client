@@ -363,7 +363,7 @@ settings:
 localNetworkAccess:
   label: Local network access
   subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
-  vpnMustBeOff: VPN must be off to edit "Local network access"
+  vpnMustBeOff: VPN must be off to edit “Local network access”
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
