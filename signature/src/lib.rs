@@ -123,8 +123,18 @@ pub extern "C" fn verify_content_signature(
         Ok(x) => x,
     };
 
+    let root_hash_hex = root_hash_str.replace(":", "");
+    let Ok(root_hash) = hex::decode(root_hash_hex) else {
+        logger.print(&BalrogError::RootHashParseFailed.to_string());
+        return false;
+    };
+    if balrog.root_hash.is_empty() || (balrog.root_hash != root_hash) {
+        logger.print(&BalrogError::RootHashMismatch.to_string());
+        return false;
+    }
+
     /* Perform the content signature validation. */
-    let _ = match balrog.verify(&input, &sig_str, now, root_hash_str, leaf_subject_str) {
+    let _ = match balrog.verify(&input, &sig_str, now, leaf_subject_str) {
         Err(e) => {
             logger.print(&e.to_string());
             return false;
@@ -264,14 +274,13 @@ mod test {
             PROD_INPUT_DATA,
             PROD_SIGNATURE,
             mock_x5u_timestamp(PROD_CERT_CHAIN),
-            PROD_ROOT_HASH,
             PROD_HOSTNAME,
         );
         assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
     }
 
     #[test]
-    fn test_verify_prod_ffi() {
+    fn test_verify_valid_ffi() {
         let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
         let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
@@ -296,19 +305,75 @@ mod test {
         };
     }
 
+    #[cfg(test)]
+    extern "C" fn ffi_logfn_panic(msg: *const c_char) {
+        match unsafe { CStr::from_ptr(msg) }.to_str() {
+            Err(_e) => {}
+            Ok(x) => panic!("{}", x),
+        };
+    }
+
+    #[test]
+    #[should_panic(expected = "Root hash mismatch")]
+    fn test_verify_ffi_bad_hash() {
+        let bad_root_hash = PROD_ROOT_HASH.replace("a", "b");
+        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
+        let bad_root_hash_cstr = CString::new(bad_root_hash).unwrap().into_raw();
+        let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
+
+        let r = verify_content_signature(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            PROD_INPUT_DATA.as_ptr(),
+            PROD_INPUT_DATA.len(),
+            prod_signature_cstr,
+            bad_root_hash_cstr,
+            prod_hostname_cstr,
+            Some(ffi_logfn_panic),
+        );
+        assert!(!r, "Verification failed to catch invalid root hash via FFI");
+
+        // Retake pointers for garbage collection.
+        unsafe {
+            let _ = CString::from_raw(prod_signature_cstr);
+            let _ = CString::from_raw(bad_root_hash_cstr);
+            let _ = CString::from_raw(prod_hostname_cstr);
+        };
+    }
+
+    #[test]
+    #[should_panic(expected = "Root hash parse failed")]
+    fn test_verify_ffi_bogus_hash() {
+        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
+        let bogus_root_hash_cstr = CString::new("The quick brown fox jumped over the lazy dog").unwrap().into_raw();
+        let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
+
+        let r = verify_content_signature(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            PROD_INPUT_DATA.as_ptr(),
+            PROD_INPUT_DATA.len(),
+            prod_signature_cstr,
+            bogus_root_hash_cstr,
+            prod_hostname_cstr,
+            Some(ffi_logfn_panic),
+        );
+        assert!(!r, "Verification failed to catch bogus hash via FFI");
+
+        // Retake pointers for garbage collection.
+        unsafe {
+            let _ = CString::from_raw(prod_signature_cstr);
+            let _ = CString::from_raw(bogus_root_hash_cstr);
+            let _ = CString::from_raw(prod_hostname_cstr);
+        };
+    }
+
     #[test]
     #[should_panic(expected = "Hostname mismatch")]
     fn test_verify_ffi_logger() {
         let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
         let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
-
-        extern "C" fn logfn(msg: *const c_char) {
-            match unsafe { CStr::from_ptr(msg) }.to_str() {
-                Err(_e) => {}
-                Ok(x) => panic!("{}", x),
-            };
-        }
 
         let r = verify_content_signature(
             PROD_CERT_CHAIN.as_ptr(),
@@ -318,7 +383,7 @@ mod test {
             prod_signature_cstr,
             prod_root_hash_cstr,
             invalid_hostname_cstr,
-            Some(logfn),
+            Some(ffi_logfn_panic),
         );
         assert!(!r, "Verification failed to catch invalid hostname via FFI");
 
