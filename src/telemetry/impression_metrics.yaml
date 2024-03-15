@@ -30,69 +30,6 @@ impression:
       screen:
         description: The id of the screen the user is on
         type: string
-  speed_test_loading_screen:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has just moved on to the screen that shows
-      the loading animation for the speed test results
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5366
-      - https://mozilla-hub.atlassian.net/browse/VPN-5718
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys: *impression_extra_keys
-  speed_test_completed_screen:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has just moved on to the screen that shows
-      the speed test results
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5366
-      - https://mozilla-hub.atlassian.net/browse/VPN-5718
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys: *impression_extra_keys
-  speed_test_error_screen:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has just moved on to the screen that shows
-      the speed test error
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5366
-      - https://mozilla-hub.atlassian.net/browse/VPN-5718
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8060#issuecomment-1724272061
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8386#issuecomment-1780543747
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys: *impression_extra_keys
   connection_info_screen:
     type: event
     lifetime: ping

@@ -13,12 +13,6 @@ import compat 0.1
 Item {
     id: box
 
-    property bool connectionInfoScreenVisible: false
-
-    function closeConnectionInfo() {
-        box.connectionInfoScreenVisible = false;
-    }
-
     function handleConnectionStateChange() {
         // Notify accessibility client of connection state
         if (!logoTitle.Accessible.ignored) {
@@ -54,17 +48,8 @@ Item {
         radius: MZTheme.theme.cornerRadius * 2
         antialiasing: true
 
-        height: box.connectionInfoScreenVisible
-            ? maximumBoxHeight
-            : box.height
+        height: box.height
         width: box.width
-
-        Behavior on height {
-            NumberAnimation {
-                duration: connectionInfoScreen.transitionDuration
-                easing.type: Easing.InOutQuad
-            }
-        }
     }
 
     MZDropShadowWithStates {
@@ -106,11 +91,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: false
-            }
-
-            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -147,11 +127,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -197,11 +172,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: connectionInfoScreenVisible
-            }
-
-            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -244,11 +214,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: connectionInfoScreenVisible
-            }
-
-            PropertyChanges {
                 target: connectionStability
                 visible: false
             }
@@ -287,11 +252,6 @@ Item {
             }
 
             PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: !ipInfoPanel.isOpen
-            }
-
-            PropertyChanges {
                 target: animatedRings
                 visible: true
                 opacity: 1
@@ -326,11 +286,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -372,11 +327,6 @@ Item {
             PropertyChanges {
                 target: logoSubtitleOn
                 visible: false
-            }
-
-            PropertyChanges {
-                target: connectionInfoToggleButton
-                visible: connectionInfoScreenVisible
             }
 
             PropertyChanges {
@@ -459,65 +409,6 @@ Item {
     }
 
     MZIconButton {
-        id: connectionInfoToggleButton
-        objectName: "connectionInfoToggleButton"
-
-        property var connectionInfoCloseText: MZI18n.GlobalClose
-
-        anchors {
-            left: parent.left
-            leftMargin: MZTheme.theme.windowMargin / 2
-            top: parent.top
-            topMargin: MZTheme.theme.windowMargin / 2
-        }
-        accessibleName: box.connectionInfoScreenVisible ? connectionInfoCloseText : MZI18n.ConnectionInfoStartSpeedTest
-        Accessible.ignored: !enabled || !visible
-        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
-        enabled: visible && !ipInfoPanel.isOpen
-        opacity: visible ? 1 : 0
-        z: 1
-
-        onClicked: {
-            if (!box.connectionInfoScreenVisible) {
-                Glean.interaction.startSpeedTestSelected.record({
-                    screen: "main",
-                });
-            } else {
-                Glean.interaction.closeSelected.record({
-                    screen: connectionInfoScreen.state == "open-ready" ? "speed_test_completed"
-                                : connectionInfoScreen.state == "open-error" ? "speed_test_error"
-                                    : connectionInfoScreen.state == "open-loading" ? "speed_test_loading"
-                                        // Used in case the connection info screen state is "closed", "closing" or "opening".
-                                        // This should not happen, because the button is not available in these states...
-                                        // But it is a possible code path, so there you go.
-                                        : "unexpected",
-                });
-            }
-
-            box.connectionInfoScreenVisible = !box.connectionInfoScreenVisible;
-        }
-
-        Image {
-            property int iconSize: box.connectionInfoScreenVisible
-                ? MZTheme.theme.iconSize
-                : MZTheme.theme.iconSize * 1.5
-
-            anchors.centerIn: connectionInfoToggleButton
-            source: box.connectionInfoScreenVisible
-                ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/ui/resources/bandwidth.svg"
-            sourceSize.height: iconSize
-            sourceSize.width: iconSize
-        }
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 300
-            }
-        }
-    }
-
-    MZIconButton {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
@@ -536,9 +427,7 @@ Item {
         buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
-        visible: (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching)
-            && !connectionInfoScreen.isOpen
-            && !connectionInfoScreen.isTransitioning
+        visible: VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching
         z: 1
         onClicked: {
             ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
@@ -618,7 +507,7 @@ Item {
             objectName: "controllerTitle"
             lineHeight: MZTheme.theme.labelLineHeight
             font.pixelSize: 22
-            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
+            Accessible.ignored: ipInfoPanel.isOpen || !visible
             width: parent.width
             onPaintedHeightChanged: if (visible) col.handleMultilineText()
             onTextChanged: handleConnectionStateChange()
@@ -654,7 +543,7 @@ Item {
 
             color: MZTheme.theme.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
+            Accessible.ignored: ipInfoPanel.isOpen || !visible
 
             //% "Secure and private"
             //: This refers to the user’s internet connection.
@@ -669,7 +558,7 @@ Item {
 
         ConnectionStability {
             id: connectionStability
-            Accessible.ignored: connectionInfoScreenVisible || !visible
+            Accessible.ignored: !visible
             width: parent.width
             implicitHeight: childrenRect.height
         }
@@ -686,9 +575,9 @@ Item {
             horizontalCenterOffset: 0
             horizontalCenter: parent.horizontalCenter
         }
-        enabled: !connectionInfoScreenVisible && !ipInfoPanel.visible
+        enabled: !ipInfoPanel.visible
 
-        Accessible.ignored: connectionInfoScreenVisible || ipInfoPanel.isOpen || !visible
+        Accessible.ignored: ipInfoPanel.isOpen || !visible
     }
 
     IPInfoPanel {
@@ -726,25 +615,5 @@ Item {
                 ipInfoPanel.isOpen = false
             }
         }
-    }
-
-    ConnectionInfoScreen {
-        id: connectionInfoScreen
-        isOpen: box.connectionInfoScreenVisible
-
-        height: boxBackground.height
-        radius: MZTheme.theme.cornerRadius * 2
-    }
-
-    Component.onCompleted: MZNavigator.addView(VPN.ScreenHome, connectionInfoScreen)
-
-    Connections {
-        function onGoBack(item) {
-            if (item === connectionInfoScreen && connectionInfoScreen.isOpen) {
-                closeConnectionInfo();
-            }
-        }
-
-        target: MZNavigator
     }
 }

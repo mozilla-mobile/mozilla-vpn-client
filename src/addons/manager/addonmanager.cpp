@@ -272,7 +272,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
 
     if (QCryptographicHash::hash(addonFileContents,
                                  QCryptographicHash::Sha256) != sha256) {
-      logger.warning() << "Addon hash does not match" << addonFilePath;
+      logger.warning() << "Addon hash does not match" << addonId;
       return false;
     }
   }
@@ -281,7 +281,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
   QString addonMountPath = mountPath(addonId);
 
   if (!QResource::registerResource(addonFilePath, addonMountPath)) {
-    logger.warning() << "Unable to load resource from file" << addonFilePath;
+    logger.warning() << "Unable to load resource from file" << addonId;
     return false;
   }
 

@@ -1,11 +1,5 @@
 ControllerView 0.1 ControllerView.qml
-ConnectionCheckmarkList 0.1 connectionInfo/ConnectionCheckmarkList.qml
-ConnectionInfoContent 0.1 connectionInfo/ConnectionInfoContent.qml
-ConnectionInfoError 0.1 connectionInfo/ConnectionInfoError.qml
-ConnectionInfoItem 0.1 connectionInfo/ConnectionInfoItem.qml
-ConnectionInfoScreen 0.1 connectionInfo/ConnectionInfoScreen.qml
 ConnectionTimer 0.1 ConnectionTimer.qml
 IPAddress 0.1 ip/IPAddress.qml
 IPInfoPanel 0.1 ip/IPInfoPanel.qml
-LogoLoader 0.1 connectionInfo/LogoLoader.qml
 VPNToggle 0.1 VPNToggle.qml

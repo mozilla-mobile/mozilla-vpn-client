@@ -15,7 +15,6 @@
 #include "apppermission.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
-#include "connectionbenchmark/connectionbenchmark.h"
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
