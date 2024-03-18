@@ -218,3 +218,6 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.h
        )
 endif()
+
+
+mz_add_clang_tidy(mozillavpn-sources)
