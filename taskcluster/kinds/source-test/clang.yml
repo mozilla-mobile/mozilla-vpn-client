@@ -1,0 +1,60 @@
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Clang-tidy "
+    treeherder:
+        symbol: lint(tidy)
+        kind: other
+        tier: 2
+    run:
+        using: run-task
+    when:
+        files-changed:
+            - '**/*.c'
+            - '**/*.cpp'
+            - '**/*.cc'
+            - '**/*.cxx'
+            - '**/*.m'
+            - '**/*.mm'
+
+
+clang-tidy-android:
+    treeherder:
+            tier: 1
+            platform: android/arm64-v8a
+    worker-type: b-linux-large
+    fetches:
+      toolchain: 
+        - conda-android-arm64-6.6.0
+    worker:
+          max-run-time: 3600
+          chain-of-trust: true
+          docker-image: {in-tree: conda-base}
+          artifacts:
+            - type: directory
+              name: public/build/
+              path: /builds/worker/artifacts/
+    run:
+      using: run-task
+      use-caches: true
+      cwd: '{checkout}'
+      command: >-
+        source $TASK_WORKDIR/fetches/bin/activate &&
+        conda-unpack &&
+        $QTPATH/bin/qt-cmake \
+          -DQT_HOST_PATH=$QT_HOST_PATH \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
+          -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DADJUST_TOKEN=AAAAAAA \
+          -DBUILD_TESTS=OFF \
+          -GNinja \
+          -S . -B .tmp/ &&
+        cmake --build .tmp --target clang_tidy_report &&
+        mkdir -p /builds/worker/artifacts/ &&
+        cp .tmp/clang-tidy/* /builds/worker/artifacts/
+        
