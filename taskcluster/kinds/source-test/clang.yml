@@ -44,6 +44,7 @@ clang-tidy-android:
       command: >-
         source $TASK_WORKDIR/fetches/bin/activate &&
         conda-unpack &&
+        git submodule update --init --recursive && 
         $QTPATH/bin/qt-cmake \
           -DQT_HOST_PATH=$QT_HOST_PATH \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -54,6 +55,10 @@ clang-tidy-android:
           -DBUILD_TESTS=OFF \
           -GNinja \
           -S . -B .tmp/ &&
+        unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER && 
+        cmake --build .tmp --target sentry &&
+        cmake --build .tmp --target translations &&
+        cmake --build .tmp --target qtglean &&
         cmake --build .tmp --target clang_tidy_report &&
         mkdir -p /builds/worker/artifacts/ &&
         cp .tmp/clang-tidy/* /builds/worker/artifacts/
