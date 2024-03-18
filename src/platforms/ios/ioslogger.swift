@@ -84,7 +84,7 @@ public class IOSLoggerImpl : NSObject {
 
         if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
             let fileType: LogType = Bundle.main.bundlePath.hasSuffix(".appex") ? .networkExtension : .swift
-            let _ = IOSLoggerImpl.withLogFile(for: .fileType) { logFileHandle in
+            let _ = IOSLoggerImpl.withLogFile(for: fileType) { logFileHandle in
                 logFileHandle.seekToEndOfFile()
                 logFileHandle.write(data)
             }
@@ -93,20 +93,25 @@ public class IOSLoggerImpl : NSObject {
 
     @objc static func getLogs(callback: @escaping (String) -> Void) {
         var returnLogs: String = ""
-        [FileType.networkExtension, FileType.swift].forEach {
+        [LogType.networkExtension, .swift].forEach {
             IOSLoggerImpl.withLogFile(for: $0) { logFileHandle in
                 if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
                     returnLogs.append(contents)
                 }
             }
         }
-        callback(returnLogs);
+        callback(returnLogs)
     }
-    
+
     @objc static func clearLogs() {
-        [FileType.networkExtension, FileType.swift].forEach {
-            IOSLoggerImpl.withLogFile(for: $0) { logFileHandle in
+        [LogType.networkExtension, .swift].forEach { logType in
+            IOSLoggerImpl.withLogFile(for: logType) { logFileHandle in
                 logFileHandle.truncateFile(atOffset: 0)
+                if let data = logType.newFileText.data(using: .utf8) {
+                    logFileHandle.write(data)
+                } else {
+                    logger.error(message: "Unable to write new log header")
+                }
             }
         }
     }
