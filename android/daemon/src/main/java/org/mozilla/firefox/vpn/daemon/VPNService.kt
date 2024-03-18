@@ -46,7 +46,7 @@ class VPNService : android.net.VpnService() {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
-            if (shouldRecordMetrics) {
+            if (shouldRecordTimerAndEndMetrics) {
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -60,15 +60,17 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
-    private val isChangingServers: Boolean
+    // Is a VPN connection coming from the app (not daemon) AND
+    // is happening because of a server switch?
+    private val isAppChangingServers: Boolean
         get() {
             // could be user choosing new server or silent switching
             return (this.mConfig?.optInt("reason") ?: 0) == 1
         }
 
-    private val shouldRecordMetrics: Boolean
+    private val shouldRecordTimerAndEndMetrics: Boolean
         get() {
-            return isSuperDooperMetricsActive && !isChangingServers
+            return isSuperDooperMetricsActive && !isAppChangingServers
         }
 
     private val isUsingShortTimerSessionPing: Boolean
@@ -269,7 +271,7 @@ class VPNService : android.net.VpnService() {
         return intent
     }
 
-    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null, shouldSkipMetricsBecauseReconnect: Boolean = false) {
+    fun turnOn(json: JSONObject?, useFallbackServer: Boolean = false, source: String? = null, isDaemonChangingServers: Boolean = false) {
         if (json == null) {
             throw Error("no json config provided")
         }
@@ -313,7 +315,15 @@ class VPNService : android.net.VpnService() {
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
+
         mConfig = json
+        // shouldRecordStartTelemetry must be calculated after mConfig is set (on prior line)
+        // We don't want to record start metrics in several situations:
+        // - If Super Dooper feature is not active. (Covered by shouldRecordTimerAndEndMetrics)
+        // - If this is an app-caused server switch. (Covered by shouldRecordTimerAndEndMetrics)
+        // - If this is a daemon-caused server switch. (Covered by isDaemonChangingServers)
+        val shouldRecordStartTelemetry = shouldRecordTimerAndEndMetrics && !isDaemonChangingServers
+
         // Store the config in case the service gets
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
@@ -328,6 +338,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("serverFallback").getString("ipv4Gateway"),
                 json.getJSONObject("server").getString("ipv4AddrIn"),
+                shouldRecordStartTelemetry,
             )
         } else {
             var fallbackIpv4 = ""
@@ -339,6 +350,7 @@ class VPNService : android.net.VpnService() {
                 json.getJSONObject("server").getString("ipv4Gateway"),
                 json.getString("dns"),
                 fallbackIpv4,
+                shouldRecordStartTelemetry,
             )
         }
 
@@ -349,7 +361,7 @@ class VPNService : android.net.VpnService() {
             Log.i(tag, "Setting Glean debug tag for daemon.")
             Glean.setDebugViewTag(gleanTag)
         }
-        if (shouldRecordMetrics && !shouldSkipMetricsBecauseReconnect) {
+        if (shouldRecordStartTelemetry) {
             val installationIdString = json.getString("installationId")
             installationIdString?.let {
                 try {
@@ -437,7 +449,7 @@ class VPNService : android.net.VpnService() {
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
-        if (shouldRecordMetrics) {
+        if (shouldRecordTimerAndEndMetrics) {
             Session.daemonSessionEnd.set()
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,

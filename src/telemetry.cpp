@@ -115,11 +115,6 @@ void Telemetry::initialize() {
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
 
-#if defined(MZ_ANDROID)
-  connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::eventInitialized,
-          this, &Telemetry::onDaemonStatus);
-#endif
-
   connect(
       controller, &Controller::handshakeFailed, this,
       [](const QString& publicKey) {
@@ -297,24 +292,5 @@ void Telemetry::periodicStateRecorder() {
   if (controllerState == Controller::StateOff) {
     mozilla::glean::sample::controller_state_off.record();
   }
-}
-#endif
-
-#if defined(MZ_ANDROID)
-void Telemetry::onDaemonStatus(const QString& data) {
-  auto doc = QJsonDocument::fromJson(data.toUtf8());
-  bool connected = doc.object()["connected"].toBool(false);
-  if (!connected) {
-    // If we're not connected, connection health is irrelevant.
-    return;
-  }
-  auto status = doc.object()["connection-health-status"].toString();
-  if (status.isNull()) {
-    return;
-  }
-
-  mozilla::glean::sample::android_daemon_status.record(
-      mozilla::glean::sample::AndroidDaemonStatusExtra{._connectionHealthState =
-                                                           status});
 }
 #endif

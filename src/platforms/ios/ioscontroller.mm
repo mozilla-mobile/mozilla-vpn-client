@@ -147,6 +147,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       serverPublicKey:config.m_serverPublicKey.toNSString()
       serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
       serverPort:config.m_serverPort
+      excludeLocalNetworks:settingsHolder->localNetworkAccess()
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason
       gleanDebugTag:settingsHolder->gleanDebugTagActive()
