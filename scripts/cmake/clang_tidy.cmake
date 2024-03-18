@@ -95,10 +95,3 @@ function(mz_add_clang_tidy aTarget)
     add_dependencies(clang_tidy_all ${aTarget}_clang_tidy)
     add_dependencies(clang_tidy_fix_all ${aTarget}_clang_tidy_fix)
 endfunction() 
-
-add_custom_target(clang_tidy_diff
-   COMMAND git diff main | python3 ${PROJECT_SOURCE_DIR}/scripts/clang-tidy-diff.py -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR} 
-   DEPENDS ${aTarget}
-   COMMENT "Running clang-tidy against a diff ${branch} -> main"
-   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} 
-)

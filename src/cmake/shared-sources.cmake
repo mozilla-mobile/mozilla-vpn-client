@@ -246,5 +246,4 @@ endif()
 include(${CMAKE_SOURCE_DIR}/src/platforms/${MZ_PLATFORM_NAME}/sources.cmake)
 include(${CMAKE_SOURCE_DIR}/src/cmake/sentry.cmake)
 
-
 mz_add_clang_tidy(shared-sources)
