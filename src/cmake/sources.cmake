@@ -220,4 +220,12 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 
+# Creates Target (mozillavpn-sources_clang_tidy_report)
 mz_add_clang_tidy(mozillavpn-sources)
+# we need to make sure those are up to date before we build. 
+# Those targets generate code we #include, therefore
+add_dependencies(mozillavpn-sources_clang_tidy_report
+    qtglean
+    sentry
+    translations
+)

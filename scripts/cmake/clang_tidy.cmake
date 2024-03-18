@@ -76,9 +76,19 @@ function(mz_add_clang_tidy aTarget)
     # Otherwise we might have files from MOC there. 
     list(FILTER aTarget_SOURCE_FILES INCLUDE REGEX ".*\\.cpp$")
     list(FILTER aTarget_SOURCE_FILES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+    
+    if(WIN32)
+        # on windows we need to pass \\ to clang tidy
+        # cmake by default uses / as delemiter so let's replace that. 
+        foreach(file ${aTarget_SOURCE_FILES})
+            string(REPLACE "/" "\\\\" fixed_path ${file})
+            list(APPEND temp_fixed_paths ${fixed_path})
+        endforeach()
+        set(aTarget_SOURCE_FILES ${temp_fixed_paths})
+    endif()
 
     add_custom_target(${aTarget}_clang_tidy_report
-        COMMAND python3 ${PROJECT_SOURCE_DIR}/scripts/run-clang-tidy.py -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -export-fixes=${CMAKE_BINARY_DIR}/clang-tidy/${aTarget}-report.yaml -p ${CMAKE_BINARY_DIR} ${aTarget_SOURCE_FILES}
+        COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/scripts/run-clang-tidy.py -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -export-fixes=${CMAKE_BINARY_DIR}/clang-tidy/${aTarget}-report.yaml -p ${CMAKE_BINARY_DIR} ${aTarget_SOURCE_FILES}
         DEPENDS ${aTarget}
         COMMENT "Build clang-tidy report for ${aTarget}"
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # Needs to be root so the config file is found
