@@ -83,44 +83,31 @@ public class IOSLoggerImpl : NSObject {
         let formattedDateString = dateFormatter.string(from: currentDate)
 
         if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
-            if (Bundle.main.bundlePath.hasSuffix(".appex")) {
-                let _ = IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
-                    logFileHandle.seekToEndOfFile()
-                    logFileHandle.write(data)
-                }
-            } else {
-                let _ = IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
-                    logFileHandle.seekToEndOfFile()
-                    logFileHandle.write(data)
-                }
+            let fileType: LogType = Bundle.main.bundlePath.hasSuffix(".appex") ? .networkExtension : .swift
+            let _ = IOSLoggerImpl.withLogFile(for: .fileType) { logFileHandle in
+                logFileHandle.seekToEndOfFile()
+                logFileHandle.write(data)
             }
         }
     }
 
-    @objc static func getAppexLogs(callback: @escaping (String) -> Void) {
-        var backendLogs: String = ""
-        var swiftLogs: String = ""
-
-        IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
-            if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
-                backendLogs = contents
+    @objc static func getLogs(callback: @escaping (String) -> Void) {
+        var returnLogs: String = ""
+        [FileType.networkExtension, FileType.swift].forEach {
+            IOSLoggerImpl.withLogFile(for: $0) { logFileHandle in
+                if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
+                    returnLogs.append(contents)
+                }
             }
         }
-        IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
-            if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
-                swiftLogs = contents
-            }
-        }
-        callback(backendLogs + swiftLogs);
+        callback(returnLogs);
     }
     
-    @objc static func clearAppexLogs() {
-        IOSLoggerImpl.withLogFile(for: .networkExtension) { logFileHandle in
-            logFileHandle.truncateFile(atOffset: 0)
-        }
-
-        IOSLoggerImpl.withLogFile(for: .swift) { logFileHandle in
-            logFileHandle.truncateFile(atOffset: 0)
+    @objc static func clearLogs() {
+        [FileType.networkExtension, FileType.swift].forEach {
+            IOSLoggerImpl.withLogFile(for: $0) { logFileHandle in
+                logFileHandle.truncateFile(atOffset: 0)
+            }
         }
     }
 
