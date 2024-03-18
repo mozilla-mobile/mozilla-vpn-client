@@ -680,65 +680,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  connection_health_no_signal:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-      - vpnsession
-      - daemonsession
-    description: |
-      The connection has no signal.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
-
-      A no signal event event happens when the connection is showing issues,
-      and a silent switch will not address the issue. On when the connection
-      is showing issues and there have been previous silent switches which
-      did not address the issue.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  connection_health_unstable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-      - vpnsession
-      - daemonsession
-    description: |
-      The connection is unstable.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
-
-      An unstable event happens when the connection is showing issues,
-      but a silent switch may still address the issue and no previous
-      silent switches have happened yet.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
   get_help_clicked_initialize:
     type: event
     lifetime: ping
@@ -1629,26 +1570,6 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  connection_health_stable_count:
-    type: counter
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      Count of times that the connection health check succeeds.
-      Collected only on mobile apps.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-4700
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6783#pullrequestreview-1407551157
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
   daemon_session_start:
     type: datetime
     description: |
@@ -1722,3 +1643,246 @@ session:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
+
+connection_health:
+  changed_to_no_signal:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The connection status changed to no signal.
+
+      This event is recorded in both main application and daemon.
+      The logic and cadence of health checks for each of these
+      is not the same. On the daemon this checks are only
+      done on the Android daemon and not on the iOS network extension.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+
+      A no signal event happens when the connection is showing issues,
+      and a silent switch will not address the issue. Or when the connection
+      is showing issues and there have been previous silent switches which
+      did not address the issue.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  changed_to_unstable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The connection status changed to unstable.
+
+      This event is recorded in both main application and daemon.
+      The logic and cadence of health checks for each of these
+      is not the same. On the daemon this checks are only
+      done on the Android daemon and not on the iOS network extension.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+
+      An unstable event happens when the connection is showing issues,
+      but silent switches may still address the issue.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  changed_to_stable:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The connection status changed to stable.
+
+      This event is recorded in both main application and daemon.
+      The logic and cadence of health checks for each of these
+      is not the same. On the daemon this checks are only
+      done on the Android daemon and not on the iOS network extension.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+
+      Stable status is when the app is not in a no signal or unstable
+      connection state.
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  no_signal_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Count of times that the connection health check results
+      in no signal.
+
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  unstable_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Count of times that the connection health check results
+      in unstable.
+
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  stable_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Count of times that the connection health check succeeds.
+
+      The health check counters must not be considered as markers of time. There is a possible
+      situation in the health check (which calls the telemetry) which frequently results in more
+      than one count per second. The situation: A health check is conducted because a network
+      check did not return, and milliseconds later that network check returns and another health
+      check is started because of the return.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-4700
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/6783#pullrequestreview-1407551157
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  no_signal_time:
+    type: timing_distribution
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Time spent in no signal state.
+
+      Only collected on desktop for vpnsession, as mobile apps
+      frequently are relaunched during VPN sessions. It is
+      collected in daemonsession, currently only on Android.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  unstable_time:
+    type: timing_distribution
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Time spent in unstable state.
+
+      Only collected on desktop for vpnsession, as mobile apps
+      frequently are relaunched during VPN sessions. It is
+      collected in daemonsession, currently only on Android.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  stable_time:
+    type: timing_distribution
+    lifetime: ping
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      Time spent in stable state.
+
+      Only collected on desktop for vpnsession, as mobile apps
+      frequently are relaunched during VPN sessions. It is
+      collected in daemonsession, currently only on Android.
+      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5860
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15

@@ -66,6 +66,7 @@ void ConnectionHealth::stop() {
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
 
+  stopTimingDistributionMetric(m_stability);
   setStability(Stable);
 }
 
@@ -75,6 +76,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   if (serverIpv4Gateway.isEmpty() ||
       MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+    logger.info() << "ConnectionHealth not starting because no connection";
     return;
   }
 
@@ -86,6 +88,7 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
+  startTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::startIdle() {
@@ -107,6 +110,8 @@ void ConnectionHealth::startIdle() {
   m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
   m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                            m_dnsPingSequence);
+
+  stopTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -119,18 +124,16 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
+  // Connection check pings sometimes come between VPN sessions, triggering
+  // setStability. Do not record count metrics in these cases.
+  Controller::State state = MozillaVPN::instance()->controller()->state();
+  if (state == Controller::StateOn || state == Controller::StateSwitching ||
+      state == Controller::StateSilentSwitching) {
+    recordMetrics(m_stability, stability);
+  }
+
   if (stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
-
-    mozilla::glean::sample::connection_health_unstable.record();
-  } else if (stability == NoSignal) {
-    mozilla::glean::sample::connection_health_no_signal.record();
-  } else {
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-    // Count successful health checks only on mobile apps, as they
-    // only do health checks when foregrounded.
-    mozilla::glean::session::connection_health_stable_count.add();
-#endif
   }
 
   if (m_stability == stability) {
@@ -237,7 +240,7 @@ void ConnectionHealth::startUnsettledPeriod() {
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+#ifndef MZ_MOBILE
   Q_UNUSED(state);
   // Do not suspend PingsendHelper on Desktop.
   return;
@@ -274,4 +277,83 @@ void ConnectionHealth::overwriteStabilityForInspector(
   m_stabilityOverwritten = true;
   m_stability = stability;
   emit stabilityChanged();
+}
+
+void ConnectionHealth::startTimingDistributionMetric(
+    ConnectionStability stability) {
+#ifndef MZ_MOBILE
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+      m_metricsTimerId =
+          mozilla::glean::connection_health::unstable_time.start();
+      break;
+    case ConnectionHealth::NoSignal:
+      m_metricsTimerId =
+          mozilla::glean::connection_health::no_signal_time.start();
+      break;
+    default:
+      m_metricsTimerId = mozilla::glean::connection_health::stable_time.start();
+  }
+#endif
+}
+
+void ConnectionHealth::stopTimingDistributionMetric(
+    ConnectionStability stability) {
+#ifndef MZ_MOBILE
+  if (m_metricsTimerId == -1) {
+    logger.info() << "No active health timer for state" << stability;
+    return;
+  }
+  switch (stability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_time.stopAndAccumulate(
+          m_metricsTimerId);
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_time.stopAndAccumulate(
+          m_metricsTimerId);
+      break;
+    default:
+      mozilla::glean::connection_health::stable_time.stopAndAccumulate(
+          m_metricsTimerId);
+  }
+  m_metricsTimerId = -1;  // used as a signal to prevent turning it off twice
+                          // when ConnectionHealth moves between idle and stop.
+#endif
+}
+
+void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
+                                     ConnectionStability newStability) {
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::unstable_count.add();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::no_signal_count.add();
+      break;
+    default:
+      mozilla::glean::connection_health::stable_count.add();
+  }
+
+  if (oldStability == newStability) {
+    logger.debug() << "No stability change for telemetry.";
+    return;
+  }
+
+  logger.info() << "Recording telemetry for stability change from"
+                << oldStability << "to" << newStability;
+
+  stopTimingDistributionMetric(oldStability);
+  startTimingDistributionMetric(newStability);
+
+  switch (newStability) {
+    case ConnectionHealth::Unstable:
+      mozilla::glean::connection_health::changed_to_unstable.record();
+      break;
+    case ConnectionHealth::NoSignal:
+      mozilla::glean::connection_health::changed_to_no_signal.record();
+      break;
+    default:
+      mozilla::glean::connection_health::changed_to_stable.record();
+  }
 }
