@@ -2,17 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "connectionhealth.h"
 #include "float.h"
 #include "helper.h"
 #include "pinghelper.h"
+#include "settingsholder.h"
 
 class TestConnectionHealth final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void init();
+  void cleanup();
   void dnsPingReceived();
   void healthCheckup();
   void updateDnsPingLatency();
+  void testTelemetry();
 
   /**
    * @brief Calculates the Exponentially Weighted Moving Average of the
@@ -32,4 +37,16 @@ class TestConnectionHealth final : public TestHelper {
     return weight * obs.back() +
            (1 - weight) * ewma(std::vector(obs.begin(), obs.end() - 1), weight);
   }
+
+ private:
+  SettingsHolder* m_settingsHolder = nullptr;
+  int getTimingDistCountFromValues(QHash<int, int> values);
+  void metricsTestErrorAndChange(int expectedStablePeriods,
+                                 int expectedUnstablePeriods,
+                                 int expectedNoSignalPeriods);
+  void metricsTestCount(int expectedStablePeriods, int expectedUnstablePeriods,
+                        int expectedNoSignalPeriods);
+  void metricsTestTimespan(int expectedStablePeriods,
+                           int expectedUnstablePeriods,
+                           int expectedNoSignalPeriods);
 };
