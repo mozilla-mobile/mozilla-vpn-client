@@ -1,9 +1,9 @@
 Checks: >  
   clang-diagnostic-*
   clang-analyzer-*,
-#  modernize-*,
+  -modernize-use-trailing-return-type,
+  modernize-*,
 #  cppcoreguidelines-*,
-#  -modernize-use-trailing-return-type,
 WarningsAsErrors: >
   clang-analyzer-security.*
 HeaderFilterRegex: ''

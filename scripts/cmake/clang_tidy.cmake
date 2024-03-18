@@ -62,11 +62,10 @@ if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
 endif()
 
 
+add_custom_target(clang_tidy_report)
 
-
-add_custom_target(clang_tidy_all)
-add_custom_target(clang_tidy_fix_all)
-
+# Create a folder for clang-tidy reports
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/clang-tidy)
 function(mz_add_clang_tidy aTarget)
 
     get_target_property(aTarget_SOURCE_FILES ${aTarget} SOURCES)
@@ -78,20 +77,12 @@ function(mz_add_clang_tidy aTarget)
     list(FILTER aTarget_SOURCE_FILES INCLUDE REGEX ".*\\.cpp$")
     list(FILTER aTarget_SOURCE_FILES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
 
-    add_custom_target(${aTarget}_clang_tidy
-        COMMAND python3 ${PROJECT_SOURCE_DIR}/scripts/run-clang-tidy.py -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR} ${aTarget_SOURCE_FILES}
+    add_custom_target(${aTarget}_clang_tidy_report
+        COMMAND python3 ${PROJECT_SOURCE_DIR}/scripts/run-clang-tidy.py -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -export-fixes=${CMAKE_BINARY_DIR}/clang-tidy/${aTarget}-report.yaml -p ${CMAKE_BINARY_DIR} ${aTarget_SOURCE_FILES}
         DEPENDS ${aTarget}
-        COMMENT "Running clang-tidy on ${aTarget}"
+        COMMENT "Build clang-tidy report for ${aTarget}"
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # Needs to be root so the config file is found
     )
-        add_custom_target(${aTarget}_clang_tidy_fix
-        COMMAND python3 ${PROJECT_SOURCE_DIR}/scripts/run-clang-tidy.py -fix -clang-tidy-binary ${CLANG_TIDY_EXECUTABLE} -p ${CMAKE_BINARY_DIR} ${aTarget_SOURCE_FILES}
-        DEPENDS ${aTarget}
-        COMMENT "Running clang-tidy --fix on ${aTarget}"
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
-
     # Add the clang-tidy targets as a dependency 
-    add_dependencies(clang_tidy_all ${aTarget}_clang_tidy)
-    add_dependencies(clang_tidy_fix_all ${aTarget}_clang_tidy_fix)
+    add_dependencies(clang_tidy_report ${aTarget}_clang_tidy_report)
 endfunction() 
