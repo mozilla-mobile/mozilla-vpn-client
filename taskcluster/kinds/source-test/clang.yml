@@ -73,18 +73,4 @@ clang-tidy-windows:
               name: public/build/
               path: /builds/worker/artifacts/
     run:
-      command: >-
-        source $TASK_WORKDIR/fetches/bin/activate &&
-        conda-unpack &&
-        git submodule update --init --recursive && 
-        cmake -s . -b .tmp \
-          -GNinja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" \
-          -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" \
-          -DWINTUN_FOLDER="$FETCHES_PATH\wintun" \
-          -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" \
-          -DBUILD_TESTS=OFF &&
-        cmake --build .tmp --target clang_tidy_report &&
-        mkdir -p /builds/worker/artifacts/ &&
-        cp .tmp/clang-tidy/* /builds/worker/artifacts/
+      command: taskcluster/scripts/source-test/clang-tidy.ps1
