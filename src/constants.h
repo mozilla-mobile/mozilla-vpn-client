@@ -231,17 +231,12 @@ PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
              Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
                                      "http://%1/success.txt"));
 
-PRODBETAEXPR(
-    const char*, balrogUrl,
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
-    "update.json");
+constexpr const char* BALROG_PROD_HOSTNAME = "aus5.mozilla.org";
 constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
-constexpr const char* BALROG_STAGE_URL =
-    "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
-    "release-cdntest/update.json";
+constexpr const char* BALROG_STAGE_HOSTNAME =
+    "stage.balrog.nonprod.cloudops.mozgcp.net";
 constexpr const char* AUTOGRAPH_STAGE_CURRENT_FINGERPRINT =
     "45c37f3a09a6d70e0fa321fb29753ba7998f1259b32772768f23ccdc24836798";
 constexpr const char* AUTOGRAPH_STAGE_NEXT_FINGERPRINT =

@@ -464,11 +464,22 @@ void Balrog::propagateError(NetworkRequest* request,
 
 //static
 QString Balrog::balrogUrl() {
-  const QString version = appVersion();
-  const QString agent = userAgent();
+  const QString product = "FirefoxVPN";
+  QString hostname = Constants::BALROG_PROD_HOSTNAME;
+  QString channel = "release";
+
   if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
-    return QString(Constants::BALROG_STAGE_URL).arg(version).arg(agent);
-  } else {
-    return QString(Constants::balrogUrl()).arg(version).arg(agent);
+    hostname = Constants::BALROG_STAGE_HOSTNAME;
+    channel = "release-cdntest";
+  } else if (!Constants::inProduction()) {
+    channel = "release-cdntest";
   }
+
+  QStringList path =
+      {"json", "1", product, appVersion(), userAgent(), channel, "update.json"};
+  QUrl url;
+  url.setScheme("https");
+  url.setHost(hostname);
+  url.setPath(QString("/") + path.join("/"));
+  return url.toString();
 }
