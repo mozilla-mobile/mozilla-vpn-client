@@ -52,3 +52,6 @@ Write-Output "GENERATED FOLDER"
 
 cat $BUILD_DIR/compile_commands.json
 cmake --build $BUILD_DIR --target clang_tidy_report
+
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
+Copy-Item -Path $BUILD_DIR/clang-tidy/* -Destination $TASK_WORKDIR/artifacts
