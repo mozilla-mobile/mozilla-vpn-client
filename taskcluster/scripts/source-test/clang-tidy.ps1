@@ -5,6 +5,8 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
+$SOURCE_DIR = resolve-path "."
+
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
 # Prep Env:
@@ -24,6 +26,7 @@ $CONDA_PREFIX = $env:CONDA_PREFIX
 $env:PATH="$CONDA_PREFIX\bin;$env:Path"
 # 
 $ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CONDA_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
+
 foreach ($script in  $ACTIVATION_SCRIPTS)  {
     Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
     . "$CONDA_PREFIX\etc\conda\activate.d\$script"
