@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
-    description: "Clang-tidy "
+    description: "Clang-tidy"
     treeherder:
         symbol: lint(tidy)
         kind: other
@@ -75,3 +75,37 @@ clang-tidy-windows:
     run:
       exec-with: powershell
       command: taskcluster/scripts/source-test/clang-tidy.ps1
+
+
+
+# clang-tidy-macos:
+#     treeherder:
+#             platform: macos/universal
+#     worker-type: b-macos
+#     fetches:
+#         toolchain:
+#             - conda-macos
+#             - qt-macos-6.6
+#     run:
+#         using: run-task
+#         use-caches: false
+#         cwd: '{checkout}'
+#         command: >-
+#           export TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+#           rm -rf "${TASK_HOME}/artifacts" &&
+#           mkdir -p "${TASK_HOME}/artifacts" &&
+#           source ${TASK_WORKDIR}/fetches/bin/activate && 
+#           conda-unpack && 
+#           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path) && 
+#           git submodule update --init --recursive && 
+
+#           cmake -S . -B ${TASK_HOME}/build -GNinja \
+#             -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+#             -DBUILD_TESTS=OFF \
+#             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+#           cmake --build ${TASK_HOME}/build --target clang_tidy_report &&
+#           rm -rf ${TASK_HOME}/build
+
+
+
+        
