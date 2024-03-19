@@ -14,6 +14,7 @@
 
 #include "constants.h"
 #include "errorhandler.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -79,8 +80,7 @@ void Balrog::start(Task* task) {
             ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
   }
 
-  QString url =
-      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
+  QString url = balrogUrl();
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = new NetworkRequest(task, 200);
@@ -460,4 +460,15 @@ void Balrog::propagateError(NetworkRequest* request,
   }
 
   REPORTNETWORKERROR(error, m_errorPropagationPolicy, "balrog");
+}
+
+//static
+QString Balrog::balrogUrl() {
+  const QString version = appVersion();
+  const QString agent = userAgent();
+  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+    return QString(Constants::BALROG_STAGE_URL).arg(version).arg(agent);
+  } else {
+    return QString(Constants::balrogUrl()).arg(version).arg(agent);
+  }
 }

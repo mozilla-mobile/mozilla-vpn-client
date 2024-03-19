@@ -44,6 +44,7 @@ class Balrog final : public Updater {
                       QNetworkReply::NetworkError error);
 
  private:
+  static QString balrogUrl();
   TemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =

@@ -239,6 +239,14 @@ PRODBETAEXPR(
 constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
+constexpr const char* BALROG_STAGE_URL =
+    "https://stage.balrog.nonprod.cloudops.mozgcp.net/json/1/FirefoxVPN/%1/%2/"
+    "release-cdntest/update.json";
+constexpr const char* AUTOGRAPH_STAGE_CURRENT_FINGERPRINT =
+    "45c37f3a09a6d70e0fa321fb29753ba7998f1259b32772768f23ccdc24836798";
+constexpr const char* AUTOGRAPH_STAGE_NEXT_FINGERPRINT =
+    "c0f05d59b1fde25780854c32fae8faba8481c233b4c1d390cca5f2cea81930ee";
+
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 
 PRODBETAEXPR(QString, upgradeToAnnualUrl,
