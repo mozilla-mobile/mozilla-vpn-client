@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+git submodule update --init --recursive
 
 $REPO_ROOT_PATH = resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR = resolve-path "$REPO_ROOT_PATH/../../"
