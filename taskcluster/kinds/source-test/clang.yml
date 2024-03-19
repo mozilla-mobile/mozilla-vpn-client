@@ -10,7 +10,12 @@ task-defaults:
         kind: other
         tier: 2
     run:
-        using: run-task
+      using: run-task
+      use-caches: true
+      cwd: '{checkout}'
+    worker:
+        max-run-time: 3600
+        chain-of-trust: true
     when:
         files-changed:
             - '**/*.c'
@@ -23,24 +28,18 @@ task-defaults:
 
 clang-tidy-android:
     treeherder:
-            tier: 1
             platform: android/arm64-v8a
     worker-type: b-linux-large
     fetches:
       toolchain: 
         - conda-android-arm64-6.6.0
     worker:
-          max-run-time: 3600
-          chain-of-trust: true
           docker-image: {in-tree: conda-base}
           artifacts:
             - type: directory
               name: public/build/
               path: /builds/worker/artifacts/
     run:
-      using: run-task
-      use-caches: true
-      cwd: '{checkout}'
       command: >-
         source $TASK_WORKDIR/fetches/bin/activate &&
         conda-unpack &&
@@ -56,10 +55,36 @@ clang-tidy-android:
           -GNinja \
           -S . -B .tmp/ &&
         unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER && 
-        cmake --build .tmp --target sentry &&
-        cmake --build .tmp --target translations &&
-        cmake --build .tmp --target qtglean &&
         cmake --build .tmp --target clang_tidy_report &&
         mkdir -p /builds/worker/artifacts/ &&
         cp .tmp/clang-tidy/* /builds/worker/artifacts/
         
+clang-tidy-windows:
+    treeherder:
+            platform: windows/x86_64
+    worker-type: b-windows
+    fetches:
+      toolchain: 
+        - qt-windows-x86_64-6.6.0
+        - conda-windows-x86_64
+    worker:
+          artifacts:
+            - type: directory
+              name: public/build/
+              path: /builds/worker/artifacts/
+    run:
+      command: >-
+        source $TASK_WORKDIR/fetches/bin/activate &&
+        conda-unpack &&
+        git submodule update --init --recursive && 
+        cmake -s . -b .tmp \
+          -GNinja \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" \
+          -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" \
+          -DWINTUN_FOLDER="$FETCHES_PATH\wintun" \
+          -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" \
+          -DBUILD_TESTS=OFF &&
+        cmake --build .tmp --target clang_tidy_report &&
+        mkdir -p /builds/worker/artifacts/ &&
+        cp .tmp/clang-tidy/* /builds/worker/artifacts/
