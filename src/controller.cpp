@@ -504,29 +504,10 @@ void Controller::clearConnectedTime() {
   m_timer.stop();
 }
 
-QList<IPAddress> Controller::getAllowedIPAddressRanges(
-    const Server& exitServer) {
-  logger.debug() << "Computing the allowed IP addresses";
-
-  QList<IPAddress> list;
-
-#ifdef MZ_IOS
-  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
-  // LAN traffic is allowed through. This is in the swift code.
-
-  Q_UNUSED(exitServer);
-
-  logger.debug() << "Catch all IPv4";
-  list.append(IPAddress("0.0.0.0/0"));
-
-  logger.debug() << "Catch all IPv6";
-  list.append(IPAddress("::0/0"));
-#else
+// static
+Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
   QList<IPAddress> excludeIPv4s;
   QList<IPAddress> excludeIPv6s;
-  // For multi-hop connections, the last entry in the server list is the
-  // ingress node to the network of wireguard servers, and must not be
-  // routed through the VPN.
 
   // filtering out the RFC1918 local area network
   logger.debug() << "Filtering out the local area networks (rfc 1918)";
@@ -549,6 +530,34 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
     excludeIPv6s.append(IPAddress(ipv6String));
   }
 
+  return IPAddressList{
+      .v6 = excludeIPv6s,
+      .v4 = excludeIPv4s,
+  };
+}
+
+// static
+QList<IPAddress> Controller::getAllowedIPAddressRanges(
+    const Server& exitServer) {
+  logger.debug() << "Computing the allowed IP addresses";
+
+  QList<IPAddress> list;
+
+#ifdef MZ_IOS
+  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
+  // LAN traffic is allowed through. This is in the swift code.
+
+  Q_UNUSED(exitServer);
+
+  logger.debug() << "Catch all IPv4";
+  list.append(IPAddress("0.0.0.0/0"));
+
+  logger.debug() << "Catch all IPv6";
+  list.append(IPAddress("::0/0"));
+#else
+
+  auto excludedIPs = getExcludedIPAddressRanges();
+
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
@@ -561,9 +570,9 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   // Allow access to everything not covered by an excluded address.
   QList<IPAddress> allowedIPv4 = {IPAddress("0.0.0.0/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv4, excludeIPv4s));
+  list.append(IPAddress::excludeAddresses(allowedIPv4, excludedIPs.v4));
   QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv6, excludeIPv6s));
+  list.append(IPAddress::excludeAddresses(allowedIPv6, excludedIPs.v6));
 #endif
 
   return list;
@@ -850,12 +859,12 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   logger.debug() << "Status updated";
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
-                           uint64_t rxBytes)>>
+                           uint64_t rxBytes)> >
       list;
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }

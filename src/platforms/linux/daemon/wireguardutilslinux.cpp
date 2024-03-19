@@ -32,7 +32,6 @@
 extern "C" {
 #endif
 #include "../../3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h"
-#include "netfilter.h"
 #if defined(__cplusplus)
 }
 #endif
@@ -63,17 +62,11 @@ static void nlmsg_append_attr32(struct nlmsghdr* nlmsg, size_t maxlen,
 namespace {
 Logger logger("WireguardUtilsLinux");
 
-void NetfilterLogger(int level, const char* msg) {
-  Q_UNUSED(level);
-  logger.debug() << "NetfilterGo:" << msg;
-}
 }  // namespace
 
 WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
-    : WireguardUtils(parent) {
+    : WireguardUtils(parent), m_firewall(this) {
   MZ_COUNT_CTOR(WireguardUtilsLinux);
-  NetfilterSetLogger((GoUintptr)&NetfilterLogger);
-  NetfilterCreateTables();
 
   m_nlsock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
   if (m_nlsock < 0) {
@@ -121,7 +114,6 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
 
 WireguardUtilsLinux::~WireguardUtilsLinux() {
   MZ_COUNT_DTOR(WireguardUtilsLinux);
-  NetfilterRemoveTables();
   if (m_nlsock >= 0) {
     close(m_nlsock);
   }
@@ -176,26 +168,19 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   }
 
   // Configure firewall rules
-  GoString goIfname = {.p = device->name, .n = (ptrdiff_t)strlen(device->name)};
-  if (NetfilterIfup(goIfname, device->fwmark) != 0) {
+  if (!m_firewall.up(WG_INTERFACE, WG_FIREWALL_MARK,
+                     config.m_deviceIpv6Address)) {
     return false;
   }
-  if (m_cgroupVersion == 1) {
-    NetfilterMarkCgroupV1(VPN_EXCLUDE_CLASS_ID);
+  if (m_cgroupVersion == 1 && !m_firewall.markCgroupV1(VPN_EXCLUDE_CLASS_ID)) {
+    return false;
   }
-
-  int slashPos = config.m_deviceIpv6Address.indexOf('/');
-  GoString goIpv6Address = {.p = qPrintable(config.m_deviceIpv6Address),
-                            .n = config.m_deviceIpv6Address.length()};
-  if (slashPos != -1) {
-    goIpv6Address.n = slashPos;
-  }
-  NetfilterIsolateIpv6(goIfname, goIpv6Address);
 
   // BIG HACK: We can only set this route once the moz0 interface is up.
-  // We need to wait for it to go up. There is probably a better way to do this,
-  // but for now this is what we got.
+  // We need to wait for it to go up. There is probably a better way to do
+  // this, but for now this is what we got.
   std::this_thread::sleep_for(std::chrono::seconds(1));
+  // Create routing policy for VPN interface
   setupWireguardRoutingTable();
 
   return true;
@@ -227,9 +212,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
     return false;
   }
 
-  // HACK: We are running into a crash on Linux due to the address list being
-  // *WAAAY* too long, which we aren't really using anways since the routing
-  // policy rules are doing all the work for us anyways.
+  // Rules that allow traffic or not are applied on the firewall for Linux.
   //
   // To work around the issue, just set default routes for the exit hop.
   if ((config.m_hopType == InterfaceConfig::SingleHop) ||
@@ -256,9 +239,9 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
 
   // Update the firewall to mark inbound traffic from the server.
-  GoString goAddress = {.p = qPrintable(config.m_serverIpv4AddrIn),
-                        .n = (ptrdiff_t)config.m_serverIpv4AddrIn.length()};
-  NetfilterMarkInbound(goAddress, config.m_serverPort);
+  if (!m_firewall.markInbound(config.m_serverIpv4AddrIn)) {
+    return false;
+  }
 
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
@@ -304,9 +287,9 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   }
 
   // Clear firewall settings for this server.
-  GoString goAddress = {.p = qPrintable(config.m_serverIpv4AddrIn),
-                        .n = (ptrdiff_t)config.m_serverIpv4AddrIn.length()};
-  NetfilterClearInbound(goAddress);
+  if (!m_firewall.clearInbound(config.m_serverIpv4AddrIn)) {
+    return false;
+  }
 
   // Set/update device
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
@@ -320,8 +303,9 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsLinux::deleteInterface() {
-  // Clear firewall rules
-  NetfilterClearTables();
+  if (!m_firewall.down()) {
+    return false;
+  }
 
   // Clear routing policy rules
   if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
@@ -709,10 +693,7 @@ void WireguardUtilsLinux::excludeCgroup(const QString& cgroup) {
     moveCgroupProcs(m_cgroupUnified + cgroup,
                     m_cgroupNetClass + VPN_EXCLUDE_CGROUP);
   } else if (m_cgroupVersion == 2) {
-    QByteArray cgpath = cgroup.toLocal8Bit();
-    GoString goCgroup = {.p = cgpath.constData(),
-                         .n = (ptrdiff_t)cgpath.length()};
-    NetfilterMarkCgroupV2(goCgroup);
+    m_firewall.markCgroupV2(cgroup);
   } else {
     Q_ASSERT(m_cgroupVersion == 0);
   }
@@ -724,10 +705,7 @@ void WireguardUtilsLinux::resetCgroup(const QString& cgroup) {
     // Add all PIDs from the unified cgroup to the net_cls default cgroup.
     moveCgroupProcs(m_cgroupUnified + cgroup, m_cgroupNetClass);
   } else if (m_cgroupVersion == 2) {
-    QByteArray cgpath = cgroup.toLocal8Bit();
-    GoString goCgroup = {.p = cgpath.constData(),
-                         .n = (ptrdiff_t)cgpath.length()};
-    NetfilterResetCgroupV2(goCgroup);
+    m_firewall.clearCgroupV2(cgroup);
   } else {
     Q_ASSERT(m_cgroupVersion == 0);
   }
@@ -739,7 +717,7 @@ void WireguardUtilsLinux::resetAllCgroups() {
     // Add all PIDs from the net_cls exclusion cgroup to the default cgroup.
     moveCgroupProcs(m_cgroupNetClass + VPN_EXCLUDE_CGROUP, m_cgroupNetClass);
   } else if (m_cgroupVersion == 2) {
-    NetfilterResetAllCgroupsV2();
+    m_firewall.clearAllCgroupsV2();
   } else {
     Q_ASSERT(m_cgroupVersion == 0);
   }
