@@ -4,6 +4,7 @@
 
 #include "balrog.h"
 
+#include <QCryptographicHash>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -23,10 +24,12 @@
 // Implemented in rust. See the `signature` folder.
 // TODO (VPN-5708): We should really generate this with cbindgen.
 extern "C" {
+bool compute_root_certificate_hash(const char* x5u_ptr, size_t x5u_length,
+                                   char* hash_out_ptr, size_t hash_length);
+
 bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
                               const char* msg_ptr, size_t msg_length,
-                              const char* signature, const char* rootHash,
-                              const char* certSubject,
+                              const char* signature, const char* certSubject,
                               void (*logfn)(const char*));
 }
 
@@ -181,10 +184,31 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
+  // Validate the root certificate hash.
+  int hashSize = QCryptographicHash::hashLength(QCryptographicHash::Sha256);
+  QByteArray rootHash(hashSize, 0);
+  if (!compute_root_certificate_hash(x5uData.constData(), x5uData.length(),
+                                     rootHash.data(), rootHash.length())) {
+    logger.error() << "Failed to calculate root certificate hash";
+    return false;
+  }
+  bool hashOkay = false;
+  for (const QString& fingerprint : rootCertHashes()) {
+    QByteArray fpDecode = QByteArray::fromHex(fingerprint.toUtf8());
+    Q_ASSERT(fpDecode.length() == hashSize);
+    if (rootHash == fpDecode) {
+      hashOkay = true;
+    }
+  }
+  if (!hashOkay) {
+    logger.error() << "Untrusted root certificate hash";
+    return false;
+  }
+
+  // Validate the content signature.
   bool verify = verify_content_signature(
       x5uData.constData(), x5uData.length(), updateData.constData(),
-      updateData.length(), signatureBlob.constData(),
-      Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT, BALROG_CERT_SUBJECT_CN,
+      updateData.length(), signatureBlob.constData(), BALROG_CERT_SUBJECT_CN,
       balrogLogger);
   if (!verify) {
     logger.error() << "Verification failed";
@@ -482,4 +506,13 @@ QString Balrog::balrogUrl() {
   url.setHost(hostname);
   url.setPath(QString("/") + path.join("/"));
   return url.toString();
+}
+
+// static
+QStringList Balrog::rootCertHashes() {
+  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+    return QString(Constants::AUTOGRAPH_STAGE_FINGERPRINTS).split('\n');
+  } else {
+    return QString(Constants::AUTOGRAPH_PROD_FINGERPRINTS).split('\n');
+  }
 }

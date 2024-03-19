@@ -4,6 +4,7 @@
 
 use crate::balrog::*;
 use crate::logger::*;
+use ring::digest;
 use ring::signature;
 use std::ffi::CStr;
 use std::os::raw::c_char;
@@ -53,6 +54,45 @@ pub extern "C" fn verify_rsa(
     }
 }
 
+/* FFI interface to get the SHA256 hash of the root certificate in a chain
+ *
+ * The following arguments are expected:
+ *  - x5u_ptr: Pointer to a PEM-encoded X509 certificate chain.
+ *  - x5u_length: Length of PEM-encoded X509 certificate chain (in bytes).
+ *  - root_hash_out: Output pointer for the SHA256 hash.
+ *  - root_hash_len: Size of the root hash buffer (in bytes).
+ */
+#[no_mangle]
+pub extern "C" fn compute_root_certificate_hash(
+    x5u_ptr: *const c_uchar,
+    x5u_length: usize,
+    root_hash_out: *mut c_uchar,
+    root_hash_len: usize,
+) -> bool {
+    /* Parse the PEM Certificate chain. */
+    let x5u = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
+    let Ok(pem_chain) = parse_pem_chain(x5u) else {
+        return false;
+    };
+
+    /* Hash the final certificate in the chain. */
+    let Some(pem) = pem_chain.last() else {
+        return false;
+    };
+    if pem.label != "CERTIFICATE" {
+        return false;
+    }
+    let digest = digest::digest(&digest::SHA256, pem.contents.as_slice());
+
+    /* Output the hash to the caller. */
+    if root_hash_len != digest::SHA256_OUTPUT_LEN {
+        return false;
+    }
+    let output = unsafe { std::slice::from_raw_parts_mut(root_hash_out, root_hash_len) };
+    output.copy_from_slice(digest.as_ref());
+    return true;
+}
+
 /* FFI interface to verify a Mozilla content signature
  *
  * The following arguments are expected:
@@ -72,7 +112,6 @@ pub extern "C" fn verify_content_signature(
     input_ptr: *const c_uchar,
     input_length: usize,
     signature: *const c_char,
-    root_hash: *const c_char,
     leaf_subject: *const c_char,
     log_fn: Option<extern "C" fn(*const c_char)>,
 ) -> bool {
@@ -82,13 +121,6 @@ pub extern "C" fn verify_content_signature(
     let x5u = unsafe { std::slice::from_raw_parts(x5u_ptr, x5u_length) };
     let input = unsafe { std::slice::from_raw_parts(input_ptr, input_length) };
     let sig_str = match unsafe { CStr::from_ptr(signature) }.to_str() {
-        Err(e) => {
-            logger.print(&e.to_string());
-            return false;
-        }
-        Ok(x) => x,
-    };
-    let root_hash_str = match unsafe { CStr::from_ptr(root_hash) }.to_str() {
         Err(e) => {
             logger.print(&e.to_string());
             return false;
@@ -122,16 +154,6 @@ pub extern "C" fn verify_content_signature(
         }
         Ok(x) => x,
     };
-
-    let root_hash_hex = root_hash_str.replace(":", "");
-    let Ok(root_hash) = hex::decode(root_hash_hex) else {
-        logger.print(&BalrogError::RootHashParseFailed.to_string());
-        return false;
-    };
-    if balrog.root_hash.is_empty() || (balrog.root_hash != root_hash) {
-        logger.print(&BalrogError::RootHashMismatch.to_string());
-        return false;
-    }
 
     /* Perform the content signature validation. */
     let _ = match balrog.verify(&input, &sig_str, now, leaf_subject_str) {
@@ -177,6 +199,14 @@ mod test {
 
         let v = x509.validity();
         (v.not_before.timestamp() + v.not_after.timestamp()) / 2
+    }
+
+    #[cfg(test)]
+    extern "C" fn ffi_logfn_panic(msg: *const c_char) {
+        match unsafe { CStr::from_ptr(msg) }.to_str() {
+            Err(_e) => {}
+            Ok(x) => panic!("{}", x),
+        };
     }
 
     #[test]
@@ -241,13 +271,6 @@ mod test {
     #[test]
     #[should_panic]
     fn test_rsa_ffi_logger() {
-        extern "C" fn logfn(msg: *const c_char) {
-            match unsafe { CStr::from_ptr(msg) }.to_str() {
-                Err(_e) => {}
-                Ok(x) => panic!("{}", x),
-            };
-        }
-
         let mut addon_message = data_encoding::BASE64
             .decode(RSA_ADDON_MESSAGE_BASE64)
             .unwrap();
@@ -260,9 +283,37 @@ mod test {
             addon_message.len(),
             RSA_ADDON_SIGNATURE.as_ptr(),
             RSA_ADDON_SIGNATURE.len(),
-            Some(logfn),
+            Some(ffi_logfn_panic),
         );
         assert!(!r, "RSA signature check failed to catch an error");
+    }
+
+    #[test]
+    fn test_compute_root_hash() {
+        let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN];
+        let expect = hex::decode(PROD_ROOT_HASH).unwrap();
+
+        let r = compute_root_certificate_hash(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len());
+        
+        assert!(r, "Root hash computation failed");
+        assert_eq!(hash_result, expect.as_slice());
+    }
+
+    #[test]
+    fn test_compute_root_hash_invalid_length() {
+        let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN-1];
+
+        let r = compute_root_certificate_hash(
+            PROD_CERT_CHAIN.as_ptr(),
+            PROD_CERT_CHAIN.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len());
+
+        assert!(!r, "Root hash computation failed to check buffer size");
     }
 
     #[test]
@@ -282,7 +333,6 @@ mod test {
     #[test]
     fn test_verify_valid_ffi() {
         let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
-        let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
 
         let r = verify_content_signature(
@@ -291,7 +341,6 @@ mod test {
             PROD_INPUT_DATA.as_ptr(),
             PROD_INPUT_DATA.len(),
             prod_signature_cstr,
-            prod_root_hash_cstr,
             prod_hostname_cstr,
             None,
         );
@@ -300,70 +349,6 @@ mod test {
         // Retake pointers for garbage collection.
         unsafe {
             let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(prod_root_hash_cstr);
-            let _ = CString::from_raw(prod_hostname_cstr);
-        };
-    }
-
-    #[cfg(test)]
-    extern "C" fn ffi_logfn_panic(msg: *const c_char) {
-        match unsafe { CStr::from_ptr(msg) }.to_str() {
-            Err(_e) => {}
-            Ok(x) => panic!("{}", x),
-        };
-    }
-
-    #[test]
-    #[should_panic(expected = "Root hash mismatch")]
-    fn test_verify_ffi_bad_hash() {
-        let bad_root_hash = PROD_ROOT_HASH.replace("a", "b");
-        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
-        let bad_root_hash_cstr = CString::new(bad_root_hash).unwrap().into_raw();
-        let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
-
-        let r = verify_content_signature(
-            PROD_CERT_CHAIN.as_ptr(),
-            PROD_CERT_CHAIN.len(),
-            PROD_INPUT_DATA.as_ptr(),
-            PROD_INPUT_DATA.len(),
-            prod_signature_cstr,
-            bad_root_hash_cstr,
-            prod_hostname_cstr,
-            Some(ffi_logfn_panic),
-        );
-        assert!(!r, "Verification failed to catch invalid root hash via FFI");
-
-        // Retake pointers for garbage collection.
-        unsafe {
-            let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(bad_root_hash_cstr);
-            let _ = CString::from_raw(prod_hostname_cstr);
-        };
-    }
-
-    #[test]
-    #[should_panic(expected = "Root hash parse failed")]
-    fn test_verify_ffi_bogus_hash() {
-        let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
-        let bogus_root_hash_cstr = CString::new("The quick brown fox jumped over the lazy dog").unwrap().into_raw();
-        let prod_hostname_cstr = CString::new(PROD_HOSTNAME).unwrap().into_raw();
-
-        let r = verify_content_signature(
-            PROD_CERT_CHAIN.as_ptr(),
-            PROD_CERT_CHAIN.len(),
-            PROD_INPUT_DATA.as_ptr(),
-            PROD_INPUT_DATA.len(),
-            prod_signature_cstr,
-            bogus_root_hash_cstr,
-            prod_hostname_cstr,
-            Some(ffi_logfn_panic),
-        );
-        assert!(!r, "Verification failed to catch bogus hash via FFI");
-
-        // Retake pointers for garbage collection.
-        unsafe {
-            let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(bogus_root_hash_cstr);
             let _ = CString::from_raw(prod_hostname_cstr);
         };
     }
@@ -372,7 +357,6 @@ mod test {
     #[should_panic(expected = "Hostname mismatch")]
     fn test_verify_ffi_logger() {
         let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
-        let prod_root_hash_cstr = CString::new(PROD_ROOT_HASH).unwrap().into_raw();
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
 
         let r = verify_content_signature(
@@ -381,7 +365,6 @@ mod test {
             PROD_INPUT_DATA.as_ptr(),
             PROD_INPUT_DATA.len(),
             prod_signature_cstr,
-            prod_root_hash_cstr,
             invalid_hostname_cstr,
             Some(ffi_logfn_panic),
         );
@@ -390,7 +373,6 @@ mod test {
         // Retake pointers for garbage collection.
         unsafe {
             let _ = CString::from_raw(prod_signature_cstr);
-            let _ = CString::from_raw(prod_root_hash_cstr);
             let _ = CString::from_raw(invalid_hostname_cstr);
         };
     }
