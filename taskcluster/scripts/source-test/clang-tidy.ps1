@@ -43,4 +43,5 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
 
+cmake --build $BUILD_DIR --target translations
 cmake --build $BUILD_DIR --target clang_tidy_report
