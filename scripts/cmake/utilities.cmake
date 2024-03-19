@@ -221,6 +221,9 @@ function(mz_add_new_module)
             endif()
         endforeach()
     endif()
+
+    # Add Clang-tidy to that module
+    mz_add_clang_tidy(${MZ_ADD_NEW_MODULE_TARGET_NAME})
 endfunction()
 
 function(mz_add_library)
@@ -474,3 +477,4 @@ function(mz_add_the_apple_stuff)
         ${APPLE_SPECIFIC_TARGET_NAME}
     )
 endfunction()
+

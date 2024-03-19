@@ -34,6 +34,8 @@ set_target_properties(build_tests PROPERTIES
 
 # Include Global Helper functions
 include(scripts/cmake/utilities.cmake)
+include(scripts/cmake/clang_tidy.cmake)
+
 
 ## Some workarounds for platform build quirks
 if(WIN32)

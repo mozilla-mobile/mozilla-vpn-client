@@ -218,3 +218,17 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.h
        )
 endif()
+
+
+# Creates Target (mozillavpn-sources_clang_tidy_report)
+mz_add_clang_tidy(mozillavpn-sources)
+# we need to make sure those are up to date before we build. 
+# Those targets generate code we #include, therefore
+
+if(TARGET mozillavpn-sources_clang_tidy_report)
+    add_dependencies(mozillavpn-sources_clang_tidy_report
+        qtglean
+        sentry
+        translations
+    )
+endif()
