@@ -45,4 +45,9 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
 
 cmake --build $BUILD_DIR --target translations
+Write-Output "GENERATED FOLDER"
+ls $BUILD_DIR/translations/generated
+Write-Output "GENERATED FOLDER"
+
+cat $BUILD_DIR/compile_commands.json
 cmake --build $BUILD_DIR --target clang_tidy_report
