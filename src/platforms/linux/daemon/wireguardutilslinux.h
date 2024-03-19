@@ -11,6 +11,7 @@
 #include <QStringList>
 
 #include "daemon/wireguardutils.h"
+#include "linuxfirewall.h"
 
 class WireguardUtilsLinux final : public WireguardUtils {
   Q_OBJECT
@@ -58,6 +59,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   int m_cgroupVersion = 0;
   QString m_cgroupNetClass;
   QString m_cgroupUnified;
+
+  LinuxFirewall m_firewall;
 
  private slots:
   void nlsockReady();

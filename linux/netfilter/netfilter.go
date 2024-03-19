@@ -29,6 +29,9 @@ import (
 	"github.com/google/nftables/xt"
 	linux "golang.org/x/sys/unix"
 )
+import (
+	"fmt"
+)
 
 type CLogger struct {
 	level    C.int
@@ -62,6 +65,8 @@ type nftCtx struct {
 	nat         *nftables.Chain
 	conntrack   *nftables.Chain
 	preroute    *nftables.Chain
+	input       *nftables.Chain
+	output      *nftables.Chain
 	preroute_v6 *nftables.Chain
 	addrset     *nftables.Set
 	fwmark      uint32
@@ -75,6 +80,7 @@ func (ctx *nftCtx) nftCommit() int32 {
 		log.Println("Netfiler commit failed:", err)
 		return -1
 	}
+	log.Println("Netfiler commit succeeded")
 	return 0
 }
 
@@ -89,7 +95,7 @@ func nftIfname(n string) []byte {
 // and non-zero.
 const ctzone_external = 0x9e4c
 
-func (ctx *nftCtx) nftIfup(ifname string) {
+func (ctx *nftCtx) nftApplyFwMark() {
 	var immctzone = expr.Immediate{
 		Register: 1,
 		Data:     binaryutil.NativeEndian.PutUint32(ctzone_external),
@@ -173,6 +179,172 @@ func (ctx *nftCtx) nftIfup(ifname string) {
 			// Set the conntrack zone.
 			&immctzone,
 			&setctzone,
+		},
+	})
+}
+
+func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
+	log.Println("Restricting network traffic", ifname)
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			// Accept packet from loopback interfaces
+			&expr.Meta{
+				Key:      expr.MetaKeyIIFTYPE,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			// Accept all packets from the VPN interface
+			&expr.Meta{
+				Key:      expr.MetaKeyIIFNAME,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     nftIfname(ifname),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			// Accept all packets from the VPN server
+			&expr.Meta{
+				Key:      expr.MetaKeyPROTOCOL,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(linux.ETH_P_IP),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(12), // saddr
+				Len:          uint32(4),
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName:        ctx.addrset.Name,
+				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	// Output
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.output,
+		Exprs: []expr.Any{
+			// Accept packet to loopback interfaces
+			&expr.Meta{
+				Key:      expr.MetaKeyOIFTYPE,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.output,
+		Exprs: []expr.Any{
+			// Accept all packets to the VPN interface
+			&expr.Meta{
+				Key:      expr.MetaKeyOIFNAME,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     nftIfname(ifname),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.output,
+		Exprs: []expr.Any{
+			// Accept all packets to the VPN server
+			&expr.Meta{
+				Key:      expr.MetaKeyPROTOCOL,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(linux.ETH_P_IP),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(16), // daddr
+				Len:          uint32(4),
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName:        ctx.addrset.Name,
+				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
 		},
 	})
 }
@@ -415,6 +587,24 @@ func NetfilterCreateTables() int32 {
 		Priority: nftables.ChainPriorityRaw,
 	})
 
+	dropPolicy := nftables.ChainPolicyDrop
+	mozvpn_ctx.input = mozvpn_ctx.conn.AddChain(&nftables.Chain{
+		Name:     "mozvpn-input",
+		Table:    mozvpn_ctx.table_inet,
+		Type:     nftables.ChainTypeFilter,
+		Hooknum:  nftables.ChainHookInput,
+		Priority: nftables.ChainPriorityFilter,
+		Policy:   &dropPolicy,
+	})
+	mozvpn_ctx.output = mozvpn_ctx.conn.AddChain(&nftables.Chain{
+		Name:     "mozvpn-output",
+		Table:    mozvpn_ctx.table_inet,
+		Type:     nftables.ChainTypeFilter,
+		Hooknum:  nftables.ChainHookOutput,
+		Priority: nftables.ChainPriorityFilter,
+		Policy:   &dropPolicy,
+	})
+
 	mozvpn_ctx.table_v6 = mozvpn_ctx.conn.AddTable(&nftables.Table{
 		Family: nftables.TableFamilyIPv6,
 		Name:   "mozvpn-v6",
@@ -440,40 +630,143 @@ func NetfilterCreateTables() int32 {
 
 //export NetfilterRemoveTables
 func NetfilterRemoveTables() int32 {
-	mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_inet)
-	mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_v6)
-
-	log.Println("Removing netfilter tables")
-	return mozvpn_ctx.nftCommit()
-}
-
-//export NetfilterClearTables
-func NetfilterClearTables() int32 {
-	mozvpn_ctx.fwmark = 0
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.mangle)
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.nat)
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.conntrack)
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute)
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.preroute_v6)
-	mozvpn_ctx.conn.FlushSet(mozvpn_ctx.addrset)
-
-	log.Println("Clearing netfilter tables")
-	return mozvpn_ctx.nftCommit()
-}
-
-//export NetfilterIfup
-func NetfilterIfup(ifname string, fwmark uint32) int32 {
-	mozvpn_ctx.fwmark = fwmark
-	if fwmark != 0 {
-		mozvpn_ctx.nftIfup(ifname)
+	tables, err := mozvpn_ctx.conn.ListTables()
+	if err != nil {
+		fmt.Println("Error listing tables:", err)
+		return -1
 	}
 
-	log.Println("Starting netfilter tables for", ifname)
+	for _, table := range tables {
+		if table.Name == "mozvpn-inet" {
+			log.Println("Removing netfilter inet table")
+			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_inet)
+		}
+
+		if table.Name == "mozvpn-v6" {
+			log.Println("Removing netfilter ipv6 table")
+			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_v6)
+		}
+	}
+
+	return mozvpn_ctx.nftCommit()
+}
+
+//export NetfilterApplyFwMark
+func NetfilterApplyFwMark(fwmark uint32) int32 {
+	mozvpn_ctx.fwmark = fwmark
+	if fwmark == 0 {
+		log.Panic("Invalid fwmark")
+		return -1
+	}
+
+	mozvpn_ctx.nftApplyFwMark()
+
+	log.Println("Applying firewall mark")
+	return mozvpn_ctx.nftCommit()
+}
+
+//export NetfilterRestrictTraffic
+func NetfilterRestrictTraffic(ifname string) int32 {
+	mozvpn_ctx.nftRestrictTraffic(ifname)
+
+	log.Println("Restricting traffic for", ifname)
+	return mozvpn_ctx.nftCommit()
+}
+
+const (
+	SADDR = iota
+	DADDR
+)
+
+func buildIpNetExpr(ipnet *net.IPNet, addrtype int) []expr.Any {
+	ipsize := len(ipnet.IP)
+
+	var offset uint32
+	var iptype []byte
+	var ip []byte
+	var xormask = make([]byte, ipsize)
+	if ipnet.IP.To4() != nil {
+		iptype = []byte{linux.NFPROTO_IPV4}
+		ip = ipnet.IP.To4()
+
+		if addrtype == SADDR {
+			offset = 12
+		} else {
+			offset = 16
+		}
+	} else {
+		iptype = []byte{linux.NFPROTO_IPV6}
+		ip = ipnet.IP.To16()
+
+		if addrtype == SADDR {
+			offset = 8
+		} else {
+			offset = 24
+		}
+	}
+
+	return []expr.Any{
+		&expr.Meta{
+			Key:      expr.MetaKeyNFPROTO,
+			Register: 1,
+		},
+		&expr.Cmp{
+			Op:       expr.CmpOpEq,
+			Register: 1,
+			Data:     iptype,
+		},
+		&expr.Payload{
+			DestRegister: 1,
+			Base:         expr.PayloadBaseNetworkHeader,
+			Offset:       offset,
+			Len:          uint32(ipsize),
+		},
+		&expr.Bitwise{
+			SourceRegister: 1,
+			DestRegister:   1,
+			Len:            uint32(ipsize),
+			Mask:           ipnet.Mask,
+			Xor:            xormask,
+		},
+		&expr.Cmp{
+			Op:       expr.CmpOpEq,
+			Register: 1,
+			Data:     ip,
+		},
+		&expr.Verdict{
+			Kind: expr.VerdictAccept,
+		},
+	}
+
+}
+
+//export NetfilterAllowPrefix
+func NetfilterAllowPrefix(prefix string) int32 {
+	_, ipnet, err := net.ParseCIDR(prefix)
+	if err != nil {
+		log.Println("Unable to parse", prefix)
+		return -1
+	}
+
+	log.Println("Allow traffic from", prefix)
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: buildIpNetExpr(ipnet, DADDR),
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: buildIpNetExpr(ipnet, SADDR),
+	})
+
 	return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterMarkInbound
-func NetfilterMarkInbound(ipaddr string, port uint32) int32 {
+func NetfilterMarkInbound(ipaddr string) int32 {
 	element := []nftables.SetElement{
 		{Key: net.ParseIP(ipaddr).To4()},
 	}
