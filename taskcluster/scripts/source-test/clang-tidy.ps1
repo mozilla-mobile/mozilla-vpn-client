@@ -41,6 +41,7 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON `
+        -DWINTUN_FOLDER="not-existing" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
 
 cmake --build $BUILD_DIR --target translations
