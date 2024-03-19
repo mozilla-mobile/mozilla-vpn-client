@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-$REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
-$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
+$REPO_ROOT_PATH = resolve-path "$PSScriptRoot/../../../"
+$TASK_WORKDIR = resolve-path "$REPO_ROOT_PATH/../../"
+$FETCHES_PATH = resolve-path "$TASK_WORKDIR/fetches"
 $SOURCE_DIR = resolve-path "."
 
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
