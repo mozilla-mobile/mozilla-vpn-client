@@ -39,12 +39,15 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
 
     file(MAKE_DIRECTORY ${GENERATED_DIR})
     target_include_directories(${TARGET_NAME} PUBLIC ${GENERATED_DIR})
+    target_include_directories(${TARGET_NAME} INTERFACE ${GENERATED_DIR})
 
     target_sources(${TARGET_NAME} PRIVATE
         ${GENERATED_DIR}/i18nstrings_p.cpp
-        ${GENERATED_DIR}/i18nstrings.h
         ${GENERATED_DIR}/translations.qrc
         ${CMAKE_SOURCE_DIR}/translations/i18nstrings.cpp
+    )
+    target_sources(${TARGET_NAME} INTERFACE
+        ${GENERATED_DIR}/i18nstrings.h
     )
 
     ## Generate the string database (language agnostic)
