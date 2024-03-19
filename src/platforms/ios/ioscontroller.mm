@@ -256,9 +256,9 @@ void IOSController::checkStatus() {
 void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
   std::function<void(const QString&)> callback = std::move(a_callback);
 
-  [IOSLoggerImpl getAppexLogsWithCallback:^(NSString* logs) {
+  [IOSLoggerImpl getLogsWithCallback:^(NSString* logs) {
     callback(QString::fromNSString(logs));
   }];
 }
 
-void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearAppexLogs]; }
+void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearLogs]; }
