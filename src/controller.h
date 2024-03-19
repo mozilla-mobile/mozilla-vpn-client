@@ -156,6 +156,19 @@ class Controller : public QObject, public LogSerializer {
   ~Controller();
 
   void initialize();
+
+  struct IPAddressList {
+    QList<IPAddress> v6;
+    QList<IPAddress> v4;
+
+    QList<IPAddress> flatten() {
+      QList<IPAddress> list;
+      list.append(v6);
+      list.append(v4);
+      return list;
+    }
+  };
+  static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
 
   enum ServerCoolDownPolicyForSilentSwitch {
