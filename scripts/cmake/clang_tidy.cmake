@@ -49,7 +49,7 @@ if(NOT CLANG_TIDY_EXECUTABLE)
 endif()
 # Check if the flag is set
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
-    message(STATUS "clang-tidy: The -DEXPORT_COMPILE_COMMANDS=ON flag is not set. Linting will be skipped.")
+    message(STATUS "clang-tidy: The -DCMAKE_EXPORT_COMPILE_COMMANDS=ON flag is not set. Linting will be skipped.")
     function(mz_add_clang_tidy dummyArgument)
     endfunction() 
     return()
