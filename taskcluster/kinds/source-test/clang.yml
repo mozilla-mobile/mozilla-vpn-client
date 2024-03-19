@@ -62,7 +62,7 @@ clang-tidy-android:
 clang-tidy-windows:
     treeherder:
             platform: windows/x86_64
-    worker-type: b-windows
+    worker-type: b-win2022
     fetches:
       toolchain: 
         - qt-windows-x86_64-6.6.0
