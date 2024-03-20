@@ -486,7 +486,7 @@ void Balrog::propagateError(NetworkRequest* request,
   REPORTNETWORKERROR(error, m_errorPropagationPolicy, "balrog");
 }
 
-//static
+// static
 QString Balrog::balrogUrl() {
   const QString product = "FirefoxVPN";
   QString hostname = Constants::BALROG_PROD_HOSTNAME;
@@ -499,8 +499,8 @@ QString Balrog::balrogUrl() {
     channel = "release-cdntest";
   }
 
-  QStringList path =
-      {"json", "1", product, appVersion(), userAgent(), channel, "update.json"};
+  QStringList path = {"json",      "1",     product,      appVersion(),
+                      userAgent(), channel, "update.json"};
   QUrl url;
   url.setScheme("https");
   url.setHost(hostname);
