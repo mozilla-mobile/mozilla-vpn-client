@@ -98,9 +98,7 @@ impl<'a> Balrog<'_> {
             parsed.push(x509);
         }
 
-        Ok(Balrog {
-            chain: parsed,
-        })
+        Ok(Balrog { chain: parsed })
     }
 
     /* Ensure that the certificate chain is valid. */
@@ -331,7 +329,7 @@ impl<'a> Balrog<'_> {
         self.verify_chain(current_time)?;
         self.verify_leaf_hostname(leaf_subject)?;
         self.verify_content_signature(input, signature)?;
-    
+
         /* Success */
         Ok(())
     }
@@ -623,9 +621,7 @@ culpa qui officia deserunt mollit anim id est laborum.";
 
     #[test]
     fn test_everything_fails_without_init() {
-        let b = Balrog {
-            chain: Vec::new(),
-        };
+        let b = Balrog { chain: Vec::new() };
 
         let r = b.verify_chain(VALID_TIMESTAMP);
         assert_eq!(r, Err(BalrogError::CertificateNotFound));

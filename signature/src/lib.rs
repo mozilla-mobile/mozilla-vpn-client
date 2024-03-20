@@ -297,21 +297,23 @@ mod test {
             PROD_CERT_CHAIN.as_ptr(),
             PROD_CERT_CHAIN.len(),
             hash_result.as_mut_ptr(),
-            hash_result.len());
-        
+            hash_result.len(),
+        );
+
         assert!(r, "Root hash computation failed");
         assert_eq!(hash_result, expect.as_slice());
     }
 
     #[test]
     fn test_compute_root_hash_invalid_length() {
-        let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN-1];
+        let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN - 1];
 
         let r = compute_root_certificate_hash(
             PROD_CERT_CHAIN.as_ptr(),
             PROD_CERT_CHAIN.len(),
             hash_result.as_mut_ptr(),
-            hash_result.len());
+            hash_result.len(),
+        );
 
         assert!(!r, "Root hash computation failed to check buffer size");
     }
