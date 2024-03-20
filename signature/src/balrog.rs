@@ -16,7 +16,6 @@
  */
 
 use asn1_rs::ToDer;
-use ring::digest;
 use x509_parser::prelude::*;
 
 use oid_registry::{
@@ -25,7 +24,6 @@ use oid_registry::{
 
 pub struct Balrog<'a> {
     pub chain: Vec<X509Certificate<'a>>,
-    pub root_hash: Vec<u8>,
 }
 
 // Errors that can be returned from the Balrog module.
@@ -87,8 +85,7 @@ impl<'a> Balrog<'_> {
         }
 
         let mut parsed: Vec<X509Certificate<'a>> = Vec::new();
-        let mut hash: Vec<u8> = Vec::new();
-        for (i, pem) in list.iter().enumerate() {
+        for pem in list {
             if pem.label != "CERTIFICATE" {
                 return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
@@ -99,17 +96,10 @@ impl<'a> Balrog<'_> {
                 return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
             parsed.push(x509);
-
-            /* For the final certificate, calculate its SHA256 hash. */
-            if i + 1 == list.len() {
-                let digest = digest::digest(&digest::SHA256, pem.contents.as_slice());
-                hash.extend_from_slice(digest.as_ref());
-            }
         }
 
         Ok(Balrog {
             chain: parsed,
-            root_hash: hash,
         })
     }
 
@@ -127,9 +117,7 @@ impl<'a> Balrog<'_> {
          *  5. Call X509Certificate::verify_signature with the key from step 4.
          *
          * For the last certificate in the chain (the root), repeat the same
-         * steps using the last certificate as both cert N and cert N+1, and
-         * check that the SHA256 of the root certificate matches the root_hash
-         * parameter to this function.
+         * steps using the last certificate as both cert N and cert N+1.
          */
         let mut index = 0;
         while index + 1 < self.chain.len() {
@@ -354,7 +342,6 @@ mod test {
     use super::*;
 
     // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
-    const ROOT_HASH_HEX: &str = "3C01446ABE9036CEA9A09ACAA3A520AC628F20A7AE32CE861CB2EFB70FA0C745";
     const VALID_CERT_CHAIN: &[u8] = include_bytes!("../assets/valid_cert_chain.pem");
     const VALID_INPUT: &[u8] = b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
     const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
@@ -395,15 +382,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_HOSTNAME,
         );
         assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
-    }
-
-    #[test]
-    fn test_compute_root_hash() {
-        let pem_chain = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
-        let balrog = Balrog::new(&pem_chain).unwrap();
-        let root_hash = hex::decode(ROOT_HASH_HEX).unwrap();
-
-        assert_eq!(balrog.root_hash, root_hash, "Incorrect root hash");
     }
 
     #[test]
@@ -647,7 +625,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
     fn test_everything_fails_without_init() {
         let b = Balrog {
             chain: Vec::new(),
-            root_hash: Vec::new(),
         };
 
         let r = b.verify_chain(VALID_TIMESTAMP);
