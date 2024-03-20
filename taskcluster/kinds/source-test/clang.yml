@@ -71,7 +71,7 @@ clang-tidy-windows:
           artifacts:
             - type: directory
               name: public/build/
-              path: /builds/worker/artifacts/
+              path: artifacts/
     run:
       exec-with: powershell
       command: taskcluster/scripts/source-test/clang-tidy.ps1
