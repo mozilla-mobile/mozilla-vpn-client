@@ -15,7 +15,6 @@ Checks: >
   -misc-no-recursion
 WarningsAsErrors: >
   clang-analyzer-security.*
-HeaderFilterRegex: '^q.*\.h$' # Any qHeader, so we don't get warnings for qt thigns.
 AnalyzeTemporaryDtors: false
 # Use our .clang-format file when applying fixes.
 FormatStyle: file

@@ -76,7 +76,7 @@ function(mz_add_clang_tidy aTarget)
     # Otherwise we might have files from MOC there. 
     list(FILTER aTarget_SOURCE_FILES INCLUDE REGEX ".*\\.cpp$")
     list(FILTER aTarget_SOURCE_FILES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
-   
+
     if(WIN32)
         # on windows we need to pass \\ to clang tidy
         # cmake by default uses / as delemiter so let's replace that. 
