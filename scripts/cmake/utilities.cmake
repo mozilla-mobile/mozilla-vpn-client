@@ -478,3 +478,11 @@ function(mz_add_the_apple_stuff)
     )
 endfunction()
 
+# Creates an optional dependency between two CMake targets.
+# If both TARGET_A and TARGET_B exist, a dependency is established
+# where TARGET_A depends on TARGET_B.
+function(mz_optional_dependency TARGET_A TARGET_B)
+   if(TARGET ${TARGET_A} AND TARGET ${TARGET_B})
+      add_dependencies(${TARGET_A} ${TARGET_B})
+   endif()
+endfunction() 
