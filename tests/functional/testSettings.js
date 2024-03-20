@@ -879,6 +879,11 @@ describe('Settings', function() {
   });
 
   it('Get help impression telemetry is recorded', async () => {
+    // This test cannot run in wasm
+    if (vpn.runningOnWasm()) {
+      this.skip();
+    }
+
     const getHelpTelemetryScreenId = "help"
 
     await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
