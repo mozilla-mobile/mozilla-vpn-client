@@ -880,8 +880,8 @@ describe('Settings', function() {
 
   it('Get help impression telemetry is recorded', async () => {
     // This test cannot run in wasm
-    if (vpn.runningOnWasm()) {
-      this.skip();
+    if (this.ctx.wasm) {
+      return;
     }
 
     const getHelpTelemetryScreenId = "help"
