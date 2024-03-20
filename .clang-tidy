@@ -4,16 +4,18 @@
 # Everything marked under Checks will be warnings
 # WarningAsErrors bump them to a CI error. 
 Checks: >  
-  misc-include-cleaner,
-  misc-const-correctness,
   clang-diagnostic-*,
   clang-analyzer-*,
-#  modernize-*,
-#  -modernize-use-trailing-return-type,
-#  cppcoreguidelines-*,
+  performance*
+  cppcoreguidelines-*,
+  -cppcoreguidelines-owning-memory,
+  modernize*,
+  -modernize-use-trailing-return-type,
+  misc*,
+  -misc-no-recursion
 WarningsAsErrors: >
   clang-analyzer-security.*
-HeaderFilterRegex: ''
+HeaderFilterRegex: '^q.*\.h$' # Any qHeader, so we don't get warnings for qt thigns.
 AnalyzeTemporaryDtors: false
 # Use our .clang-format file when applying fixes.
 FormatStyle: file
