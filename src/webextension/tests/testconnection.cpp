@@ -80,7 +80,7 @@ void TestConnection::testInvalidJSONEmitsInvalid() {
     // When it recieves valid json it should
     // emit that object raw.
     bool callbackFired = false;
-    connect(&con, &WebExtension::Connection::onMessageReceived,
+    connect(&con, &WebExtension::Connection::onMessageReceived, 
             [&](QJsonObject o) { callbackFired = true; });
 
     writeTo(testCase.toLocal8Bit(), &buffer);
