@@ -96,29 +96,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;
-         INCLUDE_DIRECTORIES;
-         SOURCES;
-         IOS_SOURCES;
-         ANDROID_SOURCES;
-         MACOS_SOURCES;
-         LINUX_SOURCES;
-         WINDOWS_SOURCES;
-         WASM_SOURCES;
-         DUMMY_SOURCES;
-         TEST_SOURCES;
-         QT_DEPENDENCIES;
-         MZ_DEPENDENCIES;
-         RUST_DEPENDENCIES;
-         EXTRA_DEPENDENCIES;
-         TEST_DEPENDENCIES;
-         IOS_DEPENDENCIES;
-         ANDROID_DEPENDENCIES;
-         MACOS_DEPENDENCIES;
-         LINUX_DEPENDENCIES;
-         WINDOWS_DEPENDENCIES;
-         WASM_DEPENDENCIES;
-         DUMMY_DEPENDENCIES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
         ${ARGN})
 
 
@@ -139,7 +117,7 @@ function(mz_add_new_module)
         WASM_SOURCES ${MZ_ADD_NEW_MODULE_WASM_SOURCES}
         DUMMY_SOURCES ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES}
     )
-    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE ${ALL_SOURCES})
+    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${ALL_SOURCES})
 
     # Generate dependencies lists
     mz_generate_link_libraries(
@@ -210,9 +188,9 @@ function(mz_add_new_module)
                 DEPENDENCIES
                     ${TEST_LINK_LIBRARIES}
             )
-
+            
             add_dependencies(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests ${TEST_TARGET_NAME})
-
+            
             # Check if the corresponding header file exists
             string(REGEX REPLACE "\.cpp$" ".h" HEADER_FILE ${TEST_FILE})
             if(EXISTS ${HEADER_FILE})
@@ -221,7 +199,7 @@ function(mz_add_new_module)
             endif()
         endforeach()
     endif()
-
+    
     # Add Clang-tidy to that module
     mz_add_clang_tidy(${MZ_ADD_NEW_MODULE_TARGET_NAME})
 endfunction()
