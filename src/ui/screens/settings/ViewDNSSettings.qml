@@ -62,6 +62,7 @@ MZViewBase {
 
         root.customDNS = true;
         root.dnsSelectionChanged = true;
+        ipInput.forceActiveFocus();
     }
 
     function saveChange(dnsProviderFlags, userDNS = undefined) {
@@ -231,7 +232,6 @@ MZViewBase {
 
                     hasError: valueInvalid
                     enabled: root.customDNS
-                    onEnabledChanged: if(enabled) forceActiveFocus()
 
                     _placeholderText: MZI18n.SettingsDnsSettingsInputPlaceholder
                     text: ""
