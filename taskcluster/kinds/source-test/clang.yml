@@ -89,7 +89,7 @@ clang-tidy-macos:
         use-caches: false
         cwd: '{checkout}'
         command: >-
-          export TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" )
+          export TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" ) &&
           rm -rf "${TASK_HOME}/artifacts" &&
           mkdir -p "${TASK_HOME}/artifacts" &&
           source ${TASK_WORKDIR}/fetches/bin/activate && 
