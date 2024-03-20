@@ -187,6 +187,9 @@ describe('Devices', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.skipOnboarding();
+
       // This method must be called when the client is on the "Get Started"
       // view.
       await vpn.waitForInitialView();
@@ -231,11 +234,6 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -449,6 +447,9 @@ describe('Devices', function() {
         await vpn.flipFeatureOn('inAppAuthentication');
       }
 
+      //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
+      await vpn.skipOnboarding();
+
       // This method must be called when the client is on the "Get Started"
       // view.
       await vpn.waitForInitialView();
@@ -494,11 +495,6 @@ describe('Devices', function() {
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(
-          queries.screenPostAuthentication.BUTTON.visible());
-
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await vpn.waitForQueryAndClick(queries.screenTelemetry.BUTTON.visible());
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

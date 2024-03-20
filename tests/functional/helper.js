@@ -345,7 +345,11 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(clickOnPostAuthenticate, acceptTelemetry, wasm) {
+  async authenticateInBrowser(wasm, skipOnboarding = true) {
+    if (skipOnboarding) {
+      await this.skipOnboarding();
+    }
+
     if (await this.isFeatureFlippedOn('inAppAuthentication')) {
       await this.flipFeatureOff('inAppAuthentication');
     }
@@ -395,28 +399,13 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
-
-    if (clickOnPostAuthenticate) {
-      await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
-    }
-    if (acceptTelemetry) {
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
-
-      await this.waitForQuery(queries.global.SCREEN_LOADER.ready());
-      await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    }
   },
 
-  async authenticateInApp(
-      clickOnPostAuthenticate = false, acceptTelemetry = false) {
+  async authenticateInApp(skipOnboarding = true) {
+    if (skipOnboarding) {
+      await this.skipOnboarding();
+    }
+    
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForInitialView();
 
@@ -444,19 +433,47 @@ module.exports = {
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+  },
 
-    if (clickOnPostAuthenticate) {
+  async skipOnboarding() {
+    await this.setSetting('onboardingCompleted', 'true');
+    await this.setSetting('postAuthenticationShown', 'true');
+    await this.setSetting('telemetryPolicyShown', 'true');
+  }, 
+
+  async completePostAuthentication() {
       await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
       await this.clickOnQuery(
           queries.screenPostAuthentication.BUTTON.visible());
       await this.wait();
-    }
-    if (acceptTelemetry) {
+  },
+
+  async completeTelemetryPolicy() {
       await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
       await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
       await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-    }
   },
+
+  async completeOnboarding() {
+    await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    switch(await this.getSetting('onboardingStep')) {
+    case 0:
+      await this.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 1:
+      await this.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 2:
+      await this.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+    case 3:
+      await this.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
+      await this.waitForQuery(queries.screenHome.SCREEN.visible());
+      assert.equal(await this.getSetting('onboardingCompleted'), true);
+    default:
+      break;
+    }
+ },
 
   async logout() {
     const json = await this._writeCommand('logout');

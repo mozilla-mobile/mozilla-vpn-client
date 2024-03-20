@@ -35,11 +35,11 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
-    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+    await vpn.authenticateInBrowser(this.ctx.wasm);
   });
 
   it('Completes authentication after logout', async () => {
-    await vpn.authenticateInBrowser(true, true, this.ctx.wasm);
+    await vpn.authenticateInBrowser(this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS);
 
     await vpn.waitForQuery(queries.screenSettings.SIGN_OUT);
@@ -48,6 +48,6 @@ describe('User authentication in browser', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.SIGN_OUT);
     await vpn.waitForInitialView();
 
-    await vpn.authenticateInBrowser(false, false, this.ctx.wasm);
+    await vpn.authenticateInBrowser(this.ctx.wasm);
   });
 });

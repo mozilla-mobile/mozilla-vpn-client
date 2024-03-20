@@ -7,13 +7,18 @@ const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 describe('Telemetry view', function() {
-  beforeEach(async () => {
+  beforeEach(async function () {
+    //Telemetry policy view does not exist in new onboarding
+    if (await vpn.isFeatureEnabled('newOnboarding')) {
+      await vpn.flipFeatureOff("newOnboarding");
+    }
+    
     await vpn.waitForInitialView();
   });
 
   async function _getToTelemetryPage() {
-    await vpn.authenticateInApp();
-    await vpn.clickOnQuery(queries.screenPostAuthentication.BUTTON.visible());
+    await vpn.authenticateInApp(false);
+    await vpn.completePostAuthentication();
     await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
     await vpn.waitForQuery(queries.screenTelemetry.DECLINE_LINK.visible());
   }

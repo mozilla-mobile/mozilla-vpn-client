@@ -109,7 +109,7 @@ exports.mochaHooks = {
       await vpn.reset();
       await vpn.setSetting('tipsAndTricksIntroShown', 'true');
       await vpn.setSetting('localhostRequestsOnly', 'true');
-      await vpn.authenticateInApp(true, true);
+      await vpn.authenticateInApp();
 
       const fileName = await vpn.settingsFileName();
 

@@ -108,7 +108,7 @@ exports.mochaHooks = {
     await vpn.setSetting('tipsAndTricksIntroShown', 'true')
 
     if (this.currentTest.ctx.authenticationNeeded) {
-      await vpn.authenticateInApp(true, true);
+      await vpn.authenticateInApp();
     }
 
     // Add servers to the context so that stub endpoints can be modified in the

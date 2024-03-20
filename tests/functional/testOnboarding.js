@@ -14,29 +14,8 @@ describe('Onboarding', function() {
     await vpn.flipFeatureOn("newOnboarding");
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    await vpn.authenticateInApp();
+    await vpn.authenticateInApp(false);
   });
-
- async function completeOnboarding() {
-   await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   switch(await vpn.getSetting('onboardingStep')) {
-   case 0:
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   case 1:
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   case 2:
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-   case 3:
-    await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-    await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-    assert.equal(await vpn.getSetting('onboardingCompleted'), true);
-  default:
-    break;
-   }
- }
 
   async function advanceToSlide(slide) {
    await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
@@ -338,7 +317,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Complete onboarding and get to the home screen
-    await completeOnboarding();
+    await vpn.completeOnboarding();
 
     //Ensure glean is disabled
     assert.equal(await vpn.getSetting('gleanEnabled'), false);
@@ -357,7 +336,7 @@ describe('Onboarding', function() {
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
 
     //Complete onboarding and get to the home screen
-    await completeOnboarding();
+    await vpn.completeOnboarding();
 
     //Ensure glean is enabled
     assert.equal(await vpn.getSetting('gleanEnabled'), true);
@@ -423,7 +402,7 @@ describe('Onboarding', function() {
 
       await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
 
-      await completeOnboarding()
+      await vpn.completeOnboarding()
 
       let onboardingCompletedEvents = await vpn.gleanTestGetValue("outcome", "onboardingCompleted", "main");
       assert.equal(onboardingCompletedEvents.length, 1);

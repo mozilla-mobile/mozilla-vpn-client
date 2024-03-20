@@ -137,7 +137,7 @@ FEATURE(newOnboarding,         // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(notificationControl,     // Feature ID
         "Notification control",  // Feature name
