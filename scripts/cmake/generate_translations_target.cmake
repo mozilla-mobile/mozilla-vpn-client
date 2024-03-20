@@ -42,10 +42,10 @@ function(generate_translations_target TARGET_NAME TRANSLATIONS_DIRECTORY)
 
     target_sources(${TARGET_NAME} PRIVATE
         ${GENERATED_DIR}/i18nstrings_p.cpp
+        ${GENERATED_DIR}/i18nstrings.h
         ${GENERATED_DIR}/translations.qrc
         ${CMAKE_SOURCE_DIR}/translations/i18nstrings.cpp
     )
-
 
     ## Generate the string database (language agnostic)
     add_custom_command(
