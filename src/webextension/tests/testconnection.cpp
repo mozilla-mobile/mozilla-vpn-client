@@ -14,7 +14,6 @@
 
 QTEST_MAIN(TestConnection)
 
-
 void TestConnection::testEmptyBuffer() {
   QEventLoop loop;
   QBuffer buffer;
@@ -51,10 +50,11 @@ void TestConnection::testEmitsJSONMessages() {
   // When it recieves valid json it should
   // emit that object raw.
   bool callbackFired = false;
-  connect(&con, &WebExtension::Connection::onMessageReceived, [&](QJsonObject o) {
-    callbackFired = true;
-    QCOMPARE(o["t"].toString(), "valid");
-  });
+  connect(&con, &WebExtension::Connection::onMessageReceived,
+          [&](QJsonObject o) {
+            callbackFired = true;
+            QCOMPARE(o["t"].toString(), "valid");
+          });
 
   writeTo("{\"t\":\"valid\"}", &buffer);
   buffer.seek(0);
@@ -80,7 +80,7 @@ void TestConnection::testInvalidJSONEmitsInvalid() {
     // When it recieves valid json it should
     // emit that object raw.
     bool callbackFired = false;
-    connect(&con, &WebExtension::Connection::onMessageReceived, 
+    connect(&con, &WebExtension::Connection::onMessageReceived,
             [&](QJsonObject o) { callbackFired = true; });
 
     writeTo(testCase.toLocal8Bit(), &buffer);
