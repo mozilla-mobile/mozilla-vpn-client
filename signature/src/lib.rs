@@ -101,7 +101,6 @@ pub extern "C" fn compute_root_certificate_hash(
  *  - input_ptr: Data signed by the leaf certificate.
  *  - input_length: Length of data signed by the leaf certificate (in bytes).
  *  - signature: base64-encoded content signature.
- *  - root_hash: hex-encoded SHA256 hash expected of the root certificate.
  *  - leaf_subject: hostname from which the content signature was received.
  *  - log_fn: callback function for log messages (optional)
  */
@@ -302,6 +301,44 @@ mod test {
 
         assert!(r, "Root hash computation failed");
         assert_eq!(hash_result, expect.as_slice());
+    }
+
+    #[test]
+    fn test_compute_root_hash_reject_bad_pem() {
+        let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN];
+        let pem_empty: &[u8] = b"";
+        let pem_bad_contents: &[u8] = b"\
+-----BEGIN CERTIFICATE-----
+Trust me, I am a certificate.
+-----END CERTIFICATE-----";
+        let pem_not_cert: &[u8] = b"\
+-----BEGIN COMPLIMENT-----
+WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
+-----END COMPLIMENT-----";
+
+        let r = compute_root_certificate_hash(
+            pem_empty.as_ptr(),
+            pem_empty.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len(),
+        );
+        assert!(!r, "Root hash computation failed to detect empty PEM content");
+
+        let r = compute_root_certificate_hash(
+            pem_bad_contents.as_ptr(),
+            pem_bad_contents.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len(),
+        );
+        assert!(!r, "Root hash computation failed to detect invalid PEM content");
+
+        let r = compute_root_certificate_hash(
+            pem_not_cert.as_ptr(),
+            pem_not_cert.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len(),
+        );
+        assert!(!r, "Root hash computation failed to detect invalid PEM type");
     }
 
     #[test]

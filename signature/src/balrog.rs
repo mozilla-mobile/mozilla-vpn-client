@@ -317,7 +317,9 @@ impl<'a> Balrog<'_> {
         )?)
     }
 
-    /* Wrapper function to verify everything at once. */
+    /* Wrapper function to verify the certificate chain, signer subject name,
+     * and content signature all at once.
+     */
     pub fn verify(
         &self,
         input: &[u8],
