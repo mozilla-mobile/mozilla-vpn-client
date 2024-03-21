@@ -50,6 +50,11 @@ target_link_libraries(mozillavpn PRIVATE
     qtglean
 )
 
+if(NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(webextension)
+    target_link_libraries(mozillavpn PRIVATE mz_webextension)
+endif()
+
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
 if ((${CMAKE_SYSTEM_NAME} STREQUAL "Android") OR (${CMAKE_SYSTEM_NAME} STREQUAL "iOS"))
@@ -61,11 +66,6 @@ target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAM
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 
-if(NOT CMAKE_CROSSCOMPILING)
-    target_compile_definitions(mozillavpn PUBLIC MVPN_WEBEXTENSION)
-endif()
-
 add_subdirectory(ui)
 target_link_libraries(mozillavpn PRIVATE mozillavpn-ui mozillavpn-uiplugin)
-
 qt_finalize_target(mozillavpn)

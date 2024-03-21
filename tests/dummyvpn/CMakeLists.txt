@@ -22,6 +22,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(dummyvpn PRIVATE
+    mz_webextension
     shared-sources
     mozillavpn-sources
     mozillavpn-ui
