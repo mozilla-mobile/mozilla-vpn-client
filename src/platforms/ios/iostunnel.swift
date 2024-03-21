@@ -102,10 +102,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
-                // The internal DNS endpoint results is in the 10.x.x.x restricted IP range. For reasons I couldn't
-                // determine, pinging restricted IP addresses failed. Thus, using another one.
-                guard let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host,
-                      let endpointIP = String(describing: endpointHost) else {
+                let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host
+                if endpointHost == nil {
                     // Intentionally using an assertion failure here without an early return.
                     // This is new functionality being added for connection health checks.
                     // It would be surprising if this was ever nil (and we hit this block).
@@ -115,6 +113,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     self.logger.info(message: "Tunnel config is missing endpoint")
                     assertionFailure("Missing endpoint")
                 }
+                let endpointIP = String(describing: endpointHost)
                 self.connectionHealthMonitor.start(for: endpointIP)
 
                 completionHandler(nil)
