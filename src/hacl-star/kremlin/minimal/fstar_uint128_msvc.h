@@ -9,6 +9,7 @@
  */
 
 #pragma once
+#pragma warning(disable : C4554)
 
 #include "kremlin/internal/types.h"
 #include "FStar_UInt128.h"
