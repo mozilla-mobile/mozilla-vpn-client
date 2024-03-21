@@ -240,9 +240,12 @@ constexpr const char* AUTOGRAPH_PROD_FINGERPRINTS[] = {
 constexpr const char* BALROG_STAGE_HOSTNAME =
     "stage.balrog.nonprod.cloudops.mozgcp.net";
 constexpr const char* AUTOGRAPH_STAGE_FINGERPRINTS[] = {
-    "c0f05d59b1fde25780854c32fae8faba8481c233b4c1d390cca5f2cea81930ee",  // cas-new-2024-03-12
-    "45c37f3a09a6d70e0fa321fb29753ba7998f1259b32772768f23ccdc24836798",  // cas-cur-2024-03-12
-    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745",  // test.addons.signing.root.ca-2021-02-11
+    // cas-new-2024-03-12
+    "c0f05d59b1fde25780854c32fae8faba8481c233b4c1d390cca5f2cea81930ee",
+    // cas-cur-2024-03-12
+    "45c37f3a09a6d70e0fa321fb29753ba7998f1259b32772768f23ccdc24836798",
+    // test.addons.signing.root.ca-2021-02-11
+    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745",
     nullptr  // list termination
 };
 

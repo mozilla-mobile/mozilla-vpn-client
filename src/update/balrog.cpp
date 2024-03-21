@@ -512,7 +512,8 @@ QString Balrog::balrogUrl() {
 QStringList Balrog::rootCertHashes() {
   QStringList result;
   if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
-    for (int i = 0; Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i] != nullptr; i++) {
+    for (int i = 0; Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i] != nullptr;
+         i++) {
       result.append(Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i]);
     }
   } else {
