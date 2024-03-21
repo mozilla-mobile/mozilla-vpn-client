@@ -28,7 +28,11 @@ include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
-qt_add_executable(app_auth_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
+qt_add_executable(app_auth_tests MANUAL_FINALIZATION)
+set_target_properties(app_auth_tests PROPERTIES
+    EXCLUDE_FROM_ALL ${BUILD_TESTS}
+    FOLDER "Tests"
+)
 add_dependencies(build_tests app_auth_tests)
 target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 

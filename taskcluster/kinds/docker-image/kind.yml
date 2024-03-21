@@ -52,16 +52,17 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:jammy
-    linux-build-lunar:
-        symbol: I(linux-lunar)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: ubuntu:lunar
     linux-build-mantic:
         symbol: I(linux-mantic)
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:mantic
+    linux-build-noble:
+        symbol: I(linux-noble)
+        definition: linux-dpkg-build
+        cache: false ## Disable caching while Ubuntu/Noble is in beta.
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:noble
     linux-build-fedora-fc37:
         symbol: I(linux-fedora-fc37)
         definition: linux-rpm-build

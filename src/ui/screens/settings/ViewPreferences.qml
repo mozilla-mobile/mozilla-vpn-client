@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 MZViewBase {
     id: vpnFlickable
@@ -17,23 +18,31 @@ MZViewBase {
     property string _languageTitle: ""
     readonly property string telemetryScreenId : "app_preferences"
 
+    property bool vpnIsOff: VPNController.state === VPNController.StateOff
+    property bool isIOS: Qt.platform.os === "ios"
+
     objectName: "settingsPreferencesView"
 
     Component.onCompleted: Glean.impression.appPreferencesScreen.record({screen:telemetryScreenId})
 
-    _viewContentData: Column {
-        spacing: MZTheme.theme.windowMargin
-        Layout.fillWidth: true
+    _viewContentData: ColumnLayout {
+        Layout.preferredWidth: parent.width
         Layout.alignment: Qt.AlignHCenter
 
-        MZCheckBoxRow {
-            id: startAtBootCheckBox
-            objectName: "settingStartAtBoot"
+        spacing: MZTheme.theme.windowMargin
+
+        MZToggleRow {
+            objectName: "startAtBootToogle"
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
 
             labelText: _startAtBootTitle
             subLabelText: MZI18n.SettingsStartAtBootSubtitle
-            isChecked: MZSettings.startAtBoot
-            showDivider: false
+            checked: MZSettings.startAtBoot
+            visible: MZFeatureList.get("startOnBoot").isSupported
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: {
                 MZSettings.startAtBoot = !MZSettings.startAtBoot
                 if (MZSettings.startAtBoot)
@@ -45,32 +54,61 @@ MZViewBase {
                     Glean.interaction.vpnOnStartupDisabled.record({screen:telemetryScreenId})
                 }
             }
-            visible: MZFeatureList.get("startOnBoot").isSupported
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: MZTheme.theme.windowMargin
-            }
         }
 
-        MZCheckBoxRow {
-            id: dataCollection
-            objectName: "dataCollection"
-            width: parent.width - MZTheme.theme.windowMargin
-            anchors {
-                right: parent.right
-                left: parent.left
-                rightMargin: MZTheme.theme.windowMargin
-            }
+        MZToggleRow {
+            objectName: "dataCollectionToggle"
 
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            showDivider: isIOS
 
             labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
             subLabelText: MZI18n.SettingsDataCollectionDescription
-            isChecked: MZSettings.gleanEnabled
+            checked: MZSettings.gleanEnabled
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
         }
 
-        Column {
+        MZToggleRow {
+            id: localNetwork
+            objectName: "settingLocalNetworkAccess"
+            visible: isIOS
+
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            showDivider: false
+
+            labelText: MZI18n.LocalNetworkAccessLabel
+            subLabelText: MZI18n.LocalNetworkAccessSubLabel
+            checked: MZSettings.localNetworkAccess
+            enabled: isIOS && vpnIsOff
+            dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
+            onClicked: {
+                if (VPNController.StateOff) {
+                    MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
+                }
+            }
+        }
+
+        MZContextualAlerts {
+            Layout.topMargin: MZTheme.theme.listSpacing
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+
+            visible: isIOS && !vpnIsOff
+
+            messages: [
+                {
+                    type: "warning",
+                    message: MZI18n.LocalNetworkAccessVpnMustBeOff,
+                }
+            ]
+        }
+
+        ColumnLayout {
             spacing: MZTheme.theme.windowMargin / 2
             width: parent.width
             MZSettingsItem {

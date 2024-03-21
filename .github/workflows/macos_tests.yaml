@@ -100,13 +100,18 @@ jobs:
         with:
           name: test-client-${{ github.sha }}
           path: build/
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install test dependecies
-        run: |
-          pip install -r requirements.txt
-          npm install
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm install
 
       - name: Check build
         shell: bash

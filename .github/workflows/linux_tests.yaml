@@ -28,13 +28,12 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install build dependencies
-        shell: bash
-        run: |
-          pip install -r requirements.txt
+          cache: 'pip'
+      - run: pip install -r requirements.txt
           
       - name: Cache grcov
         id: cache-grcov
@@ -112,11 +111,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
           sudo apt install --no-upgrade firefox xvfb -y
-          npm install
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
       - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - run: npm install
+
       - name: Cache grcov
         id: cache-grcov
         uses: actions/cache@v3

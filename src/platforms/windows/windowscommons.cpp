@@ -20,8 +20,6 @@
 #include "logger.h"
 #include "platforms/windows/windowsutils.h"
 
-#define TUNNEL_SERVICE_NAME L"WireGuardTunnel$mozvpn"
-
 constexpr const char* VPN_NAME = "MozillaVPN";
 constexpr const char* WIREGUARD_DIR = "WireGuard";
 constexpr const char* DATA_DIR = "Data";

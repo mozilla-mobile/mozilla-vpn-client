@@ -65,6 +65,20 @@ MZViewBase {
             }
         }
 
+        MZExternalLinkListItem {
+            objectName: "resetVpn"
+
+            title: MZI18n.ResetSettingsResetLabel
+            iconSource: "qrc:/nebula/resources/chevron.svg"
+            iconMirror: MZLocalizer.isRightToLeft
+            backgroundColor: MZTheme.theme.iconButtonLightBackground
+            visible: MZFeatureList.get("factoryReset").isSupported
+
+            onClicked: getHelpStackView.push("qrc:/ui/screens/settings/ViewReset.qml");
+
+            accessibleName: title
+        }
+
         MZSettingsItem {
             objectName: "developer"
 
@@ -79,6 +93,5 @@ MZViewBase {
             visible: MZSettings.developerUnlock
             onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }
-
     }
 }

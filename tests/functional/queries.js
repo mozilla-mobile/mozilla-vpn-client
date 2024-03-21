@@ -78,12 +78,6 @@ class QmlQueryComposer {
 const screenHome = {
   BACK: new QmlQueryComposer('//screenHome-back'),
   CAP_PORTAL_BUTTON: new QmlQueryComposer('//captivePortalAlertActionButton'),
-  CONNECTION_INFO_ERROR: new QmlQueryComposer('//connectionInfoError'),
-  CONNECTION_INFO_RETRY:
-      new QmlQueryComposer('//connectionInfoErrorRetryButton'),
-  CONNECTION_INFO_RESTART:
-      new QmlQueryComposer('//connectionInfoRestartButton'),
-  CONNECTION_INFO_TOGGLE: new QmlQueryComposer('//connectionInfoToggleButton'),
   CONTROLLER_SUBTITLE: new QmlQueryComposer('//controllerSubTitle'),
   CONTROLLER_TITLE: new QmlQueryComposer('//controllerTitle'),
   CONTROLLER_TOGGLE: new QmlQueryComposer('//controllerToggle'),
@@ -254,6 +248,7 @@ const screenGetHelp = {
   HELP_CENTER: new QmlQueryComposer('//helpCenter'),
   LINKS: new QmlQueryComposer('//getHelpLinks'),
   LOGS: new QmlQueryComposer('//viewLogs'),
+  RESET: new QmlQueryComposer('//resetVpn'),
   DEVELOPER_MENU: new QmlQueryComposer('//developer'),
   STACKVIEW: new QmlQueryComposer('//getHelpStackView'),
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
@@ -261,6 +256,15 @@ const screenGetHelp = {
   contactSupportView: {
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
+  },
+
+  resetView: {
+    RESET_BUTTON: new QmlQueryComposer('//resetVpnButton'),
+    BACK_BUTTON: new QmlQueryComposer('//goBackButton'),
+    POPUP_LOADER: new QmlQueryComposer('//confirmResetPopupLoader'),
+    CONFIRM_RESET_BUTTON: new QmlQueryComposer('//confirmResetButton'),
+    CANCEL_BUTTON: new QmlQueryComposer('//cancelButton'),
+    POPUP_CLOSE_BUTTON: new QmlQueryComposer('//confirmResetPopupCloseButton'),
   }
 };
 
@@ -290,12 +294,9 @@ const screenSettings = {
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),
-    BLOCK_ADS: new QmlQueryComposer('//blockAds'),
-    BLOCK_ADS_CHECKBOX: new QmlQueryComposer('//blockAds//checkbox'),
-    BLOCK_TRACKERS: new QmlQueryComposer('//blockTrackers'),
-    BLOCK_TRACKERS_CHECKBOX: new QmlQueryComposer('//blockTrackers//checkbox'),
-    BLOCK_MALWARE: new QmlQueryComposer('//blockMalware'),
-    BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
+    BLOCK_ADS_TOGGLE: new QmlQueryComposer('//blockAds/toggle'),
+    BLOCK_TRACKERS_TOGGLE: new QmlQueryComposer('//blockTrackers/toggle'),
+    BLOCK_MALWARE_TOGGLE: new QmlQueryComposer('//blockMalware/toggle'),
 
     INFORMATION_CARD:
         new QmlQueryComposer('//privacySettingsViewInformationCard'),
@@ -353,8 +354,8 @@ const screenSettings = {
   },
 
   appPreferencesView: {
-    START_AT_BOOT: new QmlQueryComposer('//settingStartAtBoot'),
-    DATA_COLLECTION: new QmlQueryComposer('//dataCollection'),
+    START_AT_BOOT_TOGGLE: new QmlQueryComposer('//startAtBootToogle'),
+    DATA_COLLECTION_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
     LANGUAGE: new QmlQueryComposer('//settingsLanguages'),
     NOTIFICATIONS: new QmlQueryComposer('//settingsNotifications'),
     DNS_SETTINGS: new QmlQueryComposer('//dnsSettings'),
@@ -519,15 +520,14 @@ const screenOnboarding = {
   STEP_PROG_BAR_PRIVACY_BUTTON: new QmlQueryComposer('//progressBarRow/privacy'),
   STEP_PROG_BAR_DEVICES_BUTTON: new QmlQueryComposer('//progressBarRow/devices'),
   DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
-  DATA_CHECKBOX_ROW: new QmlQueryComposer('//dataCollectionCheckBox'),
-  DATA_CHECKBOX: new QmlQueryComposer('//dataCollectionCheckBox/checkbox'),
+  DATA_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
   DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),
   DATA_NEXT_BUTTON: new QmlQueryComposer('//dataNextButton'),
   PRIVACY_SLIDE: new QmlQueryComposer('//onboardingPrivacySlide'),
   PRIVACY_NEXT_BUTTON: new QmlQueryComposer('//privacyNextButton'),
-  PRIVACY_BLOCK_ADS_CHECKBOX: new QmlQueryComposer('//blockAds//checkbox'),
-  PRIVACY_BLOCK_TRACKERS_CHECKBOX: new QmlQueryComposer('//blockTrackers//checkbox'),
-  PRIVACY_BLOCK_MALWARE_CHECKBOX: new QmlQueryComposer('//blockMalware//checkbox'),
+  PRIVACY_BLOCK_ADS_TOGGLE: new QmlQueryComposer('//blockAds/toggle'),
+  PRIVACY_BLOCK_TRACKERS_TOGGLE: new QmlQueryComposer('//blockTrackers/toggle'),
+  PRIVACY_BLOCK_MALWARE_TOGGLE: new QmlQueryComposer('//blockMalware/toggle'),
   PRIVACY_BACK_BUTTON: new QmlQueryComposer('//privacyBackButton'),
   DEVICES_SLIDE: new QmlQueryComposer('//onboardingDevicesSlide'),
   DEVICES_TOGGLE_BTN_ANDROID: new QmlQueryComposer('//segmentedToggleBtnLayout/tabAndroid'),
@@ -538,7 +538,7 @@ const screenOnboarding = {
   DEVICES_NEXT_BUTTON: new QmlQueryComposer('//devicesNextButton'),
   DEVICES_BACK_BUTTON: new QmlQueryComposer('//devicesBackButton'),
   START_SLIDE: new QmlQueryComposer('//onboardingStartSlide'),
-  START_START_AT_BOOT_CHECKBOX: new QmlQueryComposer('//startAtBootCheckBox//checkbox'),
+  START_START_AT_BOOT_TOGGLE: new QmlQueryComposer('//startAtBootToggle'),
   START_NEXT_BUTTON: new QmlQueryComposer('//startNextButton'),
   START_BACK_BUTTON: new QmlQueryComposer('//startBackButton'),
 };

@@ -37,7 +37,7 @@ Here are some useful links to start:
 
 ## Building the Client
 
-Moved here -> [Dev-Setup](./docs/dev-setup/index.md)
+Moved here -> [Dev-Setup](./docs/Building/index.md)
 
 ### Pre-commit formatting hook
 

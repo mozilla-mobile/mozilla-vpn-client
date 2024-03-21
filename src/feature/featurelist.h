@@ -54,13 +54,6 @@ FEATURE(appReview,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_iosOrAndroid)
 
-FEATURE(benchmarkUpload,       // Feature ID
-        "Benchmark Upload",    // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
 FEATURE(captivePortal,          // Feature ID
         "Captive Portal",       // Feature name
         FeatureCallback_true,   // Can be flipped on
@@ -82,6 +75,13 @@ FEATURE(customDNS,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
+FEATURE(factoryReset,          // Feature ID
+        "Factory reset",       // Feature name
+        FeatureCallback_true,  // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(freeTrial,              // Feature ID
         "Free trial",           // Feature name
         FeatureCallback_true,   // Can be flipped on
@@ -101,7 +101,7 @@ FEATURE(helpSheets,            // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(inAppAccountCreate,                  // Feature ID
         "In-app Account Creation",           // Feature name

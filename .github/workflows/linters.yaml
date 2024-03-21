@@ -24,10 +24,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y aspell aspell-en $(./scripts/linux/getdeps.py -b linux/debian/control)
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
+          cache: 'pip'
       - run: pip install -r requirements.txt
+
       - name: Importing translation files
         shell: bash
         run: |
@@ -102,11 +105,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: 'true'
+
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
+          cache: 'npm'
+      - run: npm install
+
       - name: Run languagelocalizer
         run: |
           cd tools/languagelocalizer
-          npm install 
           node languageLocalizer.js --check

@@ -1,4 +1,4 @@
-personal_ws-1.1 en 232 utf-8
+personal_ws-1.1 en 246 utf-8
 ADRs
 APIs
 Adblock
@@ -10,14 +10,14 @@ CLI
 CMU
 CMake
 CSV
+CTest
 Changelog
 Conda
 ConnectionDiagnostics
-Docusaurus
 DNS
 DevOps
+Docusaurus
 FFI
-ffi
 FeatureList
 Figma
 FreeDesktop
@@ -59,13 +59,11 @@ Qt's
 QtLottie
 RCC
 README
-readme
 RSA
 Replacer
 Rizental
 Rustup
 SDKs
-sdks
 SHA
 Serde
 SettingsHolder
@@ -77,7 +75,6 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
-uniffi
 WebAssembly
 WebSockets
 WiX
@@ -103,8 +100,6 @@ auth
 backend
 backgrounded
 bea's
-benchmarked
-benchmarking
 bool
 boolean
 bugfixes
@@ -137,6 +132,7 @@ experimentalfeaturelist
 facto
 featurelist
 featuresOverride
+ffi
 frontend
 getters
 gobject
@@ -166,6 +162,7 @@ macosdaemon
 makefiles
 md
 miniconda
+modularization
 mozilla
 mozillavpn
 mozillavpnbionic
@@ -192,6 +189,7 @@ qml
 qmldir
 qrc
 rdparty
+readme
 reftag
 relink
 relinking
@@ -201,9 +199,10 @@ resolvconf
 rlottie
 runtime
 rustup
+sarah's
 scalable
 sdk
-sarah's
+sdks
 serverData
 settingHolder
 shader
@@ -221,6 +220,7 @@ tooltip
 ui
 ulist
 unenrolled
+uniffi
 uploader
 urls
 utils

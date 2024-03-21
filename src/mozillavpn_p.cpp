@@ -13,10 +13,6 @@ CaptivePortalDetection* MozillaVPN::captivePortalDetection() const {
   return &m_private->m_captivePortalDetection;
 }
 
-ConnectionBenchmark* MozillaVPN::connectionBenchmark() const {
-  return &m_private->m_connectionBenchmark;
-}
-
 ConnectionHealth* MozillaVPN::connectionHealth() const {
   return &m_private->m_connectionHealth;
 }

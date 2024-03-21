@@ -34,14 +34,4 @@ else()
     endif()
 endif()
 
-add_dependencies(shared-sources ndk_openssl_merged)
-
-get_property(crypto_module GLOBAL PROPERTY OPENSSL_CRYPTO_MODULE)
-get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
-
-target_include_directories(shared-sources INTERFACE ${ssl_module}/include)
-
-target_link_directories(shared-sources INTERFACE ${openssl_libs})
-target_link_libraries(shared-sources INTERFACE libcrypto.so)
-target_link_libraries(shared-sources INTERFACE libssl.so)
 target_link_libraries(shared-sources INTERFACE -ljnigraphics)

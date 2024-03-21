@@ -31,12 +31,6 @@
         <file>screens/getHelp/developerMenu/ViewTelemetryDebugging.qml</file>
         <file>screens/getHelp/developerMenu/ViewThemeList.qml</file>
         <file>screens/getHelp/developerMenu/ViewUiTesting.qml</file>
-        <file>screens/home/controller/connectionInfo/ConnectionCheckmarkList.qml</file>
-        <file>screens/home/controller/connectionInfo/ConnectionInfoContent.qml</file>
-        <file>screens/home/controller/connectionInfo/ConnectionInfoError.qml</file>
-        <file>screens/home/controller/connectionInfo/ConnectionInfoItem.qml</file>
-        <file>screens/home/controller/connectionInfo/ConnectionInfoScreen.qml</file>
-        <file>screens/home/controller/connectionInfo/LogoLoader.qml</file>
         <file>screens/home/controller/ConnectionStability.qml</file>
         <file>screens/home/controller/ConnectionTimer.qml</file>
         <file>screens/home/controller/ControllerImage.qml</file>
@@ -103,6 +97,7 @@
         <file>screens/settings/ViewLicenses.qml</file>
         <file>screens/settings/ViewNotifications.qml</file>
         <file>screens/settings/ViewPreferences.qml</file>
+        <file>screens/settings/ViewReset.qml</file>
         <file>screens/settings/ViewSettingsMenu.qml</file>
         <file>screens/settings/privacy/ViewPrivacy.qml</file>
         <file>screens/settings/privacy/PrivacyFeaturesList.qml</file>
@@ -113,6 +108,7 @@
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>
+        <file>sharedViews/ViewFullScreen.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>
     </qresource>
 </RCC>

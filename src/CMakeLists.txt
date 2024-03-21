@@ -52,6 +52,10 @@ target_link_libraries(mozillavpn PRIVATE
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
+if ((${CMAKE_SYSTEM_NAME} STREQUAL "Android") OR (${CMAKE_SYSTEM_NAME} STREQUAL "iOS"))
+    target_compile_definitions(mozillavpn PRIVATE "MZ_MOBILE")
+endif()
+
 target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(cmake/${MZ_PLATFORM_NAME}.cmake)

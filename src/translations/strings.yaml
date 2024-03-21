@@ -360,6 +360,11 @@ settings:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
 
+localNetworkAccess:
+  label: Local network access
+  subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
+  vpnMustBeOff: VPN must be off to edit “Local network access”
+
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
   titlePrivacy: Override privacy features?
@@ -572,10 +577,10 @@ onboarding:
   progressBarAccessibilityStepIncomplete2:
     value: "Onboarding step “%1” (%2 of %3)"
     comment: Accessibility read out for incomplete future steps in the step progress bar. %1 is the name of the step. %2 is the index of the current step. %3 is the total number of steps.
-  dataSlideHeader: Data collection and use
-  dataSlideBody: We strive to provide you with choices and collect only the technical data we need to improve Mozilla VPN. Sharing data with Mozilla is optional.
-  dataSlideCheckboxLabel: Mozilla may collect technical data about my use of Mozilla VPN.
-  dataSlideLearnMoreCaption: Learn more about what data Mozilla collects and how it’s used
+  dataSlideHeader2: Data collection
+  dataSlideBody2: Help us improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data. We never collect data about your online activity while using the VPN.
+  dataSlideToggleLabel: Share technical data
+  dataSlideLearnMoreCaption2: Learn more about data collection
   dataSlidePrivacyLinkLabel: Mozilla VPN Privacy Notice
   privacySlideHeader: Get more privacy
   privacySlideBody: Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings.
@@ -723,7 +728,6 @@ inAppAuth:
   continueToSignIn:
     value: Continue to sign in
     comment: Button a user clicks after updating their Mozilla account settings so that they can re-attempt sign-in
-
 
 postAuthentication:
   headline: Quick access
@@ -953,11 +957,11 @@ devices:
     value: My devices
     comment: Title for the menu bar when viewing the devices or device limit pages
 
-helpSheets: 
+helpSheets:
   dnsTitle:
     value: Custom DNS settings
     comment: Title label for the custom dns help sheet
-  dnsHeader: 
+  dnsHeader:
     value: What is a custom DNS?
     comment: Header label for the custom dns help sheet
   dnsBody1:
@@ -982,7 +986,7 @@ helpSheets:
     value: Excluded apps
     comment: Title label for the excluded apps help sheet
   excludedAppsHeader:
-    value: What are excluded apps? 
+    value: What are excluded apps?
     comment: Header label for the excluded apps help sheet
   excludedAppsBody1:
     value: Excluded apps let you turn off VPN protection for specific apps, without turning off VPN protection for your entire device.
@@ -1002,7 +1006,7 @@ helpSheets:
   devicesHeader:
     value: Adding and removing devices
     comment: Header label for the devices help sheet
-  devicesBody1: 
+  devicesBody1:
     value: "Adding a new device to your subscription is easy: just download and log in to Mozilla VPN on that device."
     comment: Body label for the devices help sheet
   devicesBody2:
@@ -1020,6 +1024,35 @@ helpSheets:
   locationBody2:
     value: If you want to add more privacy, switch to “Multi-hop” and add an additional server location. Multi-hop VPN routes your traffic through two server locations instead of one for extra security and privacy. This may also slow down your connection a bit.
     comment: Body label for the location selection help sheet
+
+resetSettings:
+  resetLabel:
+    value: Reset VPN
+    comment: Label for button that takes the user to the factory reset flow
+  title:
+    value: Reset Mozilla VPN
+    comment: Title of the screen where users go to reset the VPN to factory settings
+  body1:
+    value: "This will reset all VPN settings, including:"
+    comment: Body content of the screen where users go to reset the VPN to factory settings
+  listItemPreferences:
+    value: Preferences
+    comment: Item in a bulleted list denoting what will be deleted if the user opts to factory reset the client
+  body2:
+    value: Resetting the VPN will sign you out, but your account will not be deleted.
+    comment: Body content of the screen where users go to reset the VPN to factory settings
+  resetButtonLabel:
+    value: Reset VPN
+    comment: Label for button that initiates a restore to factory settings
+  confirmResetModalTitle:
+    value: Confirm reset
+    comment: Title of the modal where users can confirm they want to restore back to factory settings
+  confirmResetModalBody:
+    value: Reset Mozilla VPN settings? This can’t be undone.
+    comment: Body of the modal where users can confirm they want to restore back to factory settings
+  confirmResetModalResetButtonLabel:
+    value: Reset and quit
+    comment: Label for button that finalizes a restore to factory settings
 
 global:
   expand:

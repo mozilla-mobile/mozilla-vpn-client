@@ -705,10 +705,21 @@ SETTING_STRINGLIST(subscriptionTransactions,        // getter
                    removeSubscriptionTransactions,  // remover
                    hasSubscriptionTransactions,     // has
                    "subscriptionTransactions",      // key
-                   QStringList(),                   // efault value
+                   QStringList(),                   // default value
                    false,                           // remove when reset
                    true                             // sensitive (do not log)
 )
+
+SETTING_BOOL(localNetworkAccess,        // getter
+             setLocalNetworkAccess,     // setter
+             removeLocalNetworkAccess,  // remover
+             hasLocalNetworkAccess,     // has
+             "localNetworkAccess",      // key
+             false,                     // default value
+             true,                      // remove when reset
+             false                      // sensitive (do not log)
+)
+
 #endif
 
 SETTING_BOOL(gleanDebugTagActive,        // getter
@@ -750,6 +761,18 @@ SETTING_BOOL(shortTimerSessionPing,        // getter
              true,                         // remove when reset
              false                         // sensitive (do not log)
 )
+
+#if defined(MZ_FLATPAK)
+SETTING_STRING(tunnelUuid,        // getter
+               setTunnelUuid,     // setter
+               removeTunnelUuid,  // remover
+               hasTunnelUuid,     // has
+               "tunnelUuid",      // key
+               "",                // default value
+               false,             // remove when reset
+               true               // sensitive (do not log)
+)
+#endif
 
 #ifdef UNIT_TEST
 SETTING_BOOL(addonApiSetting,        // getter

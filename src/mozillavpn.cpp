@@ -252,8 +252,6 @@ void MozillaVPN::initialize() {
 
   m_private->m_telemetry.initialize();
 
-  m_private->m_connectionBenchmark.initialize();
-
   m_private->m_ipAddressLookup.initialize();
 
   m_private->m_serverLatency.initialize();

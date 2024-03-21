@@ -18,9 +18,7 @@ function(add_addon_target NAME)
 
     # Fix Ninja dependency tracking when dealing with absolute paths. 
     cmake_policy(PUSH)
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20)
-        cmake_policy(SET CMP0116 NEW)
-    endif()
+    cmake_policy(SET CMP0116 NEW)
 
     if(NOT ADDON_OUTPUT_DIR)
         set(ADDON_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -57,8 +55,7 @@ function(add_addon_target NAME)
         execute_process(OUTPUT_VARIABLE ADDON_ID OUTPUT_STRIP_TRAILING_WHITESPACE
             COMMAND ${PYTHON_EXECUTABLE} -c "import json; print(json.load(open('${MANIFEST_FILE}', encoding='utf-8'))['id'])")
 
-        if((CMAKE_GENERATOR MATCHES "Ninja") OR
-           (CMAKE_GENERATOR MATCHES "Makefiles" AND (CMAKE_VERSION VERSION_GREATER_EQUAL 3.20)))
+        if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
             ## Depfiles are great, but they only work for some generators.
             file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_deps)
             add_custom_command(

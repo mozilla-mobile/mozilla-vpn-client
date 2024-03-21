@@ -1,0 +1,30 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.from_deps
+    - mozillavpn_taskgraph.transforms.beetmover_apt
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - beetmover
+
+tasks:
+    push-to-gcr:
+        from-deps:
+            with-attributes:
+                build-type:
+                    - linux64/release-deb
+        run-on-tasks-for: [action]
+        description: description
+        worker-type: beetmover-apt
+        worker:
+            product: vpn
+            max-run-time: 1800
+            gcs-sources: [] # Set from Transform beetmover_apt
+        
+
+      

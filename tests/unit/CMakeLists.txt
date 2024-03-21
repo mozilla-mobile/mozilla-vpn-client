@@ -15,8 +15,11 @@ include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
-qt_add_executable(unit_tests EXCLUDE_FROM_ALL)
-set_target_properties(unit_tests PROPERTIES FOLDER "Tests")
+qt_add_executable(unit_tests)
+set_target_properties(unit_tests PROPERTIES
+    EXCLUDE_FROM_ALL ${BUILD_TESTS}
+    FOLDER "Tests"
+)
 add_dependencies(build_tests unit_tests)
 target_link_libraries(unit_tests PRIVATE
     Qt6::Core
@@ -32,6 +35,8 @@ target_link_libraries(unit_tests PRIVATE
 )
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
+target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
+target_compile_definitions(unit_tests PRIVATE MZ_DUMMY)
 
 target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 
@@ -118,6 +123,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${MZ_SOURCE_DIR}/tcppingsender.cpp
+    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp

@@ -15,6 +15,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
+#include "tcppingsender.h"
 
 constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
 
@@ -64,6 +65,9 @@ void ServerLatency::initialize() {
   if (feature->isSupported()) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
   }
+
+  connect(qApp, &QApplication::applicationStateChanged, this,
+          &ServerLatency::applicationStateChanged);
 }
 
 void ServerLatency::start() {
@@ -87,6 +91,13 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+  if (!m_pingSender->isValid()) {
+    // Fallback to using TCP handshake times for pings if we can't create an
+    // ICMP socket on this platform, this probes at the ports used for Wireguard
+    // over TCP.
+    delete m_pingSender;
+    m_pingSender = new TcpPingSender(QHostAddress(), 80, this);
+  }
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
           SLOT(recvPing(quint16)), Qt::QueuedConnection);
@@ -241,6 +252,26 @@ void ServerLatency::stateChanged() {
     // If the VPN has been deactivated, start a refresh if desired.
     start();
   }
+}
+
+// iOS kills the socket shortly after the device is turned off, and possibly if
+// the app is backgrounded. This was causing a crash when the device was turned
+// back on. By only refreshing the server list when the app is active, we
+// prevent this crash. More details in VPN-5766.
+void ServerLatency::applicationStateChanged() {
+#ifdef MZ_IOS
+  if (QGuiApplication::applicationState() !=
+      Qt::ApplicationState::ApplicationActive) {
+    if (m_pingSender != nullptr) {
+      m_wantRefresh = true;
+      stop();
+    }
+  } else {
+    if (m_wantRefresh) {
+      refresh();
+    }
+  }
+#endif
 }
 
 void ServerLatency::recvPing(quint16 sequence) {

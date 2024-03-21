@@ -5,6 +5,7 @@
 #include "ioscommons.h"
 #include "constants.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "qmlengineholder.h"
 
 #include <QtGui/qpa/qplatformnativeinterface.h>
@@ -102,6 +103,15 @@ void IOSCommons::shareLogs(const QString& logs) {
     activityViewController.popoverPresentationController.sourceRect =
         CGRectMake(view.bounds.size.width / 2, view.bounds.size.height, 0, 0);
   }
+  activityViewController.completionWithItemsHandler =
+      ^(NSString* activityType, BOOL completed, NSArray* returnedItems, NSError* activityError) {
+        if (completed) {
+          logger.info() << "Clearing logs.";
+          LogHandler::instance()->flushLogs();
+        } else {
+          logger.info() << "No need to clear logs.";
+        }
+      };
   [qtController presentViewController:activityViewController animated:YES completion:nil];
   [activityViewController release];
 }

@@ -146,13 +146,6 @@ PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
 
 #undef PRODBETAEXPR
 
-// Number of msecs for max runtime of the connection benchmarks.
-constexpr uint32_t BENCHMARK_MAX_BYTES_UPLOAD = 10485760;  // 10 Megabyte
-constexpr uint32_t BENCHMARK_MAX_DURATION_PING = 3000;
-constexpr uint32_t BENCHMARK_MAX_DURATION_TRANSFER = 15000;
-constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_FAST = 25000000;    // 25 Megabit
-constexpr uint32_t BENCHMARK_THRESHOLD_SPEED_MEDIUM = 10000000;  // 10 Megabit
-
 #if defined(UNIT_TEST)
 #  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
                     testingValue)                                 \
@@ -234,19 +227,6 @@ PRODBETAEXPR(QString, addonBaseUrl,
                  "MZ_ADDON_URL",
                  "https://mozilla-mobile.github.io/mozilla-vpn-client/addons/"))
 
-PRODBETAEXPR(QString, benchmarkDownloadUrl,
-             "https://archive.mozilla.org/pub/vpn/speedtest/50m.data",
-             Constants::envOrDefault(
-                 "MZ_BENCHMARK_DOWNLOAD_URL",
-                 "https://archive.mozilla.org/pub/vpn/speedtest/50m.data"));
-
-PRODBETAEXPR(
-    QString, benchmarkUploadUrl, "https://benchmark.vpn.mozilla.org/upload",
-    Constants::envOrDefault(
-        "MZ_BENCHMARK_UPLOAD_URL",
-        "https://dev.vpn-network-benchmark.nonprod.webservices.mozgcp.net/"
-        "upload"));
-
 PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
              Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
                                      "http://%1/success.txt"));
@@ -300,13 +280,6 @@ constexpr const char* IOS_FALLBACK_APP_ID = "org.mozilla.ios.FirefoxVPN";
 constexpr const wchar_t* WINDOWS_CRED_KEY = L"Mozilla VPN";
 #endif
 
-// Communication pipe between instances
-#if defined(MZ_WINDOWS)
-constexpr const char* UI_PIPE = "\\\\.\\pipe\\mozillavpn.ui";
-#else
-constexpr const char* UI_PIPE = "/tmp/mozillavpn.ui.sock";
-#endif
-
 #ifdef MZ_ANDROID
 constexpr const char* ANDROID_LOG_NAME = "mozillavpn";
 
@@ -325,6 +298,8 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
 constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
 // TODO: #endif
+
+constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
 
 };  // namespace Constants
 

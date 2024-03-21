@@ -14,8 +14,11 @@ include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/glean)
 
-qt_add_executable(qml_tests EXCLUDE_FROM_ALL)
-set_target_properties(qml_tests PROPERTIES FOLDER "Tests")
+qt_add_executable(qml_tests)
+set_target_properties(qml_tests PROPERTIES
+    EXCLUDE_FROM_ALL ${BUILD_TESTS}
+    FOLDER "Tests"
+)
 add_dependencies(build_tests qml_tests)
 
 target_link_libraries(qml_tests PRIVATE
@@ -71,6 +74,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
+    ${MZ_SOURCE_DIR}/tcppingsender.cpp
+    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp
