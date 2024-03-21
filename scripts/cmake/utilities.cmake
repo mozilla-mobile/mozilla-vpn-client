@@ -117,7 +117,7 @@ function(mz_add_new_module)
         WASM_SOURCES ${MZ_ADD_NEW_MODULE_WASM_SOURCES}
         DUMMY_SOURCES ${MZ_ADD_NEW_MODULE_DUMMY_SOURCES}
     )
-    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PUBLIC ${ALL_SOURCES})
+    target_sources(${MZ_ADD_NEW_MODULE_TARGET_NAME} PRIVATE ${ALL_SOURCES})
 
     # Generate dependencies lists
     mz_generate_link_libraries(
@@ -214,7 +214,7 @@ function(mz_add_library)
 
     add_library(${MZ_ADD_LIBRARY_NAME} ${MZ_ADD_LIBRARY_TYPE})
     mz_target_handle_warnings(${MZ_ADD_LIBRARY_NAME})
-    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PUBLIC
+    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PRIVATE
         "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )

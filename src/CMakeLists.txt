@@ -68,9 +68,4 @@ include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 add_subdirectory(ui)
 target_link_libraries(mozillavpn PRIVATE mozillavpn-ui mozillavpn-uiplugin)
-qt6_add_qml_module(mozillavpn
-  URI Mozilla.Shared.qmlcomponents
-  VERSION 1.0
-)
-
 qt_finalize_target(mozillavpn)
