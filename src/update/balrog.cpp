@@ -510,9 +510,16 @@ QString Balrog::balrogUrl() {
 
 // static
 QStringList Balrog::rootCertHashes() {
+  QStringList result;
   if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
-    return QString(Constants::AUTOGRAPH_STAGE_FINGERPRINTS).split('\n');
+    for (int i = 0; Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i] != nullptr; i++) {
+      result.append(Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i]);
+    }
   } else {
-    return QString(Constants::AUTOGRAPH_PROD_FINGERPRINTS).split('\n');
+    for (int i = 0; Constants::AUTOGRAPH_PROD_FINGERPRINTS[i] != nullptr; i++) {
+      result.append(Constants::AUTOGRAPH_PROD_FINGERPRINTS[i]);
+    }
   }
+
+  return result;
 }
