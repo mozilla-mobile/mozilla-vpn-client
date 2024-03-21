@@ -188,9 +188,9 @@ function(mz_add_new_module)
                 DEPENDENCIES
                     ${TEST_LINK_LIBRARIES}
             )
-            
+
             add_dependencies(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests ${TEST_TARGET_NAME})
-            
+
             # Check if the corresponding header file exists
             string(REGEX REPLACE "\.cpp$" ".h" HEADER_FILE ${TEST_FILE})
             if(EXISTS ${HEADER_FILE})
@@ -199,7 +199,7 @@ function(mz_add_new_module)
             endif()
         endforeach()
     endif()
-    
+
     # Add Clang-tidy to that module
     mz_add_clang_tidy(${MZ_ADD_NEW_MODULE_TARGET_NAME})
 endfunction()
