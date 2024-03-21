@@ -5,7 +5,7 @@
 # Sets Defaults like `-Wall -Werror` if we know it will not
 # explode on that target + compiler
 function(mz_target_handle_warnings MZ_TARGET)
-    if(MSVC OR IOS)
+    if(IOS)
         return()
     endif()
     # Just don't for wasm
@@ -20,7 +20,11 @@ function(mz_target_handle_warnings MZ_TARGET)
         set(scope "PRIVATE")
     endif()
 
-    target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
+    if(MSVC)
+        target_compile_options( ${MZ_TARGET} ${scope} /W3 /WX)
+    else()
+        target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
+    endif()
 endfunction()
 
 # MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
