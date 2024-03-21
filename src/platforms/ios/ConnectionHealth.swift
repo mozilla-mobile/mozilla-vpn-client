@@ -10,7 +10,7 @@ class ConnectionHealth {
     // Every 15-16 seconds, send 20 pings over 5 seconds.
     // Pings timeout after 4 seconds.
     // After all pings have returned or timed out,
-    // PingTest calculates the stability.
+    // PingAnalyzer calculates the stability.
 
     enum ConnectionStability {
         case stable, unstable, noSignal
@@ -57,10 +57,10 @@ class ConnectionHealth {
             return
         }
 
-        logger.info(message: "Creating PingTest")
-        let _ = PingTest(pingAddress: pingAddress) { (connectivity) in
+        logger.info(message: "Creating PingAnalyzer")
+        let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity) in
             guard let connectivity = connectivity else {
-                self.logger.error(message: "PingTest returned error")
+                self.logger.error(message: "PingAnalyzer returned error")
                 return
             }
 

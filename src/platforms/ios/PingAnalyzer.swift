@@ -5,8 +5,8 @@
 import Foundation
 import NetworkExtension
 
-class PingTest {
-    private let logger = IOSLoggerImpl(tag: "PingTest")
+class PingAnalyzer {
+    private let logger = IOSLoggerImpl(tag: "PingAnalyzer")
 
     private let numberOfPings = 20
     private let pingSendTimespan: Double = 5.0 // send numberOfPings over 5 secons

@@ -103,8 +103,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 }
 
                 // The internal DNS endpoint results is in the 10.x.x.x restricted IP range. For reasons I couldn't
-                // determine, pinging restricted IP addresses failed. Thus, using other ones.
-                let endpointIP = String(describing: tunnelConfiguration.peers.first?.endpoint?.host ?? "8.8.8.8")
+                // determine, pinging restricted IP addresses failed. Thus, using another one.
+                guard let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host,
+                      let endpointIP = String(describing: endpointHost) else {
+                    // Intentionally using an assertion failure here without an early return.
+                    // This is new functionality being added for connection health checks.
+                    // It would be surprising if this was ever nil (and we hit this block).
+                    // If on a debug build, we want to halt everything, done with assertionFailure.
+                    // But if this has been occuring on prod already, we don't want to change
+                    // behavior to something that halts the tunnel setup.
+                    self.logger.info(message: "Tunnel config is missing endpoint")
+                    assertionFailure("Missing endpoint")
+                }
                 self.connectionHealthMonitor.start(for: endpointIP)
 
                 completionHandler(nil)
