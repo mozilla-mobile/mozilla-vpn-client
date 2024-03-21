@@ -439,9 +439,6 @@ bool LogHandler::viewLogs() {
 
 #  if defined(MZ_ANDROID)
     ok = AndroidCommons::shareText(*buffer);
-    if (ok) {
-      flushLogs();
-    }
 #  else
     IOSCommons::shareLogs(*buffer);
 #  endif
