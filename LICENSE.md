@@ -63,6 +63,11 @@ under the terms of the Unicode Terms of Use, a copy of which is [available
 here](https://github.com/unicode-org/cldr-json/blob/main/LICENSE) and a copy is
 provided below.
 
+For iOS releases, [SwiftyPing](https://github.com/samiyr/SwiftyPing/) is used to
+to send pings. SwiftyPing is released under the terms of the MIT Public License
+(*MIT*), a copy of which is [available here](https://opensource.org/licenses/MIT)
+and a copy is provided below.
+
 Finally, this project uses EC25519 and CHACHA-POLY implementations from
 [HACL\*](https://hacl-star.github.io/), available under the terms of the MIT
 Public License (*MIT*) and copyright (c) 2016-2020 INRIA, CMU, and Microsoft

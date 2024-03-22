@@ -9,6 +9,8 @@ import IOSGlean
 class PacketTunnelProvider: NEPacketTunnelProvider {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
 
+    private let connectionHealthMonitor = ConnectionHealth()
+
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
             switch logLevel {
@@ -100,6 +102,20 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
+                let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host
+                if endpointHost == nil {
+                    // Intentionally using an assertion failure here without an early return.
+                    // This is new functionality being added for connection health checks.
+                    // It would be surprising if this was ever nil (and we hit this block).
+                    // If on a debug build, we want to halt everything, done with assertionFailure.
+                    // But if this has been occuring on prod already, we don't want to change
+                    // behavior to something that halts the tunnel setup.
+                    self.logger.info(message: "Tunnel config is missing endpoint")
+                    assertionFailure("Missing endpoint")
+                }
+                let endpointIP = String(describing: endpointHost)
+                self.connectionHealthMonitor.start(for: endpointIP)
+
                 completionHandler(nil)
                 return
             }
@@ -139,6 +155,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
+            self.connectionHealthMonitor.stop()
             if self.shouldSendTelemetry {
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
