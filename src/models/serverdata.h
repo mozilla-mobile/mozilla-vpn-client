@@ -47,8 +47,6 @@ class ServerData final : public QObject {
 
   ServerData& operator=(const ServerData& other);
 
-  void initialize();
-
   [[nodiscard]] bool fromSettings();
 
   Q_INVOKABLE void changeServer(const QString& countryCode,
@@ -105,8 +103,6 @@ class ServerData final : public QObject {
                                      const QString& cityName);
 
  private:
-  bool m_initialized = false;
-
   QString m_exitCountryCode;
   QString m_exitCountryName;
   QString m_exitCityName;

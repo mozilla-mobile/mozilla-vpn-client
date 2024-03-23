@@ -256,8 +256,6 @@ void MozillaVPN::initialize() {
 
   m_private->m_serverLatency.initialize();
 
-  m_private->m_serverData.initialize();
-
   AddonManager::instance();
 
   RecentConnections::instance()->initialize();
