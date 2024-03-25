@@ -4,6 +4,7 @@
 
 #include "balrog.h"
 
+#include <QCryptographicHash>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -14,6 +15,7 @@
 
 #include "constants.h"
 #include "errorhandler.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -22,10 +24,12 @@
 // Implemented in rust. See the `signature` folder.
 // TODO (VPN-5708): We should really generate this with cbindgen.
 extern "C" {
+bool compute_root_certificate_hash(const char* x5u_ptr, size_t x5u_length,
+                                   char* hash_out_ptr, size_t hash_length);
+
 bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
                               const char* msg_ptr, size_t msg_length,
-                              const char* signature, const char* rootHash,
-                              const char* certSubject,
+                              const char* signature, const char* certSubject,
                               void (*logfn)(const char*));
 }
 
@@ -79,8 +83,7 @@ void Balrog::start(Task* task) {
             ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
   }
 
-  QString url =
-      QString(Constants::balrogUrl()).arg(appVersion()).arg(userAgent());
+  QString url = balrogUrl();
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = new NetworkRequest(task, 200);
@@ -181,10 +184,31 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
 bool Balrog::validateSignature(const QByteArray& x5uData,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
+  // Validate the root certificate hash.
+  int hashSize = QCryptographicHash::hashLength(QCryptographicHash::Sha256);
+  QByteArray rootHash(hashSize, 0);
+  if (!compute_root_certificate_hash(x5uData.constData(), x5uData.length(),
+                                     rootHash.data(), rootHash.length())) {
+    logger.error() << "Failed to calculate root certificate hash";
+    return false;
+  }
+  bool hashOkay = false;
+  for (const QString& fingerprint : rootCertHashes()) {
+    QByteArray fpDecode = QByteArray::fromHex(fingerprint.toUtf8());
+    Q_ASSERT(fpDecode.length() == hashSize);
+    if (rootHash == fpDecode) {
+      hashOkay = true;
+    }
+  }
+  if (!hashOkay) {
+    logger.error() << "Untrusted root certificate hash";
+    return false;
+  }
+
+  // Validate the content signature.
   bool verify = verify_content_signature(
       x5uData.constData(), x5uData.length(), updateData.constData(),
-      updateData.length(), signatureBlob.constData(),
-      Constants::AUTOGRAPH_ROOT_CERT_FINGERPRINT, BALROG_CERT_SUBJECT_CN,
+      updateData.length(), signatureBlob.constData(), BALROG_CERT_SUBJECT_CN,
       balrogLogger);
   if (!verify) {
     logger.error() << "Verification failed";
@@ -460,4 +484,43 @@ void Balrog::propagateError(NetworkRequest* request,
   }
 
   REPORTNETWORKERROR(error, m_errorPropagationPolicy, "balrog");
+}
+
+// static
+QString Balrog::balrogUrl() {
+  const QString product = "FirefoxVPN";
+  QString hostname = Constants::BALROG_PROD_HOSTNAME;
+  QString channel = "release";
+
+  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+    hostname = Constants::BALROG_STAGE_HOSTNAME;
+    channel = "release-cdntest";
+  } else if (!Constants::inProduction()) {
+    channel = "release-cdntest";
+  }
+
+  QStringList path = {"json",      "1",     product,      appVersion(),
+                      userAgent(), channel, "update.json"};
+  QUrl url;
+  url.setScheme("https");
+  url.setHost(hostname);
+  url.setPath(QString("/") + path.join("/"));
+  return url.toString();
+}
+
+// static
+QStringList Balrog::rootCertHashes() {
+  QStringList result;
+  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+    for (int i = 0; Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i] != nullptr;
+         i++) {
+      result.append(Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i]);
+    }
+  } else {
+    for (int i = 0; Constants::AUTOGRAPH_PROD_FINGERPRINTS[i] != nullptr; i++) {
+      result.append(Constants::AUTOGRAPH_PROD_FINGERPRINTS[i]);
+    }
+  }
+
+  return result;
 }
