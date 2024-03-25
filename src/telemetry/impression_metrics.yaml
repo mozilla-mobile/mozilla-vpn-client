@@ -636,3 +636,20 @@ impression:
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
+  help_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has just opened the "get help" screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-5234
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9145#pullrequestreview-1877936268
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys: *impression_extra_keys

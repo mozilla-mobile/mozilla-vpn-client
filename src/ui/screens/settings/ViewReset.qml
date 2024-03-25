@@ -13,6 +13,9 @@ import compat 0.1
 import "qrc:/ui/sharedViews"
 
 ViewFullScreen {
+    id: root
+
+    property string telemetryScreenId: "reset_vpn"
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
     property var _menuOnBackClicked:  () => {
                                           getHelpStackView.pop();
@@ -169,7 +172,13 @@ ViewFullScreen {
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
                     colorScheme: MZTheme.theme.redButton
 
-                    onClicked: VPN.hardResetAndQuit()
+                    onClicked: {
+                        Glean.interaction.resetVpnSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+
+                        VPN.hardResetAndQuit()
+                    }
                 },
                 MZLinkButton {
                     objectName: "cancelButton"
