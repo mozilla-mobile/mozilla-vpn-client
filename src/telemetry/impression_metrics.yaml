@@ -650,7 +650,6 @@ impression:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *impression_extra_keys
