@@ -1150,7 +1150,6 @@ interaction:
     data_sensitivity:
       - interaction
     notification_emails:
-      - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
     extra_keys: *interaction_extra_keys
