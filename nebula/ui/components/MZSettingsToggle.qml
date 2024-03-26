@@ -24,6 +24,11 @@ CheckBox {
 
     implicitHeight: MZTheme.theme.toggleHeight
     implicitWidth: MZTheme.theme.toggleWidth
+
+    // Hack-around for https://bugreports.qt.io/browse/QTBUG-99692
+    // Prevents the default Qt checkbox from appearing when hovering the toggle on Windows
+    hoverEnabled: false
+
     states: [
         State {
             when: checked
