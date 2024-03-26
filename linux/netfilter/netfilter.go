@@ -900,6 +900,7 @@ func NetfilterResetAllCgroupsV2() int32 {
 const (
 	DHCPV4_SERVER_PORT = 67
 	DHCPV4_CLIENT_PORT = 68
+	DNS_PORT           = 53
 )
 
 //export NetfilterAllowDHCP
@@ -1147,6 +1148,74 @@ func NetfilterAllowDHCP() int32 {
 			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	return mozvpn_ctx.nftCommit()
+}
+
+//export NetfilterBlockDNS
+func NetfilterBlockDNS() int32 {
+	// udp dport 53 reject
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DNS_PORT),
+			},
+			&expr.Reject{
+				Type: uint32(linux.NFT_REJECT_ICMPX_UNREACH),
+				Code: uint8(linux.NFT_REJECT_ICMPX_PORT_UNREACH),
+			},
+		},
+	})
+
+	// tcp dport 53 reject with tcp reset
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_TCP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DNS_PORT),
+			},
+			&expr.Reject{
+				Type: uint32(linux.NFT_REJECT_TCP_RST),
 			},
 		},
 	})
