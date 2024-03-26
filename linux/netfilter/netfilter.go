@@ -897,4 +897,261 @@ func NetfilterResetAllCgroupsV2() int32 {
 	return mozvpn_ctx.nftCommit()
 }
 
+const (
+	DHCPV4_SERVER_PORT = 67
+	DHCPV4_CLIENT_PORT = 68
+)
+
+//export NetfilterAllowDHCP
+func NetfilterAllowDHCP() int32 {
+	// Output
+
+	// udp sport 68 ip daddr 255.255.255.255 udp dport 67 accept
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // sport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_CLIENT_PORT),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyNFPROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.NFPROTO_IPV4},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(16), // daddr
+				Len:          uint32(4),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{0xFF, 0xFF, 0xFF, 0xFF}, // 255.255.255.255 (Broadcast)
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_SERVER_PORT),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	// udp sport 67 udp dport 68 accept
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // sport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_SERVER_PORT),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_CLIENT_PORT),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	// Input
+
+	// udp sport 68 ip daddr 255.255.255.255 udp dport 67 accept
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // sport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_CLIENT_PORT),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyNFPROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.NFPROTO_IPV4},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(16), // daddr
+				Len:          uint32(4),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{0xFF, 0xFF, 0xFF, 0xFF}, // 255.255.255.255 (Broadcast)
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_SERVER_PORT),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // sport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_CLIENT_PORT),
+			},
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(2), // dport
+				Len:          uint32(2),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.BigEndian.PutUint16(DHCPV4_SERVER_PORT),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	return mozvpn_ctx.nftCommit()
+}
+
 func main() {}
