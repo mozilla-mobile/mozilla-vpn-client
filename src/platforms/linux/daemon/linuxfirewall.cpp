@@ -105,6 +105,10 @@ bool LinuxFirewall::up(const QString& ifname, uint32_t fwmark,
     }
   }
 
+  if (NetfilterAllowDHCP() != 0) {
+    return false;
+  }
+
   cleanup.dismiss();
   return true;
 }
