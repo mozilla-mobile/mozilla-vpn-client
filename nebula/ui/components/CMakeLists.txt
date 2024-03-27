@@ -33,7 +33,6 @@ qt_add_qml_module(components
          MZFocusOutline.qml
          MZFooterLink.qml
          MZGreyLink.qml
-         MZGuideCard.qml
          MZHeaderLink.qml
          MZHeadline.qml
          MZHelpSheet.qml
@@ -76,7 +75,6 @@ qt_add_qml_module(components
          MZSegmentedToggle.qml
          MZSegmentedNavigation.qml
          MZUserProfile.qml
-         MZGuideList.qml
          MZScreenBase.qml
          MZViewBase.qml
          MZSwipeDelegate.qml

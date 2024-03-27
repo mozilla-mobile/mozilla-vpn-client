@@ -1914,25 +1914,6 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "guides", "Returns a list of guide title ids", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        QJsonObject obj;
-
-        AddonManager* am = AddonManager::instance();
-        Q_ASSERT(am);
-
-        QJsonArray guides;
-        am->forEach([&](Addon* addon) {
-          if (addon->type() == "guide") {
-            guides.append(addon->id());
-          }
-        });
-
-        obj["value"] = guides;
-        return obj;
-      });
-
-  InspectorHandler::registerCommand(
       "fetch_addons", "Force a fetch of the addon list manifest", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         AddonManager::instance()->fetch();

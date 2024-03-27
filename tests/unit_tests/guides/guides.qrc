@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/guides">
-        <file>01_demo.json</file>
-    </qresource>
-</RCC>

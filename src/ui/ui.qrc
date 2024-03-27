@@ -90,7 +90,6 @@
         <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
         <file>screens/settings/ViewAboutUs.qml</file>
         <file>screens/settings/ViewDNSSettings.qml</file>
-        <file>screens/settings/ViewGuide.qml</file>
         <file>screens/settings/ViewLanguage.qml</file>
         <file>screens/settings/ViewLicense.qml</file>
         <file>screens/settings/ViewLicenses.qml</file>
