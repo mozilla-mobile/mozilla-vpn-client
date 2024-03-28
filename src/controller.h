@@ -100,6 +100,7 @@ class Controller : public QObject, public LogSerializer {
 
   Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
+  void forceDaemonSilentServerSwitch();
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)

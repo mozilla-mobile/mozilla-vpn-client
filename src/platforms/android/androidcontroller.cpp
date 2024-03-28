@@ -179,15 +179,8 @@ void AndroidController::activate(const InterfaceConfig& config,
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
-  const QList<Server> serverList =
-      vpn->controller()->currentServer().exitServers();
-  Server* fallbackServer = nullptr;
-  foreach (auto item, serverList) {
-    if (item.publicKey() != config.m_serverPublicKey) {
-      fallbackServer = &item;
-      break;
-    }
-  }
+  Server* fallbackServer =
+      vpn->controller()->currentServer().backupServer(config.m_serverPublicKey);
   QJsonObject jFallbackServer;
   if (fallbackServer) {
     jFallbackServer["ipv4AddrIn"] = fallbackServer->ipv4AddrIn();

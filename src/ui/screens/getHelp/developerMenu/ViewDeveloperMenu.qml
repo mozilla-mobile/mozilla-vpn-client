@@ -257,6 +257,16 @@ MZViewBase {
         }
 
         MZButton {
+            id: unstableNetworkExtension
+            visible: Qt.platform.os === "ios"
+
+            text: "iOS daemon: Silent server switch"
+            onClicked: {
+                VPNController.forceDaemonSilentServerSwitch();
+            }
+        }
+
+        MZButton {
             id: resetAndQuit
             objectName: "resetAndQuitButton"
             property int clickNeeded: 5

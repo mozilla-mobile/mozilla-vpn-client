@@ -64,6 +64,7 @@ class ServerData final : public QObject {
   const QString& exitCityName() const { return m_exitCityName; }
   QString localizedExitCountryName() const;
   QString localizedExitCityName() const;
+  const Server backupServer(const QString& currentPublicKey);
 
   bool multihop() const {
     return !m_entryCountryCode.isEmpty() && !m_entryCityName.isEmpty();

@@ -16,6 +16,9 @@ public enum TunnelMessage: Codable, CustomStringConvertible {
     /// Telemetry state has changed
     case telemetryEnabledChanged(Bool)
 
+    /// Manually initiate a network extension silent server switch (used for testing only)
+    case silentServerSwitch
+
     public var description: String {
         switch self {
         case .getRuntimeConfiguration:
@@ -26,6 +29,8 @@ public enum TunnelMessage: Codable, CustomStringConvertible {
             return "configurationSwitch"
         case .telemetryEnabledChanged(let flag): 
             return "telemetryEnabledChanged(\(flag))"
+        case .silentServerSwitch:
+            return "silentServerSwitch"
         }
     }
 
