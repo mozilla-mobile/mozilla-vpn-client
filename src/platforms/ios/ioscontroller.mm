@@ -142,11 +142,27 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  [impl connectWithDnsServer:config.m_dnsServer.toNSString()
-      serverIpv6Gateway:config.m_serverIpv6Gateway.toNSString()
-      serverPublicKey:config.m_serverPublicKey.toNSString()
-      serverIpv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
-      serverPort:config.m_serverPort
+  ServerData serverData = MozillaVPN::instance()->controller()->currentServer();
+  const Server fallbackServer = serverData.backupServer(config.m_serverPublicKey);
+  VPNServerData* fallbackServerData = nullptr;
+  if (fallbackServer.initialized()) {
+    fallbackServerData =
+        [[VPNServerData alloc] initWithDns:fallbackServer.ipv4Gateway().toNSString()
+                               ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
+                                 publicKey:fallbackServer.publicKey().toNSString()
+                                ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()
+                                      port:fallbackServer.choosePort()];
+  }
+
+  VPNServerData* mainServer =
+      [[VPNServerData alloc] initWithDns:config.m_dnsServer.toNSString()
+                             ipv6Gateway:config.m_serverIpv6Gateway.toNSString()
+                               publicKey:config.m_serverPublicKey.toNSString()
+                              ipv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
+                                    port:config.m_serverPort];
+
+  [impl connectWithServerData:mainServer
+      fallbackServer:fallbackServerData
       excludeLocalNetworks:settingsHolder->localNetworkAccess()
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason
@@ -252,6 +268,8 @@ void IOSController::checkStatus() {
                        QString::fromNSString(deviceIpv4Address), txBytes, rxBytes);
   }];
 }
+
+void IOSController::forceDaemonSilentServerSwitch() { [impl silentServerSwitch]; }
 
 void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
   std::function<void(const QString&)> callback = std::move(a_callback);

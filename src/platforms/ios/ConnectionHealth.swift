@@ -5,6 +5,10 @@
 import Foundation
 import NetworkExtension
 
+protocol SilentServerSwitching: AnyObject {
+    func silentServerSwitch()
+}
+
 class ConnectionHealth {
 
     // Every 15-16 seconds, send 20 pings over 5 seconds.
@@ -17,6 +21,8 @@ class ConnectionHealth {
     }
 
     private let logger = IOSLoggerImpl(tag: "ConnectionHealthSwift")
+
+    weak var serverSwitchingDelegate: SilentServerSwitching?
 
     // Timer should fire between 15 and 16 seconds.
     private let checkTime = 15.0 // 15 seconds
@@ -67,10 +73,10 @@ class ConnectionHealth {
             self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
             // TODO: record metrics
 
-            // TODO: Add silent server switch
-            // if connectivity == .unstable {
-                // self.logger.info(message: "Unstable, starting silent switch from network extension")
-            // }
+            if connectivity == .unstable {
+                self.logger.info(message: "Unstable, starting silent switch from network extension")
+                self.serverSwitchingDelegate?.silentServerSwitch()
+            }
         }
 
         // Timer set to repeat until stop() is run, so no need to call any repeat step here.

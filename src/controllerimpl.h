@@ -55,6 +55,10 @@ class ControllerImpl : public QObject {
   // testing the ability of the VPN to recover from a backend error.
   virtual void forceDaemonCrash() {}
 
+  // This method attempts to force the daemon to do a silent server switch,
+  // and is used exclusively for testing.
+  virtual void forceDaemonSilentServerSwitch(){};
+
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is
   // active.

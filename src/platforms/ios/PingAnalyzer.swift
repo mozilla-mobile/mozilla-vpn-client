@@ -52,11 +52,12 @@ class PingAnalyzer {
             ping.targetCount = numberOfPings
             logger.info(message: "Sending pings")
             try ping.startPinging()
+            timer = Timer.scheduledTimer(timeInterval: TimeInterval(checkTime), target: self, selector: #selector(calculateStability), userInfo: nil, repeats: false)
         } catch {
             logger.error(message: "Error when sending pings")
+            logger.error(message: error.localizedDescription)
             callback(nil)
         }
-        timer = Timer.scheduledTimer(timeInterval: TimeInterval(checkTime), target: self, selector: #selector(calculateStability), userInfo: nil, repeats: false)
     }
 
     // This will be called when all pings return or the timer completes, whichever comes first.
