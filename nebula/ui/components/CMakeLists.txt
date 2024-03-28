@@ -77,7 +77,6 @@ qt_add_qml_module(components
          MZSegmentedNavigation.qml
          MZUserProfile.qml
          MZGuideList.qml
-         MZTipsAndTricksSection.qml
          MZScreenBase.qml
          MZViewBase.qml
          MZSwipeDelegate.qml

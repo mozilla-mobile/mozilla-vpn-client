@@ -1706,20 +1706,6 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenTipsAndTricks, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenTipsAndTricks.qml", QVector<int>{},
-      [](int* requestedScreen) -> int8_t {
-        return (requestedScreen &&
-                *requestedScreen == MozillaVPN::ScreenTipsAndTricks)
-                   ? 99
-                   : -1;
-      },
-      []() -> bool {
-        Navigator::instance()->requestPreviousScreen();
-        return true;
-      });
-
-  Navigator::registerScreen(
       MozillaVPN::ScreenViewLogs, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/ui/screens/ScreenViewLogs.qml", QVector<int>{},
       [](int* requestedScreen) -> int8_t {

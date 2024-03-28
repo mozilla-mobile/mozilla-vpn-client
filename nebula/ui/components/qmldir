@@ -74,5 +74,4 @@ MZUserProfile 0.1 MZUserProfile.qml
 MZVerticalSpacer 0.1 MZVerticalSpacer.qml
 MZViewBase 0.1 MZViewBase.qml
 MZGuideList 0.1 MZGuideList.qml
-MZTipsAndTricksSection 0.1 MZTipsAndTricksSection.qml
 MZHelpSheet 0.1 MZHelpSheet

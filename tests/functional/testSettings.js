@@ -55,61 +55,11 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
 
-    if (!(await vpn.isFeatureEnabled('helpSheets'))) {
-      await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    }
-
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
     await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
-  });
-
-  it('Checking the tips and tricks settings', async function () {
-    //tips and tricks feature is hidden when help sheets are enabled
-    if (await vpn.isFeatureEnabled('helpSheets')) {
-      await vpn.flipFeatureOff("helpSheets");
-    }
-
-    await vpn.waitForQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN, queries.screenSettings.TIPS_AND_TRICKS);
-
-    await vpn.clickOnQuery(queries.screenSettings.TIPS_AND_TRICKS.visible());
-    await vpn.waitForQuery(queries.screenSettings.tipsAndTricksView.SCREEN);
-
-
-    // TODO: (VPN-2749)
-    // Test guides
-    // let guides = await vpn.guides();
-    // let guideParent = 'guideLayout'
-
-    // for (var guide of guides) {
-    //   guide = guideParent + "/" + guide;
-
-    //   await vpn.setElementProperty(
-    //     'allTab', 'contentY', 'i',
-    //     parseInt(await vpn.getElementProperty(guide, 'y')) +
-    //     parseInt(await vpn.getElementProperty(guide, 'height')) +
-    //     parseInt(await vpn.getElementProperty(guideParent, 'y')));
-    //   await vpn.wait();
-
-    //   await vpn.waitForElement(guide);
-    //   await vpn.clickOnElement(guide);
-    //   await vpn.wait();
-
-    //   await vpn.waitForElement('backArrow');
-    //   await vpn.clickOnElement('backArrow')
-    //   await vpn.wait();
-
-    //   await vpn.waitForElement('settingsTipsAndTricksPage');
-    // }
-
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.tipsAndTricksView.BACK.visible());
-
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
   describe('Privacy settings tests', function () {
@@ -1059,25 +1009,6 @@ describe('Settings', function() {
         }
         await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
         const events = await vpn.gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
-
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-    });
-
-    it("record telemetry when user clicks on Tips and tricks", async function () {
-        // This test cannot run in wasm
-        if (vpn.runningOnWasm()) {
-          this.skip();
-        }
-
-        //tips and tricks is not available when help sheets are enabled
-        if (await vpn.isFeatureEnabled('helpSheets')) {
-          await vpn.flipFeatureOff("helpSheets");
-        }
-
-        await vpn.waitForQueryAndClick(queries.screenSettings.TIPS_AND_TRICKS.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "tipsAndTricksSelected", "main");
 
         assert.equal(events.length, 1);
         var element = events[0];
