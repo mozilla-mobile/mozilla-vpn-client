@@ -14,11 +14,6 @@ ColumnLayout {
     property var addon
     required property int view
 
-    enum View {
-        Guide = 0,
-        Message = 1
-    }
-
     spacing: 0
 
     Repeater {
@@ -62,24 +57,12 @@ ColumnLayout {
                 }
 
                 if (modelData instanceof MZComposerBlockText) {
-                    switch(composer.view) {
-                    case MZComposerView.View.Guide:
-                        return MZTheme.theme.listSpacing * 0.5
-                    case MZComposerView.View.Message:
-                    default:
-                        return MZTheme.theme.vSpacingSmall
-                    }
+                    return MZTheme.theme.vSpacingSmall
                 }
 
                 if (modelData instanceof MZComposerBlockOrderedList ||
                         modelData instanceof MZComposerBlockUnorderedList) {
-                    switch(composer.view) {
-                    case MZComposerView.View.Guide:
-                        return MZTheme.theme.listSpacing * 0.5
-                    case MZComposerView.View.Message:
-                    default:
-                        return MZTheme.theme.vSpacingSmall
-                    }
+                    return MZTheme.theme.vSpacingSmall
                 }
 
                 if (modelData instanceof MZComposerBlockButton) {

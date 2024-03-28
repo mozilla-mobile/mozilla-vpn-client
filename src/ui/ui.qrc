@@ -83,7 +83,6 @@
         <file>screens/ScreenSubscriptionNeeded.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
         <file>screens/ScreenTelemetryPolicy.qml</file>
-        <file>screens/ScreenTipsAndTricks.qml</file>
         <file>screens/ScreenUpdateRecommended.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
@@ -91,7 +90,6 @@
         <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
         <file>screens/settings/ViewAboutUs.qml</file>
         <file>screens/settings/ViewDNSSettings.qml</file>
-        <file>screens/settings/ViewGuide.qml</file>
         <file>screens/settings/ViewLanguage.qml</file>
         <file>screens/settings/ViewLicense.qml</file>
         <file>screens/settings/ViewLicenses.qml</file>
@@ -104,7 +102,6 @@
         <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml</file>
         <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
-        <file>screens/tipsAndTricks/ViewTipsAndTricks.qml</file>
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>

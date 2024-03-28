@@ -107,7 +107,6 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
-      await vpn.setSetting('tipsAndTricksIntroShown', 'true');
       await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.authenticateInApp();
 
@@ -140,7 +139,6 @@ exports.mochaHooks = {
       await startAndConnect();
       await vpn.gleanTestReset();
       await vpn.reset();
-      await vpn.setSetting('tipsAndTricksIntroShown', 'true')
     }
 
     await vpn.setGleanAutomationHeader();

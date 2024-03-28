@@ -8,7 +8,6 @@
 #include <QTemporaryFile>
 
 #include "addons/addon.h"
-#include "addons/addonguide.h"
 #include "addons/addonmessage.h"
 #include "addons/addonproperty.h"
 #include "addons/addonpropertylist.h"

@@ -12,7 +12,6 @@
 #include <QJsonObject>
 
 #include "addonapi.h"
-#include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addonreplacer.h"
@@ -370,10 +369,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   if (type == "i18n") {
     addon = new AddonI18n(parent, manifestFileName, id, name);
-  }
-
-  else if (type == "guide") {
-    addon = AddonGuide::create(parent, manifestFileName, id, name, obj);
   }
 
   else if (type == "message") {

@@ -49,8 +49,6 @@ theme.overlayBackground = '#4D000000';
 
 theme.checkBoxWarning = '#C45A27';
 
-theme.guideCardImageBgColor = "#50134B"
-
 theme.fontColor = '#6D6D6E';
 theme.fontColorDark = '#3D3D3D';
 theme.fontFamily = 'Metropolis';
@@ -84,8 +82,6 @@ theme.menuHeight = 56;
 theme.viewBaseTopMargin = 16;
 theme.checkBoxRowSubLabelTopMargin = 2;
 theme.dividerHeight = 1
-
-theme.guideCardHeight = 172
 
 theme.helpSheetTitleBodySpacing = 8
 theme.helpSheetBodySpacing = 16

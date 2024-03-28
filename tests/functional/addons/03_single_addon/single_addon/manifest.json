@@ -1,9 +1,9 @@
 {
   "api_version": "0.1",
   "id": "single_addon",
-  "name": "Guide: dummy addon",
-  "type": "guide",
-  "guide": {
+  "name": "Message: dummy addon",
+  "type": "message",
+  "message": {
     "id": "a",
     "title": "This is a title",
     "subtitle": "This is a subtitle",

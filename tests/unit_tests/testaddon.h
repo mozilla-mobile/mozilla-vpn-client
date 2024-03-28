@@ -27,9 +27,6 @@ class TestAddon final : public TestHelper {
   void conditionWatcher_endTime();
   void conditionWatcher_javascript();
 
-  void guide_create_data();
-  void guide_create();
-
   void message_create_data();
   void message_create();
   void message_load_status_data();

@@ -1706,20 +1706,6 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenTipsAndTricks, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenTipsAndTricks.qml", QVector<int>{},
-      [](int* requestedScreen) -> int8_t {
-        return (requestedScreen &&
-                *requestedScreen == MozillaVPN::ScreenTipsAndTricks)
-                   ? 99
-                   : -1;
-      },
-      []() -> bool {
-        Navigator::instance()->requestPreviousScreen();
-        return true;
-      });
-
-  Navigator::registerScreen(
       MozillaVPN::ScreenViewLogs, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/ui/screens/ScreenViewLogs.qml", QVector<int>{},
       [](int* requestedScreen) -> int8_t {
@@ -1924,25 +1910,6 @@ void MozillaVPN::registerInspectorCommands() {
 
         QJsonObject obj;
         obj["value"] = deviceArray;
-        return obj;
-      });
-
-  InspectorHandler::registerCommand(
-      "guides", "Returns a list of guide title ids", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        QJsonObject obj;
-
-        AddonManager* am = AddonManager::instance();
-        Q_ASSERT(am);
-
-        QJsonArray guides;
-        am->forEach([&](Addon* addon) {
-          if (addon->type() == "guide") {
-            guides.append(addon->id());
-          }
-        });
-
-        obj["value"] = guides;
         return obj;
       });
 

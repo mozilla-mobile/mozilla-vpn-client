@@ -455,15 +455,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has checked the block ads checkbox
+      The user has checked the block ads checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -473,15 +473,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has unchecked the block ads checkbox
+      The user has unchecked the block ads checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -491,15 +491,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has checked the block trackers checkbox
+      The user has checked the block trackers checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -509,15 +509,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has unchecked the block trackers checkbox
+      The user has unchecked the block trackers checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -527,15 +527,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has checked the block malware checkbox
+      The user has checked the block malware checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -545,15 +545,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has unchecked the block malware checkbox
+      The user has unchecked the block malware checkbox
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -563,15 +563,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has selected the android segment of the devices toggle in onboarding
+      The user has selected the android segment of the devices toggle in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -581,15 +581,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has selected the android segment of the devices toggle in onboarding
+      The user has selected the android segment of the devices toggle in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -599,15 +599,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has enabled connect on startup
+      The user has enabled connect on startup
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -617,15 +617,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has disabled connect on startup
+      The user has disabled connect on startup
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -635,15 +635,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has clicked get started in onboarding
+      The user has clicked get started in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -653,15 +653,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has clicked approve mozilla vpn in onboarding
+      The user has clicked approve mozilla vpn in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -671,15 +671,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has clicked the data step progress bar button in onboarding
+      The user has clicked the data step progress bar button in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -689,15 +689,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has clicked the privacy step progress bar button in onboarding
+      The user has clicked the privacy step progress bar button in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -707,15 +707,15 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-        - main
+      - main
     description: |
-        The user has clicked the devices step progress bar button in onboarding
+      The user has clicked the devices step progress bar button in onboarding
     bugs:
-        - https://mozilla-hub.atlassian.net/browse/VPN-5098
+      - https://mozilla-hub.atlassian.net/browse/VPN-5098
     data_reviews:
-        - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8493#issuecomment-1799126384
     data_sensitivity:
-        - interaction
+      - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
@@ -728,24 +728,6 @@ interaction:
       - main
     description: |
       The Privacy features button in the Settings screen was selected
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5269
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/8449#issuecomment-1791461168
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - vpn-telemetry@mozilla.com
-      - gela@mozilla.com
-    expires: never
-    extra_keys: *interaction_extra_keys
-  tips_and_tricks_selected:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The Tips and tricks button in the Settings screen was selected
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -925,7 +907,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-        User clicked on Notifications in App preferences
+      User clicked on Notifications in App preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -943,7 +925,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-        User clicked on Language in App preferences
+      User clicked on Language in App preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -959,9 +941,9 @@ interaction:
     type: event
     lifetime: ping
     send_in_pings:
-    - main
+      - main
     description: |
-        User clicked on DNS settings in App preferences
+      User clicked on DNS settings in App preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -1045,7 +1027,7 @@ interaction:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
-    extra_keys: *interaction_extra_keys 
+    extra_keys: *interaction_extra_keys
   edit_selected:
     type: event
     lifetime: ping
@@ -1062,7 +1044,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never 
+    expires: never
     extra_keys: *interaction_extra_keys
   manage_subscription_selected:
     type: event

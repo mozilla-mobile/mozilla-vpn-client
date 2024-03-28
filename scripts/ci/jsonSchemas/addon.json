@@ -59,9 +59,6 @@
         }
       }
     },
-    "tutorial": {
-      "$ref": "tutorial.json#"
-    },
     "guide": {
       "$ref": "guide.json#"
     },

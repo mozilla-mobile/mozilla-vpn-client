@@ -588,16 +588,6 @@ SETTING_STRING(theme,          // getter
                false           // sensitive (do not log)
 )
 
-SETTING_BOOL(tipsAndTricksIntroShown,        // getter
-             setTipsAndTricksIntroShown,     // setter
-             removeTipsAndTricksIntroShown,  // remover
-             hasTipsAndTricksIntroShown,     // has
-             "tipsAndTricksIntroShown",      // key
-             false,                          // default value
-             false,                          // remove when reset
-             false                           // sensitive (do not log)t
-)
-
 SETTING_STRING(token,        // getter
                setToken,     // setter
                removeToken,  // remover
