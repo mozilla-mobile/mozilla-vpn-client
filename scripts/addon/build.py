@@ -21,64 +21,6 @@ comment_types = {
 }
 
 
-def retrieve_strings_tutorial(manifest, filename):
-    tutorial_strings = {}
-
-    tutorial_json = manifest["tutorial"]
-    if "id" not in tutorial_json:
-        exit(f"Tutorial {filename} does not have an id")
-    if "title" not in tutorial_json:
-        exit(f"Tutorial {filename} does not have a title")
-    if "subtitle" not in tutorial_json:
-        exit(f"Tutorial {filename} does not have a subtitle")
-    if "completion_message" not in tutorial_json:
-        exit(f"Tutorial {filename} does not have a completion message")
-    if "steps" not in tutorial_json:
-        exit(f"Tutorial {filename} does not have steps")
-
-    tutorial_id = tutorial_json["id"]
-    title_id = f"tutorial.{tutorial_id}.title"
-    tutorial_strings[title_id] = {
-        "value": tutorial_json["title"],
-        "comments": tutorial_json.get("title_comment", "Title for a tutorial view"),
-    }
-
-    subtitle_id = f"tutorial.{tutorial_id}.subtitle"
-    tutorial_strings[subtitle_id] = {
-        "value": tutorial_json["subtitle"],
-        "comments": tutorial_json.get(
-            "subtitle_comment", "Subtitle for a tutorial view"
-        ),
-    }
-
-    completion_id = f"tutorial.{tutorial_id}.completion_message"
-    tutorial_strings[completion_id] = {
-        "value": tutorial_json["completion_message"],
-        "comments": tutorial_json.get(
-            "completion_message_comment", "Completion message for a tutorial view"
-        ),
-    }
-
-    for step in tutorial_json["steps"]:
-        if "id" not in step:
-            exit(f"Tutorial {filename} does not have an id for one of the steps")
-        if "tooltip" not in step:
-            exit(
-                f"Tutorial {filename} does not have a tooltip for step id {step['id']}"
-            )
-
-        step_id = f"tutorial.{tutorial_id}.step.{step['id']}"
-        if step_id in tutorial_strings:
-            exit(f"Duplicate step id {step_id} when parsing {filename}")
-
-        tutorial_strings[step_id] = {
-            "value": step["tooltip"],
-            "comments": step.get("comment", "A tutorial step tooltip"),
-        }
-
-    return tutorial_strings
-
-
 def retrieve_strings_blocks(blocks, filename, strings, prefix):
     for block in blocks:
         if "id" not in block:
@@ -366,9 +308,7 @@ with open(args.source, "r", encoding="utf-8") as file:
 
     if "translatable" not in manifest or manifest["translatable"] == True:
         print("Retrieving strings...")
-        if manifest["type"] == "tutorial":
-            strings = retrieve_strings_tutorial(manifest, args.source)
-        elif manifest["type"] == "guide":
+        if manifest["type"] == "guide":
             strings = retrieve_strings_guide(manifest, args.source)
         elif manifest["type"] == "message":
             strings = retrieve_strings_message(manifest, args.source)
