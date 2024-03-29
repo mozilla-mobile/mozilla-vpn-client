@@ -4,6 +4,9 @@
 
 #include "windowspingsender.h"
 
+#include <ranges>
+#include <mutex>
+
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <iphlpapi.h>
@@ -24,16 +27,26 @@
 #pragma comment(lib, "Ws2_32")
 
 constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
+constexpr size_t ICMP_ERR_SIZE = 8;
+constexpr size_t MinimumReplyBufferSize = sizeof(ICMP_ECHO_REPLY) +
+                                   WindowsPingPayloadSize + ICMP_ERR_SIZE +
+                                   sizeof(IO_STATUS_BLOCK);
 
 struct WindowsPingSenderPrivate {
   HANDLE m_handle;
   HANDLE m_event;
-  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8 +
-                         sizeof(IO_STATUS_BLOCK)];
+  std::array<ICMP_ECHO_REPLY, 2> m_replyBuffer;
 };
+static_assert(sizeof(WindowsPingSenderPrivate::m_replyBuffer) > MinimumReplyBufferSize,
+              "Fulfills the minimum size requirements");
+
+
 
 namespace {
 Logger logger("WindowsPingSender");
+
+std::mutex io_mutex;
+
 }
 
 static DWORD icmpCleanupHelper(LPVOID data) {
@@ -61,7 +74,7 @@ WindowsPingSender::WindowsPingSender(const QHostAddress& source,
   QObject::connect(m_notifier, &QWinEventNotifier::activated, this,
                    &WindowsPingSender::pingEventReady);
 
-  memset(m_private->m_buffer, 0, sizeof(m_private->m_buffer));
+  m_private->m_replyBuffer.fill({});
 }
 
 WindowsPingSender::~WindowsPingSender() {
@@ -87,18 +100,37 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
     return;
   }
 
+  std::scoped_lock lock(io_mutex);
+
   quint32 v4dst = dest.toIPv4Address();
   if (m_source.isNull()) {
-    IcmpSendEcho2(m_private->m_handle, m_private->m_event, nullptr, nullptr,
-                  qToBigEndian<quint32>(v4dst), &sequence, sizeof(sequence),
-                  nullptr, m_private->m_buffer, sizeof(m_private->m_buffer),
-                  10000);
+    IcmpSendEcho2(m_private->m_handle,           // IcmpHandle,
+                  m_private->m_event,            // Event
+                  nullptr,                       // ApcRoutine
+                  nullptr,                       // ApcContext
+                  qToBigEndian<quint32>(v4dst),  // DestinationAddress
+                  &sequence,                     // RequestData
+                  sizeof(sequence),              // RequestSize
+                  nullptr,                       // RequestOptions
+                  &m_private->m_replyBuffer,     // [OUT] ReplyBuffer
+                  sizeof(m_private->m_replyBuffer),  // ReplySize
+                  10000                          // Timeout
+    );
   } else {
     quint32 v4src = m_source.toIPv4Address();
-    IcmpSendEcho2Ex(m_private->m_handle, m_private->m_event, nullptr, nullptr,
-                    qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
-                    &sequence, sizeof(sequence), nullptr, m_private->m_buffer,
-                    sizeof(m_private->m_buffer), 10000);
+    IcmpSendEcho2Ex(m_private->m_handle,           // IcmpHandle
+                    m_private->m_event,            // Event
+                    nullptr,                       // ApcRoutine
+                    nullptr,                       // ApcContext
+                    qToBigEndian<quint32>(v4src),  // SourceAddress
+                    qToBigEndian<quint32>(v4dst),  // DestinationAddress
+                    &sequence,                     // RequestData
+                    sizeof(sequence),              // RequestSize
+                    nullptr,                       // RequestOptions
+                    &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
+                    sizeof(m_private->m_replyBuffer),   // ReplySize
+                    10000                          // Timeout
+    );
   }
 
   DWORD status = GetLastError();
@@ -111,8 +143,15 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 }
 
 void WindowsPingSender::pingEventReady() {
-  DWORD replyCount =
-      IcmpParseReplies(m_private->m_buffer, sizeof(m_private->m_buffer));
+  std::scoped_lock lock(io_mutex);
+  const auto guard = qScopeGuard([this](){ 
+      m_private->m_replyBuffer.fill({});
+  });
+  // Move ICMP State, to m_buffer is reset to 0;
+  auto state = m_private->m_replyBuffer; 
+  m_private->m_replyBuffer.fill({});
+
+  DWORD replyCount = IcmpParseReplies(&state, sizeof(state));
   if (replyCount == 0) {
     DWORD error = GetLastError();
     if (error == IP_REQ_TIMED_OUT) {
@@ -123,14 +162,12 @@ void WindowsPingSender::pingEventReady() {
                    << " Message: " << errmsg;
     return;
   }
-
-  const ICMP_ECHO_REPLY* replies = (const ICMP_ECHO_REPLY*)m_private->m_buffer;
-  for (DWORD i = 0; i < replyCount; i++) {
-    if (replies[i].DataSize < sizeof(quint16)) {
+  for (auto const& reply :
+       state | std::ranges::views::take(replyCount)) {
+    if (reply.Data == nullptr) {
       continue;
     }
-    quint16 sequence;
-    memcpy(&sequence, replies[i].Data, sizeof(quint16));
+    quint16 sequence = *(quint16*)reply.Data;
     emit recvPing(sequence);
   }
 }

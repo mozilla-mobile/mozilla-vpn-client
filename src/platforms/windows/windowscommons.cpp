@@ -143,7 +143,7 @@ int WindowsCommons::VPNAdapterIndex() {
 
 // Static
 QString WindowsCommons::getCurrentPath() {
-  QByteArray buffer(2048, 0xFF);
+  QByteArray buffer(2048, 0xFFu);
   auto ok = GetModuleFileNameA(NULL, buffer.data(), buffer.size());
 
   if (ok == ERROR_INSUFFICIENT_BUFFER) {
