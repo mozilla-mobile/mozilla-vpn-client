@@ -174,4 +174,12 @@ bool FeatureCallback_webPurchase() {
 #endif
 }
 
+bool FeatureCallback_hasBalrog() {
+#if defined(MVPN_BALROG)
+  return true;
+#else
+  return false;
+#endif
+}
+
 #endif  // FEATURELISTCALLBACK_H

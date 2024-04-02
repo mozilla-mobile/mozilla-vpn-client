@@ -16,8 +16,6 @@
  */
 
 use asn1_rs::ToDer;
-use hex;
-use ring::digest;
 use x509_parser::prelude::*;
 
 use oid_registry::{
@@ -26,7 +24,6 @@ use oid_registry::{
 
 pub struct Balrog<'a> {
     pub chain: Vec<X509Certificate<'a>>,
-    pub root_hash: Vec<u8>,
 }
 
 // Errors that can be returned from the Balrog module.
@@ -81,28 +78,6 @@ pub fn parse_pem_chain(input: &[u8]) -> Result<Vec<Pem>, BalrogError> {
     Ok(Pem::iter_from_buffer(input).collect::<Result<Vec<Pem>, PEMError>>()?)
 }
 
-/* A one-and-done function that parses a signature chain and validates a content signature. */
-pub fn parse_and_verify(
-    x5u: &[u8],
-    input: &[u8],
-    signature: &str,
-    current_time: i64,
-    root_hash: &str,
-    leaf_subject: &str,
-) -> Result<(), BalrogError> {
-    /* Parse the certificate chain. */
-    let pem_chain = parse_pem_chain(x5u)?;
-    let balrog = Balrog::new(&pem_chain)?;
-
-    /* Verify things. */
-    balrog.verify_chain(current_time, root_hash)?;
-    balrog.verify_leaf_hostname(leaf_subject)?;
-    balrog.verify_content_signature(input, signature)?;
-
-    /* Success */
-    Ok(())
-}
-
 impl<'a> Balrog<'_> {
     pub fn new(list: &'a Vec<Pem>) -> Result<Balrog<'a>, BalrogError> {
         if list.is_empty() {
@@ -110,8 +85,7 @@ impl<'a> Balrog<'_> {
         }
 
         let mut parsed: Vec<X509Certificate<'a>> = Vec::new();
-        let mut hash: Vec<u8> = Vec::new();
-        for (i, pem) in list.iter().enumerate() {
+        for pem in list {
             if pem.label != "CERTIFICATE" {
                 return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
@@ -122,22 +96,13 @@ impl<'a> Balrog<'_> {
                 return Err(BalrogError::from(X509Error::InvalidCertificate));
             }
             parsed.push(x509);
-
-            /* For the final certificate, calculate its SHA256 hash. */
-            if i + 1 == list.len() {
-                let digest = digest::digest(&digest::SHA256, pem.contents.as_slice());
-                hash.extend_from_slice(digest.as_ref());
-            }
         }
 
-        Ok(Balrog {
-            chain: parsed,
-            root_hash: hash,
-        })
+        Ok(Balrog { chain: parsed })
     }
 
     /* Ensure that the certificate chain is valid. */
-    pub fn verify_chain(&self, current_time: i64, root_hash: &str) -> Result<(), BalrogError> {
+    pub fn verify_chain(&self, current_time: i64) -> Result<(), BalrogError> {
         if self.chain.is_empty() {
             return Err(BalrogError::CertificateNotFound);
         }
@@ -150,9 +115,7 @@ impl<'a> Balrog<'_> {
          *  5. Call X509Certificate::verify_signature with the key from step 4.
          *
          * For the last certificate in the chain (the root), repeat the same
-         * steps using the last certificate as both cert N and cert N+1, and
-         * check that the SHA256 of the root certificate matches the root_hash
-         * parameter to this function.
+         * steps using the last certificate as both cert N and cert N+1.
          */
         let mut index = 0;
         while index + 1 < self.chain.len() {
@@ -165,14 +128,6 @@ impl<'a> Balrog<'_> {
         /* Verify the root certificate. */
         let root_cert = self.chain.last().unwrap();
         Self::verify_cert_chain_pair(root_cert, root_cert, current_time)?;
-
-        let hash_stripped = root_hash.replace(":", "");
-        let Ok(hash_decoded) = hex::decode(hash_stripped) else {
-            return Err(BalrogError::RootHashParseFailed);
-        };
-        if self.root_hash.is_empty() || (self.root_hash != hash_decoded) {
-            return Err(BalrogError::RootHashMismatch);
-        }
 
         /* Success! */
         Ok(())
@@ -361,6 +316,25 @@ impl<'a> Balrog<'_> {
             &pubkey, &algorithm, &sig_asn1, &message,
         )?)
     }
+
+    /* Wrapper function to verify the certificate chain, signer subject name,
+     * and content signature all at once.
+     */
+    pub fn verify(
+        &self,
+        input: &[u8],
+        signature: &str,
+        current_time: i64,
+        leaf_subject: &str,
+    ) -> Result<(), BalrogError> {
+        /* Verify things. */
+        self.verify_chain(current_time)?;
+        self.verify_leaf_hostname(leaf_subject)?;
+        self.verify_content_signature(input, signature)?;
+
+        /* Success */
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -368,7 +342,6 @@ mod test {
     use super::*;
 
     // Copied from https://github.com/mozilla/application-services/blob/main/components/support/rc_crypto/src/contentsignature.rs
-    const ROOT_HASH: &str = "3C:01:44:6A:BE:90:36:CE:A9:A0:9A:CA:A3:A5:20:AC:62:8F:20:A7:AE:32:CE:86:1C:B2:EF:B7:0F:A0:C7:45";
     const VALID_CERT_CHAIN: &[u8] = include_bytes!("../assets/valid_cert_chain.pem");
     const VALID_INPUT: &[u8] = b"{\"data\":[],\"last_modified\":\"1603992731957\"}";
     const VALID_SIGNATURE: &str = "fJJcOpwdnkjEWFeHXfdOJN6GaGLuDTPGzQOxA2jn6ldIleIk6KqMhZcy2GZv2uYiGwl6DERWwpaoUfQFLyCAOcVjck1qlaaEFZGY1BQba9p99xEc9FNQ3YPPfvSSZqsw";
@@ -383,6 +356,22 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.";
 
+    /* A one-and-done function that parses a signature chain and validates a content signature. */
+    #[cfg(test)]
+    fn parse_and_verify(
+        x5u: &[u8],
+        input: &[u8],
+        signature: &str,
+        current_time: i64,
+        leaf_subject: &str,
+    ) -> Result<(), BalrogError> {
+        /* Parse the certificate chain. */
+        let pem_chain = parse_pem_chain(x5u)?;
+        let balrog = Balrog::new(&pem_chain)?;
+
+        balrog.verify(input, signature, current_time, leaf_subject)
+    }
+
     #[test]
     fn test_verify_succeeds_if_valid() {
         let r = parse_and_verify(
@@ -390,23 +379,9 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
-    }
-
-    #[test]
-    fn test_verify_fails_if_root_hash_mismatch() {
-        let r = parse_and_verify(
-            VALID_CERT_CHAIN,
-            VALID_INPUT,
-            VALID_SIGNATURE,
-            VALID_TIMESTAMP,
-            &ROOT_HASH.replace("A", "B"),
-            VALID_HOSTNAME,
-        );
-        assert_eq!(r, Err(BalrogError::RootHashMismatch));
     }
 
     #[test]
@@ -416,7 +391,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert!(
@@ -437,7 +411,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert!(
@@ -455,7 +428,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert!(
@@ -497,17 +469,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
     }
 
     #[test]
-    fn test_verify_chain_fails_on_bogus_hash() {
-        let pem = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
-        let b = Balrog::new(&pem).unwrap();
-
-        assert_eq!(
-            b.verify_chain(VALID_TIMESTAMP, BOGUS_DATA),
-            Err(BalrogError::RootHashParseFailed)
-        );
-    }
-
-    #[test]
     fn test_verify_signature_fails_on_bogus_signature() {
         let pem = parse_pem_chain(VALID_CERT_CHAIN).unwrap();
         let b = Balrog::new(&pem).unwrap();
@@ -546,7 +507,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert_eq!(r, Err(BalrogError::X509(X509Error::InvalidCertificate)));
@@ -559,7 +519,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             VALID_TIMESTAMP,
-            ROOT_HASH,
             "example.com",
         );
         assert_eq!(r, Err(BalrogError::HostnameMismatch));
@@ -572,7 +531,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             VALID_SIGNATURE,
             1215559719, // July 9, 2008
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert_eq!(r, Err(BalrogError::CertificateExpired));
@@ -592,7 +550,7 @@ culpa qui officia deserunt mollit anim id est laborum.";
             Err(e) => panic!("Found unexpected error: {}", e),
             Ok(x) => x,
         };
-        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        let r = b.verify_chain(VALID_TIMESTAMP);
         assert_eq!(r, Err(BalrogError::ChainSubjectMismatch));
     }
 
@@ -619,7 +577,7 @@ culpa qui officia deserunt mollit anim id est laborum.";
             Err(e) => panic!("Found unexpected error: {}", e),
             Ok(x) => x,
         };
-        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        let r = b.verify_chain(VALID_TIMESTAMP);
         assert_eq!(
             r,
             Err(BalrogError::from(X509Error::SignatureVerificationError))
@@ -633,7 +591,6 @@ culpa qui officia deserunt mollit anim id est laborum.";
             VALID_INPUT,
             &VALID_SIGNATURE.to_ascii_lowercase(), // altering case should modify the base64 signature without changing its length.
             VALID_TIMESTAMP,
-            ROOT_HASH,
             VALID_HOSTNAME,
         );
         assert_eq!(
@@ -666,12 +623,9 @@ culpa qui officia deserunt mollit anim id est laborum.";
 
     #[test]
     fn test_everything_fails_without_init() {
-        let b = Balrog {
-            chain: Vec::new(),
-            root_hash: Vec::new(),
-        };
+        let b = Balrog { chain: Vec::new() };
 
-        let r = b.verify_chain(VALID_TIMESTAMP, ROOT_HASH);
+        let r = b.verify_chain(VALID_TIMESTAMP);
         assert_eq!(r, Err(BalrogError::CertificateNotFound));
 
         let r = b.verify_leaf_hostname(VALID_HOSTNAME);

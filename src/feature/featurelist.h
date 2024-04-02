@@ -202,6 +202,13 @@ FEATURE(startOnBoot,            // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_startOnBoot)
 
+FEATURE(stagingUpdateServer,        // Feature ID
+        "Staging Update Server",    // Feature name
+        FeatureCallback_hasBalrog,  // Can be flipped on
+        FeatureCallback_false,      // Can be flipped off
+        QStringList(),              // feature dependencies
+        FeatureCallback_false)
+
 FEATURE(subscriptionManagement,     // Feature ID
         "Subscription management",  // Feature name
         FeatureCallback_true,       // Can be flipped on

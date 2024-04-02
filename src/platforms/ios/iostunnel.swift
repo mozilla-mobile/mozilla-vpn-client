@@ -104,8 +104,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
 
-                let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host
-                if endpointHost == nil {
+                if let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host {
+                    self.connectionHealthMonitor.start(for: String(describing: endpointHost))
+                } else {
                     // Intentionally using an assertion failure here without an early return.
                     // This is new functionality being added for connection health checks.
                     // It would be surprising if this was ever nil (and we hit this block).
@@ -115,8 +116,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                     self.logger.info(message: "Tunnel config is missing endpoint")
                     assertionFailure("Missing endpoint")
                 }
-                let endpointIP = String(describing: endpointHost)
-                self.connectionHealthMonitor.start(for: endpointIP)
 
                 completionHandler(nil)
                 return

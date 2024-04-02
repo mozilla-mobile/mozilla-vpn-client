@@ -54,8 +54,7 @@ class PingAnalyzer {
             try ping.startPinging()
             timer = Timer.scheduledTimer(timeInterval: TimeInterval(checkTime), target: self, selector: #selector(calculateStability), userInfo: nil, repeats: false)
         } catch {
-            logger.error(message: "Error when sending pings")
-            logger.error(message: error.localizedDescription)
+            logger.error(message: "Error when sending pings: \(error)")
             callback(nil)
         }
     }
