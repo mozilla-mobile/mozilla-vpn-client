@@ -4,9 +4,6 @@
 
 #include "windowspingsender.h"
 
-#include <ranges>
-#include <mutex>
-
 #include <WS2tcpip.h>
 #include <Windows.h>
 #include <iphlpapi.h>
@@ -32,21 +29,32 @@ constexpr size_t MinimumReplyBufferSize = sizeof(ICMP_ECHO_REPLY) +
                                    WindowsPingPayloadSize + ICMP_ERR_SIZE +
                                    sizeof(IO_STATUS_BLOCK);
 
+
+#pragma pack(push, 1)
+struct ICMP_ECHO_REPLY_BUFFER {
+  ICMP_ECHO_REPLY reply;
+  quint16 payload;
+  std::array<char8_t, ICMP_ERR_SIZE> icmp_error;
+  IO_STATUS_BLOCK status; 
+};
+#pragma pack(pop)
+
+// If the Size is not the MinimumReplyBufferSize, the compiler added
+// padding, so the fields will not be properly aligned with 
+// what IcmpSendEcho2 will write.
+static_assert(sizeof(ICMP_ECHO_REPLY_BUFFER) == MinimumReplyBufferSize,
+              "Fulfills the size requirements");
+
 struct WindowsPingSenderPrivate {
   HANDLE m_handle;
   HANDLE m_event;
-  std::array<ICMP_ECHO_REPLY, 2> m_replyBuffer;
+  ICMP_ECHO_REPLY_BUFFER m_replyBuffer;
 };
-static_assert(sizeof(WindowsPingSenderPrivate::m_replyBuffer) > MinimumReplyBufferSize,
-              "Fulfills the minimum size requirements");
 
 
 
 namespace {
 Logger logger("WindowsPingSender");
-
-std::mutex io_mutex;
-
 }
 
 static DWORD icmpCleanupHelper(LPVOID data) {
@@ -74,7 +82,7 @@ WindowsPingSender::WindowsPingSender(const QHostAddress& source,
   QObject::connect(m_notifier, &QWinEventNotifier::activated, this,
                    &WindowsPingSender::pingEventReady);
 
-  m_private->m_replyBuffer.fill({});
+  m_private->m_replyBuffer = {};
 }
 
 WindowsPingSender::~WindowsPingSender() {
@@ -99,8 +107,6 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   if (m_private->m_event == INVALID_HANDLE_VALUE) {
     return;
   }
-
-  std::scoped_lock lock(io_mutex);
 
   quint32 v4dst = dest.toIPv4Address();
   if (m_source.isNull()) {
@@ -143,15 +149,13 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 }
 
 void WindowsPingSender::pingEventReady() {
-  std::scoped_lock lock(io_mutex);
+  // Cleanup all data once we're done with m_replyBuffer.
   const auto guard = qScopeGuard([this](){ 
-      m_private->m_replyBuffer.fill({});
+      m_private->m_replyBuffer = {};
   });
-  // Move ICMP State, to m_buffer is reset to 0;
-  auto state = m_private->m_replyBuffer; 
-  m_private->m_replyBuffer.fill({});
 
-  DWORD replyCount = IcmpParseReplies(&state, sizeof(state));
+  DWORD replyCount = IcmpParseReplies(&m_private->m_replyBuffer,
+                                      sizeof(m_private->m_replyBuffer));
   if (replyCount == 0) {
     DWORD error = GetLastError();
     if (error == IP_REQ_TIMED_OUT) {
@@ -162,12 +166,18 @@ void WindowsPingSender::pingEventReady() {
                    << " Message: " << errmsg;
     return;
   }
-  for (auto const& reply :
-       state | std::ranges::views::take(replyCount)) {
-    if (reply.Data == nullptr) {
-      continue;
-    }
-    quint16 sequence = *(quint16*)reply.Data;
-    emit recvPing(sequence);
+  // We only allocated for one reply, so more should be impossible. 
+  if (replyCount != 1){
+    logger.error() << "Invalid amount of responses recieved";
+    return;
   }
+  if (m_private->m_replyBuffer.reply.Data == nullptr) {
+    logger.error() << "Did get a ping response without payload";
+    return;
+  }
+  // Assert that the (void*) pointer of Data is pointing 
+  // to our ReplyBuffer payload. 
+  assert(m_private->m_replyBuffer.reply.Data == static_cast<PVOID>(&m_private->m_replyBuffer.payload));
+
+  emit recvPing(m_private->m_replyBuffer.payload);
 }
