@@ -53,7 +53,7 @@ class PingAnalyzer {
             logger.info(message: "Sending pings")
             try ping.startPinging()
         } catch {
-            logger.error(message: "Error when sending pings")
+            logger.error(message: "Error when sending pings: \(error)")
             callback(nil)
         }
         timer = Timer.scheduledTimer(timeInterval: TimeInterval(checkTime), target: self, selector: #selector(calculateStability), userInfo: nil, repeats: false)
