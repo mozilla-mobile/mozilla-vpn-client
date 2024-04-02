@@ -183,13 +183,13 @@ void AndroidController::activate(const InterfaceConfig& config,
       vpn->controller()->currentServer().backupServer(config.m_serverPublicKey);
   QJsonObject jFallbackServer;
   if (fallbackServer.initialized()) {
-    jFallbackServer["ipv4AddrIn"] = fallbackServer->ipv4AddrIn();
-    jFallbackServer["ipv4Gateway"] = fallbackServer->ipv4Gateway();
-    jFallbackServer["ipv6AddrIn"] = fallbackServer->ipv6AddrIn();
-    jFallbackServer["ipv6Gateway"] = fallbackServer->ipv6Gateway();
+    jFallbackServer["ipv4AddrIn"] = fallbackServer.ipv4AddrIn();
+    jFallbackServer["ipv4Gateway"] = fallbackServer.ipv4Gateway();
+    jFallbackServer["ipv6AddrIn"] = fallbackServer.ipv6AddrIn();
+    jFallbackServer["ipv6Gateway"] = fallbackServer.ipv6Gateway();
 
-    jFallbackServer["publicKey"] = fallbackServer->publicKey();
-    jFallbackServer["port"] = (double)fallbackServer->choosePort();
+    jFallbackServer["publicKey"] = fallbackServer.publicKey();
+    jFallbackServer["port"] = (double)fallbackServer.choosePort();
   }
 
   QJsonObject args;
