@@ -6,12 +6,12 @@ import chalk from 'chalk';
 import {program} from 'commander';
 import fs from 'fs';
 import { fileURLToPath } from 'node:url';
-import path from 'path'; 
+import path from 'path';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import WBK from 'wikibase-sdk';
 
-const I18N_SUBMODULE_PATH = '../../src/translations/i18n';
+const I18N_SUBMODULE_PATH = '../../3rdparty/i18n';
 const LANGUAGES_OUTPUT_FILE =
     '../../src/translations/extras/languages.json';
 
@@ -38,7 +38,7 @@ const LanguageLocalizer = {
   async init() {
     program.version('0.0.1')
     program.option("-c, --check", `
-      Check only, will fail if user input would be required to generate 
+      Check only, will fail if user input would be required to generate
       the file.
     `);
 
@@ -112,10 +112,10 @@ const LanguageLocalizer = {
       if ('languages' in language) {
         if( old_entry && 'languages' in old_entry){
           // Check if we the new languages object lost language data, if so
-          // put it back. 
+          // put it back.
           const old_languages = Object.keys(old_entry.languages);
           const new_languages = Object.keys(language.languages);
-          // List of keys we no longer have in the new lang obj i.e ["bg","cy"] 
+          // List of keys we no longer have in the new lang obj i.e ["bg","cy"]
           const lost_languages = old_languages.filter( l => !new_languages.includes(l));
           lost_languages.forEach(lost_language_code =>{
             language.languages[lost_language_code] = old_entry.languages[lost_language_code];

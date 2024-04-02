@@ -133,7 +133,7 @@ def generate_html(result):
 
 def main():
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    result = analyze_folder(os.path.join(script_directory, "../../src/translations/i18n"))
+    result = analyze_folder(os.path.join(script_directory, "../../3rdparty/i18n"))
     generate_html(result)
 
 
