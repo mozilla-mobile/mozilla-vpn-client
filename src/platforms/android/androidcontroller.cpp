@@ -179,10 +179,10 @@ void AndroidController::activate(const InterfaceConfig& config,
   // Find a Server as Fallback in the Same Location in case
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
-  Server* fallbackServer =
+  Server fallbackServer =
       vpn->controller()->currentServer().backupServer(config.m_serverPublicKey);
   QJsonObject jFallbackServer;
-  if (fallbackServer) {
+  if (fallbackServer.initialized()) {
     jFallbackServer["ipv4AddrIn"] = fallbackServer->ipv4AddrIn();
     jFallbackServer["ipv4Gateway"] = fallbackServer->ipv4Gateway();
     jFallbackServer["ipv6AddrIn"] = fallbackServer->ipv6AddrIn();
@@ -200,7 +200,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["allowedIPs"] = jAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = config.m_dnsServer;
-  if (fallbackServer) {
+  if (fallbackServer.initialized()) {
     args["serverFallback"] = jFallbackServer;
   }
   // Build the "canned" Notification messages

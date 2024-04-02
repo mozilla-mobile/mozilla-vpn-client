@@ -298,7 +298,7 @@ void ServerData::setExitServerPublicKey(const QString& publicKey) {
   m_exitServerPublicKey = publicKey;
 }
 
-const Server ServerData::backupServer(const QString& currentPublicKey) {
+const Server ServerData::backupServer(const QString& currentPublicKey) const {
   const QList<Server> serverList = exitServers();
   foreach (auto item, serverList) {
     if (item.publicKey() != currentPublicKey) {

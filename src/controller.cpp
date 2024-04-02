@@ -1065,6 +1065,9 @@ void Controller::forceDaemonSilentServerSwitch() {
   if (m_impl) {
     logger.debug() << "Sending server switch message to iOS Network Extension";
     m_impl->forceDaemonSilentServerSwitch();
+  } else {
+    logger.error() << "No server switch message sent to iOS Network Extension "
+                      "- no controller found";
   }
 #else
   logger.debug() << "Server switch debug feature only available for iOS. Not "

@@ -38,6 +38,10 @@ let VPN_NAME = "Mozilla VPN"
 
         super.init()
     }
+
+    var serverWithPort: String {
+        return self.ipv4AddrIn + ":\(self.port )"
+    }
 }
 
 public class IOSControllerImpl: NSObject {
@@ -150,7 +154,7 @@ public class IOSControllerImpl: NSObject {
                 fallbackConfig = nil
             }
 
-            return self.configureTunnel(config: config, reason: reason, serverName: serverData.ipv4AddrIn + ":\(serverData.port )", fallbackConfig: fallbackConfig, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverData.serverWithPort, fallbackConfig: fallbackConfig, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
@@ -172,13 +176,13 @@ public class IOSControllerImpl: NSObject {
                 }
             }
 
-            var configHack = proto?.providerConfiguration ?? [:]
-            configHack["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
-            configHack["gleanDebugTag"] = gleanDebugTag
-            configHack["installationId"] = installationId
+            var configManipulation = proto?.providerConfiguration ?? [:]
+            configManipulation["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            configManipulation["gleanDebugTag"] = gleanDebugTag
+            configManipulation["installationId"] = installationId
 
-            configHack["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
-            proto?.providerConfiguration = configHack
+            configManipulation["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
+            proto?.providerConfiguration = configManipulation
 
             tunnel.protocolConfiguration = proto
             tunnel.localizedDescription = VPN_NAME
@@ -311,7 +315,7 @@ public class IOSControllerImpl: NSObject {
         IOSControllerImpl.logger.info(message: "Sending new message \(message)");
         do {
             try session.sendProviderMessage(message.encode()) { _ in
-                // IMPORANT: Must keep this log line (or other code) in this closure.
+                // IMPORTANT: Must keep this log line (or other code) in this closure.
                 // The closure is optional for `sendProviderMessage`. However, without using a closure, the message is
                 // sent but not received by the network extention. Mysterious, but couldn't figure out why in a
                 // reasonable amount of time.
