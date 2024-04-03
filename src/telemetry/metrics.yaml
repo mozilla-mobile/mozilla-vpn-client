@@ -1156,25 +1156,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-connection:
-  bandwidth_usage:
-    type: memory_distribution
-    description: |
-      The amount of bandwidth sent / received through the VPN tunnel.
-
-      The is accumulated periodically (TBD) while the VPN is turned on.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    memory_unit: byte
-
 performance:
   time_to_main_screen:
     type: timing_distribution
@@ -1426,6 +1407,54 @@ session:
     expires: never
 
 connection_health:
+  data_transferred_tx:
+    type: memory_distribution
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The amount of data sent through the VPN tunnel.
+
+      This metrics is accumulated periodically (TBD) while the VPN is turned on.
+
+      > **Note**: This metric is recorded on the vpnsession ping for
+      > desktop platforms and on the daemonsession ping for mobile platforms.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    memory_unit: byte
+
+  data_transferred_rx:
+    type: memory_distribution
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The amount of data received through the VPN tunnel.
+
+      This metrics is accumulated periodically (TBD) while the VPN is turned on.
+
+      > **Note**: This metric is recorded on the vpnsession ping for
+      > desktop platforms and on the daemonsession ping for mobile platforms.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    memory_unit: byte
+
   changed_to_no_signal:
     type: event
     lifetime: ping
