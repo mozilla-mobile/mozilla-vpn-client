@@ -23,7 +23,7 @@ FEATURE(addonSignature,             // Feature ID
         "Addons Signature",         // Feature name
         FeatureCallback_inStaging,  // Can be flipped on
         FeatureCallback_inStaging,  // Can be flipped off
-        QStringList{"addon"},       // feature dependencies
+        QStringList(),              // feature dependencies
         FeatureCallback_true)
 
 FEATURE(alwaysPort53,          // Feature ID
