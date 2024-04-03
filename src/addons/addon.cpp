@@ -33,7 +33,6 @@
 #include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
-#include "state/addonsessionstate.h"
 #include "versionutils.h"
 
 namespace {
@@ -399,8 +398,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
   if (!addon) {
     return nullptr;
   }
-
-  addon->m_state = new AddonState(addon, obj["state"].toObject());
 
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {

@@ -67,11 +67,6 @@ AddonManager::AddonManager(QObject* parent)
 AddonManager::~AddonManager() { MZ_COUNT_DTOR(AddonManager); }
 
 void AddonManager::initialize() {
-  if (!Feature::get(Feature::Feature_addon)->isSupported()) {
-    logger.warning() << "Addons disabled by feature flag";
-    return;
-  }
-
   // Load on disk addons, doing this will initialize the addons directory
   QList<AddonData> addons;
   if (m_addonIndex.getOnDiskAddonsList(&addons)) {
@@ -197,11 +192,6 @@ bool AddonManager::loadManifest(const QString& manifestFileName) {
 }
 
 void AddonManager::unload(const QString& addonId) {
-  if (!Feature::get(Feature::Feature_addon)->isSupported()) {
-    logger.warning() << "Addons disabled by feature flag";
-    return;
-  }
-
   if (!m_addons.contains(addonId)) {
     logger.warning() << "No addon with id" << addonId;
     return;

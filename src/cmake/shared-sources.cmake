@@ -64,11 +64,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonindex.h
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstate.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.h
     ${CMAKE_SOURCE_DIR}/src/app.cpp
     ${CMAKE_SOURCE_DIR}/src/app.h
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.cpp

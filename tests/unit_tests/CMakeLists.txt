@@ -80,10 +80,6 @@ target_sources(app_unit_tests PRIVATE
     testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
-    testaddonsessionstate.cpp
-    testaddonsessionstate.h
-    testaddonstatebase.cpp
-    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
     testcheckedint.cpp
