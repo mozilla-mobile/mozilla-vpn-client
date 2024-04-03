@@ -1156,6 +1156,25 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
+connection:
+  bandwidth_usage:
+    type: memory_distribution
+    description: |
+      The amount of bandwidth sent / received through the VPN tunnel.
+
+      The is accumulated periodically (TBD) while the VPN is turned on.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - brizental@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    memory_unit: byte
+
 performance:
   time_to_main_screen:
     type: timing_distribution
