@@ -556,16 +556,6 @@ SETTING_STRING(userEmail,        // getter
                true              // sensitive (do not log)
 )
 
-SETTING_BOOL(telemetryPolicyShown,        // getter
-             setTelemetryPolicyShown,     // setter
-             removeTelemetryPolicyShown,  // remover
-             hasTelemetryPolicyShown,     // has
-             "telemetryPolicyShown",      // key
-             false,                       // default value
-             false,                       // remove when reset
-             false                        // sensitive (do not log)
-)
-
 #define DEFAULT_THEME "main"
 
 SETTING_STRING(theme,          // getter

@@ -47,9 +47,6 @@ class App : public QObject {
     // An error occurred during the subscription validation.
     StateSubscriptionNotValidated,
 
-    // The user needs to accept the telemetry policy.
-    StateTelemetryPolicy,
-
     // The user was successfully authenticated and moves into the onboarding
     // flow
     StateOnboarding,

@@ -406,13 +406,6 @@ void MozillaVPN::maybeStateMain() {
   }
 #endif
 
-  // If we're not using the new onboarding, continue with the old onboarding
-  // (telemetry policy)
-  if (!settingsHolder->telemetryPolicyShown()) {
-    setState(StateTelemetryPolicy);
-    return;
-  }
-
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
     SettingsManager::instance()->reset();
@@ -900,8 +893,6 @@ void MozillaVPN::onboardingCompleted() {
   // users do not have to go through it if the new onboaring feature is turned
   // off
   settingsHolder->setPostAuthenticationShown(true);
-
-  settingsHolder->setTelemetryPolicyShown(true);
 
   // Super racy, but it could happen that we are already in update-required
   // state.
@@ -1668,12 +1659,6 @@ void MozillaVPN::registerNavigatorScreens() {
       [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenTelemetryPolicy, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenTelemetryPolicy.qml",
-      QVector<int>{App::StateTelemetryPolicy}, [](int*) -> int8_t { return 0; },
-      []() -> bool { return false; });
-
-  Navigator::registerScreen(
       MozillaVPN::ScreenUpdateRequired, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/ui/screens/ScreenUpdateRequired.qml",
       QVector<int>{MozillaVPN::StateUpdateRequired},
@@ -2049,9 +2034,6 @@ void MozillaVPN::registerInspectorCommands() {
 
         SettingsHolder* settingsHolder = SettingsHolder::instance();
         Q_ASSERT(settingsHolder);
-
-        // Extra cleanup for testing
-        settingsHolder->setTelemetryPolicyShown(false);
 
         return QJsonObject();
       });

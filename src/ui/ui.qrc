@@ -82,7 +82,6 @@
         <file>screens/ScreenSubscriptionInUseError.qml</file>
         <file>screens/ScreenSubscriptionNeeded.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
-        <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenUpdateRecommended.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
