@@ -399,13 +399,6 @@ void MozillaVPN::maybeStateMain() {
     return;
   }
 
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
-  if (!settingsHolder->postAuthenticationShown()) {
-    setState(StatePostAuthentication);
-    return;
-  }
-#endif
-
   if (!modelsInitialized()) {
     logger.warning() << "Models not initialized yet";
     SettingsManager::instance()->reset();
@@ -834,21 +827,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   }
 }
 
-void MozillaVPN::postAuthenticationCompleted() {
-  logger.debug() << "Post authentication completed";
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->setPostAuthenticationShown(true);
-
-  // Super racy, but it could happen that we are already in update-required
-  // state.
-  if (state() == StateUpdateRequired) {
-    return;
-  }
-
-  maybeStateMain();
-}
-
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
@@ -888,11 +866,6 @@ void MozillaVPN::onboardingCompleted() {
   // user selected
   settingsHolder->setGleanEnabled(
       settingsHolder->onboardingDataCollectionEnabled());
-
-  // Mark the old onboarding experience as completed as well, ensuring that
-  // users do not have to go through it if the new onboaring feature is turned
-  // off
-  settingsHolder->setPostAuthenticationShown(true);
 
   // Super racy, but it could happen that we are already in update-required
   // state.
@@ -1555,13 +1528,6 @@ void MozillaVPN::registerNavigatorScreens() {
                    : -1;
       },
       []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenPostAuthentication,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenPostAuthentication.qml",
-      QVector<int>{App::StatePostAuthentication},
-      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,

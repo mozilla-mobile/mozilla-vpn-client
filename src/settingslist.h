@@ -378,16 +378,6 @@ SETTING_INT(onboardingStep,        // getter
             false                  // sensitive (do not log)
 )
 
-SETTING_BOOL(postAuthenticationShown,        // getter
-             setPostAuthenticationShown,     // setter
-             removePostAuthenticationShown,  // remover
-             hasPostAuthenticationShown,     // has
-             "postAuthenticationShown",      // key
-             false,                          // default value
-             false,                          // remove when reset
-             false                           // sensitive (do not log)
-)
-
 SETTING_STRING(previousLanguageCode,        // getter
                setPreviousLanguageCode,     // setter
                removePreviousLanguageCode,  // remover

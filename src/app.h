@@ -30,10 +30,6 @@ class App : public QObject {
     // All good!
     StateMain,
 
-    // Post authentication + subscription flow, we want to inform users about
-    // "things".
-    StatePostAuthentication,
-
     // Something went wrong during the subscription flow. We are unable to
     // complete the subscription.
     StateSubscriptionBlocked,
