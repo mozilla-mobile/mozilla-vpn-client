@@ -176,13 +176,13 @@ public class IOSControllerImpl: NSObject {
                 }
             }
 
-            var configManipulation = proto?.providerConfiguration ?? [:]
-            configManipulation["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
-            configManipulation["gleanDebugTag"] = gleanDebugTag
-            configManipulation["installationId"] = installationId
+            var customConfig = proto?.providerConfiguration ?? [:]
+            customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            customConfig["gleanDebugTag"] = gleanDebugTag
+            customConfig["installationId"] = installationId
 
-            configManipulation["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
-            proto?.providerConfiguration = configManipulation
+            customConfig["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
+            proto?.providerConfiguration = customConfig
 
             tunnel.protocolConfiguration = proto
             tunnel.localizedDescription = VPN_NAME
