@@ -190,41 +190,6 @@ ColumnLayout {
                     checkBoxActiveFocusOnTab: false
                     Layout.alignment: Qt.AlignVCenter
                     Accessible.name: appName
-                    focus: true
-
-                    // Change list selection on focus change
-                    onActiveFocusChanged: {
-                        if (activeFocus) { 
-                            listView.currentIndex = index;
-                        };
-                    }
-
-                    function handleTabPressed() {
-                        if (listView.currentIndex < (listView.count - 1)) {
-                            // Move selection & focus to next item
-                            listView.incrementCurrentIndex();
-                            listView.currentItem.forceActiveFocus(Qt.TabFocusReason);
-                        }
-                        else {
-                            // Currently at end of list. Move focus to footer
-                            listView.footerItem.forceActiveFocus(Qt.TabFocusReason);
-                        }
-                    }
-
-                    function handleBacktabPressed() {
-                        if (listView.currentIndex > 0) {
-                            // Move selection & focus to previous item
-                            listView.decrementCurrentIndex();
-                            listView.currentItem.forceActiveFocus(Qt.BacktabFocusReason);
-                        }
-                        else {
-                            // Currently at top of list. Move focus to header
-                            listView.headerItem.forceActiveFocus(Qt.BacktabFocusReason);
-                        }
-                    }
-
-                    Keys.onTabPressed: handleTabPressed()
-                    Keys.onBacktabPressed: handleBacktabPressed()
                 }
 
                 Rectangle {
