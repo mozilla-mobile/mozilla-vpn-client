@@ -393,12 +393,10 @@ void MozillaVPN::maybeStateMain() {
   // choose to add the vpn tunnel configuration and invoke the VPN via system
   // settings after onboarding but before removing a potential 6th device and
   // getting to the home screen
-  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    if (!settingsHolder->onboardingCompleted()) {
-      setState(StateOnboarding);
-      settingsHolder->setOnboardingStarted(true);
-      return;
-    }
+  if (!settingsHolder->onboardingCompleted()) {
+    setState(StateOnboarding);
+    settingsHolder->setOnboardingStarted(true);
+    return;
   }
 
 #if !defined(MZ_ANDROID) && !defined(MZ_IOS)
@@ -410,11 +408,9 @@ void MozillaVPN::maybeStateMain() {
 
   // If we're not using the new onboarding, continue with the old onboarding
   // (telemetry policy)
-  if (!Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    if (!settingsHolder->telemetryPolicyShown()) {
-      setState(StateTelemetryPolicy);
-      return;
-    }
+  if (!settingsHolder->telemetryPolicyShown()) {
+    setState(StateTelemetryPolicy);
+    return;
   }
 
   if (!modelsInitialized()) {
@@ -890,25 +886,20 @@ void MozillaVPN::mainWindowLoaded() {
 void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    logger.debug() << "onboarding completed";
-    settingsHolder->setOnboardingCompleted(true);
+  logger.debug() << "onboarding completed";
+  settingsHolder->setOnboardingCompleted(true);
 
-    mozilla::glean::outcome::onboarding_completed.record();
+  mozilla::glean::outcome::onboarding_completed.record();
 
-    // Toggle glean on or off at the end of onboarding, depending on what the
-    // user selected
-    settingsHolder->setGleanEnabled(
-        settingsHolder->onboardingDataCollectionEnabled());
+  // Toggle glean on or off at the end of onboarding, depending on what the
+  // user selected
+  settingsHolder->setGleanEnabled(
+      settingsHolder->onboardingDataCollectionEnabled());
 
-    // Mark the old onboarding experience as completed as well, ensuring that
-    // users do not have to go through it if the new onboaring feature is turned
-    // off
-    settingsHolder->setPostAuthenticationShown(true);
-
-  } else {
-    logger.debug() << "telemetry policy completed";
-  }
+  // Mark the old onboarding experience as completed as well, ensuring that
+  // users do not have to go through it if the new onboaring feature is turned
+  // off
+  settingsHolder->setPostAuthenticationShown(true);
 
   settingsHolder->setTelemetryPolicyShown(true);
 

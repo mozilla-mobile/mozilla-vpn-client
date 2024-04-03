@@ -118,13 +118,6 @@ FEATURE(multiHop,               // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
-FEATURE(newOnboarding,         // Feature ID
-        "New onboarding",      // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
 FEATURE(notificationControl,     // Feature ID
         "Notification control",  // Feature name
         FeatureCallback_true,    // Can be flipped on
