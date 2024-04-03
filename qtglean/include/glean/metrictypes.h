@@ -9,6 +9,7 @@
 #include "counter.h"
 #include "datetime.h"
 #include "event.h"
+#include "memorydistribution.h"
 #include "ping.h"
 #include "quantity.h"
 #include "string.h"
