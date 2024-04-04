@@ -14,7 +14,7 @@ task-defaults:
         fetch:
             - miniconda-osx
     worker:
-        taskcluster-proxy: true
+        taskcluster-proxy: false
         chain-of-trust: true
         max-run-time: 3600
     release-artifacts:
