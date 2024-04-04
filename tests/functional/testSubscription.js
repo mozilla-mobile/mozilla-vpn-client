@@ -1397,6 +1397,7 @@ describe('Subscription view', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
     await vpn.waitForQuery(queries.screenSettings.subscriptionView.SCREEN.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
   }
 
   it('Shows annual upgrade UI based on billing interval and purchase type',
