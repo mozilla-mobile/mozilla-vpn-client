@@ -105,7 +105,6 @@ exports.mochaHooks = {
     await driver.get(url);
     await vpn.connect(vpnWasm, { url, driver });
     await vpn.setGleanAutomationHeader();
-    await vpn.setSetting('tipsAndTricksIntroShown', 'true')
 
     if (this.currentTest.ctx.authenticationNeeded) {
       await vpn.authenticateInApp();

@@ -92,32 +92,6 @@ MZViewBase {
                 visible: MZFeatureList.get("splitTunnel").isSupported
             }
 
-            Loader {
-                Layout.preferredHeight: active ? item.Layout.preferredHeight : 0
-                Layout.fillWidth: active ? item.Layout.fillWidth : false
-
-                visible: active
-                active: !MZFeatureList.get("helpSheets").isSupported
-
-                sourceComponent: MZSettingsItem {
-                    objectName: "settingsTipsAndTricks"
-
-                    anchors.right: parent.right
-                    anchors.left: parent.left
-                    anchors.leftMargin: 0
-                    anchors.rightMargin: 0
-
-                    settingTitle: MZI18n.SettingsTipsAndTricksSettings
-                    imageLeftSrc: "qrc:/ui/resources/settings/tipsandtrickssettings.svg"
-                    imageRightSrc: "qrc:/nebula/resources/chevron.svg"
-                    imageRightMirror: MZLocalizer.isRightToLeft
-                    onClicked: {
-                        Glean.interaction.tipsAndTricksSelected.record({screen:telemetryScreenId})
-                        MZNavigator.requestScreen(VPN.ScreenTipsAndTricks);
-                    }
-                }
-            }
-
             MZSettingsItem {
                 objectName: "settingsDevice"
 
@@ -149,7 +123,7 @@ MZViewBase {
                                                   })
                 }
             }
-            
+
             MZSettingsItem {
                 objectName: "settingsGetHelp"
                 settingTitle: MZI18n.GetHelpLinkTitle

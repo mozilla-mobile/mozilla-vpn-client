@@ -181,7 +181,6 @@ endforeach()
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
     addons/addons.qrc
-    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc

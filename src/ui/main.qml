@@ -181,7 +181,6 @@ Window {
             VPN.ScreenHome,
             VPN.ScreenMessaging,
             VPN.ScreenGetHelp,
-            VPN.ScreenTipsAndTricks
         ]
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&

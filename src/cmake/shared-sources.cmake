@@ -28,8 +28,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.h
     ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonmessage.cpp

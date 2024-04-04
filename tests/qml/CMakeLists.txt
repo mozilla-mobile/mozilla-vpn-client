@@ -86,9 +86,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/addon.h
     ${MZ_SOURCE_DIR}/addons/addonapi.cpp
     ${MZ_SOURCE_DIR}/addons/addonapi.h
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.h
     ${MZ_SOURCE_DIR}/addons/addoni18n.cpp
     ${MZ_SOURCE_DIR}/addons/addoni18n.h
     ${MZ_SOURCE_DIR}/addons/addonmessage.cpp
