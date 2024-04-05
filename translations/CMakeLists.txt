@@ -4,4 +4,7 @@
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
 
-generate_translations_target(translations ${CMAKE_SOURCE_DIR}/src/translations)
+generate_translations_target(translations
+    ${CMAKE_SOURCE_DIR}/src/translations
+    ${CMAKE_SOURCE_DIR}/3rdparty/i18n
+)

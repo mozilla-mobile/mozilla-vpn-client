@@ -49,7 +49,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
-generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
+generate_translations_target(translations-unit-tests
+    ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations
+    ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations/i18n
+)
 
 target_link_libraries(app_unit_tests PRIVATE
     qtglean

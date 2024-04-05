@@ -147,19 +147,7 @@ void Localizer::initialize() {
   QString systemCode = systemLanguageCode();
   logger.debug() << "System language code:" << systemCode;
 
-  // In previous versions, we did not have the support for the system language.
-  // If this is the first time we are here, we need to check if the current
-  // language matches with the system one.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (!settingsHolder->systemLanguageCodeMigrated()) {
-    settingsHolder->setSystemLanguageCodeMigrated(true);
-
-    if (settingsHolder->languageCode() == systemCode) {
-      settingsHolder->setPreviousLanguageCode(settingsHolder->languageCode());
-      settingsHolder->setLanguageCode("");
-    }
-  }
-
   // We always need a previous code.
   if (settingsHolder->previousLanguageCode().isEmpty()) {
     settingsHolder->setPreviousLanguageCode(systemCode);
