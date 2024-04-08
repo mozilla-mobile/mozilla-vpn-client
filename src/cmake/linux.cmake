@@ -120,9 +120,6 @@ install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/128x128/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
 if(NOT BUILD_FLATPAK)
-    ## TODO: We need another solution for sandboxed applications to request
-    ## startup at boot. See "org.freedesktop.portal.Background" for the portal
-    ## to use for this.
     configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn-startup.desktop.in
         ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop
