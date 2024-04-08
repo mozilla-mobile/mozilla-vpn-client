@@ -4,10 +4,6 @@
 
 #include "xdgstartatbootwatcher.h"
 
-#include "leakdetector.h"
-#include "logger.h"
-#include "settingsholder.h"
-
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusObjectPath>
@@ -15,13 +11,18 @@
 #include <QDBusPendingReply>
 #include <QRandomGenerator>
 
+#include "leakdetector.h"
+#include "logger.h"
+#include "settingsholder.h"
+
 namespace {
 Logger logger("XdgStartAtBootWatcher");
 }
 
 constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
 constexpr const char* XDG_PORTAL_PATH = "/org/freedesktop/portal/desktop";
-constexpr const char* XDG_PORTAL_BACKGROUND = "org.freedesktop.portal.Background";
+constexpr const char* XDG_PORTAL_BACKGROUND =
+    "org.freedesktop.portal.Background";
 constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
 
 XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
@@ -49,18 +50,21 @@ XdgStartAtBootWatcher::~XdgStartAtBootWatcher() {
 }
 
 // See the org.freedesktop.portal.Request documentation, the request portal will
-// likely take the form of /org/freedesktop/portal/desktop/request/<SENDER>/TOKEN
+// likely take the form "/org/freedesktop/portal/desktop/request/<SENDER>/TOKEN"
 // and we should connect to it before trying to make a request.
 QString XdgStartAtBootWatcher::xdgReplyPath() {
   QDBusConnection bus = QDBusConnection::sessionBus();
   QString sender = bus.baseService().mid(1).replace('.', '_');
-  return QString("/org/freedesktop/portal/desktop/request/%1/%2").arg(sender).arg(m_token);
+  return QString("/org/freedesktop/portal/desktop/request/%1/%2")
+      .arg(sender)
+      .arg(m_token);
 }
 
 void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
   logger.debug() << "StartAtBoot responded:" << response;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
-    logger.debug() << "StartAtBoot" << QString("%1:").arg(i.key()) << i.value().toString();
+    logger.debug() << "StartAtBoot" << QString("%1:").arg(i.key())
+                   << i.value().toString();
   }
 }
 
@@ -69,19 +73,18 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
 
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
 
-  QStringList cmdline =
-      {QCoreApplication::applicationFilePath(), "ui", "-m", "-s"};
+  QStringList cmdline = {QCoreApplication::applicationFilePath(), "ui", "-m",
+                         "-s"};
   QVariantMap options;
   options["autostart"] = QVariant(startAtBoot);
   options["background"] = QVariant(true);
   options["commandline"] = QVariant(cmdline);
   options["handle_token"] = QVariant(m_token);
 
-  QDBusMessage call =
-      QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
-                                     XDG_PORTAL_BACKGROUND,
-                                     "RequestBackground");
-  call << ""; // TODO: parent_window
+  QDBusMessage call = QDBusMessage::createMethodCall(
+      XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_BACKGROUND,
+      "RequestBackground");
+  call << "";  // TODO: parent_window
   call << options;
 
   // Make the D-Bus call.
