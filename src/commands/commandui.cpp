@@ -61,7 +61,7 @@
 #endif
 
 #ifdef MZ_FLATPAK
-#  include "platforms/linux/flatpakstartatbootwatcher.h"
+#  include "platforms/linux/xdgstartatbootwatcher.h"
 #endif
 
 #ifdef MZ_MACOS
@@ -302,7 +302,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MZ_FLATPAK
-    FlatpakStartAtBootWatcher startAtBootWatcher;
+    XdgStartAtBootWatcher startAtBootWatcher;
 #endif
 
 #ifdef MZ_LINUX

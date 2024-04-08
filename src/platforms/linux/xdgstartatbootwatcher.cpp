@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "flatpakstartatbootwatcher.h"
+#include "xdgstartatbootwatcher.h"
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -15,7 +15,7 @@
 #include <QDBusPendingReply>
 
 namespace {
-Logger logger("FlatpakStartAtBootWatcher");
+Logger logger("XdgStartAtBootWatcher");
 }
 
 constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
@@ -25,13 +25,13 @@ constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
 
 constexpr const char* XDG_PORTAL_REQUEST_HANDLE = "mozillavpn";
 
-FlatpakStartAtBootWatcher::FlatpakStartAtBootWatcher() : QObject() {
-  MZ_COUNT_CTOR(FlatpakStartAtBootWatcher);
+XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
+  MZ_COUNT_CTOR(XdgStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
 
   connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
-          &FlatpakStartAtBootWatcher::startAtBootChanged);
+          &XdgStartAtBootWatcher::startAtBootChanged);
 
   m_replyPath = xdgReplyPath();
   QDBusConnection::sessionBus().connect(XDG_PORTAL_SERVICE, m_replyPath,
@@ -41,27 +41,27 @@ FlatpakStartAtBootWatcher::FlatpakStartAtBootWatcher() : QObject() {
   startAtBootChanged();
 }
 
-FlatpakStartAtBootWatcher::~FlatpakStartAtBootWatcher() {
-  MZ_COUNT_DTOR(FlatpakStartAtBootWatcher);
+XdgStartAtBootWatcher::~XdgStartAtBootWatcher() {
+  MZ_COUNT_DTOR(XdgStartAtBootWatcher);
 }
 
 // See the org.freedesktop.portal.Request documentation, the request portal will
 // likely take the form of /org/freedesktop/portal/desktop/request/<SENDER>/TOKEN
 // and we should connect to it before trying to make a request.
-QString FlatpakStartAtBootWatcher::xdgReplyPath() {
+QString XdgStartAtBootWatcher::xdgReplyPath() {
   QDBusConnection bus = QDBusConnection::sessionBus();
   QString sender = bus.baseService().mid(1).replace('.', '_');
   return QString("/org/freedesktop/portal/desktop/request/%1/%2").arg(sender).arg(XDG_PORTAL_REQUEST_HANDLE);
 }
 
-void FlatpakStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
+void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
   logger.debug() << "StartAtBoot responded:" << response;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
     logger.debug() << "StartAtBoot" << QString("%1:").arg(i.key()) << i.value().toString();
   }
 }
 
-void FlatpakStartAtBootWatcher::startAtBootChanged() {
+void XdgStartAtBootWatcher::startAtBootChanged() {
   bool startAtBoot = SettingsHolder::instance()->startAtBoot();
 
   logger.debug() << "StartAtBoot changed:" << startAtBoot;
@@ -86,12 +86,12 @@ void FlatpakStartAtBootWatcher::startAtBootChanged() {
   QDBusPendingReply<QDBusObjectPath> reply = bus.asyncCall(call);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   connect(watcher, &QDBusPendingCallWatcher::finished, this,
-          &FlatpakStartAtBootWatcher::callCompleted);
+          &XdgStartAtBootWatcher::callCompleted);
   connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
           &QObject::deleteLater);
 }
 
-void FlatpakStartAtBootWatcher::callCompleted(QDBusPendingCallWatcher* call) {
+void XdgStartAtBootWatcher::callCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QDBusObjectPath> reply = *call;
   if (reply.isError()) {
     logger.error() << "Error received from the DBus service";

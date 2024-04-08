@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef FLATPAKSTARTATBOOTWATCHER_H
-#define FLATPAKSTARTATBOOTWATCHER_H
+#ifndef XDGSTARTATBOOTWATCHER_H
+#define XDGSTARTATBOOTWATCHER_H
 
 #include <QObject>
 
 class QDBusPendingCallWatcher;
 
-class FlatpakStartAtBootWatcher final : public QObject {
+class XdgStartAtBootWatcher final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(FlatpakStartAtBootWatcher)
+  Q_DISABLE_COPY_MOVE(XdgStartAtBootWatcher)
 
  public:
-  explicit FlatpakStartAtBootWatcher();
-  ~FlatpakStartAtBootWatcher();
+  explicit XdgStartAtBootWatcher();
+  ~XdgStartAtBootWatcher();
 
  private slots:
   void xdgResponse(uint, QVariantMap);
@@ -28,4 +28,4 @@ class FlatpakStartAtBootWatcher final : public QObject {
   QString m_replyPath;
 };
 
-#endif  // FLATPAKSTARTATBOOTWATCHER_H
+#endif  // XDGSTARTATBOOTWATCHER_H
