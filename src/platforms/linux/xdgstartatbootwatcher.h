@@ -22,10 +22,11 @@ class XdgStartAtBootWatcher final : public QObject {
 
  private:
   void startAtBootChanged();
-  static QString xdgReplyPath();
+  QString xdgReplyPath();
   void callCompleted(QDBusPendingCallWatcher* call);
 
   QString m_replyPath;
+  QString m_token;
 };
 
 #endif  // XDGSTARTATBOOTWATCHER_H

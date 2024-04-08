@@ -13,6 +13,7 @@
 #include <QDBusObjectPath>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QRandomGenerator>
 
 namespace {
 Logger logger("XdgStartAtBootWatcher");
@@ -22,8 +23,6 @@ constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
 constexpr const char* XDG_PORTAL_PATH = "/org/freedesktop/portal/desktop";
 constexpr const char* XDG_PORTAL_BACKGROUND = "org.freedesktop.portal.Background";
 constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
-
-constexpr const char* XDG_PORTAL_REQUEST_HANDLE = "mozillavpn";
 
 XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
   MZ_COUNT_CTOR(XdgStartAtBootWatcher);
@@ -38,6 +37,10 @@ XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
                                         XDG_PORTAL_REQUEST, "Response", this,
                                         SLOT(xdgResponse(uint, QVariantMap)));
 
+  // Generate a unique token for this application instance.
+  quint64 randbits = QRandomGenerator::global()->generate64();
+  m_token = "mozillavpn-" + QString::number(randbits, 16);
+
   startAtBootChanged();
 }
 
@@ -51,7 +54,7 @@ XdgStartAtBootWatcher::~XdgStartAtBootWatcher() {
 QString XdgStartAtBootWatcher::xdgReplyPath() {
   QDBusConnection bus = QDBusConnection::sessionBus();
   QString sender = bus.baseService().mid(1).replace('.', '_');
-  return QString("/org/freedesktop/portal/desktop/request/%1/%2").arg(sender).arg(XDG_PORTAL_REQUEST_HANDLE);
+  return QString("/org/freedesktop/portal/desktop/request/%1/%2").arg(sender).arg(m_token);
 }
 
 void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
@@ -72,7 +75,7 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
   options["autostart"] = QVariant(startAtBoot);
   options["background"] = QVariant(true);
   options["commandline"] = QVariant(cmdline);
-  options["handle_token"] = QVariant(XDG_PORTAL_REQUEST_HANDLE);
+  options["handle_token"] = QVariant(m_token);
 
   QDBusMessage call =
       QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
