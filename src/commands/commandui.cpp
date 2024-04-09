@@ -187,20 +187,6 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifdef MZ_WINDOWS
-#  ifdef MZ_DEBUG
-    // Allocate a console to view log output in debug mode on windows
-    if (AllocConsole()) {
-      FILE* unusedFile;
-      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
-      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
-      std::cout.clear();
-      std::clog.clear();
-      std::cerr.clear();
-    }
-#  endif
-#endif
-
 #ifdef MZ_DEBUG
     // This enables the qt-creator qml debugger on debug builds.:
     // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
