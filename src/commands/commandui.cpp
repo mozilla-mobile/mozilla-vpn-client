@@ -91,7 +91,8 @@
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-#  include "server/serverhandler.h"
+#  include "webextension/server.h"
+#  include "webextensionadapter.h"
 #endif
 
 #include <QApplication>
@@ -184,20 +185,6 @@ int CommandUI::run(QStringList& tokens) {
 
     // This class receives communications from other instances.
     EventListener eventListener;
-#endif
-
-#ifdef MZ_WINDOWS
-#  ifdef MZ_DEBUG
-    // Allocate a console to view log output in debug mode on windows
-    if (AllocConsole()) {
-      FILE* unusedFile;
-      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
-      freopen_s(&unusedFile, "CONOUT$", "w", stderr);
-      std::cout.clear();
-      std::clog.clear();
-      std::cerr.clear();
-    }
-#  endif
 #endif
 
 #ifdef MZ_DEBUG
@@ -394,9 +381,9 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    ServerHandler serverHandler;
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &serverHandler,
-                     &ServerHandler::close);
+    WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+                     &extensionServer, &WebExtension::Server::close);
 #endif
 
 #ifdef MZ_ANDROID

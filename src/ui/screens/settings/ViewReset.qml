@@ -13,16 +13,13 @@ import compat 0.1
 import "qrc:/ui/sharedViews"
 
 ViewFullScreen {
+    id: root
+
+    property string telemetryScreenId: "reset_vpn"
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
     property var _menuOnBackClicked:  () => {
                                           getHelpStackView.pop();
-                                          if (internal.wasNavbarVisible) navbar.visible = true
                                       }
-    //Internal properies
-    QtObject {
-      id: internal
-      property bool wasNavbarVisible: false
-    }
 
     content: ColumnLayout {
         spacing : 0
@@ -139,7 +136,6 @@ ViewFullScreen {
 
             onClicked: {
                 getHelpStackView.pop();
-                if (internal.wasNavbarVisible) navbar.visible = true
             }
         }
     }
@@ -169,7 +165,13 @@ ViewFullScreen {
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
                     colorScheme: MZTheme.theme.redButton
 
-                    onClicked: VPN.hardResetAndQuit()
+                    onClicked: {
+                        Glean.interaction.resetVpnSelected.record({
+                            screen: root.telemetryScreenId,
+                        });
+
+                        VPN.hardResetAndQuit()
+                    }
                 },
                 MZLinkButton {
                     objectName: "cancelButton"
@@ -188,12 +190,5 @@ ViewFullScreen {
         }
 
         onActiveChanged: if (active) { item.open() }
-    }
-
-    Component.onCompleted: {
-        if(navbar.visible) {
-            internal.wasNavbarVisible = true
-            navbar.visible = false
-        }
     }
 }

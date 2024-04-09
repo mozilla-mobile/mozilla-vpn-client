@@ -12,7 +12,6 @@
 #include <QJsonObject>
 
 #include "addonapi.h"
-#include "addonguide.h"
 #include "addoni18n.h"
 #include "addonmessage.h"
 #include "addonreplacer.h"
@@ -33,7 +32,6 @@
 #include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
-#include "state/addonsessionstate.h"
 #include "versionutils.h"
 
 namespace {
@@ -372,10 +370,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
     addon = new AddonI18n(parent, manifestFileName, id, name);
   }
 
-  else if (type == "guide") {
-    addon = AddonGuide::create(parent, manifestFileName, id, name, obj);
-  }
-
   else if (type == "message") {
     addon = AddonMessage::create(parent, manifestFileName, id, name, obj);
   }
@@ -399,8 +393,6 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
   if (!addon) {
     return nullptr;
   }
-
-  addon->m_state = new AddonState(addon, obj["state"].toObject());
 
   QJsonObject javascript = obj["javascript"].toObject();
   if (!addon->evaluateJavascript(javascript)) {

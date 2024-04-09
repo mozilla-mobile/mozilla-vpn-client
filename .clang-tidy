@@ -1,12 +1,20 @@
+# For a list of checks and what they do see
+# https://clang.llvm.org/extra/clang-tidy/checks/list.html
+#
+# Everything marked under Checks will be warnings
+# WarningAsErrors bump them to a CI error. 
 Checks: >  
-  clang-diagnostic-*
+  clang-diagnostic-*,
   clang-analyzer-*,
+  performance*
+  cppcoreguidelines-*,
+  -cppcoreguidelines-owning-memory,
+  modernize*,
   -modernize-use-trailing-return-type,
-  modernize-*,
-#  cppcoreguidelines-*,
+  misc*,
+  -misc-no-recursion
 WarningsAsErrors: >
   clang-analyzer-security.*
-HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false
-# Use our Clang Format
+# Use our .clang-format file when applying fixes.
 FormatStyle: file

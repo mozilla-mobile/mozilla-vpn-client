@@ -1,4 +1,4 @@
-personal_ws-1.1 en 246 utf-8
+personal_ws-1.1 en 245 utf-8
 ADRs
 APIs
 Adblock
@@ -14,6 +14,7 @@ CTest
 Changelog
 Conda
 ConnectionDiagnostics
+DBUILD
 DNS
 DevOps
 Docusaurus
@@ -68,6 +69,7 @@ SHA
 Serde
 SettingsHolder
 Speedtest
+SwiftyPing
 TBD
 TODO
 TORTIOUS

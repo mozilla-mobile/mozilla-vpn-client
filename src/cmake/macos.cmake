@@ -164,7 +164,7 @@ osx_bundle_files(mozillavpn FILES
 )
 
 # Install the lproj translation files into the bundle.
-get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/src/translations/i18n ABSOLUTE)
+get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/3rdparty/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
 list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
 foreach(LOCALE ${I18N_LOCALES})

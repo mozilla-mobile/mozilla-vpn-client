@@ -34,3 +34,18 @@ Some checks can be fixed automatically. You can use `clang-apply-replacements` t
     # Apply all suggestions: 
     clang-apply-replacements <build_dir>/clang-tidy/
 ```
+
+
+## Help 
+
+
+### Error: error: 'some.h' file not found [clang-diagnostic-error]
+Make sure that either all targets (including tests) are built or try configuring with -DBUILD_TESTS=OFF. 
+
+This might happen clang-tidy reads the compilation database for each file i.e `a.cpp`, if there are 2 object files built from `a.cpp` i.e:
+```cmake
+add_library(lib_a a.cpp)
+add_library(lib_b a.cpp)
+```
+it will pick one, so either make sure only one lib is configured, all possible dependencies for `a.cpp` are attached to the lint target or create a smaller target.
+

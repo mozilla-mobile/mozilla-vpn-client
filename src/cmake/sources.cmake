@@ -212,11 +212,13 @@ if(NOT CMAKE_CROSSCOMPILING)
      target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/server/serverhandler.h
        )
+
+    target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.cpp
+    )
+    target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)
 endif()
 
 
@@ -225,10 +227,6 @@ mz_add_clang_tidy(mozillavpn-sources)
 # we need to make sure those are up to date before we build. 
 # Those targets generate code we #include, therefore
 
-if(TARGET mozillavpn-sources_clang_tidy_report)
-    add_dependencies(mozillavpn-sources_clang_tidy_report
-        qtglean
-        sentry
-        translations
-    )
-endif()
+mz_optional_dependency(mozillavpn-sources_clang_tidy_report qtglean)
+mz_optional_dependency(mozillavpn-sources_clang_tidy_report sentry)
+mz_optional_dependency(mozillavpn-sources_clang_tidy_report translations)

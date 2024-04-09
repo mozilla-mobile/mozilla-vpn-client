@@ -231,13 +231,27 @@ PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
              Constants::envOrDefault("MZ_CAPTIVE_PORTAL_URL",
                                      "http://%1/success.txt"));
 
-PRODBETAEXPR(
-    const char*, balrogUrl,
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release/update.json",
-    "https://aus5.mozilla.org/json/1/FirefoxVPN/%1/%2/release-cdntest/"
-    "update.json");
-constexpr const char* AUTOGRAPH_ROOT_CERT_FINGERPRINT =
-    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
+constexpr const char* BALROG_PROD_HOSTNAME = "aus5.mozilla.org";
+constexpr const char* AUTOGRAPH_PROD_FINGERPRINTS[] = {
+    // root-ca-production-amo 2015-03-17
+    "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
+    // root-ca-production-amo 2024-02-01
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1882147
+    "c8a80e9afaef4e219b6fb5d7a71d0f101223bac5001ac28f9b0d43dc59a106db",
+    nullptr  // list termination
+};
+
+constexpr const char* BALROG_STAGE_HOSTNAME =
+    "stage.balrog.nonprod.cloudops.mozgcp.net";
+constexpr const char* AUTOGRAPH_STAGE_FINGERPRINTS[] = {
+    // cas-new-2024-03-12
+    "c0f05d59b1fde25780854c32fae8faba8481c233b4c1d390cca5f2cea81930ee",
+    // cas-cur-2024-03-12
+    "45c37f3a09a6d70e0fa321fb29753ba7998f1259b32772768f23ccdc24836798",
+    // test.addons.signing.root.ca-2021-02-11
+    "3c01446abe9036cea9a09acaa3a520ac628f20a7ae32ce861cb2efb70fa0c745",
+    nullptr  // list termination
+};
 
 PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 

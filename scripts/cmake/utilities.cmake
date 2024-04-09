@@ -5,7 +5,7 @@
 # Sets Defaults like `-Wall -Werror` if we know it will not
 # explode on that target + compiler
 function(mz_target_handle_warnings MZ_TARGET)
-    if(MSVC OR IOS)
+    if(IOS)
         return()
     endif()
     # Just don't for wasm
@@ -20,7 +20,11 @@ function(mz_target_handle_warnings MZ_TARGET)
         set(scope "PRIVATE")
     endif()
 
-    target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
+    if(MSVC)
+        target_compile_options( ${MZ_TARGET} ${scope} /W3 /WX)
+    else()
+        target_compile_options( ${MZ_TARGET} ${scope} -Wall -Werror -Wno-conversion)
+    endif()
 endfunction()
 
 # MZ_ADD_NEW_MODULE: A utility function for adding a new module to this project.
@@ -96,29 +100,7 @@ function(mz_add_new_module)
         MZ_ADD_NEW_MODULE # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;
-         INCLUDE_DIRECTORIES;
-         SOURCES;
-         IOS_SOURCES;
-         ANDROID_SOURCES;
-         MACOS_SOURCES;
-         LINUX_SOURCES;
-         WINDOWS_SOURCES;
-         WASM_SOURCES;
-         DUMMY_SOURCES;
-         TEST_SOURCES;
-         QT_DEPENDENCIES;
-         MZ_DEPENDENCIES;
-         RUST_DEPENDENCIES;
-         EXTRA_DEPENDENCIES;
-         TEST_DEPENDENCIES;
-         IOS_DEPENDENCIES;
-         ANDROID_DEPENDENCIES;
-         MACOS_DEPENDENCIES;
-         LINUX_DEPENDENCIES;
-         WINDOWS_DEPENDENCIES;
-         WASM_DEPENDENCIES;
-         DUMMY_DEPENDENCIES" # multi-value args
+        "TARGET_NAME;INCLUDE_DIRECTORIES;SOURCES;IOS_SOURCES;ANDROID_SOURCES;MACOS_SOURCES;LINUX_SOURCES;WINDOWS_SOURCES;WASM_SOURCES;DUMMY_SOURCES;TEST_SOURCES;QT_DEPENDENCIES;MZ_DEPENDENCIES;RUST_DEPENDENCIES;EXTRA_DEPENDENCIES;TEST_DEPENDENCIES;IOS_DEPENDENCIES;ANDROID_DEPENDENCIES;MACOS_DEPENDENCIES;LINUX_DEPENDENCIES;WINDOWS_DEPENDENCIES;WASM_DEPENDENCIES;DUMMY_DEPENDENCIES" # multi-value args
         ${ARGN})
 
 
@@ -236,7 +218,7 @@ function(mz_add_library)
 
     add_library(${MZ_ADD_LIBRARY_NAME} ${MZ_ADD_LIBRARY_TYPE})
     mz_target_handle_warnings(${MZ_ADD_LIBRARY_NAME})
-    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PUBLIC
+    target_compile_definitions(${MZ_ADD_LIBRARY_NAME} PRIVATE
         "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
         "$<$<CONFIG:Debug>:MZ_DEBUG>"
     )
@@ -478,3 +460,11 @@ function(mz_add_the_apple_stuff)
     )
 endfunction()
 
+# Creates an optional dependency between two CMake targets.
+# If both TARGET_A and TARGET_B exist, a dependency is established
+# where TARGET_A depends on TARGET_B.
+function(mz_optional_dependency TARGET_A TARGET_B)
+   if(TARGET ${TARGET_A} AND TARGET ${TARGET_B})
+      add_dependencies(${TARGET_A} ${TARGET_B})
+   endif()
+endfunction() 

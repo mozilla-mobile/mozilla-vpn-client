@@ -12,8 +12,14 @@ import components 0.1
 
 MZViewBase {
     id: vpnFlickable
+
+    property string telemetryScreenId: "help"
+
     _menuTitle: MZI18n.GetHelpLinkTitle
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
+
+    Component.onCompleted: Glean.impression.helpScreen.record({screen:telemetryScreenId});
+
     _viewContentData: Column {
 
         objectName: "getHelpLinks"

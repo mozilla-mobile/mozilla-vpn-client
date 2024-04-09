@@ -86,9 +86,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/addon.h
     ${MZ_SOURCE_DIR}/addons/addonapi.cpp
     ${MZ_SOURCE_DIR}/addons/addonapi.h
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.cpp
-    ${MZ_SOURCE_DIR}/addons/addonguide.h
     ${MZ_SOURCE_DIR}/addons/addoni18n.cpp
     ${MZ_SOURCE_DIR}/addons/addoni18n.h
     ${MZ_SOURCE_DIR}/addons/addonmessage.cpp
@@ -123,11 +120,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/addons/state/addonstate.h
-    ${MZ_SOURCE_DIR}/addons/state/addonstatebase.cpp
-    ${MZ_SOURCE_DIR}/addons/state/addonstatebase.h
-    ${MZ_SOURCE_DIR}/addons/state/addonsessionstate.cpp
-    ${MZ_SOURCE_DIR}/addons/state/addonsessionstate.h
     ${MZ_SOURCE_DIR}/app.cpp
     ${MZ_SOURCE_DIR}/app.h
     ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp

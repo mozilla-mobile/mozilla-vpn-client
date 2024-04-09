@@ -73,7 +73,6 @@ class MozillaVPN final : public App {
     ScreenSubscriptionNeeded,
     ScreenSubscriptionNotValidated,
     ScreenTelemetryPolicy,
-    ScreenTipsAndTricks,
     ScreenUpdateRecommended,
     ScreenUpdateRequired,
     ScreenViewLogs,

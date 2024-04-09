@@ -670,7 +670,7 @@ bool WindowsFirewall::blockTrafficTo(const IPAddress& addr, uint8_t weight,
   filter.weight.uint8 = weight;
   filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
 
-  FWPM_FILTER_CONDITION0 cond[1] = {0};
+  FWPM_FILTER_CONDITION0 cond[1] = {};
   FWP_RANGE0 ipRange;
   QByteArray lowIpV6Buffer;
   QByteArray highIpV6Buffer;
