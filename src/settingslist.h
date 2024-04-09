@@ -654,7 +654,13 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    removeVpnDisabledApps,  // remover
                    hasVpnDisabledApps,     // has
                    "vpnDisabledApps",      // key
-                   QStringList(),          // default value
+#ifdef MZ_ANDROID
+                  QStringList{
+                    "com.google.android.projection.gearhead"
+                  },
+#else
+                  QStringList(),
+#endif
                    false,                  // remove when reset
                    false                   // sensitive (do not log)
 )
