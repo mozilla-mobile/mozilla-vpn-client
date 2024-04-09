@@ -11,6 +11,15 @@
 #include <QDBusPendingReply>
 #include <QRandomGenerator>
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#  include <qpa/qplatformintegration.h>
+#  include <private/qguiapplication_p.h>
+#  include <private/qgenericunixservices_p.h>
+#  include "qmlengineholder.h"
+#else
+#  include <QGuiApplication>
+#endif
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
@@ -68,6 +77,31 @@ void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
   }
 }
 
+// Try to find the window identifier for an XDG desktop portal request.
+// https://flatpak.github.io/xdg-desktop-portal/docs/window-identifiers.html
+QString XdgStartAtBootWatcher::parentWindow() {
+  QWindow *window = QmlEngineHolder::instance()->window();
+  if (window == nullptr) {
+    return QString("");
+  }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  QGenericUnixServices* services = dynamic_cast<QGenericUnixServices*>(
+      QGuiApplicationPrivate::platformIntegration()->services());
+  if (services != nullptr) {
+		return services->portalWindowIdentifier(window);
+	}
+#else
+  // X11 is the only platform that we can get a window handle on prior to 6.5.0
+  if (QGuiApplication::platformName() == "xcb") {
+    return "x11:" + QString::number(window->winId(), 16);
+  }
+#endif
+
+  // Otherwise, we don't support this windowing system.
+  return QString("");
+}
+
 void XdgStartAtBootWatcher::startAtBootChanged() {
   bool startAtBoot = SettingsHolder::instance()->startAtBoot();
 
@@ -84,7 +118,7 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
   QDBusMessage call = QDBusMessage::createMethodCall(
       XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_BACKGROUND,
       "RequestBackground");
-  call << "";  // TODO: parent_window
+  call << parentWindow();
   call << options;
 
   // Make the D-Bus call.

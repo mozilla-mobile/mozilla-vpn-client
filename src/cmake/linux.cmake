@@ -84,6 +84,13 @@ else()
     # Linux source files for sandboxed builds
     target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
 
+    # Resolving the parent window handle for the XDG desktop portal on Wayland
+    # needs the Gui internal header files on Qt 6.5.0 and later. Otherwise it
+    # only works for X11.
+    if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
+        target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
+    endif()
+
     # Network Manager controller - experimental
     pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
     target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)

@@ -23,6 +23,7 @@ class XdgStartAtBootWatcher final : public QObject {
  private:
   void startAtBootChanged();
   QString xdgReplyPath();
+  QString parentWindow();
   void callCompleted(QDBusPendingCallWatcher* call);
 
   QString m_replyPath;
