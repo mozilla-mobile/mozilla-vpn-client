@@ -419,6 +419,11 @@ describe('Settings', function() {
               .visible()
               .prop('checked', false));
 
+      await vpn.setQueryProperty(
+          queries.screenSettings.appPreferencesView.dnsSettingsView
+              .CUSTOM_DNS_INPUT.visible(),
+          'text', '1.2.3.4');
+
       await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
