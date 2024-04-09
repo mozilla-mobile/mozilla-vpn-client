@@ -23,19 +23,40 @@
 
 #pragma comment(lib, "Ws2_32")
 
+/*
+ * On 64 Bit systems we need to use another struct.
+ */
+#ifdef _WIN64
+using MZ_ICMP_ECHO_REPLY = ICMP_ECHO_REPLY32;
+#else
+using MZ_ICMP_ECHO_REPLY = ICMP_ECHO_REPLY;
+#endif
+
 constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
 constexpr size_t ICMP_ERR_SIZE = 8;
-constexpr size_t MinimumReplyBufferSize = sizeof(ICMP_ECHO_REPLY) +
-                                   WindowsPingPayloadSize + ICMP_ERR_SIZE +
-                                   sizeof(IO_STATUS_BLOCK);
+/*
+ * IcmpSendEcho2 expects us to provide a Buffer that is
+ * at least this size
+ */
+constexpr size_t MinimumReplyBufferSize =
+    sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + ICMP_ERR_SIZE +
+    sizeof(IO_STATUS_BLOCK);
+/**
+ * ICMP_ECHO_REPLY32 is smaller than ICMP_ECHO_REPLY, so if we use that due to
+ * binary compat Windows will add some padding.
+ */
+constexpr auto reply_padding =
+    sizeof(ICMP_ECHO_REPLY) - sizeof(MZ_ICMP_ECHO_REPLY);
 
-
+// Disable Packing, so the compiler does not add padding in this struct between
+// diffrent sized types.
 #pragma pack(push, 1)
 struct ICMP_ECHO_REPLY_BUFFER {
-  ICMP_ECHO_REPLY reply;
+  MZ_ICMP_ECHO_REPLY reply;
+  std::array<uint8_t, reply_padding> padding;
   quint16 payload;
   std::array<char8_t, ICMP_ERR_SIZE> icmp_error;
-  IO_STATUS_BLOCK status; 
+  IO_STATUS_BLOCK status;
 };
 #pragma pack(pop)
 
@@ -176,8 +197,15 @@ void WindowsPingSender::pingEventReady() {
     return;
   }
   // Assert that the (void*) pointer of Data is pointing 
-  // to our ReplyBuffer payload. 
-  assert(m_private->m_replyBuffer.reply.Data == static_cast<PVOID>(&m_private->m_replyBuffer.payload));
+  // to our ReplyBuffer payload.
+  if (m_private->m_replyBuffer.reply.Data == nullptr) {
+    logger.error() << "Did get a ping response without payload";
+    return;
+  }
+  // Assert that the (void*) pointer of Data is pointing
+  // to our ReplyBuffer payload.
+  assert(m_private->m_replyBuffer.reply.Data ==
+         static_cast<PVOID>(&m_private->m_replyBuffer.payload));
 
   emit recvPing(m_private->m_replyBuffer.payload);
 }
