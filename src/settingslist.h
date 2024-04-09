@@ -656,6 +656,7 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    "vpnDisabledApps",      // key
 #ifdef MZ_ANDROID
                   QStringList{
+                   // Android Auto
                     "com.google.android.projection.gearhead"
                   },
 #else
