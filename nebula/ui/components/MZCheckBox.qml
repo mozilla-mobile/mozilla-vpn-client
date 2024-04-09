@@ -12,6 +12,7 @@ import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 CheckBox {
     property var uiState: MZTheme.theme.uiState
     property string accessibleName
+    property alias checkBoxActiveFocusOnTab: checkBox.activeFocusOnTab
 
     id: checkBox
 

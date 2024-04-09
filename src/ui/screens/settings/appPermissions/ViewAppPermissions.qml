@@ -14,6 +14,10 @@ import components.forms 0.1
 MZViewBase {
     id: vpnFlickable
     objectName: "appPermissions"
+    // The ListView Flickable in AppPermissionsList is interactive, so prevent conflict by turning off this one
+     _interactive: false
+    // Turn off top & bottom margins because ListView in AppPermissionsList fills the vertical content area, so additional margins are unecessary
+    _useMargins: false
 
     readonly property string telemetryScreenId : "app_exclusions"
 
@@ -53,45 +57,18 @@ MZViewBase {
 
     _menuTitle: MZI18n.SettingsAppExclusionSettings
     _viewContentData: ColumnLayout {
-
-        Layout.preferredWidth: parent.width
-
-        Loader {
-            Layout.leftMargin: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.bottomMargin: 24
-            Layout.fillWidth: true
-
-            active: Qt.platform.os === "linux" && VPNController.state !== VPNController.StateOff
-            visible: active
-
-            sourceComponent: MZInformationCard {
-                width: parent.width
-                implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
-                _infoContent: MZTextBlock {
-                    id: textBlock
-                    Layout.fillWidth: true
-
-
-                    text: MZI18n.SplittunnelInfoCardDescription
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
-        }
-
         AppPermissionsList {
             id: enabledList
 
             Layout.fillWidth: true
             Layout.fillHeight: false
             Layout.leftMargin: MZTheme.theme.vSpacing
-            Layout.rightMargin: MZTheme.theme.vSpacing
 
             searchBarPlaceholder: searchApps
             enabled: Qt.platform.os === "linux" ? VPNController.state === VPNController.StateOff : true
+            availableHeight: window.height - MZTheme.theme.menuHeight
         }
     }
-
 
     MZHelpSheet {
         id: helpSheet
