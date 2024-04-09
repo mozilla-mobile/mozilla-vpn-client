@@ -70,8 +70,11 @@ if [[ ! -f "$DSCFILE" ]]; then
 fi
 dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
+DPKG_PACKAGE_DBGSYM=${DPKG_PACKAGE_SRCNAME}-dbgsym
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
 DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
+DPKG_PACKAGE_BINARY_ARCH=$(dpkg-architecture -q DEB_HOST_ARCH)
+DPKG_PACKAGE_BUILD_ARGS="--unsigned-source"
 
 # Update the changelog to release for the target distribution.
 if [[ -z "$TASK_OWNER" ]]; then
@@ -93,12 +96,15 @@ fi
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
 sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
-rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
+rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*
 
 # Build the packages
 (cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
 
 # Gather the build artifacts for export
-tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz *.deb *.ddeb *.buildinfo *.changes *.dsc *.debian.tar.xz
-mv $(find . -name '*.deb' | tr -d '\n') /builds/worker/artifacts/mozillavpn.deb
-mv $(find . -name '*.ddeb' | tr -d '\n') /builds/worker/artifacts/mozillavpn.ddeb
+tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz $(find . -maxdepth 1 -type f -name 'mozillavpn*' -printf '%f\n')
+
+# Gather the binary artifacts for upload.
+shopt -s extglob
+cp ${DPKG_PACKAGE_SRCNAME}_${DPKG_PACKAGE_DIST_VERSION}_${DPKG_PACKAGE_BINARY_ARCH}.deb /builds/worker/artifacts/mozillavpn.deb
+cp ${DPKG_PACKAGE_DBGSYM}_${DPKG_PACKAGE_DIST_VERSION}_${DPKG_PACKAGE_BINARY_ARCH}.@(deb|ddeb) /builds/worker/artifacts/mozillavpn.ddeb
