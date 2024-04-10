@@ -50,7 +50,7 @@ XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
 
   // Generate a unique token for this application instance.
   quint64 randbits = QRandomGenerator::global()->generate64();
-  m_token = "mozillavpn-" + QString::number(randbits, 16);
+  m_token = "mozillavpn_" + QString::number(randbits, 16);
 
   startAtBootChanged();
 }
