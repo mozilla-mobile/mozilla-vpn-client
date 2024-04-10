@@ -167,7 +167,7 @@ void Controller::initialize() {
 
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
-  logger.debug() << "Conenction Manager initialized with status:" << status
+  logger.debug() << "Connection Manager initialized with status:" << status
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
@@ -1058,4 +1058,19 @@ bool Controller::deactivate() {
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
   return true;
+}
+
+void Controller::forceDaemonSilentServerSwitch() {
+#ifdef MZ_IOS
+  if (m_impl) {
+    logger.debug() << "Sending server switch message to iOS Network Extension";
+    m_impl->forceDaemonSilentServerSwitch();
+  } else {
+    logger.error() << "No server switch message sent to iOS Network Extension "
+                      "- no controller found";
+  }
+#else
+  logger.debug() << "Server switch debug feature only available for iOS. Not "
+                    "sending message.";
+#endif
 }

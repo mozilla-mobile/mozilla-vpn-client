@@ -27,6 +27,8 @@ class IOSController final : public ControllerImpl {
 
   void checkStatus() override;
 
+  void forceDaemonSilentServerSwitch() override;
+
   void getBackendLogs(std::function<void(const QString&)>&& callback) override;
 
   void cleanupBackendLogs() override;

@@ -839,12 +839,15 @@ describe('Settings', function() {
       return;
     }
 
-    const getHelpTelemetryScreenId = "help"
+    const getHelpTelemetryScreenId =
+        'help'
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
+        await vpn.waitForQueryAndClick(
+            queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
 
-    const helpScreenEvents = await vpn.gleanTestGetValue("impression", "helpScreen", "main");
+    const helpScreenEvents =
+        await vpn.gleanTestGetValue('impression', 'helpScreen', 'main');
     assert.equal(helpScreenEvents.length, 1);
     const helpScreenEventsExtras = helpScreenEvents[0].extra;
     assert.equal(getHelpTelemetryScreenId, helpScreenEventsExtras.screen);
