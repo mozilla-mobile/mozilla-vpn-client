@@ -69,4 +69,4 @@ void TestLeakDetector::leakFound() {
       "== MZ  - Leak report ===================\nDummy\n  - ptr: 0x"));
 }
 
-#include "testLeakDetector.moc"
+#include "testleakdetector.moc"
