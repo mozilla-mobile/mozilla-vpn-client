@@ -81,8 +81,11 @@ void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
 // Try to find the window identifier for an XDG desktop portal request.
 // https://flatpak.github.io/xdg-desktop-portal/docs/window-identifiers.html
 QString XdgStartAtBootWatcher::parentWindow() {
-  QWindow* window = QmlEngineHolder::instance()->window();
-  if (window == nullptr) {
+  if (!QmlEngineHolder::exists()) {
+    return QString("");
+  }
+  QmlEngineHolder* holder = QmlEngineHolder::instance();
+  if (!holder->hasWindow()) {
     return QString("");
   }
 
@@ -90,12 +93,12 @@ QString XdgStartAtBootWatcher::parentWindow() {
   QGenericUnixServices* services = dynamic_cast<QGenericUnixServices*>(
       QGuiApplicationPrivate::platformIntegration()->services());
   if (services != nullptr) {
-    return services->portalWindowIdentifier(window);
+    return services->portalWindowIdentifier(holder->window());
   }
 #else
   // X11 is the only platform that we can get a window handle on prior to 6.5.0
   if (QGuiApplication::platformName() == "xcb") {
-    return "x11:" + QString::number(window->winId(), 16);
+    return "x11:" + QString::number(holder->window()->winId(), 16);
   }
 #endif
 
