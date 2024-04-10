@@ -162,7 +162,7 @@ function(mz_add_new_module)
     # Create separate targets for each test,
     # one target that builds all tests from this module
     # and finally add this module's tests to the build_tests target which builds all tests.
-    if(MZ_ADD_NEW_MODULE_TEST_SOURCES)
+    if(MZ_ADD_NEW_MODULE_TEST_SOURCES AND NOT ${CMAKE_CROSSCOMPILING})
         add_custom_target(${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
 
         add_dependencies(build_tests ${MZ_ADD_NEW_MODULE_TARGET_NAME}-alltests)
