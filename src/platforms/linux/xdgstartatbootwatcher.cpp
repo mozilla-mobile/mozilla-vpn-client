@@ -135,7 +135,7 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
 void XdgStartAtBootWatcher::callCompleted(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QDBusObjectPath> reply = *call;
   if (reply.isError()) {
-    logger.error() << "Error received from the DBus service";
+    logger.error() << "Failed to set startOnBoot:" << reply.error().message();
     return;
   }
 
