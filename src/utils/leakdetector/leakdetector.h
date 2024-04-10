@@ -6,6 +6,7 @@
 #define LEAKDETECTOR_H
 
 #include <QObject>
+#include <QTextStream>
 
 #ifdef MZ_DEBUG
 #  define MZ_COUNT_CTOR(_type)                                   \
