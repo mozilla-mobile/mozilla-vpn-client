@@ -8,7 +8,6 @@
 #include <QTemporaryFile>
 
 #include "addons/addon.h"
-#include "addons/addonguide.h"
 #include "addons/addonmessage.h"
 #include "addons/addonproperty.h"
 #include "addons/addonpropertylist.h"
@@ -528,124 +527,6 @@ void TestAddon::conditionWatcher_endTime() {
   QVERIFY(!acw->conditionApplied());
 }
 
-void TestAddon::guide_create_data() {
-  QTest::addColumn<QString>("id");
-  QTest::addColumn<QJsonObject>("content");
-  QTest::addColumn<bool>("created");
-
-  QTest::addRow("object-without-id") << "" << QJsonObject() << false;
-
-  QJsonObject obj;
-  obj["id"] = "foo";
-  QTest::addRow("no-image") << "foo" << obj << false;
-
-  obj["image"] = "foo.png";
-  QTest::addRow("no-blocks") << "foo" << obj << false;
-
-  QJsonArray blocks;
-  obj["blocks"] = blocks;
-  QTest::addRow("with-blocks") << "foo" << obj << true;
-
-  blocks.append("");
-  obj["blocks"] = blocks;
-  QTest::addRow("with-invalid-block") << "foo" << obj << false;
-
-  QJsonObject block;
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-without-id") << "foo" << obj << false;
-
-  block["id"] = "A";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-without-type") << "foo" << obj << false;
-
-  block["type"] = "wow";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-with-invalid-type") << "foo" << obj << false;
-
-  block["type"] = "title";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-title") << "foo" << obj << true;
-
-  block["type"] = "text";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-text") << "foo" << obj << true;
-
-  block["type"] = "olist";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-without-content")
-      << "foo" << obj << false;
-
-  block["content"] = "foo";
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-with-invalid-content")
-      << "foo" << obj << false;
-
-  QJsonArray content;
-  block["content"] = content;
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-with-empty-content")
-      << "foo" << obj << true;
-
-  content.append("foo");
-  block["content"] = content;
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-with-invalid-content")
-      << "foo" << obj << false;
-
-  QJsonObject subBlock;
-  content.replace(0, subBlock);
-  block["content"] = content;
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-without-id-subblock")
-      << "foo" << obj << false;
-
-  subBlock["id"] = "sub";
-  content.replace(0, subBlock);
-  block["content"] = content;
-  blocks.replace(0, block);
-  obj["blocks"] = blocks;
-  QTest::addRow("with-block-type-olist-with-subblock") << "foo" << obj << true;
-
-  obj["advanced"] = true;
-  QTest::addRow("advanced") << "foo" << obj << true;
-
-  obj["advanced"] = false;
-  QTest::addRow("not-advanced") << "foo" << obj << true;
-}
-
-void TestAddon::guide_create() {
-  QFETCH(QString, id);
-  QFETCH(QJsonObject, content);
-  QFETCH(bool, created);
-
-  QJsonObject obj;
-  obj["guide"] = content;
-
-  QObject parent;
-  Addon* guide = AddonGuide::create(&parent, id, "bar", "name", obj);
-  QCOMPARE(!!guide, created);
-
-  if (!guide) {
-    return;
-  }
-
-  QCOMPARE(guide->property("title").type(), QMetaType::QString);
-  QCOMPARE(guide->property("subtitle").type(), QMetaType::QString);
-
-  QCOMPARE(guide->property("image").toString(), "foo.png");
-  QCOMPARE(guide->property("advanced").toBool(), content["advanced"].toBool());
-}
-
 void TestAddon::message_create_data() {
   QTest::addColumn<QString>("id");
   QTest::addColumn<QJsonObject>("content");
@@ -787,8 +668,8 @@ void TestAddon::telemetry_status_change() {
   content["blocks"] = QJsonArray();
 
   QJsonObject obj;
-  obj["guide"] = content;
-  obj["type"] = "guide";
+  obj["message"] = content;
+  obj["type"] = "message";
   obj["api_version"] = "0.1";
   obj["id"] = "id";
   obj["name"] = "name";
@@ -800,7 +681,7 @@ void TestAddon::telemetry_status_change() {
 
   QObject parent;
   // The type of the addon, for the purposes of this test, is irrelevant.
-  Addon* guide = Addon::create(&parent, file.fileName());
+  Addon* message = Addon::create(&parent, file.fileName());
 
   // Check no errors were recorded for this metric.
   // Event metrics can only record InvalidValue or InvalidOverflow errors
@@ -830,7 +711,7 @@ void TestAddon::telemetry_status_change() {
   QCOMPARE(enabledEventExtras["addon_id"].toString(), "id");
   QCOMPARE(enabledEventExtras["state"].toString(), "Enabled");
 
-  guide->disable();
+  message->disable();
 
   // After disabling we expect a disabled state event to be recorded.
 

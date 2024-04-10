@@ -233,7 +233,11 @@ PRODBETAEXPR(QString, captivePortalUrl, "http://%1/success.txt",
 
 constexpr const char* BALROG_PROD_HOSTNAME = "aus5.mozilla.org";
 constexpr const char* AUTOGRAPH_PROD_FINGERPRINTS[] = {
+    // root-ca-production-amo 2015-03-17
     "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e",
+    // root-ca-production-amo 2024-02-01
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1882147
+    "c8a80e9afaef4e219b6fb5d7a71d0f101223bac5001ac28f9b0d43dc59a106db",
     nullptr  // list termination
 };
 

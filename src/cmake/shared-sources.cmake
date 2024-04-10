@@ -28,8 +28,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.h
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/addonguide.h
     ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addoni18n.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonmessage.cpp
@@ -64,11 +62,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonindex.h
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstate.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonstatebase.h
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.cpp
-    ${CMAKE_SOURCE_DIR}/src/addons/state/addonsessionstate.h
     ${CMAKE_SOURCE_DIR}/src/app.cpp
     ${CMAKE_SOURCE_DIR}/src/app.h
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.cpp

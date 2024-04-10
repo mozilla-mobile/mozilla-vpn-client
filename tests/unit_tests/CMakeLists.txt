@@ -49,7 +49,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
-generate_translations_target(translations-unit-tests ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations)
+generate_translations_target(translations-unit-tests
+    ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations
+    ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations/i18n
+)
 
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
@@ -80,10 +83,6 @@ target_sources(app_unit_tests PRIVATE
     testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
-    testaddonsessionstate.cpp
-    testaddonsessionstate.h
-    testaddonstatebase.cpp
-    testaddonstatebase.h
     testadjust.cpp
     testadjust.h
     testcheckedint.cpp
@@ -185,7 +184,6 @@ endforeach()
 # Unit test mock resources
 target_sources(app_unit_tests PRIVATE
     addons/addons.qrc
-    guides/guides.qrc
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc

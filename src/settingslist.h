@@ -536,16 +536,6 @@ SETTING_BYTEARRAY(subscriptionData,        // getter
                   true                     // sensitive (do not log)
 )
 
-SETTING_BOOL(systemLanguageCodeMigrated,        // getter
-             setSystemLanguageCodeMigrated,     // setter
-             removeSystemLanguageCodeMigrated,  // remover
-             hasSystemLanguageCodeMigrated,     // has
-             "systemLanguageCodeMigrated",      // key
-             false,                             // default value
-             true,                              // remove when reset
-             false                              // sensitive (do not log)
-)
-
 SETTING_DATETIME(updateTime,        // getter
                  setUpdateTime,     // setter
                  removeUpdateTime,  // remover
@@ -586,16 +576,6 @@ SETTING_STRING(theme,          // getter
                DEFAULT_THEME,  // default value
                true,           // remove when reset
                false           // sensitive (do not log)
-)
-
-SETTING_BOOL(tipsAndTricksIntroShown,        // getter
-             setTipsAndTricksIntroShown,     // setter
-             removeTipsAndTricksIntroShown,  // remover
-             hasTipsAndTricksIntroShown,     // has
-             "tipsAndTricksIntroShown",      // key
-             false,                          // default value
-             false,                          // remove when reset
-             false                           // sensitive (do not log)t
 )
 
 SETTING_STRING(token,        // getter

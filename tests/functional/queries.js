@@ -124,10 +124,6 @@ const screenHome = {
   }
 };
 
-const screenTipsAndTricks = {
-  VIEW: new QmlQueryComposer('//settingsTipsAndTricksPage'),
-}
-
 const screenInitialize = {
   ALREADY_A_SUBSCRIBER_LINK: new QmlQueryComposer('//alreadyASubscriberLink'),
   AUTHENTICATE_VIEW: new QmlQueryComposer('//authenticatingView'),
@@ -284,7 +280,6 @@ const screenSettings = {
   SIGN_OUT: new QmlQueryComposer('//settingsLogout'),
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
-  TIPS_AND_TRICKS: new QmlQueryComposer('//settingsTipsAndTricks'),
   USER_PROFILE:
       new QmlQueryComposer('//settingsUserProfile'),
   USER_PROFILE_DISPLAY_NAME:
@@ -325,7 +320,7 @@ const screenSettings = {
     CHECKBOX2: new QmlQueryComposer('//app-1/checkbox'),
     CLEAR_ALL: new QmlQueryComposer('//clearAll'),
     SCREEN: new QmlQueryComposer('//appPermissions'),
-  
+
     HELP_BUTTON: new QmlQueryComposer('//excludedAppsHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//excludedAppsHelpSheet'),
     HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
@@ -346,11 +341,6 @@ const screenSettings = {
     HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
     HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
     HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
-  },
-
-  tipsAndTricksView: {
-    BACK: new QmlQueryComposer('//tipsAndTricks-back'),
-    SCREEN: new QmlQueryComposer('//settingsTipsAndTricksPage'),
   },
 
   appPreferencesView: {
@@ -564,7 +554,6 @@ module.exports = {
   screenGetHelp,
   screenSettings,
   screenBackendFailure,
-  screenTipsAndTricks,
   screenMessaging,
   screenDeleteAccount,
   screenSubscriptionNeeded,

@@ -405,7 +405,7 @@ module.exports = {
     if (skipOnboarding) {
       await this.skipOnboarding();
     }
-    
+
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForInitialView();
 
@@ -439,7 +439,7 @@ module.exports = {
     await this.setSetting('onboardingCompleted', 'true');
     await this.setSetting('postAuthenticationShown', 'true');
     await this.setSetting('telemetryPolicyShown', 'true');
-  }, 
+  },
 
   async completePostAuthentication() {
       await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
@@ -570,14 +570,6 @@ module.exports = {
     const json = await this._writeCommand('servers');
     assert(
         json.type === 'servers' && !('error' in json),
-        `Command failed: ${json.error}`);
-    return json.value;
-  },
-
-  async guides() {
-    const json = await this._writeCommand('guides');
-    assert(
-        json.type === 'guides' && !('error' in json),
         `Command failed: ${json.error}`);
     return json.value;
   },
