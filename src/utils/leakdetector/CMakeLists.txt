@@ -8,7 +8,7 @@ mz_add_new_module(
         leakdetector.h
         leakdetector.cpp
     TEST_SOURCES
-        tests/testLeakDetector.cpp
+        tests/testleakdetector.cpp
     QT_DEPENDENCIES
         Core
 )
