@@ -18,7 +18,6 @@
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "loghandler.h"
 #include "models/licensemodel.h"
@@ -26,6 +25,7 @@
 #include "theme.h"
 #include "urlopener.h"
 #include "utils.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"

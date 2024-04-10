@@ -9,9 +9,9 @@
 #include <QJsonValue>
 
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "versionutils.h"
 
 namespace {

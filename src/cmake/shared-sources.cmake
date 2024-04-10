@@ -122,8 +122,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/languagei18n.cpp
     ${CMAKE_SOURCE_DIR}/src/languagei18n.h
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
@@ -238,6 +236,7 @@ include(${CMAKE_SOURCE_DIR}/src/platforms/${MZ_PLATFORM_NAME}/sources.cmake)
 include(${CMAKE_SOURCE_DIR}/src/cmake/sentry.cmake)
 
 add_dependencies(shared-sources translations)
+target_link_libraries(shared-sources  INTERFACE mz_utils)
 
 mz_add_clang_tidy(shared-sources)
 if(TARGET shared-sources_clang_tidy_report)

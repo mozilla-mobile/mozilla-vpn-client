@@ -28,7 +28,6 @@
 #include "inspector/inspectorhandler.h"
 #include "ipaddresslookup.h"
 #include "keyregenerator.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
 #include "models/recentconnections.h"
@@ -50,6 +49,7 @@
 #include "telemetry.h"
 #include "temporarydir.h"
 #include "update/updater.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>

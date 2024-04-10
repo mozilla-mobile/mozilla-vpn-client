@@ -6,9 +6,9 @@
 
 #include <QTimer>
 
-#include "leakdetector.h"
 #include "linuxnetworkwatcherworker.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("LinuxNetworkWatcher");

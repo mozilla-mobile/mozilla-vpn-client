@@ -11,12 +11,12 @@
 #include <QScopeGuard>
 #include <QUuid>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "networkmanagerconnection.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #if defined(__cplusplus)
 extern "C" {

@@ -4,8 +4,8 @@
 
 #include "settings/settinggroup.h"
 
-#include "leakdetector.h"
 #include "settingsmanager.h"
+#include "utils/leakdetector/leakdetector.h"
 
 SettingGroup::SettingGroup(QObject* parent,
                            SettingsConnector* settingsConnector,

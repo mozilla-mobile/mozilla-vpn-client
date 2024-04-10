@@ -4,7 +4,7 @@
 
 #include "ioslogger.h"
 #include "Mozilla-Swift.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #include <QString>
 

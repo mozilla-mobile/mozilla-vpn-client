@@ -9,9 +9,9 @@
 #include <QUrlQuery>
 #include <limits>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("DesktopAuthenticationListener");

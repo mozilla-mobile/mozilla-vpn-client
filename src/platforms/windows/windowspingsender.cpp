@@ -16,9 +16,9 @@
 
 #include <QtEndian>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowsutils.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "windowscommons.h"
 
 #pragma comment(lib, "Ws2_32")

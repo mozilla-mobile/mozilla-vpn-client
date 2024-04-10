@@ -8,7 +8,6 @@
 
 #include "controller.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/location.h"
@@ -16,6 +15,7 @@
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
 #include "tcppingsender.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 

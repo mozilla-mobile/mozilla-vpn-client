@@ -4,7 +4,7 @@
 
 #include "dummyapplistprovider.h"
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 DummyAppListProvider::DummyAppListProvider(QObject* parent)
     : AppListProvider(parent) {

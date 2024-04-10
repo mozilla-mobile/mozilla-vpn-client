@@ -29,7 +29,6 @@
 #include "inspectorhotreloader.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -43,6 +42,7 @@
 #include "task.h"
 #include "urlopener.h"
 #include "utils.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasminspector.h"

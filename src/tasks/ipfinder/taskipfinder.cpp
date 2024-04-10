@@ -14,10 +14,10 @@
 #include "app.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("TaskIPFinder");

@@ -6,7 +6,7 @@
 
 #include <QTextStream>
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr int RADIX = 36;
 

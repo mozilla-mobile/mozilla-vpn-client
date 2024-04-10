@@ -4,7 +4,7 @@
 
 #include "dummynetworkwatcher.h"
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 DummyNetworkWatcher::DummyNetworkWatcher(QObject* parent)
     : NetworkWatcherImpl(parent) {

@@ -10,10 +10,10 @@
 
 #include "commandlineparser.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/daemon/wireguardutilswindows.h"
 #include "platforms/windows/windowsutils.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("WindowsDaemonTunnel");

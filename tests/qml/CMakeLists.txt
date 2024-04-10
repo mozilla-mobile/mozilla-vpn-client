@@ -31,7 +31,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::QuickTest
 )
 
-target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations mz_utils)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -178,8 +178,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/itempicker.h
     ${MZ_SOURCE_DIR}/languagei18n.cpp
     ${MZ_SOURCE_DIR}/languagei18n.h
-    ${MZ_SOURCE_DIR}/leakdetector.cpp
-    ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
     ${MZ_SOURCE_DIR}/logger.cpp

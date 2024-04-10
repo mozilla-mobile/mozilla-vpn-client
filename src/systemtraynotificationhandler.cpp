@@ -13,11 +13,11 @@
 #include "controller.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");

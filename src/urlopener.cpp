@@ -11,9 +11,9 @@
 
 #include "constants.h"
 #include "env.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("UrlOpener");

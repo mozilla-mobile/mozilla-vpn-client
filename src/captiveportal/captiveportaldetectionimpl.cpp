@@ -5,9 +5,9 @@
 #include "captiveportaldetectionimpl.h"
 
 #include "captiveportalrequesttask.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortalDetectionImpl");

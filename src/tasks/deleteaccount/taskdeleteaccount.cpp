@@ -10,10 +10,10 @@
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
 #include "errorhandler.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("TaskDeleteAccount");

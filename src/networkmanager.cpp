@@ -5,9 +5,9 @@
 #include "networkmanager.h"
 
 #include "constants.h"
-#include "leakdetector.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #if MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"

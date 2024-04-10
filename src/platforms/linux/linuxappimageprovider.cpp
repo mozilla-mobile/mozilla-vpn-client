@@ -11,8 +11,8 @@
 #include <QSettings>
 #include <QString>
 
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const char* PIXMAP_FALLBACK_PATH = "/usr/share/pixmaps/";
 constexpr const char* DESKTOP_ICON_LOCATION = "/usr/share/icons/";

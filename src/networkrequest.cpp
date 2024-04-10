@@ -13,11 +13,11 @@
 #include <QRegularExpression>
 #include <QUrl>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr int REQUEST_MAX_REDIRECTS = 4;
 

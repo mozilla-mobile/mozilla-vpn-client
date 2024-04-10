@@ -9,8 +9,8 @@
 #include <QLocalSocket>
 
 #include "daemonlocalserverconnection.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_MACOS
 #  include <sys/stat.h>

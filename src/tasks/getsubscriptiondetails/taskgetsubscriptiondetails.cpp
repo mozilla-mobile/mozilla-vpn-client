@@ -11,12 +11,12 @@
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"
 #include "models/user.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("TaskGetSubscriptionDetails");

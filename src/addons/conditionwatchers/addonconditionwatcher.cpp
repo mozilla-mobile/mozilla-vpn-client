@@ -4,7 +4,7 @@
 
 #include "addonconditionwatcher.h"
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 AddonConditionWatcher::AddonConditionWatcher(QObject* parent)
     : QObject(parent) {

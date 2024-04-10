@@ -4,9 +4,9 @@
 
 #include "addonconditionwatcherlocales.h"
 
-#include "leakdetector.h"
 #include "localizer.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 // static
 AddonConditionWatcher* AddonConditionWatcherLocales::maybeCreate(

@@ -16,7 +16,6 @@
 
 #include "constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "qmlengineholder.h"
@@ -24,6 +23,7 @@
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 SentryAdapter* s_instance = nullptr;

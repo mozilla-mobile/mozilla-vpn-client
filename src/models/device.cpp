@@ -11,7 +11,7 @@
 
 #include "constants.h"
 #include "keys.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifndef QT_NO_SSL
 #  include <QSslSocket>

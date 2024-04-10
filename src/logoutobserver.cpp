@@ -5,7 +5,7 @@
 #include "logoutobserver.h"
 
 #include "app.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);

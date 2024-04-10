@@ -21,9 +21,9 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/linux/linuxdependencies.h"
+#include "utils/leakdetector/leakdetector.h"
 
 // Import wireguard C library for Linux
 #if defined(__cplusplus)

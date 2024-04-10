@@ -20,7 +20,6 @@
 #include "glean/generated/metrics.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
@@ -28,6 +27,7 @@
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("AndroidController");

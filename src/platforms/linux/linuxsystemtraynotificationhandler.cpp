@@ -7,8 +7,8 @@
 #include <QtDBus/QtDBus>
 
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const char* DBUS_ITEM = "org.freedesktop.Notifications";
 constexpr const char* DBUS_PATH = "/org/freedesktop/Notifications";

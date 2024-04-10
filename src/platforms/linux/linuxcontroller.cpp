@@ -15,11 +15,11 @@
 #include "dbusclient.h"
 #include "errorhandler.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("LinuxController");

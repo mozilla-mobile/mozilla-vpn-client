@@ -6,7 +6,7 @@
 
 #include <QtMath>
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 IPAddress::IPAddress() { MZ_COUNT_CTOR(IPAddress); }
 

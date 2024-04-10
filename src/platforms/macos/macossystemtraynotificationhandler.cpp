@@ -9,12 +9,12 @@
 #include <QWindow>
 
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "macosutils.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("MacosSystemTrayNotificationHandler");

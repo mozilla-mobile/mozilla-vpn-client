@@ -4,8 +4,8 @@
 
 #include "settings/setting.h"
 
-#include "leakdetector.h"
 #include "settingsmanager.h"
+#include "utils/leakdetector/leakdetector.h"
 
 Setting::Setting(QObject* parent, SettingsConnector* settingsConnector,
                  const QString& key,

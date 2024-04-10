@@ -8,7 +8,7 @@
 #include <QQmlAbstractUrlInterceptor>
 #include <QUrl>
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 // static
 ResourceLoader* ResourceLoader::instance() {

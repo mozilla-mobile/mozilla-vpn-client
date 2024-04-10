@@ -6,12 +6,12 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "tasks/release/taskrelease.h"
 #include "taskscheduler.h"
 #include "update/updater.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("ReleaseMonitor");

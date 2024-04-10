@@ -9,8 +9,8 @@
 #include <QNetworkDatagram>
 #include <QtEndian>
 
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const quint16 DNS_PORT = 53;
 

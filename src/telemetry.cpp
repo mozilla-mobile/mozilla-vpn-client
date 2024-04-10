@@ -12,12 +12,12 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcher.h"
 #include "purchasehandler.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #if defined(MZ_ANDROID)
 #  include "platforms/android/androidvpnactivity.h"

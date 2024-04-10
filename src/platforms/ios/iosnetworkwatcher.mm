@@ -5,9 +5,9 @@
 #include "iosnetworkwatcher.h"
 
 #include "controller.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #import <Network/Network.h>
 

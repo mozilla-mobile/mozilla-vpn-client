@@ -11,10 +11,10 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "leakdetector.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "tasks/servers/taskservers.h"
+#include "utils/leakdetector/leakdetector.h"
 
 CommandServers::CommandServers(QObject* parent)
     : Command(parent, "servers", "Show the list of servers.") {

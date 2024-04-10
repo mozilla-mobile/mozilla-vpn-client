@@ -7,10 +7,10 @@
 #include <QEventLoop>
 #include <QTextStream>
 
-#include "leakdetector.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "utils/leakdetector/leakdetector.h"
 
 CommandDevice::CommandDevice(QObject* parent)
     : Command(parent, "device", "Remove a device by its id.") {

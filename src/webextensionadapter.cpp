@@ -13,7 +13,6 @@
 #include <functional>
 
 #include "controller.h"
-#include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
 #include "models/servercity.h"
@@ -21,6 +20,7 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "webextensionadapter.h"
 
 namespace {

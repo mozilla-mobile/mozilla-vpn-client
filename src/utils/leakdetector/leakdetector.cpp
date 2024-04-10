@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #include <QHash>
 #include <QMutex>
 #include <QObject>
 #include <QTextStream>
+
+#include "leakdetector.h"
 
 #ifdef MZ_DEBUG
 static QMutex s_leakDetector;
@@ -23,9 +25,10 @@ LeakDetector::LeakDetector() {
 
 LeakDetector::~LeakDetector() {
 #ifdef MZ_DEBUG
-  QTextStream out(stderr);
-
-  out << "== MZ  - Leak report ===================" << Qt::endl;
+  if (!m_out) {
+    return;
+  }
+  (*m_out) << "== MZ  - Leak report ===================" << Qt::endl;
 
   bool hasLeaks = false;
   for (auto i = s_leaks.begin(); i != s_leaks.end(); ++i) {
@@ -36,16 +39,18 @@ LeakDetector::~LeakDetector() {
     }
 
     hasLeaks = true;
-    out << className << Qt::endl;
+    (*m_out) << className << Qt::endl;
 
     for (auto l = i->begin(); l != i->end(); ++l) {
-      out << "  - ptr: " << l.key() << " size:" << l.value() << Qt::endl;
+      (*m_out) << "  - ptr: " << l.key() << " size:" << l.value() << Qt::endl;
     }
   }
 
   if (!hasLeaks) {
-    out << "No leaks detected." << Qt::endl;
+    (*m_out) << "No leaks detected." << Qt::endl;
   }
+
+  (*m_out).flush();
 #endif
 }
 
@@ -73,3 +78,15 @@ void LeakDetector::logDtor(void* ptr, const char* typeName, uint32_t size) {
   leak.remove(ptr);
 }
 #endif
+
+const QHash<QString, QHash<void*, uint32_t>> LeakDetector::getObjects() {
+#ifdef MZ_DEBUG
+  return s_leaks;
+#else
+  return {};
+#endif
+}
+
+void LeakDetector::setOutStream(std::unique_ptr<QTextStream> other) {
+  m_out.swap(other);
+}

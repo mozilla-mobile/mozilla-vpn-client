@@ -6,9 +6,9 @@
 
 #include "app.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"

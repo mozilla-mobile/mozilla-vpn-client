@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "commandlineparser.h"
-#include "leakdetector.h"
 #include "stdio.h"
+#include "utils/leakdetector/leakdetector.h"
 #ifdef MZ_WINDOWS
 
 #  include <windows.h>

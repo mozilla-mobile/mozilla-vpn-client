@@ -9,12 +9,12 @@
 #include <QtGlobal>
 
 #include "controller.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
 #include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsnetworkwatcher.h"

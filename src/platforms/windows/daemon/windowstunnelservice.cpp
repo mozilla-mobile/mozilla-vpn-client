@@ -9,10 +9,10 @@
 #include <QDateTime>
 #include <QScopeGuard>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsutils.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "windowsdaemon.h"
 
 #define TUNNEL_NAMED_PIPE \

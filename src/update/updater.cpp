@@ -6,9 +6,9 @@
 
 #include "constants.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "versionapi.h"
 #include "webupdater.h"
 

@@ -12,9 +12,9 @@
 
 #include <QFileInfo>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
 

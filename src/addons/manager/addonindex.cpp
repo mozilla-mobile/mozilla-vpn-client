@@ -13,10 +13,10 @@
 #include "addondirectory.h"
 #include "addonmanager.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
 #include "signature.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("AddonIndex");

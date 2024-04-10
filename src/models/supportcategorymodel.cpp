@@ -5,8 +5,8 @@
 #include "supportcategorymodel.h"
 
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("SupportCategoryModel");

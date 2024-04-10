@@ -4,7 +4,7 @@
 
 #include "taskfunction.h"
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 TaskFunction::TaskFunction(std::function<void()>&& callback,
                            Task::DeletePolicy deletePolicy)

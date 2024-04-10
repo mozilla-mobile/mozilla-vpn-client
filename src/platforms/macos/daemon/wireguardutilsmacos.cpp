@@ -12,8 +12,8 @@
 #include <QLocalSocket>
 #include <QTimer>
 
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const int WG_TUN_PROC_TIMEOUT = 5000;
 constexpr const char* WG_RUNTIME_DIR = "/var/run/wireguard";

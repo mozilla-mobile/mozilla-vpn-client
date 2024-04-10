@@ -7,8 +7,8 @@
 #include <QApplication>
 
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 using namespace std::chrono_literals;

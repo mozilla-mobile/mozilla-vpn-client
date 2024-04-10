@@ -6,7 +6,7 @@
 
 #include <QTcpSocket>
 
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 TcpPingSender::TcpPingSender(const QHostAddress& source, quint16 port,
                              QObject* parent)

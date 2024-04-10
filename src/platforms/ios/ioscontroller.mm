@@ -8,13 +8,13 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #include <QByteArray>
 #include <QFile>

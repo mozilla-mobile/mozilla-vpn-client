@@ -8,10 +8,10 @@
 #include <cmath>
 
 #include "dnspingsender.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
+#include "utils/leakdetector/leakdetector.h"
 
 // Maximum window size for ping statistics.
 constexpr int PING_STATS_WINDOW = 32;

@@ -7,7 +7,6 @@
 #include "constants.h"
 #include "controller.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
 #include "models/device.h"
@@ -16,6 +15,7 @@
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("KeyRegenerator");

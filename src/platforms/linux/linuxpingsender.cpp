@@ -16,8 +16,8 @@
 #include <QSocketNotifier>
 #include <QtEndian>
 
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("LinuxPingSender");

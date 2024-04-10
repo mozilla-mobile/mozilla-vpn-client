@@ -11,11 +11,11 @@
 #include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Navigator* s_instance = nullptr;

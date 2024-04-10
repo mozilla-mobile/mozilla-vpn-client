@@ -16,10 +16,10 @@
 #include <QtGlobal>
 
 #include "dnsutilswindows.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsservicemanager.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "windowsfirewall.h"
 
 namespace {

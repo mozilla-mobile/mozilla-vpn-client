@@ -13,9 +13,9 @@
 #include "glean/generated/metrics.h"
 #include "glean/metrictypes.h"
 #include "incrementaldecoder.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "resourceloader.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr int PASSWORD_MIN_LENGTH = 8;
 

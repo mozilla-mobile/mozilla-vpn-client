@@ -28,7 +28,11 @@
 #endif
 
 class LeakDetector {
+  std::unique_ptr<QTextStream> m_out = std::make_unique<QTextStream>(stderr);
+
  public:
+  static const QHash<QString, QHash<void*, uint32_t>> getObjects();
+  void setOutStream(std::unique_ptr<QTextStream> other);
   LeakDetector();
   ~LeakDetector();
 

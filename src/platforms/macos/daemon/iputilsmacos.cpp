@@ -16,9 +16,9 @@
 #include <QScopeGuard>
 
 #include "daemon/wireguardutils.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "macosdaemon.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr uint32_t ETH_MTU = 1500;
 constexpr uint32_t WG_MTU_OVERHEAD = 80;

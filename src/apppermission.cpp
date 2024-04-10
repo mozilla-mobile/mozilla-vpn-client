@@ -10,10 +10,10 @@
 #include "applistprovider.h"
 #include "collator.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #if defined(MZ_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"

@@ -5,7 +5,7 @@
 #include "addonconditionwatcherfeaturesenabled.h"
 
 #include "feature/feature.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 // static
 AddonConditionWatcher* AddonConditionWatcherFeaturesEnabled::maybeCreate(

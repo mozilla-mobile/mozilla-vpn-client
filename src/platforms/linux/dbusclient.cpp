@@ -10,13 +10,13 @@
 
 #include "interfaceconfig.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const char* DBUS_SERVICE = "org.mozilla.vpn.dbus";
 constexpr const char* DBUS_PATH = "/";

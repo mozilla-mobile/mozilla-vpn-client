@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosstatusicon.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #import <Cocoa/Cocoa.h>
 #import <UserNotifications/UserNotifications.h>

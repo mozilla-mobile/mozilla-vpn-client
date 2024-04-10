@@ -7,8 +7,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("ComposerBlockUnorderedList");

@@ -9,11 +9,11 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "daemon/daemonlocalserver.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("MacOSDaemonServer");

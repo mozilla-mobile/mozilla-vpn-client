@@ -6,10 +6,10 @@
 
 #include "app.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("TaskAccount");

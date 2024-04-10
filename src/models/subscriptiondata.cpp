@@ -13,11 +13,11 @@
 
 #include "constants.h"
 #include "glean/generated/metrics.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/location.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("SubscriptionData");

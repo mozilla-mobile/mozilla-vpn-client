@@ -17,10 +17,10 @@
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "languagei18n.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

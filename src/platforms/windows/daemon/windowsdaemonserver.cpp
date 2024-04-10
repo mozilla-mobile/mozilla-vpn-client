@@ -15,8 +15,8 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "daemon/daemonlocalserver.h"
-#include "leakdetector.h"
 #include "logger.h"
+#include "utils/leakdetector/leakdetector.h"
 #include "windowsdaemon.h"
 
 #define SERVICE_NAME (wchar_t*)L"Mozilla  VPN"

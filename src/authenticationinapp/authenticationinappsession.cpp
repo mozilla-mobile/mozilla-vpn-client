@@ -17,9 +17,9 @@
 #include "glean/generated/metrics.h"
 #include "hawkauth.h"
 #include "hkdf.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("AuthenticationInAppSession");

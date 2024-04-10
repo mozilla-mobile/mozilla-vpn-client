@@ -5,9 +5,9 @@
 #include "taskaddonindex.h"
 
 #include "addons/manager/addonmanager.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("TaskAddonIndex");

@@ -8,10 +8,10 @@
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "loghandler.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;

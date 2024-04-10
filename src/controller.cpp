@@ -15,7 +15,6 @@
 #include "feature/feature.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -35,6 +34,7 @@
 #include "tasks/function/taskfunction.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #if defined(MZ_FLATPAK)
 #  include "platforms/linux/networkmanagercontroller.h"

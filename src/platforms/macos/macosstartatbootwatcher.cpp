@@ -4,10 +4,10 @@
 
 #include "macosstartatbootwatcher.h"
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "macosutils.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("MacOSStartAtBootWatcher");

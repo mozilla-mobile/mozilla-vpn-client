@@ -38,7 +38,7 @@ target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
 target_compile_definitions(unit_tests PRIVATE MZ_DUMMY)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations mz_utils)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -227,8 +227,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/itempicker.h
     ${MZ_SOURCE_DIR}/languagei18n.cpp
     ${MZ_SOURCE_DIR}/languagei18n.h
-    ${MZ_SOURCE_DIR}/leakdetector.cpp
-    ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
     ${MZ_SOURCE_DIR}/logger.cpp

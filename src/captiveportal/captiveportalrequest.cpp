@@ -6,11 +6,11 @@
 
 #include "captiveportal.h"
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 #include "task.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("CaptivePortalRequest");

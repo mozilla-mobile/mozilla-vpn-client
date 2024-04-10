@@ -12,10 +12,10 @@
 #include <QQmlEngine>
 #include <QScopeGuard>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("AddonReplacer");

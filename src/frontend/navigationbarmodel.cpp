@@ -7,9 +7,9 @@
 #include <QCoreApplication>
 #include <QFile>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "navigator.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("NavigationBarModel");

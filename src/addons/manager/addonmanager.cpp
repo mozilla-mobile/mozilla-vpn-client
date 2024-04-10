@@ -21,7 +21,6 @@
 #include "addons/addonmessage.h"
 #include "constants.h"
 #include "feature/feature.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -29,6 +28,7 @@
 #include "tasks/addonindex/taskaddonindex.h"
 #include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =
     "MVPN_SKIP_ADDON_SIGNATURE";

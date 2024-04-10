@@ -7,11 +7,11 @@
 #include <QDir>
 #include <QJSEngine>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

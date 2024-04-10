@@ -6,9 +6,9 @@
 
 #include <QDateTime>
 
-#include "leakdetector.h"
 #include "mfbt/checkedint.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 AddonConditionWatcherTime::AddonConditionWatcherTime(QObject* parent,
                                                      qint64 time, bool isStart)

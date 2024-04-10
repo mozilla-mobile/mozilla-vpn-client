@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosnotificationhandler.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>

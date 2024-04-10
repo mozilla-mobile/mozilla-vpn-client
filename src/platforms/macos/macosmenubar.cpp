@@ -7,10 +7,10 @@
 #include "controller.h"
 #include "frontend/navigator.h"
 #include "i18nstrings.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
+#include "utils/leakdetector/leakdetector.h"
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosutils.h"
 #endif

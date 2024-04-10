@@ -8,7 +8,7 @@
 
 #include "command.h"
 #include "constants.h"
-#include "leakdetector.h"
+#include "utils/leakdetector/leakdetector.h"
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 

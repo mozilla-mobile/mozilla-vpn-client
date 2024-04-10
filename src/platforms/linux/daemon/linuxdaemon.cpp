@@ -5,10 +5,10 @@
 #include "command.h"
 #include "dbus_adaptor.h"
 #include "dbusservice.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "signalhandler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("main");

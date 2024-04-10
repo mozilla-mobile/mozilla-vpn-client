@@ -13,13 +13,13 @@
 #include <QUrlQuery>
 
 #include "jni.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "platforms/android/androidcommons.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 AndroidUtils* s_instance = nullptr;

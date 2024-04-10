@@ -9,9 +9,9 @@
 #include <QUrlQuery>
 
 #include "constants.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "urlopener.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 

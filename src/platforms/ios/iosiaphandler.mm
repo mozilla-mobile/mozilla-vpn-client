@@ -7,11 +7,11 @@
 #include "app.h"
 #include "errorhandler.h"
 #include "iosutils.h"
-#include "leakdetector.h"
 #include "logger.h"
 #include "settingsholder.h"
 #include "tasks/purchase/taskpurchase.h"
 #include "taskscheduler.h"
+#include "utils/leakdetector/leakdetector.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>

@@ -12,12 +12,12 @@
 #include <QVBoxLayout>
 #include <QWindow>
 
-#include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
 #include "platforms/macos/macosmenubar.h"
 #include "statusicon.h"
+#include "utils/leakdetector/leakdetector.h"
 
 namespace {
 Logger logger("WasmWindowController");

@@ -9,8 +9,8 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "leakdetector.h"
 #include "settingsholder.h"
+#include "utils/leakdetector/leakdetector.h"
 
 User::User() { MZ_COUNT_CTOR(User); }
 

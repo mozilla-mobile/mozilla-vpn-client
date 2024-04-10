@@ -49,6 +49,8 @@ target_link_libraries(mozillavpn PRIVATE
     translations
     qtglean
 )
+add_subdirectory(utils)
+target_link_libraries(mozillavpn PRIVATE mz_utils)
 
 if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(webextension)
