@@ -7,5 +7,3 @@ add_library(mz_utils INTERFACE)
 add_subdirectory(leakdetector)
 
 target_link_libraries(mz_utils INTERFACE mz_utils_leakdetector)
-
-
