@@ -13,6 +13,7 @@ on:
       - 'tools/wasm_chrome/**'
       - 'tools/addonstats/**'
       - 'addons/**'
+      - '.github/workflows/gh_pages.yaml'
   schedule:
     - cron: '0 5 * * *'
 
