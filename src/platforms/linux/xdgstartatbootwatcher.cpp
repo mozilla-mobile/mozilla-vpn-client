@@ -43,14 +43,13 @@ XdgStartAtBootWatcher::XdgStartAtBootWatcher() : QObject() {
   connect(SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
           &XdgStartAtBootWatcher::startAtBootChanged);
 
+  // Generate a unique token, and connect to the XDG Response portal.
+  quint64 randbits = QRandomGenerator::global()->generate64();
+  m_token = "mozillavpn_" + QString::number(randbits, 16);
   m_replyPath = xdgReplyPath();
   QDBusConnection::sessionBus().connect(XDG_PORTAL_SERVICE, m_replyPath,
                                         XDG_PORTAL_REQUEST, "Response", this,
                                         SLOT(xdgResponse(uint, QVariantMap)));
-
-  // Generate a unique token for this application instance.
-  quint64 randbits = QRandomGenerator::global()->generate64();
-  m_token = "mozillavpn_" + QString::number(randbits, 16);
 
   startAtBootChanged();
 }
