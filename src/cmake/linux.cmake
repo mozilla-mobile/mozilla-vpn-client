@@ -7,17 +7,6 @@ option(BUILD_FLATPAK "Build for Flatpak distribution" OFF)
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
-# Link to libsecret
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
-if (QT_FEATURE_static)
-    target_link_libraries(mozillavpn PRIVATE ${LIBSECRET_STATIC_LIBRARIES})
-    target_include_directories(mozillavpn PRIVATE ${LIBSECRET_STATIC_INCLUDE_DIRS})
-    target_compile_options(mozillavpn PRIVATE ${LIBSECRET_STATIC_CFLAGS})
-else()
-    target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBSECRET)
-endif()
-
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.cpp
@@ -39,14 +28,16 @@ target_sources(mozillavpn PRIVATE
 )
 
 if(NOT BUILD_FLATPAK)
-    # Link to libcap
+    # Link to libcap and libsecret
+    find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
+    pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
+        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
+        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
+        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP)
+        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
     endif()
 
     target_sources(mozillavpn PRIVATE

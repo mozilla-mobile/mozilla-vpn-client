@@ -288,8 +288,4 @@ endforeach()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(Qt6 REQUIRED COMPONENTS DBus)
     target_link_libraries(qml_tests PRIVATE Qt6::DBus)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(qml_tests PRIVATE PkgConfig::libsecret)
 endif()
