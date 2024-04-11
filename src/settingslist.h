@@ -655,15 +655,13 @@ SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    hasVpnDisabledApps,     // has
                    "vpnDisabledApps",      // key
 #ifdef MZ_ANDROID
-                  QStringList{
-                   // Android Auto
-                    "com.google.android.projection.gearhead"
-                  },
+                   QStringList{// Android Auto
+                               "com.google.android.projection.gearhead"},
 #else
-                  QStringList(),
+                   QStringList(),
 #endif
-                   false,                  // remove when reset
-                   false                   // sensitive (do not log)
+                   false,  // remove when reset
+                   false   // sensitive (do not log)
 )
 
 SETTING_STRING(sentryDSN,        // getter
