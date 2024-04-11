@@ -65,24 +65,6 @@ jobs:
               name: AddonStats
               path: tools/addonstats
 
-  docs:
-    name: Render Docs
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-      - name: Building
-        shell: bash
-        run: |
-            sudo apt-get update
-            sudo apt-get install doxygen -y
-            doxygen
-      - name: Uploading
-        uses: actions/upload-artifact@v3
-        with:
-            name: doxygen-docs
-            path: html/
-
   inspector:
     name: Add Inspector
     runs-on: ubuntu-20.04
@@ -189,14 +171,6 @@ jobs:
           name: Wasm-Chrome
           # Destination path
           path: _site
-
-      - name: Download Docs
-        uses: actions/download-artifact@v3
-        with:
-          name: doxygen-docs
-          # Destination path
-          path: _site/docs
-
       - name: Download a Addons Artifact
         uses: actions/download-artifact@v3
         with:
