@@ -86,12 +86,25 @@ linux/fedora-fc38:
         type: build
 
 linux64/release-deb:
-    description: "Linux: Package a .deb file using Static Qt"
+    description: "Linux Build (Debian/Static Qt)"
     treeherder:
         platform: linux/x86_64
     fetches:
         toolchain:
             - qt-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}
+    run:
+        command: /builds/worker/builder.sh -s
+
+linux64/next-deb:
+    description: "Linux Build (Debian/Next Qt)"
+    treeherder:
+        symbol: NEXT
+        platform: linux/x86_64
+    fetches:
+        toolchain:
+            - qt-linux-6.6
     worker:
         docker-image: {in-tree: linux-qt6-build}
     run:
