@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - "releases/**"
     types:
       - opened
       - synchronize
@@ -18,7 +18,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - name: Install dependecies
         run: |
@@ -27,8 +27,8 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Importing translation files
@@ -52,10 +52,10 @@ jobs:
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@v0.16.2
         with:
-          source: '.'
+          source: "."
           clangFormatVersion: 16
           style: file
-      
+
       - name: Check for issues with cargo fmt
         run: |
           for tomlfile in $(git ls-files -c '*/Cargo.toml'); do
@@ -83,9 +83,13 @@ jobs:
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-packages
+      # Glean is required for the gradle build.
+      - name: Fetch glean submodules
+        run: |
+          git submodule update --init 3rdparty/glean
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: vpn 
+          activate-environment: vpn
           environment-file: env.yml
       - name: Setup Android SDK
         run: |
@@ -104,12 +108,12 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
-          submodules: 'true'
+          submodules: "true"
 
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
       - run: npm install
 
       - name: Run languagelocalizer
