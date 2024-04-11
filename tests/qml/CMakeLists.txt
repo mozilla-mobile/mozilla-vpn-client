@@ -190,7 +190,7 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkmanager.h
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
-    ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp

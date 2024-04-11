@@ -5,6 +5,7 @@
 target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkwatcher.cpp

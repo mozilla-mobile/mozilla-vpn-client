@@ -143,6 +143,7 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
     ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp

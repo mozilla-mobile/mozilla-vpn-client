@@ -35,6 +35,7 @@ target_link_libraries(dummyvpn PRIVATE
 target_sources(dummyvpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycontroller.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/dummy/dummycryptosettings.cpp
 )
 
 # VPN statically links with Qt on Windows. When Qt is statically linked, the
