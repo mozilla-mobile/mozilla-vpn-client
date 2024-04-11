@@ -21,7 +21,7 @@ env
 whereis pip
 whereis python3
 pip config debug
-pip config --user set install.no-index False || true
+pip config --user set install.no-index 0 || true
 pip config debug
 
 
