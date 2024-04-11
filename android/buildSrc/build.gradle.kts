@@ -5,11 +5,9 @@
 import org.gradle.kotlin.dsl.`kotlin-dsl`
 
 plugins {
-    `kotlin-dsl`
+    // Required workaround for: https://github.com/gradle/gradle/issues/16345
+    `kotlin-dsl`.version("2.3.3")
 }
 repositories {
     mavenCentral()
-}
-
-dependencies {
 }

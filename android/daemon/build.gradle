@@ -90,7 +90,8 @@ android {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug",
                               "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
+                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
                 }
             }
         }
@@ -101,7 +102,8 @@ android {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}",
                               "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
+                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
                 }
             }
         }
@@ -116,8 +118,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation SharedDependencies.androidx_core
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     implementation project(path: ':qtglean')
     implementation project(path: ':common')

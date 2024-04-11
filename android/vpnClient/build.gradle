@@ -12,9 +12,8 @@ buildscript {
     }
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:1.4.30-M1"
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.7.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.6.0"
     }
 }
 plugins {
@@ -81,8 +80,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation project(path: ':vpnClient')
     testImplementation "org.robolectric:robolectric:4.10.2"
-    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.9.22"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.22"
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
@@ -94,6 +93,6 @@ dependencies {
     implementation "com.android.installreferrer:installreferrer:2.2"
     implementation "com.android.billingclient:billing-ktx:5.2.0"
     implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
 
 }

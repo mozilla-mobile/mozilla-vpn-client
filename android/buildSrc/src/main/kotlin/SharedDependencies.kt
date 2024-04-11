@@ -4,7 +4,7 @@
 
 // Dependencies used by at least more then 1 Subproject.
 object SharedDependencies {
-    const val com_android_tools_build_gradle = "com.android.tools.build:gradle:4.0.0"
-    const val androidx_core = "androidx.core:core-ktx:1.9.0"
-    const val com_android_tools_desugar_jdk_libs = "com.android.tools:desugar_jdk_libs:1.0.10"
+    const val com_android_tools_build_gradle = "com.android.tools.build:gradle:7.4.2"
+    const val androidx_core = "androidx.core:core-ktx:1.12.0"
+    const val com_android_tools_desugar_jdk_libs = "com.android.tools:desugar_jdk_libs:2.0.4"
 }
