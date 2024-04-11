@@ -49,7 +49,7 @@ constexpr auto reply_padding =
     sizeof(ICMP_ECHO_REPLY) - sizeof(MZ_ICMP_ECHO_REPLY);
 
 // Disable Packing, so the compiler does not add padding in this struct between
-// diffrent sized types.
+// different sized types.
 #pragma pack(push, 1)
 struct ICMP_ECHO_REPLY_BUFFER {
   MZ_ICMP_ECHO_REPLY reply;
