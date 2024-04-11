@@ -9,5 +9,4 @@ target_include_directories(shared-sources INTERFACE ${libsecret_INCLUDE_DIRS})
 target_sources(shared-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/linux/linuxcryptosettings.cpp
 )
