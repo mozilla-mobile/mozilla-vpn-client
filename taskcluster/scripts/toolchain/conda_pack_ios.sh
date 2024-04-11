@@ -21,6 +21,8 @@ env
 whereis pip
 whereis python3
 pip config debug
+pip config --user set install.no-index: false
+pip config debug
 
 
 conda env create -f env.yml -n vpn
