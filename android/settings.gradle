@@ -9,6 +9,18 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+
+def repositoryRoot = "$rootDir/../../.."
+def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("gleanLibs") {
+            from(files("$gleanVendoredPath/gradle/libs.versions.toml"))
+        }
+    }
+}
+
 include ':qtglean'
 include ':daemon'
 include ':qtBindings'
@@ -16,4 +28,3 @@ include ':ClientCommon'
 include ':vpnClient'
 include ':common'
 include ':adjust'
-
