@@ -20,7 +20,7 @@ source bin/activate
 env 
 whereis pip
 whereis python3
-
+pip config debug
 
 
 conda env create -f env.yml -n vpn
