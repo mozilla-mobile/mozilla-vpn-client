@@ -5,8 +5,13 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
+    paths:
+      - 'tools/logviewer/**'
+      - 'tools/translationsreport/**'
+      - 'tools/inspector/**'
+      - 'tools/wasm_chrome/**'
+      - 'tools/addonstats/**'
+      - 'addons/**'
   schedule:
     - cron: '0 5 * * *'
 
@@ -23,7 +28,7 @@ concurrency:
 jobs:
   wasm_chrome:
     name: Add Wasm_Chrome
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -43,7 +48,7 @@ jobs:
 
   logviewer:
       name: Add Logviewer
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-latest
       steps:
         - name: Clone repository
           uses: actions/checkout@v3
@@ -52,10 +57,9 @@ jobs:
           with:
               name: Logviewer
               path: tools/logviewer
-
   addonStats:
       name: Add Addon-Stats
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-latest
       steps:
         - name: Clone repository
           uses: actions/checkout@v3
@@ -64,17 +68,22 @@ jobs:
           with:
               name: AddonStats
               path: tools/addonstats
-
   inspector:
     name: Add Inspector
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Cache conda Packages
+        uses: actions/cache@v2
         with:
-          node-version: '16'
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-packages
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: vpn 
+          environment-file: env.yml
 
       - name: Building
         shell: bash
@@ -90,7 +99,7 @@ jobs:
 
   translationsreport:
     name: Add Translations Report
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -159,7 +168,7 @@ jobs:
               build-addons/manifest.*
 
   ghPages:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [wasm_chrome, inspector, translationsreport, addons, logviewer, addonstats, docs]
     name: Compile Github Page from Components
     env:
@@ -171,6 +180,14 @@ jobs:
           name: Wasm-Chrome
           # Destination path
           path: _site
+
+      - name: Download Docs
+        uses: actions/download-artifact@v3
+        with:
+          name: doxygen-docs
+          # Destination path
+          path: _site/docs
+
       - name: Download a Addons Artifact
         uses: actions/download-artifact@v3
         with:
