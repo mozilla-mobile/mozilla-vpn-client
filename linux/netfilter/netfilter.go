@@ -260,6 +260,22 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
 			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyMARK,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctx.fwmark),
+			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,
 			},
@@ -341,6 +357,25 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SourceRegister: 1,
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.output,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyMARK,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctx.fwmark),
 			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,
