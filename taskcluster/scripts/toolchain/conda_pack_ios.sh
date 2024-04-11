@@ -17,6 +17,12 @@ chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
 
+env 
+whereis pip
+whereis python3
+
+
+
 conda env create -f env.yml -n vpn
 conda activate vpn
 echo "SETTING QT_VERSION=${BACKUP_QT_VERSION}"
