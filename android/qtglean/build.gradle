@@ -11,6 +11,11 @@
 def repositoryRoot = "$rootDir/../../.."
 def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
+// Path to the CMake build directory.
+// CMAKE?! Correct. Remember, we are using CMake to build this gradle project...
+// This is equivalent to CMAKE_BINARY_DIR from that parent CMake project.
+def cmakeBinaryDir = "$rootDir/../.."
+
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
@@ -31,7 +36,7 @@ android {
             manifest.srcFile "$gleanVendoredPath/glean-core/android/src/main/AndroidManifest.xml"
             kotlin.srcDirs = [
                 "$gleanVendoredPath/glean-core/android/src/main",
-                "${System.getProperty('user.dir')}/../../glean"
+                "$cmakeBinaryDir/glean"
             ]
         }
     }
@@ -41,7 +46,8 @@ android {
     }
 }
 
-// From now on this code is copy pasted from 3rdparty/glean/glean-core/android/build.gradle
+// From here on this code is copy pasted from 3rdparty/glean/glean-core/android/build.gradle
+
 configurations {
     // There's an interaction between Gradle's resolution of dependencies with different types
     // (@jar, @aar) for `implementation` and `testImplementation` and with Android Studio's built-in
