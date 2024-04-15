@@ -40,7 +40,7 @@ constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 // Destination address for latency measurements when the VPN is
 // deactivated. This is the doh.mullvad.net DNS server.
 constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
-}
+}  // namespace
 
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   MZ_COUNT_CTOR(ConnectionHealth);
