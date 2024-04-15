@@ -15,14 +15,13 @@
 #  include <private/qgenericunixservices_p.h>
 #  include <private/qguiapplication_p.h>
 #  include <qpa/qplatformintegration.h>
-
-#  include "qmlengineholder.h"
 #else
 #  include <QGuiApplication>
 #endif
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "qmlengineholder.h"
 #include "settingsholder.h"
 
 namespace {
@@ -79,6 +78,9 @@ void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
 
 // Try to find the window identifier for an XDG desktop portal request.
 // https://flatpak.github.io/xdg-desktop-portal/docs/window-identifiers.html
+//
+// If the window identifier couldn't be determined (eg: not on Wayland/X11, or
+// there is no window yet). Then this method should return an empty string.
 QString XdgStartAtBootWatcher::parentWindow() {
   if (!QmlEngineHolder::exists()) {
     return QString("");
@@ -135,6 +137,7 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
 }
 
 void XdgStartAtBootWatcher::callCompleted(QDBusPendingCallWatcher* call) {
+  Q_ASSERT(call != nullptr);
   QDBusPendingReply<QDBusObjectPath> reply = *call;
   if (reply.isError()) {
     logger.error() << "Failed to set startOnBoot:" << reply.error().message();
