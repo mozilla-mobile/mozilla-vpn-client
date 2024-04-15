@@ -50,13 +50,12 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
-constexpr const uint32_t TIMER_MSEC = 1000;
-
 // X connection retries.
 constexpr const int CONNECTION_MAX_RETRY = 9;
-
-constexpr const uint32_t CONFIRMING_TIMOUT_SEC = 10;
-constexpr const uint32_t HANDSHAKE_TIMEOUT_SEC = 15;
+using namespace std::chrono_literals;
+constexpr const auto CONFIRMING_TIMOUT = 10s;
+constexpr const auto HANDSHAKE_TIMEOUT = 15s;
+constexpr const auto CONNECTION_TIME_UPDATE_FREQUENCY = 1s;
 
 #ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -191,7 +190,7 @@ void Controller::implInitialized(bool status, bool a_connected,
                                ? connectionDate.toUTC()
                                : QDateTime::currentDateTimeUtc();
     emit timeChanged();
-    m_timer.start(TIMER_MSEC);
+    m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
   }
 }
 
@@ -251,7 +250,7 @@ void Controller::deleteOSTunnelConfig() {
 }
 
 void Controller::startHandshakeTimer() {
-  m_handshakeTimer.start(HANDSHAKE_TIMEOUT_SEC * 1000);
+  m_handshakeTimer.start(HANDSHAKE_TIMEOUT);
 }
 
 void Controller::handshakeTimeout() {
@@ -696,7 +695,7 @@ void Controller::connected(const QString& pubkey,
   if (connectionTimestamp.isValid()) {
     m_connectedTimeInUTC = connectionTimestamp;
     emit timeChanged();
-    m_timer.start(TIMER_MSEC);
+    m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
   } else {
     resetConnectedTime();
   }
@@ -710,7 +709,7 @@ void Controller::connected(const QString& pubkey,
 void Controller::resetConnectedTime() {
   m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
   emit timeChanged();
-  m_timer.start(TIMER_MSEC);
+  m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
 }
 
 void Controller::disconnected() {
@@ -774,7 +773,7 @@ void Controller::maybeEnableDisconnectInConfirming() {
   if (m_state == StateConfirming) {
     m_enableDisconnectInConfirming = false;
     emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.start(CONFIRMING_TIMOUT_SEC * 1000);
+    m_connectingTimer.start(CONFIRMING_TIMOUT);
   } else {
     m_enableDisconnectInConfirming = false;
     emit enableDisconnectInConfirmingChanged();
