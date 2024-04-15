@@ -20,8 +20,11 @@ chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
 
-# Hack, let's disable the Mozilla Pip repo
-# as we do have all things pinned down. 
+# Normally pip is locked down to only 
+# allow download from moz-pip mirror. 
+# The packages are firefox only and everything
+# we're going to fetch is pinned down, so 
+# let's remove that restriction for the current task. 
 rm -f ~/.config/pip/pip.conf
 pip config --user set install.no-index 0 
 pip config debug
@@ -50,4 +53,6 @@ find ../../public/build/ -mindepth 1 -delete
 
 conda-pack -p envs/vpn -o conda-ios.tar.gz
 mv conda-ios.tar.gz  ../../public/build
+
+# remove our Pip conf, so the restrictions are back. 
 rm -f ~/.config/pip/pip.conf
