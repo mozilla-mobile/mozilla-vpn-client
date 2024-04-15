@@ -17,24 +17,22 @@
 #include "pingsenderfactory.h"
 #include "tcppingsender.h"
 
-constexpr const uint32_t SERVER_LATENCY_TIMEOUT_MSEC = 5000;
-
-constexpr const uint32_t SERVER_LATENCY_INITIAL_MSEC = 1000;
-
-constexpr const uint32_t SERVER_LATENCY_REFRESH_MSEC = 1800000;
-
 constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
 
 constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
-
-// Delay the progressChanged() signal to rate-limit how often score changes.
-constexpr const uint32_t SERVER_LATENCY_PROGRESS_DELAY_MSEC = 500;
 
 // Minimum number of redundant servers we expect at a location.
 constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
 
 namespace {
 Logger logger("ServerLatency");
+
+using namespace std::chrono_literals;
+constexpr const auto SERVER_LATENCY_TIMEOUT = 5s;
+constexpr const auto SERVER_LATENCY_INITIAL = 1s;
+constexpr const auto SERVER_LATENCY_REFRESH = 30min;
+// Delay the progressChanged() signal to rate-limit how often score changes.
+constexpr const auto SERVER_LATENCY_PROGRESS_DELAY = 500ms;
 }
 
 ServerLatency::ServerLatency() { MZ_COUNT_CTOR(ServerLatency); }
@@ -63,7 +61,7 @@ void ServerLatency::initialize() {
   const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
   connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
   if (feature->isSupported()) {
-    m_refreshTimer.start(SERVER_LATENCY_INITIAL_MSEC);
+    m_refreshTimer.start(SERVER_LATENCY_INITIAL);
   }
 
   connect(qApp, &QApplication::applicationStateChanged, this,
@@ -151,7 +149,7 @@ void ServerLatency::maybeSendPings() {
   // Scan through the reply list, looking for timeouts.
   while (!m_pingReplyList.isEmpty()) {
     const ServerPingRecord& record = m_pingReplyList.first();
-    if ((record.timestamp + SERVER_LATENCY_TIMEOUT_MSEC) > now) {
+    if ((record.timestamp + SERVER_LATENCY_TIMEOUT) > now) {
       break;
     }
     logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout"
@@ -191,7 +189,7 @@ void ServerLatency::maybeSendPings() {
 
   m_lastUpdateTime = QDateTime::currentDateTime();
   if (!m_progressDelayTimer.isActive()) {
-    m_progressDelayTimer.start(SERVER_LATENCY_PROGRESS_DELAY_MSEC);
+    m_progressDelayTimer.start(SERVER_LATENCY_PROGRESS_DELAY);
   }
 
   if (m_pingReplyList.isEmpty()) {
@@ -202,7 +200,7 @@ void ServerLatency::maybeSendPings() {
     // to cleanup anything that experiences a timeout.
     const ServerPingRecord& record = m_pingReplyList.first();
 
-    CheckedInt<int> value(SERVER_LATENCY_TIMEOUT_MSEC);
+    CheckedInt<int> value(SERVER_LATENCY_TIMEOUT);
     value -= static_cast<int>(now - record.timestamp);
 
     m_pingTimeout.start(value.value());
@@ -223,7 +221,7 @@ void ServerLatency::stop() {
   emit progressChanged();
   m_progressDelayTimer.stop();
   if (!m_refreshTimer.isActive()) {
-    m_refreshTimer.start(SERVER_LATENCY_REFRESH_MSEC);
+    m_refreshTimer.start(SERVER_LATENCY_REFRESH);
   }
 }
 
