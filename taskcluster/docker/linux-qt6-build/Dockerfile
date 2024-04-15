@@ -2,15 +2,30 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM $DOCKER_IMAGE_PARENT
+FROM debian:bullseye
 
 MAINTAINER Naomi Kirby <naomi@mozilla.com>
+
+#----------------------------------------------------------------------------------------------------------------------
+#-- Extra Packages ----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------
+ENV CURL='curl --location --retry 5' \
+    DEBIAN_FRONTEND='noninteractive' \
+    LANG='en_US.UTF-8' \
+    LC_ALL='en_US.UTF-8' \
+    TERM='dumb'
+
+## Ensure that we generate the default locale
+RUN echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8" | debconf-set-selections
+
+## Enable bullseye-backports
+RUN echo "deb http://deb.debian.org/debian/ bullseye-backports main" > /etc/apt/sources.list.d/bullseye-backports.list
+RUN echo "deb-src http://deb.debian.org/debian/ bullseye-backports main" >> /etc/apt/sources.list.d/bullseye-backports.list
 
 RUN apt-get update -q
 RUN apt-get -y install tzdata
 RUN apt-get -y install build-essential \
                        clang \
-                       cmake \
                        curl \
                        debhelper \
                        devscripts \
@@ -50,6 +65,16 @@ RUN apt-get -y install libfontconfig1-dev \
                        libxcb-xkb-dev \
                        libxkbcommon-dev \
                        libxkbcommon-x11-dev
+
+## Install CMake from bullseye-backports
+RUN apt-get -y install -t bullseye-backports cmake
+
+## Install Rust
+RUN mkdir -p /tmp/rust
+RUN curl https://static.rust-lang.org/dist/rust-1.69.0-x86_64-unknown-linux-gnu.tar.gz  -o /tmp/rust/rust-static.tar.gz
+RUN tar -C /tmp/rust -xf /tmp/rust/rust-static.tar.gz
+RUN $(find /tmp/rust -name 'install.sh')
+RUN rm -rf /tmp/rust
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
