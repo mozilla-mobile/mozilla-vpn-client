@@ -26,14 +26,14 @@
 #include <QJsonDocument>
 #include <QJsonValue>
 
-constexpr int CONNECTION_STABILITY_MSEC = 45000;
-
 constexpr const uint32_t VPNSESSION_PING_TIMER_SEC = 3 * 60 * 60;  // 3 hours
 constexpr const uint32_t SHORT_DEBUG_VPNSESSION_PING_TIMER_SEC =
     3 * 60;  // 3 minutes
 
 namespace {
 Logger logger("Telemetry");
+using namespace std::chrono_literals;
+constexpr auto CONNECTION_STABILITY = 45s;
 
 }  // namespace
 
@@ -137,7 +137,7 @@ void Telemetry::initialize() {
     if (state != Controller::StateOn) {
       m_connectionStabilityTimer.stop();
     } else {
-      m_connectionStabilityTimer.start(CONNECTION_STABILITY_MSEC);
+      m_connectionStabilityTimer.start(CONNECTION_STABILITY);
     }
 
     mozilla::glean::sample::controller_step.record(
