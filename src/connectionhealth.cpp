@@ -42,6 +42,10 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
 
   connect(&m_dnsPingSender, &DnsPingSender::recvPing, this,
           &ConnectionHealth::dnsPingReceived, Qt::QueuedConnection);
+  connect(&m_dnsPingSender, &DnsPingSender::criticalPingError, this, [this]() {
+    m_dnsPingInitialized = false;
+    m_dnsPingTimer.stop();
+  });
 
   connect(&m_dnsPingTimer, &QTimer::timeout, this, [this]() {
     m_dnsPingSequence++;
@@ -103,14 +107,13 @@ void ConnectionHealth::startIdle() {
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
 
-  m_dnsPingSender.start();
-  m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
-
-  // Send an initial ping right away.
-  m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
-  m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
-                           m_dnsPingSequence);
-
+  if (m_dnsPingSender.start()) {
+    m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
+    // Send an initial ping right away.
+    m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
+    m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
+                             m_dnsPingSequence);
+  }
   stopTimingDistributionMetric(m_stability);
 }
 
