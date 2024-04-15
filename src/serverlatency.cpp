@@ -28,7 +28,7 @@ namespace {
 Logger logger("ServerLatency");
 
 using namespace std::chrono_literals;
-constexpr const auto SERVER_LATENCY_TIMEOUT = 5s;
+constexpr const std::chrono::milliseconds SERVER_LATENCY_TIMEOUT = 5s;
 constexpr const auto SERVER_LATENCY_INITIAL = 1s;
 constexpr const auto SERVER_LATENCY_REFRESH = 30min;
 // Delay the progressChanged() signal to rate-limit how often score changes.
@@ -149,7 +149,7 @@ void ServerLatency::maybeSendPings() {
   // Scan through the reply list, looking for timeouts.
   while (!m_pingReplyList.isEmpty()) {
     const ServerPingRecord& record = m_pingReplyList.first();
-    if ((record.timestamp + SERVER_LATENCY_TIMEOUT) > now) {
+    if ((record.timestamp + SERVER_LATENCY_TIMEOUT.count()) > now) {
       break;
     }
     logger.debug() << "Server" << logger.keys(record.publicKey) << "timeout"
@@ -200,7 +200,7 @@ void ServerLatency::maybeSendPings() {
     // to cleanup anything that experiences a timeout.
     const ServerPingRecord& record = m_pingReplyList.first();
 
-    CheckedInt<int> value(SERVER_LATENCY_TIMEOUT);
+    CheckedInt<int> value(SERVER_LATENCY_TIMEOUT.count());
     value -= static_cast<int>(now - record.timestamp);
 
     m_pingTimeout.start(value.value());
