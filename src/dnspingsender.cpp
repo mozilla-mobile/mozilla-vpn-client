@@ -61,7 +61,7 @@ DnsPingSender::~DnsPingSender() { MZ_COUNT_DTOR(DnsPingSender); }
 
 bool DnsPingSender::start() {
   auto state = m_socket.state();
-  if (true) {
+  if (state != QAbstractSocket::UnconnectedState) {
     logger.info()
         << "Attempted to start UDP socket, but it's in an invalid state:"
         << state;
