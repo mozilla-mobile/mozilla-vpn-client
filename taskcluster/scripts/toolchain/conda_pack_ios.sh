@@ -10,11 +10,6 @@ ls
 cd vcs
 ls 
 
-# Hack, let's disable the Mozilla Pip repo
-# as we do have all things pinned down. 
-rm -f ~/.config/pip/pip.conf
-pip config --user set install.no-index 0 
-pip config debug
 
 
 # save the passed QT_Version
@@ -24,6 +19,12 @@ BACKUP_QT_VERSION=${QT_VERSION}
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
+
+# Hack, let's disable the Mozilla Pip repo
+# as we do have all things pinned down. 
+rm -f ~/.config/pip/pip.conf
+pip config --user set install.no-index 0 
+pip config debug
 
 conda env create -f env.yml -n vpn
 conda activate vpn
