@@ -4,6 +4,7 @@
 
 import Foundation
 import NetworkExtension
+import IOSGlean
 
 protocol SilentServerSwitching: AnyObject {
     func silentServerSwitch()
@@ -29,12 +30,16 @@ class ConnectionHealth {
     private let toleranceTime = 1.0 // 1 seconds
     private var timer: Timer?
 
+    private var lastHealthStatus: ConnectionStability = .stable
+    private var connectionHealthTimerId: GleanTimerId? = nil
+
     private var pingAddress: String?
 
     func start(for pingAddress: String) {
         self.logger.info(message: "Starting ConnectionHealth with \(pingAddress)")
         self.pingAddress = pingAddress
         startTimer()
+        startTimingDistributionMetric(for: lastHealthStatus)
     }
 
     func startTimer() {
@@ -43,12 +48,13 @@ class ConnectionHealth {
             // There is no restart on a Timer (though we repeat it), so we need to recreate it each time the VPN reconnects
             timer = Timer.scheduledTimer(timeInterval: checkTime, target: self, selector: #selector(runHealthChecks), userInfo: nil, repeats: true)
         }
-       // Giving Timer some tolerance improves performance from iOS.
-       timer?.tolerance = toleranceTime
+        // Giving Timer some tolerance improves performance from iOS.
+        timer?.tolerance = toleranceTime
     }
 
     func stop() {
         self.logger.info(message: "Stopping ConnectionHealth timer")
+        stopTimingDistributionMetric(for: lastHealthStatus)
         guard let confirmedTimer = timer else {
             logger.error(message: "No timer found when stopping ConnectionHealth")
             return
@@ -71,7 +77,7 @@ class ConnectionHealth {
             }
 
             self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
-            // TODO: record metrics
+            self.recordMetrics(with: connectivity)
 
             if connectivity == .unstable {
                 self.logger.info(message: "Unstable, starting silent switch from network extension")
@@ -80,5 +86,55 @@ class ConnectionHealth {
         }
 
         // Timer set to repeat until stop() is run, so no need to call any repeat step here.
+    }
+
+    private func recordMetrics(with stability: ConnectionStability) {
+        switch stability {
+        case .stable: GleanMetrics.ConnectionHealth.stableCount.add()
+        case .unstable: GleanMetrics.ConnectionHealth.unstableCount.add()
+        case .noSignal: GleanMetrics.ConnectionHealth.noSignalCount.add()
+        }
+
+        if (lastHealthStatus == stability) {
+            return
+        }
+
+        logger.info(message: "Health status changed.")
+
+        switch stability {
+        case .stable: GleanMetrics.ConnectionHealth.changedToStable.record()
+        case .unstable: GleanMetrics.ConnectionHealth.changedToUnstable.record()
+        case .noSignal: GleanMetrics.ConnectionHealth.changedToNoSignal.record()
+        }
+
+        stopTimingDistributionMetric(for: lastHealthStatus)
+        startTimingDistributionMetric(for: stability)
+
+        lastHealthStatus = stability
+    }
+
+    private func startTimingDistributionMetric(for stability: ConnectionStability) {
+        switch stability {
+        case .stable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.stableTime.start()
+        case .unstable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.unstableTime.start()
+        case .noSignal: connectionHealthTimerId = GleanMetrics.ConnectionHealth.noSignalTime.start()
+        }
+    }
+
+    private func stopTimingDistributionMetric(for stability: ConnectionStability) {
+        guard let connectionHealthTimerId = connectionHealthTimerId else {
+            logger.error(message: "No active health timer for \(stability)")
+            return
+        }
+
+        switch stability {
+        case .stable: GleanMetrics.ConnectionHealth.stableTime.stopAndAccumulate(connectionHealthTimerId)
+        case .unstable: GleanMetrics.ConnectionHealth.unstableTime.stopAndAccumulate(connectionHealthTimerId)
+        case .noSignal: GleanMetrics.ConnectionHealth.noSignalTime.stopAndAccumulate(connectionHealthTimerId)
+        }
+
+        // Set to nil to defensively ensure there is no future erroenous attempt to turn it off
+        self.connectionHealthTimerId = nil
+
     }
 }

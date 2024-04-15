@@ -1597,9 +1597,7 @@ connection_health:
 
       This event is recorded in both main application and daemon.
       The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      is not the same.
 
       A no signal event happens when the connection is showing issues,
       and a silent switch will not address the issue. Or when the connection
@@ -1629,9 +1627,7 @@ connection_health:
 
       This event is recorded in both main application and daemon.
       The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      is not the same.
 
       An unstable event happens when the connection is showing issues,
       but silent switches may still address the issue.
@@ -1659,9 +1655,7 @@ connection_health:
 
       This event is recorded in both main application and daemon.
       The logic and cadence of health checks for each of these
-      is not the same. On the daemon this checks are only
-      done on the Android daemon and not on the iOS network extension.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      is not the same.
 
       Stable status is when the app is not in a no signal or unstable
       connection state.
@@ -1767,8 +1761,7 @@ connection_health:
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsession, currently only on Android.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      collected in daemonsession for mobile clients.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1791,8 +1784,7 @@ connection_health:
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsession, currently only on Android.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      collected in daemonsession for mobile clients.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1815,8 +1807,7 @@ connection_health:
 
       Only collected on desktop for vpnsession, as mobile apps
       frequently are relaunched during VPN sessions. It is
-      collected in daemonsession, currently only on Android.
-      To be done on iOS: https://mozilla-hub.atlassian.net/browse/VPN-4979
+      collected in daemonsession for mobile clients.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
