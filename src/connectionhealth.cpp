@@ -25,7 +25,7 @@ using namespace std::chrono_literals;
 constexpr std::chrono::seconds PING_INTERVAL_IDLE = 15s;
 
 // In seconds, the timeout for unstable pings.
-constexpr std::chrono::seconds PING_TIME_UNSTABLE = 1s;
+constexpr std::chrono::milliseconds PING_TIME_UNSTABLE = 1s;
 
 // In seconds, the timeout to detect no-signal pings.
 constexpr std::chrono::seconds PING_TIME_NOSIGNAL = 4s;
@@ -73,7 +73,7 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   });
 
   m_dnsPingInitialized = false;
-  m_dnsPingLatency = std::chrono::milliseconds(PING_TIME_UNSTABLE).count();
+  m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 }
 
 ConnectionHealth::~ConnectionHealth() { MZ_COUNT_DTOR(ConnectionHealth); }
@@ -123,7 +123,7 @@ void ConnectionHealth::startIdle() {
   // Reset the DNS latency measurement.
   m_dnsPingSequence = QRandomGenerator::global()->bounded(UINT16_MAX);
   m_dnsPingInitialized = false;
-  m_dnsPingLatency = std::chrono::milliseconds(PING_TIME_UNSTABLE).count();
+  m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 
   m_dnsPingSender.start();
   m_dnsPingTimer.start(PING_INTERVAL_IDLE);
@@ -246,8 +246,7 @@ void ConnectionHealth::healthCheckup() {
   // If recent pings took too long, then mark the connection as unstable.
   else if (m_dnsPingInitialized &&
            m_pingHelper.maximum() >
-               (std::chrono::milliseconds(PING_TIME_UNSTABLE).count() +
-                m_dnsPingLatency)) {
+               (PING_TIME_UNSTABLE.count() + m_dnsPingLatency)) {
     setStability(Unstable);
   }
   // Otherwise, the connection is stable.
