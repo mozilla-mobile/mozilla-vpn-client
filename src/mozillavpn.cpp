@@ -877,7 +877,7 @@ void MozillaVPN::mainWindowLoaded() {
     mozilla::glean_pings::Main.submit();
     emit MozillaVPN::sendGleanPings();
   });
-  m_gleanTimer.start(Constants::gleanTimeoutMsec());
+  m_gleanTimer.start(Constants::Timers::gleanTimeout());
   m_gleanTimer.setSingleShot(false);
 #endif
 #ifdef SENTRY_ENABLED
@@ -927,9 +927,7 @@ void MozillaVPN::onboardingCompleted() {
 }
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
-  logger.debug() << "Start scheduling account and servers"
-                 << Constants::schedulePeriodicTaskTimerMsec();
-  m_periodicOperationsTimer.start(Constants::schedulePeriodicTaskTimerMsec());
+  m_periodicOperationsTimer.start(Constants::Timers::schedulePeriodicTask());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {

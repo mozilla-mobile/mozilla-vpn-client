@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <QDateTime>
 #include <QString>
 
 namespace Constants {
@@ -146,38 +147,32 @@ PRODBETAEXPR(QString, fxaApiBaseUrl, "https://api.accounts.firefox.com",
 
 #undef PRODBETAEXPR
 
+namespace Timers {
+
 #if defined(UNIT_TEST)
-#  define CONSTEXPR(type, functionName, releaseValue, debugValue, \
-                    testingValue)                                 \
-    inline type functionName() { return testingValue; }
+#  define TIMEREXPR(functionName, releaseValue, debugValue, testingValue) \
+    inline std::chrono::milliseconds functionName() { return testingValue; }
 #else
-#  define CONSTEXPR(type, functionName, releaseValue, debugValue,   \
-                    testingValue)                                   \
-    inline type functionName() {                                    \
-      return Constants::inProduction() ? releaseValue : debugValue; \
+#  define TIMEREXPR(functionName, releaseValue, debugValue, testingValue) \
+    inline std::chrono::milliseconds functionName() noexcept {            \
+      return Constants::inProduction() ? releaseValue : debugValue;       \
     }
 #endif
-
-// Any 6 hours, a new check
-CONSTEXPR(uint32_t, releaseMonitorMsec, 21600000, 4000, 0)
-
-// in milliseconds, how often we should fetch the server list, the account and
-// so on. 60 minuts on prod, 5 minutes on stage
-CONSTEXPR(uint32_t, schedulePeriodicTaskTimerMsec, 3600000, 300000, 0)
-
-// how often we check the captive portal when the VPN is on.
-CONSTEXPR(uint32_t, captivePortalRequestTimeoutMsec, 10000, 4000, 0)
-
+using namespace std::chrono_literals;
+// How often we check for updates
+TIMEREXPR(releaseMonitor, 6h, 4s, 0s)
+// How often should we do periodic things (i.e update Serverlist)
+TIMEREXPR(schedulePeriodicTask, 60min, 5min, 0ms)
+// How often we should check for a Captive portal
+TIMEREXPR(captivePortalRequest, 10s, 4s, 0ms)
 // How fast the animated icon should move
-CONSTEXPR(uint32_t, statusIconAnimationMsec, 200, 200, 0)
-
+TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
 // How often glean pings are sent
-CONSTEXPR(uint32_t, gleanTimeoutMsec, 1200000, 1200000, 0)
-
+TIMEREXPR(gleanTimeout, 20min, 20min, 0ms)
 // How often to check in on the controller state
-CONSTEXPR(uint32_t, controllerPeriodicStateRecorderMsec, 10800000, 60000, 0)
-
-#undef CONSTEXPR
+TIMEREXPR(controllerRecordPeriodicState, 180min, 1min, 0ms)
+#undef TIMEREXPR
+}  // namespace Timers
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
 constexpr const char* API_STAGING_URL =
