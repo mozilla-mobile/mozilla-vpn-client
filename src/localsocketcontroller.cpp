@@ -194,11 +194,6 @@ void LocalSocketController::getBackendLogs(
 void LocalSocketController::cleanupBackendLogs() {
   logger.debug() << "Cleanup logs";
 
-  if (m_logCallback) {
-    m_logCallback("");
-    m_logCallback = nullptr;
-  }
-
   if (m_daemonState != eReady) {
     return;
   }
