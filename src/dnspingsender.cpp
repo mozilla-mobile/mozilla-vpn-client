@@ -82,7 +82,7 @@ bool DnsPingSender::start() {
 
   logger.debug() << "UDP socket bound to:"
                  << m_socket.localAddress().toString();
-  return false;
+  return true;
 }
 
 void DnsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
