@@ -998,7 +998,9 @@ sample:
           loss, stddev.
         type: string
       transport:
-        description: The Host network type (i.e wifi or 4g). Possible values are Unknown, Disconnected, Local, Site, Online
+        description:
+          The Host network type (i.e wifi or 4g). Possible values are Unknown,
+          Disconnected, Local, Site, Online
         type: string
 
   connectivity_stable:
@@ -1514,7 +1516,8 @@ session:
   daemon_session_start:
     type: datetime
     description: |
-      (Mobile-only) The time the user starts a VPN session from the daemon or network extension
+      (Mobile-only) The time the user starts a VPN session from the daemon or
+      network extension
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
@@ -1531,7 +1534,8 @@ session:
   daemon_session_end:
     type: datetime
     description: |
-      (Mobile-only) The time the user ends a VPN session from the daemon or network extension
+      (Mobile-only) The time the user ends a VPN session from the daemon or
+      network extension
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
@@ -1549,10 +1553,10 @@ session:
     type: uuid
     lifetime: user
     description: |
-      (Mobile-only) A unique identifier for each session. This is used to connect
-      unique VPN sessions across pings, and as a safety check on edge cases of VPN
-      activation/deactivation, such as a session being started/ended from mobile
-      system settings.
+      (Mobile-only) A unique identifier for each session.
+      This is used to connect unique VPN sessions across pings, and as a safety
+      check on edge cases of VPN activation/deactivation, such as a session
+      being started/ended from mobile system settings.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
@@ -1569,9 +1573,9 @@ session:
   daemon_session_source:
     type: string
     description: |
-      (Mobile-only) Where the VPN session started from, to determine how many sessions
-      start outside the app. Values should be "app" or "system". "system" covers
-      cases like system settings, autostart on boot, tile, etc.
+      (Mobile-only) Where the VPN session started from, to determine how many
+      sessions start outside the app. Values should be "app" or "system".
+      "system" covers cases like system settings, autostart on boot, tile, etc.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4038
     data_reviews:
@@ -1682,11 +1686,12 @@ connection_health:
       Count of times that the connection health check results
       in no signal.
 
-      The health check counters must not be considered as markers of time. There is a possible
-      situation in the health check (which calls the telemetry) which frequently results in more
-      than one count per second. The situation: A health check is conducted because a network
-      check did not return, and milliseconds later that network check returns and another health
-      check is started because of the return.
+      The health check counters must not be considered as markers of time.
+      There is a possible situation in the health check (which calls the
+      telemetry) which frequently results in more than one count per second.
+      The situation: A health check is conducted because a network check did not
+      return, and milliseconds later that network check returns and another
+      health check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1708,11 +1713,12 @@ connection_health:
       Count of times that the connection health check results
       in unstable.
 
-      The health check counters must not be considered as markers of time. There is a possible
-      situation in the health check (which calls the telemetry) which frequently results in more
-      than one count per second. The situation: A health check is conducted because a network
-      check did not return, and milliseconds later that network check returns and another health
-      check is started because of the return.
+      The health check counters must not be considered as markers of time.
+      There is a possible situation in the health check (which calls the
+      telemetry) which frequently results in more than one count per second.
+      The situation: A health check is conducted because a network check did not
+      return, and milliseconds later that network check returns and another
+      health check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5860
     data_reviews:
@@ -1733,11 +1739,12 @@ connection_health:
     description: |
       Count of times that the connection health check succeeds.
 
-      The health check counters must not be considered as markers of time. There is a possible
-      situation in the health check (which calls the telemetry) which frequently results in more
-      than one count per second. The situation: A health check is conducted because a network
-      check did not return, and milliseconds later that network check returns and another health
-      check is started because of the return.
+      The health check counters must not be considered as markers of time.
+      There is a possible situation in the health check (which calls the
+      telemetry) which frequently results in more than one count per second.
+      The situation: A health check is conducted because a network check did not
+      return, and milliseconds later that network check returns and another
+      health check is started because of the return.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-4700
     data_reviews:

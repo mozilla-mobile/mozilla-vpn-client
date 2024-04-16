@@ -28,7 +28,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:extractNativeLibs="true"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/vpnicon"
-        android:networkSecurityConfig="@xml/network_security_config">  
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"

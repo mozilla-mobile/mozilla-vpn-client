@@ -11,14 +11,13 @@ import com.adjust.sdk.*
  * a privacy proxy that minimizes tracking.
  */
 class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Configuration.Provider {
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             // This is required for Glean to be able to enqueue the PingUploadWorker
             // from both the daemon and the main app.
             .setDefaultProcessName(packageName)
             .setMinimumLoggingLevel(Log.INFO)
             .build()
-    }
 
     override fun onCreate() {
         super.onCreate()

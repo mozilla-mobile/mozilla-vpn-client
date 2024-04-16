@@ -8,137 +8,45 @@
 // qtglean binary instead and we don't event need to add it here because
 // those symbols are already alvailable from the VPN project.
 
-buildscript {
-    repositories {
-        maven {
-            url "https://maven.mozilla.org/maven2"
-        }
-        mavenCentral()
-    }
+def repositoryRoot = "$rootDir/../../.."
+def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
-    dependencies {
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.7.0"
-    }
-}
-
-plugins {
-    id "com.jetbrains.python.envs" version "0.0.31"
-}
-
-// Copied from from 3rdparty/glean/build.gradle
-def versions = [
-    android_gradle_plugin: '7.4.1',
-    coroutines: '1.6.4',
-    jna: '5.13.0',
-    junit: '4.12',
-    mockito: '3.11.2',
-    mockwebserver: '4.9.1', // This is different than a-c, but we're fine, it's only tests.
-    kotlin: '1.8.21',
-    robolectric: '4.10.2',
-    rust_android_plugin: '0.9.3',
-
-    // Android X dependencies
-    androidx_annotation: '1.7.0',
-    androidx_appcompat: '1.3.0',
-    androidx_browser: '1.3.0',
-    androidx_core: '1.9.0',
-    androidx_espresso: '3.5.1',
-    androidx_junit: '1.1.5',
-    androidx_lifecycle: '2.5.1',
-    androidx_test: '1.5.0',
-    androidx_work: '2.8.1',
-    androidx_uiautomator: '2.2.0',
-]
+// Path to the CMake build directory.
+// CMAKE?! Correct. Remember, we are using CMake to build this gradle project...
+// This is equivalent to CMAKE_BINARY_DIR from that parent CMake project.
+def cmakeBinaryDir = "$rootDir/../.."
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
-def repositoryRoot = "$rootDir/../../.."
-def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
-
-ext.allowGleanInternal = true
-ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = [
-    "$gleanVendoredPath/glean-core/metrics.yaml",
-    "$gleanVendoredPath/glean-core/pings.yaml",
-    "$gleanVendoredPath/glean-core/android/metrics.yaml",
-]
-
 android {
+    namespace "mozilla.telemetry.glean"
+
     compileSdkVersion Config.compileSdkVersion
     defaultConfig {
+        resConfig "en"
         minSdkVersion Config.minSdkVersion
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        debug {
-            // Export our rules in debug, as a consumer might still enable proguard/r8
-            consumerProguardFiles "$gleanVendoredPath/proguard-rules-consumer.pro"
-        }
-
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            consumerProguardFiles "$gleanVendoredPath/proguard-rules-consumer.pro"
-        }
-
-        withoutLib {
-            initWith release
-        }
+        targetSdkVersion Config.targetSdkVersion
+        buildConfigField "int", "VERSION_CODE", System.getenv("VERSIONCODE") ?: "99999"
+        buildConfigField "String", "VERSION_NAME", '"' + (System.getenv("SHORTVERSION") ?: "") + '"'
     }
 
     sourceSets {
-        all {
+        main {
             manifest.srcFile "$gleanVendoredPath/glean-core/android/src/main/AndroidManifest.xml"
-            kotlin.srcDirs += "$gleanVendoredPath/glean-core/android/src/main"
+            kotlin.srcDirs = [
+                "$gleanVendoredPath/glean-core/android/src/main",
+                "$cmakeBinaryDir/glean"
+            ]
         }
     }
 
-    // This is required to support new AndroidX support libraries.
-    // See mozilla-mobile/android-components#842
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    testOptions {
-        unitTests.all {
-            testLogging {
-                showStandardStreams = true
-            }
-
-            maxHeapSize = "1024m"
-        }
-
-        unitTests {
-            includeAndroidResources = true
-        }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
-android.libraryVariants.all { variant ->
-    def uniffiGeneratedPath = "generated/source/uniffi/${variant.name}/java"
-    def udlFilePath = "glean-core/src/glean.udl"
-    def t = tasks.register("generate${variant.name.capitalize()}UniFFIBindings", Exec) {
-        workingDir "$gleanVendoredPath"
-        commandLine "cargo", "uniffi-bindgen", "generate", "--no-format", "${udlFilePath}", "--language", "kotlin", "--out-dir", "${buildDir}/${uniffiGeneratedPath}"
-        outputs.dir "${buildDir}/${uniffiGeneratedPath}"
-        // Re-generate if the interface definition changes.
-        inputs.file "$gleanVendoredPath/glean-core/src/glean.udl"
-        // Re-generate if our uniffi-bindgen tooling changes.
-        inputs.dir "$gleanVendoredPath/tools/embedded-uniffi-bindgen/"
-        // Re-generate if our uniffi-bindgen version changes.
-        inputs.file "$gleanVendoredPath/Cargo.lock"
-    }
-    variant.registerJavaGeneratingTask(t.get(), new File(buildDir, uniffiGeneratedPath))
-}
+// From here on this code is copy pasted from 3rdparty/glean/glean-core/android/build.gradle
 
 configurations {
     // There's an interaction between Gradle's resolution of dependencies with different types
@@ -158,17 +66,24 @@ configurations {
 }
 
 dependencies {
-    jnaForTest "net.java.dev.jna:jna:$versions.jna@jar"
-    implementation "net.java.dev.jna:jna:$versions.jna@aar"
+    jnaForTest(gleanLibs.jna) {
+        artifact {
+            extension ="jar"
+            type = "jar"
+        }
+    }
+    implementation(gleanLibs.jna) {
+        artifact {
+            extension ="aar"
+            type = "aar"
+        }
+    }
 
-    // Note: the following version must be kept in sync
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
-
-    implementation "androidx.annotation:annotation:$versions.androidx_annotation"
-    implementation "androidx.lifecycle:lifecycle-common:$versions.androidx_lifecycle"
-    implementation "androidx.lifecycle:lifecycle-process:$versions.androidx_lifecycle"
-    implementation "androidx.work:work-runtime-ktx:$versions.androidx_work"
+    implementation gleanLibs.androidx.annotation
+    implementation gleanLibs.androidx.lifecycle.common
+    implementation gleanLibs.androidx.lifecycle.process
+    implementation gleanLibs.androidx.work
+    implementation gleanLibs.kotlinx.coroutines
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries
@@ -176,8 +91,8 @@ dependencies {
     // We can't simply create a separate package otherwise we would need
     // to provide a public API for the testing package to access the
     // Glean internals, which is something we would not want to do.
-    compileOnly "junit:junit:$versions.junit"
-    compileOnly "androidx.work:work-testing:$versions.androidx_work"
+    compileOnly gleanLibs.junit
+    compileOnly gleanLibs.test.work
 
     // For reasons unknown, resolving the jnaForTest configuration directly
     // trips a nasty issue with the Android-Gradle plugin 3.2.1, like `Cannot
@@ -187,15 +102,13 @@ dependencies {
     // causing it to be resolved.  Cloning first dissociates the configuration,
     // avoiding other configurations from being resolved.  Tricky!
     testImplementation files(configurations.jnaForTest.copyRecursive().files)
-    testImplementation "androidx.test.ext:junit:$versions.androidx_junit"
-    testImplementation "org.robolectric:robolectric:$versions.robolectric"
-    testImplementation "org.mockito:mockito-core:$versions.mockito"
-    testImplementation "androidx.test:core-ktx:$versions.androidx_test"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver"
-    testImplementation "androidx.work:work-testing:$versions.androidx_work"
+    testImplementation gleanLibs.mockito
+    testImplementation gleanLibs.mockwebserver
+    testImplementation gleanLibs.robolectric
+    testImplementation gleanLibs.test.core
+    testImplementation gleanLibs.test.junit.ext
+    testImplementation gleanLibs.test.work
 
-    androidTestImplementation "androidx.test:runner:$versions.androidx_test"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$versions.androidx_espresso"
+    androidTestImplementation gleanLibs.test.espresso.core
+    androidTestImplementation gleanLibs.test.runner
 }
-
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"

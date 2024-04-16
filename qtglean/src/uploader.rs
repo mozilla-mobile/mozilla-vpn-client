@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use glean::net::{PingUploader, UploadResult};
+use glean::net::{PingUploader, UploadResult, PingUploadRequest};
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 
@@ -20,9 +20,9 @@ impl VPNPingUploader {
 }
 
 impl PingUploader for VPNPingUploader {
-    fn upload(&self, url: String, body: Vec<u8>, headers: Vec<(String, String)>) -> UploadResult {
+    fn upload(&self, upload_request: PingUploadRequest) -> UploadResult {
         let mut parsed_headers = HeaderMap::new();
-        for (name, value) in headers {
+        for (name, value) in upload_request.headers {
             if let (Ok(parsed_name), Ok(parsed_value)) = (
                 HeaderName::from_bytes(&name.as_bytes()),
                 HeaderValue::from_str(&value),
@@ -33,9 +33,9 @@ impl PingUploader for VPNPingUploader {
 
         let response = self
             .client
-            .post(url)
+            .post(upload_request.url)
             .headers(parsed_headers)
-            .body(body)
+            .body(upload_request.body)
             .send();
 
         let status = match response {
