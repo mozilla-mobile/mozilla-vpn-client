@@ -9,6 +9,9 @@ echo pwd
 ls 
 cd vcs
 ls 
+
+
+
 # save the passed QT_Version
 # as that will be overwritten once 
 # we enable the env.yml
@@ -16,6 +19,15 @@ BACKUP_QT_VERSION=${QT_VERSION}
 chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -u -p .
 source bin/activate
+
+# Normally pip is locked down to only 
+# allow download from moz-pip mirror. 
+# The packages are firefox only and everything
+# we're going to fetch is pinned down, so 
+# let's remove that restriction for the current task. 
+rm -f ~/.config/pip/pip.conf
+pip config --user set install.no-index 0 
+pip config debug
 
 conda env create -f env.yml -n vpn
 conda activate vpn
@@ -41,3 +53,6 @@ find ../../public/build/ -mindepth 1 -delete
 
 conda-pack -p envs/vpn -o conda-ios.tar.gz
 mv conda-ios.tar.gz  ../../public/build
+
+# remove our Pip conf, so the restrictions are back. 
+rm -f ~/.config/pip/pip.conf
