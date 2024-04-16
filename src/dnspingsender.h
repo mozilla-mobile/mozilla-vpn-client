@@ -19,7 +19,11 @@ class DnsPingSender final : public PingSender {
 
   void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
-  void start();
+  /**
+   * Starts the Underlying socket, returns true
+   * if the PingSender is now ready to be used.
+   */
+  [[nodiscard]] bool start();
   void stop() { m_socket.close(); }
 
  private:
