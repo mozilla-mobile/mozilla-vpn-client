@@ -52,28 +52,6 @@ describe('Server list', function() {
         '| Current exit country code:', currentCountryCode);
   });
 
-  it('checking collapsible card', async function () {
-    //Collapsible card is only visible when help sheets are disabled
-    if (await vpn.isFeatureEnabled('helpSheets')) {
-      await vpn.flipFeatureOff("helpSheets");
-    }
-
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
-    await vpn.waitForQuery(
-        queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD.visible());
-
-    assert(
-        await vpn.getQueryProperty(
-            queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD,
-            'expanded') === 'false');
-
-    await vpn.waitForQueryAndClick(
-        queries.screenHome.serverListView.VPN_MULTHOP_CHEVRON.visible())
-    assert(await vpn.getQueryProperty(
-        queries.screenHome.serverListView.VPN_COLLAPSIBLE_CARD, 'expanded'))
-  });
-
   it('check the countries and cities for multihop entries', async () => {
     /**
      * This test navigates to the Multi-Hop -> ENTRY_BUTTON

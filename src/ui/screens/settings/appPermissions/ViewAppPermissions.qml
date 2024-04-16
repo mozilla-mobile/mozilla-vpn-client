@@ -31,7 +31,7 @@ MZViewBase {
 
     property Component rightMenuButton: Component {
         Loader {
-            active: MZFeatureList.get("helpSheets").isSupported
+            active: true
             sourceComponent: MZIconButton {
                 objectName: "excludedAppsHelpButton"
 
