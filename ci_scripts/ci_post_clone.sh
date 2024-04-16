@@ -30,7 +30,7 @@ NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
 
-export INDEX_KEY=index.mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.conda-ios-x86_64-6.6.0.latest
+export INDEX_KEY=mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.conda-ios-x86_64-6.6.0.latest
 curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/$INDEX_KEY/artifacts/public%2Fbuild%2Fconda-ios.tar.gz --output conda-ios.tar.gz 
 
 tar -xf conda-ios.tar.gz 
