@@ -19,12 +19,14 @@
 #include "settingsholder.h"
 #include "task.h"
 
-// Timeout for the network requests.
-constexpr uint32_t REQUEST_TIMEOUT_MSEC = 15000;
 constexpr int REQUEST_MAX_REDIRECTS = 4;
 
 namespace {
 Logger logger("NetworkRequest");
+
+using namespace std::chrono_literals;
+// Timeout for the network requests.
+constexpr auto REQUEST_TIMEOUT = 15s;
 
 #ifndef QT_NO_SSL
 QList<QSslCertificate> s_intervention_certs;
@@ -118,7 +120,7 @@ void NetworkRequest::post(const QUrl& url, QIODevice* uploadData) {
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->post(m_request, uploadData));
 
-  m_timer.start(REQUEST_TIMEOUT_MSEC);
+  m_timer.start(REQUEST_TIMEOUT);
 }
 
 void NetworkRequest::post(const QUrl& url, const QJsonObject& obj) {
@@ -136,7 +138,7 @@ void NetworkRequest::post(const QUrl& url, const QByteArray& body) {
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->post(m_request, body));
 
-  m_timer.start(REQUEST_TIMEOUT_MSEC);
+  m_timer.start(REQUEST_TIMEOUT);
 }
 
 void NetworkRequest::deleteResource(const QUrl& url) {
@@ -150,7 +152,7 @@ void NetworkRequest::deleteResource(const QUrl& url) {
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->deleteResource(m_request));
 
-  m_timer.start(REQUEST_TIMEOUT_MSEC);
+  m_timer.start(REQUEST_TIMEOUT);
 }
 
 void NetworkRequest::replyFinished() {
@@ -310,7 +312,7 @@ void NetworkRequest::getResource() {
       NetworkManager::instance()->networkAccessManager();
   handleReply(manager->get(m_request));
 
-  m_timer.start(REQUEST_TIMEOUT_MSEC);
+  m_timer.start(REQUEST_TIMEOUT);
 }
 
 void NetworkRequest::handleReply(QNetworkReply* reply) {

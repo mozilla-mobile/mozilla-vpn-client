@@ -10,10 +10,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-// in seconds, hide alerts
-constexpr const uint32_t HIDE_ALERT_SEC = 4;
-
 namespace {
+using namespace std::chrono_literals;
+constexpr const std::chrono::seconds HIDE_ALERT_DELAY = 4s;
+
 ErrorHandler* s_instance = nullptr;
 Logger logger("ErrorHandler");
 
@@ -228,7 +228,7 @@ void ErrorHandler::setAlert(AlertType alert) {
   m_alertTimer.stop();
 
   if (alert != NoAlert) {
-    m_alertTimer.start(1000 * HIDE_ALERT_SEC);
+    m_alertTimer.start(HIDE_ALERT_DELAY);
   }
 
   m_alert = alert;

@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QRandomGenerator>
+#include <chrono>
 
 #include "constants.h"
 #include "controller.h"
@@ -18,7 +19,28 @@
 
 namespace {
 Logger logger("ConnectionHealth");
-}
+
+using namespace std::chrono_literals;
+// In seconds, the time between pings while the VPN is deactivated.
+constexpr std::chrono::seconds PING_INTERVAL_IDLE = 15s;
+
+// In seconds, the timeout for unstable pings.
+constexpr std::chrono::milliseconds PING_TIME_UNSTABLE = 1s;
+
+// In seconds, the timeout to detect no-signal pings.
+constexpr std::chrono::seconds PING_TIME_NOSIGNAL = 4s;
+
+// Duration of time after a connection change when we should be skeptical
+// of network reachability problems.
+constexpr std::chrono::seconds SETTLING_TIMEOUT = 3s;
+
+// Packet loss threshold for a connection to be considered unstable.
+constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
+
+// Destination address for latency measurements when the VPN is
+// deactivated. This is the doh.mullvad.net DNS server.
+constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
+}  // namespace
 
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   MZ_COUNT_CTOR(ConnectionHealth);
@@ -55,7 +77,7 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   });
 
   m_dnsPingInitialized = false;
-  m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
+  m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 }
 
 ConnectionHealth::~ConnectionHealth() { MZ_COUNT_DTOR(ConnectionHealth); }
@@ -87,8 +109,8 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
   m_currentGateway = serverIpv4Gateway;
   m_deviceAddress = deviceIpv4Address;
   m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
-  m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
-  m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
+  m_noSignalTimer.start(PING_TIME_NOSIGNAL);
+  m_healthCheckTimer.start(PING_TIME_UNSTABLE);
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
@@ -105,15 +127,16 @@ void ConnectionHealth::startIdle() {
   // Reset the DNS latency measurement.
   m_dnsPingSequence = QRandomGenerator::global()->bounded(UINT16_MAX);
   m_dnsPingInitialized = false;
-  m_dnsPingLatency = PING_TIME_UNSTABLE_SEC * 1000;
+  m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 
   if (m_dnsPingSender.start()) {
-    m_dnsPingTimer.start(PING_INTERVAL_IDLE_SEC * 1000);
+    m_dnsPingTimer.start(PING_INTERVAL_IDLE);
     // Send an initial ping right away.
     m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
     m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                              m_dnsPingSequence);
   }
+
   stopTimingDistributionMetric(m_stability);
 }
 
@@ -188,8 +211,8 @@ void ConnectionHealth::pingSentAndReceived(qint64 msec) {
 #endif
 
   // If a ping has been received, we have signal. Restart the timers.
-  m_noSignalTimer.start(PING_TIME_NOSIGNAL_SEC * 1000);
-  m_healthCheckTimer.start(PING_TIME_UNSTABLE_SEC * 1000);
+  m_noSignalTimer.start(PING_TIME_NOSIGNAL);
+  m_healthCheckTimer.start(PING_TIME_UNSTABLE);
 
   healthCheckup();
   emit pingReceived();
@@ -227,7 +250,7 @@ void ConnectionHealth::healthCheckup() {
   // If recent pings took too long, then mark the connection as unstable.
   else if (m_dnsPingInitialized &&
            m_pingHelper.maximum() >
-               (PING_TIME_UNSTABLE_SEC * 1000 + m_dnsPingLatency)) {
+               (PING_TIME_UNSTABLE.count() + m_dnsPingLatency)) {
     setStability(Unstable);
   }
   // Otherwise, the connection is stable.
@@ -239,7 +262,7 @@ void ConnectionHealth::healthCheckup() {
 void ConnectionHealth::startUnsettledPeriod() {
   logger.debug() << "Starting unsettled period.";
   emit unsettledChanged();
-  m_settlingTimer.start(SETTLING_TIMEOUT_SEC * 1000);
+  m_settlingTimer.start(SETTLING_TIMEOUT);
 }
 
 void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
