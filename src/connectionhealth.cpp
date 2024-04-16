@@ -336,7 +336,6 @@ void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
   }
 
   if (oldStability == newStability) {
-    logger.debug() << "No stability change for telemetry.";
     return;
   }
 
