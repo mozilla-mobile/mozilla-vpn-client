@@ -10,7 +10,8 @@ buildCache {
     }
 }
 
-def repositoryRoot = "$rootDir/../../.."
+// If we are running ./gradlew from the android-build/ folder we don't need this env var.
+def repositoryRoot = System.getenv("REPOSITORY_ROOT") ?: "$rootDir/../../.."
 def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
 dependencyResolutionManagement {

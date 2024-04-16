@@ -99,7 +99,7 @@ jobs:
         working-directory: android
         run: |
           conda info
-          ./gradlew ktlint
+          REPOSITORY_ROOT=$(pwd)/.. ./gradlew ktlint
 
   check-language-json:
     name: Check if languages.json is valid
