@@ -22,28 +22,17 @@ buildscript {
 
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.mozilla.telemetry:glean-gradle-plugin:52.7.0"
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
-    id "com.jetbrains.python.envs" version "0.0.31"
 }
 
 apply plugin: "com.android.library"
 apply plugin: "org.jetbrains.kotlin.android"
 
-apply plugin: "org.mozilla.telemetry.glean-gradle-plugin"
 
-ext.gleanNamespace = "mozilla.telemetry.glean"
-ext.gleanYamlFiles = [
-    "$rootDir/../../../src/telemetry/metrics.yaml",
-    "$rootDir/../../../src/telemetry/interaction_metrics.yaml",
-    "$rootDir/../../../src/telemetry/impression_metrics.yaml",
-    "$rootDir/../../../src/telemetry/outcome_metrics.yaml",
-    "$rootDir/../../../src/telemetry/pings.yaml"
-]
 
 android {
     compileSdkVersion Config.compileSdkVersion
@@ -52,6 +41,8 @@ android {
         minSdkVersion Config.minSdkVersion
         targetSdkVersion Config.targetSdkVersion
 
+        buildConfigField "int", "VERSION_CODE", System.getenv("VERSIONCODE") ?: "99999"
+        buildConfigField "String", "VERSION_NAME", '"' + (System.getenv("SHORTVERSION") ?: "") + '"'
         buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
         buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
         buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
@@ -84,6 +75,14 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            kotlin.srcDirs = [
+                "${System.getProperty('user.dir')}/../../daemontelemetry"
+            ]
+        }
+    }
+
     buildTypes {
         debug {
             minifyEnabled false
@@ -91,7 +90,8 @@ android {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug",
                               "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
+                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
                 }
             }
         }
@@ -102,7 +102,8 @@ android {
                 cmake {
                     arguments "-DANDROID_PACKAGE_NAME=${groupName}",
                               "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}"
+                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
+                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
                 }
             }
         }
@@ -117,8 +118,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation SharedDependencies.androidx_core
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     implementation project(path: ':qtglean')
     implementation project(path: ':common')

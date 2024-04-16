@@ -273,10 +273,6 @@ describe('Settings', function() {
     });
 
     it('Checking the privacy help sheet', async () => {
-      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-        await vpn.flipFeatureOn('helpSheets');
-      }
-
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
@@ -304,10 +300,6 @@ describe('Settings', function() {
       });
 
       it('Checking privacy help sheet telemetry', async () => {
-        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-          await vpn.flipFeatureOn('helpSheets');
-        }
-
         const privacyHelpSheetTelemetryScreenId = "privacy_features_info"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
@@ -582,10 +574,6 @@ describe('Settings', function() {
     });
 
     it('Checking the dns help sheet', async () => {
-      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-        await vpn.flipFeatureOn('helpSheets');
-      }
-
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
@@ -613,10 +601,6 @@ describe('Settings', function() {
       });
 
       it('Checking DNS help sheet telemetry', async () => {
-        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-          await vpn.flipFeatureOn('helpSheets');
-        }
-
         const dnsHelpSheetTelemetryScreenId = "dns_settings_info"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
@@ -839,12 +823,15 @@ describe('Settings', function() {
       return;
     }
 
-    const getHelpTelemetryScreenId = "help"
+    const getHelpTelemetryScreenId =
+        'help'
 
-    await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
+        await vpn.waitForQueryAndClick(
+            queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
 
-    const helpScreenEvents = await vpn.gleanTestGetValue("impression", "helpScreen", "main");
+    const helpScreenEvents =
+        await vpn.gleanTestGetValue('impression', 'helpScreen', 'main');
     assert.equal(helpScreenEvents.length, 1);
     const helpScreenEventsExtras = helpScreenEvents[0].extra;
     assert.equal(getHelpTelemetryScreenId, helpScreenEventsExtras.screen);

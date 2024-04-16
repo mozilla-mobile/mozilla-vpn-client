@@ -7,7 +7,7 @@ import NetworkExtension
 
 let VPN_NAME = "Mozilla VPN"
 
-@objc class VPNIPAddressRange : NSObject {
+@objc class VPNIPAddressRange: NSObject {
     public var address: NSString = ""
     public var networkPrefixLength: UInt8 = 0
     public var isIpv6: Bool = false
@@ -21,7 +21,30 @@ let VPN_NAME = "Mozilla VPN"
     }
 }
 
-public class IOSControllerImpl : NSObject {
+@objc class VPNServerData: NSObject {
+    // This should be a struct, but we must use a class for objc interoperability
+    let dns: String
+    let ipv6Gateway: String
+    let publicKey: String
+    let ipv4AddrIn: String
+    let port: Int
+
+    @objc init(dns: String, ipv6Gateway: String, publicKey: String, ipv4AddrIn: String, port: Int) {
+        self.dns = dns
+        self.ipv6Gateway = ipv6Gateway
+        self.publicKey = publicKey
+        self.ipv4AddrIn = ipv4AddrIn
+        self.port = port
+
+        super.init()
+    }
+
+    var serverWithPort: String {
+        return self.ipv4AddrIn + ":\(self.port )"
+    }
+}
+
+public class IOSControllerImpl: NSObject {
     private static let logger = IOSLoggerImpl(tag: "IOSSwiftController")
 
     private var stateChangeCallback: ((Bool, Date?) -> Void?)? = nil
@@ -116,52 +139,31 @@ public class IOSControllerImpl : NSObject {
         }
     }
 
-    @objc func connect(dnsServer: String, serverIpv6Gateway: String, serverPublicKey: String, serverIpv4AddrIn: String, serverPort: Int,  excludeLocalNetworks: Bool, allowedIPAddressRanges: Array<VPNIPAddressRange>, reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(serverData: VPNServerData, fallbackServer: VPNServerData?, excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
             (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
 
-            let keyData = PublicKey(base64Key: serverPublicKey)!
-            let dnsServerIP = IPv4Address(dnsServer)
-            let ipv6GatewayIP = IPv6Address(serverIpv6Gateway)
-
-            var peerConfiguration = PeerConfiguration(publicKey: keyData)
-            peerConfiguration.endpoint = Endpoint(from: serverIpv4AddrIn + ":\(serverPort )")
-            peerConfiguration.allowedIPs = []
-
-            allowedIPAddressRanges.forEach {
-                if (!$0.isIpv6) {
-                    peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
-                } else {
-                    peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
-                }
+            let config = createConfig(for: serverData, allowedIPAddressRanges: allowedIPAddressRanges)
+            let fallbackConfig: TunnelConfiguration?
+            if let fallbackServer = fallbackServer {
+                fallbackConfig = createConfig(for: fallbackServer, allowedIPAddressRanges: allowedIPAddressRanges)
+            } else {
+                fallbackConfig = nil
             }
 
-            var peerConfigurations: [PeerConfiguration] = []
-            peerConfigurations.append(peerConfiguration)
-
-            var interface = InterfaceConfiguration(privateKey: self.privateKey!)
-
-            if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
-               let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
-                interface.addresses = [ipv4Address, ipv6Address]
-            }
-            interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
-
-            let config = TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
-
-            return self.configureTunnel(config: config, reason: reason, serverName: serverIpv4AddrIn + ":\(serverPort )", excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(config: config, reason: reason, serverName: serverData.serverWithPort, fallbackConfig: fallbackConfig, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, excludeLocalNetworks: Bool, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, fallbackConfig: TunnelConfiguration?, excludeLocalNetworks: Bool, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
             proto!.disconnectOnSleep = false
-            proto!.serverAddress = serverName;
+            proto!.serverAddress = serverName
 
             if #available(iOS 15.1, *) {
                 IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
@@ -174,11 +176,13 @@ public class IOSControllerImpl : NSObject {
                 }
             }
 
-            var configHack = proto?.providerConfiguration ?? [:]
-            configHack["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
-            configHack["gleanDebugTag"] = gleanDebugTag
-            configHack["installationId"] = installationId
-            proto?.providerConfiguration = configHack
+            var customConfig = proto?.providerConfiguration ?? [:]
+            customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            customConfig["gleanDebugTag"] = gleanDebugTag
+            customConfig["installationId"] = installationId
+
+            customConfig["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
+            proto?.providerConfiguration = customConfig
 
             tunnel.protocolConfiguration = proto
             tunnel.localizedDescription = VPN_NAME
@@ -299,5 +303,57 @@ public class IOSControllerImpl : NSObject {
 
             return
         }
+    }
+
+    @objc func silentServerSwitch() {
+        guard let session = TunnelManager.session else {
+            IOSControllerImpl.logger.info(message: "No tunnel session available to send silentServerSwitch message");
+            return
+        }
+
+        let message = TunnelMessage.silentServerSwitch;
+        IOSControllerImpl.logger.info(message: "Sending new message \(message)");
+        do {
+            try session.sendProviderMessage(message.encode()) { _ in
+                // IMPORTANT: Must keep this log line (or other code) in this closure.
+                // The closure is optional for `sendProviderMessage`. However, without using a closure, the message is
+                // sent but not received by the network extention. Mysterious, but couldn't figure out why in a
+                // reasonable amount of time.
+                IOSControllerImpl.logger.info(message: "\(message) sent");
+            }
+        } catch {
+            IOSControllerImpl.logger.error(message: "Failed to send message to session. \(error)")
+        }
+    }
+
+    private func createConfig(for serverData: VPNServerData, allowedIPAddressRanges: [VPNIPAddressRange]) -> TunnelConfiguration {
+        let keyData = PublicKey(base64Key: serverData.publicKey)!
+        let dnsServerIP = IPv4Address(serverData.dns)
+        let ipv6GatewayIP = IPv6Address(serverData.ipv6Gateway)
+
+        var peerConfiguration = PeerConfiguration(publicKey: keyData)
+        peerConfiguration.endpoint = Endpoint(from: serverData.ipv4AddrIn + ":\(serverData.port )")
+        peerConfiguration.allowedIPs = []
+
+        allowedIPAddressRanges.forEach {
+            if (!$0.isIpv6) {
+                peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv4Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
+            } else {
+                peerConfiguration.allowedIPs.append(IPAddressRange(address: IPv6Address($0.address as String)!, networkPrefixLength: $0.networkPrefixLength))
+            }
+        }
+
+        var peerConfigurations: [PeerConfiguration] = []
+        peerConfigurations.append(peerConfiguration)
+
+        var interface = InterfaceConfiguration(privateKey: self.privateKey!)
+
+        if let ipv4Address = IPAddressRange(from: deviceIpv4Address!),
+           let ipv6Address = IPAddressRange(from: deviceIpv6Address!) {
+            interface.addresses = [ipv4Address, ipv6Address]
+        }
+        interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
+
+        return TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
     }
 }

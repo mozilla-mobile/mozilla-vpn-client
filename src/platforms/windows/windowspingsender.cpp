@@ -23,13 +23,53 @@
 
 #pragma comment(lib, "Ws2_32")
 
+/*
+ * On 64 Bit systems we need to use another struct.
+ */
+#ifdef _WIN64
+using MZ_ICMP_ECHO_REPLY = ICMP_ECHO_REPLY32;
+#else
+using MZ_ICMP_ECHO_REPLY = ICMP_ECHO_REPLY;
+#endif
+
 constexpr WORD WindowsPingPayloadSize = sizeof(quint16);
+constexpr size_t ICMP_ERR_SIZE = 8;
+/*
+ * IcmpSendEcho2 expects us to provide a Buffer that is
+ * at least this size
+ */
+constexpr size_t MinimumReplyBufferSize =
+    sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + ICMP_ERR_SIZE +
+    sizeof(IO_STATUS_BLOCK);
+/**
+ * ICMP_ECHO_REPLY32 is smaller than ICMP_ECHO_REPLY, so if we use that due to
+ * binary compat Windows will add some padding.
+ */
+constexpr auto reply_padding =
+    sizeof(ICMP_ECHO_REPLY) - sizeof(MZ_ICMP_ECHO_REPLY);
+
+// Disable Packing, so the compiler does not add padding in this struct between
+// different sized types.
+#pragma pack(push, 1)
+struct ICMP_ECHO_REPLY_BUFFER {
+  MZ_ICMP_ECHO_REPLY reply;
+  std::array<uint8_t, reply_padding> padding;
+  quint16 payload;
+  std::array<char8_t, ICMP_ERR_SIZE> icmp_error;
+  IO_STATUS_BLOCK status;
+};
+#pragma pack(pop)
+
+// If the Size is not the MinimumReplyBufferSize, the compiler added
+// padding, so the fields will not be properly aligned with
+// what IcmpSendEcho2 will write.
+static_assert(sizeof(ICMP_ECHO_REPLY_BUFFER) == MinimumReplyBufferSize,
+              "Fulfills the size requirements");
 
 struct WindowsPingSenderPrivate {
   HANDLE m_handle;
   HANDLE m_event;
-  unsigned char m_buffer[sizeof(ICMP_ECHO_REPLY) + WindowsPingPayloadSize + 8 +
-                         sizeof(IO_STATUS_BLOCK)];
+  ICMP_ECHO_REPLY_BUFFER m_replyBuffer;
 };
 
 namespace {
@@ -61,7 +101,7 @@ WindowsPingSender::WindowsPingSender(const QHostAddress& source,
   QObject::connect(m_notifier, &QWinEventNotifier::activated, this,
                    &WindowsPingSender::pingEventReady);
 
-  memset(m_private->m_buffer, 0, sizeof(m_private->m_buffer));
+  m_private->m_replyBuffer = {};
 }
 
 WindowsPingSender::~WindowsPingSender() {
@@ -89,16 +129,33 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 
   quint32 v4dst = dest.toIPv4Address();
   if (m_source.isNull()) {
-    IcmpSendEcho2(m_private->m_handle, m_private->m_event, nullptr, nullptr,
-                  qToBigEndian<quint32>(v4dst), &sequence, sizeof(sequence),
-                  nullptr, m_private->m_buffer, sizeof(m_private->m_buffer),
-                  10000);
+    IcmpSendEcho2(m_private->m_handle,               // IcmpHandle,
+                  m_private->m_event,                // Event
+                  nullptr,                           // ApcRoutine
+                  nullptr,                           // ApcContext
+                  qToBigEndian<quint32>(v4dst),      // DestinationAddress
+                  &sequence,                         // RequestData
+                  sizeof(sequence),                  // RequestSize
+                  nullptr,                           // RequestOptions
+                  &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
+                  sizeof(m_private->m_replyBuffer),  // ReplySize
+                  10000                              // Timeout
+    );
   } else {
     quint32 v4src = m_source.toIPv4Address();
-    IcmpSendEcho2Ex(m_private->m_handle, m_private->m_event, nullptr, nullptr,
-                    qToBigEndian<quint32>(v4src), qToBigEndian<quint32>(v4dst),
-                    &sequence, sizeof(sequence), nullptr, m_private->m_buffer,
-                    sizeof(m_private->m_buffer), 10000);
+    IcmpSendEcho2Ex(m_private->m_handle,               // IcmpHandle
+                    m_private->m_event,                // Event
+                    nullptr,                           // ApcRoutine
+                    nullptr,                           // ApcContext
+                    qToBigEndian<quint32>(v4src),      // SourceAddress
+                    qToBigEndian<quint32>(v4dst),      // DestinationAddress
+                    &sequence,                         // RequestData
+                    sizeof(sequence),                  // RequestSize
+                    nullptr,                           // RequestOptions
+                    &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
+                    sizeof(m_private->m_replyBuffer),  // ReplySize
+                    10000                              // Timeout
+    );
   }
 
   DWORD status = GetLastError();
@@ -111,8 +168,11 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 }
 
 void WindowsPingSender::pingEventReady() {
-  DWORD replyCount =
-      IcmpParseReplies(m_private->m_buffer, sizeof(m_private->m_buffer));
+  // Cleanup all data once we're done with m_replyBuffer.
+  const auto guard = qScopeGuard([this]() { m_private->m_replyBuffer = {}; });
+
+  DWORD replyCount = IcmpParseReplies(&m_private->m_replyBuffer,
+                                      sizeof(m_private->m_replyBuffer));
   if (replyCount == 0) {
     DWORD error = GetLastError();
     if (error == IP_REQ_TIMED_OUT) {
@@ -123,14 +183,25 @@ void WindowsPingSender::pingEventReady() {
                    << " Message: " << errmsg;
     return;
   }
-
-  const ICMP_ECHO_REPLY* replies = (const ICMP_ECHO_REPLY*)m_private->m_buffer;
-  for (DWORD i = 0; i < replyCount; i++) {
-    if (replies[i].DataSize < sizeof(quint16)) {
-      continue;
-    }
-    quint16 sequence;
-    memcpy(&sequence, replies[i].Data, sizeof(quint16));
-    emit recvPing(sequence);
+  // We only allocated for one reply, so more should be impossible.
+  if (replyCount != 1) {
+    logger.error() << "Invalid amount of responses recieved";
+    return;
   }
+  if (m_private->m_replyBuffer.reply.Data == nullptr) {
+    logger.error() << "Did get a ping response without payload";
+    return;
+  }
+  // Assert that the (void*) pointer of Data is pointing
+  // to our ReplyBuffer payload.
+  if (m_private->m_replyBuffer.reply.Data == nullptr) {
+    logger.error() << "Did get a ping response without payload";
+    return;
+  }
+  // Assert that the (void*) pointer of Data is pointing
+  // to our ReplyBuffer payload.
+  assert(m_private->m_replyBuffer.reply.Data ==
+         static_cast<PVOID>(&m_private->m_replyBuffer.payload));
+
+  emit recvPing(m_private->m_replyBuffer.payload);
 }

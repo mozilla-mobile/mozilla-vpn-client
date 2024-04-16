@@ -6,7 +6,7 @@ import NetworkExtension
 import os
 import IOSGlean
 
-class PacketTunnelProvider: NEPacketTunnelProvider {
+class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
 
     private let connectionHealthMonitor = ConnectionHealth()
@@ -36,6 +36,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     override init() {
         super.init()
+
+        connectionHealthMonitor.serverSwitchingDelegate = self
 
         // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
@@ -202,35 +204,43 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                 }
             case .configurationSwitch(let configString):
                 // Updates the tunnel configuration and responds with the active configuration
-                logger.info(message: "Switching tunnel configuration")
-
-                do {
-                  let tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: configString)
-                  adapter.update(tunnelConfiguration: tunnelConfiguration) { error in
-                    if let error = error {
-                        self.logger.error(message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
-                      completionHandler(nil)
-                      return
-                    }
-
-                    self.adapter.getRuntimeConfiguration { settings in
-                      var data: Data?
-                      if let settings = settings {
-                          data = settings.data(using: .utf8)!
-                      }
-                      completionHandler(data)
-                    }
-                  }
-                } catch {
-                  completionHandler(nil)
-                }
+                logger.info(message: "Switching tunnel configuration from app message")
+                updateServerConfig(with: configString, completionHandler: completionHandler)
             case .telemetryEnabledChanged(let uploadEnabled):
                 Glean.shared.setUploadEnabled(uploadEnabled)
+                completionHandler(nil)
+            case .silentServerSwitch:
+                silentServerSwitch()
                 completionHandler(nil)
             }
         } catch {
             logger.error(message: "Unexpected error while parsing message: \(error).")
             completionHandler(nil)
+        }
+    }
+
+    private func updateServerConfig(with configString: String, completionHandler: ((Data?) -> Void)? = nil) {
+        do {
+            let tunnelConfiguration = try TunnelConfiguration(fromWgQuickConfig: configString)
+            adapter.update(tunnelConfiguration: tunnelConfiguration) { error in
+                if let error = error {
+                    self.logger.error(message: "Failed to switch tunnel configuration: \(error.localizedDescription)")
+                    completionHandler?(nil)
+                    return
+                }
+            }
+        } catch {
+          completionHandler?(nil)
+        }
+    }
+
+    func silentServerSwitch() {
+        if let fallbackServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] as? String), !fallbackServerConfig.isEmpty {
+            self.logger.info(message: "Sending silent server switch in Network Extension")
+            updateServerConfig(with: fallbackServerConfig)
+            (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] = ""
+        } else {
+            logger.info(message: "Silent server switch called, but no fallbackConfig available")
         }
     }
 }

@@ -297,3 +297,13 @@ void ServerData::setExitServerPublicKey(const QString& publicKey) {
   logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
   m_exitServerPublicKey = publicKey;
 }
+
+const Server ServerData::backupServer(const QString& currentPublicKey) const {
+  const QList<Server> serverList = exitServers();
+  foreach (auto item, serverList) {
+    if (item.publicKey() != currentPublicKey) {
+      return item;
+    }
+  }
+  return Server();
+}

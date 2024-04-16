@@ -19,7 +19,7 @@ MZViewBase {
     readonly property string telemetryScreenId : "privacy_features"
     property Component rightMenuButton: Component {
         Loader {
-            active: MZFeatureList.get("helpSheets").isSupported
+            active: true
             sourceComponent: MZIconButton {
                 objectName: "privacyHelpButton"
 
@@ -167,4 +167,3 @@ MZViewBase {
         }
     }
 }
-

@@ -19,10 +19,6 @@ describe('Devices', function() {
     });
 
     it('Checking the devices help sheet', async () => {
-      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-        await vpn.flipFeatureOn('helpSheets');
-      }
-  
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
@@ -50,10 +46,6 @@ describe('Devices', function() {
       });
 
       it('Checking devices screen help sheet telemetry', async () => {
-        if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-          await vpn.flipFeatureOn('helpSheets');
-        }
-
         const devicesHelpSheetTelemetryScreenId = "my_devices_info"
 
         await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());

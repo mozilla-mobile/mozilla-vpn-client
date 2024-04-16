@@ -86,10 +86,7 @@ execute_process(
         ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml
             -- generate --language swift --out-dir ${CMAKE_CURRENT_BINARY_DIR}/glean
             ${GLEAN_VENDORED_PATH}/glean-core/src/glean.udl
-    COMMAND ${CMAKE_COMMAND} -E env
-            SOURCE_ROOT=${CMAKE_CURRENT_BINARY_DIR}
-            PROJECT=${BUILD_IOS_APP_IDENTIFIER}
-        ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh
+    COMMAND ${PYTHON_EXECUTABLE} -m glean_parser translate -f swift
             -o ${CMAKE_CURRENT_BINARY_DIR}/glean/generated --allow-reserved
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND_ERROR_IS_FATAL ANY
@@ -113,8 +110,8 @@ list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     DEPENDS ${PINGS_LIST} ${METRICS_LIST}
-    COMMAND ${GLEAN_VENDORED_PATH}/glean-core/ios/sdk_generator.sh 
-        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -g IOSGlean
+    COMMAND ${PYTHON_EXECUTABLE} -m glean_parser translate -f swift
+        -o ${CMAKE_CURRENT_BINARY_DIR}/generated -s "glean_namespace=IOSGlean"
         ${PINGS_LIST} ${METRICS_LIST}
     # We need to rename otherwise XCode gets confused with the same name file name as the Glean internal metrics
     COMMAND mv ${CMAKE_CURRENT_BINARY_DIR}/generated/Metrics.swift ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift

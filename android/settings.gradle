@@ -9,6 +9,19 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+
+// If we are running ./gradlew from the android-build/ folder we don't need this env var.
+def repositoryRoot = System.getenv("REPOSITORY_ROOT") ?: "$rootDir/../../.."
+def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("gleanLibs") {
+            from(files("$gleanVendoredPath/gradle/libs.versions.toml"))
+        }
+    }
+}
+
 include ':qtglean'
 include ':daemon'
 include ':qtBindings'
@@ -16,4 +29,3 @@ include ':ClientCommon'
 include ':vpnClient'
 include ':common'
 include ':adjust'
-

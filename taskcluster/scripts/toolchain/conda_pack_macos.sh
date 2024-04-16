@@ -16,6 +16,16 @@ chmod +x ${MOZ_FETCHES_DIR}/miniconda.sh
 bash ${MOZ_FETCHES_DIR}/miniconda.sh -b -p ${TASK_WORKDIR}/miniconda
 source ${TASK_WORKDIR}/miniconda/bin/activate
 
+
+# Normally pip is locked down to only 
+# allow download from moz-pip mirror. 
+# The packages are firefox only and everything
+# we're going to fetch is pinned down, so 
+# let's remove that restriction for the current task. 
+rm -f ~/.config/pip/pip.conf
+pip config --user set install.no-index 0 
+pip config debug
+
 echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env.yml
 conda activate VPN
@@ -34,3 +44,6 @@ mkdir -p ${TASK_WORKDIR}/public/build
 conda-pack -p ${TASK_WORKDIR}/miniconda/envs/vpn -o ${TASK_WORKDIR}/public/build/conda-macos.tar.gz
 
 echo "Done."
+
+# remove our Pip conf, so the restrictions are back. 
+rm -f ~/.config/pip/pip.conf

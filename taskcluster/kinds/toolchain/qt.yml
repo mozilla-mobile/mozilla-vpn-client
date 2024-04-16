@@ -97,3 +97,20 @@ qt-linux:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
+
+qt-linux-6.6.0:
+    description: "Linux QT compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball-6.6.0
+    run:
+        script: compile_qt_6_linux.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-linux-6.6
+        toolchain-artifact: public/build/qt6_linux.tar.xz
+    treeherder:
+        symbol: TL(qt-linux-6.6)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: linux-qt6-build}

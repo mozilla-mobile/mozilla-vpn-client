@@ -105,6 +105,15 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         # so that it can be linked to both the main app and the daemon.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static")
         set(SHARED 1)
+    elseif(QT_FEATURE_static AND QT_FEATURE_openssl AND QT_FEATURE_openssl_linked)
+        # If Qt is statically linked to OpenSSL, so to should the glean libs.
+        find_package(OpenSSL REQUIRED)
+        get_filename_component(OPENSSL_LIB_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
+
+        list(APPEND CARGO_ENV
+            OPENSSL_STATIC=TRUE
+            OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR}
+            OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR})
     endif()
 
     ## Build the qtglean Rust library

@@ -61,7 +61,7 @@ MZViewBase {
 
             Loader {
                 id: helpIconButtonLoader
-                active: MZFeatureList.get("helpSheets").isSupported
+                active: true
                 sourceComponent: MZIconButton {
                     objectName: "devicesHelpButton"
 

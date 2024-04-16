@@ -60,6 +60,10 @@
 #  include "platforms/linux/linuxdependencies.h"
 #endif
 
+#ifdef MZ_FLATPAK
+#  include "platforms/linux/xdgstartatbootwatcher.h"
+#endif
+
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosmenubar.h"
 #  include "platforms/macos/macosstartatbootwatcher.h"
@@ -281,6 +285,10 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WINDOWS
     WindowsStartAtBootWatcher startAtBootWatcher;
+#endif
+
+#ifdef MZ_FLATPAK
+    XdgStartAtBootWatcher startAtBootWatcher;
 #endif
 
 #ifdef MZ_LINUX

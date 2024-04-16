@@ -435,7 +435,7 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    [&] { emit disconnected(); });
-  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
                    &QObject::deleteLater);
 
   delete m_connection;
