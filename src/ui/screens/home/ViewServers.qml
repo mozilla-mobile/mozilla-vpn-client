@@ -33,7 +33,7 @@ Item {
 
         rightButtonComponent: Component {
             Loader {
-                active: MZFeatureList.get("helpSheets").isSupported
+                active: true
                 sourceComponent: MZIconButton {
                     objectName: "serverHelpButton"
 
@@ -221,4 +221,3 @@ Item {
         }
     }
 }
-

@@ -45,7 +45,7 @@ describe('Settings', function() {
       // This test cannot run in wasm
       return;
     }
-    
+
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX1.visible());
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX2.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
@@ -67,10 +67,10 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CHECKBOX2);
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-    
+
     await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-    
+
     await vpn.waitForQuery(queries.screenSettings.appExclusionsView.APP_ROW1.visible().prop(
         'appIdForFunctionalTests', 'com.example.two'));
   });
@@ -82,10 +82,6 @@ describe('Settings', function() {
   });
 
   it('Checking the excluded apps help sheet', async () => {
-    if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-      await vpn.flipFeatureOn('helpSheets');
-    }
-
     //Test the "Open privacy features" button
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
     await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
@@ -137,10 +133,6 @@ describe('Settings', function() {
     });
 
     it('Checking privacy help sheet telemetry', async () => {
-      if (!(await vpn.isFeatureFlippedOn('helpSheets'))) {
-        await vpn.flipFeatureOn('helpSheets');
-      }
-
       const appExclusionsHelpSheetTelemetryScreenId = "app_exclusions_info"
 
       await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
