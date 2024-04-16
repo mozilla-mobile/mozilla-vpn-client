@@ -226,9 +226,9 @@ diskcache==5.6.3 \
     --hash=sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc \
     --hash=sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19
     # via glean-parser
-glean-parser==13.0.0 \
-    --hash=sha256:1c1e9d33fae3b804fc066ae6b2ae7ae8f4148cac1e5b248f2c1e2bfc2e3ae520 \
-    --hash=sha256:833780cab7e057034b352786203af94f21afcb0094cbed6010471f5dc21a5f91
+glean-parser==13.0.1 \
+    --hash=sha256:8421c88f3673dd195d0cde635f4f09c9bfd0c9709ad3d28c8b201b3b7145e257 \
+    --hash=sha256:feead4cbec6930ed38a48df5bae9eb4ee486bb4026ddf2f3206b85f80279d1e7
     # via -r requirements.in
 humanize==4.8.0 \
     --hash=sha256:8bc9e2bb9315e61ec06bf690151ae35aeb65651ab091266941edf97c90836404 \
