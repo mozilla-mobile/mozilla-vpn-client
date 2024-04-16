@@ -649,20 +649,30 @@ SETTING_BOOL(userSubscriptionNeeded,        // getter
              false                          // sensitive (do not log)
 )
 
+#ifdef MZ_ANDROID
+
 SETTING_STRINGLIST(vpnDisabledApps,        // getter
                    setVpnDisabledApps,     // setter
                    removeVpnDisabledApps,  // remover
                    hasVpnDisabledApps,     // has
                    "vpnDisabledApps",      // key
-#ifdef MZ_ANDROID
-                   QStringList{// Android Auto
+                   QStringList{            // Android Auto
                                "com.google.android.projection.gearhead"},
-#else
-                   QStringList(),
-#endif
                    false,  // remove when reset
                    false   // sensitive (do not log)
 )
+
+#else
+SETTING_STRINGLIST(vpnDisabledApps,        // getter
+                   setVpnDisabledApps,     // setter
+                   removeVpnDisabledApps,  // remover
+                   hasVpnDisabledApps,     // has
+                   "vpnDisabledApps",      // key
+                   QStringList{},
+                   false,  // remove when reset
+                   false   // sensitive (do not log)
+)
+#endif
 
 SETTING_STRING(sentryDSN,        // getter
                setSentryDSN,     // setter
