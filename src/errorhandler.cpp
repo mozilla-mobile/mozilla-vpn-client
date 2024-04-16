@@ -10,10 +10,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 
+namespace {
 using namespace std::chrono_literals;
 constexpr const std::chrono::seconds HIDE_ALERT_DELAY = 4s;
 
-namespace {
 ErrorHandler* s_instance = nullptr;
 Logger logger("ErrorHandler");
 

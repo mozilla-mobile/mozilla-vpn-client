@@ -21,7 +21,7 @@ Logger logger("PingHelper");
 using namespace std::chrono_literals;
 // Any X seconds, a new ping.
 constexpr std::chrono::milliseconds PING_TIMEOUT = 1s;
-}
+}  // namespace
 
 PingHelper::PingHelper() {
   MZ_COUNT_CTOR(PingHelper);

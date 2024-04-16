@@ -50,13 +50,6 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
-// X connection retries.
-constexpr const int CONNECTION_MAX_RETRY = 9;
-using namespace std::chrono_literals;
-constexpr const auto CONFIRMING_TIMOUT = 10s;
-constexpr const auto HANDSHAKE_TIMEOUT = 15s;
-constexpr const auto CONNECTION_TIME_UPDATE_FREQUENCY = 1s;
-
 #ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
@@ -67,6 +60,13 @@ constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 
 namespace {
 Logger logger("Controller");
+
+// X connection retries.
+constexpr const int CONNECTION_MAX_RETRY = 9;
+using namespace std::chrono_literals;
+constexpr const auto CONFIRMING_TIMOUT = 10s;
+constexpr const auto HANDSHAKE_TIMEOUT = 15s;
+constexpr const auto CONNECTION_TIME_UPDATE_FREQUENCY = 1s;
 
 Controller::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching ||
@@ -843,7 +843,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }

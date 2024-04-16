@@ -33,7 +33,7 @@ constexpr const auto SERVER_LATENCY_INITIAL = 1s;
 constexpr const auto SERVER_LATENCY_REFRESH = 30min;
 // Delay the progressChanged() signal to rate-limit how often score changes.
 constexpr const auto SERVER_LATENCY_PROGRESS_DELAY = 500ms;
-}
+}  // namespace
 
 ServerLatency::ServerLatency() { MZ_COUNT_CTOR(ServerLatency); }
 
