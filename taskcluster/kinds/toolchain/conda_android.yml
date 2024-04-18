@@ -22,6 +22,7 @@ task-defaults:
             - scripts/android/conda_trim.sh
             - android_sdk.txt
             - requirements.txt
+            - env.yml
         toolchain-alias: "filled-by-transform: conda.py"
         toolchain-artifact: public/build/conda-android.tar.gz
 
