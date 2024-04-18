@@ -12,7 +12,6 @@
 #include <QJsonObject>
 
 #include "addonapi.h"
-#include "addoni18n.h"
 #include "addonmessage.h"
 #include "addonreplacer.h"
 #include "conditionwatchers/addonconditionwatcherfeaturesenabled.h"
@@ -366,11 +365,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
 
   Addon* addon = nullptr;
 
-  if (type == "i18n") {
-    addon = new AddonI18n(parent, manifestFileName, id, name);
-  }
-
-  else if (type == "message") {
+  if (type == "message") {
     addon = AddonMessage::create(parent, manifestFileName, id, name, obj);
   }
 
