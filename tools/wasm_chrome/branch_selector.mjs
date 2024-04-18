@@ -106,21 +106,26 @@ class BranchSelector extends HTMLElement {
     return data;
   }
 
-  render() {
+  async render() {
     const urlParams = new URLSearchParams(window.location.search);
-    const selectedBranch = urlParams.get("branch") || DEFAULT_SELECTED_BRANCH;
+    let selectedBranch = urlParams.get("branch") || DEFAULT_SELECTED_BRANCH;
+    const branches = await this.getData();
+    // If the branch in the param does not exit, roll back to main :)
+    if(!branches.some(branch => branch.name == selectedBranch)){
+      selectedBranch = DEFAULT_SELECTED_BRANCH;
+    }
 
 
     if (this.#dom.innerHTML != "") {
       this.update();
     }
-    this.#dom.innerHTML = `
+    this.#dom.innerHTML = (`
     <style>
         :root {
           --max-height: 300px;
       }
     </style>
-    <fluent-combobox id="selector" autocomplete="both" value="${selectedBranch}"></fluent-combobox>`;
+    <fluent-combobox id="selector" autocomplete="both" value="${selectedBranch}"></fluent-combobox>`);
 
     const selector = this.#dom.querySelector("#selector");
     selector.addEventListener("change", (e) => {
