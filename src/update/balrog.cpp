@@ -21,6 +21,10 @@
 #include "logger.h"
 #include "networkrequest.h"
 
+#if defined(MZ_WINDOWS)
+#  include "Windows.h"
+#endif
+
 // Implemented in rust. See the `signature` folder.
 // TODO (VPN-5708): We should really generate this with cbindgen.
 extern "C" {
@@ -397,9 +401,8 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
 bool Balrog::install(const QString& filePath) {
   logger.debug() << "Install the package:" << filePath;
 
-  QString logFile = m_tmpDir.filePath("msiexec.log");
-
 #if defined(MZ_WINDOWS)
+  QString logFile = m_tmpDir.filePath("msiexec.log");
   QStringList arguments;
   arguments << "/qb!-"
             << "REBOOT=ReallySuppress"
@@ -409,6 +412,12 @@ bool Balrog::install(const QString& filePath) {
   QProcess* process = new QProcess(this);
   process->setProgram("msiexec.exe");
   process->setArguments(arguments);
+
+  // Start the installer as a new process group.
+  process->setCreateProcessArgumentsModifier(
+      [](QProcess::CreateProcessArguments* args) {
+        args->flags |= DETACHED_PROCESS;
+      });
 
   connect(process, &QProcess::readyReadStandardError, [process]() {
     logger.info() << "[msiexec - stderr]" << Qt::endl
@@ -428,10 +437,23 @@ bool Balrog::install(const QString& filePath) {
             deleteLater();
           });
 
-  if (!process->startDetached()) {
-    logger.error() << "Unable to run the installer";
-    deleteLater();
-  }
+  connect(process, &QProcess::finished, this,
+          [this, logFile](int exitCode, QProcess::ExitStatus) {
+            logger.info() << "Installer finished - exitCode:" << exitCode;
+
+            QFile log(logFile);
+            if (!log.open(QIODevice::ReadOnly | QIODevice::Text)) {
+              logger.warning() << "Failed to read msiexec log file";
+            } else {
+              QTextStream logStream(&log);
+              logStream.setEncoding(QStringConverter::Encoding::Utf16);
+              logger.debug() << "[msiexec - logfile]" << Qt::endl
+                             << logStream.readAll();
+            }
+            deleteLater();
+          });
+
+  process->start();
 #endif
 
 #if defined(MZ_MACOS)
