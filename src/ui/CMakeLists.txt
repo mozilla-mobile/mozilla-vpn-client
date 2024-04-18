@@ -24,6 +24,9 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml
         screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml
         screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
+        sharedViews/ViewErrorFullScreen.qml
+        sharedViews/ViewUpdate.qml
+        sharedViews/ViewFullScreen.qml
     SOURCES
         composer/composer.cpp
         composer/composer.h
