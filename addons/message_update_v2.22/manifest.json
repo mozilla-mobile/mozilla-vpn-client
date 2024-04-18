@@ -1,25 +1,25 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.21",
-  "name": "Update to Mozilla VPN 2.21",
+  "id": "message_update_v2.22",
+  "name": "Update to Mozilla VPN 2.22",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.20.9"
+    "max_client_version": "2.21.9"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1671066000,
-    "id": "message_update_v2.21",
-    "title": "Update to Mozilla VPN 2.21",
+    "date": 1713466835,
+    "id": "message_update_v2.22",
+    "title": "Update to Mozilla VPN 2.22",
     "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.",
     "badge": "new_update",
     "blocks": [
       {
         "id": "c_1-1",
         "type": "text",
-        "content": "This update includes a new and easier way to access educational content on the app. It also includes bug fixes, UI adjustments and other performance improvements."
+        "content": "This update includes a new factory reset feature, in addition to minor bug fixes, UI adjustments and other performance improvements."
       },
       {
         "id": "c_3",
@@ -45,7 +45,7 @@
       {
         "id": "extra_1",
         "type": "text",
-        "content": "Download the new Mozilla VPN 2.21"
+        "content": "Download the new Mozilla VPN 2.22"
       }
     ]
   }
