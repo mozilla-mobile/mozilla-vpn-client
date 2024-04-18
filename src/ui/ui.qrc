@@ -84,22 +84,6 @@
         <file>screens/ScreenUpdateRecommended.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
-        <file>screens/settings/appPermissions/AppPermissionsList.qml</file>
-        <file>screens/settings/appPermissions/ViewAppPermissions.qml</file>
-        <file>screens/settings/ViewAboutUs.qml</file>
-        <file>screens/settings/ViewDNSSettings.qml</file>
-        <file>screens/settings/ViewLanguage.qml</file>
-        <file>screens/settings/ViewLicense.qml</file>
-        <file>screens/settings/ViewLicenses.qml</file>
-        <file>screens/settings/ViewNotifications.qml</file>
-        <file>screens/settings/ViewPreferences.qml</file>
-        <file>screens/settings/ViewReset.qml</file>
-        <file>screens/settings/ViewSettingsMenu.qml</file>
-        <file>screens/settings/privacy/ViewPrivacy.qml</file>
-        <file>screens/settings/privacy/PrivacyFeaturesList.qml</file>
-        <file>screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml</file>
-        <file>screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml</file>
-        <file>screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml</file>
         <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>sharedViews/ViewErrorFullScreen.qml</file>
         <file>sharedViews/ViewUpdate.qml</file>

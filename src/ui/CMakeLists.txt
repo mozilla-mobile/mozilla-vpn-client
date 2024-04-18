@@ -7,6 +7,23 @@ qt_add_qml_module(mozillavpn-ui
     URI Mozilla.VPN
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
+    QML_FILES
+        screens/settings/appPermissions/ViewAppPermissions.qml
+        screens/settings/appPermissions/AppPermissionsList.qml
+        screens/settings/ViewAboutUs.qml
+        screens/settings/ViewDNSSettings.qml
+        screens/settings/ViewLanguage.qml
+        screens/settings/ViewLicense.qml
+        screens/settings/ViewLicenses.qml
+        screens/settings/ViewNotifications.qml
+        screens/settings/ViewPreferences.qml
+        screens/settings/ViewReset.qml
+        screens/settings/ViewSettingsMenu.qml
+        screens/settings/privacy/ViewPrivacy.qml
+        screens/settings/privacy/PrivacyFeaturesList.qml
+        screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml
+        screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml
+        screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
     SOURCES
         composer/composer.cpp
         composer/composer.h

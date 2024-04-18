@@ -80,7 +80,7 @@ MZViewBase {
             backgroundColor: MZTheme.theme.iconButtonLightBackground
             visible: MZFeatureList.get("factoryReset").isSupported
 
-            onClicked: getHelpStackView.push("qrc:/ui/screens/settings/ViewReset.qml");
+            onClicked: getHelpStackView.push("qrc:/Mozilla/VPN/screens/settings/ViewReset.qml");
 
             accessibleName: title
         }

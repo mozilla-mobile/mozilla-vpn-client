@@ -75,7 +75,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.privacyFeaturesSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/privacy/ViewPrivacy.qml")
                 }
             }
 
@@ -87,7 +87,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
-                    stackview.push("qrc:/ui/screens/settings/appPermissions/ViewAppPermissions.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissions.qml")
                 }
                 visible: MZFeatureList.get("splitTunnel").isSupported
             }
@@ -115,7 +115,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.appPreferencesSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/settings/ViewPreferences.qml", {
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => MZI18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
                                                     _notificationsTitle:  Qt.binding(() => qsTrId("vpn.settings.notifications")),
@@ -144,7 +144,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/settings/ViewAboutUs.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewAboutUs.qml")
                 }
             }
 
@@ -178,14 +178,14 @@ MZViewBase {
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
                 && stackview.currentItem.objectName !== "subscriptionManagmentView"
             ) {
-                return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
+                return stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
             // Only push the profile view if it’s not already in the stack
             if (
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
                 && stackview.currentItem.objectName !== "reauthenticationFlow"
             ) {
-                return stackview.push("qrc:/ui/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
+                return stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
                     _onClose: () => {
                         VPNProfileFlow.reset();
                         stackview.pop(null, StackView.Immediate);
