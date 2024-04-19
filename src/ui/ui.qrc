@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>deleteAccount/ViewDeleteAccount.qml</file>
-        <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
         <file>popups/ServerUnavailablePopup.qml</file>
         <file>qmldir</file>
