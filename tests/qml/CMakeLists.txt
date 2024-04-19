@@ -262,11 +262,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/versionutils.h
 )
 
-# VPN Client UI resources
-target_sources(qml_tests PRIVATE
-    ${MZ_SOURCE_DIR}/ui/ui.qrc
-)
-
 # QML test source files
 target_sources(qml_tests PRIVATE
     helper.cpp

@@ -1,6 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+# You can obtain one at http://mozilla.org/MPL/2.0/.
 
 qt_add_qml_module(mozillavpn-ui
     VERSION 1.0
@@ -63,6 +63,33 @@ qt_add_qml_module(mozillavpn-ui
         screens/onboarding/OnboardingStartSlideDesktop.qml
         screens/onboarding/OnboardingStartSlideMobile.qml
         screens/onboarding/ViewOnboarding.qml
+        screens/ScreenRemovingDevice.qml
+        screens/ScreenAuthenticating.qml
+        screens/ScreenAuthenticationInApp.qml
+        screens/ScreenBackendFailure.qml
+        screens/ScreenBillingNotAvailable.qml
+        screens/ScreenCaptivePortal.qml
+        screens/ScreenCrashReporting.qml
+        screens/ScreenDeviceLimit.qml
+        screens/ScreenGetHelp.qml
+        screens/ScreenHome.qml
+        screens/ScreenInitialize.qml
+        screens/ScreenMessaging.qml
+        screens/ScreenNoSubscriptionFoundError.qml
+        screens/ScreenOnboarding.qml
+        screens/ScreenSettings.qml
+        screens/ScreenSubscriptionBlocked.qml
+        screens/ScreenSubscriptionGenericError.qml
+        screens/ScreenSubscriptionExpiredError.qml
+        screens/ScreenSubscriptionInProgressIAP.qml
+        screens/ScreenSubscriptionInProgressWeb.qml
+        screens/ScreenSubscriptionInUseError.qml
+        screens/ScreenSubscriptionNeeded.qml
+        screens/ScreenSubscriptionNotValidated.qml
+        screens/ScreenUpdateRecommended.qml
+        screens/ScreenUpdateRequired.qml
+        screens/ScreenViewLogs.qml
+        screens/ScreenDeleteAccount.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml
