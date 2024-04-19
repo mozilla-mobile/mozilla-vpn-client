@@ -21,6 +21,11 @@ qt_add_qml_module(mozillavpn-ui
         deleteAccount/ViewDeleteAccount.qml
         deleteAccount/ViewDeleteAccountRequest.qml
         screens/authenticationInApp/ViewAuthenticationInApp.qml
+        screens/devices/ViewDevices.qml
+        screens/devices/ViewDeviceLimit.qml
+        screens/devices/VPNDeviceList.qml
+        screens/devices/VPNDeviceListItem.qml
+        screens/devices/VPNRemoveDevicePopup.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml

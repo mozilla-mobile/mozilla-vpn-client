@@ -102,7 +102,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.myDevicesSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/devices/ViewDevices.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/devices/ViewDevices.qml")
                 }
             }
 
