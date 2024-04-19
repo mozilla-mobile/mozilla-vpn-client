@@ -52,7 +52,7 @@ MZViewBase {
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 Glean.sample.helpContactSupportOpened.record();
-                getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
+                getHelpStackView.push("qrc:/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsForm.qml");
             }
         }
 
@@ -97,7 +97,7 @@ MZViewBase {
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft
             visible: MZSettings.developerUnlock
-            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
+            onClicked: getHelpStackView.push("qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }
     }
 }

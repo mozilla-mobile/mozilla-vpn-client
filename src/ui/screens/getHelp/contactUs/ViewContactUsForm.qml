@@ -33,7 +33,7 @@ MZViewBase {
            target: VPN
            function onTicketCreationAnswer(successful) {
                if(successful) {
-                   getHelpStackView.replace("qrc:/ui/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
+                   getHelpStackView.replace("qrc:/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
                } else {
                    // TODO: Navigator.GetTheThing
                    getHelpStackView.replace("qrc:/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {

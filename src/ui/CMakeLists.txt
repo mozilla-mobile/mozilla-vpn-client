@@ -26,6 +26,15 @@ qt_add_qml_module(mozillavpn-ui
         screens/devices/VPNDeviceList.qml
         screens/devices/VPNDeviceListItem.qml
         screens/devices/VPNRemoveDevicePopup.qml
+        screens/getHelp/ViewGetHelp.qml
+        screens/getHelp/contactUs/ViewContactUsForm.qml
+        screens/getHelp/contactUs/ViewContactUsThankYou.qml
+        screens/getHelp/developerMenu/ViewAnimationsPlayground.qml
+        screens/getHelp/developerMenu/ViewDeveloperMenu.qml
+        screens/getHelp/developerMenu/ViewFeatureList.qml
+        screens/getHelp/developerMenu/ViewTelemetryDebugging.qml
+        screens/getHelp/developerMenu/ViewThemeList.qml
+        screens/getHelp/developerMenu/ViewUiTesting.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml
