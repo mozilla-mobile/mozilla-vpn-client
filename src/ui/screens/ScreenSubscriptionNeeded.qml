@@ -13,6 +13,6 @@ StackView {
 
     Component.onCompleted: function(){
         MZNavigator.addStackView(VPN.ScreenSubscriptionNeeded, stackview)
-        stackview.push("qrc:/ui/screens/subscriptionNeeded/ViewSubscriptionNeeded.qml")
+        stackview.push("qrc:/Mozilla/VPN/screens/subscriptionNeeded/ViewSubscriptionNeeded.qml")
     }
 }

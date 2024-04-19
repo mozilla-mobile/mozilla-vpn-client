@@ -344,7 +344,7 @@ int CommandUI::run(QStringList& tokens) {
                      &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/Mozilla/VPN/main.qml"));
     engine->load(url);
     if (!engineHolder.hasWindow()) {
       logger.error() << "Failed to load " << url.toString();

@@ -8,6 +8,7 @@ qt_add_qml_module(mozillavpn-ui
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
     QML_FILES
+        main.qml
         authenticationInApp/ViewAuthenticationFallbackInBrowser.qml
         authenticationInApp/ViewAuthenticationInitializing.qml
         authenticationInApp/ViewAuthenticationSignIn.qml
@@ -20,6 +21,7 @@ qt_add_qml_module(mozillavpn-ui
         authenticationInApp/ViewAuthenticationSsoAccount.qml
         deleteAccount/ViewDeleteAccount.qml
         deleteAccount/ViewDeleteAccountRequest.qml
+        popups/ServerUnavailablePopup.qml
         screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/devices/ViewDevices.qml
         screens/devices/ViewDeviceLimit.qml
@@ -52,6 +54,9 @@ qt_add_qml_module(mozillavpn-ui
         screens/home/ViewHome.qml
         screens/home/ViewMultiHop.qml
         screens/home/ViewServers.qml
+        screens/initialize/ViewInitialize.qml
+        screens/messaging/ViewMessage.qml
+        screens/messaging/ViewMessagesInbox.qml
         screens/onboarding/OnboardingDataSlide.qml
         screens/onboarding/OnboardingDevicesSlide.qml
         screens/onboarding/OnboardingPrivacySlide.qml
@@ -74,6 +79,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml
         screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml
         screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
+        screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewUpdate.qml
         sharedViews/ViewFullScreen.qml

@@ -1,12 +1,6 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>main.qml</file>
-        <file>popups/ServerUnavailablePopup.qml</file>
-        <file>qmldir</file>
         <file>screens/ScreenRemovingDevice.qml</file>
-        <file>screens/initialize/ViewInitialize.qml</file>
-        <file>screens/messaging/ViewMessage.qml</file>
-        <file>screens/messaging/ViewMessagesInbox.qml</file>
         <file>screens/ScreenAuthenticating.qml</file>
         <file>screens/ScreenAuthenticationInApp.qml</file>
         <file>screens/ScreenBackendFailure.qml</file>
@@ -32,7 +26,6 @@
         <file>screens/ScreenUpdateRecommended.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>
-        <file>screens/subscriptionNeeded/ViewSubscriptionNeeded.qml</file>
         <file>screens/ScreenDeleteAccount.qml</file>
     </qresource>
 </RCC>
