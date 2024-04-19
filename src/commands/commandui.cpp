@@ -101,6 +101,9 @@
 
 #include <QApplication>
 
+#include <QtQml/qqmlextensionplugin.h>
+Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
+
 namespace {
 Logger logger("CommandUI");
 }
@@ -296,6 +299,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!LinuxDependencies::checkDependencies()) {
       return 1;
     }
+#endif
+
+    // Prior to Qt 6.5, there was no default QML import path. We must set one.
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+    engine->addImportPath("qrc:/");
 #endif
 
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);

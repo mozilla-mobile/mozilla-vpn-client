@@ -35,6 +35,23 @@ qt_add_qml_module(mozillavpn-ui
         screens/getHelp/developerMenu/ViewTelemetryDebugging.qml
         screens/getHelp/developerMenu/ViewThemeList.qml
         screens/getHelp/developerMenu/ViewUiTesting.qml
+        screens/home/controller/ConnectionStability.qml
+        screens/home/controller/ConnectionTimer.qml
+        screens/home/controller/ControllerImage.qml
+        screens/home/controller/ControllerNav.qml
+        screens/home/controller/ControllerView.qml
+        screens/home/controller/ip/IPAddress.qml
+        screens/home/controller/ip/IPInfoPanel.qml
+        screens/home/controller/VPNToggle.qml
+        screens/home/servers/RecentConnections.qml
+        screens/home/servers/ServerCountry.qml
+        screens/home/servers/ServerLabel.qml
+        screens/home/servers/ServerLatencyIndicator.qml
+        screens/home/servers/ServerList.qml
+        screens/home/servers/ServerListToggle.qml
+        screens/home/ViewHome.qml
+        screens/home/ViewMultiHop.qml
+        screens/home/ViewServers.qml
         screens/onboarding/OnboardingDataSlide.qml
         screens/onboarding/OnboardingDevicesSlide.qml
         screens/onboarding/OnboardingPrivacySlide.qml
@@ -107,6 +124,11 @@ target_include_directories(mozillavpn-ui PRIVATE
 )
 
 target_include_directories(mozillavpn-ui PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer
+    ${CMAKE_CURRENT_SOURCE_DIR}/singletons
+    ${CMAKE_CURRENT_SOURCE_DIR}/types
+)
+target_include_directories(mozillavpn-uiplugin PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/composer
     ${CMAKE_CURRENT_SOURCE_DIR}/singletons
     ${CMAKE_CURRENT_SOURCE_DIR}/types
