@@ -8,6 +8,17 @@ qt_add_qml_module(mozillavpn-ui
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
     QML_FILES
+        authenticationInApp/ViewAuthenticationFallbackInBrowser.qml
+        authenticationInApp/ViewAuthenticationInitializing.qml
+        authenticationInApp/ViewAuthenticationSignIn.qml
+        authenticationInApp/ViewAuthenticationSignUp.qml
+        authenticationInApp/ViewAuthenticationStart.qml
+        authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml
+        authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml
+        authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml
+        authenticationInApp/ViewAuthenticationStubAccount.qml
+        authenticationInApp/ViewAuthenticationSsoAccount.qml
+        screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml

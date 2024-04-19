@@ -1,21 +1,10 @@
 <RCC>
     <qresource prefix="/ui">
-        <file>authenticationInApp/ViewAuthenticationFallbackInBrowser.qml</file>
-        <file>authenticationInApp/ViewAuthenticationInitializing.qml</file>
-        <file>authenticationInApp/ViewAuthenticationSignIn.qml</file>
-        <file>authenticationInApp/ViewAuthenticationSignUp.qml</file>
-        <file>authenticationInApp/ViewAuthenticationStart.qml</file>
-        <file>authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml</file>
-        <file>authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml</file>
-        <file>authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml</file>
-        <file>authenticationInApp/ViewAuthenticationStubAccount.qml</file>
-        <file>authenticationInApp/ViewAuthenticationSsoAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccount.qml</file>
         <file>deleteAccount/ViewDeleteAccountRequest.qml</file>
         <file>main.qml</file>
         <file>popups/ServerUnavailablePopup.qml</file>
         <file>qmldir</file>
-        <file>screens/authenticationInApp/ViewAuthenticationInApp.qml</file>
         <file>screens/devices/ViewDevices.qml</file>
         <file>screens/devices/VPNDeviceListItem.qml</file>
         <file>screens/devices/VPNRemoveDevicePopup.qml</file>
