@@ -138,6 +138,15 @@ class VPNService : android.net.VpnService() {
         initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
     }
 
+    override fun onCreate(savedInstanceState: Bundle) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState.getBoolean("wasActive")) {
+            Log.v(tag, "Reactivating from onCreate")
+            val jsonConfig = savedInstanceState.getString("jsonConfig")
+            turnOn(jsonConfig)
+        }
+    }
+
     override fun onUnbind(intent: Intent?): Boolean {
         if (!isUp) {
             Log.v(tag, "Client Disconnected, VPN is down - Service might shut down soon")
@@ -463,6 +472,12 @@ class VPNService : android.net.VpnService() {
             Session.daemonSessionId.generateAndSet()
         }
         mMetricsTimer.cancel()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("wasActive", isUp)
+        outState.putString("jsonConfig", mConfig.toString())
+        super.onSaveInstanceState(outState)
     }
 
     /** Configures an Android VPN Service Tunnel with a given Wireguard Config */
