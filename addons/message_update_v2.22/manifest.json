@@ -11,15 +11,38 @@
   },
   "message": {
     "date": 1713466835,
-    "id": "message_update_v2.22",
+    "id": "message_update_v2.22-0",
     "title": "Update to Mozilla VPN 2.22",
-    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.",
+    "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience. This update includes minor bug fixes, UI adjustments and other performance improvements.",
     "badge": "new_update",
     "blocks": [
       {
-        "id": "c_1-1",
+        "id": "c_1-2",
         "type": "text",
-        "content": "This update includes a new factory reset feature, in addition to minor bug fixes, UI adjustments and other performance improvements."
+        "content": "It also introduces a new option to reset Mozilla VPN to its default settings. This can be helpful if you’re experiencing instability or crashes with the application, and other troubleshooting steps haven’t resolved the issue."
+      },
+      {
+        "id": "c_1-3",
+        "type": "text",
+        "content": "How to reset Mozilla VPN:"
+      },
+      {
+        "id": "c_2",
+        "type": "olist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "Click or tap on the gear icon to access Settings."
+          },
+          {
+            "id": "l_2",
+            "content": "Navigate to the Get help section."
+          },
+          {
+            "id": "l_3",
+            "content": "Look for the new Reset VPN option and follow the on-screen instructions."
+          }
+        ]
       },
       {
         "id": "c_3",
