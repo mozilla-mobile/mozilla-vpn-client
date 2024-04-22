@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="../src/apps/vpn/ui/screens/settings/ViewLanguage.qml" datatype="plaintext" source-language="en" target-language="en">
+    <body>
+      <trans-unit id="languages.bg">
+        <source>Bulgarian</source>
+    </trans-unit>
+      <trans-unit id="languages.co">
+        <source>Corsican</source>
+    </trans-unit>
+      <trans-unit id="languages.cs">
+        <source>Czech</source>
+    </trans-unit>
+      <trans-unit id="languages.cy">
+        <source>Welsh</source>
+    </trans-unit>
+      <trans-unit id="languages.da">
+        <source>Danish</source>
+    </trans-unit>
+      <trans-unit id="languages.de">
+        <source>German</source>
+    </trans-unit>
+      <trans-unit id="languages.dsb">
+        <source>Lower Sorbian</source>
+    </trans-unit>
+      <trans-unit id="languages.el">
+        <source>Greek</source>
+    </trans-unit>
+      <trans-unit id="languages.en">
+        <source>English</source>
+    </trans-unit>
+      <trans-unit id="languages.en_CA">
+        <source>Canadian English</source>
+    </trans-unit>
+      <trans-unit id="languages.en_GB">
+        <source>British English</source>
+    </trans-unit>
+      <trans-unit id="languages.es_ES">
+        <source>Spanish</source>
+    </trans-unit>
+      <trans-unit id="languages.es_MX">
+        <source>Mexican Spanish</source>
+    </trans-unit>
+      <trans-unit id="languages.fa">
+        <source>Persian</source>
+    </trans-unit>
+      <trans-unit id="languages.fi">
+        <source>Finnish</source>
+    </trans-unit>
+      <trans-unit id="languages.fr">
+        <source>French</source>
+    </trans-unit>
+      <trans-unit id="languages.fy_NL">
+        <source>Western Frisian</source>
+    </trans-unit>
+      <trans-unit id="languages.hsb">
+        <source>Upper Sorbian</source>
+    </trans-unit>
+      <trans-unit id="languages.hu">
+        <source>Hungarian</source>
+    </trans-unit>
+      <trans-unit id="languages.ia">
+        <source>Interlingua</source>
+    </trans-unit>
+      <trans-unit id="languages.id">
+        <source>Indonesian</source>
+    </trans-unit>
+      <trans-unit id="languages.is">
+        <source>Icelandic</source>
+    </trans-unit>
+      <trans-unit id="languages.it">
+        <source>Italian</source>
+    </trans-unit>
+      <trans-unit id="languages.ja">
+        <source>Japanese</source>
+    </trans-unit>
+      <trans-unit id="languages.lo">
+        <source>Lao</source>
+    </trans-unit>
+      <trans-unit id="languages.nl">
+        <source>Dutch</source>
+    </trans-unit>
+      <trans-unit id="languages.pa_IN">
+        <source>Punjabi</source>
+    </trans-unit>
+      <trans-unit id="languages.pl">
+        <source>Polish</source>
+    </trans-unit>
+      <trans-unit id="languages.pt_BR">
+        <source>Portuguese</source>
+    </trans-unit>
+      <trans-unit id="languages.pt_PT">
+        <source>European Portuguese</source>
+    </trans-unit>
+      <trans-unit id="languages.ru">
+        <source>Russian</source>
+    </trans-unit>
+      <trans-unit id="languages.sk">
+        <source>Slovak</source>
+    </trans-unit>
+      <trans-unit id="languages.sl">
+        <source>Slovenian</source>
+    </trans-unit>
+      <trans-unit id="languages.sq">
+        <source>Albanian</source>
+    </trans-unit>
+      <trans-unit id="languages.sv_SE">
+        <source>Swedish</source>
+    </trans-unit>
+      <trans-unit id="languages.tr">
+        <source>Turkish</source>
+    </trans-unit>
+      <trans-unit id="languages.uk">
+        <source>Ukrainian</source>
+    </trans-unit>
+      <trans-unit id="languages.zh_CN">
+        <source>Simplified Chinese</source>
+    </trans-unit>
+      <trans-unit id="languages.zh_TW">
+        <source>Traditional Chinese</source>
+    </trans-unit>
+    </body>
+  </file>
+  <file original="../src/apps/vpn/ui/screens/home/ViewServers.qml" datatype="plaintext" source-language="en" target-language="en">
+    <body>
+      <trans-unit id="servers.al">
+        <source>Albania</source>
+    </trans-unit>
+      <trans-unit id="servers.au">
+        <source>Australia</source>
+    </trans-unit>
+      <trans-unit id="servers.be">
+        <source>Belgium</source>
+    </trans-unit>
+      <trans-unit id="servers.bg">
+        <source>Bulgaria</source>
+    </trans-unit>
+      <trans-unit id="servers.br">
+        <source>Brazil</source>
+    </trans-unit>
+      <trans-unit id="servers.ca">
+        <source>Canada</source>
+    </trans-unit>
+      <trans-unit id="servers.ch">
+        <source>Switzerland</source>
+    </trans-unit>
+      <trans-unit id="servers.co">
+        <source>Colombia</source>
+    </trans-unit>
+      <trans-unit id="servers.cz">
+        <source>Czech Republic</source>
+    </trans-unit>
+      <trans-unit id="servers.de">
+        <source>Germany</source>
+    </trans-unit>
+      <trans-unit id="servers.dk">
+        <source>Denmark</source>
+    </trans-unit>
+      <trans-unit id="servers.ee">
+        <source>Estonia</source>
+    </trans-unit>
+      <trans-unit id="servers.es">
+        <source>Spain</source>
+    </trans-unit>
+      <trans-unit id="servers.fi">
+        <source>Finland</source>
+    </trans-unit>
+      <trans-unit id="servers.fr">
+        <source>France</source>
+    </trans-unit>
+      <trans-unit id="servers.gb">
+        <source>United Kingdom</source>
+    </trans-unit>
+      <trans-unit id="servers.gr">
+        <source>Greece</source>
+    </trans-unit>
+      <trans-unit id="servers.hk">
+        <source>Hong Kong</source>
+    </trans-unit>
+      <trans-unit id="servers.hr">
+        <source>Croatia</source>
+    </trans-unit>
+      <trans-unit id="servers.hu">
+        <source>Hungary</source>
+    </trans-unit>
+      <trans-unit id="servers.ie">
+        <source>Republic of Ireland</source>
+    </trans-unit>
+      <trans-unit id="servers.il">
+        <source>Israel</source>
+    </trans-unit>
+      <trans-unit id="servers.it">
+        <source>Italy</source>
+    </trans-unit>
+      <trans-unit id="servers.jp">
+        <source>Japan</source>
+    </trans-unit>
+      <trans-unit id="servers.lv">
+        <source>Latvia</source>
+    </trans-unit>
+      <trans-unit id="servers.mx">
+        <source>Mexico</source>
+    </trans-unit>
+      <trans-unit id="servers.nl">
+        <source>Netherlands</source>
+    </trans-unit>
+      <trans-unit id="servers.no">
+        <source>Norway</source>
+    </trans-unit>
+      <trans-unit id="servers.nz">
+        <source>New Zealand</source>
+    </trans-unit>
+      <trans-unit id="servers.pl">
+        <source>Poland</source>
+    </trans-unit>
+      <trans-unit id="servers.pt">
+        <source>Portugal</source>
+    </trans-unit>
+      <trans-unit id="servers.ro">
+        <source>Romania</source>
+    </trans-unit>
+      <trans-unit id="servers.rs">
+        <source>Serbia</source>
+    </trans-unit>
+      <trans-unit id="servers.se">
+        <source>Sweden</source>
+    </trans-unit>
+      <trans-unit id="servers.sg">
+        <source>Singapore</source>
+    </trans-unit>
+      <trans-unit id="servers.si">
+        <source>Slovenia</source>
+    </trans-unit>
+      <trans-unit id="servers.sk">
+        <source>Slovakia</source>
+    </trans-unit>
+      <trans-unit id="servers.ua">
+        <source>Ukraine</source>
+    </trans-unit>
+      <trans-unit id="servers.us">
+        <source>United States of America</source>
+    </trans-unit>
+      <trans-unit id="servers.za">
+        <source>South Africa</source>
+    </trans-unit>
+    </body>
+  </file>
+</xliff>
