@@ -110,11 +110,12 @@ MZViewBase {
 
         ColumnLayout {
             spacing: MZTheme.theme.windowMargin / 2
-            width: parent.width
+            Layout.alignment: Qt.AlignHCenter
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+
             MZSettingsItem {
                 objectName: "settingsNotifications"
-                anchors.left: parent.left
-                anchors.right: parent.right
 
                 settingTitle: _notificationsTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
@@ -129,14 +130,10 @@ MZViewBase {
                     stackview.push("qrc:/ui/screens/settings/ViewNotifications.qml")
                 }
                 visible: MZFeatureList.get("captivePortal").isSupported || MZFeatureList.get("unsecuredNetworkNotification").isSupported || MZFeatureList.get("notificationControl").isSupported
-                width: parent.width - MZTheme.theme.windowMargin
             }
 
             MZSettingsItem {
                 objectName: "settingsLanguages"
-
-                anchors.left: parent.left
-                anchors.right: parent.right
 
                 settingTitle: _languageTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
@@ -147,14 +144,10 @@ MZViewBase {
                     stackview.push("qrc:/ui/screens/settings/ViewLanguage.qml")
                 }
                 visible: MZLocalizer.hasLanguages
-                width: parent.width - MZTheme.theme.windowMargin
             }
 
             MZSettingsItem {
                 objectName: "dnsSettings"
-
-                anchors.left: parent.left
-                anchors.right: parent.right
 
                 settingTitle: MZI18n.SettingsDnsSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/dnssettings.svg"
@@ -164,7 +157,6 @@ MZViewBase {
                     Glean.interaction.dnsSettingsSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/ui/screens/settings/ViewDNSSettings.qml")
                 }
-                width: parent.width - MZTheme.theme.windowMargin
             }
         }
     }
