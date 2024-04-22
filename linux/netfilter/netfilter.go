@@ -933,6 +933,379 @@ func NetfilterResetAllCgroupsV2() int32 {
 }
 
 const (
+	ROUTER_SOLICITATION_OUT_DST_ADDR = "ff02::2/128"
+	SOLICITED_NODE_MULTICAST         = "ff02::1:ff00:0/104"
+	IPV6_LINK_LOCAL                  = "fe80::/10"
+)
+
+//export NetfilterAllowNDP
+func NetfilterAllowNDP() int32 {
+	// Output
+
+	_, ipnet, err := net.ParseCIDR(ROUTER_SOLICITATION_OUT_DST_ADDR)
+	if err != nil {
+		log.Println("UNEXPECTED: Unable to parse hardcoded IP range", ROUTER_SOLICITATION_OUT_DST_ADDR)
+		return -1
+	}
+
+	ip6rule := buildIpNetExpr(ipnet, DADDR)
+	// Remove the verdict, we are going to add more stuff to the slice first.
+	ip6rule = ip6rule[:len(ip6rule)-1]
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(133)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-11
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	_, ipnet, err = net.ParseCIDR(SOLICITED_NODE_MULTICAST)
+	if err != nil {
+		log.Println("UNEXPECTED: Unable to parse hardcoded IP range", SOLICITED_NODE_MULTICAST)
+		return -1
+	}
+
+	ip6rule = buildIpNetExpr(ipnet, DADDR)
+	// Remove the verdict, we are going to add more stuff to the slice first.
+	ip6rule = ip6rule[:len(ip6rule)-1]
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(135)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-13
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	_, ipnet, err = net.ParseCIDR(IPV6_LINK_LOCAL)
+	if err != nil {
+		log.Println("UNEXPECTED: Unable to parse hardcoded IP range", IPV6_LINK_LOCAL)
+		return -1
+	}
+
+	ip6rule = buildIpNetExpr(ipnet, DADDR)
+	// Remove the verdict, we are going to add more stuff to the slice first.
+	ip6rule = ip6rule[:len(ip6rule)-1]
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(135)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-13
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.output,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(136)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-14
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	// Input
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(134)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-12
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(135)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-13
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(136)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-14
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	mozvpn_ctx.conn.AddRule(&nftables.Rule{
+		Table: mozvpn_ctx.table_inet,
+		Chain: mozvpn_ctx.input,
+		Exprs: append(ip6rule, []expr.Any{
+			&expr.Meta{
+				Key:      expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.IPPROTO_ICMPV6},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(0), // type
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(137)}, // https://www.iana.org/assignments/icmpv6-parameters/icmpv6-parameters.xhtml#icmpv6-parameters-codes-15
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseTransportHeader,
+				Offset:       uint32(1), // code
+				Len:          uint32(1),
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{uint8(0)},
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		}...),
+	})
+
+	return 0
+}
+
+const (
 	DHCPV4_SERVER_PORT = 67
 	DHCPV4_CLIENT_PORT = 68
 	DNS_PORT           = 53
