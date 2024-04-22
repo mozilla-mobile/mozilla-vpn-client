@@ -6,6 +6,9 @@ import QtQuick 2.0
 import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
+// https://bugreports.qt.io/browse/QTBUG-109438
+import QtQuick.Controls.Basic
+
 import Mozilla.Shared 1.0
 import components 0.1
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils

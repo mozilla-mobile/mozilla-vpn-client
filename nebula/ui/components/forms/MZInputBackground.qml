@@ -4,6 +4,9 @@
 
 import QtQuick 2.5
 
+// https://bugreports.qt.io/browse/QTBUG-109438
+import QtQuick.Controls.Basic
+
 import Mozilla.Shared 1.0
 import components 0.1
 
