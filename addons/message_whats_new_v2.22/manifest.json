@@ -19,17 +19,17 @@
     "notify": false,
     "blocks": [
       {
-        "id": "c_1-1",
+        "id": "c_1-2",
         "type": "text",
         "content": "This update includes minor bug fixes, UI adjustments and other performance improvements."
       },
       {
-        "id": "c_1-2",
+        "id": "c_1-3",
         "type": "text",
         "content": "It also introduces a new option to reset Mozilla VPN to its default settings. This can be helpful if you’re experiencing instability or crashes with the application, and other troubleshooting steps haven’t resolved the issue."
       },
       {
-        "id": "c_1-3",
+        "id": "c_1-4",
         "type": "text",
         "content": "How to reset Mozilla VPN:"
       },
