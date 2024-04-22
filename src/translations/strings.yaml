@@ -73,12 +73,6 @@
 #
 
 serversView:
-  recommendedCardTitle:
-    value: Why are these locations recommended?
-    comment: Title of an expandable info card on the recommended servers list.
-  recommendedCardBody:
-    value: These locations are sorted by expected performance.
-    comment: Body text of an expandable info card on the recommended servers list.
   recommendedRefreshLabel:
     value: Refresh list
     comment: Accessible label for the button that triggers a refresh of the recommended servers list.
@@ -165,8 +159,6 @@ splittunnel:
 multiHopFeature:
   singleHopToggleCTA: Single-hop
   multiHopToggleCTA: Multi-hop
-  multiHopCardHeader: What is multi-hop VPN?
-  multiHopCardBody: Multi-hop VPN routes your traffic through two servers instead of one for extra security and privacy. This may slow down your connection.
   multiHopEntryLocationHeader: Select entry location
   multiHopExitLocationHeader: Select exit location
   multiHopInfoText: Exit location represents your main VPN server.

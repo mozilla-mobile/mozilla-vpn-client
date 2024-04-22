@@ -156,20 +156,6 @@ FocusScope {
                         right: parent.right
                     }
 
-                    MZCollapsibleCard {
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-                        iconSrc: "qrc:/ui/resources/tip.svg"
-                        contentItem: MZTextBlock {
-                            text: MZI18n.ServersViewRecommendedCardBody
-                            textFormat: Text.StyledText
-                            Layout.fillWidth: true
-                        }
-                        title: MZI18n.ServersViewRecommendedCardTitle
-                        width: parent.width - MZTheme.theme.windowMargin * 2
-                        visible: !MZFeatureList.get("helpSheets").isSupported
-                    }
-
                     // Status component
                     // TODO: Refresh server list and handle states
                     MZClickableRow {
