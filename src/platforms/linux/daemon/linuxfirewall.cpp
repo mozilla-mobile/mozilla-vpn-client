@@ -109,6 +109,10 @@ bool LinuxFirewall::up(const QString& ifname, uint32_t fwmark,
     return false;
   }
 
+  if (NetfilterAllowNDP() != 0) {
+    return false;
+  }
+
   if (NetfilterBlockDNS() != 0) {
     return false;
   }
