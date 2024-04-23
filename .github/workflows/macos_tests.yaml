@@ -55,7 +55,7 @@ jobs:
           echo "!!!!!!!!!!"
 
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -GNinja 
+          cmake -S $(pwd) -B build/cmake -GNinja \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCC=$CONDA_PREFIX/bin/clang \
             -DCXX=$CONDA_PREFIX/bin/clang \
