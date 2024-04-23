@@ -11,7 +11,6 @@ class Dummy {
   ~Dummy() { MZ_COUNT_DTOR(Dummy); };
 };
 
-
 QTEST_MAIN(TestLeakDetector)
 
 /**

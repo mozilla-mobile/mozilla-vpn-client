@@ -5,8 +5,8 @@
 #ifndef TESTLEAKDETECTOR_H
 #define TESTLEAKDETECTOR_H
 
-#include <QTest>
 #include <QObject>
+#include <QTest>
 class TestLeakDetector : public QObject {
   Q_OBJECT
 
