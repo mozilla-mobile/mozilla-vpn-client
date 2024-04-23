@@ -56,10 +56,12 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
         OUTPUT ${GENERATED_DIR}/i18nstrings_p.cpp ${GENERATED_DIR}/i18nstrings.h
         DEPENDS
             ${ASSETS_DIRECTORY}/strings.yaml
+            ${ASSETS_DIRECTORY}/extras/extras.xliff
             ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
         COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
             -o ${GENERATED_DIR}
             ${ASSETS_DIRECTORY}/strings.yaml
+            ${ASSETS_DIRECTORY}/extras/extras.xliff
     )
 
     ## Build the list of supported locales and add rules to build them.
@@ -81,11 +83,13 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
         add_custom_command(
             OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
             MAIN_DEPENDENCY ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff
-            DEPENDS ${GENERATED_DIR}/i18nstrings_p.cpp
+            DEPENDS
+                ${GENERATED_DIR}/i18nstrings_p.cpp
+                ${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff
             COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/i18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
             COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
                             -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts ${INCLUDE_UNTRANSLATED}
-                            -if xlf -i ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff
+                            -if xlf -i ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff -i ${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff
         )
 
         add_custom_command(

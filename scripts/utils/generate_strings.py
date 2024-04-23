@@ -6,7 +6,7 @@
 import os
 import yaml
 import argparse
-
+from lxml import etree
 
 def stop(string_id):
     exit(
@@ -242,15 +242,15 @@ const char* const I18nStrings::_ids[] = {
 if __name__ == "__main__":
     # Parse arguments to locate the input and output files.
     parser = argparse.ArgumentParser(
-        description="Generate internationalization strings database from a YAML source"
+        description="Generate internationalization strings database from a YAML and/or XLIFF sources"
     )
     parser.add_argument(
-        "source",
+        "sources",
         metavar="SOURCE",
         type=str,
         action="store",
         nargs='+',
-        help="YAML strings file to process",
+        help="Comma separated list of YAML and/or XLIFF sources to parse",
     )
     parser.add_argument(
         "-o",
@@ -262,18 +262,25 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if not args.source:
+    if not args.sources:
         exit("No source argument.")
 
     # If no output directory was provided, use the current directory.
     if args.output is None:
         args.output = os.getcwd()
 
-    # Parse the inputs for their sweet juicy strings.
+    # Parse the inputs
     strings = {}
-    for source in args.source:
-        substrings = parseTranslationStrings(source)
-        strings.update(substrings)
+    for source in args.sources:
+        _, ext = os.path.splitext(source)
+        if ext == '.yaml':
+            substrings = parseYAMLTranslationStrings(source)
+            strings.update(substrings)
+        elif ext == '.xliff':
+            substrings = parseXLIFFTranslationStrings(source)
+            strings.update(substrings)
+        else:
+            raise f'Unknown file format provided: {source}'
 
     # Render the strings into generated content.
     generateStrings(strings, args.output)
