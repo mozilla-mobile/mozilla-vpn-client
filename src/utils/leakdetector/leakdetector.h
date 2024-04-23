@@ -37,10 +37,8 @@ class LeakDetector {
   LeakDetector();
   ~LeakDetector();
 
-#ifdef MZ_DEBUG
   static void logCtor(void* ptr, const char* typeName, uint32_t size);
   static void logDtor(void* ptr, const char* typeName, uint32_t size);
-#endif
 };
 
 #endif  // LEAKDETECTOR_H

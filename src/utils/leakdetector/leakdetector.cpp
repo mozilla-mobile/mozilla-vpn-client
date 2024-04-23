@@ -54,8 +54,8 @@ LeakDetector::~LeakDetector() {
 #endif
 }
 
-#ifdef MZ_DEBUG
 void LeakDetector::logCtor(void* ptr, const char* typeName, uint32_t size) {
+#ifdef MZ_DEBUG
   QMutexLocker lock(&s_leakDetector);
 
   QString type(typeName);
@@ -64,9 +64,11 @@ void LeakDetector::logCtor(void* ptr, const char* typeName, uint32_t size) {
   }
 
   s_leaks[type].insert(ptr, size);
+#endif
 }
 
 void LeakDetector::logDtor(void* ptr, const char* typeName, uint32_t size) {
+#ifdef MZ_DEBUG
   QMutexLocker lock(&s_leakDetector);
 
   QString type(typeName);
@@ -76,8 +78,8 @@ void LeakDetector::logDtor(void* ptr, const char* typeName, uint32_t size) {
   Q_ASSERT(leak.contains(ptr));
   Q_ASSERT(leak[ptr] == size);
   leak.remove(ptr);
-}
 #endif
+}
 
 const QHash<QString, QHash<void*, uint32_t>> LeakDetector::getObjects() {
 #ifdef MZ_DEBUG
