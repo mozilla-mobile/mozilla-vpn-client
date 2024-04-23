@@ -149,8 +149,3 @@ int LanguageI18N::languageCompare(const QString& languageCodeA,
 
   return 1;
 }
-
-QString LanguageI18N::currencySymbolForLanguage(
-    const QString& languageCode, const QString& currencyIso4217) {
-  return m_currencies.value(itemKey(currencyIso4217, languageCode));
-}

@@ -40,6 +40,15 @@ QMap<QString, QString> s_languageMap{
     {"es_MX", "Español, México"},
 };
 
+// Fallback map of supported currency symbols.
+// The list of supported countries can be found at
+// https://mozilla-hub.atlassian.net/wiki/spaces/PXI/pages/173539548/Supported+Markets+and+Currencies.
+QMap<QString, QString> s_currencyMap{
+    {"USD", "$"},  {"GBP", "£"},   {"NZD", "NZ$"}, {"MYR", "RM"},
+    {"SGD", "S$"}, {"CAD", "CA$"}, {"EUR", "€"},   {"CHF", "CHF"},
+    {"SEK", "kr"}, {"PLN", "zł"},  {"DKK", "kr"},  {"CZK", "Kč"},
+    {"HUF", "Ft"}, {"BGN", "лв"},  {"RON", "lei"}};
+
 QString toUpper(const QLocale& locale, QString input) {
   return input.replace(0, 1, locale.toUpper(QString(input[0])));
 }
@@ -537,15 +546,12 @@ QString Localizer::localizeCurrency(double value,
     return locale.toCurrencyString(value, currencyIso4217);
   }
 
-  // Happy path
   if (locale.currencySymbol(QLocale::CurrencyIsoCode) == currencyIso4217) {
     return locale.toCurrencyString(value);
   }
 
-  QString symbol = LanguageI18N::instance()->currencySymbolForLanguage(
-      languageCode, currencyIso4217);
-  if (!symbol.isEmpty()) {
-    return locale.toCurrencyString(value, symbol);
+  if (s_currencyMap.contains(currencyIso4217)) {
+    return s_currencyMap[currencyIso4217];
   }
 
   return locale.toCurrencyString(value, currencyIso4217);

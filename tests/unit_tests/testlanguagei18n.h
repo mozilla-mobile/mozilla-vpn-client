@@ -9,5 +9,4 @@ class TestLanguageI18n : public TestHelper {
 
  private slots:
   void translations();
-  void currencies();
 };

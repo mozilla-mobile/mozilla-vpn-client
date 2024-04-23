@@ -36,7 +36,31 @@ class UniqueKeyLoader(yaml.SafeLoader):
         return super().construct_mapping(node, deep)
 
 
-def parseTranslationStrings(yamlfile):
+def parseXLIFFTranslationStrings(xliff_file):
+    if not os.path.isfile(xliff_file):
+        exit(f"Unable to find {xliff_file}")
+
+    strings = {}
+
+    ns = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
+    tree = etree.parse(xliff_file)
+    root = tree.getroot()
+
+    for node in root.xpath('//x:trans-unit', namespaces=ns):
+        id = node.get('id')
+        cpp_id = pascalize(id.replace('.', '_'))
+        value = node.xpath('./x:source', namespaces=ns)[0].text
+
+        strings[cpp_id] = {
+            "string_id": id,
+            "value": [value],
+            "comments": [],
+        }
+
+    return strings
+
+
+def parseYAMLTranslationStrings(yamlfile):
     if not os.path.isfile(yamlfile):
         exit(f"Unable to find {yamlfile}")
 

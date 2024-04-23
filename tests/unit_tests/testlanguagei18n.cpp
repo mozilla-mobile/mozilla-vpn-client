@@ -26,20 +26,4 @@ void TestLanguageI18n::translations() {
   QVERIFY(LanguageI18N::instance()->translateLanguage("fi", "tlh").isEmpty());
 }
 
-void TestLanguageI18n::currencies() {
-  // Non existing language
-  QVERIFY(LanguageI18N::instance()
-              ->currencySymbolForLanguage("FOO", "FOO")
-              .isEmpty());
-
-  // Not existing currency
-  QVERIFY(LanguageI18N::instance()
-              ->currencySymbolForLanguage("tlh", "FOO")
-              .isEmpty());
-
-  // OK
-  QCOMPARE(LanguageI18N::instance()->currencySymbolForLanguage("tlh", "EUR"),
-           "€");
-}
-
 static TestLanguageI18n s_testLanguageI18n;

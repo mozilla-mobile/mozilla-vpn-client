@@ -21,9 +21,6 @@ class LanguageI18N final : public QObject {
 
   ~LanguageI18N();
 
-  QString currencySymbolForLanguage(const QString& languageCode,
-                                    const QString& currencyIso4217);
-
   bool languageExists(const QString& languageCode);
 
   QString translateLanguage(const QString& translationCode,
