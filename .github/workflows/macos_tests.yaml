@@ -57,8 +57,8 @@ jobs:
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCC=$CONDA_PREFIX/bin/clang \
-            -DCXX=$CONDA_PREFIX/bin/clang \
+            -DCMAKE_C_COMPILER=$CONDA_PREFIX/bin/clang \
+            -DCMAKE_CXX_COMPILER=$CONDA_PREFIX/bin/clang++ \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
 
           cmake --build build/cmake -j$(nproc) --target dummyvpn
