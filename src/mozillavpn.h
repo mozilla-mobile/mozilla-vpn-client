@@ -162,7 +162,7 @@ class MozillaVPN final : public App {
 
   void abortAuthentication();
 
-  void silentSwitch();
+  Q_INVOKABLE void silentSwitch();
 
   void logout();
 

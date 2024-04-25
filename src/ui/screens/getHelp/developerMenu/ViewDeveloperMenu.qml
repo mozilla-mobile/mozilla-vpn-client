@@ -257,6 +257,15 @@ MZViewBase {
         }
 
         MZButton {
+            id: silentServerSwitch
+
+            text: "Silent server switch (from app)"
+            onClicked: {
+                VPN.silentSwitch();
+            }
+        }
+
+        MZButton {
             id: unstableNetworkExtension
             visible: Qt.platform.os === "ios"
 
