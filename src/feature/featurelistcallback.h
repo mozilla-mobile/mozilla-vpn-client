@@ -69,6 +69,13 @@ bool FeatureCallback_captivePortal() {
 #endif
 }
 
+bool FeatureCallback_inAppAuthentication() {
+  if (Constants::inProduction() || FeatureCallback_iosOrAndroid()) {
+    return true;
+  }
+  return false;
+}
+
 bool FeatureCallback_splitTunnel() {
 #if defined(MZ_ANDROID) || defined(MZ_DUMMY)
   return true;
