@@ -4,6 +4,7 @@
 
 #include "androidiaphandler.h"
 
+#include <QCoreApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
 #include <QJsonArray>
@@ -56,7 +57,7 @@ void AndroidIAPHandler::maybeInit() {
                                      appContext.object());
 
   // Hook together implementations for functions called by native code
-  AndroidCommons::runOnAndroidThreadSync([]() {
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
     JNINativeMethod methods[]{
         // Failures
         {"onBillingNotAvailable", "(Ljava/lang/String;)V",
@@ -83,8 +84,7 @@ void AndroidIAPHandler::maybeInit() {
     }
     env->RegisterNatives(objectClass, methods,
                          sizeof(methods) / sizeof(methods[0]));
-  });
-  m_init = true;
+  }).then([this]() { m_init = true; });
 }
 
 void AndroidIAPHandler::nativeRegisterProducts() {

@@ -28,7 +28,7 @@ Logger logger("AndroidVPNActivity");
 }  // namespace
 
 AndroidVPNActivity::AndroidVPNActivity() {
-  AndroidCommons::runOnAndroidThreadSync([]() {
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
     // Hook in the native implementation for startActivityForResult into the JNI
     JNINativeMethod methods[]{
         {"handleBackButton", "()Z", reinterpret_cast<bool*>(handleBackButton)},
@@ -188,10 +188,11 @@ void AndroidVPNActivity::onAppStateChange() {
   // those screens.
   auto state = MozillaVPN::instance()->state();
   bool isSensitive = state == App::StateAuthenticating;
-  AndroidCommons::runOnAndroidThreadSync([isSensitive]() {
-    QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",
-                                       "(Z)V", isSensitive);
-  });
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(
+      [isSensitive]() {
+        QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",
+                                           "(Z)V", isSensitive);
+      });
 }
 
 QUrl AndroidVPNActivity::getOpenerURL() {
