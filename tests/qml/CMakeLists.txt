@@ -68,8 +68,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
-    ${MZ_SOURCE_DIR}/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/serveri18n.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp

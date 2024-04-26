@@ -14,4 +14,27 @@
       </trans-unit>
     </body>
   </file>
+  <file original="../src/apps/vpn/ui/screens/home/ViewServers.qml" datatype="plaintext" source-language="en" target-language="en">
+    <body>
+      <trans-unit id="servers.us" xml:space="preserve">
+        <source>United States of America</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.mx" xml:space="preserve">
+        <source>Mexico</source>
+      </trans-unit>
+      <trans-unit id="servers.es" xml:space="preserve">
+        <source>Spain</source>
+      </trans-unit>
+      <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
+        <source>Salt Lake City, UT</source>
+      </trans-unit>
+      <trans-unit id="servers.MexicoCity" xml:space="preserve">
+        <source>Mexico City</source>
+      </trans-unit>
+      <trans-unit id="servers.Barcelona" xml:space="preserve">
+        <source>Barcelona</source>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

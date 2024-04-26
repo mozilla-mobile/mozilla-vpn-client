@@ -28,7 +28,6 @@
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
@@ -843,7 +842,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
 
   list.swap(m_getStatusCallbacks);
   for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           const QString&serverIpv4Gateway, const QString&deviceIpv4Address,
            uint64_t txBytes, uint64_t rxBytes)>&func : list) {
     func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
   }

@@ -13,12 +13,12 @@
 #include "constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "recommendedlocationmodel.h"
 #include "servercountry.h"
 #include "serverdata.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 
@@ -161,8 +161,8 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedNameRole: {
       const ServerCountry& country = m_countries.at(index.row());
-      return QVariant(ServerI18N::instance()->translateCountryName(
-          country.code(), country.name()));
+      return QVariant(
+          Localizer::instance()->getTranslatedCountryName(country.code()));
     }
 
     case CodeRole:
@@ -265,9 +265,8 @@ bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
                          Collator* collator) {
   Q_ASSERT(collator);
   return collator->compare(
-             ServerI18N::instance()->translateCountryName(a.code(), a.name()),
-             ServerI18N::instance()->translateCountryName(b.code(), b.name())) <
-         0;
+             Localizer::instance()->getTranslatedCountryName(a.code()),
+             Localizer::instance()->getTranslatedCountryName(b.code())) < 0;
 }
 
 }  // anonymous namespace

@@ -74,6 +74,9 @@ class Localizer final : public QAbstractListModel {
   static QMap<QString, double> loadTranslationCompleteness(
       const QString& fileName);
 
+  QString getTranslatedCountryName(const QString& countryCode) const;
+  QString getTranslatedCityName(const QString& cityName) const;
+
   Q_INVOKABLE QString formatDate(const QDateTime& nowDateTime,
                                  const QDateTime& messageDateTime,
                                  const QString& yesterday);

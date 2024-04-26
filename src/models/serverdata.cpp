@@ -9,10 +9,10 @@
 
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 
@@ -164,38 +164,33 @@ bool ServerData::settingsChanged() {
 
 QString ServerData::localizedExitCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCityName(m_exitCountryCode,
-                                                   m_exitCityName);
+  return Localizer::instance()->getTranslatedCityName(m_exitCityName);
 }
 
 QString ServerData::localizedEntryCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCityName(m_entryCountryCode,
-                                                   m_entryCityName);
+  return Localizer::instance()->getTranslatedCityName(m_entryCityName);
 }
 
 QString ServerData::localizedPreviousExitCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
-                                                   m_previousExitCountryName);
+  return Localizer::instance()->getTranslatedCityName(
+      m_previousExitCountryName);
 }
 
 QString ServerData::localizedPreviousExitCityName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCityName(m_previousExitCountryCode,
-                                                   m_previousExitCityName);
+  return Localizer::instance()->getTranslatedCityName(m_previousExitCityName);
 }
 
 QString ServerData::localizedEntryCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCountryName(m_entryCountryCode,
-                                                      m_entryCountryName);
+  return Localizer::instance()->getTranslatedCountryName(m_entryCountryCode);
 }
 
 QString ServerData::localizedExitCountryName() const {
   Q_ASSERT(m_initialized);
-  return ServerI18N::instance()->translateCountryName(m_exitCountryCode,
-                                                      m_exitCountryName);
+  return Localizer::instance()->getTranslatedCountryName(m_exitCountryCode);
 }
 
 void ServerData::changeServer(const QString& countryCode,

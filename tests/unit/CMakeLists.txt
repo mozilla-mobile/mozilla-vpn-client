@@ -104,8 +104,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/releasemonitor.h
-    ${MZ_SOURCE_DIR}/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/serveri18n.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/statusicon.cpp
@@ -337,8 +335,6 @@ target_sources(unit_tests PRIVATE
     testmodels.h
     testreleasemonitor.cpp
     testreleasemonitor.h
-    testserveri18n.cpp
-    testserveri18n.h
     testserverlatency.cpp
     testserverlatency.h
     teststatusicon.cpp

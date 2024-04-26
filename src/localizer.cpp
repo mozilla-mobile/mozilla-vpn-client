@@ -570,6 +570,35 @@ QString Localizer::findLanguageCode(const QString& languageCode,
   return languageCodeWithoutCountry;
 }
 
+QString Localizer::getTranslatedCountryName(const QString& countryCode) const {
+  if (countryCode.isEmpty()) {
+    return "";
+  }
+
+  logger.debug() << "Country code:" << countryCode;
+
+  // Country name i18n id is: Servers<PascalCaseCountryCode>
+  // e.g. ServersDe -> Germany
+  QString i18nCountryId = QString("Servers%1").arg(toPascalCase(countryCode));
+  return getCapitalizedStringFromI18n(i18nCountryId);
+}
+
+QString Localizer::getTranslatedCityName(const QString& cityName) const {
+  if (cityName.isEmpty()) {
+    return "";
+  }
+
+  logger.debug() << "City name:" << cityName;
+
+  // City name i18n id is: Servers<PascalCaseCityNameWithoutState>
+  // e.g. ServersSaltLakeCity -> Salt Lake City, UT
+  QString i18nCityId =
+      QString("Servers%1")
+          .arg(toPascalCase(cityName.split(u',')[0].replace(" ", "")));
+
+  return getCapitalizedStringFromI18n(i18nCityId);
+}
+
 // static
 QString Localizer::getTranslationCode() {
   QString translationCode = SettingsHolder::instance()->languageCode();

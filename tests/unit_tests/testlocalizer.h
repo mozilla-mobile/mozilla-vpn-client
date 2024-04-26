@@ -40,6 +40,10 @@ class TestLocalizer final : public TestHelper {
 
   void localizedLanguageName();
 
+  void getTranslatedCountryName();
+
+  void getTranslatedCityName();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };
