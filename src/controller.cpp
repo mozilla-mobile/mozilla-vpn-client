@@ -512,8 +512,9 @@ Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
   logger.debug() << "Filtering out the local area networks (rfc 1918)";
   excludeIPv4s.append(RFC1918::ipv4());
 
-  logger.debug() << "Filtering out the local area networks (rfc 4193)";
+  logger.debug() << "Filtering out the local area networks";
   excludeIPv6s.append(RFC4193::ipv6());
+  excludeIPv6s.append(RFC4291::ipv6LinkLocalAddressBlock());
 
   logger.debug() << "Filtering out multicast addresses";
   excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
