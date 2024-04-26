@@ -91,7 +91,7 @@ jobs:
     needs: source-bundle
     runs-on: ubuntu-latest
     container:
-      image: fedora:39
+      image: fedora:40
 
     steps:
       - name: Download Source Package
