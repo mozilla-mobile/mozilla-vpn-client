@@ -13,6 +13,8 @@
 #include "daemon/wireguardutils.h"
 #include "linuxfirewall.h"
 
+struct nlmsghdr;
+
 class WireguardUtilsLinux final : public WireguardUtils {
   Q_OBJECT
 
@@ -48,12 +50,15 @@ class WireguardUtilsLinux final : public WireguardUtils {
    */
   bool setupWireguardRoutingTable();
   bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
+  void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
+  void nlsockHandleDellink(struct nlmsghdr* nlmsg);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
+  char m_nlrecvbuf[32768];
   QSocketNotifier* m_notifier = nullptr;
 
   int m_cgroupVersion = 0;
@@ -61,6 +66,9 @@ class WireguardUtilsLinux final : public WireguardUtils {
   QString m_cgroupUnified;
 
   LinuxFirewall m_firewall;
+
+  unsigned int m_ifindex = 0;
+  int m_ifflags = 0;
 
  private slots:
   void nlsockReady();
