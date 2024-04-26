@@ -1,3 +1,4 @@
 {
-    "es_MX": ["es_CL", "es_ES"]
+    "es_MX": ["es_CL", "es_ES"],
+    "es_CL": ["es_MX", "es_ES"]
 }

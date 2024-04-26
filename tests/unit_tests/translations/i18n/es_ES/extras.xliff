@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="../src/apps/vpn/ui/screens/settings/ViewLanguage.qml" datatype="plaintext" source-language="en" target-language="es_ES">
+        <body>
+            <trans-unit id="languages.en">
+                <source>English</source>
+                <target>Inglés</target>
+            </trans-unit>
+            <trans-unit id="languages.es_ES">
+                <source>Spanish</source>
+                <target>Español de españa</target>
+            </trans-unit>
+            <trans-unit id="languages.es_MX">
+                <source>Mexican Spanish</source>
+                <target>Español mexicano</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

@@ -41,6 +41,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
     target_include_directories(${TARGET_NAME} PUBLIC ${GENERATED_DIR})
 
     target_sources(${TARGET_NAME} PRIVATE
+        ${GENERATED_DIR}/i18nlanguagenames.h
         ${GENERATED_DIR}/i18nstrings_p.cpp
         ${GENERATED_DIR}/i18nstrings.h
         ${GENERATED_DIR}/translations.qrc
@@ -64,9 +65,16 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
             ${ASSETS_DIRECTORY}/extras/extras.xliff
     )
 
+    add_custom_command(
+        OUTPUT ${GENERATED_DIR}/i18nlanguagenames.h
+        DEPENDS ${ASSETS_DIRECTORY}/extras/extras.xliff
+        COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_language_names_map.py
+            ${TRANSLATIONS_DIRECTORY}
+            ${GENERATED_DIR}/i18nlanguagenames.h
+    )
+
     ## Build the list of supported locales and add rules to build them.
     file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${TRANSLATIONS_DIRECTORY} ${TRANSLATIONS_DIRECTORY}/*)
-    message(${I18N_LOCALES})
     list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
     foreach(LOCALE ${I18N_LOCALES})
         if(NOT EXISTS ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff)

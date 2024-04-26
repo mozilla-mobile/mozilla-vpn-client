@@ -176,8 +176,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/languagei18n.cpp
-    ${MZ_SOURCE_DIR}/languagei18n.h
     ${MZ_SOURCE_DIR}/leakdetector.cpp
     ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp

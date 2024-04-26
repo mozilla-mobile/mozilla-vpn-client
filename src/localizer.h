@@ -78,7 +78,7 @@ class Localizer final : public QAbstractListModel {
                                  const QDateTime& messageDateTime,
                                  const QString& yesterday);
 
-  QStringList fallbackForLanguage(const QString& code);
+  QStringList fallbackForLanguage(const QString& code) const;
 
   // QAbstractListModel methods
 
@@ -92,7 +92,7 @@ class Localizer final : public QAbstractListModel {
   void localeChanged();
 
  private:
-  QString localizedLanguageName(const Language& language) const;
+  QString localizedLanguageName(const QString& languageCode) const;
   static QString nativeLanguageName(const QLocale& locale, const QString& code);
 
   QString systemLanguageCode() const;
@@ -110,6 +110,10 @@ class Localizer final : public QAbstractListModel {
 
   void maybeLoadLanguageFallbackData();
 
+  static QString getTranslationCode();
+
+  static QString getCapitalizedStringFromI18n(const QString& id);
+
  private:
   QList<QTranslator*> m_translators;
 
@@ -120,6 +124,10 @@ class Localizer final : public QAbstractListModel {
   QList<Language> m_languages;
   QMap<QString, double> m_translationCompleteness;
   QMap<QString, QStringList> m_translationFallback;
+
+#ifdef UNIT_TEST
+  friend class TestLocalizer;
+#endif
 };
 
 #endif  // LOCALIZER_H

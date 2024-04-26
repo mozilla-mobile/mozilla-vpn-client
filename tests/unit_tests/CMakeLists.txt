@@ -95,8 +95,6 @@ target_sources(app_unit_tests PRIVATE
     testenv.h
     testipaddress.cpp
     testipaddress.h
-    testlanguagei18n.cpp
-    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
