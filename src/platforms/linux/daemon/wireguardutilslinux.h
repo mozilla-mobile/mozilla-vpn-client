@@ -48,7 +48,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
    * Packets that make it to this table must go through the Wireguard interface.
    * Firewall rules and ip rules are responsible for making sure of that.
    */
-  bool setupWireguardRoutingTable();
+  bool setupWireguardRoutingTable(int family);
   bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
   void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
   void nlsockHandleDellink(struct nlmsghdr* nlmsg);

@@ -360,7 +360,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::setupWireguardRoutingTable() {
+bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
@@ -380,7 +380,7 @@ bool WireguardUtilsLinux::setupWireguardRoutingTable() {
   nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_EXCL | NLM_F_CREATE;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_family = AF_INET;
+  rtm->rtm_family = family;
   rtm->rtm_type = RTN_UNICAST;
   rtm->rtm_table = RT_TABLE_UNSPEC;
   rtm->rtm_protocol = RTPROT_STATIC;
@@ -675,7 +675,8 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
   // Check for the interface going up.
   if ((diff & IFF_UP) && (msg->ifi_flags & IFF_UP)) {
     logger.info() << "Wireguard interface is UP";
-    setupWireguardRoutingTable();
+    setupWireguardRoutingTable(AF_INET);
+    setupWireguardRoutingTable(AF_INET6);
   }
 
   logger.debug() << "RTM_NEWLINK flags:" << "0x" + QString::number(msg->ifi_flags, 16);
