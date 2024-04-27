@@ -99,9 +99,10 @@
 #  include "webextensionadapter.h"
 #endif
 
+#include <QtQml/qqmlextensionplugin.h>
+
 #include <QApplication>
 
-#include <QtQml/qqmlextensionplugin.h>
 Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
 
 namespace {
