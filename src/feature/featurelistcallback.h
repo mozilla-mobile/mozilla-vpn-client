@@ -70,10 +70,15 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_inAppAuthentication() {
+#if defined(MZ_DUMMY)
+  return true;
+#else
   if (Constants::inProduction() || FeatureCallback_iosOrAndroid()) {
     return true;
   }
+
   return false;
+#endif
 }
 
 bool FeatureCallback_splitTunnel() {
