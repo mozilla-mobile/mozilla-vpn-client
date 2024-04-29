@@ -35,7 +35,7 @@ def extract_strings_with_id(directory):
     return language_strings
 
 def generate_cpp_header(language_strings, output_file):
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w', encoding="utf-8") as f:
         f.write('#ifndef LANGUAGE_STRINGS_H\n')
         f.write('#define LANGUAGE_STRINGS_H\n\n')
         f.write('#include <QMap>\n#include <QString>\n\n')
