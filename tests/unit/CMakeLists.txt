@@ -347,7 +347,6 @@ configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
-    servers/servers.qrc
 )
 
 ## Add the tests to be run, one for each test class.
