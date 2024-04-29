@@ -744,10 +744,12 @@ void Controller::disconnected() {
     return;
   }
 
+  // Need this StateConfirming check to prevent recording telemetry during Android onboarding.
+  if (m_state != StateConfirming) {
+    emit recordConnectionEndTelemetry();
+  }
+
   setState(StateOff);
-  // WRAPPING THIS IN IF STATEMENT CREATES A TELEMETRY BUG. CAN BE REMOVED FOR
-  // iOS. CAN IT BE REMOVED FOR OTHER PLATFOMRS, BASED ON HOW HOW THEY ONBOARD?
-  emit recordConnectionEndTelemetry();
 }
 
 bool Controller::processNextStep() {

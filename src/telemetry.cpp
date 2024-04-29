@@ -215,12 +215,9 @@ void Telemetry::initialize() {
 
   connect(
       controller, &Controller::recordConnectionEndTelemetry, this,
-      [this, controller]() {
+      [this]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (controller->state() == Controller::StateOff &&
-              SettingsHolder::instance()->onboardingCompleted()) {
             mozilla::glean::session::session_end.set();
-
             mozilla::glean_pings::Vpnsession.submit("end");
             m_vpnSessionPingTimer.stop();
 
@@ -231,7 +228,6 @@ void Telemetry::initialize() {
             // metrics.
             mozilla::glean::session::session_id.generateAndSet();
           }
-        }
       });
 }
 
