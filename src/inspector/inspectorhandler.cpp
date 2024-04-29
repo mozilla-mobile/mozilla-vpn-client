@@ -382,11 +382,16 @@ static QList<InspectorCommand> s_commands{
                        // and to add a delay (VPN-3697)
                        QTest::qWait(150);
 
-                       QPointF pointF = item->mapToScene(QPoint(0, 0));
-                       QPoint point = pointF.toPoint();
-
-                       QTest::mouseClick(item->window(), Qt::LeftButton,
-                                         Qt::NoModifier, point);
+                       // Post a mouse click and the release.
+                       QPointF point(item->width()/2, item->height()/2);
+                       QCoreApplication::postEvent(item, new QMouseEvent(
+                          QEvent::MouseButtonPress, point,
+                          item->mapToGlobal(point), Qt::LeftButton,
+                          Qt::LeftButton, Qt::NoModifier));
+                       QCoreApplication::postEvent(item, new QMouseEvent(
+                          QEvent::MouseButtonRelease, point,
+                          item->mapToGlobal(point), Qt::LeftButton,
+                          Qt::LeftButton, Qt::NoModifier));
 
                        return obj;
                      }},
