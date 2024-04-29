@@ -123,8 +123,7 @@ class Controller : public QObject, public LogSerializer {
  private slots:
   void timerTimeout();
   void handshakeTimeout();
-  void connected(const QString& pubkey,
-                 const QDateTime& connectionTimestamp = QDateTime());
+  void connected(const QString& pubkey);
   void disconnected();
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
@@ -228,7 +227,7 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
-  bool shouldSkipSessionTelemetry;
+  bool isSwitchingServer;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
