@@ -67,7 +67,9 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
 
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/i18nlanguagenames.h
-        DEPENDS ${ASSETS_DIRECTORY}/extras/extras.xliff
+        DEPENDS
+            ${ASSETS_DIRECTORY}/extras/extras.xliff
+            ${MVPN_SCRIPT_DIR}/utils/generate_language_names_map.py
         COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_language_names_map.py
             ${TRANSLATIONS_DIRECTORY}
             ${GENERATED_DIR}/i18nlanguagenames.h

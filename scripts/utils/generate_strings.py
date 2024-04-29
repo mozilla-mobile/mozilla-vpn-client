@@ -173,17 +173,7 @@ class I18nStrings final : public QQmlPropertyMap {
   };
 
   static String getString(const QString& s) {
-  """
-        )
-
-        for i, key in enumerate(strings):
-            output.write(f"    {'if' if i == 0 else '  } else if '} (s == \"{key}\") {{\n")
-            output.write(f"        return {key};\n")
-
-        output.write(
-            """      } else {
-          return Empty;
-      }
+    return s_stringIdMap.value(s, I18nStrings::Empty);
   }
 
   static I18nStrings* instance();
@@ -200,6 +190,16 @@ class I18nStrings final : public QQmlPropertyMap {
 
  private:
   static const char* const _ids[];
+
+  static inline const QHash<QString, I18nStrings::String> s_stringIdMap = {
+"""
+    )
+
+        for i, key in enumerate(strings):
+            output.write(f"    {{\"{key}\", I18nStrings::{key}}}, \n")
+
+        output.write("""
+  };
 };
 
 #endif  // I18NSTRINGS_H
