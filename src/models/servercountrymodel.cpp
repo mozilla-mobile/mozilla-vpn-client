@@ -161,8 +161,7 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedNameRole: {
       const ServerCountry& country = m_countries.at(index.row());
-      return QVariant(
-          Localizer::instance()->getTranslatedCountryName(country.code()));
+      return QVariant(country.localizedName());
     }
 
     case CodeRole:
@@ -264,9 +263,7 @@ namespace {
 bool sortCountryCallback(const ServerCountry& a, const ServerCountry& b,
                          Collator* collator) {
   Q_ASSERT(collator);
-  return collator->compare(
-             Localizer::instance()->getTranslatedCountryName(a.code()),
-             Localizer::instance()->getTranslatedCountryName(b.code())) < 0;
+  return collator->compare(a.localizedName(), b.localizedName()) < 0;
 }
 
 }  // anonymous namespace

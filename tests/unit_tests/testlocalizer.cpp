@@ -435,26 +435,31 @@ void TestLocalizer::getTranslatedCountryName() {
   Localizer localizer;
 
   // Make sure we don't crash on an empty input.
-  QCOMPARE(localizer.getTranslatedCountryName(""), "");
+  QCOMPARE(localizer.getTranslatedCountryName("", ""), "");
+
+  // If the country name provided doesn't match any translation,
+  // just return what was provided.
+  QCOMPARE(localizer.getTranslatedCountryName("Middle Earth", "Middle Earth"),
+           "Middle Earth");
 
   // Happy path
-  QCOMPARE(localizer.getTranslatedCountryName("us"),
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "United States of America");
 
   m_settingsHolder->setLanguageCode("es_ES");
-  QCOMPARE(localizer.getTranslatedCountryName("us"),
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "Estados Unidos de América");
 
   // This language doesn't have a translations for "us",
   // but it should not fallback to English. It should fallback to Spanish.
   m_settingsHolder->setLanguageCode("es_CL");
-  QCOMPARE(localizer.getTranslatedCountryName("us"),
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "Estados Unidos de América");
 
   // This language doesn't have a translations for "en"
   // and it also doesn't have fallbacks. It should fallback to English.
   m_settingsHolder->setLanguageCode("pt_BR");
-  QCOMPARE(localizer.getTranslatedCountryName("us"),
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "United States of America");
 }
 
@@ -463,6 +468,10 @@ void TestLocalizer::getTranslatedCityName() {
 
   // Make sure we don't crash on an empty input.
   QCOMPARE(localizer.getTranslatedCityName(""), "");
+
+  // If the city name provided doesn't match any translation,
+  // just return what was provided.
+  QCOMPARE(localizer.getTranslatedCityName("Hogsmead"), "Hogsmead");
 
   QCOMPARE(localizer.getTranslatedCityName("Salt Lake City, UT"),
            "Salt Lake City, UT");

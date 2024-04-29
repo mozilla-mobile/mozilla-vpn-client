@@ -570,7 +570,8 @@ QString Localizer::findLanguageCode(const QString& languageCode,
   return languageCodeWithoutCountry;
 }
 
-QString Localizer::getTranslatedCountryName(const QString& countryCode) const {
+QString Localizer::getTranslatedCountryName(const QString& countryCode,
+                                            const QString& countryName) const {
   if (countryCode.isEmpty()) {
     return "";
   }
@@ -578,7 +579,15 @@ QString Localizer::getTranslatedCountryName(const QString& countryCode) const {
   // Country name i18n id is: Servers<PascalCaseCountryCode>
   // e.g. ServersDe -> Germany
   QString i18nCountryId = QString("Servers%1").arg(toPascalCase(countryCode));
-  return getCapitalizedStringFromI18n(i18nCountryId);
+  auto value = getCapitalizedStringFromI18n(i18nCountryId);
+
+  // The server list is ever changing, so it is plausible that a translation
+  // doesn't exist yet for a given server.
+  if (value.isEmpty()) {
+    return countryName;
+  }
+
+  return value;
 }
 
 QString Localizer::getTranslatedCityName(const QString& cityName) const {
@@ -593,6 +602,9 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
           .arg(toPascalCase(cityName.split(u',')[0].replace(" ", "")));
 
   auto value = getCapitalizedStringFromI18n(i18nCityId);
+
+  // The server list is ever changing, so it is plausible that a translation
+  // doesn't exist yet for a given server.
   if (value.isEmpty()) {
     return cityName;
   }

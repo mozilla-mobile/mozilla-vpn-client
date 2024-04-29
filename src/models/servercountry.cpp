@@ -73,6 +73,10 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   return true;
 }
 
+QString ServerCountry::localizedName() const {
+  return Localizer::instance()->getTranslatedCountryName(m_code, m_name);
+}
+
 namespace {
 
 bool sortCityCallback(const QString& a, const QString& b, Collator* collator) {

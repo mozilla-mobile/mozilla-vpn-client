@@ -2040,8 +2040,7 @@ void MozillaVPN::registerInspectorCommands() {
 
           QJsonObject countryObj;
           countryObj["name"] = country.name();
-          countryObj["localizedName"] =
-              Localizer::instance()->getTranslatedCountryName(country.code());
+          countryObj["localizedName"] = country.localizedName();
           countryObj["code"] = country.code();
           countryObj["cities"] = cityArray;
 
