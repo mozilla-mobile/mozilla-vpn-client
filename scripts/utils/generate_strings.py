@@ -6,7 +6,7 @@
 import os
 import yaml
 import argparse
-from lxml import etree
+import xml.etree.ElementTree as etree
 import re
 
 def stop(string_id):
@@ -43,15 +43,14 @@ def parseXLIFFTranslationStrings(xliff_file):
 
     strings = {}
 
-    ns = {'x':'urn:oasis:names:tc:xliff:document:1.2'}
     tree = etree.parse(xliff_file)
     root = tree.getroot()
 
-    for node in root.xpath('//x:trans-unit', namespaces=ns):
+    for node in root.findall('.//{urn:oasis:names:tc:xliff:document:1.2}trans-unit'):
         # Remove any unexpected characters e.g. São Paulo -> SoPaulo
         id = re.sub(r'[^a-zA-Z.]', '', node.get('id'))
         cpp_id = pascalize(id.replace('.', '_'))
-        value = node.xpath('./x:source', namespaces=ns)[0].text
+        value = node.findall('.//{urn:oasis:names:tc:xliff:document:1.2}source')[0].text
 
         strings[cpp_id] = {
             "string_id": id,

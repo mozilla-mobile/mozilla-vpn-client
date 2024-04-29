@@ -5,7 +5,7 @@
 
 import os
 import argparse
-from lxml import etree
+import xml.etree.ElementTree as etree
 
 def extract_strings_with_id(directory):
     language_strings = {}
