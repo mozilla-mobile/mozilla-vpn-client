@@ -176,13 +176,13 @@ class I18nStrings final : public QQmlPropertyMap {
         )
 
         for i, key in enumerate(strings):
-            output.write(f"    {'if' if i == 0 else '} else if '} (s == \"{key}\") {{\n")
+            output.write(f"    {'if' if i == 0 else '  } else if '} (s == \"{key}\") {{\n")
             output.write(f"        return {key};\n")
 
         output.write(
-            """    } else {
+            """      } else {
           return Empty;
-        }
+      }
   }
 
   static I18nStrings* instance();
