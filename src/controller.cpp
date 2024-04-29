@@ -297,21 +297,18 @@ void Controller::serverUnavailable() {
   // to deactivate the VPN in the case of server location becoming unavailable
   // because the user may not notice that they are no longer protected which can
   // cause the traffic to leak outside the tunnel without their knowledge.
-  if (m_state == StateOn || m_state == StateOnPartial) {
+  if (m_state == StateOn || m_state == StateSilentSwitching || m_state == StateOnPartial) {
+    logger.info() << "Server location is unavailable in StateOn or "
+                     "StateSilentSwitching. Do not deactivate.";
     return;
   }
+
+  logger.info() << "Server location is unavailable and we are not in StateOn "
+                   "or StateSilentSwitching. Deactivate.";
 
   m_nextStep = ServerUnavailable;
-
-  if (m_state == StateSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming) {
-    logger.info() << "Server location is unavailable and we are not in "
-                     "StateOn. Deactivate!";
-    deactivate();
-    return;
-  }
-  logger.info() << "Server location is unavailable. Do not deactivate the VPN "
-                   "automatically.";
+  deactivate();
+  return;
 }
 
 void Controller::updateRequired() {
@@ -617,8 +614,11 @@ void Controller::activateNext() {
   if (m_initiator == ExtensionUser) {
     return;
   }
-  // Move to the confirming state if we are awaiting any connection handshakes.
-  setState(StateConfirming);
+
+  if (m_state != StateSilentSwitching) {
+    // Move to the StateConfirming if we are awaiting any connection handshakes
+    setState(StateConfirming);
+  }
 }
 
 void Controller::setState(State state) {
