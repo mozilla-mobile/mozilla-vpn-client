@@ -25,7 +25,7 @@
         <source>Spain</source>
       </trans-unit>
       <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
-        <source>Salt Lake City, UT</source>
+        <source>Salt Lake City</source>
       </trans-unit>
       <trans-unit id="servers.MexicoCity" xml:space="preserve">
         <source>Mexico City</source>
@@ -34,7 +34,7 @@
         <source>Barcelona</source>
       </trans-unit>
       <trans-unit id="servers.SãoPaulo" xml:space="preserve">
-        <source>São Paulo, SP</source>
+        <source>São Paulo</source>
       </trans-unit>
     </body>
   </file>

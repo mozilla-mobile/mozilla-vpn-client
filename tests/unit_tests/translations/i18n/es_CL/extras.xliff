@@ -31,7 +31,7 @@
         <target></target>
       </trans-unit>
       <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
-        <source>Salt Lake City, UT</source>
+        <source>Salt Lake City</source>
         <target></target>
       </trans-unit>
       <trans-unit id="servers.MexicoCity" xml:space="preserve">
@@ -43,7 +43,7 @@
         <target></target>
       </trans-unit>
       <trans-unit id="servers.SãoPaulo" xml:space="preserve">
-        <source>São Paulo, SP</source>
+        <source>São Paulo</source>
         <target></target>
       </trans-unit>
     </body>

@@ -4,7 +4,6 @@
     <body>
       <trans-unit id="languages.en">
         <source>English</source>
-        <target></target>
       </trans-unit>
       <trans-unit id="languages.es_ES">
         <source>Spanish</source>
@@ -18,7 +17,6 @@
     <body>
       <trans-unit id="servers.us" xml:space="preserve">
         <source>United States of America</source>
-        <target></target>
       </trans-unit>
       <trans-unit id="servers.mx" xml:space="preserve">
         <source>Mexico</source>
@@ -27,13 +25,16 @@
         <source>Spain</source>
       </trans-unit>
       <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
-        <source>Salt Lake City, UT</source>
+        <source>Salt Lake City</source>
       </trans-unit>
       <trans-unit id="servers.MexicoCity" xml:space="preserve">
         <source>Mexico City</source>
       </trans-unit>
       <trans-unit id="servers.Barcelona" xml:space="preserve">
         <source>Barcelona</source>
+      </trans-unit>
+      <trans-unit id="servers.SãoPaulo" xml:space="preserve">
+        <source>São Paulo</source>
       </trans-unit>
     </body>
   </file>
