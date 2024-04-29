@@ -50,7 +50,6 @@ def parseXLIFFTranslationStrings(xliff_file):
     for node in root.xpath('//x:trans-unit', namespaces=ns):
         # Remove any unexpected characters e.g. São Paulo -> SoPaulo
         id = re.sub(r'[^a-zA-Z.]', '', node.get('id'))
-        print(id)
         cpp_id = pascalize(id.replace('.', '_'))
         value = node.xpath('./x:source', namespaces=ns)[0].text
 
