@@ -461,7 +461,7 @@ QString Localizer::localizedLanguageName(const QString& languageCode) const {
 
   // Value should never be empty, because the ultimate fallback locale is "en"
   // and that locale has all strings.
-    return value;
+  return value;
 }
 
 QVariant Localizer::data(const QModelIndex& index, int role) const {
