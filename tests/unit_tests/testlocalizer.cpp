@@ -40,7 +40,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  QVERIFY(l.rowCount(QModelIndex()) == 4);
+  QVERIFY(l.rowCount(QModelIndex()) == 5);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }
@@ -97,12 +97,11 @@ void TestLocalizer::localizeCurrency() {
 
   // Happy path
   QCOMPARE(l.localizeCurrency(123.123, "GBP"), "£123.12");
+  QCOMPARE(l.localizeCurrency(123.123, "USD"), "$123.12");
+  QCOMPARE(l.localizeCurrency(123.123, "BGN"), "лв123.12");
 
   // Let's guess - invalid currency
   QCOMPARE(l.localizeCurrency(123.123, "AAA"), "AAA123.12");
-
-  // Let's guess - valid currency for CLDR
-  QCOMPARE(l.localizeCurrency(123.123, "BBB"), "WOW123.12");
 }
 
 void TestLocalizer::majorLanguageCode() {
@@ -253,7 +252,8 @@ void TestLocalizer::fallback() {
   QCOMPARE(l.languages(), QStringList() << "en"
                                         << "es_CL"
                                         << "es_ES"
-                                        << "es_MX");
+                                        << "es_MX"
+                                        << "pt_BR");
 
   // MX contains translations for "foo.1"
   QCOMPARE(qtTrId("foo.1"), "hello world 1 es_MX");
@@ -379,7 +379,7 @@ void TestLocalizer::nativeLanguageName_data() {
 
   // Happy path
   QTest::addRow("existing transation") << QLocale(QLocale::Spanish) << "es_ES"
-                                       << "Español";
+                                       << "Español de españa";
 
   // There is a key for this locale in LANGUAGE_NAMES,
   // but there is no translation. This is going to use Qt's translation

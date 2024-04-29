@@ -27,7 +27,8 @@ def extract_strings_with_id(directory):
                         value = trans_unit.find('.//{urn:oasis:names:tc:xliff:document:1.2}source')
                     else:
                         value = trans_unit.find('.//{urn:oasis:names:tc:xliff:document:1.2}target')
-                    if value and value.text is not None:
+
+                    if value is not None and value.text is not None:
                         source_text = value.text.strip()
                         language_strings[lang_code][unit_id.replace('languages.', '')] = source_text
 

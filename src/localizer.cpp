@@ -522,7 +522,7 @@ QString Localizer::localizeCurrency(double value,
   }
 
   if (s_currencyMap.contains(currencyIso4217)) {
-    return s_currencyMap[currencyIso4217];
+    return locale.toCurrencyString(value, s_currencyMap[currencyIso4217]);
   }
 
   return locale.toCurrencyString(value, currencyIso4217);
