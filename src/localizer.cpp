@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QRegularExpression>
 #include <QTranslator>
 
 #include "constants.h"
@@ -595,11 +596,18 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
     return "";
   }
 
-  // City name i18n id is: Servers<PascalCaseCityNameWithoutState>
-  // e.g. ServersSaltLakeCity -> Salt Lake City, UT
-  QString i18nCityId =
-      QString("Servers%1")
-          .arg(toPascalCase(cityName.split(u',')[0].replace(" ", "")));
+  // City name i18n id is:
+  // Servers<PascalCaseCityNameWithoutStateORSpecialCharacters> e.g.
+  // Malmö -> ServersMalm, São Paulo, SP -> ServersSoPaulo, Berlin, BE ->
+  // ServersBerlin
+
+  QRegularExpression acceptedChars("[^a-zA-Z]");
+  QString parsedCityName =
+      cityName.split(u',')[0]
+          .replace(" ", "")             // Remove state suffix
+          .replace(acceptedChars, "");  // Remove special characters
+
+  QString i18nCityId = QString("Servers%1").arg(toPascalCase(parsedCityName));
 
   auto value = getCapitalizedStringFromI18n(i18nCityId);
 

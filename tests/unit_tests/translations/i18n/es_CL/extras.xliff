@@ -1,47 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file original="../src/apps/vpn/ui/screens/settings/ViewLanguage.qml" datatype="plaintext" source-language="en" target-language="es_CL">
-        <body>
-            <trans-unit id="languages.en">
-                <source>English</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="languages.es_ES">
-                <source>Spanish</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="languages.es_MX">
-                <source>Mexican Spanish</source>
-                <target></target>
-            </trans-unit>
-        </body>
-    </file>
-    <file original="../src/apps/vpn/ui/screens/home/ViewServers.qml" datatype="plaintext" source-language="en" target-language="es_CL">
-        <body>
-            <trans-unit id="servers.us" xml:space="preserve">
-                <source>United States of America</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="servers.mx" xml:space="preserve">
-                <source>Mexico</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="servers.es" xml:space="preserve">
-                <source>Spain</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
-                <source>Salt Lake City, UT</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="servers.MexicoCity" xml:space="preserve">
-                <source>Mexico City</source>
-                <target></target>
-            </trans-unit>
-            <trans-unit id="servers.Barcelona" xml:space="preserve">
-                <source>Barcelona</source>
-                <target></target>
-            </trans-unit>
-        </body>
-    </file>
+  <file original="../src/apps/vpn/ui/screens/settings/ViewLanguage.qml" datatype="plaintext" source-language="en" target-language="es_CL">
+    <body>
+      <trans-unit id="languages.en">
+        <source>English</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="languages.es_ES">
+        <source>Spanish</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="languages.es_MX">
+        <source>Mexican Spanish</source>
+        <target></target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="../src/apps/vpn/ui/screens/home/ViewServers.qml" datatype="plaintext" source-language="en" target-language="es_CL">
+    <body>
+      <trans-unit id="servers.us" xml:space="preserve">
+        <source>United States of America</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.mx" xml:space="preserve">
+        <source>Mexico</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.es" xml:space="preserve">
+        <source>Spain</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.SaltLakeCity" xml:space="preserve">
+        <source>Salt Lake City, UT</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.MexicoCity" xml:space="preserve">
+        <source>Mexico City</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.Barcelona" xml:space="preserve">
+        <source>Barcelona</source>
+        <target></target>
+      </trans-unit>
+      <trans-unit id="servers.SãoPaulo" xml:space="preserve">
+        <source>São Paulo, SP</source>
+        <target></target>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

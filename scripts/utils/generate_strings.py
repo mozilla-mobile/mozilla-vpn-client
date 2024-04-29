@@ -7,6 +7,7 @@ import os
 import yaml
 import argparse
 from lxml import etree
+import re
 
 def stop(string_id):
     exit(
@@ -47,7 +48,9 @@ def parseXLIFFTranslationStrings(xliff_file):
     root = tree.getroot()
 
     for node in root.xpath('//x:trans-unit', namespaces=ns):
-        id = node.get('id')
+        # Remove any unexpected characters e.g. São Paulo -> SoPaulo
+        id = re.sub(r'[^a-zA-Z.]', '', node.get('id'))
+        print(id)
         cpp_id = pascalize(id.replace('.', '_'))
         value = node.xpath('./x:source', namespaces=ns)[0].text
 

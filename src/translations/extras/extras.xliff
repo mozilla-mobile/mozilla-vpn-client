@@ -162,7 +162,7 @@
       <trans-unit id="servers.br" xml:space="preserve">
         <source>Brazil</source>
       </trans-unit>
-      <trans-unit id="servers.SaoPaulo" xml:space="preserve">
+      <trans-unit id="servers.SãoPaulo" xml:space="preserve">
         <source>Sao Paulo</source>
       </trans-unit>
       <trans-unit id="servers.ca" xml:space="preserve">

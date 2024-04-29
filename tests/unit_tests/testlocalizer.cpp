@@ -473,9 +473,12 @@ void TestLocalizer::getTranslatedCityName() {
   // just return what was provided.
   QCOMPARE(localizer.getTranslatedCityName("Hogsmead"), "Hogsmead");
 
+  // Make sure special characters and state suffixes don't trip us up.
   QCOMPARE(localizer.getTranslatedCityName("Salt Lake City, UT"),
-           "Salt Lake City, UT");
+           "Salt Lake City");
+  QCOMPARE(localizer.getTranslatedCityName("São Paulo, SP"), "São Paulo");
 
+  // Happy path
   m_settingsHolder->setLanguageCode("es_ES");
   QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Ciudad de México");
 

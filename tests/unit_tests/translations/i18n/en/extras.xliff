@@ -33,6 +33,9 @@
       <trans-unit id="servers.Barcelona" xml:space="preserve">
         <source>Barcelona</source>
       </trans-unit>
+      <trans-unit id="servers.SãoPaulo" xml:space="preserve">
+        <source>São Paulo, SP</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
