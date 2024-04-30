@@ -18,19 +18,98 @@
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
 
+#include "wireguard.h"
+
 #pragma comment(lib, "iphlpapi.lib")
 
 namespace {
 Logger logger("WireguardUtilsWindows");
+
+// ID for the Mullvad Split-Tunnel Sublayer Provider
+DEFINE_GUID(AAAA, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
+            0xa7, 0x99, 0x63, 0x56, 0xd9);
+
+
 };  // namespace
 
-WireguardUtilsWindows::WireguardUtilsWindows(QObject* parent)
-    : WireguardUtils(parent), m_tunnel(this), m_routeMonitor(this) {
+
+
+/**
+* Helper for the WireguardNT api, containing pointers
+* to all exposed functions by wireguard.dll
+* 
+* Open the dll using ::create();
+* If the struct is destroyed, the dll is unloaded aswell. 
+*/
+struct WireGuardAPI {
+  WIREGUARD_CREATE_ADAPTER_FUNC* CreateAdapter;
+  WIREGUARD_OPEN_ADAPTER_FUNC* OpenAdapter;
+  WIREGUARD_CLOSE_ADAPTER_FUNC* CloseAdapter;
+  WIREGUARD_GET_ADAPTER_LUID_FUNC* GetAdapterLUID;
+  WIREGUARD_GET_RUNNING_DRIVER_VERSION_FUNC*
+      GetRunningDriverVersion;
+  WIREGUARD_DELETE_DRIVER_FUNC* DeleteDriver;
+  WIREGUARD_SET_LOGGER_FUNC* SetLogger;
+  WIREGUARD_SET_ADAPTER_LOGGING_FUNC* SetAdapterLogging;
+  WIREGUARD_GET_ADAPTER_STATE_FUNC* GetAdapterState;
+  WIREGUARD_SET_ADAPTER_STATE_FUNC* SetAdapterState;
+  WIREGUARD_GET_CONFIGURATION_FUNC* GetConfiguration;
+  WIREGUARD_SET_CONFIGURATION_FUNC* SetConfiguration;
+  HMODULE dll; // Handle to DLL
+
+  ~WireGuardAPI(){ 
+      if (this->dll){
+        FreeLibrary(this->dll);
+      }
+  }
+  /**
+  * Opens Wireguard DLL, constructs a  WireGuardAPI object
+  * and returns that. 
+  * Returns nullptr on failure. 
+  */
+  static std::unique_ptr<WireGuardAPI> create() {
+    auto out = std::make_unique<WireGuardAPI>();
+    HMODULE WireGuardDll = LoadLibraryExW(
+        L"wireguard.dll", NULL,
+        LOAD_LIBRARY_SEARCH_APPLICATION_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if (!WireGuardDll) return {};
+
+#define X(Name)              \
+  ((*(FARPROC*)& out->Name = \
+        GetProcAddress(WireGuardDll, "WireGuard##Name")) == NULL)
+    if (X(CreateAdapter) || X(OpenAdapter) || X(CloseAdapter) ||
+        X(GetAdapterLUID) || X(GetRunningDriverVersion) || X(DeleteDriver) ||
+        X(SetLogger) || X(SetAdapterLogging) || X(GetAdapterState) ||
+        X(SetAdapterState) || X(GetConfiguration) || X(SetConfiguration))
+#undef X
+    {
+      DWORD LastError = GetLastError();
+      FreeLibrary(WireGuardDll);
+      SetLastError(LastError);
+      return {};
+    }
+    out->dll = WireGuardDll;
+    return out;
+  }
+};
+
+
+std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
+    QObject* parent) {
+  auto wg_nt = WireGuardAPI::create();
+  if (!wg_nt) {
+    return {};
+  }
+  // Can't use make_unique here as the Constructor is private :( 
+  auto utils = new WireguardUtilsWindows(parent, std::move(wg_nt));
+  return std::unique_ptr<WireguardUtilsWindows>(utils);
+}
+
+WireguardUtilsWindows::WireguardUtilsWindows(
+    QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
+    : WireguardUtils(parent), m_routeMonitor(this), m_wireguard_api(std::move(wireguard)) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
-
-  connect(&m_tunnel, &WindowsTunnelService::backendFailure, this,
-          [&] { emit backendFailure(); });
 }
 
 WireguardUtilsWindows::~WireguardUtilsWindows() {
@@ -38,47 +117,30 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
   logger.debug() << "WireguardUtilsWindows destroyed.";
 }
 
+bool WireguardUtilsWindows::interfaceExists() { 
+    return m_adapter == NULL; 
+}
+
 QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
-  QString reply = m_tunnel.uapiCommand("get=1");
-  PeerStatus status;
   QList<PeerStatus> peerList;
-  for (const QString& line : reply.split('\n')) {
-    int eq = line.indexOf('=');
-    if (eq <= 0) {
-      continue;
-    }
-    QString name = line.left(eq);
-    QString value = line.mid(eq + 1);
-
-    if (name == "public_key") {
-      if (!status.m_pubkey.isEmpty()) {
-        peerList.append(status);
-      }
-      QByteArray pubkey = QByteArray::fromHex(value.toUtf8());
-      status = PeerStatus(pubkey.toBase64());
-    }
-
-    if (name == "tx_bytes") {
-      status.m_txBytes = value.toDouble();
-    }
-    if (name == "rx_bytes") {
-      status.m_rxBytes = value.toDouble();
-    }
-    if (name == "last_handshake_time_sec") {
-      status.m_handshake += value.toLongLong() * 1000;
-    }
-    if (name == "last_handshake_time_nsec") {
-      status.m_handshake += value.toLongLong() / 1000000;
-    }
-  }
-  if (!status.m_pubkey.isEmpty()) {
-    peerList.append(status);
-  }
-
   return peerList;
 }
 
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
+  // TODO: REWRITE
+  m_wireguard_api->CreateAdapter(L"W", L"AA", &AAAA );
+
+  auto private_key = QByteArray::fromBase64(config.m_privateKey.toUtf8(),
+                                            QByteArray::Base64Encoding);
+  WIREGUARD_INTERFACE wgConf = {
+      .Flags = WIREGUARD_INTERFACE_HAS_PRIVATE_KEY,
+      .ListenPort = 0,  // Choose Randomly
+      .PeersCount = 0,
+  }; 
+  std::copy(std::begin(private_key), std::end(private_key),
+            std::begin(wgConf.PrivateKey));
+
+
   QStringList addresses;
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     addresses.append(ip.toString());
@@ -100,10 +162,10 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     configString.truncate(peerStart);
   }
 
-  if (!m_tunnel.start(configString)) {
-    logger.error() << "Failed to activate the tunnel service";
-    return false;
-  }
+  //if (!m_tunnel.start(configString)) {
+  //  logger.error() << "Failed to activate the tunnel service";
+  //  return false;
+ // }
 
   // Determine the interface LUID
   NET_LUID luid;
@@ -126,12 +188,14 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsWindows::deleteInterface() {
+  // TODO: REWRITE
   WindowsFirewall::instance()->disableKillSwitch();
-  m_tunnel.stop();
+  //m_tunnel.stop();
   return true;
 }
 
 bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
+  // TODO: REWRITE
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
@@ -167,13 +231,14 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
     m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
-
-  QString reply = m_tunnel.uapiCommand(message);
-  logger.debug() << "DATA:" << reply;
+  // TODO: REWRITE
+  //QString reply = m_tunnel.uapiCommand(message);
+  //logger.debug() << "DATA:" << reply;
   return true;
 }
 
 bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
+    // TODO: REWRITE
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
@@ -192,8 +257,8 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   out << "public_key=" << QString(publicKey.toHex()) << "\n";
   out << "remove=true\n";
 
-  QString reply = m_tunnel.uapiCommand(message);
-  logger.debug() << "DATA:" << reply;
+  //QString reply = m_tunnel.uapiCommand(message);
+  //logger.debug() << "DATA:" << reply;
   return true;
 }
 
