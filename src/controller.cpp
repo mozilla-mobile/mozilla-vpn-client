@@ -744,7 +744,8 @@ void Controller::disconnected() {
     return;
   }
 
-  // Need this StateConfirming check to prevent recording telemetry during Android onboarding.
+  // Need this StateConfirming check to prevent recording telemetry during
+  // Android onboarding.
   if (m_state != StateConfirming) {
     emit recordConnectionEndTelemetry();
   }
