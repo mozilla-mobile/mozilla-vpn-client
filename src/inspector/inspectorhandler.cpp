@@ -18,6 +18,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QSignalSpy>
 #include <QTest>
 #include <functional>
 
@@ -357,6 +358,15 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
+                       // Ensure window rendering is finished.
+                       QQuickWindow* window = qobject_cast<QQuickWindow*>(
+                          QmlEngineHolder::instance()->window());
+                       QSignalSpy spy(window, SIGNAL(afterRendering()));
+                       window->update();
+                       if (!spy.wait(150)) {
+                        logger.debug() << "Never got an afterRendering signal";
+                       }
+
                        QObject* qmlobj =
                            InspectorUtils::queryObject(arguments[1]);
                        if (!qmlobj) {
@@ -371,7 +381,6 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       QWindow* window = QmlEngineHolder::instance()->window();
                        QPointF center = item->boundingRect().center();
                        QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
                                          item->mapToScene(center).toPoint());
