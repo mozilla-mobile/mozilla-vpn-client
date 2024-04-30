@@ -371,28 +371,10 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       // It seems that in QT/QML there is a race-condition bug
-                       // between the rendering thread and the main one when
-                       // simulating clicks using QTest. At this point, all the
-                       // properties are synchronized, the animation is
-                       // probably already completed (otherwise it's a bug in
-                       // the test!) but it could be that he following
-                       // `mouse`Click` is ignored.
-                       // The horrible/temporary solution is to wait a bit more
-                       // and to add a delay (VPN-3697)
-                       QTest::qWait(150);
-
-                       // Post a mouse click and the release.
-                       QPointF point(item->width()/2, item->height()/2);
-                       QCoreApplication::postEvent(item, new QMouseEvent(
-                          QEvent::MouseButtonPress, point,
-                          item->mapToGlobal(point), Qt::LeftButton,
-                          Qt::LeftButton, Qt::NoModifier));
-                       QCoreApplication::postEvent(item, new QMouseEvent(
-                          QEvent::MouseButtonRelease, point,
-                          item->mapToGlobal(point), Qt::LeftButton,
-                          Qt::LeftButton, Qt::NoModifier));
-
+                       QWindow* window = QmlEngineHolder::instance()->window();
+                       QPointF center = item->boundingRect().center();
+                       QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+                                         item->mapToScene(center).toPoint());
                        return obj;
                      }},
 
