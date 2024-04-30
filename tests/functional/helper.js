@@ -239,6 +239,18 @@ module.exports = {
     await this.wait();
   },
 
+  async scrollToBottom(view) {
+    assert(await this.query(view), 'Scrolling on an non-existing view?!?');
+
+    const contentHeight =
+        parseInt(await this.getQueryProperty(view, 'contentHeight'));
+    const height = parseInt(await this.getQueryProperty(view, 'height'));
+    let maxScroll = (contentHeight > height) ? contentHeight - height : 0;
+
+    await this.setQueryProperty(view, 'contentY', maxScroll);
+    await this.wait();
+  },
+
   async getMozillaProperty(namespace, id, property) {
     const json =
         await this._writeCommand(`property ${encodeURIComponent(namespace)} ${

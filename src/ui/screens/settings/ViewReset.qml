@@ -14,6 +14,7 @@ import "qrc:/Mozilla/VPN/sharedViews"
 
 ViewFullScreen {
     id: root
+    objectName: "resetVpnView"
 
     property string telemetryScreenId: "reset_vpn"
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
