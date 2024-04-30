@@ -235,6 +235,7 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
               .visible());
+      await vpn.waitForInitialView();
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
