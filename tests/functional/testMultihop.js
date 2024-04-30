@@ -172,6 +172,7 @@ describe('Server list', function() {
 
     if (await vpn.getQueryProperty(countryId, 'cityListVisible') === 'false') {
       await vpn.clickOnQuery(countryId);
+      await vpn.waitForQuery(countryId.ready());
     }
     let [city] = server.cities
     const cityId_query =
