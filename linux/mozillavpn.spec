@@ -7,7 +7,7 @@ Release:   1~git%(git log -1 --format=%h)%{?dist}
 Summary:   Mozilla VPN
 License:   MPL-2.0
 URL:       https://vpn.mozilla.org
-Packager:  Owen Kirby
+Packager:  Naomi Kirby
 Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
