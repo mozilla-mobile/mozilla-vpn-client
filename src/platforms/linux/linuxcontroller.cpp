@@ -30,7 +30,7 @@ LinuxController::LinuxController() {
 
   m_dbus = new DBusClient(this);
   connect(m_dbus, &DBusClient::connected, this,
-          [this](auto key) { emit connected(key, QDateTime()); });
+          [this](auto key) { emit connected(key); });
   connect(m_dbus, &DBusClient::disconnected, this,
           &LinuxController::disconnected);
 

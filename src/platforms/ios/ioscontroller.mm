@@ -94,8 +94,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
         }
       }
-      callback:^(BOOL a_connected, NSDate* date) {
-        QDateTime qtDate(QDateTime::fromNSDate(date));
+      callback:^(BOOL a_connected) {
         logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
           emit connected(m_serverPublicKey);
