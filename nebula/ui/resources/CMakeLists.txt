@@ -53,6 +53,7 @@ qt_add_qml_module(resources
         verification-code.svg
         warning-dark-orange.svg
         warning-orange.svg
+        warning-gray.svg
         warning.svg
         x-red50.svg
         check-green70.svg
@@ -69,6 +70,7 @@ qt_add_qml_module(resources
         copy.svg
         paste.svg
         info.svg
+        success.svg
         lock.svg
         startup.svg
         question.svg
