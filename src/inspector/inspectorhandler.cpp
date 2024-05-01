@@ -361,10 +361,13 @@ static QList<InspectorCommand> s_commands{
                        // Ensure window rendering is finished.
                        QQuickWindow* window = qobject_cast<QQuickWindow*>(
                           QmlEngineHolder::instance()->window());
-                       QSignalSpy spy(window, SIGNAL(afterRendering()));
+                       QSignalSpy spy(window, &QQuickWindow::afterFrameEnd);
                        window->update();
+                       if (!spy.isValid()) {
+                         logger.debug() << "QSignalSpy is invalid";
+                       }
                        if (!spy.wait(150)) {
-                        logger.debug() << "Never got an afterRendering signal";
+                        logger.debug() << "Never got an afterFrameEnd signal";
                        }
 
                        QObject* qmlobj =
