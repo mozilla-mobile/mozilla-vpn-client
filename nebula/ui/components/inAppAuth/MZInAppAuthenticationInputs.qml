@@ -13,6 +13,7 @@ import components.forms 0.1
 
 ColumnLayout {
     id: base
+    property string _viewObjectName: ""
     property string _telemetryScreenId
     property string _telemetryButtonEventName
     property string _inputPlaceholderText: ""
@@ -55,7 +56,7 @@ ColumnLayout {
 
             MZTextField {
                 id: textInput
-                objectName: base.objectName + "-textInput"
+                objectName: base._viewObjectName + "-textInput"
                 width: base.width - (inputPasteButton.visible ? inputPasteButton.width - parent.spacing : 0)
                 height: MZTheme.theme.rowHeight
                 _placeholderText: _inputPlaceholderText
@@ -65,7 +66,7 @@ ColumnLayout {
 
             MZPasswordInput {
                 id: passwordInput
-                objectName: base.objectName + "-passwordInput"
+                objectName: base._viewObjectName + "-passwordInput"
                 _placeholderText: _inputPlaceholderText
                 Keys.onReturnPressed: col.submitInfo(passwordInput)
                 width: base.width - inputPasteButton.width - parent.spacing
@@ -75,7 +76,7 @@ ColumnLayout {
 
             MZPasteButton {
                 id: inputPasteButton
-                objectName: base.objectName + "-inputPasteButton"
+                objectName: base._viewObjectName + "-inputPasteButton"
                 width: MZTheme.theme.rowHeight
                 height: MZTheme.theme.rowHeight
                 onClicked: {
@@ -145,20 +146,20 @@ ColumnLayout {
 
                 MZInAppAuthenticationPasswordCondition {
                     id: passwordLength
-                    objectName: base.objectName + "-passwordConditionLength"
+                    objectName: base._viewObjectName + "-passwordConditionLength"
                     _iconVisible: true
                     _passwordConditionIsSatisfied: toolTip._isSignUp && MZAuthInApp.validatePasswordLength(passwordInput.text)
                     _passwordConditionDescription: MZI18n.InAppAuthPasswordHintCharacterLength
                 }
                 MZInAppAuthenticationPasswordCondition {
-                    objectName: base.objectName + "-passwordConditionEmailAddress"
+                    objectName: base._viewObjectName + "-passwordConditionEmailAddress"
                     _iconVisible: passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && MZAuthInApp.validatePasswordEmail(passwordInput.text)
                     _passwordConditionDescription: MZI18n.InAppAuthPasswordHintEmailAddressAsPassword
                     opacity: passwordLength._passwordConditionIsSatisfied ? 1 : .5
                 }
                 MZInAppAuthenticationPasswordCondition {
-                    objectName: base.objectName + "-passwordConditionCommon"
+                    objectName: base._viewObjectName + "-passwordConditionCommon"
                     _iconVisible:  passwordLength._passwordConditionIsSatisfied
                     _passwordConditionIsSatisfied: toolTip._isSignUp && passwordLength._passwordConditionIsSatisfied && MZAuthInApp.validatePasswordCommons(passwordInput.text)
                     _passwordConditionDescription: MZI18n.InAppAuthPasswordHintCommonPassword
@@ -233,7 +234,7 @@ ColumnLayout {
 
     MZButton {
         id: btn
-        objectName: base.objectName + "-button"
+        objectName: base._viewObjectName + "-button"
         Layout.fillWidth: true
         loaderVisible:  MZAuthInApp.state === MZAuthInApp.StateCheckingAccount ||
                         MZAuthInApp.state === MZAuthInApp.StateSigningIn ||

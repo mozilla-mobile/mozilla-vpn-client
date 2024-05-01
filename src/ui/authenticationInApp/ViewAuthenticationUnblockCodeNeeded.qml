@@ -13,9 +13,9 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authUnblockCodeNeeded
+    objectName: "authUnblockCodeNeeded"
 
     _telemetryScreenId: "enter_unblock_code"
-    _viewObjectName: "authUnblockCodeNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
@@ -37,7 +37,7 @@ MZInAppAuthenticationBase {
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authUnblockCodeNeeded"
+        _viewObjectName: authUnblockCodeNeeded.objectName
         _telemetryScreenId: authUnblockCodeNeeded._telemetryScreenId
         _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === MZAuthInApp.unblockCodeLength && !activeInput().hasError
@@ -52,7 +52,7 @@ MZInAppAuthenticationBase {
         spacing: MZTheme.theme.windowMargin
 
         MZLinkButton {
-            objectName: _viewObjectName + "-resendCode"
+            objectName: authUnblockCodeNeeded.objectName + "-resendCode"
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -66,7 +66,7 @@ MZInAppAuthenticationBase {
             }
         }
         MZCancelButton {
-            objectName: _viewObjectName + "-cancel"
+            objectName: authUnblockCodeNeeded.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 Glean.interaction.cancelSelected.record({

@@ -12,16 +12,16 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authSignUp
+    objectName: "authVerificationSessionByEmailNeeded"
 
     _telemetryScreenId: "enter_verification_code"
-    _viewObjectName: "authVerificationSessionByEmailNeeded"
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: "qrc:/nebula/resources/verification-code.svg"
     _backButtonVisible: false
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authVerificationSessionByEmailNeeded"
+        _viewObjectName: authSignUp.objectName
         _telemetryScreenId: authSignUp._telemetryScreenId
         _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === MZAuthInApp.sessionEmailCodeLength && !activeInput().hasError
@@ -36,7 +36,7 @@ MZInAppAuthenticationBase {
         spacing: MZTheme.theme.windowMargin
 
         MZLinkButton {
-            objectName: _viewObjectName + "-resendCode"
+            objectName: authSignUp.objectName + "-resendCode"
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -50,7 +50,7 @@ MZInAppAuthenticationBase {
         }
 
         MZCancelButton {
-            objectName: _viewObjectName + "-cancel"
+            objectName: authSignUp.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 Glean.interaction.cancelSelected.record({

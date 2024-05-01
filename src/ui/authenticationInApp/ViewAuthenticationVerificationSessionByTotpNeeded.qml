@@ -12,10 +12,10 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authVerificationSessionByTotpNeeded
+    objectName: "authVerificationSessionByTotpNeeded"
 
     _telemetryScreenId: "enter_security_code"
 
-    _viewObjectName: "authVerificationSessionByTotpNeeded"
     _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
@@ -39,7 +39,7 @@ MZInAppAuthenticationBase {
     _backButtonVisible: false
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authVerificationSessionByTotpNeeded"
+        _viewObjectName: authVerificationSessionByTotpNeeded.objectName
 
         _telemetryScreenId: authVerificationSessionByTotpNeeded._telemetryScreenId
         _telemetryButtonEventName: "verifySelected"
@@ -55,7 +55,7 @@ MZInAppAuthenticationBase {
         Layout.preferredWidth: parent.width
 
         MZCancelButton {
-            objectName: _viewObjectName + "-cancel"
+            objectName: authVerificationSessionByTotpNeeded.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 Glean.interaction.cancelSelected.record({

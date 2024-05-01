@@ -13,7 +13,6 @@ import components.forms 0.1
 MZFlickable {
     id: authThirdParty
 
-    property string _viewObjectName
     property string _telemetryScreenId
 
     property alias _imgSource: img.source
@@ -39,7 +38,7 @@ MZFlickable {
 
             MZLinkButton {
                 id: headerLink
-                objectName: _viewObjectName + "-getHelpLink"
+                objectName: authThirdParty.objectName + "-getHelpLink"
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: MZTheme.theme.windowMargin
                 labelText: MZI18n.GetHelpLinkTitle
@@ -74,7 +73,7 @@ MZFlickable {
 
             MZHeadline {
                 id: headline
-                objectName: _viewObjectName + "-headline"
+                objectName: authThirdParty.objectName + "-headline"
                 width: undefined
                 Layout.fillWidth: true
             }
@@ -100,7 +99,7 @@ MZFlickable {
             spacing: 24
 
             MZButton {
-                objectName: _viewObjectName + "-buttonSignIn"
+                objectName: authThirdParty.objectName + "-buttonSignIn"
                 text: MZI18n.InAppAuthContinueToSignIn
                 Layout.fillWidth: true
                 onClicked: {
@@ -109,7 +108,7 @@ MZFlickable {
             }
 
             MZCancelButton {
-                objectName: _viewObjectName + "-cancel"
+                objectName: authThirdParty.objectName + "-cancel"
                 Layout.alignment: Qt.AlignHCenter
                 onClicked: {
                     VPN.cancelAuthentication();
