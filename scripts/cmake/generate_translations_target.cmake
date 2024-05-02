@@ -47,6 +47,10 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
         ${CMAKE_SOURCE_DIR}/translations/i18nstrings.cpp
     )
 
+    if(NOT QT_FEATURE_zstd)
+        set_property(SOURCE ${GENERATED_DIR}/translations.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    endif()
+
     ## Generate the string database (language agnostic)
     add_custom_command(
         OUTPUT ${GENERATED_DIR}/i18nstrings_p.cpp ${GENERATED_DIR}/i18nstrings.h

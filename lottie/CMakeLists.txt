@@ -38,7 +38,7 @@ target_sources(lottie PRIVATE
     lib/lottie.qrc
 )
 
-if(ANDROID)
+if(NOT QT_FEATURE_zstd)
     set_property(SOURCE lib/lottie.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
