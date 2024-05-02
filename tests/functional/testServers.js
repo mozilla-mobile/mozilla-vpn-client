@@ -152,6 +152,12 @@ describe('Server', function() {
             'VPN is on';
       });
 
+      assert.equal(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONNECTION_TIMER,
+              'connectionTimeForFunctionalTest'),
+          '00:00:00');
+
       let currentCountry = '';
       for (let server of servers) {
         if (server.code === currentCountryCode) {
@@ -223,6 +229,12 @@ describe('Server', function() {
                    queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'VPN is on';
       });
+
+      assert.notEqual(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONNECTION_TIMER,
+              'connectionTimeForFunctionalTest'),
+          '00:00:00');
 
       assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
       assert.strictEqual(
