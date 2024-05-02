@@ -21,7 +21,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
-  worker.start(1 * 1000 * 60 * 60);  // 1hr
+  worker.start(std::chrono::milliseconds(1 * 1000 * 60 * 60));  // 1hr
 
   auto updatedListOfTasks = TaskScheduler::tasks();
 
@@ -47,7 +47,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
-  worker.start(200);  // 200ms
+  worker.start(std::chrono::milliseconds(200));  // 200ms
 
   // Sleep for 250 milliseconds,
   // give the worker time to schedule the first periodic task.
@@ -81,7 +81,7 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
-  worker.start(1 * 1000 * 60 * 60);  // 1hr
+  worker.start(std::chrono::milliseconds(1 * 1000 * 60 * 60));  // 1hr
 
   settingsHolder.setToken("aToken");
   settingsHolder.setToken("anotherToken");
@@ -115,7 +115,7 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
 
   {
     TaskGetFeatureListWorker worker;
-    worker.start(200);  // 200ms
+    worker.start(std::chrono::milliseconds(200));  // 200ms
 
     // Sleep for 250 milliseconds,
     // give the worker time to schedule the first periodic task.
