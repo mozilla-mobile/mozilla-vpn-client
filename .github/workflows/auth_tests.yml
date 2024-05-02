@@ -80,7 +80,6 @@ jobs:
           cmake --build build/cmake -j$(nproc) --target app_auth_tests
 
       - name: Running tests
-        shell: bash
         working-directory: ./build/cmake/tests/auth_tests
         run: |
           python3 -m oathtool
