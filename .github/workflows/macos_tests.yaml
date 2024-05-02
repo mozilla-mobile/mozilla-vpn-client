@@ -48,12 +48,6 @@ jobs:
 
       - name: Compile test client
         run: |
-          conda info --envs
-          which python
-          which python3
-
-          echo "!!!!!!!!!!"
-
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
