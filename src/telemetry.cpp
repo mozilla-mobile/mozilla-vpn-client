@@ -62,6 +62,9 @@ void Telemetry::initialize() {
   logger.debug() << "Initialize";
 
   MozillaVPN* vpn = MozillaVPN::instance();
+  connect(vpn, &MozillaVPN::logSubscriptionCompleted, this,
+          [] { mozilla::glean::outcome::subscription_completed.record(); });
+
   connect(vpn, &MozillaVPN::stateChanged, this, []() {
     int state = MozillaVPN::instance()->state();
 

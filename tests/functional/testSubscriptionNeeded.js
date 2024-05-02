@@ -113,11 +113,37 @@ describe("subscription needed tests", function() {
         const startedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionStarted", "main");
         assert.strictEqual(startedEventsList.length, 1);
 
+        // Override directly in the running guardian server for this test.
+        this.ctx.guardianServer.overrideEndpoints = {
+          POSTs: {
+            '/api/v2/vpn/login/verify': {
+              status: 200,
+              body: {
+                user: {
+                  avatar: '',
+                  display_name: 'Test',
+                  email: 'test@mozilla.com',
+                  max_devices: 5,
+                  subscriptions: {vpn: {active: true}},
+                  devices: [],
+                },
+                token: 'our-token'
+              }
+            }
+          }
+        };
+
         // Subscription, for Guardian, is the same as in-browser auth.
         await vpn.mockInBrowserAuthentication();
 
-        const completedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionCompleted", "main");
-        assert.strictEqual(completedEventsList.length, 1);
+        // Check subscription completed is recorded.
+        await vpn.waitForCondition(async () => {
+          const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionCompleted", "main");
+          return eventList.length === 1;
+        });
+
+        // Reset the Gaurdian overrides.
+        this.ctx.guardianServer.overrideEndpoints = this.ctx.guardianOverrideEndpoints;
       });
 
       // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
