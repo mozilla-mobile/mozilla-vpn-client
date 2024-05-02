@@ -22,13 +22,14 @@ def get_gcs_sources(dependent_task):
     if not destinations:
         return []
     assert len(destinations) == 1 # We only should expect one
+    destination = list(destinations.values())[0]
     # release_artifacts is a list of upstream artifacts 
     # i.e [{'type': 'file', 'name': 'public/build/mozillavpn.deb', 'path': '/builds/worker/artifacts/mozillavpn.deb'}]
     release_artifacts = dependent_task.attributes["release-artifacts"]
     if not release_artifacts:
         return []
 
-    gcs_path_prefix = urlparse(destinations[0]).path
+    gcs_path_prefix = urlparse(destination).path
     if gcs_path_prefix[0] == "/":
         gcs_path_prefix=gcs_path_prefix[1:]
     gcs_paths = []
@@ -42,7 +43,7 @@ def get_gcs_sources(dependent_task):
 
 
 ALLOWED_SHIPPING_PHASES = [
-#    "ship-client", - TODO: Disabled until https://mozilla-hub.atlassian.net/browse/VPN-6208 is resolved
+    "ship-client",
 #    "promote-client" - candidates are not setup yet.
 ]
 
