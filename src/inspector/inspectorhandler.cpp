@@ -358,10 +358,10 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
-#ifndef MZ_WASM
-                       // Ensure window rendering is finished.
                        QQuickWindow* window = qobject_cast<QQuickWindow*>(
                            QmlEngineHolder::instance()->window());
+#ifndef MZ_WASM
+                       // Ensure window rendering is finished.
                        QSignalSpy spy(window, &QQuickWindow::afterFrameEnd);
                        window->update();
                        if (!spy.isValid()) {
