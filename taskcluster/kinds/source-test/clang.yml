@@ -43,7 +43,8 @@ clang-tidy-android:
       command: >-
         source $TASK_WORKDIR/fetches/bin/activate &&
         conda-unpack &&
-        git submodule update --init --recursive && 
+        git submodule update --init --recursive &&
+        unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER &&  
         $QTPATH/bin/qt-cmake \
           -DQT_HOST_PATH=$QT_HOST_PATH \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
