@@ -358,17 +358,18 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
 
+#ifndef MZ_WASM
                        // Ensure window rendering is finished.
                        QQuickWindow* window = qobject_cast<QQuickWindow*>(
-                          QmlEngineHolder::instance()->window());
+                           QmlEngineHolder::instance()->window());
                        QSignalSpy spy(window, &QQuickWindow::afterFrameEnd);
                        window->update();
                        if (!spy.isValid()) {
                          logger.debug() << "QSignalSpy is invalid";
+                       } else if (!spy.wait(150)) {
+                         logger.debug() << "Never got an afterFrameEnd signal";
                        }
-                       if (!spy.wait(150)) {
-                        logger.debug() << "Never got an afterFrameEnd signal";
-                       }
+#endif
 
                        QObject* qmlobj =
                            InspectorUtils::queryObject(arguments[1]);
