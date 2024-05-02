@@ -20,7 +20,7 @@ TaskGetFeatureListWorker::~TaskGetFeatureListWorker() {
   qDebug() << "Destructing!";
 }
 
-void TaskGetFeatureListWorker::start(int interval) {
+void TaskGetFeatureListWorker::start(std::chrono::milliseconds interval) {
   scheduleTask();
 
   // The `token` setting is the setting that contains the JWT token for authed

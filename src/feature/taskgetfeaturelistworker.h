@@ -44,7 +44,7 @@ class TaskGetFeatureListWorker final : public QObject {
    * 2. Starts a timer to re-run TaskGetFeatureList on a given interval
    * 3. Starts observers for re-triggering the task on experimenter id change
    */
-  void start(int interval);
+  void start(std::chrono::milliseconds interval);
 
  private:
   void scheduleTask();

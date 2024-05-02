@@ -249,7 +249,7 @@ void MozillaVPN::initialize() {
   Q_ASSERT(state() == StateInitialize);
 
   m_private->m_taskGetFeatureListWorker.start(
-      Constants::schedulePeriodicTaskTimerMsec());
+      Constants::Timers::schedulePeriodicTask());
 
   m_private->m_releaseMonitor.runSoon();
 
