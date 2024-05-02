@@ -55,6 +55,7 @@ ColumnLayout {
 
                     sourceComponent: MZInformationCard {
                         width: parent.width
+                        cardType: MZInformationCard.CardType.Info
                         implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
                         anchors.top: parent.top
                         anchors.topMargin: MZTheme.theme.viewBaseTopMargin
