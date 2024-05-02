@@ -18,20 +18,20 @@ task-defaults:
           using: run-task
           use-caches: true
           cwd: '{checkout}'
-
-android-qt-next/debug:
-        treeherder:
-            platform: android/arm64-v8a
-            symbol: NEXT
-        fetches:
-            toolchain: 
-                - conda-android-arm64-6.7.0
-        requires-level: 1
-        run:
-            command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
-        release-artifacts:
-            # APK Artifacts expects file to be in /builds/worker/artifacts/
-            - mozillavpn-arm64-v8a-debug.apk
+# TODO: Re-Enable The next build
+# android-qt-next/debug:
+#         treeherder:
+#             platform: android/arm64-v8a
+#             symbol: NEXT
+#         fetches:
+#             toolchain: 
+#                 - conda-android-arm64-6.7.0
+#         requires-level: 1
+#         run:
+#             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
+#         release-artifacts:
+#             # APK Artifacts expects file to be in /builds/worker/artifacts/
+#             - mozillavpn-arm64-v8a-debug.apk
 
 # Debug Builds:
 android-arm64/debug:
