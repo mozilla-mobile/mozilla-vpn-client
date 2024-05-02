@@ -82,7 +82,6 @@ jobs:
       - name: Running tests
         working-directory: ./build/cmake/tests/auth_tests
         run: |
-          python3 -m oathtool
           ctest --output-on-failure
 
   windows-unit-tests:
