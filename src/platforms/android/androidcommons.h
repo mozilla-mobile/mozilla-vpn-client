@@ -30,8 +30,6 @@ class AndroidCommons final : public QObject {
 
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
-  static void runOnAndroidThreadSync(const std::function<void()> runnable);
-
   static void dispatchToMainThread(std::function<void()> callback);
 };
 
