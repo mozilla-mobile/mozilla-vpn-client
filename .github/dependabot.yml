@@ -69,7 +69,7 @@ updates:
       - "dependencies"
     # We should not update glean-parser unless we are updating the glean submodule.
     ignore:
-    - dependency-name: "glean-parser"
+      - dependency-name: "glean-parser"
   # Functional Tests etc
   - package-ecosystem: "npm"
     directory: "/"
