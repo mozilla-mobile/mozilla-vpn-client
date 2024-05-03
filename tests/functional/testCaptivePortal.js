@@ -58,40 +58,6 @@ describe('Captive portal', function() {
     assert.equal(vpn.lastNotification().title, null);
   });
 
-  it('Captive portal in the Post authentication view', async function () {
-    //Post auth view does not exist in new onboarding
-    if (await vpn.isFeatureEnabled("newOnboarding")) {
-      await vpn.flipFeatureOff("newOnboarding");
-    }
-
-    await vpn.authenticateInApp(false);
-    // Setup - end
-
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-
-    // Notifications are not OK yet.
-    assert.equal(vpn.lastNotification().title, null);
-  });
-
-  it('Captive portal in the Telemetry policy view', async function () {
-    //Telemetry policy view does not exist in new onboarding
-    if (await vpn.isFeatureEnabled('newOnboarding')) {
-      await vpn.flipFeatureOff("newOnboarding");
-    }
-
-    await vpn.authenticateInApp(false);
-    await vpn.completePostAuthentication();
-    // Setup - end
-
-    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-    await vpn.forceCaptivePortalDetection();
-    await vpn.wait();
-
-    // Notifications are not OK yet.
-    assert.equal(vpn.lastNotification().title, null);
-  });
-
   describe('Captive portal post auth', function() {
     this.ctx.authenticationNeeded = true;
 

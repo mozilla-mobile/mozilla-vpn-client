@@ -175,11 +175,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();
         // If this disconnect is due to the end of onboarding, call appropriate function.
-        if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-          if (SettingsHolder::instance()->onboardingCompleted() == false) {
-            logger.error() << "Error in tunnel creation, but finishing onboarding";
-            MozillaVPN::instance()->onboardingCompleted();
-          }
+        if (SettingsHolder::instance()->onboardingCompleted() == false) {
+          logger.error() << "Error in tunnel creation, but finishing onboarding";
+          MozillaVPN::instance()->onboardingCompleted();
         }
       }
       onboardingCompletedCallback:^() {

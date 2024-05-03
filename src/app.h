@@ -30,10 +30,6 @@ class App : public QObject {
     // All good!
     StateMain,
 
-    // Post authentication + subscription flow, we want to inform users about
-    // "things".
-    StatePostAuthentication,
-
     // Something went wrong during the subscription flow. We are unable to
     // complete the subscription.
     StateSubscriptionBlocked,
@@ -46,9 +42,6 @@ class App : public QObject {
 
     // An error occurred during the subscription validation.
     StateSubscriptionNotValidated,
-
-    // The user needs to accept the telemetry policy.
-    StateTelemetryPolicy,
 
     // The user was successfully authenticated and moves into the onboarding
     // flow
