@@ -119,6 +119,6 @@ Item {
 
     // Catch edge-cases where the user navigates away from the
     // delete account view (by clicking something in the systray, or
-    // by clicking Get help -> Some other nav bar option).
+    // by clicking Help -> Some other nav bar option).
     Component.onDestruction: VPN.cancelReauthentication();
 }

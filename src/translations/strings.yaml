@@ -323,7 +323,7 @@ settings:
   privacySettings: Privacy features
   appExclusionSettings: App exclusions
   dnsSettings: DNS settings
-  appPreferences: App preferences
+  appPreferences: Preferences
   dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
   startAtBootTitle:
     value: Connect VPN on startup
@@ -767,8 +767,8 @@ freeTrials:
 
 subscriptionManagement:
   menuTitle:
-    value: Profile
-    comment: Menu title for a view with details on the users account.
+    value: Account
+    comment: Menu title for a view with details on the user's account.
   summaryHeadline:
     value: Subscription summary
     comment: Headline for a list with information on the subscription plan of the user.
@@ -890,7 +890,7 @@ inAppMessaging:
 devices:
   countLabel:
     value: "%1 out of %2 devices added"
-    comment: Label at the top of the "My devices" setting screen indicating the number of devices registered to the users account (1st arg) vs the max limit of devices available for their account (2nd arg)
+    comment: Label at the top of the "Devices" setting screen indicating the number of devices registered to the users account (1st arg) vs the max limit of devices available for their account (2nd arg)
   limitTitle:
     value: Device not added
     comment: Title of the "device limit" view stating that the device has not yet been added to the list of active devices (because we are at the device limit)
@@ -925,7 +925,7 @@ devices:
     value: Remove
     comment: Label for the primary button for the Remove Device poup
   menuTitle:
-    value: My devices
+    value: Devices
     comment: Title for the menu bar when viewing the devices or device limit pages
 
 helpSheets:
@@ -1086,7 +1086,7 @@ getHelp:
   viewLogs:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
-  linkTitle: Get help
+  linkTitle: Help
   developerOptions:
     value: Developer options
     comment: Button label

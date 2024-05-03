@@ -65,7 +65,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The "Get help" link was clicked.
+      The "Help" link was clicked.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5251
     data_reviews:
@@ -745,7 +745,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The My devices button in the Settings screen was selected
+      The Devices button in the Settings screen was selected
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -763,7 +763,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The App preferences button in the Settings screen was selected
+      The Preferences button in the Settings screen was selected
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -907,7 +907,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      User clicked on Notifications in App preferences
+      User clicked on Notifications in Preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -925,7 +925,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      User clicked on Language in App preferences
+      User clicked on Language in Preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -943,7 +943,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      User clicked on DNS settings in App preferences
+      User clicked on DNS settings in Preferences
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:

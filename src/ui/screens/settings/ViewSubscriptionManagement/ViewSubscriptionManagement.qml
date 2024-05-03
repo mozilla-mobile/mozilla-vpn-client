@@ -125,6 +125,26 @@ MZViewBase {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: MZTheme.theme.vSpacing
             }
+
+            MZSignOut {
+                id: signOutLink
+
+                objectName: "settingsLogout"
+                colorStrength: MZSignOut.ColorStrength.Soft
+                anchors {
+                    horizontalCenter: undefined
+                    bottom: undefined
+                    bottomMargin: undefined
+                }
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
+
+                preLogoutCallback: () => {
+                    Glean.interaction.signOutSelected.record({
+                        screen: vpnFlickable.telemetryScreenId,
+                    });
+                }
+            }
         }
     }
 

@@ -777,7 +777,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
-  it('Checking the get help', async () => {
+  it('Checking the Help', async () => {
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
 
     await vpn.scrollToQuery(
@@ -808,7 +808,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
   });
 
-  it('Get help is opened and closed', async () => {
+  it('Help is opened and closed', async () => {
     await getToGetHelpView();
 
     await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
@@ -817,7 +817,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
   });
 
-  it('Get help impression telemetry is recorded', async () => {
+  it('Help impression telemetry is recorded', async () => {
     // This test cannot run in wasm
     if (this.ctx.wasm) {
       return;
@@ -1007,30 +1007,34 @@ describe('Settings', function() {
         assert.equal(element.extra.screen, "settings");
     });
 
-    it("record telemetry when user clicks on My devices", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-        await vpn.waitForQueryAndClick(queries.screenSettings.MY_DEVICES.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "myDevicesSelected", "main");
+    it('record telemetry when user clicks on Devices', async () => {
+      if (this.ctx.wasm) {
+        // This test cannot run in wasm
+        return;
+      }
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.MY_DEVICES.visible());
+      const events = await vpn.gleanTestGetValue(
+          "interaction", "myDevicesSelected", "main");
 
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+      assert.equal(events.length, 1);
+      var element = events[0];
+      assert.equal(element.extra.screen, "settings");
     });
 
-    it("record telemetry when user clicks on App preferences", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-        await vpn.waitForQueryAndClick(queries.screenSettings.APP_PREFERENCES.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "appPreferencesSelected", "main");
+    it('record telemetry when user clicks on Preferences', async () => {
+      if (this.ctx.wasm) {
+        // This test cannot run in wasm
+        return;
+      }
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      const events = await vpn.gleanTestGetValue(
+          "interaction", "appPreferencesSelected", "main");
 
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
+      assert.equal(events.length, 1);
+      var element = events[0];
+      assert.equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user clicks on Sign out in the Settings screen", async () => {

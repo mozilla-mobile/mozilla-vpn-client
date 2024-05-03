@@ -27,7 +27,7 @@ MZViewBase {
         }
     }
 
-    //% "My devices"
+    //% "Devices"
     _menuTitle: qsTrId("vpn.devices.myDevices")
 
     _viewContentData: ColumnLayout {

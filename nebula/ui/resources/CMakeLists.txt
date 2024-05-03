@@ -15,6 +15,7 @@ qt_add_qml_module(resources
         avatar.svg
         avatar-default.png
         avatar-delete-account.svg
+        avatar-grayscale.svg
         back-dark.svg
         back.svg
         buttonLoader.svg
