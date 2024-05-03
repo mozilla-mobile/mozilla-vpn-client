@@ -70,8 +70,6 @@ void MozillaVPN::logout() {}
 
 void MozillaVPN::silentSwitch() {}
 
-void MozillaVPN::postAuthenticationCompleted() {}
-
 void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::onboardingCompleted() {}

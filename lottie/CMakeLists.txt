@@ -38,6 +38,10 @@ target_sources(lottie PRIVATE
     lib/lottie.qrc
 )
 
+if(NOT QT_FEATURE_zstd)
+    set_property(SOURCE lib/lottie.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+endif()
+
 ## This writes into the source directory to generate lottie.mjs. Which is frowned-upon. :`(
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/lib/lottie/lottie.mjs

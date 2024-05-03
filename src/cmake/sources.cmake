@@ -207,6 +207,13 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
 
+if(NOT QT_FEATURE_zstd)
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/certs/certs.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+endif()
+
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
      target_sources(mozillavpn-sources INTERFACE

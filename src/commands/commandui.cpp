@@ -403,7 +403,7 @@ int CommandUI::run(QStringList& tokens) {
       Navigator::instance()->requestDeepLink(url);
     }
     // Whenever the Client is re-opened with a new url
-    // pass that to the navigaot
+    // pass that to the navigator
     QObject::connect(
         AndroidVPNActivity::instance(), &AndroidVPNActivity::onOpenedWithUrl,
         [](QUrl url) { Navigator::instance()->requestDeepLink(url); });

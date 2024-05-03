@@ -72,7 +72,6 @@
         <file>screens/ScreenMessaging.qml</file>
         <file>screens/ScreenNoSubscriptionFoundError.qml</file>
         <file>screens/ScreenOnboarding.qml</file>
-        <file>screens/ScreenPostAuthentication.qml</file>
         <file>screens/ScreenSettings.qml</file>
         <file>screens/ScreenSubscriptionBlocked.qml</file>
         <file>screens/ScreenSubscriptionGenericError.qml</file>
@@ -82,7 +81,6 @@
         <file>screens/ScreenSubscriptionInUseError.qml</file>
         <file>screens/ScreenSubscriptionNeeded.qml</file>
         <file>screens/ScreenSubscriptionNotValidated.qml</file>
-        <file>screens/ScreenTelemetryPolicy.qml</file>
         <file>screens/ScreenUpdateRecommended.qml</file>
         <file>screens/ScreenUpdateRequired.qml</file>
         <file>screens/ScreenViewLogs.qml</file>

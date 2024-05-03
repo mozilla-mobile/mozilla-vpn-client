@@ -10,7 +10,7 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - beetmover
+    - beetmover-promote
 
 tasks:
     push-to-gcr:

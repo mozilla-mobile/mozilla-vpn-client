@@ -143,10 +143,6 @@ const screenAuthenticating = {
   CANCEL_FOOTER_LINK: new QmlQueryComposer('//cancelFooterLink'),
 };
 
-const screenPostAuthentication = {
-  BUTTON: new QmlQueryComposer('//postAuthenticationButton'),
-};
-
 const screenTelemetry = {
   BUTTON: new QmlQueryComposer('//telemetryPolicyButton'),
   DECLINE_LINK: new QmlQueryComposer('//declineTelemetryLink'),
@@ -549,7 +545,6 @@ const global = {
 module.exports = {
   screenHome,
   screenInitialize,
-  screenPostAuthentication,
   screenTelemetry,
   screenAuthenticationInApp,
   screenAuthenticating,

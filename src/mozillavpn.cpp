@@ -393,28 +393,10 @@ void MozillaVPN::maybeStateMain() {
   // choose to add the vpn tunnel configuration and invoke the VPN via system
   // settings after onboarding but before removing a potential 6th device and
   // getting to the home screen
-  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    if (!settingsHolder->onboardingCompleted()) {
-      setState(StateOnboarding);
-      settingsHolder->setOnboardingStarted(true);
-      return;
-    }
-  }
-
-#if !defined(MZ_ANDROID) && !defined(MZ_IOS)
-  if (!settingsHolder->postAuthenticationShown()) {
-    setState(StatePostAuthentication);
+  if (!settingsHolder->onboardingCompleted()) {
+    setState(StateOnboarding);
+    settingsHolder->setOnboardingStarted(true);
     return;
-  }
-#endif
-
-  // If we're not using the new onboarding, continue with the old onboarding
-  // (telemetry policy)
-  if (!Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    if (!settingsHolder->telemetryPolicyShown()) {
-      setState(StateTelemetryPolicy);
-      return;
-    }
   }
 
   if (!modelsInitialized()) {
@@ -845,21 +827,6 @@ void MozillaVPN::reset(bool forceInitialState) {
   }
 }
 
-void MozillaVPN::postAuthenticationCompleted() {
-  logger.debug() << "Post authentication completed";
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  settingsHolder->setPostAuthenticationShown(true);
-
-  // Super racy, but it could happen that we are already in update-required
-  // state.
-  if (state() == StateUpdateRequired) {
-    return;
-  }
-
-  maybeStateMain();
-}
-
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
 
@@ -890,27 +857,15 @@ void MozillaVPN::mainWindowLoaded() {
 void MozillaVPN::onboardingCompleted() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-    logger.debug() << "onboarding completed";
-    settingsHolder->setOnboardingCompleted(true);
+  logger.debug() << "onboarding completed";
+  settingsHolder->setOnboardingCompleted(true);
 
-    mozilla::glean::outcome::onboarding_completed.record();
+  mozilla::glean::outcome::onboarding_completed.record();
 
-    // Toggle glean on or off at the end of onboarding, depending on what the
-    // user selected
-    settingsHolder->setGleanEnabled(
-        settingsHolder->onboardingDataCollectionEnabled());
-
-    // Mark the old onboarding experience as completed as well, ensuring that
-    // users do not have to go through it if the new onboaring feature is turned
-    // off
-    settingsHolder->setPostAuthenticationShown(true);
-
-  } else {
-    logger.debug() << "telemetry policy completed";
-  }
-
-  settingsHolder->setTelemetryPolicyShown(true);
+  // Toggle glean on or off at the end of onboarding, depending on what the
+  // user selected
+  settingsHolder->setGleanEnabled(
+      settingsHolder->onboardingDataCollectionEnabled());
 
   // Super racy, but it could happen that we are already in update-required
   // state.
@@ -1575,13 +1530,6 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenPostAuthentication,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenPostAuthentication.qml",
-      QVector<int>{App::StatePostAuthentication},
-      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
-
-  Navigator::registerScreen(
       MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
       "qrc:/ui/screens/ScreenSettings.qml", QVector<int>{App::StateMain},
       [](int*) -> int8_t { return 0; },
@@ -1675,12 +1623,6 @@ void MozillaVPN::registerNavigatorScreens() {
       "qrc:/ui/screens/ScreenSubscriptionNotValidated.qml",
       QVector<int>{App::StateSubscriptionNotValidated},
       [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenTelemetryPolicy, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/ui/screens/ScreenTelemetryPolicy.qml",
-      QVector<int>{App::StateTelemetryPolicy}, [](int*) -> int8_t { return 0; },
-      []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenUpdateRequired, Navigator::LoadPolicy::LoadTemporarily,
@@ -2058,9 +2000,6 @@ void MozillaVPN::registerInspectorCommands() {
 
         SettingsHolder* settingsHolder = SettingsHolder::instance();
         Q_ASSERT(settingsHolder);
-
-        // Extra cleanup for testing
-        settingsHolder->setTelemetryPolicyShown(false);
 
         return QJsonObject();
       });

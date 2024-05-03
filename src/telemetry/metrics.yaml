@@ -752,34 +752,6 @@ sample:
       - vpn-telemetry@mozilla.com
     expires: never
 
-  onboarding_cta_click:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      User initiates authentication process from mobile onboarding
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2545
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-    data_sensitivity:
-      - interaction
-    expires: never
-    extra_keys:
-      panel_id:
-        description: Panel content identifier
-        type: string
-      panel_idx:
-        description: Panel position in onboarding stack
-        type: string
-      panel_cta:
-        description: Element that was clicked to trigger auth
-        type: string
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-
   settings_view_opened:
     type: event
     lifetime: ping

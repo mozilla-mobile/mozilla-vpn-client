@@ -437,15 +437,6 @@ module.exports = {
 
   async skipOnboarding() {
     await this.setSetting('onboardingCompleted', 'true');
-    await this.setSetting('postAuthenticationShown', 'true');
-    await this.setSetting('telemetryPolicyShown', 'true');
-  },
-
-  async completePostAuthentication() {
-      await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
   },
 
   async completeTelemetryPolicy() {

@@ -27,7 +27,7 @@ impl Logger {
     pub fn init(f: extern fn(i32, *mut c_char)) {
         let logger = LOGGER.get_or_init(|| Logger::new(f));
         if log::set_logger(logger).is_ok() {
-            log::set_max_level(LevelFilter::Debug);
+            log::set_max_level(LevelFilter::Info);
         }
     }
 }

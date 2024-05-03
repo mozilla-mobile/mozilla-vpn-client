@@ -6,7 +6,7 @@ ARG DOCKER_BASE_IMAGE=ubuntu:20:04
 
 FROM $DOCKER_BASE_IMAGE
 
-MAINTAINER Owen Kirby <okirby@mozilla.com>
+MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------

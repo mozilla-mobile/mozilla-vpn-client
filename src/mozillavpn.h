@@ -62,7 +62,6 @@ class MozillaVPN final : public App {
     ScreenInitialize,
     ScreenMessaging,
     ScreenNoSubscriptionFoundError,
-    ScreenPostAuthentication,
     ScreenSettings,
     ScreenSubscriptionBlocked,
     ScreenSubscriptionExpiredError,
@@ -72,7 +71,6 @@ class MozillaVPN final : public App {
     ScreenSubscriptionInUseError,
     ScreenSubscriptionNeeded,
     ScreenSubscriptionNotValidated,
-    ScreenTelemetryPolicy,
     ScreenUpdateRecommended,
     ScreenUpdateRequired,
     ScreenViewLogs,
@@ -101,7 +99,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
   Q_INVOKABLE void removeDeviceFromPublicKey(const QString& publicKey);
-  Q_INVOKABLE void postAuthenticationCompleted();
   Q_INVOKABLE void onboardingCompleted();
   Q_INVOKABLE void mainWindowLoaded();
   Q_INVOKABLE void activate();

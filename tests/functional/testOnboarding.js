@@ -11,7 +11,6 @@ describe('Onboarding', function() {
   this.timeout(120000);
 
   beforeEach(async () => {
-    await vpn.flipFeatureOn("newOnboarding");
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
     await vpn.authenticateInApp(false);
