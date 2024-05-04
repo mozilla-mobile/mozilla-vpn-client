@@ -708,7 +708,8 @@ describe('User authentication', function() {
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
             await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
-            await vpn.scrollToBottom(queries.screenAuthenticationInApp.AUTH_SIGNIN_SCREEN);
+            await vpn.scrollToQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_SCREEN,
+                queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
             await vpn.clickOnQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
             await vpn.testLastInteractionEvent({
                 eventName: "cancelSelected",

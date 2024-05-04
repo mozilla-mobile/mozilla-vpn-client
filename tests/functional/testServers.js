@@ -80,9 +80,8 @@ describe('Server', function() {
               countryId, city.name);
           await vpn.waitForQuery(cityId);
 
-          await vpn.scrollView(
-              queries.screenHome.serverListView.COUNTRY_VIEW,
-              parseInt(await vpn.getQueryProperty(cityId, 'y')) + countryY);
+          await vpn.scrollToQuery(
+              queries.screenHome.serverListView.COUNTRY_VIEW, cityId);
           await vpn.waitForQuery(cityId.visible());
 
           const cityName =

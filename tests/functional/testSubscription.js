@@ -1208,7 +1208,7 @@ describe('Subscription view', function() {
         queries.screenDeleteAccount.BUTTON.visible().disabled());
 
     await vpn.scrollToQuery(queries.screenDeleteAccount.SCREEN,
-        queries.screenDeleteAccount.CHECKBOX3);
+        queries.screenDeleteAccount.CHECKBOX4);
     await vpn.waitForQuery(queries.screenDeleteAccount.CHECKBOX4.visible().prop(
         'isChecked', false));
     await vpn.waitForQueryAndClick(
@@ -1223,7 +1223,8 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.wait();
+    await vpn.scrollToQuery(queries.screenDeleteAccount.SCREEN,
+      queries.screenDeleteAccount.BUTTON);
 
     await vpn.waitForQueryAndClick(
         queries.screenDeleteAccount.BUTTON.visible().enabled());
@@ -1368,8 +1369,8 @@ describe('Subscription view', function() {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/destroy'].body = {}
     };
 
-    await vpn.wait();
-
+    await vpn.scrollToQuery(queries.screenDeleteAccount.SCREEN,
+      queries.screenDeleteAccount.BUTTON);
     await vpn.waitForQueryAndClick(
         queries.screenDeleteAccount.BUTTON.visible().enabled());
 

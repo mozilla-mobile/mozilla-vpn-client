@@ -7,10 +7,8 @@ const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 async function selectCityFromList(cityId, countryId) {
-  await vpn.scrollView(
-      queries.screenHome.serverListView.COUNTRY_VIEW,
-      parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-          parseInt(await vpn.getQueryProperty(countryId, 'y')));
+  await vpn.scrollToQuery(
+      queries.screenHome.serverListView.COUNTRY_VIEW, cityId);
 }
 
 async function selectCountryFromList(countryId) {
