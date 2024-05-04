@@ -391,71 +391,70 @@ static QList<InspectorCommand> s_commands{
                        return obj;
                      }},
 
-    InspectorCommand{"scrollview", "Scroll a view until an item is centered", 2,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QJsonObject result;
+    InspectorCommand{
+        "scrollview", "Scroll a view until an item is centered", 2,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject result;
 
-                       QObject* viewobj =
-                           InspectorUtils::queryObject(arguments[1]);
-                       if (!viewobj) {
-                         logger.error() << "Did not find view object";
-                         result["error"] = "Object not found";
-                         return result;
-                       }
-                       QQuickItem* view = qobject_cast<QQuickItem*>(viewobj);
-                       if (!view) {
-                         logger.error() << "View is not a QQuickItem object";
-                         result["error"] = "Object not found";
-                         return result;
-                       }
-                       const QMetaObject* viewMeta = view->metaObject();
-                       int scrollPropId = viewMeta->indexOfProperty("contentY");
-                       if (scrollPropId < 0) {
-                         logger.error() << "View is not scrollable";
-                         result["error"] = "View is not scrollable";
-                         return result;
-                       }
+          QObject* viewobj = InspectorUtils::queryObject(arguments[1]);
+          if (!viewobj) {
+            logger.error() << "Did not find view object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          QQuickItem* view = qobject_cast<QQuickItem*>(viewobj);
+          if (!view) {
+            logger.error() << "View is not a QQuickItem object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          const QMetaObject* viewMeta = view->metaObject();
+          int scrollPropId = viewMeta->indexOfProperty("contentY");
+          if (scrollPropId < 0) {
+            logger.error() << "View is not scrollable";
+            result["error"] = "View is not scrollable";
+            return result;
+          }
 
-                       QObject* targetobj =
-                           InspectorUtils::queryObject(arguments[2]);
-                       if (!targetobj) {
-                         logger.error() << "Did not find target object";
-                         result["error"] = "Object not found";
-                         return result;
-                       }
-                       QQuickItem* target = qobject_cast<QQuickItem*>(targetobj);
-                       if (!target) {
-                         logger.error() << "View is not a QQuickItem object";
-                         result["error"] = "Object not found";
-                         return result;
-                       }
+          QObject* targetobj = InspectorUtils::queryObject(arguments[2]);
+          if (!targetobj) {
+            logger.error() << "Did not find target object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          QQuickItem* target = qobject_cast<QQuickItem*>(targetobj);
+          if (!target) {
+            logger.error() << "Target is not a QQuickItem object";
+            result["error"] = "Object not found";
+            return result;
+          }
 
-                       // Get the size of the view and calculate scroll limits.
-                       qreal current = view->property("contentY").toReal();
-                       qreal content = view->property("contentHeight").toReal();
-                       qreal height = view->property("height").toReal();
-                       qreal limit = (content > height) ? content - height : 0;
+          // Get the size of the view and calculate scroll limits.
+          qreal current = view->property("contentY").toReal();
+          qreal content = view->property("contentHeight").toReal();
+          qreal height = view->property("height").toReal();
+          qreal limit = (content > height) ? content - height : 0;
 
-                       // Get the vertical position, in the view's coordinates.
-                       QPointF center = target->boundingRect().center();
-                       qreal offset = target->mapToItem(view, center).y();
+          // Get the vertical position, in the view's coordinates.
+          QPointF center = target->boundingRect().center();
+          qreal offset = target->mapToItem(view, center).y();
 
-                       // Figure out how much to scroll to center the target.
-                       qreal contentY = current + offset - (height / 2);
-                       if (contentY < 0) contentY = 0;
-                       if (contentY > limit) contentY = limit;
+          // Figure out how much to scroll to center the target.
+          qreal contentY = current + offset - (height / 2);
+          if (contentY < 0) contentY = 0;
+          if (contentY > limit) contentY = limit;
 
-                       // Scroll the view.
-                       QMetaProperty prop = viewMeta->property(scrollPropId);
-                       Q_ASSERT(prop.isValid());
-                       if (!prop.write(view, QVariant::fromValue(contentY))) {
-                         logger.error() << "Could not write property contentY";
-                         result["error"] = "Could not write property contentY";
-                         return result;
-                       }
+          // Scroll the view.
+          QMetaProperty prop = viewMeta->property(scrollPropId);
+          Q_ASSERT(prop.isValid());
+          if (!prop.write(view, QVariant::fromValue(contentY))) {
+            logger.error() << "Could not write property contentY";
+            result["error"] = "Could not write property contentY";
+            return result;
+          }
 
-                       return result;
-                     }},
+          return result;
+        }},
 
     InspectorCommand{
         "stealurls",
