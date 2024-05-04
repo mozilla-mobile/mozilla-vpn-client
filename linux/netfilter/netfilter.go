@@ -61,8 +61,8 @@ func NetfilterSetLogger(loggerFn uintptr) {
 type nftCtx struct {
 	table_inet  *nftables.Table
 	table_v6    *nftables.Table
-	mangle      *nftables.Chain
-	nat         *nftables.Chain
+	cgroup_mark *nftables.Chain
+	cgroup_nat  *nftables.Chain
 	conntrack   *nftables.Chain
 	preroute    *nftables.Chain
 	input       *nftables.Chain
@@ -90,28 +90,19 @@ func nftIfname(n string) []byte {
 	return b
 }
 
-// A Conntrack zone used for traffic excluded from the VPN tunnel.
+// A Conntrack mark used to identify traffic excluded from the VPN.
 // The value is not important, so long as it's constant, unique,
 // and non-zero.
-const ctzone_external = 0x9e4c
+const ctmark_excluded = 0x9e4c
 
 func (ctx *nftCtx) nftApplyFwMark() {
-	var immctzone = expr.Immediate{
-		Register: 1,
-		Data:     binaryutil.NativeEndian.PutUint32(ctzone_external),
-	}
-	var setctzone = expr.Ct{
-		Key:            expr.CtKeyZONE,
-		Register:       1,
-		SourceRegister: true,
-	}
-
-	// Move all marked packets into their own conntrack zone
+	// Apply a conntrack mark to excluded outbound packets so that we can
+	// identify the corresponding inbound packet flows.
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
 		Chain: ctx.conntrack,
 		Exprs: []expr.Any{
-			// Match marked packets
+			// Match packets with a fwmark set.
 			&expr.Meta{
 				Key:      expr.MetaKeyMARK,
 				Register: 1,
@@ -121,14 +112,20 @@ func (ctx *nftCtx) nftApplyFwMark() {
 				Register: 1,
 				Data:     binaryutil.NativeEndian.PutUint32(ctx.fwmark),
 			},
-			// Set the conntrack zone
-			&immctzone,
-			&setctzone,
+			// Set the conntrack mark.
+			&expr.Immediate{
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctmark_excluded),
+			},
+			&expr.Ct{
+				Key:            expr.CtKeyMARK,
+				Register:       1,
+				SourceRegister: true,
+			},
 		},
 	})
 
-	// Inbound packets from wireguard servers should be marked for RPF
-	// and moved into the external conntrack zone.
+	// Inbound packets from wireguard servers should be marked for RPF.
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
 		Chain: ctx.preroute,
@@ -176,9 +173,6 @@ func (ctx *nftCtx) nftApplyFwMark() {
 				Register:       1,
 				SourceRegister: true,
 			},
-			// Set the conntrack zone.
-			&immctzone,
-			&setctzone,
 		},
 	})
 }
@@ -259,6 +253,30 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SourceRegister: 1,
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table_inet,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			// Accept packets if they originated from an excluded connection.
+			// TODO: Any other conntrack state we should check?
+			&expr.Ct{
+				Key:      expr.CtKeyMARK,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctmark_excluded),
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
 			},
 		},
 	})
@@ -412,7 +430,7 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
-		Chain: ctx.mangle,
+		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			// Match the cgroup v2 path for originated packets.
 			&xtmatch,
@@ -436,7 +454,7 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 				Register: 1,
 				Data:     binaryutil.NativeEndian.PutUint16(linux.ARPHRD_LOOPBACK),
 			},
-			// Set the firewall mark to request NAT
+			// Set the firewall mark to route this packet outside of the VPN.
 			&expr.Immediate{
 				Register: 1,
 				Data:     binaryutil.NativeEndian.PutUint32(ctx.fwmark),
@@ -452,7 +470,7 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 	// Masquerade outgoing packets from split tunnelling to trigger rerouting.
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
-		Chain: ctx.nat,
+		Chain: ctx.cgroup_nat,
 		Exprs: []expr.Any{
 			&xtmatch,
 			// Match marked packets
@@ -504,7 +522,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
-		Chain: ctx.mangle,
+		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			&loadcgroup,
 			&matchcgroup,
@@ -534,7 +552,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 	// Masquerade outgoing packets from split tunnelling to trigger rerouting.
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
-		Chain: ctx.nat,
+		Chain: ctx.cgroup_nat,
 		Exprs: []expr.Any{
 			&loadcgroup,
 			&matchcgroup,
@@ -557,7 +575,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 func (ctx *nftCtx) nftBlockCgroup(cgroup uint32) {
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table_inet,
-		Chain: ctx.mangle,
+		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			// Match packets from the cgroup
 			&expr.Meta{
@@ -593,15 +611,15 @@ func NetfilterCreateTables() int32 {
 		Family: nftables.TableFamilyINet,
 		Name:   "mozvpn-inet",
 	})
-	mozvpn_ctx.mangle = mozvpn_ctx.conn.AddChain(&nftables.Chain{
-		Name:     "mozvpn-mangle",
+	mozvpn_ctx.cgroup_mark = mozvpn_ctx.conn.AddChain(&nftables.Chain{
+		Name:     "mozvpn-cgroup-mark",
 		Table:    mozvpn_ctx.table_inet,
 		Type:     nftables.ChainTypeRoute,
 		Hooknum:  nftables.ChainHookOutput,
-		Priority: nftables.ChainPriorityMangle,
+		Priority: nftables.ChainPriorityRaw,
 	})
-	mozvpn_ctx.nat = mozvpn_ctx.conn.AddChain(&nftables.Chain{
-		Name:     "mozvpn-nat",
+	mozvpn_ctx.cgroup_nat = mozvpn_ctx.conn.AddChain(&nftables.Chain{
+		Name:     "mozvpn-cgroup-nat",
 		Table:    mozvpn_ctx.table_inet,
 		Type:     nftables.ChainTypeNAT,
 		Hooknum:  nftables.ChainHookPostrouting,
@@ -612,7 +630,7 @@ func NetfilterCreateTables() int32 {
 		Table:    mozvpn_ctx.table_inet,
 		Type:     nftables.ChainTypeRoute,
 		Hooknum:  nftables.ChainHookOutput,
-		Priority: nftables.ChainPriorityConntrack - 1,
+		Priority: nftables.ChainPriorityConntrack + 1,
 	})
 	mozvpn_ctx.preroute = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-preroute",
@@ -906,7 +924,7 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 	xtcgroup := nftXtCgroupMatch(cgroup)
 
 	// Delete all mangle rules matching against the cgroup.
-	rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.mangle)
+	rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.cgroup_mark)
 	if err != nil {
 		log.Println("Failed to inspect inet/mangle rules", err)
 	} else {
@@ -914,7 +932,7 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 	}
 
 	// Delete all NAT rules matching against the cgroup.
-	rules, err = mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.nat)
+	rules, err = mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.cgroup_nat)
 	if err != nil {
 		log.Println("Failed to inspect inet/nat rules", err)
 	} else {
@@ -927,8 +945,8 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 //export NetfilterResetAllCgroupsV2
 func NetfilterResetAllCgroupsV2() int32 {
 	log.Println("Clearing all cgroup traffic marks")
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.mangle)
-	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.nat)
+	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.cgroup_mark)
+	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.cgroup_nat)
 	return mozvpn_ctx.nftCommit()
 }
 
