@@ -6,7 +6,11 @@ import QtQuick 2.5
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+
+import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 import components 0.1
+
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 //View that spaces out content to take up the entire screen, but scrolls if necessary (typically on smaller devices)
@@ -39,7 +43,6 @@ MZFlickable {
 
     //Weirdly get a "parent is null" warning when popping of a stackview without checking if parent is null
     implicitHeight: parent ? parent.height : 0
-    flickContentHeight: layout.implicitHeight + layout.anchors.topMargin
 
     ColumnLayout {
         id: layout
@@ -47,7 +50,7 @@ MZFlickable {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: flickable.isMobile ? 0 : 48
+        anchors.topMargin: flickable.isMobile ? 0 : 24
         anchors.leftMargin: 24
         anchors.rightMargin: 24
 
@@ -80,8 +83,12 @@ MZFlickable {
 
             Layout.topMargin: flickable.isMobile ? 0 : 40
             Layout.bottomMargin: flickable.isMobile ? 36 : 48 //58 for iPhones with safe area
-
             spacing: 0
+        }
+
+         Item {
+            visible: flickable.isMobile && VPN.UserAuthenticated
+            Layout.minimumHeight: MZTheme.theme.navBarBottomMargin + MZTheme.theme.navBarHeight
         }
 
         Item {
