@@ -40,12 +40,9 @@ def generate_cpp_header(language_strings, output_file):
         f.write('#define LANGUAGE_STRINGS_H\n\n')
         f.write('#include <QMap>\n#include <QString>\n\n')
         f.write('namespace LanguageStrings {\n')
-        f.write('const QMap<QString, QMap<QString, QString>> LANGUAGE_NAMES = {\n')
+        f.write('const QMap<QString, QString> NATIVE_LANGUAGE_NAMES = {\n')
         for lang_code, strings in language_strings.items():
-            f.write('    {"' + lang_code + '", {\n')
-            for unit_id, source_text in strings.items():
-                f.write('        {"' + unit_id + '", "' + source_text.replace('"', r'\"') + '"},\n')
-            f.write('    }},\n')
+            f.write('    {"' + lang_code + '", "' + strings.get(lang_code, strings.get("en", "")) + '"},\n')
         f.write('};\n}\n\n#endif\n')
 
 if __name__ == "__main__":

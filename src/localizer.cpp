@@ -424,9 +424,8 @@ void Localizer::maybeLoadLanguageFallback(const QString& code) {
 // static
 QString Localizer::nativeLanguageName(const QLocale& locale,
                                       const QString& code) {
-  QMap<QString, QString> localizedLanguageNames =
-      LanguageStrings::LANGUAGE_NAMES.value(code);
-  QString localizedLanguageName = localizedLanguageNames.value(code);
+  QString localizedLanguageName =
+      LanguageStrings::NATIVE_LANGUAGE_NAMES.value(code);
   if (!localizedLanguageName.isEmpty()) {
     return toUpper(locale, localizedLanguageName);
   }

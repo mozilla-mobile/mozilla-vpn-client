@@ -381,7 +381,7 @@ void TestLocalizer::nativeLanguageName_data() {
   QTest::addRow("existing transation") << QLocale(QLocale::Spanish) << "es_ES"
                                        << "Español de españa";
 
-  // There is a key for this locale in LANGUAGE_NAMES,
+  // There is a key for this locale in NATIVE_LANGUAGE_NAMES,
   // but there is no translation. This is going to use Qt's translation
   // (which in this case is a terrible translation).
   QTest::addRow("missing transation") << QLocale(QLocale::Spanish) << "es_CL"
