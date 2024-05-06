@@ -28,7 +28,7 @@ MZStackView {
 
             errorMessage2:  MZI18n.MultiFxaAccountErrorVisitOurHelpCenter,
 
-            primaryButtonText: MZI18n.GetHelpLinkTitle,
+            primaryButtonText: MZI18n.GetHelpLinkText,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: true,

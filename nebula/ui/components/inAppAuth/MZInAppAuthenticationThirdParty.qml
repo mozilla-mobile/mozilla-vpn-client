@@ -42,7 +42,7 @@ MZFlickable {
                 objectName: _viewObjectName + "-getHelpLink"
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: MZTheme.theme.windowMargin
-                labelText: MZI18n.GetHelpLinkTitle
+                labelText: MZI18n.GetHelpLinkText
                 horizontalPadding: MZTheme.theme.windowMargin / 2
                 onClicked: {
                     Glean.interaction.getHelpSelected.record({

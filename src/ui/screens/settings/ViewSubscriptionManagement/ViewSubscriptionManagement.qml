@@ -18,7 +18,7 @@ MZViewBase {
 
     Component.onDestruction: () => VPNProfileFlow.reset()
 
-    _menuTitle: MZI18n.SubscriptionManagementMenuTitle
+    _menuTitle: MZI18n.SubscriptionManagementSectionTitle
     _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
         Layout.preferredWidth: parent.width

@@ -43,7 +43,7 @@ MZViewBase {
                     });
                 }
 
-                accessibleName: MZI18n.GetHelpLinkTitle
+                accessibleName: MZI18n.GetHelpLinkText
 
                 Image {
                     anchors.centerIn: parent

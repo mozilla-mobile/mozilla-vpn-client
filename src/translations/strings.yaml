@@ -323,7 +323,7 @@ settings:
   privacySettings: Privacy features
   appExclusionSettings: App exclusions
   dnsSettings: DNS settings
-  appPreferences: Preferences
+  preferencesSettings: Preferences
   dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
   startAtBootTitle:
     value: Connect VPN on startup
@@ -766,7 +766,7 @@ freeTrials:
   freeTrialLabel: 7-day free trial
 
 subscriptionManagement:
-  menuTitle:
+  sectionTitle:
     value: Account
     comment: Menu title for a view with details on the user's account.
   summaryHeadline:
@@ -924,7 +924,7 @@ devices:
   removePopupPrimaryButtonLabel:
     value: Remove
     comment: Label for the primary button for the Remove Device poup
-  menuTitle:
+  sectionTitle:
     value: Devices
     comment: Title for the menu bar when viewing the devices or device limit pages
 
@@ -1086,7 +1086,7 @@ getHelp:
   viewLogs:
     value: View Logs
     comment: Label for a clickable item in the Get-Help view
-  linkTitle: Help
+  linkText: Help
   developerOptions:
     value: Developer options
     comment: Button label

@@ -34,7 +34,7 @@ MZViewBase {
 
                 property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
-                settingTitle: MZI18n.SubscriptionManagementMenuTitle
+                settingTitle: MZI18n.SubscriptionManagementSectionTitle
                 imageLeftSrc: "qrc:/nebula/resources/avatar-grayscale.svg"
                 imageRightSrc: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
@@ -80,7 +80,7 @@ MZViewBase {
                 objectName: "settingsDevice"
 
                 //% "Devices"
-                settingTitle: qsTrId("vpn.devices.myDevices")
+                settingTitle: MZI18n.DevicesSectionTitle
                 imageLeftSrc: "qrc:/ui/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -93,7 +93,7 @@ MZViewBase {
             MZSettingsItem {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
-                settingTitle: MZI18n.SettingsAppPreferences
+                settingTitle: MZI18n.SettingsPreferencesSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -110,7 +110,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "settingsGetHelp"
-                settingTitle: MZI18n.GetHelpLinkTitle
+                settingTitle: MZI18n.GetHelpLinkText
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft

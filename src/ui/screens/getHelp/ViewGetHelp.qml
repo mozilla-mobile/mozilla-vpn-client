@@ -15,7 +15,7 @@ MZViewBase {
 
     property string telemetryScreenId: "help"
 
-    _menuTitle: MZI18n.GetHelpLinkTitle
+    _menuTitle: MZI18n.GetHelpLinkText
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
 
     Component.onCompleted: Glean.impression.helpScreen.record({screen:telemetryScreenId});
