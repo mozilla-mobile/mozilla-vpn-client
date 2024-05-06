@@ -70,7 +70,7 @@ QVariant LicenseModel::data(const QModelIndex& index, int role) const {
 void LicenseModel::initialize() {
   if (!m_licenses.isEmpty()) return;
 
-  QFile file(ResourceLoader::instance()->loadFile(":/license/LICENSE.md"));
+  QFile file(ResourceLoader::instance()->loadFile(":/license/README_LICENSE.md"));
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
     logger.error() << "Failed to open the license file";
     return;

@@ -50,10 +50,10 @@ Read more on https://vpn.mozilla.org
 %install
 %cmake_install
 install -d %{buildroot}/%{_licensedir}/%{name}
-install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
+install %{_srcdir}/README_LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 
 %files
-%license %{_licensedir}/%{name}/LICENSE.md
+%license %{_licensedir}/%{name}/README_LICENSE.md
 %{_sysconfdir}/chromium/native-messaging-hosts/mozillavpn.json
 %{_sysconfdir}/opt/chrome/native-messaging-hosts/mozillavpn.json
 %{_sysconfdir}/xdg/autostart/org.mozilla.vpn-startup.desktop

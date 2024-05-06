@@ -142,8 +142,8 @@ void TestResourceLoader::licenseModel() {
 
   QString title = lm->data(lm->index(0, 0), LicenseModel::TitleRole).toString();
 
-  Interceptor i(QUrl("qrc:/license/LICENSE.md"),
-                QUrl("qrc:/replace/LICENSE.md"));
+  Interceptor i(QUrl("qrc:/license/README_LICENSE.md"),
+                QUrl("qrc:/replace/README_LICENSE.md"));
 
   ResourceLoader* rl = ResourceLoader::instance();
 
@@ -172,7 +172,7 @@ void TestResourceLoader::addon() {
   {
     QJsonObject urlObj;
     urlObj["request"] = "qrc:/foo/file.txt";
-    urlObj["response"] = "replace/LICENSE.md";
+    urlObj["response"] = "replace/README_LICENSE.md";
     urls.append(urlObj);
   }
 
@@ -208,7 +208,7 @@ void TestResourceLoader::addon() {
 
   ResourceLoader* rl = ResourceLoader::instance();
   QCOMPARE(rl->loadFile(":aa"), ":aa");
-  QCOMPARE(rl->loadFile(":/foo/file.txt"), ":/replace/LICENSE.md");
+  QCOMPARE(rl->loadFile(":/foo/file.txt"), ":/replace/README_LICENSE.md");
   QCOMPARE(rl->loadFile(":/dir/file.txt"), ":/replace/file.txt");
   QCOMPARE(rl->loadDir(":/dir"), ":/replace/");
   QCOMPARE(rl->loadDir(":/dir/"), ":/replace/");

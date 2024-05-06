@@ -3,6 +3,6 @@
         <file alias="replace/encodedPassword.txt">encodedPassword.txt</file>
         <file alias="resources/encodedPassword.txt">../../../src/resources/encodedPassword.txt</file>
         <file alias="replace/languages.json">languages.json</file>
-        <file alias="replace/LICENSE.md">LICENSE.md</file>
+        <file alias="replace/README_LICENSE.md">README_LICENSE.md</file>
     </qresource>
 </RCC>
