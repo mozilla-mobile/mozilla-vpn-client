@@ -13,6 +13,7 @@
 
 namespace {
 Logger logger("TaskScheduler");
+TaskScheduler* s_taskScheduler = nullptr;
 }  // namespace
 
 // static
@@ -43,18 +44,32 @@ void TaskScheduler::forceDeleteTasks() {
 
 // static
 TaskScheduler* TaskScheduler::maybeCreate() {
-  static TaskScheduler* s_taskScheduler = nullptr;
   if (!s_taskScheduler) {
     s_taskScheduler = new TaskScheduler(qApp);
   }
   return s_taskScheduler;
 }
 
+#ifdef UNIT_TEST
+// static
+void TaskScheduler::stop() { maybeCreate()->m_stopped = true; }
+
+// static
+QList<Task*> TaskScheduler::tasks() { return maybeCreate()->m_tasks; }
+
+// static
+void TaskScheduler::reset() { delete s_taskScheduler; }
+#endif
+
 TaskScheduler::TaskScheduler(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(TaskScheduler);
 }
 
-TaskScheduler::~TaskScheduler() { MZ_COUNT_DTOR(TaskScheduler); }
+TaskScheduler::~TaskScheduler() {
+  MZ_COUNT_DTOR(TaskScheduler);
+  qDeleteAll(s_taskScheduler->m_tasks);
+  s_taskScheduler = nullptr;
+}
 
 void TaskScheduler::scheduleTaskInternal(Task* task) {
   m_tasks.append(task);
@@ -67,6 +82,12 @@ void TaskScheduler::maybeRunTask() {
   if (m_running_task || m_tasks.empty()) {
     return;
   }
+
+#ifdef UNIT_TEST
+  if (m_stopped) {
+    return;
+  }
+#endif
 
   m_running_task = m_tasks.takeFirst();
   Q_ASSERT(m_running_task);

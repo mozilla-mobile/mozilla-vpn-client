@@ -208,7 +208,7 @@ MZViewBase {
                         if (vpnFlickable.anySwipesOpen()) vpnFlickable.closeAllSwipes()
                         else {
                             addon.markAsRead()
-                            stackview.push("qrc:/ui/screens/messaging/ViewMessage.qml", {"message": addon})
+                            stackview.push("qrc:/Mozilla/VPN/screens/messaging/ViewMessage.qml", {"message": addon})
                         }
                     }
 

@@ -99,7 +99,11 @@
 #  include "webextensionadapter.h"
 #endif
 
+#include <QtQml/qqmlextensionplugin.h>
+
 #include <QApplication>
+
+Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
 
 namespace {
 Logger logger("CommandUI");
@@ -298,6 +302,11 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
 
+    // Prior to Qt 6.5, there was no default QML import path. We must set one.
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+    engine->addImportPath("qrc:/");
+#endif
+
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
@@ -336,7 +345,7 @@ int CommandUI::run(QStringList& tokens) {
                      &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/Mozilla/VPN/main.qml"));
     engine->load(url);
     if (!engineHolder.hasWindow()) {
       logger.error() << "Failed to load " << url.toString();

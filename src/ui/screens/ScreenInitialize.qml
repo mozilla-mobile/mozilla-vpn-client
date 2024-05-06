@@ -16,7 +16,7 @@ MZStackView {
     anchors.fill: parent
 
     Component.onCompleted: {
-        stackview.push("qrc:/ui/screens/initialize/ViewInitialize.qml")
+        stackview.push("qrc:/Mozilla/VPN/screens/initialize/ViewInitialize.qml")
         MZNavigator.addStackView(VPN.ScreenInitialize, stackview)
     }
 }

@@ -978,7 +978,7 @@ bool Controller::activate(const ServerData& serverData,
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
-    request->auth(App::authorizationHeader());
+    request->auth();
     request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
