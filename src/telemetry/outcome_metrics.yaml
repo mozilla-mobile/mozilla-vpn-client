@@ -170,23 +170,22 @@ outcome:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
     expires: never
-  subscription_already_present:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The subscription was blocked because the user is already a subscriber.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-6116
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9150#issuecomment-1947395434
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - vpn-telemetry@mozilla.com
-      - brizental@mozilla.com
-    expires: never
+    extra_keys:
+      reason:
+        description: |
+          What caused the subscription failure.
+          Possible values are:
+            - BillingaNotAvailable (Android-only)
+              An issue happened with the billing service.
+            - SubscriptionNotValidated
+              Guardian has returned some error.
+            - SubscriptionCancelled
+              User has cancelled the subscription themselves.
+            - UserAlreadySubscribed
+              User already has a subscription.
+            - Unknown
+              Catch all reason for anything not covered by the above.
+        type: string
   onboarding_started:
     type: event
     lifetime: ping
