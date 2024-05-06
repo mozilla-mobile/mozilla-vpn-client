@@ -1026,10 +1026,9 @@ void MozillaVPN::billingNotAvailable() {
   // a no-op because we don't need the billing client.
   if (m_private->m_user.subscriptionNeeded()) {
     mozilla::glean::outcome::subscription_failed.record(
-      mozilla::glean::outcome::SubscriptionFailedExtra{
-        ._reason = "BillingNotAvailable",
-      }
-    );
+        mozilla::glean::outcome::SubscriptionFailedExtra{
+            ._reason = "BillingNotAvailable",
+        });
 
     setState(StateBillingNotAvailable);
   }
@@ -1037,30 +1036,27 @@ void MozillaVPN::billingNotAvailable() {
 
 void MozillaVPN::subscriptionNotValidated() {
   mozilla::glean::outcome::subscription_failed.record(
-    mozilla::glean::outcome::SubscriptionFailedExtra{
-      ._reason = "SubscriptionNotValidated",
-    }
-  );
+      mozilla::glean::outcome::SubscriptionFailedExtra{
+          ._reason = "SubscriptionNotValidated",
+      });
 
   setState(StateSubscriptionNotValidated);
 }
 
 void MozillaVPN::subscriptionFailed() {
   mozilla::glean::outcome::subscription_failed.record(
-    mozilla::glean::outcome::SubscriptionFailedExtra{
-      ._reason = "Unknown",
-    }
-  );
+      mozilla::glean::outcome::SubscriptionFailedExtra{
+          ._reason = "Unknown",
+      });
 
   subscriptionFailedInternal(false /* canceled by user */);
 }
 
 void MozillaVPN::subscriptionCanceled() {
   mozilla::glean::outcome::subscription_failed.record(
-    mozilla::glean::outcome::SubscriptionFailedExtra{
-      ._reason = "SubscriptionCancelled",
-    }
-  );
+      mozilla::glean::outcome::SubscriptionFailedExtra{
+          ._reason = "SubscriptionCancelled",
+      });
 
   subscriptionFailedInternal(true /* canceled by user */);
 }
@@ -1108,10 +1104,9 @@ void MozillaVPN::alreadySubscribed() {
   logger.info() << "Setting state: Subscription Blocked";
 
   mozilla::glean::outcome::subscription_failed.record(
-    mozilla::glean::outcome::SubscriptionFailedExtra{
-      ._reason = "UserAlreadySubscribed",
-    }
-  );
+      mozilla::glean::outcome::SubscriptionFailedExtra{
+          ._reason = "UserAlreadySubscribed",
+      });
   setState(StateSubscriptionBlocked);
 }
 
