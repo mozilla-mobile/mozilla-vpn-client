@@ -68,6 +68,8 @@ void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
 
+void MozillaVPN::silentSwitch() {}
+
 void MozillaVPN::mainWindowLoaded() {}
 
 void MozillaVPN::onboardingCompleted() {}

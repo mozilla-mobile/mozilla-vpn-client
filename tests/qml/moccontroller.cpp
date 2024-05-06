@@ -31,11 +31,7 @@ void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {}
 
 bool Controller::deactivate() { return false; }
 
-void Controller::connected(const QString& pubkey,
-                           const QDateTime& connectionTimestamp) {
-  Q_UNUSED(pubkey);
-  Q_UNUSED(connectionTimestamp);
-}
+void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
 void Controller::disconnected() {}
 
@@ -81,6 +77,8 @@ void Controller::captivePortalPresent() {}
 void Controller::captivePortalGone() {}
 
 void Controller::handshakeTimeout() {}
+
+void MozillaVPN::silentSwitch() {}
 
 #ifdef MZ_DUMMY
 QString Controller::currentServerString() const { return QString("42"); }

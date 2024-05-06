@@ -13,6 +13,7 @@ RowLayout {
     property real narrowWidth: MZTheme.theme.fontSize * 0.05
     property var narrowCharacters: [" ", "\t", "\n", ":"]
     property bool ignoreForAccessibility: false
+    property var connectionTimeForFunctionalTest: formatTime(VPNController.time)
 
     function formatSingle(value) {
         if (value === 0)

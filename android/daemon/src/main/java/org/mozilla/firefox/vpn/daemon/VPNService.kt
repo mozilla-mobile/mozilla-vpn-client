@@ -98,7 +98,6 @@ class VPNService : android.net.VpnService() {
                     CoreBinder.EVENTS.connected,
                     JSONObject()
                         .apply {
-                            put("time", mConnectionTime)
                             put("city", mCityname)
                         }
                         .toString(),

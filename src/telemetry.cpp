@@ -214,23 +214,18 @@ void Telemetry::initialize() {
       });
 
   connect(
-      controller, &Controller::recordConnectionEndTelemetry, this,
-      [this, controller]() {
+      controller, &Controller::recordConnectionEndTelemetry, this, [this]() {
         if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (controller->state() == Controller::StateOff &&
-              SettingsHolder::instance()->onboardingCompleted()) {
-            mozilla::glean::session::session_end.set();
+          mozilla::glean::session::session_end.set();
+          mozilla::glean_pings::Vpnsession.submit("end");
+          m_vpnSessionPingTimer.stop();
 
-            mozilla::glean_pings::Vpnsession.submit("end");
-            m_vpnSessionPingTimer.stop();
-
-            // We are rotating the UUID here as a safety measure. It is rotated
-            // again before the next session start, and we expect to see the
-            // UUID created here in only one ping: The session ping with a
-            // "flush" reason, which should contain this UUID and no other
-            // metrics.
-            mozilla::glean::session::session_id.generateAndSet();
-          }
+          // We are rotating the UUID here as a safety measure. It is rotated
+          // again before the next session start, and we expect to see the
+          // UUID created here in only one ping: The session ping with a
+          // "flush" reason, which should contain this UUID and no other
+          // metrics.
+          mozilla::glean::session::session_id.generateAndSet();
         }
       });
 }

@@ -81,6 +81,7 @@ const screenHome = {
   CONTROLLER_SUBTITLE: new QmlQueryComposer('//controllerSubTitle'),
   CONTROLLER_TITLE: new QmlQueryComposer('//controllerTitle'),
   CONTROLLER_TOGGLE: new QmlQueryComposer('//controllerToggle'),
+  CONNECTION_TIMER: new QmlQueryComposer('//connectionTimer'),
   IP_INFO_PANEL: new QmlQueryComposer('//ipInfoPanel'),
   IP_INFO_TOGGLE: new QmlQueryComposer('//ipInfoToggleButton'),
   SCREEN: new QmlQueryComposer('//screenHome'),
@@ -105,8 +106,10 @@ const screenHome = {
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
     HELP_BUTTON: new QmlQueryComposer('//serverHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//serverHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//serverHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//serverHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     COUNTRY_VIEW: new QmlQueryComposer('//serverCountryView'),
     ENTRY_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
     EXIT_BUTTON: new QmlQueryComposer('//buttonSelectExit'),

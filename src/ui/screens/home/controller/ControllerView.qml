@@ -552,6 +552,7 @@ Item {
 
           ConnectionTimer {
             id: connectionTime
+            objectName: "connectionTimer"
             ignoreForAccessibility: true
           }
         }
