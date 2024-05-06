@@ -748,6 +748,15 @@ SETTING_STRING(tunnelUuid,        // getter
                true               // sensitive (do not log)
 )
 #endif
+SETTING_STRING(unauthedExperimenterId,        // getter
+               setUnauthedExperimenterId,     // setter
+               removeUnauthedExperimenterId,  // remover
+               hasUnauthedExperimenterId,     // has
+               "unauthedExperimenterId",      // key
+               "",                            // default value
+               true,                          // remove when reset
+               true                           // sensitive (do not log)
+)
 
 #ifdef UNIT_TEST
 SETTING_BOOL(addonApiSetting,        // getter
