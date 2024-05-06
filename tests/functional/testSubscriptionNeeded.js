@@ -175,6 +175,20 @@ describe("subscription needed tests", function() {
       // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
       // functional tests in mobile. In app purchase screens are mobile only.
       it.skip("impression event is recorded for in app screen");
+
+      it("cancel button event is recorded (in browser only)", async () => {
+        await vpn.authenticateInApp();
+        // Click the "Subscribe now" button
+        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        // Click on the "Cancel" button
+        await vpn.waitForQueryAndClick(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
+        // Check subscription cancelled event is recorded.
+        const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionFailed", "main");
+
+        assert.strictEqual(eventList.length, 1);
+        assert.strictEqual(eventList[0].extra.reason, "SubscriptionCancelled");
+
+      });
     });
   });
 });
