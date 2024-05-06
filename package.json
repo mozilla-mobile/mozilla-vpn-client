@@ -15,7 +15,7 @@
     "docs:build": "npm install && npm run build -w tools/mozillavpn.dev"
   },
   "devDependencies": {
-    "appium-adb": "^9.14.4",
+    "appium-adb": "^12.0.9",
     "body-parser": "^1.20.2",
     "chokidar": "^3.5.3",
     "command-line-args": "^5.2.1",
