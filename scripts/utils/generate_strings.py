@@ -48,7 +48,7 @@ def parseXLIFFTranslationStrings(xliff_file):
 
     for node in root.findall('.//{urn:oasis:names:tc:xliff:document:1.2}trans-unit'):
         # Remove any unexpected characters e.g. São Paulo -> SoPaulo
-        id = re.sub(r'[^a-zA-Z.]', '', node.get('id'))
+        id = re.sub(r'[^a-zA-Z._]', '', node.get('id'))
         cpp_id = pascalize(id.replace('.', '_'))
         value = node.findall('.//{urn:oasis:names:tc:xliff:document:1.2}source')[0].text
 
