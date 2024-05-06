@@ -31,11 +31,6 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
-      - name: Importing translation files
-        shell: bash
-        run: |
-          python3 scripts/utils/import_languages.py
-
       - name: Generate updated .ts files and check for l10n errors
         run: |
           ./scripts/utils/generate_ts.sh

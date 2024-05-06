@@ -52,7 +52,7 @@ StackView {
             ControllerNav {
                 function handleClick() {
                     multiHopStackView.push(
-                        "qrc:/ui/screens/home/servers/ServerList.qml",
+                        "qrc:/Mozilla/VPN/screens/home/servers/ServerList.qml",
                         {
                             currentServer: entryLabel.serversList[0],
                             showRecentConnections: false
@@ -86,7 +86,7 @@ StackView {
                 spacing: 8
                 ControllerNav {
                     function handleClick() {
-                        multiHopStackView.push("qrc:/ui/screens/home/servers/ServerList.qml",
+                        multiHopStackView.push("qrc:/Mozilla/VPN/screens/home/servers/ServerList.qml",
                            {
                                 currentServer:  exitLabel.serversList[0],
                                 showRecentConnections: false

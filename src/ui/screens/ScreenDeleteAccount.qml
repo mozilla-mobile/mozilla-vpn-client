@@ -16,6 +16,6 @@ MZStackView {
     id: stackview
     Component.onCompleted: () => {
        MZNavigator.addStackView(VPN.ScreenDeleteAccount, stackview)
-       stackview.push("qrc:/ui/deleteAccount/ViewDeleteAccount.qml")
+       stackview.push("qrc:/Mozilla/VPN/deleteAccount/ViewDeleteAccount.qml")
     }
 }

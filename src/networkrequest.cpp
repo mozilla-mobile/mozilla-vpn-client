@@ -55,6 +55,18 @@ void NetworkRequest::setRequestHandler(
   s_postResourceIODeviceCallback = std::move(postResourceIODeviceCallback);
 }
 
+#ifdef UNIT_TEST
+// static
+void NetworkRequest::resetRequestHandler() {
+  std::function<bool(NetworkRequest*)> s_deleteResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*)> s_getResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*, const QByteArray&)>
+      s_postResourceCallback = nullptr;
+  std::function<bool(NetworkRequest*, QIODevice*)>
+      s_postResourceIODeviceCallback = nullptr;
+}
+#endif
+
 NetworkRequest::NetworkRequest(Task* parent, int status)
     : QObject(parent), m_expectedStatusCode(status) {
   MZ_COUNT_CTOR(NetworkRequest);
@@ -99,7 +111,26 @@ NetworkRequest::~NetworkRequest() {
   }
 }
 
+// static
+const QByteArray NetworkRequest::authorizationHeader() {
+  if (SettingsHolder::instance()->token().isEmpty()) {
+    logger.error() << "INVALID TOKEN! This network request is going to fail.";
+    Q_ASSERT(false);
+  }
+
+  QByteArray authorizationHeader = "Bearer ";
+  authorizationHeader.append(SettingsHolder::instance()->token().toLocal8Bit());
+
+  return authorizationHeader;
+}
+
 void NetworkRequest::auth(const QByteArray& authorizationHeader) {
+  auto finalAuthorizationHeader = authorizationHeader;
+
+  if (finalAuthorizationHeader.isEmpty()) {
+    finalAuthorizationHeader = NetworkRequest::authorizationHeader();
+  }
+
   m_request.setRawHeader("Authorization", authorizationHeader);
 }
 

@@ -18,7 +18,12 @@ MZIconButton {
     accessibleName: ""
 
     onClicked: {
-        MZNavigator.requestScreenFromBottomBar(_screen, MZNavigator.screen === _screen ? MZNavigator.ForceReload : MZNavigator.NoFlags);
+        if (MZNavigator.screen === _screen) {
+            window.unwindStackView();
+            return;
+        }
+
+        MZNavigator.requestScreenFromBottomBar(_screen, MZNavigator.NoFlags);
     }
 
     width: MZTheme.theme.navBarIconSize

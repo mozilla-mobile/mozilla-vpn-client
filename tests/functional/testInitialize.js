@@ -5,6 +5,7 @@
 const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
+const { startAndConnect } = require('./setupVpn.js');
 
 
 describe('Initialize', function() {
@@ -93,9 +94,18 @@ describe('Initialize', function() {
     // https://miro.com/app/board/uXjVM0BZcnc=/?userEmail=sandrigo@mozilla.com&openComment=3458764559943493792&mid=8418131&utm_source=notification&utm_medium=email&utm_campaign=mentions&utm_content=reply-to-mention&share_link_id=496680579489
 
     it("impression event is recorded", async () => {
+      // During the beforeEach block of this test we already recorded
+      // the metric we care about here and submitted a ping with it,
+      // so we need to close and reopen to do it again for testing.
+      await vpn.quit();
+      await startAndConnect();
+
       await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      const signupScreenEvents = await vpn.gleanTestGetValue("impression", "signupScreen", "main");
-      assert.strictEqual(signupScreenEvents.length, 1);
+      let signupScreenEvents;
+      await vpn.waitForCondition(async () => {
+        signupScreenEvents = await vpn.gleanTestGetValue("impression", "signupScreen", "main");
+        return signupScreenEvents.length === 1;
+      });
       const signupScreenExtras = signupScreenEvents[0].extra;
       assert.strictEqual(telemetryScreenId, signupScreenExtras.screen);
     });

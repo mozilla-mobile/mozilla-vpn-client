@@ -202,7 +202,6 @@ target_sources(mozillavpn-sources INTERFACE
 # VPN Client UI resources
 target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources.qrc
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/certs/certs.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
