@@ -126,7 +126,7 @@ MZViewBase {
                         VPNAndroidUtils.openNotificationSettings();
                         return;
                     }
-                    stackview.push("qrc:/ui/screens/settings/ViewNotifications.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewNotifications.qml")
                 }
                 visible: MZFeatureList.get("captivePortal").isSupported || MZFeatureList.get("unsecuredNetworkNotification").isSupported || MZFeatureList.get("notificationControl").isSupported
                 width: parent.width - MZTheme.theme.windowMargin
@@ -144,7 +144,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.languageSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/settings/ViewLanguage.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewLanguage.qml")
                 }
                 visible: MZLocalizer.hasLanguages
                 width: parent.width - MZTheme.theme.windowMargin
@@ -162,7 +162,7 @@ MZViewBase {
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.dnsSettingsSelected.record({screen:telemetryScreenId})
-                    stackview.push("qrc:/ui/screens/settings/ViewDNSSettings.qml")
+                    stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewDNSSettings.qml")
                 }
                 width: parent.width - MZTheme.theme.windowMargin
             }

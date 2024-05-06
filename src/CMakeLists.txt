@@ -67,5 +67,5 @@ include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 
 add_subdirectory(ui)
-target_link_libraries(mozillavpn PRIVATE mozillavpn-ui mozillavpn-uiplugin)
+target_link_libraries(mozillavpn PRIVATE mozillavpn-uiplugin)
 qt_finalize_target(mozillavpn)

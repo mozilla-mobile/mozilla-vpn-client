@@ -14,6 +14,6 @@ MZStackView {
 
     Component.onCompleted: function() {
         MZNavigator.addStackView(VPN.ScreenAuthenticationInApp, stackview)
-        stackview.push("qrc:/ui/screens/authenticationInApp/ViewAuthenticationInApp.qml")
+        stackview.push("qrc:/Mozilla/VPN/screens/authenticationInApp/ViewAuthenticationInApp.qml")
     }
 }

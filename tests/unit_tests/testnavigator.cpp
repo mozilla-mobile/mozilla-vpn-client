@@ -44,12 +44,12 @@ void TestNavigator::testNavbarButtonTelemetry() {
   // Register screens
   Navigator::registerScreen(
       MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
-      "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
+      "qrc:/Mozilla/VPN/screens/ScreenHome.qml", QVector<int>{},
       [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
-      "qrc:/ui/screens/ScreenMessaging.qml", QVector<int>{},
+      "qrc:/Mozilla/VPN/screens/ScreenMessaging.qml", QVector<int>{},
       [](int*) -> int8_t { return 0; },
       []() -> bool {
         Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
@@ -59,7 +59,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
 
   Navigator::registerScreen(
       MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
-      "qrc:/ui/screens/ScreenSettings.qml", QVector<int>{},
+      "qrc:/Mozilla/VPN/screens/ScreenSettings.qml", QVector<int>{},
       [](int*) -> int8_t { return 0; },
       []() -> bool {
         Navigator::instance()->requestScreen(MozillaVPN::ScreenHome,
@@ -221,7 +221,7 @@ void TestNavigator::testNavbarButtonTelemetryNoLayers() {
   // Register screen
   Navigator::registerScreen(
       MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
-      "qrc:/ui/screens/ScreenHome.qml", QVector<int>{},
+      "qrc:/Mozilla/VPN/screens/ScreenHome.qml", QVector<int>{},
       [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
 
   // Click the home nav bar button to go to ScreenHome again

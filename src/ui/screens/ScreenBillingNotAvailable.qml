@@ -19,7 +19,7 @@ MZStackView {
     Component.onCompleted: {
         MZNavigator.addStackView(VPN.ScreenBillingNotAvailable, stackview)
 
-        stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
+        stackview.push("qrc:/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
             // Sign in to Google Account
             headlineText: MZI18n.NotSignedInGoogleGoogleModalHeader,
 

@@ -25,7 +25,6 @@ target_link_libraries(dummyvpn PRIVATE
     mz_webextension
     shared-sources
     mozillavpn-sources
-    mozillavpn-ui
     mozillavpn-uiplugin
     lottie
     nebula

@@ -9,7 +9,7 @@
   },
   "replacer": {
     "urls": [
-      { "request": "qrc:/ui/screens/home/ViewHome.qml", "response": "fs/home.qml" }
+      { "request": "qrc:/Mozilla/VPN/screens/home/ViewHome.qml", "response": "fs/home.qml" }
     ]
   }
 }

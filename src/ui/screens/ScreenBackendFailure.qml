@@ -20,7 +20,7 @@ MZStackView {
         MZNavigator.addStackView(VPN.ScreenBackendFailure, stackview)
 
         stackview.push(
-            "qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
+            "qrc:/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
                 //% "Something went wrong…"
                 headlineText: qsTrId("vpn.errors.somethingWentWrong"),
 
