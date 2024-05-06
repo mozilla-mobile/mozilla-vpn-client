@@ -12,10 +12,10 @@ StackView {
 
     Component.onCompleted: function(){
         if(!currentItem && initialItem) {
-            // We don't show anything right now and inital item is set, 
+            // We don't show anything right now and inital item is set,
             // On android if initialItem is anything But a component
             // it will totaly parse that into garbage values and fail
-            // 
+            //
             // See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/2638
             console.error("Using the initialItem property does not work on some platforms. Use Component.onCompleted: stackview.push(someURI)");
             MZUtils.exitForUnrecoverableError("Setting initialItem on a StackView is illegal. See previous logs for more information.")
@@ -30,6 +30,13 @@ StackView {
             if (item === stackView) {
                 stackView.pop();
             }
+        }
+    }
+
+    Connections {
+        target: window
+        function onUnwindStackView() {
+            stackview.pop(null);
         }
     }
 }
