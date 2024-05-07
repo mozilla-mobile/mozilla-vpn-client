@@ -35,6 +35,15 @@ class TestLocalizer final : public TestHelper {
   void formattedDate_data();
   void formattedDate();
 
+  void nativeLanguageName_data();
+  void nativeLanguageName();
+
+  void localizedLanguageName();
+
+  void getTranslatedCountryName();
+
+  void getTranslatedCityName();
+
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };

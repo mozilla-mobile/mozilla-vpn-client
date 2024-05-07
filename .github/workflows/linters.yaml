@@ -95,23 +95,3 @@ jobs:
         run: |
           conda info
           REPOSITORY_ROOT=$(pwd)/.. ./gradlew ktlint
-
-  check-language-json:
-    name: Check if languages.json is valid
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: "true"
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: "npm"
-      - run: npm install
-
-      - name: Run languagelocalizer
-        run: |
-          cd tools/languagelocalizer
-          node languageLocalizer.js --check

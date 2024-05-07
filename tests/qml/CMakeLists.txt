@@ -68,8 +68,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
-    ${MZ_SOURCE_DIR}/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/serveri18n.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
@@ -176,8 +174,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/languagei18n.cpp
-    ${MZ_SOURCE_DIR}/languagei18n.h
     ${MZ_SOURCE_DIR}/leakdetector.cpp
     ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp

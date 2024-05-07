@@ -104,8 +104,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/releasemonitor.h
-    ${MZ_SOURCE_DIR}/serveri18n.cpp
-    ${MZ_SOURCE_DIR}/serveri18n.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/statusicon.cpp
@@ -225,8 +223,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/languagei18n.cpp
-    ${MZ_SOURCE_DIR}/languagei18n.h
     ${MZ_SOURCE_DIR}/leakdetector.cpp
     ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
@@ -339,8 +335,6 @@ target_sources(unit_tests PRIVATE
     testmodels.h
     testreleasemonitor.cpp
     testreleasemonitor.h
-    testserveri18n.cpp
-    testserveri18n.h
     testserverlatency.cpp
     testserverlatency.h
     teststatusicon.cpp
@@ -353,7 +347,6 @@ configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
-    servers/servers.qrc
 )
 
 ## Add the tests to be run, one for each test class.

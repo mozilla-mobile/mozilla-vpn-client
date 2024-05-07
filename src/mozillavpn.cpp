@@ -22,6 +22,7 @@
 #include "i18nstrings.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "logoutobserver.h"
@@ -39,7 +40,6 @@
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "releasemonitor.h"
-#include "serveri18n.h"
 #include "settings/settinggroup.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
@@ -2033,17 +2033,14 @@ void MozillaVPN::registerInspectorCommands() {
             QJsonObject cityObj;
             cityObj["name"] = city.name();
             cityObj["localizedName"] =
-                ServerI18N::instance()->translateCityName(country.code(),
-                                                          city.name());
+                Localizer::instance()->getTranslatedCityName(city.name());
             cityObj["code"] = city.code();
             cityArray.append(cityObj);
           }
 
           QJsonObject countryObj;
           countryObj["name"] = country.name();
-          countryObj["localizedName"] =
-              ServerI18N::instance()->translateCountryName(country.code(),
-                                                           country.name());
+          countryObj["localizedName"] = country.localizedName();
           countryObj["code"] = country.code();
           countryObj["cities"] = cityArray;
 

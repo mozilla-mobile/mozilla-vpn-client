@@ -11,8 +11,8 @@
 
 #include "collator.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "serverdata.h"
-#include "serveri18n.h"
 
 ServerCountry::ServerCountry() { MZ_COUNT_CTOR(ServerCountry); }
 
@@ -73,14 +73,16 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   return true;
 }
 
+QString ServerCountry::localizedName() const {
+  return Localizer::instance()->getTranslatedCountryName(m_code, m_name);
+}
+
 namespace {
 
-bool sortCityCallback(const QString& a, const QString& b,
-                      const QString& countryCode, Collator* collator) {
+bool sortCityCallback(const QString& a, const QString& b, Collator* collator) {
   Q_ASSERT(collator);
-  return collator->compare(
-             ServerI18N::instance()->translateCityName(countryCode, a),
-             ServerI18N::instance()->translateCityName(countryCode, b)) < 0;
+  return collator->compare(Localizer::instance()->getTranslatedCityName(a),
+                           Localizer::instance()->getTranslatedCityName(b)) < 0;
 }
 
 }  // anonymous namespace
@@ -90,5 +92,5 @@ void ServerCountry::sortCities() {
 
   std::sort(m_cities.begin(), m_cities.end(),
             std::bind(sortCityCallback, std::placeholders::_1,
-                      std::placeholders::_2, m_code, &collator));
+                      std::placeholders::_2, &collator));
 }

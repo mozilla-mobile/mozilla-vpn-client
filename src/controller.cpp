@@ -28,7 +28,6 @@
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"

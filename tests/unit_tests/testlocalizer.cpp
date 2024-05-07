@@ -40,7 +40,7 @@ void TestLocalizer::basic() {
   QCOMPARE(rn[Localizer::CodeRole], "code");
   QCOMPARE(rn[Localizer::RTLRole], "isRightToLeft");
 
-  QVERIFY(l.rowCount(QModelIndex()) == 4);
+  QVERIFY(l.rowCount(QModelIndex()) == 5);
   QCOMPARE(l.data(QModelIndex(), Localizer::LocalizedLanguageNameRole),
            QVariant());
 }
@@ -97,12 +97,11 @@ void TestLocalizer::localizeCurrency() {
 
   // Happy path
   QCOMPARE(l.localizeCurrency(123.123, "GBP"), "£123.12");
+  QCOMPARE(l.localizeCurrency(123.123, "USD"), "$123.12");
+  QCOMPARE(l.localizeCurrency(123.123, "BGN"), "лв123.12");
 
   // Let's guess - invalid currency
   QCOMPARE(l.localizeCurrency(123.123, "AAA"), "AAA123.12");
-
-  // Let's guess - valid currency for CLDR
-  QCOMPARE(l.localizeCurrency(123.123, "BBB"), "WOW123.12");
 }
 
 void TestLocalizer::majorLanguageCode() {
@@ -253,7 +252,8 @@ void TestLocalizer::fallback() {
   QCOMPARE(l.languages(), QStringList() << "en"
                                         << "es_CL"
                                         << "es_ES"
-                                        << "es_MX");
+                                        << "es_MX"
+                                        << "pt_BR");
 
   // MX contains translations for "foo.1"
   QCOMPARE(qtTrId("foo.1"), "hello world 1 es_MX");
@@ -366,6 +366,131 @@ void TestLocalizer::formattedDate() {
 
   QFETCH(QString, result);
   QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
+}
+
+void TestLocalizer::nativeLanguageName_data() {
+  QTest::addColumn<QLocale>("locale");
+  QTest::addColumn<QString>("code");
+  QTest::addColumn<QString>("output");
+
+  // Happy path
+  QTest::addRow("existing transation") << QLocale(QLocale::C) << "en"
+                                       << "English";
+
+  // Happy path
+  QTest::addRow("existing transation") << QLocale(QLocale::Spanish) << "es_ES"
+                                       << "Español de españa";
+
+  // There is a key for this locale in NATIVE_LANGUAGE_NAMES,
+  // but there is no translation. This is going to use Qt's translation
+  // (which in this case is a terrible translation).
+  QTest::addRow("missing transation") << QLocale(QLocale::Spanish) << "es_CL"
+                                      << "Español de España";
+
+  // When the locale code provided is not in the map,
+  // but the QLocale provided is QLocale::C we will fallback to en_US.
+  QTest::addRow("english fallback") << QLocale(QLocale::C) << "Unknown"
+                                    << "English (US)";
+
+  // When all else fails, we just trust Qt again.
+  QTest::addRow("qt fallback") << QLocale(QLocale::Portuguese) << "Unknown"
+                               << "Português";
+}
+
+void TestLocalizer::nativeLanguageName() {
+  QFETCH(QLocale, locale);
+  QFETCH(QString, code);
+  QFETCH(QString, output);
+
+  QCOMPARE(Localizer::nativeLanguageName(locale, code), output);
+}
+
+void TestLocalizer::localizedLanguageName() {
+  Localizer localizer;
+
+  // Happy path
+  QCOMPARE(localizer.localizedLanguageName("en"), "English");
+
+  m_settingsHolder->setLanguageCode("es_ES");
+  QCOMPARE(localizer.localizedLanguageName("en"), "Inglés");
+
+  // This language doesn't have a translations for "es_MX".
+  // It does have fallback into es_MX and then es_ES.
+  // It should get the translation from the first fallback language: es_MX.
+  m_settingsHolder->setLanguageCode("es_CL");
+  QCOMPARE(localizer.localizedLanguageName("es_MX"), "Español");
+
+  // This language doesn't have a translations for "es_ES",
+  // and neither does the first fallback language: es_MX.
+  // It should still get the translation from the second fallback language
+  QCOMPARE(localizer.localizedLanguageName("es_ES"), "Español de españa");
+
+  // This language doesn't have a translations for "es_ES"
+  // and it also doesn't have fallbacks. "en" is the default fallback locale.
+  m_settingsHolder->setLanguageCode("pt_BR");
+  QCOMPARE(localizer.localizedLanguageName("es_ES"), "Spanish");
+}
+
+void TestLocalizer::getTranslatedCountryName() {
+  Localizer localizer;
+
+  // Make sure we don't crash on an empty input.
+  QCOMPARE(localizer.getTranslatedCountryName("", ""), "");
+
+  // If the country name provided doesn't match any translation,
+  // just return what was provided.
+  QCOMPARE(localizer.getTranslatedCountryName("Middle Earth", "Middle Earth"),
+           "Middle Earth");
+
+  // Happy path
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
+           "United States of America");
+
+  m_settingsHolder->setLanguageCode("es_ES");
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
+           "Estados Unidos de América");
+
+  // This language doesn't have a translations for "us",
+  // but it should not fallback to English. It should fallback to Spanish.
+  m_settingsHolder->setLanguageCode("es_CL");
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
+           "Estados Unidos de América");
+
+  // This language doesn't have a translations for "en"
+  // and it also doesn't have fallbacks. It should fallback to English.
+  m_settingsHolder->setLanguageCode("pt_BR");
+  QCOMPARE(localizer.getTranslatedCountryName("us", ""),
+           "United States of America");
+}
+
+void TestLocalizer::getTranslatedCityName() {
+  Localizer localizer;
+
+  // Make sure we don't crash on an empty input.
+  QCOMPARE(localizer.getTranslatedCityName(""), "");
+
+  // If the city name provided doesn't match any translation,
+  // just return what was provided.
+  QCOMPARE(localizer.getTranslatedCityName("Hogsmead"), "Hogsmead");
+
+  // Make sure special characters and state suffixes don't trip us up.
+  QCOMPARE(localizer.getTranslatedCityName("Salt Lake City, UT"),
+           "Salt Lake City");
+  QCOMPARE(localizer.getTranslatedCityName("São Paulo, SP"), "São Paulo");
+
+  // Happy path
+  m_settingsHolder->setLanguageCode("es_ES");
+  QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Ciudad de México");
+
+  // This language doesn't have a translations for "Mexico City",
+  // but it should not fallback to English. It should fallback to Spanish.
+  m_settingsHolder->setLanguageCode("es_CL");
+  QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Ciudad de México");
+
+  // This language doesn't have a translations for "en"
+  // and it also doesn't have fallbacks. It should fallback to English.
+  m_settingsHolder->setLanguageCode("pt_BR");
+  QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Mexico City");
 }
 
 static TestLocalizer s_testLocalizer;

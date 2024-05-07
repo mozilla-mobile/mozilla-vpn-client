@@ -42,12 +42,6 @@ add_addon_target(test_03_single_addon
 )
 set_target_properties(test_03_single_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
-add_addon_target(test_07_replacer
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/07_replacer/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/07_replacer/
-)
-set_target_properties(test_07_replacer PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
 add_addon_target(test_08_message_disabled
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/08_message_disabled/
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/08_message_disabled/

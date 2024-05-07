@@ -151,8 +151,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasewebhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settingswatcher.cpp
@@ -230,7 +228,7 @@ endif()
 
 # Creates Target (mozillavpn-sources_clang_tidy_report)
 mz_add_clang_tidy(mozillavpn-sources)
-# we need to make sure those are up to date before we build. 
+# we need to make sure those are up to date before we build.
 # Those targets generate code we #include, therefore
 
 mz_optional_dependency(mozillavpn-sources_clang_tidy_report qtglean)
