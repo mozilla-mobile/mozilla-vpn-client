@@ -18,9 +18,13 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
-#include <QSignalSpy>
 #include <QTest>
 #include <functional>
+
+#if QT_CONFIG(thread)
+#  include <QRunnable>
+#  include <QSemaphore>
+#endif
 
 #include "constants.h"
 #include "feature/feature.h"
@@ -357,17 +361,22 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"click", "Click on an object", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-
                        QQuickWindow* window = qobject_cast<QQuickWindow*>(
                            QmlEngineHolder::instance()->window());
-#ifndef MZ_WASM
-                       // Ensure window rendering is finished.
-                       QSignalSpy spy(window, &QQuickWindow::afterFrameEnd);
+
+#if QT_CONFIG(thread)
+                       // If Qt is multithreaded, we may need to ensure that
+                       // window rendering is finished in order to make sure
+                       // that the QSceneGraph is sychronized with what's on
+                       // screen.
+                       QSemaphore sem(0);
+                       QRunnable* job =
+                           QRunnable::create([&sem] { sem.release(); });
+
                        window->update();
-                       if (!spy.isValid()) {
-                         logger.debug() << "QSignalSpy is invalid";
-                       } else if (!spy.wait(150)) {
-                         logger.debug() << "Never got an afterFrameEnd signal";
+                       window->scheduleRenderJob(job, QQuickWindow::NoStage);
+                       if (!sem.tryAcquire(1, 150)) {
+                         logger.warning() << "Window rendering never finished";
                        }
 #endif
 
