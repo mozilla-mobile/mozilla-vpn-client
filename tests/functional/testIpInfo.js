@@ -15,7 +15,7 @@ describe('IP info', function() {
 
     // Open IP info panel
     await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.visible());
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
     assert.equal(
         await vpn.getQueryProperty(
             queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
@@ -33,7 +33,7 @@ describe('IP info', function() {
 
     // Open IP info panel
     await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.visible());
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
     assert.equal(
         await vpn.getQueryProperty(
             queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
@@ -64,7 +64,7 @@ describe('IP info', function() {
 
       // Open IP info panel
       await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-      await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.visible());
+      await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');

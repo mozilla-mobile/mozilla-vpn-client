@@ -33,6 +33,8 @@ describe('Factory Reset', function() {
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.RESET.visible());
 
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+	await vpn.scrollToQuery(queries.screenGetHelp.resetView.VIEW,
+		queries.screenGetHelp.resetView.BACK_BUTTON);
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.resetView.BACK_BUTTON.visible());
 
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());

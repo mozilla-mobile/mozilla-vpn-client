@@ -221,6 +221,7 @@ describe('Devices', function() {
       // Let's remove a device
       await vpn.waitForQueryAndClick(
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.wait(); // Wait for popup animation
 
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
@@ -483,6 +484,8 @@ describe('Devices', function() {
       // Let's remove a device by clicking the button
       await vpn.waitForQueryAndClick(
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.wait(); // Wait for popup animation
+
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 

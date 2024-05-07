@@ -84,9 +84,13 @@ describe('User authentication', function() {
 
         await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                            .AUTH_ERROR_POPUP_BUTTON.visible());
-        await vpn.waitForQueryAndClick(
-            queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
-                .disabled());
+        await vpn.waitForCondition(async () => {
+          const vis = await vpn.query(queries.screenAuthenticationInApp
+                                          .AUTH_ERROR_POPUP_BUTTON.visible());
+          return vis === false;
+        });
+        await vpn.waitForQuery(queries.screenAuthenticationInApp
+                                   .AUTH_START_BUTTON.visible().disabled());
       }
 
       // Step 2: start -> email error
@@ -162,6 +166,11 @@ describe('User authentication', function() {
 
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_ERROR_POPUP_BUTTON.visible());
+      await vpn.waitForCondition(async () => {
+        const vis = await vpn.query(queries.screenAuthenticationInApp
+                                       .AUTH_ERROR_POPUP_BUTTON.visible());
+        return vis === false;
+      });
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
               .disabled());
@@ -235,6 +244,7 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_EMAILVER_CANCEL_BUTTON
               .visible());
+      await vpn.waitForInitialView();
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());

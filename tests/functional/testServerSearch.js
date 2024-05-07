@@ -61,40 +61,18 @@ describe("Server list", function () {
       server.name
     );
 
+    const city = server.cities[0]
+    console.log("Start test for city:", city);
     const countryId = queries.screenHome.serverListView.generateCountryId(
       server.code
     );
-    await vpn.waitForQuery(countryId.visible());
-    await vpn.scrollToQuery(
-      queries.screenHome.serverListView.COUNTRY_VIEW,
-      countryId
-    );
-
-    if (
-      (await vpn.getQueryProperty(countryId, "cityListVisible")) === "false"
-    ) {
-      await vpn.waitForQueryAndClick(countryId.visible());
-    }
-
-    await vpn.waitForQuery(countryId.visible().prop("cityListVisible", true));
-
-    const city = server.cities[0]
-    console.log("Start test for city:", city);
     const cityId = queries.screenHome.serverListView.generateCityId(
       countryId,
       city.name
     );
-    await vpn.waitForQuery(cityId.visible());
+    await vpn.navServerList(countryId, cityId);
 
-    await vpn.setQueryProperty(
-      queries.screenHome.serverListView.COUNTRY_VIEW,
-      "contentY",
-      parseInt(await vpn.getQueryProperty(cityId, "y")) +
-        parseInt(await vpn.getQueryProperty(countryId, "y"))
-    );
-    await vpn.waitForQuery(cityId.visible());
-
-    await vpn.waitForQueryAndClick(cityId.visible());
+    await vpn.waitForQueryAndClick(cityId.visible().enabled());
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
     // navigate back to connection view
@@ -132,36 +110,15 @@ describe("Server list", function () {
       server.name
     );
 
+    console.log("Start test for city:", server.cities[0]);
     const countryId = queries.screenHome.serverListView.generateCountryId(
       server.code
     );
-    await vpn.waitForQuery(countryId.visible());
-    await vpn.scrollToQuery(
-      queries.screenHome.serverListView.COUNTRY_VIEW,
-      countryId
-    );
-
-    if (
-      (await vpn.getQueryProperty(countryId, "cityListVisible")) === "false"
-    ) {
-      await vpn.waitForQueryAndClick(countryId.visible());
-    }
-    await vpn.waitForQuery(countryId.visible().prop("cityListVisible", true));
-
-    console.log("Start test for city:", server.cities[0]);
     const cityId = queries.screenHome.serverListView.generateCityId(
       countryId,
       server.cities[0].name
     );
-    await vpn.waitForQuery(cityId.visible());
-
-    await vpn.setQueryProperty(
-      queries.screenHome.serverListView.COUNTRY_VIEW,
-      "contentY",
-      parseInt(await vpn.getQueryProperty(cityId, "y")) +
-        parseInt(await vpn.getQueryProperty(countryId, "y"))
-    );
-    await vpn.waitForQuery(cityId.visible());
+    await vpn.navServerList(countryId, cityId);
 
     await vpn.waitForQueryAndClick(cityId.visible());
     await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());

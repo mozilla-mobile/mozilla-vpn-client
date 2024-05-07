@@ -12,9 +12,9 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationThirdParty {
     id: authStubAccount
+    objectName: "authStubAccount"
 
     _telemetryScreenId: "authentication_stub_account"
-    _viewObjectName: "authStubAccount"
     _imgSource: "qrc:/ui/resources/check-email.svg"
     _headlineText: MZI18n.InAppAuthStubAccountVerificationHeader
 

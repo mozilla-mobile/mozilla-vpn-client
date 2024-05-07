@@ -570,6 +570,7 @@ describe('User authentication', function() {
         await vpn.setQueryProperty(
             queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
             'text', 'test@test.com');
+
         await vpn.waitForQueryAndClick(
             queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .enabled());
@@ -706,7 +707,10 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
+            await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
+            await vpn.scrollToQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_SCREEN,
+                queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
+            await vpn.clickOnQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
             await vpn.testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen

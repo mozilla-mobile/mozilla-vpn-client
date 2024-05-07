@@ -221,22 +221,41 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  // Scroll an item into the center of a view
   async scrollToQuery(view, id) {
-    assert(await this.query(view), 'Scrolling on an non-existing view?!?');
-    assert(await this.query(id), 'Requesting an non-existing element?!?');
+    assert(await this.query(view), 'Scrolling a non-existing view?!?');
+    assert(await this.query(id), 'Scrolling to a non-existing element?!?');
+    const json = await this._writeCommand(`scrollview ${encodeURIComponent(view)} ${encodeURIComponent(id)}`);
+    assert(
+        json.type === 'scrollview' && !('error' in json),
+        `Command failed: ${json.error}`);
 
-    const contentHeight =
-        parseInt(await this.getQueryProperty(view, 'contentHeight'));
-    const height = parseInt(await this.getQueryProperty(view, 'height'));
-    let maxScroll = (contentHeight > height) ? contentHeight - height : 0;
-    let elementY = parseInt(await this.getQueryProperty(id, 'y'));
-
-    let contentY = elementY - (height / 2);
-    if (contentY < 0) contentY = 0;
-    if (contentY > maxScroll) contentY = maxScroll;
-
-    await this.setQueryProperty(view, 'contentY', contentY);
+    // Generally there is some kind of animation or rendering delay here.
     await this.wait();
+  },
+
+  async navServerList(countryId, cityId) {
+    // TODO: Should assert that a server list is open.
+
+    const view = queries.screenHome.serverListView.COUNTRY_VIEW;
+    await this.waitForQuery(view.ready());
+
+    // Scroll to the country
+    await this.waitForQuery(countryId.visible());
+    await this.scrollToQuery(view, countryId);
+
+    // If the city list is closed, open it.
+    if (await this.getQueryProperty(countryId, "cityListVisible") !== "true") {
+      await this.waitForQueryAndClick(countryId.visible());
+      await this.waitForQuery(countryId.visible().prop("cityListVisible", true));
+    }
+    await this.waitForQuery(countryId.ready());
+
+    // If a city is given, scroll it into view.
+    if (cityId !== undefined) {
+      await this.waitForQuery(cityId.visible());
+      await this.scrollToQuery(view, cityId);
+    }
   },
 
   async getMozillaProperty(namespace, id, property) {

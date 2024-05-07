@@ -21,6 +21,11 @@
 #include <QTest>
 #include <functional>
 
+#if QT_CONFIG(thread)
+#  include <QRunnable>
+#  include <QSemaphore>
+#endif
+
 #include "constants.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
@@ -356,6 +361,24 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"click", "Click on an object", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
+                       QQuickWindow* window = qobject_cast<QQuickWindow*>(
+                           QmlEngineHolder::instance()->window());
+
+#if QT_CONFIG(thread)
+                       // If Qt is multithreaded, we may need to ensure that
+                       // window rendering is finished in order to make sure
+                       // that the QSceneGraph is sychronized with what's on
+                       // screen.
+                       QSemaphore sem(0);
+                       QRunnable* job =
+                           QRunnable::create([&sem] { sem.release(); });
+
+                       window->update();
+                       window->scheduleRenderJob(job, QQuickWindow::NoStage);
+                       if (!sem.tryAcquire(1, 150)) {
+                         logger.warning() << "Window rendering never finished";
+                       }
+#endif
 
                        QObject* qmlobj =
                            InspectorUtils::queryObject(arguments[1]);
@@ -371,25 +394,76 @@ static QList<InspectorCommand> s_commands{
                          return obj;
                        }
 
-                       // It seems that in QT/QML there is a race-condition bug
-                       // between the rendering thread and the main one when
-                       // simulating clicks using QTest. At this point, all the
-                       // properties are synchronized, the animation is
-                       // probably already completed (otherwise it's a bug in
-                       // the test!) but it could be that he following
-                       // `mouse`Click` is ignored.
-                       // The horrible/temporary solution is to wait a bit more
-                       // and to add a delay (VPN-3697)
-                       QTest::qWait(150);
-
-                       QPointF pointF = item->mapToScene(QPoint(0, 0));
-                       QPoint point = pointF.toPoint();
-
-                       QTest::mouseClick(item->window(), Qt::LeftButton,
-                                         Qt::NoModifier, point);
-
+                       QPointF center = item->boundingRect().center();
+                       QTest::mouseClick(window, Qt::LeftButton, Qt::NoModifier,
+                                         item->mapToScene(center).toPoint());
                        return obj;
                      }},
+
+    InspectorCommand{
+        "scrollview", "Scroll a view until an item is centered", 2,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QJsonObject result;
+
+          QObject* viewobj = InspectorUtils::queryObject(arguments[1]);
+          if (!viewobj) {
+            logger.error() << "Did not find view object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          QQuickItem* view = qobject_cast<QQuickItem*>(viewobj);
+          if (!view) {
+            logger.error() << "View is not a QQuickItem object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          const QMetaObject* viewMeta = view->metaObject();
+          int scrollPropId = viewMeta->indexOfProperty("contentY");
+          if (scrollPropId < 0) {
+            logger.error() << "View is not scrollable";
+            result["error"] = "View is not scrollable";
+            return result;
+          }
+
+          QObject* targetobj = InspectorUtils::queryObject(arguments[2]);
+          if (!targetobj) {
+            logger.error() << "Did not find target object";
+            result["error"] = "Object not found";
+            return result;
+          }
+          QQuickItem* target = qobject_cast<QQuickItem*>(targetobj);
+          if (!target) {
+            logger.error() << "Target is not a QQuickItem object";
+            result["error"] = "Object not found";
+            return result;
+          }
+
+          // Get the size of the view and calculate scroll limits.
+          qreal current = view->property("contentY").toReal();
+          qreal content = view->property("contentHeight").toReal();
+          qreal height = view->property("height").toReal();
+          qreal limit = (content > height) ? content - height : 0;
+
+          // Get the vertical position, in the view's coordinates.
+          QPointF center = target->boundingRect().center();
+          qreal offset = target->mapToItem(view, center).y();
+
+          // Figure out how much to scroll to center the target.
+          qreal contentY = current + offset - (height / 2);
+          if (contentY < 0) contentY = 0;
+          if (contentY > limit) contentY = limit;
+
+          // Scroll the view.
+          QMetaProperty prop = viewMeta->property(scrollPropId);
+          Q_ASSERT(prop.isValid());
+          if (!prop.write(view, QVariant::fromValue(contentY))) {
+            logger.error() << "Could not write property contentY";
+            result["error"] = "Could not write property contentY";
+            return result;
+          }
+
+          return result;
+        }},
 
     InspectorCommand{
         "stealurls",
