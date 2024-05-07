@@ -120,8 +120,6 @@ Rectangle {
 
         MZIcon {
             source: getIconImage()
-            Layout.maximumHeight: 18
-            Layout.maximumWidth: 18
             Layout.leftMargin: 4 // to account for the color stripe
             Layout.alignment: Qt.AlignVCenter
         }
