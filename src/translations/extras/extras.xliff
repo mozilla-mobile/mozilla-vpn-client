@@ -35,6 +35,12 @@
       <trans-unit id="languages.en_GB" xml:space="preserve">
         <source>British English</source>
       </trans-unit>
+      <trans-unit id="languages.es_AR" xml:space="preserve">
+        <source>Argentinian Spanish</source>
+      </trans-unit>
+      <trans-unit id="languages.es_CL" xml:space="preserve">
+        <source>Chilean Spanish</source>
+      </trans-unit>
       <trans-unit id="languages.es_ES" xml:space="preserve">
         <source>Spanish</source>
       </trans-unit>
@@ -79,6 +85,9 @@
       </trans-unit>
       <trans-unit id="languages.nl" xml:space="preserve">
         <source>Dutch</source>
+      </trans-unit>
+      <trans-unit id="languages.oc" xml:space="preserve">
+        <source>Occitan</source>
       </trans-unit>
       <trans-unit id="languages.pa_IN" xml:space="preserve">
         <source>Punjabi</source>
