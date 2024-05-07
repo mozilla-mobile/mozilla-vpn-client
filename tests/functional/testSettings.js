@@ -292,7 +292,7 @@ describe('Settings', function() {
       const privacyTelemetryScreenId = "privacy_features"
 
       it('Checking privacy screen impression telemetry', async () => {
-        const privacyFeaturesSreenEvents = await vpn.gleanTestGetValue("impression", "privacyFeaturesScreen", "main");
+        const privacyFeaturesSreenEvents = await vpn.waitForGleanValue("impression", "privacyFeaturesScreen", "main");
         assert.equal(privacyFeaturesSreenEvents.length, 1);
         const privacyFeaturesSreenEventsExtras = privacyFeaturesSreenEvents[0].extra;
         assert.equal(privacyTelemetryScreenId, privacyFeaturesSreenEventsExtras.screen);
@@ -303,21 +303,21 @@ describe('Settings', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
 
-        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
         assert.equal(helpTooltipSelectedEvents.length, 1);
         const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
         assert.equal(privacyTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
 
         await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
 
-        const privacyFeaturesInfoScreenEvents = await vpn.gleanTestGetValue("impression", "privacyFeaturesInfoScreen", "main");
+        const privacyFeaturesInfoScreenEvents = await vpn.waitForGleanValue("impression", "privacyFeaturesInfoScreen", "main");
         assert.equal(privacyFeaturesInfoScreenEvents.length, 1);
         const privacyFeaturesInfoScreenEventsExtras = privacyFeaturesInfoScreenEvents[0].extra;
         assert.equal(privacyHelpSheetTelemetryScreenId, privacyFeaturesInfoScreenEventsExtras.screen);
 
         await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
         assert.equal(learnMoreSelectedEvents.length, 1);
         const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
         assert.equal(privacyHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
@@ -593,7 +593,7 @@ describe('Settings', function() {
       const dnsTelemetryScreenId = "dns_settings"
 
       it('Checking DNS screen impression telemetry', async () => {
-        const dnsSettingsScreenEvents = await vpn.gleanTestGetValue("impression", "dnsSettingsScreen", "main");
+        const dnsSettingsScreenEvents = await vpn.waitForGleanValue("impression", "dnsSettingsScreen", "main");
         assert.equal(dnsSettingsScreenEvents.length, 1);
         const dnsSettingsScreenEventExtras = dnsSettingsScreenEvents[0].extra;
         assert.equal(dnsTelemetryScreenId, dnsSettingsScreenEventExtras.screen);
@@ -604,21 +604,21 @@ describe('Settings', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
 
-        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
         assert.equal(helpTooltipSelectedEvents.length, 1);
         const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
         assert.equal(dnsTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
 
         await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
 
-        const dnsSettingsInfoScreenEvents = await vpn.gleanTestGetValue("impression", "dnsSettingsInfoScreen", "main");
+        const dnsSettingsInfoScreenEvents = await vpn.waitForGleanValue("impression", "dnsSettingsInfoScreen", "main");
         assert.equal(dnsSettingsInfoScreenEvents.length, 1);
         const dnsSettingsInfoScreenEventsExtras = dnsSettingsInfoScreenEvents[0].extra;
         assert.equal(dnsHelpSheetTelemetryScreenId, dnsSettingsInfoScreenEventsExtras.screen);
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
         assert.equal(learnMoreSelectedEvents.length, 1);
         const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
         assert.equal(dnsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
@@ -830,7 +830,7 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
 
     const helpScreenEvents =
-        await vpn.gleanTestGetValue('impression', 'helpScreen', 'main');
+        await vpn.waitForGleanValue('impression', 'helpScreen', 'main');
     assert.equal(helpScreenEvents.length, 1);
     const helpScreenEventsExtras = helpScreenEvents[0].extra;
     assert.equal(getHelpTelemetryScreenId, helpScreenEventsExtras.screen);
@@ -976,7 +976,7 @@ describe('Settings', function() {
             return;
         }
         await vpn.waitForQueryAndClick(queries.screenSettings.USER_PROFILE.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "accountSelected", "main");
+        const events = await vpn.waitForGleanValue("interaction", "accountSelected", "main");
 
         assert.equal(events.length, 1);
         var element = events[0];
@@ -989,7 +989,7 @@ describe('Settings', function() {
             return;
         }
         await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
-        const events = await vpn.gleanTestGetValue("interaction", "privacyFeaturesSelected", "main");
+        const events = await vpn.waitForGleanValue("interaction", "privacyFeaturesSelected", "main");
 
         assert.equal(events.length, 1);
         var element = events[0];
@@ -1003,7 +1003,7 @@ describe('Settings', function() {
       }
       await vpn.waitForQueryAndClick(
           queries.screenSettings.MY_DEVICES.visible());
-      const events = await vpn.gleanTestGetValue(
+      const events = await vpn.waitForGleanValue(
           "interaction", "myDevicesSelected", "main");
 
       assert.equal(events.length, 1);
@@ -1018,7 +1018,7 @@ describe('Settings', function() {
       }
       await vpn.waitForQueryAndClick(
           queries.screenSettings.APP_PREFERENCES.visible());
-      const events = await vpn.gleanTestGetValue(
+      const events = await vpn.waitForGleanValue(
           "interaction", "appPreferencesSelected", "main");
 
       assert.equal(events.length, 1);
@@ -1034,7 +1034,7 @@ describe('Settings', function() {
 
         await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
-        const settingsScreenEvent = await vpn.gleanTestGetValue("impression", "settingsScreen", "main");
+        const settingsScreenEvent = await vpn.waitForGleanValue("impression", "settingsScreen", "main");
         const settingsScreenEventExtras = settingsScreenEvent[0].extra;
         assert.strictEqual("settings", settingsScreenEventExtras.screen);
     });

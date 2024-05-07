@@ -101,11 +101,8 @@ describe('Initialize', function() {
       await startAndConnect();
 
       await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      let signupScreenEvents;
-      await vpn.waitForCondition(async () => {
-        signupScreenEvents = await vpn.gleanTestGetValue("impression", "signupScreen", "main");
-        return signupScreenEvents.length === 1;
-      });
+      let signupScreenEvents = await vpn.waitForGleanValue("impression", "signupScreen", "main");
+      assert.strictEqual(signupScreenEvents.length, 1);
       const signupScreenExtras = signupScreenEvents[0].extra;
       assert.strictEqual(telemetryScreenId, signupScreenExtras.screen);
     });
@@ -114,7 +111,7 @@ describe('Initialize', function() {
       // Click on the "Help" link
       await vpn.waitForQueryAndClick(
         queries.screenInitialize.GET_HELP_LINK.visible());
-      const getHelpEvents = await vpn.gleanTestGetValue("interaction", "getHelpSelected", "main");
+      const getHelpEvents = await vpn.waitForGleanValue("interaction", "getHelpSelected", "main");
       assert.strictEqual(getHelpEvents.length, 1);
       const getHelpExtras = getHelpEvents[0].extra;
       assert.strictEqual(telemetryScreenId, getHelpExtras.screen);
@@ -124,7 +121,7 @@ describe('Initialize', function() {
       // Click the "Sign up" button
       await vpn.waitForQueryAndClick(
         queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      const signupButtonEvents = await vpn.gleanTestGetValue("interaction", "signupSelected", "main");
+      const signupButtonEvents = await vpn.waitForGleanValue("interaction", "signupSelected", "main");
       assert.strictEqual(signupButtonEvents.length, 1);
       const signupButtonExtras = signupButtonEvents[0].extra;
       assert.strictEqual(telemetryScreenId, signupButtonExtras.screen);
@@ -134,7 +131,7 @@ describe('Initialize', function() {
       // Click the "Already a subscriber?" button
       await vpn.waitForQueryAndClick(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
-      const alreadyASubscriberButtonEvents = await vpn.gleanTestGetValue("interaction", "alreadyASubscriberSelected", "main");
+      const alreadyASubscriberButtonEvents = await vpn.waitForGleanValue("interaction", "alreadyASubscriberSelected", "main");
       assert.strictEqual(alreadyASubscriberButtonEvents.length, 1);
       const alreadyASubscriberButtonExtras = alreadyASubscriberButtonEvents[0].extra;
       assert.strictEqual(telemetryScreenId, alreadyASubscriberButtonExtras.screen);

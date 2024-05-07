@@ -1096,7 +1096,7 @@ describe('User authentication', function() {
         });
 
         it('impression event is recorded', async () => {
-          const verificationViewEvent = await vpn.gleanTestGetValue(
+          const verificationViewEvent = await vpn.waitForGleanValue(
               "impression", "enterVerificationCodeScreen", "main");
           assert.strictEqual(verificationViewEvent.length, 1)
           const verificationViewEventExtras = verificationViewEvent[0].extra;
@@ -1181,11 +1181,8 @@ describe('User authentication', function() {
             });
 
             // First a failing outcome
-            let failedOutcomeEvent;
-            await vpn.waitForCondition(async () => {
-                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
-                return failedOutcomeEvent.length == 1;
-            });
+            let failedOutcomeEvent = await vpn.waitForGleanValue("outcome", "twoFaVerificationFailed", "main");
+            assert.strictEqual(failedOutcomeEvent.length, 1);
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
             assert.strictEqual("email", failedOutcomeExtras.type);
 
@@ -1215,7 +1212,7 @@ describe('User authentication', function() {
             await vpn.wait();
 
             // Now the successfull outcome
-            const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
+            const successOutcomeEvent = await vpn.waitForGleanValue("outcome", "twoFaVerificationSucceeded", "main");
             assert.strictEqual(successOutcomeEvent.length, 1);
             const successOutcomeExtras = successOutcomeEvent[0].extra;
             assert.strictEqual("email", successOutcomeExtras.type);
@@ -1256,7 +1253,7 @@ describe('User authentication', function() {
         });
 
         it("impression event is recorded", async () => {
-            const  verificationViewEvent = await vpn.gleanTestGetValue("impression", "enterSecurityCodeScreen", "main");
+            const  verificationViewEvent = await vpn.waitForGleanValue("impression", "enterSecurityCodeScreen", "main");
             assert.strictEqual(verificationViewEvent.length, 1)
             const verificationViewEventExtras = verificationViewEvent[0].extra;
             assert.strictEqual(screen, verificationViewEventExtras.screen);
@@ -1331,11 +1328,8 @@ describe('User authentication', function() {
             });
 
             // First a failing outcome
-            let failedOutcomeEvent;
-            await vpn.waitForCondition(async () => {
-                failedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationFailed", "main");
-                return failedOutcomeEvent.length == 1;
-            });
+            let failedOutcomeEvent = await vpn.waitForGleanValue("outcome", "twoFaVerificationFailed", "main");
+            assert.strictEqual(failedOutcomeEvent.length, 1)
             const failedOutcomeExtras = failedOutcomeEvent[0].extra;
             assert.strictEqual("totp", failedOutcomeExtras.type);
 
@@ -1367,7 +1361,7 @@ describe('User authentication', function() {
             await vpn.wait();
 
             // Now the successfull outcome
-            const successOutcomeEvent = await vpn.gleanTestGetValue("outcome", "twoFaVerificationSucceeded", "main");
+            const successOutcomeEvent = await vpn.waitForGleanValue("outcome", "twoFaVerificationSucceeded", "main");
             assert.strictEqual(successOutcomeEvent.length, 1);
             const successOutcomeExtras = successOutcomeEvent[0].extra;
             assert.strictEqual("totp", successOutcomeExtras.type);

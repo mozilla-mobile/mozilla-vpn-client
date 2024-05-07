@@ -69,7 +69,7 @@ describe('IP info', function() {
           await vpn.getQueryProperty(
               queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
 
-      const openedEventsList = await vpn.gleanTestGetValue("interaction", "openConnectionInfoSelected", "main")
+      const openedEventsList = await vpn.waitForGleanValue("interaction", "openConnectionInfoSelected", "main")
       assert.strictEqual(openedEventsList.length, 1);
       const openedExtras = openedEventsList[0].extra;
       assert.strictEqual("main", openedExtras.screen);
@@ -83,7 +83,7 @@ describe('IP info', function() {
           await vpn.getQueryProperty(
               queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'false');
 
-      const closedEventsList = await vpn.gleanTestGetValue("interaction", "closeSelected", "main")
+      const closedEventsList = await vpn.waitForGleanValue("interaction", "closeSelected", "main")
       assert.strictEqual(closedEventsList.length, 1);
       const closedExtras = closedEventsList[0].extra;
       assert.strictEqual("connection_info", closedExtras.screen);
