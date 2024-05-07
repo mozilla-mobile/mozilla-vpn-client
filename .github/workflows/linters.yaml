@@ -61,6 +61,10 @@ jobs:
         run: |
           scripts/utils/spellcheck.sh list
 
+      - name: Check for missing language names is extras.xliff
+        run: |
+          scripts/ci/check_language_names.py
+
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
