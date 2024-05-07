@@ -61,7 +61,7 @@ jobs:
         run: |
           scripts/utils/spellcheck.sh list
 
-      - name: Check for missing language names is extras.xliff
+      - name: Check for missing language names in extras.xliff
         run: |
           scripts/ci/check_lang_names.py
 
