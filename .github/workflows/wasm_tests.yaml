@@ -38,12 +38,17 @@ jobs:
       - name: Install Qt6
         shell: bash
         run: |
-          # qt6.2.3 for wasm needs the desktop linux installation
+          # qt6.2.4 for wasm needs the desktop linux installation
           python -m aqt install-qt -O /opt linux desktop $QTVERSION
           python -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
 
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v7
+        with:
+          # Emscripten does not guarantee ABI compatibility, we should use the
+          # same version used to build Qt. See:
+          # https://doc.qt.io/qt-6/wasm.html#installing-emscripten
+          version: 2.0.14
 
       - name: Compile test client
         shell: bash
