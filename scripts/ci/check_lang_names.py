@@ -40,7 +40,7 @@ if __name__ == "__main__":
         script_path, os.path.pardir, os.path.pardir, 'src', 'translations',
         'extras', 'extras.xliff'
     )
-    if not os.path.exists(i18n_path):
+    if not os.path.exists(xliff_path):
         sys.exit(f"extras.xliff not found in path {xliff_path}")
 
     tree = etree.parse(xliff_path)
