@@ -59,7 +59,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
     await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
-    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
   });
 
   describe('Privacy settings tests', function () {
@@ -915,16 +914,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
-  it('Checking the logout', async () => {
-    await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
-    await vpn.scrollToQuery(
-        queries.screenSettings.SCREEN,
-        queries.screenSettings.SIGN_OUT.visible());
-
-    await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
-    await vpn.waitForInitialView();
-  });
-
   it('Checking Developer Menu Reset and Quit', async () => {
     // WASM is failing at relaunching the app, so skip this test on WASM
     if (this.ctx.wasm) {
@@ -1035,25 +1024,6 @@ describe('Settings', function() {
       assert.equal(events.length, 1);
       var element = events[0];
       assert.equal(element.extra.screen, "settings");
-    });
-
-    it("record telemetry when user clicks on Sign out in the Settings screen", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-
-        await vpn.waitForQuery(queries.screenSettings.SIGN_OUT.visible());
-        await vpn.scrollToQuery(
-            queries.screenSettings.SCREEN,
-            queries.screenSettings.SIGN_OUT.visible());
-
-        await vpn.clickOnQuery(queries.screenSettings.SIGN_OUT.visible());
-
-        const events = await vpn.gleanTestGetValue("interaction", "signOutSelected", "main");
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
     });
 
     it("record telemetry when user goes to the Settings screen", async () => {

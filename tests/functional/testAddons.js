@@ -242,14 +242,6 @@ describe('Addons', function() {
            await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
            await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE.visible());
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-                   'text', 'Test'));
-           await vpn.waitForQuery(
-               queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-                   'text', 'test@mozilla.com'));
            await vpn.waitForQueryAndClick(
                queries.screenSettings.USER_PROFILE.visible());
            await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());

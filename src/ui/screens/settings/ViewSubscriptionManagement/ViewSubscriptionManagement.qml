@@ -129,7 +129,7 @@ MZViewBase {
             MZSignOut {
                 id: signOutLink
 
-                objectName: "settingsLogout"
+                objectName: "accountLogout"
                 colorStrength: MZSignOut.ColorStrength.Soft
                 anchors {
                     horizontalCenter: undefined
