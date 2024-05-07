@@ -979,10 +979,10 @@ describe('Subscription view', function() {
               'text', 'test@mozilla.com'));
       await vpn.waitForQueryAndClick(
           queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
       await vpn.waitForQuery(
           queries.screenSettings.subscriptionView.SCREEN.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
       if (data.subscription.expected.status) {
         assert.equal(
@@ -1149,6 +1149,8 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
     await vpn.flipFeatureOn('accountDeletion');
+    await vpn.wait();
+
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
@@ -1271,6 +1273,8 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.hidden());
     await vpn.flipFeatureOn('accountDeletion');
+    await vpn.wait();
+  
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.ACCOUNT_DELETION.visible());
 
