@@ -16,8 +16,6 @@ TaskGetFeatureListWorker::TaskGetFeatureListWorker(QObject* parent)
 
 TaskGetFeatureListWorker::~TaskGetFeatureListWorker() {
   MZ_COUNT_DTOR(TaskGetFeatureListWorker);
-
-  qDebug() << "Destructing!";
 }
 
 void TaskGetFeatureListWorker::start(std::chrono::milliseconds interval) {
