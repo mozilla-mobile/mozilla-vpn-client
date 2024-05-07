@@ -116,20 +116,17 @@ jobs:
           ./build/dummyvpn -v
 
       - name: Running ${{ matrix.test.name }} Tests
+        shell: bash
         id: runTests
-        uses: nick-invision/retry@v3
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          command: |
-            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-            export HEADLESS=yes
-            export TZ=Europe/London
-            mkdir -p $ARTIFACT_DIR
-            npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
         env:
+          TZ: Europe/London
+          HEADLESS: yes
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/dummyvpn
+        run: |
+          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+          mkdir -p $ARTIFACT_DIR
+          npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v4
