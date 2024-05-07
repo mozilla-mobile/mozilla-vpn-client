@@ -49,14 +49,25 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
   TaskGetFeatureListWorker worker;
   worker.start(std::chrono::milliseconds(200));  // 200ms
 
-  // Sleep for 250 milliseconds,
-  // give the worker time to schedule the first periodic task.
-  QTest::qWait(250);
+  QList<Task*> updatedListOfTasks;
+  bool tasksScheduled = false;
+  // Each interaion will wait for 100ms. Our timer is for 200ms,
+  // we will loop five times just in case. If after 500ms nothing
+  // has been scheduled there is definitely something wrong.
+  for (int i = 0; i < 5; ++i) {
+    // Wait 100ms.
+    QTest::qWait(100);
+    updatedListOfTasks = TaskScheduler::tasks();
+    // Wait for the list to have 2 new tasks.
+    // The first one is the init task, the second one is the timer task.
+    if (updatedListOfTasks.count() == initialListOfTasks.count() + 2) {
+      tasksScheduled = true;
+      break;
+    }
+  }
 
-  auto updatedListOfTasks = TaskScheduler::tasks();
-
-  // We are expecting two tasks, the task scheduled on start + 1.
-  QCOMPARE(initialListOfTasks.count() + 2, updatedListOfTasks.count());
+  // Ensure tasks are scheduled
+  QVERIFY(tasksScheduled);
 
   // Check that the tasks are TaskGetFeatureList, just in case.
   // Check that the tasks are TaskGetFeatureList, just in case.
@@ -117,21 +128,30 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
     TaskGetFeatureListWorker worker;
     worker.start(std::chrono::milliseconds(200));  // 200ms
 
-    // Sleep for 250 milliseconds,
-    // give the worker time to schedule the first periodic task.
-    QTest::qWait(250);
+    QList<Task*> updatedListOfTasks;
+    bool tasksScheduled = false;
+    // Each interaion will wait for 100ms. Our timer is for 200ms,
+    // we will loop five times just in case. If after 500ms nothing
+    // has been scheduled there is definitely something wrong.
+    for (int i = 0; i < 5; ++i) {
+      // Wait 100ms.
+      QTest::qWait(100);
+      updatedListOfTasks = TaskScheduler::tasks();
+      // Wait for the list to have 2 new tasks.
+      // The first one is the init task, the second one is the timer task.
+      if (updatedListOfTasks.count() == initialListOfTasks.count() + 2) {
+        tasksScheduled = true;
+        break;
+      }
+    }
 
-    auto updatedListOfTasks = TaskScheduler::tasks();
+    // Ensure tasks are scheduled
+    QVERIFY(tasksScheduled);
 
-    // We are expecting two tasks, the task scheduled on start + 1.
-    QCOMPARE(initialListOfTasks.count() + 2, updatedListOfTasks.count());
-
-    // Check that the tasks are TaskGetFeatureList, just in case.
     // Check that the tasks are TaskGetFeatureList, just in case.
     for (int i = 0; i < 2; ++i) {
       const TaskGetFeatureList* task = dynamic_cast<const TaskGetFeatureList*>(
           updatedListOfTasks.takeLast());
-      qDebug() << updatedListOfTasks.count();
       // If it is not a nullptr, the cast was succesfull.
       QVERIFY(task);
     }
@@ -140,9 +160,9 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
     initialListOfTasks = TaskScheduler::tasks();
   }
 
-  // Sleep more 250, if the timer hasn't stopped this will schedule more tasks.
-  // But it shouldn't.
-  QTest::qWait(250);
+  // Sleep more 500ms, if the timer hasn't stopped this will schedule more
+  // tasks. But it shouldn't.
+  QTest::qWait(500);
 
   // Also change the token, this should also not schedule any tasks unless
   // the signal connection was done incorrectly.
