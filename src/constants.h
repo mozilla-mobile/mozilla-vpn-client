@@ -194,7 +194,7 @@ constexpr const char* GOOGLE_SUBSCRIPTIONS_URL =
   inline type functionName() { return Constants::inProduction() ? prod : beta; }
 
 constexpr const char* MOZILLA_VPN_SUMO_URL =
-    "https://support.mozilla.org/en-US/products/firefox-private-network-vpn";
+    "https://support.mozilla.org/products/firefox-private-network-vpn";
 
 constexpr const char* SUMO_DNS =
     "https://support.mozilla.org/kb/how-do-i-change-my-dns-settings";
@@ -253,7 +253,7 @@ PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
 PRODBETAEXPR(QString, upgradeToAnnualUrl,
              "https://www.mozilla.org/products/vpn/"
              "?utm_medium=mozillavpn&utm_source=account#pricing",
-             "https://www-dev.allizom.org/en-US/products/vpn/"
+             "https://www-dev.allizom.org/products/vpn/"
              "?utm_medium=mozillavpn&utm_source=account#pricing")
 
 #undef PRODBETAEXPR
