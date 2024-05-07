@@ -52,7 +52,7 @@ if __name__ == "__main__":
             found_languages.append(unit_id.split('.')[1])
 
     ###
-    # 3. Check if the lists are different
+    # 3. Check if there are languages in the i18n folder not in the extras.xliff
 
     diff = [lang_code for lang_code in expected_languages if lang_code not in found_languages]
     if diff:
