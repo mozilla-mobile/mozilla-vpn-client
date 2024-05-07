@@ -139,7 +139,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
 endif()
 
 if(QT_KNOWN_POLICY_QTP0001)
-    qt_policy(SET QTP0001 NEW)
+    qt_policy(SET QTP0001 OLD)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")
