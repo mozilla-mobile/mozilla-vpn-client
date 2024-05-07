@@ -1,0 +1,37 @@
+name: i18n Updater
+# This Workflow will periodically go in:
+# 1. Update extras.xliff with any new servers names Mullvad may have added
+# 2. File a pr with the changes to extras.xliff
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # Every Day 7:00 UTC
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  main:
+    name: Update server name strings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+      - name: Update server name strings
+        run: |
+          scripts/ci/update_server_names.py
+      - uses: peter-evans/create-pull-request@v5
+        id: cpr
+        with:
+          # This may not be github, cuz gh actions cannot self approve
+          author: GitHub <noreply@github.com>
+          committer: GitHub <noreply@github.com>
+          commit-message: "[Bot] Add new server name strings"
+          branch: i18n_server_names_automation
+          delete-branch: true
+          title: "[Bot] Add new server name strings"
+          token: ${{ secrets.WIKI_TOKEN }}
