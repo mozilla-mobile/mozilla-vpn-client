@@ -11,6 +11,7 @@ import xml.etree.ElementTree as etree
 from translate.misc.xml_helpers import reindent
 
 MULLVAD_SERVER_LIST_API = "https://api.mullvad.net/public/relays/wireguard/v2"
+XLIFF_NAMESPACE = "{urn:oasis:names:tc:xliff:document:1.2}"
 
 def fetch_server_list():
     country_names = {}
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     root = tree.getroot()
 
     found_server_names = []
-    for trans_unit in root.findall('.//{urn:oasis:names:tc:xliff:document:1.2}trans-unit'):
+    for trans_unit in root.findall(f'.//{XLIFF_NAMESPACE}trans-unit'):
         unit_id = trans_unit.get('id')
         if unit_id.startswith('servers.'):
             found_server_names.append(unit_id.split('.')[1])
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     missing_string_map = { key: value for key, value in string_map.items() if key in missing}
 
     # Iterate over the entries and add them to the XLIFF tree
-    servers_node = root.find(".//{urn:oasis:names:tc:xliff:document:1.2}*[@original='../src/apps/vpn/ui/screens/home/ViewServers.qml']")
+    servers_node = root.find(f".//{XLIFF_NAMESPACE}file[@original='../src/apps/vpn/ui/screens/home/ViewServers.qml']//{XLIFF_NAMESPACE}body")
     if servers_node is None:
         sys.exit("Unable to find servers node. Has the extras.xliff file been changed?")
 
