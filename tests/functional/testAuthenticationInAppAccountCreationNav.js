@@ -51,6 +51,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON);
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
