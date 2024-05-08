@@ -115,7 +115,7 @@ fi
 
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.txt) # Export so gradle can pick it up
-export VERSIONCODE=$(echo $BUILD_TIMESTAMP | sed 's/.\{3\}$//' )"0" #Remove the last 3 digits of the timestamp, so we only get every ~16m a new versioncode
+export VERSIONCODE=$(echo "$BUILD_TIMESTAMP" | sed 's/.\{2\}$//' ) #Remove the last 2 digits of the timestamp, should give us a new version every 100 seconds.
 export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
