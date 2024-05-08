@@ -24,9 +24,9 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
-        with: 
-          submodules: 'true'
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: Install Linux packages
         run: |
           sudo apt-get update
@@ -34,8 +34,8 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Generating translations
