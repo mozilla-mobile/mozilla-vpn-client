@@ -37,7 +37,7 @@ MZViewBase {
 
     onIsEditingChanged: deviceList.isEditingChanged(isEditing)
 
-    _menuTitle: MZI18n.DevicesMenuTitle
+    _menuTitle: MZI18n.DevicesSectionTitle
     _viewContentData: ColumnLayout {
         id: content
 
@@ -73,7 +73,7 @@ MZViewBase {
                         });
                     }
 
-                    accessibleName: MZI18n.GetHelpLinkTitle
+                    accessibleName: MZI18n.GetHelpLinkText
 
                     Image {
                         anchors.centerIn: parent

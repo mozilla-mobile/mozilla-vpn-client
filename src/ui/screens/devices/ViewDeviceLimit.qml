@@ -19,7 +19,7 @@ MZViewBase {
 
             property bool skipEnsureVisible: true
 
-            labelText: MZI18n.GetHelpLinkTitle
+            labelText: MZI18n.GetHelpLinkText
             onClicked: {
                 Glean.sample.getHelpClickedInitialize.record();
                 MZNavigator.requestScreen(VPN.ScreenGetHelp);
@@ -27,7 +27,7 @@ MZViewBase {
         }
     }
 
-    //% "My devices"
+    //% "Devices"
     _menuTitle: qsTrId("vpn.devices.myDevices")
 
     _viewContentData: ColumnLayout {

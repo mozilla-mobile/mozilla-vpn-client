@@ -21,7 +21,7 @@ describe('Navigation bar', async function() {
   });
 
 
-  it('Is not visible over pre-authentication Get help menu', async () => {
+  it('Is not visible over pre-authentication Help menu', async () => {
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.GET_HELP_LINK.visible());
     await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
@@ -115,7 +115,7 @@ describe('Navigation bar', async function() {
        });
 
 
-    it('Is visible over the post-auth Get help menu', async () => {
+    it('Is visible over the post-auth Help menu', async () => {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
       await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());

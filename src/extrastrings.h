@@ -41,7 +41,7 @@ void macOSInstallerStrings() {
   //% "Trouble with this installation?"
   qtTrId("macosinstaller.conclusion.message2");
 
-  //% "Get help."
+  //% "Help."
   qtTrId("macosinstaller.conclusion.message3");
 }
 

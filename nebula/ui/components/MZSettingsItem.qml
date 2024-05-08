@@ -15,6 +15,7 @@ MZClickableRow {
     property alias imageRightSrc: imageRight.source
     property alias imageRightMirror: imageRight.mirror
     property string fontColor: MZTheme.theme.fontColorDark
+    property bool _loaderVisible: false
 
     accessibleName: settingTitle
 
@@ -60,9 +61,27 @@ MZClickableRow {
             elide: Text.ElideRight
         }
 
-        MZIcon {
-            id: imageRight
+        Rectangle {
+            id: iconButton
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            Layout.preferredWidth: MZTheme.theme.rowHeight
+            color: MZTheme.theme.transparent
+
+            MZIcon {
+                id: imageRight
+                fillMode: Image.PreserveAspectFit
+                anchors.centerIn: iconButton
+                visible: !_loaderVisible
+            }
+
+            MZButtonLoader {
+                id: loader
+
+                color: MZTheme.theme.transparent
+                iconUrl: "qrc:/nebula/resources/spinner.svg"
+                state: _loaderVisible ? "active" : "inactive"
+            }
         }
     }
 }

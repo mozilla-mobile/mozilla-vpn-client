@@ -686,7 +686,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      The user has clicked "Get help" from the initial view.
+      The user has clicked "Help" from the initial view.
     bugs:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
     data_reviews:

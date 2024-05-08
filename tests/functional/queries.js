@@ -277,15 +277,9 @@ const screenSettings = {
   PRIVACY: new QmlQueryComposer('//privacySettings'),
   MY_DEVICES: new QmlQueryComposer('//settingsDevice'),
   SCREEN: new QmlQueryComposer('//settingsView-flickable'),
-  SIGN_OUT: new QmlQueryComposer('//settingsLogout'),
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
-  USER_PROFILE:
-      new QmlQueryComposer('//settingsUserProfile'),
-  USER_PROFILE_DISPLAY_NAME:
-      new QmlQueryComposer('//settingsUserProfile-displayName'),
-  USER_PROFILE_EMAIL_ADDRESS:
-      new QmlQueryComposer('//settingsUserProfile-emailAddress'),
+  USER_PROFILE: new QmlQueryComposer('//settingsUserProfile'),
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),
@@ -308,8 +302,10 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//privacyHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//privacyHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   appExclusionsView: {
@@ -323,9 +319,12 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//excludedAppsHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//excludedAppsHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
-    HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/openPrivacyFeaturesButton'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON: new QmlQueryComposer(
+        '//helpSheetContentLoader/openPrivacyFeaturesButton'),
   },
 
   myDevicesView: {
@@ -339,8 +338,10 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//devicesHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//devicesHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   appPreferencesView: {
@@ -370,8 +371,10 @@ const screenSettings = {
 
       HELP_BUTTON: new QmlQueryComposer('//dnsHelpButton'),
       HELP_SHEET: new QmlQueryComposer('//dnsHelpSheet'),
-      HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//dnsHelpSheet-closeButton'),
-      HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+      HELP_SHEET_CLOSE_BUTTON:
+          new QmlQueryComposer('//dnsHelpSheet-closeButton'),
+      HELP_SHEET_LEARN_MORE_BUTTON:
+          new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     },
 
     languageSettingsView: {
@@ -408,6 +411,7 @@ const screenSettings = {
   },
 
   subscriptionView: {
+    SIGN_OUT: new QmlQueryComposer('//accountLogout'),
     ACCOUNT_DELETION: new QmlQueryComposer('//accountDeletionButton'),
     ANNUAL_UPGRADE: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
@@ -433,10 +437,6 @@ const screenSettings = {
     PAYMENT_METHOD_LABEL: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel'),
 
-    SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME:
-        new QmlQueryComposer('//subscriptionUserProfile-displayName'),
-    SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS:
-        new QmlQueryComposer('//subscriptionUserProfile-emailAddress'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT:
         new QmlQueryComposer('//subscriptionUserProfile-manageAccountButton'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:

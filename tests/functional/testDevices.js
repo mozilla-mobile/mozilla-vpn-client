@@ -8,7 +8,7 @@ const vpn = require('./helper.js');
 const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Devices', function() {
-  describe('My devices tests', function() {
+  describe('Devices tests', function() {
     this.ctx.authenticationNeeded = true;
 
     beforeEach(async () => {
@@ -70,7 +70,6 @@ describe('Devices', function() {
         assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
-
   });
 
   describe('Device limit', function() {

@@ -109,8 +109,8 @@ export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
 
 ## Developer Options and staging environment
 
-To enable the staging environment, open the `Get Help` window, and click on the
-`Get Help` text 6 times within 10 seconds to unlock the Developer Options menu.
+To enable the staging environment, open the `Help` window, and click on the
+`Help` title text 6 times within 10 seconds to unlock the Developer Options menu.
 On this menu, you can enable on the `Staging Server` checkbox to switch to the
 staging environment. A full restart of the VPN will be required for this option
 to take effect.

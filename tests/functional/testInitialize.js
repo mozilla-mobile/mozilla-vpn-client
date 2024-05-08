@@ -110,8 +110,8 @@ describe('Initialize', function() {
       assert.strictEqual(telemetryScreenId, signupScreenExtras.screen);
     });
 
-    it("get help event is recorded", async () => {
-      // Click on the "Get help" link
+    it('Help event is recorded', async () => {
+      // Click on the "Help" link
       await vpn.waitForQueryAndClick(
         queries.screenInitialize.GET_HELP_LINK.visible());
       const getHelpEvents = await vpn.gleanTestGetValue("interaction", "getHelpSelected", "main");

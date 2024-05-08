@@ -54,8 +54,8 @@ describe("subscription needed tests", function() {
         assert.strictEqual(screen, enterEmailViewEventExtras.screen);
       })
 
-      it("get help event is recorded", async () => {
-        // Click the "Get help" button
+      it('Help event is recorded', async () => {
+        // Click the "Help" button
         await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_GET_HELP.visible());
         await vpn.testLastInteractionEvent({
             eventName: "getHelpSelected",

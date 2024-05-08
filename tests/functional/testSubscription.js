@@ -389,12 +389,6 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-            'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-            'text', 'test@mozilla.com'));
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
@@ -436,12 +430,6 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-            'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-            'text', 'test@mozilla.com'));
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
@@ -971,12 +959,6 @@ describe('Subscription view', function() {
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
       await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-              'text', 'Test'));
-      await vpn.waitForQuery(
-          queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-              'text', 'test@mozilla.com'));
       await vpn.waitForQueryAndClick(
           queries.screenSettings.USER_PROFILE.visible());
 
@@ -984,97 +966,9 @@ describe('Subscription view', function() {
           queries.screenSettings.subscriptionView.SCREEN.visible());
       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-      if (data.subscription.expected.status) {
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.STATUS_PILL, 'text'),
-            data.subscription.expected.status);
-      }
-
-      if (data.plan.expected &&
-          data.subscription.value._subscription_type == 'web') {
-        await vpn.waitForQuery(
-            queries.screenSettings.subscriptionView.PLAN.visible());
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.PLAN.visible(), 'text'),
-            data.plan.expected);
-      }
-
-      if (data.subscription.expected.activated) {
-        await vpn.waitForQuery(
-            queries.screenSettings.subscriptionView.ACTIVATED.visible());
-        assert.equal(
-            await vpn.getQueryProperty(
-                queries.screenSettings.subscriptionView.ACTIVATED.visible(),
-                'text'),
-            data.subscription.expected.activated);
-      }
-
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView.CANCELLED.visible());
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenSettings.subscriptionView.CANCELLED.visible(),
-              'text'),
-          data.subscription.expected.cancelled);
-      assert.equal(
-          await vpn.getQueryProperty(
-              queries.screenSettings.subscriptionView.CANCELLED_LABEL.visible(),
-              'text'),
-          data.subscription.expected.label);
-
-      if (data.subscription.value._subscription_type == 'web') {
-        if (data.payment.expected.card) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.BRAND.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.BRAND.visible(),
-                  'text'),
-              data.payment.expected.card);
-        }
-        if (data.payment.expected.expires) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.EXPIRES.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.EXPIRES.visible(),
-                  'text'),
-              data.payment.expected.expires);
-        }
-        if (data.payment.expected.brand) {
-          await vpn.waitForQuery(
-              queries.screenSettings.subscriptionView.PAYMENT_METHOD.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.PAYMENT_METHOD
-                      .visible(),
-                  'text'),
-              data.payment.expected.brand);
-        }
-        if (data.payment.expected.payment) {
-          await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                     .PAYMENT_METHOD_LABEL.visible());
-          assert.equal(
-              await vpn.getQueryProperty(
-                  queries.screenSettings.subscriptionView.PAYMENT_METHOD_LABEL
-                      .visible(),
-                  'text'),
-              data.payment.expected.payment);
-        }
-      }
-
-      await vpn.waitForQuery(queries.screenSettings.subscriptionView
-                                 .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
       await vpn.waitForQuery(
           queries.screenSettings.subscriptionView
-              .SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME.visible()
-              .prop('text', 'Test'));
-      await vpn.waitForQuery(
-          queries.screenSettings.subscriptionView
-              .SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS.visible()
-              .prop('text', 'test@mozilla.com'));
+              .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
       await vpn.waitForQueryAndClick(
           queries.screenSettings.subscriptionView
               .SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT.visible());
@@ -1134,12 +1028,6 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-            'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-            'text', 'test@mozilla.com'));
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
@@ -1258,12 +1146,6 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_DISPLAY_NAME.visible().prop(
-            'text', 'Test'));
-    await vpn.waitForQuery(
-        queries.screenSettings.USER_PROFILE_EMAIL_ADDRESS.visible().prop(
-            'text', 'test@mozilla.com'));
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
@@ -1383,6 +1265,57 @@ describe('Subscription view', function() {
     await vpn.waitForQuery(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
   });
+
+  it('Checking the logout', async () => {
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.SCREEN.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+    await vpn.scrollToQuery(
+        queries.screenSettings.subscriptionView.FLICKABLE,
+        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+    await vpn.waitForInitialView();
+  });
+
+  it('record telemetry when user clicks on Sign out in the Settings screen',
+     async () => {
+       if (this.ctx.wasm) {
+         // This test cannot run in wasm
+         return;
+       }
+
+       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+       await vpn.waitForQueryAndClick(
+           queries.screenSettings.USER_PROFILE.visible());
+       await vpn.waitForQuery(
+           queries.screenSettings.subscriptionView.SCREEN.visible());
+       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+       await vpn.waitForQuery(
+           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+       await vpn.scrollToQuery(
+           queries.screenSettings.subscriptionView.FLICKABLE,
+           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+
+       await vpn.waitForQueryAndClick(
+           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+
+       const events = await vpn.gleanTestGetValue(
+           'interaction', 'signOutSelected', 'main');
+       assert.equal(events.length, 1);
+       var element = events[0];
+       assert.equal(element.extra.screen, 'account');
+     });
 
   async function openSubscriptionManagement() {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());

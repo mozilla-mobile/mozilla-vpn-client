@@ -15,6 +15,8 @@ MZViewBase {
     objectName: "settingsView"
     _accessibleName: MZI18n.NavBarSettingsTab
 
+    _menuTitle: MZI18n.NavBarSettingsTab
+
     readonly property string telemetryScreenId : "settings"
 
     _viewContentData: ColumnLayout {
@@ -22,17 +24,23 @@ MZViewBase {
         Layout.fillWidth: true
 
         ColumnLayout {
-            spacing: 0
             Layout.fillWidth: true
+            Layout.leftMargin: MZTheme.theme.windowMargin /2
+            Layout.rightMargin: MZTheme.theme.windowMargin /2
+            Layout.alignment: Qt.AlignHCenter
 
-            MZUserProfile {
+            MZSettingsItem {
+                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
+
                 property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
-                _iconSource: subscriptionManagementEnabled
+                settingTitle: MZI18n.SubscriptionManagementSectionTitle
+                imageLeftSrc: "qrc:/nebula/resources/avatar-grayscale.svg"
+                imageRightSrc: subscriptionManagementEnabled
                     ? "qrc:/nebula/resources/chevron.svg"
                     : "qrc:/nebula/resources/open-in-new.svg"
-                _iconMirror: subscriptionManagementEnabled && MZLocalizer.isRightToLeft
-                _buttonOnClicked: () => {
+                imageRightMirror: MZLocalizer.isRightToLeft
+                onClicked: {
                     Glean.interaction.accountSelected.record({screen:telemetryScreenId})
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
@@ -41,31 +49,7 @@ MZViewBase {
                         MZUrlOpener.openUrlLabel("account");
                     }
                 }
-                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
-                Layout.topMargin: MZTheme.theme.windowMargin / 2
-
             }
-
-            MZVerticalSpacer {
-                Layout.preferredHeight: MZTheme.theme.windowMargin * 1
-            }
-
-            Rectangle {
-                id: divider
-
-                Layout.preferredHeight: 1
-                Layout.fillWidth: true
-                Layout.leftMargin: MZTheme.theme.windowMargin
-                Layout.rightMargin: MZTheme.theme.windowMargin
-                color: MZTheme.colors.grey10
-            }
-        }
-
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.leftMargin: MZTheme.theme.windowMargin /2
-            Layout.rightMargin: MZTheme.theme.windowMargin /2
-            Layout.alignment: Qt.AlignHCenter
 
             MZSettingsItem {
                 objectName: "privacySettings"
@@ -95,8 +79,8 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsDevice"
 
-                //% "My devices"
-                settingTitle: qsTrId("vpn.devices.myDevices")
+                //% "Devices"
+                settingTitle: MZI18n.DevicesSectionTitle
                 imageLeftSrc: "qrc:/ui/resources/devices.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -109,7 +93,7 @@ MZViewBase {
             MZSettingsItem {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
-                settingTitle: MZI18n.SettingsAppPreferences
+                settingTitle: MZI18n.SettingsPreferencesSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -126,7 +110,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "settingsGetHelp"
-                settingTitle: MZI18n.GetHelpLinkTitle
+                settingTitle: MZI18n.GetHelpLinkText
                 imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
@@ -145,25 +129,6 @@ MZViewBase {
                 onClicked: {
                     Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewAboutUs.qml")
-                }
-            }
-
-            MZSignOut {
-                id: signOutLink
-
-                objectName: "settingsLogout"
-                anchors {
-                    horizontalCenter: undefined
-                    bottom: undefined
-                    bottomMargin: undefined
-                }
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
-
-                preLogoutCallback: () => {
-                    Glean.interaction.signOutSelected.record({
-                        screen: vpnFlickable.telemetryScreenId,
-                    });
                 }
             }
 
