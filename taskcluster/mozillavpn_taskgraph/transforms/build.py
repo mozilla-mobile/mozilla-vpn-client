@@ -81,5 +81,9 @@ def add_build_metadata(config, tasks):
             task["worker"]["env"].update({
                 "TASK_OWNER": config.params["owner"]
             })
+        if config.params["build_date"]:
+            task["worker"]["env"].update({
+                "BUILD_TIMESTAMP": str(config.params["build_date"])
+            })
 
         yield task
