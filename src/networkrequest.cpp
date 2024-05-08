@@ -131,7 +131,7 @@ void NetworkRequest::auth(const QByteArray& authorizationHeader) {
     finalAuthorizationHeader = NetworkRequest::authorizationHeader();
   }
 
-  m_request.setRawHeader("Authorization", authorizationHeader);
+  m_request.setRawHeader("Authorization", finalAuthorizationHeader);
 }
 
 void NetworkRequest::get(const QUrl& url) {
