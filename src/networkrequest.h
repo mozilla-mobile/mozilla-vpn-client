@@ -133,6 +133,7 @@ class NetworkRequest final : public QObject {
 // NetworkRequests
 #ifdef UNIT_TEST
   friend class TestTaskGetFeatureList;
+  friend class TestNetworkRequest;
 #endif
 };
 
