@@ -7,15 +7,15 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'tools/logviewer/**'
-      - 'tools/translationsreport/**'
-      - 'tools/inspector/**'
-      - 'tools/wasm_chrome/**'
-      - 'tools/addonstats/**'
-      - 'addons/**'
-      - '.github/workflows/gh_pages.yaml'
+      - "tools/logviewer/**"
+      - "tools/translationsreport/**"
+      - "tools/inspector/**"
+      - "tools/wasm_chrome/**"
+      - "tools/addonstats/**"
+      - "addons/**"
+      - ".github/workflows/gh_pages.yaml"
   schedule:
-    - cron: '0 5 * * *'
+    - cron: "0 5 * * *"
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -33,49 +33,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x # Run with latest stable Deno.
       - name: Generate Dynamic Files
         if: github.ref == 'refs/heads/main'
         run: |
-         cd tools/wasm_chrome
-         deno run --allow-all generate_branch_file.ts -T ${{ secrets.GITHUB_TOKEN }}
+          cd tools/wasm_chrome
+          deno run --allow-all generate_branch_file.ts -T ${{ secrets.GITHUB_TOKEN }}
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: Wasm-Chrome
-            path: tools/wasm_chrome
+          name: Wasm-Chrome
+          path: tools/wasm_chrome
 
   logviewer:
-      name: Add Logviewer
-      runs-on: ubuntu-latest
-      steps:
-        - name: Clone repository
-          uses: actions/checkout@v3
-        - name: Uploading
-          uses: actions/upload-artifact@v3
-          with:
-              name: Logviewer
-              path: tools/logviewer
+    name: Add Logviewer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+          name: Logviewer
+          path: tools/logviewer
   addonStats:
-      name: Add Addon-Stats
-      runs-on: ubuntu-latest
-      steps:
-        - name: Clone repository
-          uses: actions/checkout@v3
-        - name: Uploading
-          uses: actions/upload-artifact@v3
-          with:
-              name: AddonStats
-              path: tools/addonstats
+    name: Add Addon-Stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Uploading
+        uses: actions/upload-artifact@v3
+        with:
+          name: AddonStats
+          path: tools/addonstats
   inspector:
     name: Add Inspector
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache conda Packages
         uses: actions/cache@v2
@@ -84,7 +84,7 @@ jobs:
           key: ${{ runner.os }}-conda-packages
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: vpn 
+          activate-environment: vpn
           environment-file: env.yml
 
       - name: Building
@@ -96,19 +96,19 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: Inspector Build
-            path: tools/inspector/dist/app
+          name: Inspector Build
+          path: tools/inspector/dist/app
 
   translationsreport:
     name: Add Translations Report
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Building
         shell: bash
@@ -120,24 +120,24 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: Translations Report
-            path: tools/translationsreport/app/build
+          name: Translations Report
+          path: tools/translationsreport/app/build
 
   addons:
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: 'true'
+          submodules: "true"
       - name: Install Linux packages
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - name: Install python dependencies
         shell: bash
         run: pip install -r requirements.txt
@@ -164,17 +164,25 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v3
         with:
-            name: Addons
-            path: |
-              build-addons/*.rcc
-              build-addons/manifest.*
+          name: Addons
+          path: |
+            build-addons/*.rcc
+            build-addons/manifest.*
 
   ghPages:
     runs-on: ubuntu-latest
-    needs: [wasm_chrome, inspector, translationsreport, addons, logviewer, addonstats]
+    needs:
+      [
+        wasm_chrome,
+        inspector,
+        translationsreport,
+        addons,
+        logviewer,
+        addonstats,
+      ]
     name: Compile Github Page from Components
     env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download Wasm-chrome
         uses: actions/download-artifact@v3
@@ -216,14 +224,14 @@ jobs:
         uses: actions/upload-pages-artifact@v1
 
   deploy:
-      name: Deploy Github Page
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-      runs-on: ubuntu-latest
-      needs: ghPages
-      if: github.ref == 'refs/heads/main'
-      steps:
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v1
+    name: Deploy Github Page
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: ghPages
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Install source dependencies
@@ -85,7 +85,6 @@ jobs:
         with:
           name: Flatpak Build
           path: mozillavpn.flatpak
-
 
   rpmbuild:
     name: RPM Packages
