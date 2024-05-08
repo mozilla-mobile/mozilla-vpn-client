@@ -13,7 +13,7 @@ from translate.misc.xml_helpers import reindent
 MULLVAD_SERVER_LIST_API = "https://api.mullvad.net/public/relays/wireguard/v2"
 
 def fetch_server_list():
-    country_names = []
+    country_names = {}
     city_names = []
 
     try:
@@ -22,25 +22,19 @@ def fetch_server_list():
         if response.status_code == 200:
             data = response.json()
 
-            locations = data.get('locations', None)
-            if locations:
-                for country_code, location in locations.items():
-                    country_code = country_code.split("-")[0]
+            locations = data.get('locations', {})
+            for country_code, location in locations.items():
+                country_code = country_code.split("-")[0]
+                country_name = location.get("country", None)
 
-                    country_name = location.get("country", None)
+                # We don't want duplicates,
+                # so let's check if this country code is in the list already
+                if country_name and country_code not in country_names:
+                    country_names[country_code] = country_name
 
-                    # We don't want duplicates
-                    # so let's check if this country code is in the list already
-                    found_country = [c for c in country_names if c.get("code") == country_code]
-                    if country_name and not found_country:
-                        country_names.append({
-                            "name": country_name,
-                            "code": country_code
-                        })
-
-                    city = location.get("city", None)
-                    if city and city not in city_names:
-                        city_names.append(city)
+                city = location.get("city", None)
+                if city and city not in city_names:
+                    city_names.append(city)
 
         else:
             response.raise_for_status()
@@ -55,23 +49,6 @@ def fetch_server_list():
     }
 
 
-def pascalize(string):
-    output = ""
-    for chunk in string.split(" "):
-        output += chunk[0].upper()
-        output += chunk[1:]
-    return output
-
-
-def get_city_translation_id(str):
-    # Remove the state suffix e.g. São Paulo, SP -> São Paulo
-    str = str.split(",")[0]
-    # Remove any unexpected characters e.g. São Paulo -> SoPaulo
-    str = re.sub(r'[^a-zA-Z ]', '', str)
-
-    return pascalize(str)
-
-
 if __name__ == "__main__":
     ###
     # 1. Fetch the latest list of servers from Mullvad.
@@ -79,11 +56,11 @@ if __name__ == "__main__":
     countries, cities = fetch_server_list().values()
 
     # Create a map like so "<xliff_id>": "<xliff_source>"
-    string_map = {}
-    for country in countries:
-        string_map[country['code']] = country['name']
+    # Lucky for us, the coutries dict is already in the shape we need
+    string_map = countries
     for city in cities:
-        id = get_city_translation_id(city)
+        # Remove state suffix, capitalize each work, remove spaces.
+        id = city.split(",")[0].strip().title().replace(" ", "")
         string_map[id] = city
 
     ###
@@ -119,7 +96,7 @@ if __name__ == "__main__":
 
     # Iterate over the entries and add them to the XLIFF tree
     servers_node = root.find(".//{urn:oasis:names:tc:xliff:document:1.2}*[@original='../src/apps/vpn/ui/screens/home/ViewServers.qml']")
-    if not servers_node:
+    if servers_node is None:
         sys.exit("Unable to find servers node. Has the extras.xliff file been changed?")
 
     for id, source in missing_string_map.items():
