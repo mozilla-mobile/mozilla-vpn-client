@@ -109,3 +109,11 @@ linux64/next-deb:
         docker-image: {in-tree: linux-qt6-build}
     run:
         command: /builds/worker/builder.sh -s
+
+linux/flatpak:
+    description: "Linux Build (Flatpak)"
+    treeherder:
+        platform: linux/flatpak
+    worker-type: b-linux-generic
+    run:
+        command: ./taskcluster/scripts/build/flatpak.sh

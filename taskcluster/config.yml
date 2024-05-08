@@ -46,6 +46,11 @@ workers:
             implementation: docker-worker
             os: linux
             worker-type: b-linux-large-gcp
+        b-linux-generic:
+            provisioner: 'mozillavpn-{level}'
+            implementation: generic-worker
+            os: linux
+            worker-type: b-linux-large-gcp
         b-win2022:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
