@@ -13,14 +13,12 @@ then
   exit 1
 fi
 
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+
 # make sure submodules are up to date
 # should already be done by XCode cloud cloning but just to make sure
 git submodule update --init
-
-# add necessary directories to path
-export PATH=/Users/local/Library/Python/3.8/bin:$PATH
-
-python3 -m pip install --upgrade pip
 
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
@@ -31,34 +29,14 @@ APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
-# THIS IS A QT HOTFIX, TO CONTINUE USING 6.2.4 - Change back to curling `latest` when we move to Qt 6.5.1.
-# curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.latest/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
-curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-ios.pushdate.2023.06.12.20230612195331/artifacts/public%2Fbuild%2Fqt6_ios.zip --output qt_ios.zip
-unzip -q qt_ios.zip
-ls
 
-QTVERSION=$(ls qt_ios)
-echo "Using QT:$QTVERSION"
-QT_IOS_PATH=$(pwd)/qt_ios/$QTVERSION/ios
-QT_MACOS_PATH=$(pwd)/qt_ios/$QTVERSION/macos
+export INDEX_KEY=mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.conda-ios-x86_64-6.6.0.latest
+curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/$INDEX_KEY/artifacts/public%2Fbuild%2Fconda-ios.tar.gz --output conda-ios.tar.gz 
 
-export LC_ALL=en_US.utf-8
-export LANG=en_US.utf-8
-
-# Install Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-source "$HOME/.cargo/env"
-rustup target add aarch64-apple-ios
-
-# Install go
-brew install go
-
-# Install Python deps
-python3 -m pip install -r requirements.txt --user
-export PYTHONIOENCODING="UTF-8"
-
-# Install cmake
-brew install cmake
+tar -xf conda-ios.tar.gz 
+# Activate the Conda-ENV
+source bin/activate
+conda-unpack
 
 # In previous iterations "Mozilla VPN" didn't use to have a space in it,
 # to avoid the pains of migrations we will just rename here. 
@@ -68,14 +46,11 @@ sed -i.bak -E \
     -e "s/\"Mozilla VPN\" VERSION/\"MozillaVPN\" VERSION/" \
     "CMakeLists.txt"
 
-$QT_IOS_PATH/bin/qt-cmake -S . -GXcode \
-  -DQT_HOST_PATH="$QT_MACOS_PATH" \
-  -DCMAKE_PREFIX_PATH="$QT_IOS_PATH/lib/cmake" \
+qt-cmake -S . -GXcode \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
-  -DSENTRY_DSN=$SENTRY_DSN \
-  -DSENTRY_ENVELOPE_ENDPOINT=$SENTRY_ENVELOPE_ENDPOINT \
   -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN
+  -DBUILD_ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN \
+  -DBUILD_TESTS=OFF
 
 # Rename the default scheme to match the Xcode cloud configuration.
 XCPROJ_SCHEME_DIR=MozillaVPN.xcodeproj/xcshareddata/xcschemes
