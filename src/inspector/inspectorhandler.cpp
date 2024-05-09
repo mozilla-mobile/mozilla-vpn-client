@@ -817,6 +817,9 @@ void InspectorHandler::recv(const QByteArray& command) {
       }
 
       QJsonObject obj = command.m_callback(this, parts);
+      if (obj.contains("error")) {
+        logger.debug() << "command failed:" << obj["error"]; 
+      }
       obj["type"] = command.m_commandName;
       send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
       return;
