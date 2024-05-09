@@ -13,8 +13,5 @@ env
 echo "Dumping /etc/os-release..."
 cat /etc/os-release
 
-echo "YOLO... installing flatpak..."
-sudo apt-get install flatpak
-
-echo "YOLO... intstalling flatpak-builder..."
-sudo apt-get install flatpak-builder
+echo "Dumping installed packages..."
+dpkg --get-selections
