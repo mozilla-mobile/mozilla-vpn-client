@@ -114,6 +114,9 @@ linux/flatpak:
     description: "Linux Build (Flatpak)"
     treeherder:
         platform: linux/flatpak
+    dependencies:
+        docker-image:
+            - linux-build-flatpak
     fetches:
         docker-image:
             - linux-build-flatpak
