@@ -13,8 +13,8 @@ env
 echo "Dumping /etc/os-release..."
 cat /etc/os-release
 
-echo "Dumping installed packages..."
-dpkg --get-selections
+echo "Listing fetches..."
+ls -al $MOZ_FETCHES_DIR
 
 echo "Docker exists! Let's try it!"
 podman run --rm --privileged debian:bullseye /bin/echo "Hello World"

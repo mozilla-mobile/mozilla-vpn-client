@@ -41,6 +41,9 @@ tasks:
         parent: base
         symbol: I(linux-qt6-build)
         definition: linux-qt6-build
+    linux-build-flatpak:
+        symbol: I(linux-flatpak)
+        definition: linux-flatpak-build
     linux-build-focal:
         symbol: I(linux-focal)
         definition: linux-dpkg-build

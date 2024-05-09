@@ -114,6 +114,9 @@ linux/flatpak:
     description: "Linux Build (Flatpak)"
     treeherder:
         platform: linux/flatpak
+    fetches:
+        docker-image:
+            - linux-build-flatpak
     worker-type: b-linux-generic
     run:
         command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
