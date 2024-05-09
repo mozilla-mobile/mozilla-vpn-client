@@ -50,7 +50,7 @@ workers:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
             os: linux
-            worker-type: b-linux-large-gcp
+            worker-type: b-linux-gcp-gw
         b-win2022:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
