@@ -40,8 +40,8 @@ jobs:
         run: |
           mkdir -p build/cmake
           mkdir -p build/profile
-          cmake -S $(pwd) -B build/cmake
-          cmake --build build/cmake -j$(nproc) --target dummyvpn
+          cmake -S $(pwd) -B build/cmake -GNinja
+          cmake --build build/cmake --target dummyvpn
 
           mkdir -p build/profile
           rsync -a --include '*/' --include '*.gcno' --exclude '*' \

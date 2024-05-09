@@ -38,8 +38,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build
-          cmake --build $(pwd)/build --target build_tests -j$(nproc)
+          cmake -S . -B $(pwd)/build -GNinja
+          cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
         shell: bash

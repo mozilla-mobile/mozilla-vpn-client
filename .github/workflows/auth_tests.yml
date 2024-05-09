@@ -31,14 +31,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build
-          cmake --build $(pwd)/build --target app_auth_tests -j$(nproc)
+          cmake -S . -B $(pwd)/build -GNinja
+          cmake --build $(pwd)/build --target app_auth_tests
 
       - name: Running tests
         shell: bash
         working-directory: ./build/tests/auth_tests
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
   macos-unit-tests:
@@ -76,7 +75,7 @@ jobs:
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/cmake -j$(nproc) --target app_auth_tests
+          cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests
         working-directory: ./build/cmake/tests/auth_tests
