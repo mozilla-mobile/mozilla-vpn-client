@@ -43,7 +43,7 @@ jobs:
           cd tools/wasm_chrome
           deno run --allow-all generate_branch_file.ts -T ${{ secrets.GITHUB_TOKEN }}
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Wasm-Chrome
           path: tools/wasm_chrome
@@ -55,7 +55,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Logviewer
           path: tools/logviewer
@@ -66,7 +66,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AddonStats
           path: tools/addonstats
@@ -78,11 +78,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache conda Packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-packages
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: vpn
           environment-file: env.yml
@@ -94,7 +94,7 @@ jobs:
           npm run inspector:build
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Inspector Build
           path: tools/inspector/dist/app
@@ -106,7 +106,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "16"
 
@@ -118,7 +118,7 @@ jobs:
           npm run build
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Translations Report
           path: tools/translationsreport/app/build
@@ -134,7 +134,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "pip"
@@ -162,7 +162,7 @@ jobs:
           rm addon_private_key.pem
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Addons
           path: |
@@ -185,43 +185,43 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Download Wasm-chrome
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Wasm-Chrome
           # Destination path
           path: _site
       - name: Download a Addons Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Addons
           path: _site/addons
 
       - name: Download the Logviewer Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Logviewer
           path: _site/logviewer
 
       - name: Download the AddonStats Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AddonStats
           path: _site/addonstats
 
       - name: Download a Inspector Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Inspector Build
           path: _site/inspector
 
       - name: Download the Translations Report artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Translations Report
           path: _site/translationsreport
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
 
   deploy:
     name: Deploy Github Page
