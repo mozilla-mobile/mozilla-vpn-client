@@ -31,8 +31,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build \
-            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake -S . -B $(pwd)/build
           cmake --build $(pwd)/build --target app_auth_tests -j$(nproc)
 
       - name: Running tests

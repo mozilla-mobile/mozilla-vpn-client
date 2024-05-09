@@ -34,71 +34,31 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
-      - name: Cache grcov
-        id: cache-grcov
-        uses: actions/cache@v4
-        with:
-          path: grcov-build/
-          key: ${{runner.os}}-grcov-v0.8.13
-
-      - name: Install Grcov
-        if: steps.cache-grcov.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
-
       - name: Building tests
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build \
-            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake -S . -B $(pwd)/build
           cmake --build $(pwd)/build --target build_tests -j$(nproc)
 
       - name: Running native messaging tests
         shell: bash
         working-directory: ./build/tests/nativemessaging
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
-
-          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
       - name: Running QML tests
         shell: bash
         working-directory: ./build/tests/qml
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
-
-          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Running unit tests
         shell: bash
         working-directory: ./build/tests
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
-
-          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
-
-          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
-
-      - name: Upload coverage for linux unit tests to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: .
-          flags: linux_unit_tests
-          name: codecov-poc
-          files: nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -132,67 +92,28 @@ jobs:
           sudo mv qt_dist /opt
           cd ..
 
-      - name: Cache grcov
-        id: cache-grcov
-        uses: actions/cache@v4
-        with:
-          path: grcov-build/
-          key: ${{runner.os}}-grcov-v0.8.13
-
-      - name: Install Grcov
-        if: steps.cache-grcov.outputs.cache-hit != 'true'
-        run: |
-          cargo install grcov --root ${{github.workspace}}/grcov-build --version 0.8.13
-
       - name: Building tests
         run: |
-          export PATH=/opt/qt_dist/bin:${{github.workspace}}/grcov-build/bin:$PATH
+          export PATH=/opt/qt_dist/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja \
-            -DCMAKE_CXX_FLAGS=--coverage -DCMAKE_EXE_LINKER_FLAGS=--coverage
+          cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
         working-directory: ./build/tests/nativemessaging
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
-
-          grcov $(pwd)/CMakeFiles/nativemessaging_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/nativemessaging_lcov.info
 
       - name: Running QML tests
         working-directory: ./build/tests/qml
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
-
-          grcov $(pwd)/CMakeFiles/qml_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/qml_lcov.info
 
       - name: Running unit tests
         working-directory: ./build/tests
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
-
-          grcov $(pwd)/unit/CMakeFiles/unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unit_lcov.info
-
-          grcov $(pwd)/unit_tests/CMakeFiles/app_unit_tests.dir -s ${{github.workspace}} \
-              -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
-
-      - name: Upload coverage for macos unit tests to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: .
-          flags: macos_unit_tests
-          name: codecov-poc
-          files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   windows-unit-tests:
     name: Run Unit tests on Windows
@@ -233,21 +154,18 @@ jobs:
         shell: bash
         working-directory: ./build/tests/nativemessaging
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
       - name: Running QML tests
         shell: bash
         working-directory: ./build/tests/qml
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --output-on-failure
 
       - name: Running unit tests
         shell: bash
         working-directory: ./build/tests
         run: |
-          export PATH=${{github.workspace}}/grcov-build/bin:$PATH
           ctest --test-dir unit --output-on-failure
           ctest --test-dir unit_tests --output-on-failure
 
