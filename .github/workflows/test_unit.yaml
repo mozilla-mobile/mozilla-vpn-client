@@ -28,7 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "pip"
@@ -36,7 +36,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.13
@@ -90,13 +90,15 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for linux unit tests to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           directory: .
           flags: linux_unit_tests
           name: codecov-poc
           files: nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
           verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -111,7 +113,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           environment-file: env.yml
@@ -132,7 +134,7 @@ jobs:
 
       - name: Cache grcov
         id: cache-grcov
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: grcov-build/
           key: ${{runner.os}}-grcov-v0.8.13
@@ -182,13 +184,15 @@ jobs:
               -t lcov --branch --ignore-not-existing > ${{github.workspace}}/unitapp_lcov.info
 
       - name: Upload coverage for macos unit tests to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           directory: .
           flags: macos_unit_tests
           name: codecov-poc
           files: auth_lcov.info,nativemessaging_lcov.info,qml_lcov.info,unit_lcov.info,unitapp_lcov.info
           verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   windows-unit-tests:
     name: Run Unit tests on Windows
@@ -211,9 +215,9 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "pip"

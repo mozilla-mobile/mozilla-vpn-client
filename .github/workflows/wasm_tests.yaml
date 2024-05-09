@@ -29,7 +29,7 @@ jobs:
         with:
           submodules: "true"
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "pip"
@@ -43,7 +43,7 @@ jobs:
           python -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
 
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v7
+        uses: mymindstorm/setup-emsdk@v14
         with:
           # Emscripten does not guarantee ABI compatibility, we should use the
           # same version used to build Qt. See:
@@ -70,7 +70,7 @@ jobs:
             -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake
           cmake --build build/addons
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: WebAssembly Build Qt6
           path: |
@@ -110,12 +110,12 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: WebAssembly Build Qt6
           path: build/
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
           cache: "pip"
@@ -133,7 +133,7 @@ jobs:
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 15
           max_attempts: 3

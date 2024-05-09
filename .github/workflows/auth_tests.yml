@@ -55,7 +55,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           environment-file: env.yml
@@ -105,9 +105,9 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v2
 
-      - name: Install depedencies
+      - name: Install dependencies
         shell: bash
         run: |
           pip3 install -r requirements.txt
