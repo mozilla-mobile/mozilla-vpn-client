@@ -468,6 +468,42 @@
       <trans-unit id="servers.Johannesburg" xml:space="preserve">
         <source>Johannesburg</source>
       </trans-unit>
+      <trans-unit id="servers.th" xml:space="preserve">
+        <source>Thailand</source>
+      </trans-unit>
+      <trans-unit id="servers.id" xml:space="preserve">
+        <source>Indonesia</source>
+      </trans-unit>
+      <trans-unit id="servers.cl" xml:space="preserve">
+        <source>Chile</source>
+      </trans-unit>
+      <trans-unit id="servers.at" xml:space="preserve">
+        <source>Austria</source>
+      </trans-unit>
+      <trans-unit id="servers.Bangkok" xml:space="preserve">
+        <source>Bangkok</source>
+      </trans-unit>
+      <trans-unit id="servers.Barcelona" xml:space="preserve">
+        <source>Barcelona</source>
+      </trans-unit>
+      <trans-unit id="servers.Bordeaux" xml:space="preserve">
+        <source>Bordeaux</source>
+      </trans-unit>
+      <trans-unit id="servers.Jakarta" xml:space="preserve">
+        <source>Jakarta</source>
+      </trans-unit>
+      <trans-unit id="servers.Mcallen" xml:space="preserve">
+        <source>McAllen, TX</source>
+      </trans-unit>
+      <trans-unit id="servers.Santiago" xml:space="preserve">
+        <source>Santiago</source>
+      </trans-unit>
+      <trans-unit id="servers.Valencia" xml:space="preserve">
+        <source>Valencia</source>
+      </trans-unit>
+      <trans-unit id="servers.Vienna" xml:space="preserve">
+        <source>Vienna</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
