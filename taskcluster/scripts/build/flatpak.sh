@@ -7,4 +7,8 @@
 set -e
 
 echo "Hello World!"
+echo "Dumping the environment..."
 env
+
+echo "Dumping /etc/os-release..."
+cat /etc/os-release
