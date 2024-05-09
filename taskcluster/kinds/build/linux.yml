@@ -12,7 +12,7 @@ task-defaults:
             - artifact: mozillavpn-sources.tar.gz
     dependencies:
         build: build-source/vpn
-    worker-type: b-linux
+    worker-type: b-linux-large
     worker:
         max-run-time: 3600
         chain-of-trust: true
