@@ -17,4 +17,4 @@ echo "Dumping installed packages..."
 dpkg --get-selections
 
 echo "Docker exists! Let's try it!"
-podman run debian:bullseye --privileged /bin/echo "Hello World"
+podman run --rm --privileged debian:bullseye /bin/echo "Hello World"
