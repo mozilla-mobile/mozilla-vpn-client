@@ -15,3 +15,6 @@ cat /etc/os-release
 
 echo "Dumping installed packages..."
 dpkg --get-selections
+
+echo "Docker exists! Let's try it!"
+docker run -it debian:bullseye /bin/echo "Hello World"
