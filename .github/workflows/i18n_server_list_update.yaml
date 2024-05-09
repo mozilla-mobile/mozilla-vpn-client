@@ -1,4 +1,4 @@
-name: i18n Updater
+name: i18n Update Servers
 # This Workflow will periodically go in:
 # 1. Update extras.xliff with any new servers names Mullvad may have added
 # 2. File a pr with the changes to extras.xliff
@@ -21,6 +21,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "true"
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
       - name: Update server name strings
         run: |
           scripts/ci/update_server_names.py
