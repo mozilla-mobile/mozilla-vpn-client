@@ -115,7 +115,7 @@ linux/flatpak:
     treeherder:
         platform: linux/flatpak
     dependencies:
-        docker-image: docker-image-flatpak
+        docker-image: build-docker-image-flatpak
     fetches:
         docker-image:
             - artifact: image.tar.zst
