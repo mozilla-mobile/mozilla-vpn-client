@@ -28,7 +28,7 @@ describe('User authentication in browser', function() {
     await vpn.clickOnQuery(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
     await vpn.waitForQueryAndClick(
-        queries.screenAuthenticating.CANCELe_FOOTER_LINK.visible());
+        queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
 
     await vpn.waitForQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
   });

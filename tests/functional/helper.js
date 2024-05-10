@@ -416,7 +416,7 @@ module.exports = {
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
-      await mockInBrowserAuthentication();
+      await this.mockInBrowserAuthentication();
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
