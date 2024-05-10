@@ -37,13 +37,13 @@ tasks:
         symbol: I(wasm)
         args:
             QT_VERSION: 6.2.4
+    flatpak:
+        symbol: I(flatpak)
+        definition: flatpak
     linux-qt6-build:
         parent: base
         symbol: I(linux-qt6-build)
         definition: linux-qt6-build
-    linux-build-flatpak:
-        symbol: I(linux-flatpak)
-        definition: linux-flatpak-build
     linux-build-focal:
         symbol: I(linux-focal)
         definition: linux-dpkg-build

@@ -115,10 +115,10 @@ linux/flatpak:
     treeherder:
         platform: linux/flatpak
     dependencies:
-        docker-image: linux-build-flatpak
+        docker-image: docker-image-flatpak
     fetches:
         docker-image:
-            - linux-build-flatpak
+            - artifact: image.tar.zst
     worker-type: b-linux-generic
     run:
         command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
