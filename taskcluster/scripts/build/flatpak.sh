@@ -16,5 +16,8 @@ cat /etc/os-release
 echo "Listing fetches..."
 ls -al $MOZ_FETCHES_DIR
 
+echo "Loading docker image..."
+podman load -i $MOZ_FETCHES_DIR/image.tar.zst
+
 echo "Docker exists! Let's try it!"
 podman run --rm --privileged debian:bullseye /bin/echo "Hello World"

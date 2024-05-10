@@ -119,6 +119,7 @@ linux/flatpak:
     fetches:
         docker-image:
             - artifact: image.tar.zst
+              extract: false
     worker-type: b-linux-generic
     run:
         command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
