@@ -49,9 +49,12 @@ ENV SHELL=/bin/bash \
     HOME=/builds/worker \
     PATH="/builds/worker/.local/bin:$PATH"
 
+# The flatpak manifest to be build should be in the source volume.
 VOLUME /builds/worker/source
+
+# The generated flatpaks will be sent to the artifacts volume.
 VOLUME /builds/worker/artifacts
 
-# run-task expects to run as root
+# Running the container builds a flatpak
 USER worker
-RUN /builds/worker/builder.sh
+CMD /builds/worker/builder.sh
