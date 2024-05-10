@@ -15,6 +15,7 @@ transforms:
 kind-dependencies:
     - fetch
     - toolchain
+    - docker-image
 
 tasks-from:
     - source.yml
