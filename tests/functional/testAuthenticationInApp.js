@@ -570,6 +570,7 @@ describe('User authentication', function() {
         await vpn.setQueryProperty(
             queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
             'text', 'test@test.com');
+
         await vpn.waitForQueryAndClick(
             queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
                 .enabled());
@@ -619,13 +620,13 @@ describe('User authentication', function() {
             });
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("continue button event is recorded", async () => {
@@ -668,13 +669,13 @@ describe('User authentication', function() {
             });
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_SIGNIN_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("paste button event is recorded", async () => {
@@ -706,7 +707,10 @@ describe('User authentication', function() {
 
         it("cancel event is recorded", async () => {
             // Click the "Cancel" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
+            await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON.visible());
+            await vpn.scrollToQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_SCREEN,
+                queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
+            await vpn.clickOnQuery(queries.screenAuthenticationInApp.AUTH_SIGNIN_CANCEL_BUTTON);
             await vpn.testLastInteractionEvent({
                 eventName: "cancelSelected",
                 screen
@@ -816,13 +820,13 @@ describe('User authentication', function() {
             });
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("cancel event is recorded", async () => {
@@ -981,13 +985,13 @@ describe('User authentication', function() {
             });
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_SIGNUP_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_SIGNUP_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("cancel event is recorded", async () => {
@@ -1099,13 +1103,13 @@ describe('User authentication', function() {
           assert.strictEqual(screen, verificationViewEventExtras.screen);
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("cancel event is recorded", async () => {
@@ -1258,13 +1262,13 @@ describe('User authentication', function() {
             assert.strictEqual(screen, verificationViewEventExtras.screen);
         });
 
-        it("get help event is recorded", async () => {
-            // Click the "Get help" button
-            await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
-            await vpn.testLastInteractionEvent({
-                eventName: "getHelpSelected",
-                screen
-            });
+        it('Help event is recorded', async () => {
+          // Click the "Help" button
+          await vpn.waitForQueryAndClick(
+              queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK
+                  .visible());
+          await vpn.testLastInteractionEvent(
+              {eventName: "getHelpSelected", screen});
         });
 
         it("cancel event is recorded", async () => {

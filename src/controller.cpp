@@ -28,7 +28,6 @@
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
 #include "rfc/rfc4291.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
@@ -498,8 +497,10 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
 }
 
 void Controller::clearConnectedTime() {
-  m_connectedTimeInUTC = QDateTime();
-  emit timeChanged();
+  if (!isSwitchingServer) {
+    m_connectedTimeInUTC = QDateTime();
+    emit timeChanged();
+  }
   m_timer.stop();
 }
 
@@ -624,6 +625,8 @@ bool Controller::silentSwitchServers(
       return false;
     }
 
+    isSwitchingServer = true;
+
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
@@ -650,8 +653,7 @@ void Controller::clearRetryCounter() {
   emit connectionRetryChanged();
 }
 
-void Controller::connected(const QString& pubkey,
-                           const QDateTime& connectionTimestamp) {
+void Controller::connected(const QString& pubkey) {
   logger.debug() << "handshake completed with:" << logger.keys(pubkey);
   if (m_activationQueue.isEmpty()) {
     if (m_serverData.exitServerPublicKey() != pubkey) {
@@ -678,26 +680,31 @@ void Controller::connected(const QString& pubkey,
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
+  if (m_state == StateOn) {
+    // The only place StateOn is set is in this function, Controller::connected.
+    // If this function is called when the state is already StateOn, it is
+    // because there was a silent server switch initiated from the daemon. (Only
+    // mobile clients have this feature.) This is a rare occurance - if the app
+    // is open, the app's silent server switch is likely to activate before the
+    // daemon's silent server switch would activate. However, there is a slight
+    // chance that the app is open AND the daemon initiates a silently server
+    // switch. In this case, we need to belatedly set isSwitchingServer to
+    // prevent resetting the timer and recording telemetry for the start of a
+    // new session.
+    isSwitchingServer = true;
+  }
+
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
   setState(StateOn);
+  resetConnectedTime();
 
-  if (shouldSkipSessionTelemetry == false) {
+  if (isSwitchingServer == false) {
     logger.debug() << "Collecting telemetry for new session.";
     emit recordConnectionStartTelemetry();
   } else {
     logger.debug() << "Connection happened due to server switch. Not "
                       "collecting telemetry.";
-  }
-
-  // In case the Controller provided a valid timestamp that
-  // should be used.
-  if (connectionTimestamp.isValid()) {
-    m_connectedTimeInUTC = connectionTimestamp;
-    emit timeChanged();
-    m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
-  } else {
-    resetConnectedTime();
   }
 
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
@@ -707,7 +714,9 @@ void Controller::connected(const QString& pubkey,
 }
 
 void Controller::resetConnectedTime() {
-  m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  if (isSwitchingServer == false) {
+    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  }
   emit timeChanged();
   m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
 }
@@ -734,10 +743,13 @@ void Controller::disconnected() {
     return;
   }
 
-  setState(StateOff);
-  if (shouldSkipSessionTelemetry == false) {
+  // Need this StateConfirming check to prevent recording telemetry during
+  // Android onboarding.
+  if (m_state != StateConfirming) {
     emit recordConnectionEndTelemetry();
   }
+
+  setState(StateOff);
 }
 
 bool Controller::processNextStep() {
@@ -879,6 +891,7 @@ bool Controller::switchServers(const ServerData& serverData) {
     return false;
   }
 
+  isSwitchingServer = true;
   m_nextServerData = serverData;
   m_nextServerSelectionPolicy = RandomizeServerSelection;
 
@@ -932,10 +945,9 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
 
-  shouldSkipSessionTelemetry = (m_state == Controller::StateSwitching ||
-                                m_state == Controller::StateSilentSwitching);
-  logger.debug() << "Set shouldSkipSessionTelemetry to"
-                 << shouldSkipSessionTelemetry;
+  isSwitchingServer = (m_state == Controller::StateSwitching ||
+                       m_state == Controller::StateSilentSwitching);
+  logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
 
@@ -978,7 +990,7 @@ bool Controller::activate(const ServerData& serverData,
     // replicate the behavior of a TaskAccount.
     TaskFunction* task = new TaskFunction([]() {});
     NetworkRequest* request = new NetworkRequest(task, 200);
-    request->auth(App::authorizationHeader());
+    request->auth();
     request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,

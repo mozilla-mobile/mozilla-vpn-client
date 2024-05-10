@@ -151,8 +151,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasewebhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/releasemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/serveri18n.h
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/serverlatency.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settingswatcher.cpp
@@ -202,10 +200,16 @@ target_sources(mozillavpn-sources INTERFACE
 # VPN Client UI resources
 target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources.qrc
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/certs/certs.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc
 )
+
+if(NOT QT_FEATURE_zstd)
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/certs/certs.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+endif()
 
 # Sources for desktop platforms.
 if(NOT CMAKE_CROSSCOMPILING)
@@ -224,7 +228,7 @@ endif()
 
 # Creates Target (mozillavpn-sources_clang_tidy_report)
 mz_add_clang_tidy(mozillavpn-sources)
-# we need to make sure those are up to date before we build. 
+# we need to make sure those are up to date before we build.
 # Those targets generate code we #include, therefore
 
 mz_optional_dependency(mozillavpn-sources_clang_tidy_report qtglean)

@@ -84,6 +84,10 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/feature.h
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.h
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.h
     ${CMAKE_SOURCE_DIR}/src/fontloader.cpp
     ${CMAKE_SOURCE_DIR}/src/fontloader.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigator.cpp
@@ -120,8 +124,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/ipaddress.h
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
-    ${CMAKE_SOURCE_DIR}/src/languagei18n.cpp
-    ${CMAKE_SOURCE_DIR}/src/languagei18n.h
     ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
     ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
@@ -181,8 +183,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/getfeaturelist/taskgetfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
     ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
@@ -203,6 +203,11 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/resources/license.qrc
     ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc
 )
+
+if(NOT QT_FEATURE_zstd)
+    set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/license.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+    set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
+endif()
 
 # Signal handling for unix platforms
 if(UNIX)

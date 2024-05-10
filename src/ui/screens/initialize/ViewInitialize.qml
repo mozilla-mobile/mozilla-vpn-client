@@ -241,7 +241,7 @@ Item {
         MZHeaderLink {
             id: headerLink
             objectName: "getHelpLink"
-            labelText: MZI18n.GetHelpLinkTitle
+            labelText: MZI18n.GetHelpLinkText
             isLightTheme: false
             onClicked: {
                 Glean.interaction.getHelpSelected.record({

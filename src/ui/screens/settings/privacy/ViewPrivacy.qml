@@ -31,7 +31,7 @@ MZViewBase {
                     });
                 }
 
-                accessibleName: MZI18n.GetHelpLinkTitle
+                accessibleName: MZI18n.GetHelpLinkText
 
                 Image {
                     anchors.centerIn: parent
@@ -57,6 +57,7 @@ MZViewBase {
 
         MZInformationCard {
             objectName: "privacySettingsViewInformationCard"
+            cardType: MZInformationCard.CardType.Warning
             Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
             Layout.minimumHeight: textBlocks.height + MZTheme.theme.windowMargin * 2
             Layout.alignment: Qt.AlignHCenter

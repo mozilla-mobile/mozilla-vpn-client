@@ -115,7 +115,7 @@ MZButtonBase {
     }
 
     contentItem: RowLayout {
-        spacing: MZTheme.theme.windowMargin / 2
+        spacing: iconLoader.active?  MZTheme.theme.windowMargin / 2 : 0
 
         Loader {
             id: iconLoader

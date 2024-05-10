@@ -8,7 +8,6 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-#include "app.h"
 #include "constants.h"
 #include "curve25519.h"
 #include "errorhandler.h"
@@ -54,7 +53,7 @@ void TaskAddDevice::run() {
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  request->auth(App::authorizationHeader());
+  request->auth();
   request->post(Constants::apiUrl(Constants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},

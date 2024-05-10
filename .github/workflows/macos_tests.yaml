@@ -25,11 +25,11 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           environment-file: env.yml
@@ -48,20 +48,14 @@ jobs:
 
       - name: Compile test client
         run: |
-          conda info --envs
-          which python
-          which python3
-
-          echo "!!!!!!!!!!"
-
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/cmake -j$(nproc) --target dummyvpn
+          cmake --build build/cmake --target dummyvpn
           cp ./build/cmake/tests/dummyvpn/dummyvpn build/
           cp -r ./build/cmake/tests/dummyvpn/addons build/addons
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: test-client-${{ github.sha }}
           path: |
@@ -94,23 +88,25 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: test-client-${{ github.sha }}
           path: build/
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: 1
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
       - run: npm install
 
       - name: Check build
@@ -121,7 +117,7 @@ jobs:
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 15
           max_attempts: 3
@@ -136,8 +132,9 @@ jobs:
           MVPN_BIN: ./build/dummyvpn
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: ${{ matrix.test.name }} Logs
           path: ${{ runner.temp }}/artifacts
+          if-no-files-found: ignore

@@ -48,7 +48,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/authenticationInApp/ViewAuthenticationInitializing.qml"
+                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationInitializing.qml"
             }
         },
 
@@ -60,7 +60,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/authenticationInApp/ViewAuthenticationSignIn.qml"
+                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationSignIn.qml"
             }
         },
 
@@ -72,7 +72,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
+                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -84,7 +84,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
             }
         },
 
@@ -96,7 +96,7 @@ Item {
             )
             PropertyChanges {
                 target: loader
-                source: "qrc:/ui/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         },
 

@@ -14,9 +14,10 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authSignUp
+    objectName: "authSignUp"
+
     _changeEmailLinkVisible: true
     _telemetryScreenId: "create_password"
-    _viewObjectName: "authSignUp"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
@@ -32,7 +33,7 @@ MZInAppAuthenticationBase {
     _inputLabel: MZI18n.InAppAuthCreatePasswordLabel
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authSignUp"
+        _viewObjectName: authSignUp.objectName
 
         _telemetryScreenId: authSignUp._telemetryScreenId
         _telemetryButtonEventName: "createAccountSelected"
@@ -62,7 +63,7 @@ MZInAppAuthenticationBase {
         Layout.alignment: Qt.AlignHCenter
 
         MZCancelButton {
-            objectName: _viewObjectName + "-cancel"
+            objectName: authSignUp.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 Glean.interaction.cancelSelected.record({

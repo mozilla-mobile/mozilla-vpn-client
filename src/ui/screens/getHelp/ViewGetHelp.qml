@@ -15,7 +15,7 @@ MZViewBase {
 
     property string telemetryScreenId: "help"
 
-    _menuTitle: MZI18n.GetHelpLinkTitle
+    _menuTitle: MZI18n.GetHelpLinkText
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
 
     Component.onCompleted: Glean.impression.helpScreen.record({screen:telemetryScreenId});
@@ -52,7 +52,7 @@ MZViewBase {
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: {
                 Glean.sample.helpContactSupportOpened.record();
-                getHelpStackView.push("qrc:/ui/screens/getHelp/contactUs/ViewContactUsForm.qml");
+                getHelpStackView.push("qrc:/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsForm.qml");
             }
         }
 
@@ -80,7 +80,7 @@ MZViewBase {
             backgroundColor: MZTheme.theme.iconButtonLightBackground
             visible: MZFeatureList.get("factoryReset").isSupported
 
-            onClicked: getHelpStackView.push("qrc:/ui/screens/settings/ViewReset.qml");
+            onClicked: getHelpStackView.push("qrc:/Mozilla/VPN/screens/settings/ViewReset.qml");
 
             accessibleName: title
         }
@@ -97,7 +97,7 @@ MZViewBase {
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft
             visible: MZSettings.developerUnlock
-            onClicked: getHelpStackView.push("qrc:/ui/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
+            onClicked: getHelpStackView.push("qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")
         }
     }
 }

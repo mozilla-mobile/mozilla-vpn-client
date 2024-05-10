@@ -11,10 +11,10 @@
 #include "constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "location.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
-#include "serveri18n.h"
 #include "serverlatency.h"
 
 // Latency threshold for excellent connections, set intentionally very low.
@@ -110,7 +110,7 @@ QString ServerCity::hashKey(const QString& country, const QString cityName) {
 }
 
 const QString ServerCity::localizedName() const {
-  return ServerI18N::instance()->translateCityName(m_country, m_name);
+  return Localizer::instance()->getTranslatedCityName(m_name);
 }
 
 qint64 ServerCity::latency() const {

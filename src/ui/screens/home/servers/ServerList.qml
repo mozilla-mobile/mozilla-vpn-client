@@ -290,6 +290,7 @@ FocusScope {
         MZFlickable {
             objectName: "serverCountryView"
             property alias countries: countriesRepeater
+            property bool busy: scrollAnimation.running
             id: vpnFlickable
 
             flickContentHeight: serverList.implicitHeight

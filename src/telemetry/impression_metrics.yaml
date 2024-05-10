@@ -365,7 +365,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      User is on the App preferences screen
+      User is on the Preferences screen
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5269
     data_reviews:
@@ -642,7 +642,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has just opened the "get help" screen
+      The user has just opened the "Help" screen
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5234
     data_reviews:

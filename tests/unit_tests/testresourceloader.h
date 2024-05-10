@@ -12,7 +12,6 @@ class TestResourceLoader final : public TestHelper {
   void loadDir();
 
   void commonPasswords();
-  void languageI18N();
   void licenseModel();
 
   void addon();

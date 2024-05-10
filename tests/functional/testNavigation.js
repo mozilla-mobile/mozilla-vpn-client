@@ -21,7 +21,7 @@ describe('Navigation bar', async function() {
   });
 
 
-  it('Is not visible over pre-authentication Get help menu', async () => {
+  it('Is not visible over pre-authentication Help menu', async () => {
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.GET_HELP_LINK.visible());
     await vpn.waitForQuery(queries.screenGetHelp.BACK_BUTTON.visible());
@@ -54,20 +54,6 @@ describe('Navigation bar', async function() {
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
     assert.equal(await navigationBarVisible(), 'false');
   });
-
-
-  it('Is not visible over telemetry screen', async function () {
-    //Telemetry policy view does not exist in new onboarding
-    if (await vpn.isFeatureEnabled('newOnboarding')) {
-      await vpn.flipFeatureOff("newOnboarding");
-    }
-
-    await vpn.authenticateInApp(false);
-    await vpn.completePostAuthentication();
-    await vpn.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-    assert.equal(await navigationBarVisible(), 'false');
-  });
-
 
   describe('Authenticated tests', async function() {
     this.ctx.authenticationNeeded = true;
@@ -129,7 +115,7 @@ describe('Navigation bar', async function() {
        });
 
 
-    it('Is visible over the post-auth Get help menu', async () => {
+    it('Is visible over the post-auth Help menu', async () => {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
 
       await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());

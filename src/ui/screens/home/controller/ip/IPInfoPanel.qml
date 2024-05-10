@@ -11,6 +11,7 @@ import components 0.1
 
 Rectangle {
     property bool isOpen: false
+    property bool busy: opacityAnimation.running
 
     anchors.fill: parent
     color: MZTheme.colors.primary
@@ -74,6 +75,7 @@ Rectangle {
 
     Behavior on opacity {
         NumberAnimation {
+            id: opacityAnimation
             duration: 300
         }
     }

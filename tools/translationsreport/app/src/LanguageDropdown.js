@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { Dropdown } from 'semantic-ui-react'
 
-// Language names from src/translations/languages.json
+// Language names from src/translations/extras.xliff
 export const LANGUAGES = [
   { value: "bg", text: "Bulgarian" },
   { value: "co", text: "Corsican" },

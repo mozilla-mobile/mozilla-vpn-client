@@ -12,7 +12,8 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authStart
-    _viewObjectName: "authStart"
+    objectName: "authStart"
+
     _telemetryScreenId: "enter_email"
     _menuButtonOnClick: () => {
         Glean.interaction.backSelected.record({
@@ -30,7 +31,7 @@ MZInAppAuthenticationBase {
     _inputLabel: MZI18n.InAppAuthEmailInputPlaceholder
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authStart"
+        _viewObjectName: authStart.objectName
         _telemetryScreenId: authStart._telemetryScreenId
         _telemetryButtonEventName: "continueSelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)

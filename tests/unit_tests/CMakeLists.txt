@@ -95,8 +95,6 @@ target_sources(app_unit_tests PRIVATE
     testenv.h
     testipaddress.cpp
     testipaddress.h
-    testlanguagei18n.cpp
-    testlanguagei18n.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
@@ -107,6 +105,8 @@ target_sources(app_unit_tests PRIVATE
     testnavigator.h
     testnetworkmanager.cpp
     testnetworkmanager.h
+    testnetworkrequest.cpp
+    testnetworkrequest.h
     testqmlpath.cpp
     testqmlpath.h
     testresourceloader.cpp
@@ -127,6 +127,10 @@ target_sources(app_unit_tests PRIVATE
     feature/testfeature.h
     feature/testfeaturemodel.cpp
     feature/testfeaturemodel.h
+    feature/testtaskgetfeaturelist.cpp
+    feature/testtaskgetfeaturelist.h
+    feature/testtaskgetfeaturelistworker.cpp
+    feature/testtaskgetfeaturelistworker.h
     settings/testsetting.cpp
     settings/testsetting.h
     settings/testsettinggroup.cpp

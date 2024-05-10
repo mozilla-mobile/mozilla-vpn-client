@@ -6,7 +6,7 @@ ARG DOCKER_BASE_IMAGE=fedora:36
 
 FROM $DOCKER_BASE_IMAGE
 
-MAINTAINER Owen Kirby <okirby@mozilla.com>
+MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------

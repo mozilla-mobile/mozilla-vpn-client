@@ -38,6 +38,7 @@ if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${
 fi
 
 echo "$QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake"
+chmod +x $QT_DIR/$QT_VERSION/$ANDROID_ARCH/bin/qt-cmake
 
 
 ## Generate activation/deactivation scripts, so stuff stays portable.

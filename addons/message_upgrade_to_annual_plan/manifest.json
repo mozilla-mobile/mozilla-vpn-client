@@ -46,10 +46,10 @@
         "javascript": "openLink.js"
       },
       {
-        "id": "c_4",
+        "id": "c_4_1",
         "type": "button",
         "style": "link",
-        "content": "Get help",
+        "content": "Help",
         "javascript": "getHelp.js"
       }
     ]

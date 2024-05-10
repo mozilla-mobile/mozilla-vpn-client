@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Install source dependencies
@@ -40,7 +40,7 @@ jobs:
         run: ./scripts/linux/script.sh --source --gitref ${GITREF}
 
       - name: Upload source bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Sources
           path: .tmp
@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Sources
 
@@ -81,11 +81,10 @@ jobs:
           flatpak build-bundle fp-export-dir mozillavpn.flatpak org.mozilla.vpn
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Flatpak Build
           path: mozillavpn.flatpak
-
 
   rpmbuild:
     name: RPM Packages
@@ -96,7 +95,7 @@ jobs:
 
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Sources
 
@@ -110,7 +109,7 @@ jobs:
         run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: RPM Build
           path: |

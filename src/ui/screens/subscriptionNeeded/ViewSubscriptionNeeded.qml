@@ -30,7 +30,7 @@ MZFlickable {
 
         objectName: "vpnSubscriptionNeededGetHelp"
 
-        labelText: MZI18n.GetHelpLinkTitle
+        labelText: MZI18n.GetHelpLinkText
         onClicked: {
             Glean.interaction.getHelpSelected.record({
                 screen: vpnFlickable.telemetryScreenId,

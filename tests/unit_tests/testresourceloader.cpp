@@ -12,7 +12,6 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "feature/feature.h"
 #include "helper.h"
-#include "languagei18n.h"
 #include "localizer.h"
 #include "models/licensemodel.h"
 #include "qmlengineholder.h"
@@ -100,31 +99,6 @@ void TestResourceLoader::commonPasswords() {
 
   rl->removeUrlInterceptor(&i);
   QCOMPARE(aia->validatePasswordCommons("12345678"), false);
-}
-
-void TestResourceLoader::languageI18N() {
-  SettingsHolder settingsHolder;
-  Localizer l;
-
-  QQmlApplicationEngine engine;
-  QmlEngineHolder qml(&engine);
-
-  QCOMPARE(LanguageI18N::instance()->translateLanguage("fr", "tlh"), "klingon");
-  QVERIFY(LanguageI18N::instance()->translateLanguage("gr", "tlh").isEmpty());
-
-  Interceptor i(QUrl("qrc:/i18n/languages.json"),
-                QUrl("qrc:/replace/languages.json"));
-
-  ResourceLoader* rl = ResourceLoader::instance();
-
-  rl->addUrlInterceptor(&i);
-  QVERIFY(LanguageI18N::instance()->translateLanguage("fr", "tlh").isEmpty());
-  QCOMPARE(LanguageI18N::instance()->translateLanguage("gr", "tlh"),
-           "Κλίνγκον γλώσσα");
-
-  rl->removeUrlInterceptor(&i);
-  QCOMPARE(LanguageI18N::instance()->translateLanguage("fr", "tlh"), "klingon");
-  QVERIFY(LanguageI18N::instance()->translateLanguage("gr", "tlh").isEmpty());
 }
 
 void TestResourceLoader::licenseModel() {

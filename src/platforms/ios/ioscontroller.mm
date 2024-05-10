@@ -94,11 +94,10 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
             return;
         }
       }
-      callback:^(BOOL a_connected, NSDate* date) {
-        QDateTime qtDate(QDateTime::fromNSDate(date));
+      callback:^(BOOL a_connected) {
         logger.debug() << "State changed: " << a_connected;
         if (a_connected) {
-          emit connected(m_serverPublicKey, qtDate);
+          emit connected(m_serverPublicKey);
           return;
         }
 
@@ -175,11 +174,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();
         // If this disconnect is due to the end of onboarding, call appropriate function.
-        if (Feature::get(Feature::Feature_newOnboarding)->isSupported()) {
-          if (SettingsHolder::instance()->onboardingCompleted() == false) {
-            logger.error() << "Error in tunnel creation, but finishing onboarding";
-            MozillaVPN::instance()->onboardingCompleted();
-          }
+        if (SettingsHolder::instance()->onboardingCompleted() == false) {
+          logger.error() << "Error in tunnel creation, but finishing onboarding";
+          MozillaVPN::instance()->onboardingCompleted();
         }
       }
       onboardingCompletedCallback:^() {

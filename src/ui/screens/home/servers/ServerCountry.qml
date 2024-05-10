@@ -22,8 +22,8 @@ MZClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
     property var cityList: cityListVisible ? cityLoader.item : cityLoader
-    property var busy: cityListVisible ? scrollAnimation.running : false
     property var cityListExpandedHeight: 54 * cities.length
+    property var busy: cityListVisible && (scrollAnimation.running || listOpenTransition.running || listClosedTransition.running)
 
     Component.onCompleted:{
        cityLoader.active = cityListVisible
@@ -101,6 +101,7 @@ MZClickableRow {
 
     transitions: [
         Transition {
+            id: listClosedTransition
             to: "listClosed"
                 SequentialAnimation{
                     ParallelAnimation {
@@ -123,9 +124,9 @@ MZClickableRow {
                         }
                     }
                 }
-                
         },
         Transition {
+            id: listOpenTransition
             to: "listOpen"               
                     PropertyAnimation {
                         target: serverCountry

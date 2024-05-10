@@ -298,7 +298,13 @@ void Navigator::requestPreviousScreen() {
 void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
                            QQmlComponent* component,
                            LoadingFlags loadingFlags) {
-  logger.debug() << "Loading screen" << screen;
+  logger.debug() << "Loading screen" << component->url().toString();
+
+  if (screen == m_currentScreen) {
+    logger.debug()
+        << "Attempted to load the currently loaded screen. Ignoring.";
+    return;
+  }
 
   if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
     loadingFlags = ForceReload;

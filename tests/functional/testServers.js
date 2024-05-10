@@ -52,21 +52,7 @@ describe('Server', function() {
       for (let server of servers) {
         const countryId =
             queries.screenHome.serverListView.generateCountryId(server.code);
-        await vpn.waitForQuery(countryId.visible());
-
-        await vpn.scrollToQuery(
-            queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
-
-        if (currentCountryCode === server.code) {
-          assert.equal(
-              await vpn.getQueryProperty(countryId, 'cityListVisible'),
-              'true');
-        }
-
-        if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
-            'false') {
-          await vpn.clickOnQuery(countryId);
-        }
+        await vpn.navServerList(countryId);
 
         for (let city of server.cities) {
           const cityId = queries.screenHome.serverListView.generateCityId(
@@ -85,29 +71,17 @@ describe('Server', function() {
       for (let server of servers) {
         const countryId =
             queries.screenHome.serverListView.generateCountryId(server.code);
-        await vpn.waitForQuery(countryId.visible());
+        await vpn.navServerList(countryId);
 
-        await vpn.scrollToQuery(
-            queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
-
-        if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
-            'false') {
-          await vpn.clickOnQuery(countryId);
-          await vpn.waitForQuery(countryId.ready());
-        }
-
-        await vpn.waitForQuery(countryId.prop('cityListVisible', true));
-
+        let countryY = parseInt(await vpn.getQueryProperty(countryId, 'y'));
         for (let city of server.cities) {
           console.log('  Start test for city:', city);
           const cityId = queries.screenHome.serverListView.generateCityId(
               countryId, city.name);
           await vpn.waitForQuery(cityId);
 
-          await vpn.setQueryProperty(
-              queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-              parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-                  parseInt(await vpn.getQueryProperty(countryId, 'y')));
+          await vpn.scrollToQuery(
+              queries.screenHome.serverListView.COUNTRY_VIEW, cityId);
           await vpn.waitForQuery(cityId.visible());
 
           const cityName =
@@ -152,6 +126,12 @@ describe('Server', function() {
             'VPN is on';
       });
 
+      assert.equal(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONNECTION_TIMER,
+              'connectionTimeForFunctionalTest'),
+          '00:00:00');
+
       let currentCountry = '';
       for (let server of servers) {
         if (server.code === currentCountryCode) {
@@ -180,24 +160,12 @@ describe('Server', function() {
 
       const countryId =
           queries.screenHome.serverListView.generateCountryId(server.code);
-      await vpn.waitForQuery(countryId.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenHome.serverListView.COUNTRY_VIEW, countryId);
-      await vpn.clickOnQuery(countryId);
-
       let city = server.cities[Math.floor(Math.random() * server.cities.length)];
       const cityId =
           queries.screenHome.serverListView.generateCityId(countryId, city.name);
-      await vpn.waitForQuery(cityId.visible());
+      await vpn.navServerList(countryId, cityId);
 
-      await vpn.setQueryProperty(
-          queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-          parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-              parseInt(await vpn.getQueryProperty(countryId, 'y')));
-      await vpn.wait();
-
-      await vpn.clickOnQuery(cityId);
+      await vpn.waitForQueryAndClick(cityId.visible());
       await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
       const previousCountry = currentCountry;
@@ -223,6 +191,12 @@ describe('Server', function() {
                    queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
             'VPN is on';
       });
+
+      assert.notEqual(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONNECTION_TIMER,
+              'connectionTimeForFunctionalTest'),
+          '00:00:00');
 
       assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
       assert.strictEqual(

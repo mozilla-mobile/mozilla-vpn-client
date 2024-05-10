@@ -2,11 +2,11 @@ name: PPA Automated Releases
 on:
   push:
     branches:
-      - 'releases/[0-9]+.[0-9a-z]+.[0-9a-z]+'
+      - "releases/[0-9]+.[0-9a-z]+.[0-9a-z]+"
     tags:
-      - 'v[0-9]+.[0-9a-z]+.[0-9a-z]+'
+      - "v[0-9]+.[0-9a-z]+.[0-9a-z]+"
   schedule:
-    - cron: '0 5 * * *'
+    - cron: "0 5 * * *"
 
 jobs:
   ppa-release-candidate:
@@ -16,14 +16,14 @@ jobs:
     environment: PPA Automation
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Install dependencies
@@ -31,7 +31,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install golang debhelper devscripts dput-ng -y
-          
 
       - name: Build source bundle
         id: gen-source
@@ -92,8 +91,8 @@ jobs:
           exit $JOB_EXIT_CODE
 
       - name: Uploading sources
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-            name: Sources
-            path: .tmp
+          name: Sources
+          path: .tmp

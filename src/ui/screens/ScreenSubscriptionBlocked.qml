@@ -19,7 +19,7 @@ MZStackView {
     Component.onCompleted: {
         MZNavigator.addStackView(VPN.ScreenSubscriptionBlocked, stackview)
 
-        stackview.push("qrc:/ui/sharedViews/ViewErrorFullScreen.qml", {
+        stackview.push("qrc:/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
             // "Problem confirming subscription…"
             headlineText: MZI18n.MultiFxaAccountErrorFxaAccountErrorHeader,
 
@@ -28,7 +28,7 @@ MZStackView {
 
             errorMessage2:  MZI18n.MultiFxaAccountErrorVisitOurHelpCenter,
 
-            primaryButtonText: MZI18n.GetHelpLinkTitle,
+            primaryButtonText: MZI18n.GetHelpLinkText,
             primaryButtonObjectName: "errorGetHelpButton",
             primaryButtonOnClick: stackview.handleButtonClick,
             secondaryButtonIsSignOff: true,

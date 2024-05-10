@@ -16,6 +16,7 @@ Window {
 
     signal showServerList
     signal screenClicked(double x, double y)
+    signal unwindStackView
 
     property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
 

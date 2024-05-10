@@ -81,8 +81,6 @@ void MozillaVPN::cancelAuthentication() {}
 
 void MozillaVPN::logout() {}
 
-void MozillaVPN::postAuthenticationCompleted() {}
-
 void MozillaVPN::mainWindowLoaded() {
   TestHelper::instance()->setMainWindowLoadedCalled(true);
 }

@@ -81,6 +81,7 @@ const screenHome = {
   CONTROLLER_SUBTITLE: new QmlQueryComposer('//controllerSubTitle'),
   CONTROLLER_TITLE: new QmlQueryComposer('//controllerTitle'),
   CONTROLLER_TOGGLE: new QmlQueryComposer('//controllerToggle'),
+  CONNECTION_TIMER: new QmlQueryComposer('//connectionTimer'),
   IP_INFO_PANEL: new QmlQueryComposer('//ipInfoPanel'),
   IP_INFO_TOGGLE: new QmlQueryComposer('//ipInfoToggleButton'),
   SCREEN: new QmlQueryComposer('//screenHome'),
@@ -105,8 +106,10 @@ const screenHome = {
     BACK_BUTTON: new QmlQueryComposer('//serverListBackButton'),
     HELP_BUTTON: new QmlQueryComposer('//serverHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//serverHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//serverHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//serverHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     COUNTRY_VIEW: new QmlQueryComposer('//serverCountryView'),
     ENTRY_BUTTON: new QmlQueryComposer('//buttonSelectEntry'),
     EXIT_BUTTON: new QmlQueryComposer('//buttonSelectExit'),
@@ -138,10 +141,6 @@ const screenInitialize = {
 
 const screenAuthenticating = {
   CANCEL_FOOTER_LINK: new QmlQueryComposer('//cancelFooterLink'),
-};
-
-const screenPostAuthentication = {
-  BUTTON: new QmlQueryComposer('//postAuthenticationButton'),
 };
 
 const screenTelemetry = {
@@ -255,6 +254,7 @@ const screenGetHelp = {
   },
 
   resetView: {
+    VIEW: new QmlQueryComposer('//resetVpnView'),
     RESET_BUTTON: new QmlQueryComposer('//resetVpnButton'),
     BACK_BUTTON: new QmlQueryComposer('//goBackButton'),
     POPUP_LOADER: new QmlQueryComposer('//confirmResetPopupLoader'),
@@ -277,15 +277,9 @@ const screenSettings = {
   PRIVACY: new QmlQueryComposer('//privacySettings'),
   MY_DEVICES: new QmlQueryComposer('//settingsDevice'),
   SCREEN: new QmlQueryComposer('//settingsView-flickable'),
-  SIGN_OUT: new QmlQueryComposer('//settingsLogout'),
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
-  USER_PROFILE:
-      new QmlQueryComposer('//settingsUserProfile'),
-  USER_PROFILE_DISPLAY_NAME:
-      new QmlQueryComposer('//settingsUserProfile-displayName'),
-  USER_PROFILE_EMAIL_ADDRESS:
-      new QmlQueryComposer('//settingsUserProfile-emailAddress'),
+  USER_PROFILE: new QmlQueryComposer('//settingsUserProfile'),
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),
@@ -308,8 +302,10 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//privacyHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//privacyHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//privacyHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//privacyHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   appExclusionsView: {
@@ -323,9 +319,12 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//excludedAppsHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//excludedAppsHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
-    HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/openPrivacyFeaturesButton'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//excludedAppsHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_OPEN_PRIVACY_FEATURES_BUTTON: new QmlQueryComposer(
+        '//helpSheetContentLoader/openPrivacyFeaturesButton'),
   },
 
   myDevicesView: {
@@ -339,8 +338,10 @@ const screenSettings = {
 
     HELP_BUTTON: new QmlQueryComposer('//devicesHelpButton'),
     HELP_SHEET: new QmlQueryComposer('//devicesHelpSheet'),
-    HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//devicesHelpSheet-closeButton'),
-    HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    HELP_SHEET_CLOSE_BUTTON:
+        new QmlQueryComposer('//devicesHelpSheet-closeButton'),
+    HELP_SHEET_LEARN_MORE_BUTTON:
+        new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
   },
 
   appPreferencesView: {
@@ -370,8 +371,10 @@ const screenSettings = {
 
       HELP_BUTTON: new QmlQueryComposer('//dnsHelpButton'),
       HELP_SHEET: new QmlQueryComposer('//dnsHelpSheet'),
-      HELP_SHEET_CLOSE_BUTTON: new QmlQueryComposer('//dnsHelpSheet-closeButton'),
-      HELP_SHEET_LEARN_MORE_BUTTON: new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+      HELP_SHEET_CLOSE_BUTTON:
+          new QmlQueryComposer('//dnsHelpSheet-closeButton'),
+      HELP_SHEET_LEARN_MORE_BUTTON:
+          new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
     },
 
     languageSettingsView: {
@@ -408,6 +411,7 @@ const screenSettings = {
   },
 
   subscriptionView: {
+    SIGN_OUT: new QmlQueryComposer('//accountLogout'),
     ACCOUNT_DELETION: new QmlQueryComposer('//accountDeletionButton'),
     ANNUAL_UPGRADE: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
@@ -433,10 +437,6 @@ const screenSettings = {
     PAYMENT_METHOD_LABEL: new QmlQueryComposer(
         '//subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel'),
 
-    SUBSCRIPTION_USER_PROFILE_DISPLAY_NAME:
-        new QmlQueryComposer('//subscriptionUserProfile-displayName'),
-    SUBSCRIPTION_USER_PROFILE_EMAIL_ADDRESS:
-        new QmlQueryComposer('//subscriptionUserProfile-emailAddress'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT:
         new QmlQueryComposer('//subscriptionUserProfile-manageAccountButton'),
     SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:
@@ -546,7 +546,6 @@ const global = {
 module.exports = {
   screenHome,
   screenInitialize,
-  screenPostAuthentication,
   screenTelemetry,
   screenAuthenticationInApp,
   screenAuthenticating,

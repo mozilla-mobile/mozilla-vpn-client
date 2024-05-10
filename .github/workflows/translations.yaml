@@ -24,18 +24,18 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
-        with: 
-          submodules: 'true'
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
       - name: Install Linux packages
         run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Generating translations
@@ -43,7 +43,7 @@ jobs:
           ./scripts/utils/generate_ts.sh
 
       - name: Uploading
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Translation files
           path: |

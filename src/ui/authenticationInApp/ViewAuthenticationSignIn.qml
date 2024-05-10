@@ -12,6 +12,7 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationBase {
     id: authSignIn
+    objectName: "authSignIn"
 
     _telemetryScreenId: "enter_password"
 
@@ -41,7 +42,6 @@ MZInAppAuthenticationBase {
     ]
 
     _changeEmailLinkVisible: true
-    _viewObjectName: "authSignIn"
     _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
@@ -65,8 +65,8 @@ MZInAppAuthenticationBase {
     _inputLabel: MZI18n.InAppAuthPasswordInputLabel
 
     _inputs: MZInAppAuthenticationInputs {
-        objectName: "authSignIn"
         id: authInputs
+        _viewObjectName: authSignIn.objectName
 
         _telemetryScreenId: authSignIn._telemetryScreenId
         _telemetryButtonEventName: "signInSelected"
@@ -99,7 +99,7 @@ MZInAppAuthenticationBase {
         spacing: MZTheme.theme.windowMargin
 
         MZLinkButton {
-            objectName: _viewObjectName + "-forgotPassword"
+            objectName: authSignIn.objectName + "-forgotPassword"
             labelText: MZI18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
@@ -112,7 +112,7 @@ MZInAppAuthenticationBase {
         }
 
         MZCancelButton {
-            objectName: _viewObjectName + "-cancel"
+            objectName: authSignIn.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 Glean.interaction.cancelSelected.record({

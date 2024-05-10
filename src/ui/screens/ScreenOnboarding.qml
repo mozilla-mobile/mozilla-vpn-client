@@ -14,6 +14,6 @@ MZScreenBase {
 
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenOnboarding, getStack())
-        getStack().push("qrc:/ui/screens/onboarding/ViewOnboarding.qml")
+        getStack().push("qrc:/Mozilla/VPN/screens/onboarding/ViewOnboarding.qml")
     }
 }

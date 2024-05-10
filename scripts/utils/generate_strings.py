@@ -6,7 +6,8 @@
 import os
 import yaml
 import argparse
-
+import xml.etree.ElementTree as etree
+import re
 
 def stop(string_id):
     exit(
@@ -36,7 +37,31 @@ class UniqueKeyLoader(yaml.SafeLoader):
         return super().construct_mapping(node, deep)
 
 
-def parseTranslationStrings(yamlfile):
+def parseXLIFFTranslationStrings(xliff_file):
+    if not os.path.isfile(xliff_file):
+        exit(f"Unable to find {xliff_file}")
+
+    strings = {}
+
+    tree = etree.parse(xliff_file)
+    root = tree.getroot()
+
+    for node in root.findall('.//{urn:oasis:names:tc:xliff:document:1.2}trans-unit'):
+        # Remove any unexpected characters e.g. São Paulo -> SoPaulo
+        id = re.sub(r'[^a-zA-Z._]', '', node.get('id'))
+        cpp_id = pascalize(id.replace('.', '_'))
+        value = node.findall('.//{urn:oasis:names:tc:xliff:document:1.2}source')[0].text
+
+        strings[cpp_id] = {
+            "string_id": id,
+            "value": [value],
+            "comments": [],
+        }
+
+    return strings
+
+
+def parseYAMLTranslationStrings(yamlfile):
     if not os.path.isfile(yamlfile):
         exit(f"Unable to find {yamlfile}")
 
@@ -147,6 +172,10 @@ class I18nStrings final : public QQmlPropertyMap {
             """    __Last,
   };
 
+  static String getString(const QString& s) {
+    return s_stringIdMap.value(s, I18nStrings::Empty);
+  }
+
   static I18nStrings* instance();
   static void initialize();
 
@@ -157,10 +186,20 @@ class I18nStrings final : public QQmlPropertyMap {
 
   const char* id(I18nStrings::String) const;
 
-  QString t(String) const;
+  QString t(I18nStrings::String) const;
 
  private:
   static const char* const _ids[];
+
+  static inline const QHash<QString, I18nStrings::String> s_stringIdMap = {
+"""
+    )
+
+        for i, key in enumerate(strings):
+            output.write(f"    {{\"{key}\", I18nStrings::{key}}}, \n")
+
+        output.write("""
+  };
 };
 
 #endif  // I18NSTRINGS_H
@@ -218,15 +257,15 @@ const char* const I18nStrings::_ids[] = {
 if __name__ == "__main__":
     # Parse arguments to locate the input and output files.
     parser = argparse.ArgumentParser(
-        description="Generate internationalization strings database from a YAML source"
+        description="Generate internationalization strings database from a YAML and/or XLIFF sources"
     )
     parser.add_argument(
-        "source",
+        "sources",
         metavar="SOURCE",
         type=str,
         action="store",
         nargs='+',
-        help="YAML strings file to process",
+        help="Comma separated list of YAML and/or XLIFF sources to parse",
     )
     parser.add_argument(
         "-o",
@@ -238,18 +277,25 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if not args.source:
+    if not args.sources:
         exit("No source argument.")
 
     # If no output directory was provided, use the current directory.
     if args.output is None:
         args.output = os.getcwd()
 
-    # Parse the inputs for their sweet juicy strings.
+    # Parse the inputs
     strings = {}
-    for source in args.source:
-        substrings = parseTranslationStrings(source)
-        strings.update(substrings)
+    for source in args.sources:
+        _, ext = os.path.splitext(source)
+        if ext == '.yaml':
+            substrings = parseYAMLTranslationStrings(source)
+            strings.update(substrings)
+        elif ext == '.xliff':
+            substrings = parseXLIFFTranslationStrings(source)
+            strings.update(substrings)
+        else:
+            raise f'Unknown file format provided: {source}'
 
     # Render the strings into generated content.
     generateStrings(strings, args.output)

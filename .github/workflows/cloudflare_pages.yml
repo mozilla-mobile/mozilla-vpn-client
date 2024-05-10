@@ -8,7 +8,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-
 jobs:
   publish:
     environment: "Cloudflare (mozillavpn.dev)"
@@ -19,8 +18,8 @@ jobs:
     name: Publish to Cloudflare Pages
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       # Run a build step here if your project requires
       - name: Building
         shell: bash
@@ -42,4 +41,4 @@ jobs:
           # Optional: Change the working directory
           #workingDirectory: my-site
           # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
-          wranglerVersion: '3'
+          wranglerVersion: "3"

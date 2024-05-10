@@ -8,7 +8,7 @@ const vpn = require('./helper.js');
 const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Devices', function() {
-  describe('My devices tests', function() {
+  describe('Devices tests', function() {
     this.ctx.authenticationNeeded = true;
 
     beforeEach(async () => {
@@ -70,7 +70,6 @@ describe('Devices', function() {
         assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
       });
     });
-
   });
 
   describe('Device limit', function() {
@@ -221,6 +220,7 @@ describe('Devices', function() {
       // Let's remove a device
       await vpn.waitForQueryAndClick(
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.wait(); // Wait for popup animation
 
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
@@ -483,6 +483,8 @@ describe('Devices', function() {
       // Let's remove a device by clicking the button
       await vpn.waitForQueryAndClick(
           queries.screenSettings.myDevicesView.REMOVE_DEVICE_BUTTON.visible());
+      await vpn.wait(); // Wait for popup animation
+
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView
                                          .CONFIRM_REMOVAL_BUTTON.visible());
 

@@ -18,7 +18,7 @@ MZViewBase {
 
     Component.onDestruction: () => VPNProfileFlow.reset()
 
-    _menuTitle: MZI18n.SubscriptionManagementMenuTitle
+    _menuTitle: MZI18n.SubscriptionManagementSectionTitle
     _menuOnBackClicked: () => { stackview.pop(null) }
     _viewContentData: ColumnLayout {
         Layout.preferredWidth: parent.width
@@ -95,7 +95,7 @@ MZViewBase {
                 delegate: Loader {
                     Layout.fillWidth: true
                     objectName: _objectName
-                    source: "qrc:/ui/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                    source: "qrc:/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
 
@@ -124,6 +124,26 @@ MZViewBase {
 
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: MZTheme.theme.vSpacing
+            }
+
+            MZSignOut {
+                id: signOutLink
+
+                objectName: "accountLogout"
+                colorStrength: MZSignOut.ColorStrength.Soft
+                anchors {
+                    horizontalCenter: undefined
+                    bottom: undefined
+                    bottomMargin: undefined
+                }
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
+
+                preLogoutCallback: () => {
+                    Glean.interaction.signOutSelected.record({
+                        screen: vpnFlickable.telemetryScreenId,
+                    });
+                }
             }
         }
     }

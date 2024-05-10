@@ -16,7 +16,6 @@ MZFlickable {
     property bool _changeEmailLinkVisible: false
     property bool _disclaimersVisible: true
     property bool _backButtonVisible: true
-    property string _viewObjectName: ""
 
     property alias _menuButtonImageSource: menuButtonImage.source
     property alias _menuButtonImageMirror: menuButtonImage.mirror
@@ -57,7 +56,7 @@ MZFlickable {
 
             MZIconButton {
                 id: menuButton
-                objectName: _viewObjectName + "-backButton"
+                objectName: authBase.objectName + "-backButton"
                 onClicked: _menuButtonOnClick()
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.preferredWidth: MZTheme.theme.rowHeight
@@ -74,11 +73,11 @@ MZFlickable {
 
             MZLinkButton {
                 id: headerLink
-                objectName: _viewObjectName + "-getHelpLink"
+                objectName: authBase.objectName + "-getHelpLink"
                 Layout.preferredHeight: menuButton.height
                 Layout.alignment: Qt.AlignRight
                 Layout.rightMargin: MZTheme.theme.windowMargin
-                labelText: MZI18n.GetHelpLinkTitle
+                labelText: MZI18n.GetHelpLinkText
                 horizontalPadding: MZTheme.theme.windowMargin / 2
                 onClicked: {
                     Glean.interaction.getHelpSelected.record({
@@ -142,7 +141,7 @@ MZFlickable {
                 }
 
                 Loader {
-                    objectName: _viewObjectName + "-changeEmail"
+                    objectName: authBase.objectName + "-changeEmail"
                     Layout.alignment: Qt.AlignHCenter
                     active: _changeEmailLinkVisible
                     visible: _changeEmailLinkVisible

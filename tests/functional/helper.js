@@ -221,22 +221,41 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  // Scroll an item into the center of a view
   async scrollToQuery(view, id) {
-    assert(await this.query(view), 'Scrolling on an non-existing view?!?');
-    assert(await this.query(id), 'Requesting an non-existing element?!?');
+    assert(await this.query(view), 'Scrolling a non-existing view?!?');
+    assert(await this.query(id), 'Scrolling to a non-existing element?!?');
+    const json = await this._writeCommand(`scrollview ${encodeURIComponent(view)} ${encodeURIComponent(id)}`);
+    assert(
+        json.type === 'scrollview' && !('error' in json),
+        `Command failed: ${json.error}`);
 
-    const contentHeight =
-        parseInt(await this.getQueryProperty(view, 'contentHeight'));
-    const height = parseInt(await this.getQueryProperty(view, 'height'));
-    let maxScroll = (contentHeight > height) ? contentHeight - height : 0;
-    let elementY = parseInt(await this.getQueryProperty(id, 'y'));
-
-    let contentY = elementY - (height / 2);
-    if (contentY < 0) contentY = 0;
-    if (contentY > maxScroll) contentY = maxScroll;
-
-    await this.setQueryProperty(view, 'contentY', contentY);
+    // Generally there is some kind of animation or rendering delay here.
     await this.wait();
+  },
+
+  async navServerList(countryId, cityId) {
+    // TODO: Should assert that a server list is open.
+
+    const view = queries.screenHome.serverListView.COUNTRY_VIEW;
+    await this.waitForQuery(view.ready());
+
+    // Scroll to the country
+    await this.waitForQuery(countryId.visible());
+    await this.scrollToQuery(view, countryId);
+
+    // If the city list is closed, open it.
+    if (await this.getQueryProperty(countryId, "cityListVisible") !== "true") {
+      await this.waitForQueryAndClick(countryId.visible());
+      await this.waitForQuery(countryId.visible().prop("cityListVisible", true));
+    }
+    await this.waitForQuery(countryId.ready());
+
+    // If a city is given, scroll it into view.
+    if (cityId !== undefined) {
+      await this.waitForQuery(cityId.visible());
+      await this.scrollToQuery(view, cityId);
+    }
   },
 
   async getMozillaProperty(namespace, id, property) {
@@ -343,6 +362,40 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 
+  async mockInBrowserAuthentication() {
+    await this.waitForCondition(async () => {
+      const url = await this.getLastUrl();
+      return url.includes('/api/v2/vpn/login');
+    });
+    await this.wait();
+
+    // We don't really want to go through the authentication flow because we
+    // are mocking everything. So this next chunk of code manually
+    // makes a call to the DesktopAuthenticationListener to mock
+    // a successful authentication in browser.
+    const url = await this.getLastUrl();
+    const authListenerPort = (new URL(url)).searchParams.get('port');
+    const options = {
+      // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+      // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+      hostname: '127.0.0.1',
+      port: parseInt(authListenerPort, 10),
+      path: '/?code=the_code',
+      method: 'GET',
+    };
+
+    await new Promise(resolve => {
+      const req = http.request(options, res => {});
+      req.on('close', resolve);
+      req.on('error', error => {
+        throw new Error(
+            `Unable to connect to ${urlObj.hostname} to complete the
+            auth. ${error.name}, ${error.message}, ${error.stack}`);
+      });
+      req.end();
+    });
+  },
+
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
   async authenticateInBrowser(wasm, skipOnboarding = true) {
@@ -363,37 +416,7 @@ module.exports = {
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
-      await this.waitForCondition(async () => {
-        const url = await this.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-      await this.wait();
-
-      // We don't really want to go through the authentication flow because we
-      // are mocking everything. So this next chunk of code manually
-      // makes a call to the DesktopAuthenticationListener to mock
-      // a successful authentication in browser.
-      const url = await this.getLastUrl();
-      const authListenerPort = (new URL(url)).searchParams.get('port');
-      const options = {
-        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
-        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-        hostname: '127.0.0.1',
-        port: parseInt(authListenerPort, 10),
-        path: '/?code=the_code',
-        method: 'GET',
-      };
-
-      await new Promise(resolve => {
-        const req = http.request(options, res => {});
-        req.on('close', resolve);
-        req.on('error', error => {
-          throw new Error(
-              `Unable to connect to ${urlObj.hostname} to complete the
-              auth. ${error.name}, ${error.message}, ${error.stack}`);
-        });
-        req.end();
-      });
+      await this.mockInBrowserAuthentication();
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen
@@ -437,15 +460,6 @@ module.exports = {
 
   async skipOnboarding() {
     await this.setSetting('onboardingCompleted', 'true');
-    await this.setSetting('postAuthenticationShown', 'true');
-    await this.setSetting('telemetryPolicyShown', 'true');
-  },
-
-  async completePostAuthentication() {
-      await this.waitForQuery(queries.screenPostAuthentication.BUTTON.visible());
-      await this.clickOnQuery(
-          queries.screenPostAuthentication.BUTTON.visible());
-      await this.wait();
   },
 
   async completeTelemetryPolicy() {

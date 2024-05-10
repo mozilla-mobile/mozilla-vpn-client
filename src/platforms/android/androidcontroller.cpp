@@ -67,12 +67,8 @@ AndroidController::AndroidController() {
   connect(
       activity, &AndroidVPNActivity::eventConnected, this,
       [this](const QString& parcelBody) {
-        auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-        qlonglong time = doc.object()["time"].toVariant().toLongLong();
         Q_UNUSED(parcelBody);
-        emit connected(
-            m_serverPublicKey,
-            time > 0 ? QDateTime::fromMSecsSinceEpoch(time) : QDateTime());
+        emit connected(m_serverPublicKey);
       },
       Qt::QueuedConnection);
   connect(activity, &AndroidVPNActivity::eventDisconnected, this,

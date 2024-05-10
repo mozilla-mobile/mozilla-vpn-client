@@ -43,7 +43,7 @@ MZViewBase {
                     });
                 }
 
-                accessibleName: MZI18n.GetHelpLinkTitle
+                accessibleName: MZI18n.GetHelpLinkText
 
                 Image {
                     anchors.centerIn: parent
@@ -85,7 +85,7 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsExcludedAppsBody3, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.PrimaryButton, text: MZI18n.HelpSheetsExcludedAppsCTA, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "openPrivacyFeaturesButton", action: () => {
                     close()
-                    getStack().push("qrc:/ui/screens/settings/privacy/ViewPrivacy.qml")
+                    getStack().push("qrc:/Mozilla/VPN/screens/settings/privacy/ViewPrivacy.qml")
                 }},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoExcludedApps")

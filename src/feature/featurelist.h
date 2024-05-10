@@ -94,14 +94,14 @@ FEATURE(inAppAccountCreate,                  // Feature ID
         FeatureCallback_true,                // Can be flipped on
         FeatureCallback_true,                // Can be flipped off
         QStringList{"inAppAuthentication"},  // feature dependencies
-        FeatureCallback_true)
+        FeatureCallback_inAppAuthentication)
 
 FEATURE(inAppAuthentication,      // Feature ID
         "In-app Authentication",  // Feature name
         FeatureCallback_true,     // Can be flipped on
         FeatureCallback_true,     // Can be flipped off
         QStringList(),            // feature dependencies
-        FeatureCallback_true)
+        FeatureCallback_inAppAuthentication)
 
 FEATURE(keyRegeneration,       // Feature ID
         "Key Regeneration",    // Feature name
@@ -116,13 +116,6 @@ FEATURE(multiHop,               // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_true)
-
-FEATURE(newOnboarding,         // Feature ID
-        "New onboarding",      // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
         FeatureCallback_true)
 
 FEATURE(notificationControl,     // Feature ID

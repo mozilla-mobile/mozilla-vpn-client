@@ -7,10 +7,8 @@ const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
 async function selectCityFromList(cityId, countryId) {
-  await vpn.setQueryProperty(
-      queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-      parseInt(await vpn.getQueryProperty(cityId, 'y')) +
-          parseInt(await vpn.getQueryProperty(countryId, 'y')));
+  await vpn.scrollToQuery(
+      queries.screenHome.serverListView.COUNTRY_VIEW, cityId);
 }
 
 async function selectCountryFromList(countryId) {
@@ -73,19 +71,7 @@ describe('Server list', function() {
       // Scope country_query to be inside multiHopStackView
       // make sure we are querying the correct list :)
       const countryId = multiHopStackView.query(country_query);
-      await vpn.waitForQuery(countryId.visible());
-
-      await vpn.setQueryProperty(
-          queries.screenHome.serverListView.COUNTRY_VIEW, 'contentY',
-          parseInt(await vpn.getQueryProperty(countryId, 'y')));
-
-      await vpn.wait();
-
-
-      if (await vpn.getQueryProperty(countryId, 'cityListVisible') ===
-          'false') {
-        await vpn.clickOnQuery(countryId);
-      }
+      await vpn.navServerList(countryId);
 
       for (let city of server.cities) {
         const cityId_query = queries.screenHome.serverListView.generateCityId(
@@ -166,20 +152,16 @@ describe('Server list', function() {
     let country =
         queries.screenHome.serverListView.generateCountryId(server.code);
     let countryId = multiHopStackView.query(country);
-    await vpn.waitForQuery(countryId.visible());
-    await selectCountryFromList(countryId);
-    await vpn.wait();
 
-    if (await vpn.getQueryProperty(countryId, 'cityListVisible') === 'false') {
-      await vpn.clickOnQuery(countryId);
-    }
     let [city] = server.cities
     const cityId_query =
         queries.screenHome.serverListView.generateCityId(country, city.name);
     const cityId = multiHopStackView.query(cityId_query);
 
-    await vpn.waitForQuery(cityId);
-    await vpn.clickOnQuery(cityId);
+    // Navigate the server list and click the city.
+    await vpn.navServerList(countryId, cityId);
+    await vpn.waitForQueryAndClick(cityId.visible());
+
     // We should now be back on the overview
     await vpn.waitForQuery(
         queries.screenHome.serverListView.ENTRY_BUTTON.visible());

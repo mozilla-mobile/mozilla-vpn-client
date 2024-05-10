@@ -27,6 +27,17 @@ printn Y "Generating strings... "
 python3 cache/generate_strings.py src/translations/strings.yaml -o translations/generated
 print G "done."
 
+# Helper method - scan a directory and generate a QRC file which includes all QML files.
+generate_qml2qrc() {
+  cat << EOF
+<RCC>
+  <qresource prefix="/dummy">
+$(find $1 -name '*.qml' -printf '    <file>../../%p</file>\n')
+  </qresource>
+</RCC>
+EOF
+}
+
 printn Y "Generating a dummy PRO file... "
 cat > translations/generated/dummy_ts.pro << EOF
 HEADERS += i18nstrings.h
@@ -40,10 +51,14 @@ SOURCES += \$\$files(../../nebula/*.cpp, true)
 
 TRANSLATIONS += translations.ts
 
-RESOURCES += \$\$files(../../src/*.qrc, true)
-RESOURCES += \$\$files(../../nebula/*.qrc, true)
+RESOURCES += \$\$files(src.qrc, true)
+RESOURCES += \$\$files(nebula.qrc, true)
 EOF
 print G "done"
+
+printn Y "Scanning for QML content..."
+generate_qml2qrc src/ui > translations/generated/src.qrc
+generate_qml2qrc nebula > translations/generated/nebula.qrc
 
 QT_HOST_BINS=$(qmake6 -query QT_HOST_BINS)
 
@@ -60,75 +75,28 @@ for branch in $(git branch -r | grep origin/releases); do
   echo "Checking out to branch $branch"
   git checkout $branch || die
 
-  UNFLATTENED=false
-
-  # TODO (VPN-5515): Remove this once all branches have been updated to not have the shared/ folder.
-  EXTRA_STRINGS=
-  if [ -f src/shared/translations/strings.yaml ]; then
-    EXTRA_STRINGS=src/shared/translations/strings.yaml
-  fi
+  printn Y "Generating strings... "
   if [ -f translations/strings.yaml ]; then
     python3 cache/generate_strings.py -o translations/generated translations/strings.yaml || die
-  # TODO: Remove this once all branches have been updated to not have the apps/ folder.
-  elif [ -f src/apps/vpn/translations/strings.yaml ]; then 
-    UNFLATTENED=true
-    python3 cache/generate_strings.py -o translations/generated src/apps/vpn/translations/strings.yaml $EXTRA_STRINGS || die
   elif [ -f src/translations/strings.yaml ]; then
-    python3 cache/generate_strings.py -o translations/generated src/translations/strings.yaml $EXTRA_STRINGS || die
+    python3 cache/generate_strings.py -o translations/generated src/translations/strings.yaml || die
   else
     die "Unable to find the strings.yaml"
   fi
 
-  # Regenerate the base .ts file for unflattened versions of the repo,
-  # where the apps/ folder was present.
-  if [ "$UNFLATTENED" = true ]; then
-      if ! [ -f translations/generated/unflattened_dummy_ts.pro ]; then
-        printn Y "Generating another dummy PRO file... "
-        cat > translations/generated/unflattened_dummy_ts.pro << EOF
-HEADERS += i18nstrings.h
-HEADERS += \$\$files(../../src/shared/*.h, true)
-HEADERS += \$\$files(../../src/apps/vpn/*.h, true)
-HEADERS += \$\$files(../../nebula/*.h, true)
-
-SOURCES += i18nstrings_p.cpp
-SOURCES += ../i18nstrings.cpp
-SOURCES += \$\$files(../../src/shared/*.cpp, true)
-SOURCES += \$\$files(../../src/apps/vpn/*.cpp, true)
-SOURCES += \$\$files(../../nebula/*.cpp, true)
-
-TRANSLATIONS += translations.ts
-
-RESOURCES += \$\$files(../../src/shared/*.qrc, true)
-RESOURCES += \$\$files(../../src/apps/vpn/*.qrc, true)
-RESOURCES += \$\$files(../../nebula/*.qrc, true)
-EOF
-    fi
-
-    ${QT_HOST_BINS}/lupdate translations/generated/unflattened_dummy_ts.pro -ts branch.ts || die
-
-  else
-      ${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
-  fi
-
+  printn Y "Scanning for new strings..."
+  generate_qml2qrc src/ui > translations/generated/src.qrc
+  generate_qml2qrc nebula > translations/generated/nebula.qrc
+  ${QT_HOST_BINS}/lupdate translations/generated/dummy_ts.pro -ts branch.ts || die
   ${QT_HOST_BINS}/lconvert -i translations.ts branch.ts -o tmp.ts || die
   mv tmp.ts translations.ts || die
   rm branch.ts || die
 
   print Y "Importing addon strings from $branch..."
-  if [ -f "scripts/addon/generate_all.py" ]; then
-    # Use the old python scripts to generate addons.
-    python3 scripts/addon/generate_all.py
-    ts_files="addons/generated/addons/*.ts"
-  elif [ -f "addons/CMakeLists.txt" ]; then
-    # Use the CMake project to generate addons.
-    mkdir -p build-addons-$branch/
-    cmake -S addons/ -B build-addons-$branch/
-    cmake --build build-addons-$branch/
-    ts_files="build-addons-$branch/*.ts"
-  else
-    # No addons to process.
-    ts_files=
-  fi
+  mkdir -p build-addons-$branch/
+  cmake -S addons/ -B build-addons-$branch/
+  cmake --build build-addons-$branch/
+  ts_files="build-addons-$branch/*.ts"
 
   for f in $ts_files
   do

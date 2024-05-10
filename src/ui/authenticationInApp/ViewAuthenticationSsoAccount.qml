@@ -12,9 +12,9 @@ import components.inAppAuth 0.1
 
 MZInAppAuthenticationThirdParty {
     id: authSsoAccount
+    objectName: "authSsoAccount"
 
     _telemetryScreenId: "authentication_sso_account"
-    _viewObjectName: "authSsoAccount"
     _imgSource: "qrc:/ui/resources/create-password.svg"
     _headlineText: MZI18n.InAppAuthSsoInstructionHeader
 
