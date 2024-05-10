@@ -19,5 +19,6 @@ ls -al $MOZ_FETCHES_DIR
 echo "Loading docker image..."
 podman load -i $MOZ_FETCHES_DIR/image.tar.zst
 
-echo "Docker exists! Let's try it!"
-podman run --rm --privileged docker.io/library/flatpak:latest /bin/echo "Hello World"
+echo "Building via docker image..."
+podman run --rm --privileged --volume=$MOZ_FETCHES_DIR:/builds/worker/source \
+    docker.io/library/flatpak:latest /builds/worker/builder.sh
