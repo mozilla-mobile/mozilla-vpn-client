@@ -17,7 +17,7 @@ echo "Listing fetches..."
 ls -al $MOZ_FETCHES_DIR
 
 echo "Loading docker image..."
-podman load -i $MOZ_FETCHES_DIR/image.tar.zst worker:latest
+podman load -i $MOZ_FETCHES_DIR/image.tar.zst
 
 echo "Docker exists! Let's try it!"
-podman run --rm --privileged worker:latest /bin/echo "Hello World"
+podman run --rm --privileged docker.io/library/flatpak:latest /bin/echo "Hello World"
