@@ -175,7 +175,7 @@ outcome:
         description: |
           What caused the subscription failure.
           Possible values are:
-            - BillingaNotAvailable (Android-only)
+            - BillingNotAvailable (Android-only)
               An issue happened with the billing service.
             - SubscriptionNotValidated
               Guardian has returned some error.
