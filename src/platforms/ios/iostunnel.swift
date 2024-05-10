@@ -11,6 +11,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
     private let connectionHealthMonitor = ConnectionHealth()
 
+    private var originalStartTime: Date?
+
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
             switch logLevel {
@@ -103,6 +105,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                     GleanMetrics.Session.daemonSessionStart.set()
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
+
+                self.originalStartTime = Date()
 
                 if let endpointHost = tunnelConfiguration.peers.first?.endpoint?.host {
                     self.connectionHealthMonitor.start(for: String(describing: endpointHost))
@@ -202,6 +206,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                     }
                     completionHandler(data)
                 }
+
+            case .getConnectionTimestamp:
+                let data = withUnsafeBytes(of: originalStartTime?.timeIntervalSinceReferenceDate) { Data($0) }
+                completionHandler(data)
             case .configurationSwitch(let configString):
                 // Updates the tunnel configuration and responds with the active configuration
                 logger.info(message: "Switching tunnel configuration from app message")
