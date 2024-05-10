@@ -23,10 +23,6 @@ MZLoader {
 
         visible: footerLinkIsVisible
         onClicked: {
-            Glean.interaction.cancelSelected.record({
-                screen: telemetryScreenId,
-            });
-
             VPNPurchase.cancelSubscription();
         }
     }

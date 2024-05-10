@@ -105,7 +105,52 @@ describe("subscription needed tests", function() {
             eventName: "alreadyASubscriberSelected",
             screen
         });
+      })
+
+      it("successfull outcome events are recorded", async () => {
+        // Click the "Subscribe now" button
+        await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        const startedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionStarted", "main");
+        assert.strictEqual(startedEventsList.length, 1);
+
+        // Override directly in the running guardian server for this test.
+        this.ctx.guardianServer.overrideEndpoints = {
+          POSTs: {
+            '/api/v2/vpn/login/verify': {
+              status: 200,
+              body: {
+                user: {
+                  avatar: '',
+                  display_name: 'Test',
+                  email: 'test@mozilla.com',
+                  max_devices: 5,
+                  subscriptions: {vpn: {active: true}},
+                  devices: [],
+                },
+                token: 'our-token'
+              }
+            }
+          }
+        };
+
+        // Subscription, for Guardian, is the same as in-browser auth.
+        await vpn.mockInBrowserAuthentication();
+
+        // Check subscription completed is recorded.
+        await vpn.waitForCondition(async () => {
+          const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionCompleted", "main");
+          return eventList.length === 1;
+        });
+
+        // Reset the Gaurdian overrides.
+        this.ctx.guardianServer.overrideEndpoints = this.ctx.guardianOverrideEndpoints;
       });
+
+      // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
+      // functional tests in mobile. Failure events only happen in mobile,
+      // desktop in browser subscription failure state is registered as a cancelation
+      // and we don't record cancelation events.
+      it.skip("failure outcome events are recorded");
     });
 
     describe('loading screens', function() {
@@ -137,10 +182,12 @@ describe("subscription needed tests", function() {
         await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
         // Click on the "Cancel" button
         await vpn.waitForQueryAndClick(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
-        await vpn.testLastInteractionEvent({
-          eventName: "cancelSelected",
-          screen
-        });
+        // Check subscription cancelled event is recorded.
+        const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionFailed", "main");
+
+        assert.strictEqual(eventList.length, 1);
+        assert.strictEqual(eventList[0].extra.reason, "SubscriptionCancelled");
+
       });
     });
   });
