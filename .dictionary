@@ -1,4 +1,4 @@
-personal_ws-1.1 en 245 utf-8
+personal_ws-1.1 en 274 utf-8
 ADRs
 APIs
 Adblock
@@ -12,6 +12,7 @@ CMake
 CSV
 CTest
 Changelog
+Cliquez
 Conda
 ConnectionDiagnostics
 DBUILD
@@ -40,22 +41,27 @@ LLC
 LTS
 Lerche
 Linters
+Localizer
 Lockhart
 LottieAnimation
 MERCHANTABILITY
 MPL
 MSI
+MZI
 Menubar
 Mio
 MozillaVPN
 Mozillians
 NDK
 NONINFRINGEMENT
+NotificationsUnsecuredNetworkMessage
 OpenSSL
 PeriodicWorkRequest
+QLocale
 QML
 QMLs
 QMake
+QTranslator
 Qt's
 QtLottie
 RCC
@@ -77,13 +83,16 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+VPN's
 WebAssembly
 WebSockets
 WiX
 WikiData
 Wintun
 WireGuard
+XLIFF
 accessors
+activer
 adb
 addon
 addons
@@ -95,6 +104,7 @@ anonymized
 api
 apk
 apk's
+appareil
 aqt
 assignees
 att
@@ -126,12 +136,14 @@ entryCity
 entryCountryCode
 env
 eq
+et
 executables
 exitCity
 exitCountryCode
 experimentalFeatures
 experimentalfeaturelist
 facto
+fallbacks
 featurelist
 featuresOverride
 ffi
@@ -142,6 +154,7 @@ golang
 gps
 gradle
 iap
+ici
 idfv
 ie
 init
@@ -149,6 +162,7 @@ ios
 javascript
 js
 json
+le
 libcap
 libsecret
 licensable
@@ -171,9 +185,12 @@ mozillavpnbionic
 multicast
 multihop
 mvpn
+n'est
+nStrings
 nasm
 neq
 nextServerData
+nstrings
 ok
 olist
 onboarding
@@ -186,10 +203,15 @@ ppa
 pre
 prebuilt
 py
+qm
 qmake
 qml
 qmldir
 qrc
+qsTrId
+qsTrid
+qtTrId
+qtTrid
 rdparty
 readme
 reftag
@@ -211,9 +233,13 @@ shader
 shaders
 sig
 signup
+src
+stringID
 sublicense
 submodule
 symlink
+sécuriser
+sécurisé
 taskcluster
 th
 tmp
@@ -229,6 +255,7 @@ utils
 uuid
 vm
 vml
+votre
 vpn
 vscode
 wasm
@@ -242,6 +269,7 @@ xcodeproj
 xcodes
 xconfig
 xcrun
+xliff
 yaml
 yml
 yyyy
