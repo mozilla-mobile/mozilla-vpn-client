@@ -9,3 +9,6 @@ IPAddress RFC4291::ipv6LoopbackAddressBlock() { return IPAddress("::1/128"); }
 
 // static
 IPAddress RFC4291::ipv6MulticastAddressBlock() { return IPAddress("ff00::/8"); }
+
+// static
+IPAddress RFC4291::ipv6LinkLocalAddressBlock() { return IPAddress("fe80::/10"); }

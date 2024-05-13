@@ -68,15 +68,24 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
     : WireguardUtils(parent), m_firewall(this) {
   MZ_COUNT_CTOR(WireguardUtilsLinux);
 
-  m_nlsock = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
+  m_nlsock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
   if (m_nlsock < 0) {
     logger.warning() << "Failed to create netlink socket:" << strerror(errno);
+  }
+
+  int val = sizeof(m_nlrecvbuf);
+  if (setsockopt(m_nlsock, SOL_SOCKET, SO_SNDBUF, &val, sizeof(val)) < 0) {
+    logger.warning() << "Failed to set SO_SNDBUF:" << strerror(errno);
+  }
+  if (setsockopt(m_nlsock, SOL_SOCKET, SO_RCVBUF, &val, sizeof(val)) < 0) {
+    logger.warning() << "Failed to set SO_RCVBUF:" << strerror(errno);
   }
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
   nladdr.nl_family = AF_NETLINK;
-  nladdr.nl_pid = getpid();
+  nladdr.nl_pid = (pthread_self() << 16) | getpid();
+  nladdr.nl_groups = RTMGRP_LINK;
   if (bind(m_nlsock, (struct sockaddr*)&nladdr, sizeof(nladdr)) != 0) {
     logger.warning() << "Failed to bind netlink socket:" << strerror(errno);
   }
@@ -176,12 +185,11 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
-  // BIG HACK: We can only set this route once the moz0 interface is up.
-  // We need to wait for it to go up. There is probably a better way to do
-  // this, but for now this is what we got.
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  // Create routing policy for VPN interface
-  setupWireguardRoutingTable();
+  m_ifindex = if_nametoindex(WG_INTERFACE);
+  if (m_ifindex == 0) {
+    logger.error() << "Failed to lookup interface index";
+    return false;
+  }
 
   return true;
 }
@@ -352,7 +360,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::setupWireguardRoutingTable() {
+bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
   constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
                                   2 * RTA_SPACE(sizeof(uint32_t)) +
                                   RTA_SPACE(sizeof(struct in6_addr));
@@ -372,18 +380,13 @@ bool WireguardUtilsLinux::setupWireguardRoutingTable() {
   nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_EXCL | NLM_F_CREATE;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_family = AF_INET;
+  rtm->rtm_family = family;
   rtm->rtm_type = RTN_UNICAST;
   rtm->rtm_table = RT_TABLE_UNSPEC;
   rtm->rtm_protocol = RTPROT_STATIC;
   rtm->rtm_scope = RT_SCOPE_LINK;
   nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
-  int index = if_nametoindex(WG_INTERFACE);
-  if (index <= 0) {
-    logger.error() << "if_nametoindex() failed:" << strerror(errno);
-    return false;
-  }
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, index);
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, m_ifindex);
 
   struct sockaddr_nl nladdr;
   memset(&nladdr, 0, sizeof(nladdr));
@@ -616,27 +619,81 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
 }
 
 void WireguardUtilsLinux::nlsockReady() {
-  char buf[1024];
-  ssize_t len = recv(m_nlsock, buf, sizeof(buf), MSG_DONTWAIT);
+  ssize_t len = recv(m_nlsock, m_nlrecvbuf, sizeof(m_nlrecvbuf), MSG_DONTWAIT);
   if (len <= 0) {
+    logger.warning() << "Netlink recv failed:" << strerror(errno);
     return;
   }
 
-  struct nlmsghdr* nlmsg = (struct nlmsghdr*)buf;
-  while (NLMSG_OK(nlmsg, len)) {
-    if (nlmsg->nlmsg_type == NLMSG_DONE) {
-      return;
+  struct nlmsghdr* nlmsg;
+  for (nlmsg = (struct nlmsghdr*)m_nlrecvbuf; NLMSG_OK(nlmsg, len);
+       nlmsg = NLMSG_NEXT(nlmsg, len)) {
+    switch (nlmsg->nlmsg_type) {
+      case NLMSG_DONE:
+        return;
+      
+      case NLMSG_NOOP:
+        // Ignore noops - typically used for message padding.
+        continue;
+      
+      case NLMSG_ERROR:{
+        struct nlmsgerr* err = static_cast<struct nlmsgerr*>(NLMSG_DATA(nlmsg));
+        if (err->error != 0) {
+          logger.debug() << "Netlink request failed:" << strerror(-err->error);
+        }
+        break;
+      }
+
+      case RTM_NEWLINK:
+        nlsockHandleNewlink(nlmsg);
+        break;
+      
+      case RTM_DELLINK:
+        nlsockHandleDellink(nlmsg);
+        break;
+
+      default:
+        logger.info() << "Unknown netlink message type:" << nlmsg->nlmsg_type
+                      << "size:" << nlmsg->nlmsg_len;
+        break;
     }
-    if (nlmsg->nlmsg_type != NLMSG_ERROR) {
-      nlmsg = NLMSG_NEXT(nlmsg, len);
-      continue;
-    }
-    struct nlmsgerr* err = static_cast<struct nlmsgerr*>(NLMSG_DATA(nlmsg));
-    if (err->error != 0) {
-      logger.debug() << "Netlink request failed:" << strerror(-err->error);
-    }
-    nlmsg = NLMSG_NEXT(nlmsg, len);
   }
+}
+
+void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
+  struct ifinfomsg *msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
+
+  // Ignore messages unless they pertain to the wireguard interface.
+  if (msg->ifi_index != static_cast<int>(m_ifindex)) {
+    return;
+  }
+
+  // Update the flags.
+  int diff = m_ifflags ^ msg->ifi_flags;
+  m_ifflags = msg->ifi_flags;
+
+  // Check for the interface going up.
+  if ((diff & IFF_UP) && (msg->ifi_flags & IFF_UP)) {
+    logger.info() << "Wireguard interface is UP";
+    setupWireguardRoutingTable(AF_INET);
+    setupWireguardRoutingTable(AF_INET6);
+  }
+
+  logger.debug() << "RTM_NEWLINK flags:" << "0x" + QString::number(msg->ifi_flags, 16);
+}
+
+void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
+  struct ifinfomsg *msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
+
+  // Ignore messages unless they pertain to the wireguard interface.
+  if (msg->ifi_index != static_cast<int>(m_ifindex)) {
+    return;
+  }
+
+  // Interface is down!
+  m_ifindex = 0;
+  m_ifflags = 0;
+  logger.debug() << "RTM_DELLINK flags:" << "0x" + QString::number(msg->ifi_flags, 16);
 }
 
 // static
