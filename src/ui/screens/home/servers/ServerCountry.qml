@@ -22,6 +22,7 @@ MZClickableRow {
     property var currentCityIndex
     property alias serverCountryName: countryName.text
     property var cityList: cityListVisible ? cityLoader.item : cityLoader
+    property var cityListExpandedHeight: 54 * cities.length
     property var busy: cityListVisible && (scrollAnimation.running || listOpenTransition.running || listClosedTransition.running)
 
     Component.onCompleted:{
@@ -87,8 +88,8 @@ MZClickableRow {
             name: "listOpen"
 
             PropertyChanges {
-                        target: serverCountry
-                        height: serverCountryRow.height + cityList.height
+                target: serverCountry
+                height: serverCountryRow.height + cityListExpandedHeight
             }
             
             PropertyChanges {
