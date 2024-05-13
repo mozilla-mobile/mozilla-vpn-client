@@ -290,24 +290,9 @@ void Controller::handshakeTimeout() {
 }
 
 void Controller::serverUnavailable() {
-  logger.error() << "server unavailable";
+  logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
-  // If VPN is already active and server location becomes unavailable we do not
-  // deactivate the VPN or proceed with next steps. We specifically do not want
-  // to deactivate the VPN in the case of server location becoming unavailable
-  // because the user may not notice that they are no longer protected which can
-  // cause the traffic to leak outside the tunnel without their knowledge.
-  if (m_state == StateOn || m_state == StateSilentSwitching || m_state == StateOnPartial) {
-    logger.info() << "Server location is unavailable in StateOn or "
-                     "StateSilentSwitching. Do not deactivate.";
-    return;
-  }
-
-  logger.info() << "Server location is unavailable and we are not in StateOn "
-                   "or StateSilentSwitching. Deactivate.";
-
-  m_nextStep = ServerUnavailable;
-  deactivate();
+  emit readyToServerUnavailable(m_pingReceived);
   return;
 }
 
@@ -804,13 +789,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == BackendFailure) {
     emit readyToBackendFailure();
-    return true;
-  }
-
-  if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
-
-    emit readyToServerUnavailable(m_pingReceived);
     return true;
   }
 
