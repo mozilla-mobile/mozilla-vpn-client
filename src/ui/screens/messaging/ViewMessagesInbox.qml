@@ -272,7 +272,7 @@ MZViewBase {
                                 Layout.preferredHeight: 8
                                 Layout.preferredWidth: 8
 
-                                opacity: addon.isRead? 0 : 1
+                                opacity: addon && addon.isRead ? 0 : 1
                                 radius: Layout.preferredHeight / 2
                                 color: MZTheme.theme.blue
                             }

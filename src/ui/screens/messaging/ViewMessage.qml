@@ -186,7 +186,7 @@ MZViewBase {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                view: MZComposerView.View.Message
+                view: MZComposerView.View && MZComposerView.View.Message
                 addon: message
             }
         }
