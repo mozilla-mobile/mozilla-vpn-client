@@ -20,3 +20,6 @@ echo "Exporting the Flatpak"
 mkdir fp-export-dir
 flatpak build-export fp-export-dir fp-build-dir
 flatpak build-bundle fp-export-dir /builds/worker/artifacts/mozillavpn.flatpak org.mozilla.vpn
+
+echo "Exported contents:"
+ls -al /builds/worker/artifacts/
