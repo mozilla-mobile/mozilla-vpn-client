@@ -21,9 +21,9 @@ podman load -i $MOZ_FETCHES_DIR/image.tar.zst
 
 echo "Building via docker image..."
 mkdir -p $TASK_WORKDIR/artifacts
-podman run --rm --privileged \
-    --volume=$MOZ_FETCHES_DIR:/builds/worker/source \
-    --volume=$TASK_WORKDIR/artifacts:/builds/worker/artifacts \
+podman run --rm --privileged --userns=keep-id \
+    --volume=$MOZ_FETCHES_DIR:/builds/worker/source:ro \
+    --volume=$TASK_WORKDIR/artifacts:/builds/worker/artifacts:rw \
     docker.io/library/flatpak:latest /builds/worker/builder.sh
 
 echo "Listing aftifacts..."
