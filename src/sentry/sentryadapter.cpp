@@ -34,6 +34,9 @@ Logger logger("Sentry");
 SentryAdapter* SentryAdapter::instance() {
   if (s_instance == nullptr) {
     s_instance = new SentryAdapter();
+    qAddPostRoutine([](){
+      delete s_instance;
+    });
   }
   return s_instance;
 }
