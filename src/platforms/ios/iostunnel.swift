@@ -9,6 +9,9 @@ import IOSGlean
 class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
 
+    private let metricsInteval: TimeInterval = 3 * 60 * 60 // 3hrs
+    private var metricsTimer: Timer? = nil
+
     private let connectionHealthMonitor = ConnectionHealth()
 
     private var originalStartTime: Date?
@@ -38,7 +41,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
     override init() {
         super.init()
-
+        
+        metricsTimer = Timer.scheduledTimer(withTimeInterval: metricsInteval, repeats: true) { [self] _ in
+            recordRxTxBytes()
+        }
+        
+        
         connectionHealthMonitor.serverSwitchingDelegate = self
 
         // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
@@ -158,45 +166,47 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
         logger.info(message: "Stopping tunnel")
 
-        adapter.stop { error in
-            ErrorNotifier.removeLastErrorFile()
-            self.connectionHealthMonitor.stop()
-            if self.shouldSendTelemetry {
-                GleanMetrics.Session.daemonSessionEnd.set()
-                GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
+        recordRxTxBytes() { [self] in
+            adapter.stop { error in
+                ErrorNotifier.removeLastErrorFile()
+                self.connectionHealthMonitor.stop()
+                if self.shouldSendTelemetry {
+                    GleanMetrics.Session.daemonSessionEnd.set()
+                    GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
 
-                // We are rotating the UUID here as a safety measure. It is rotated
-                // again before the next session start, and we expect to see the
-                // UUID created here in only one ping: The daemon ping with a
-                // "flush" reason, which should contain this UUID and no other
-                // metrics.
-                GleanMetrics.Session.daemonSessionId.generateAndSet()
+                    // We are rotating the UUID here as a safety measure. It is rotated
+                    // again before the next session start, and we expect to see the
+                    // UUID created here in only one ping: The daemon ping with a
+                    // "flush" reason, which should contain this UUID and no other
+                    // metrics.
+                    GleanMetrics.Session.daemonSessionId.generateAndSet()
+                }
+
+                if let error = error {
+                    self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
+                }
+
+                // Wait for all ping submission to be finished before continuing.
+                // Very shortly after the completionHandler is called, iOS kills
+                // the network extension. If this Glean.shared.shutdown() line is
+                // in this class's deinit, the NE is killed before it can record
+                // the ping. Thus, it MUST be before the completionHandler is
+                // called.
+                // Note: This doesn't wait for pings to be uploaded,
+                // just for Glean to persist the ping for later sending.
+                Glean.shared.shutdown();
+                completionHandler()
             }
-
-            if let error = error {
-                self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
-            }
-
-            // Wait for all ping submission to be finished before continuing.
-            // Very shortly after the completionHandler is called, iOS kills
-            // the network extension. If this Glean.shared.shutdown() line is
-            // in this class's deinit, the NE is killed before it can record
-            // the ping. Thus, it MUST be before the completionHandler is
-            // called.
-            // Note: This doesn't wait for pings to be uploaded,
-            // just for Glean to persist the ping for later sending.
-            Glean.shared.shutdown();
-            completionHandler()
         }
     }
 
     override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)? = nil) {
         guard let completionHandler = completionHandler else { return }
-        
+
         do {
             let message = try TunnelMessage(messageData)
             logger.info(message: "Received new message: \(message)")
-            
+
             switch message {
             case .getRuntimeConfiguration:
                 adapter.getRuntimeConfiguration { settings in
@@ -224,6 +234,29 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         } catch {
             logger.error(message: "Unexpected error while parsing message: \(error).")
             completionHandler(nil)
+        }
+    }
+
+    private func recordRxTxBytes(completionHandler: (() -> Void)? = nil) -> Void {
+        // Ask Wireguard for information on the connection
+        adapter.getRuntimeConfiguration { data in
+            if TunnelManager.session?.status != .connected { return; }
+
+            var dataAsDict = [String: String]()
+
+            data?.components(separatedBy: .newlines).forEach { line in
+                let components = line.components(separatedBy: "=")
+                if components.count == 2 {
+                    let key = components[0]
+                    let value = components[1]
+                    dataAsDict[key] = value
+                }
+            }
+
+            GleanMetrics.ConnectionHealth.dataTransferredRx.accumulate(Int64(dataAsDict["rx_bytes"] ?? "0") ?? 0)
+            GleanMetrics.ConnectionHealth.dataTransferredTx.accumulate(Int64(dataAsDict["tx_bytes"] ?? "0") ?? 0)
+            
+            if let f = completionHandler { f() }
         }
     }
 
