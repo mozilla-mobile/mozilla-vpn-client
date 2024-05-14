@@ -29,7 +29,7 @@ tasks:
         add-index-routes:
             name: windows
             type: build
-        signing-format: autograph_authenticode_sha2
+        signing-format: autograph_authenticode_202404
         treeherder:
             job-symbol: Bs
             kind: build

@@ -40,7 +40,7 @@ tasks:
                 android.*: autograph_apk
                 linux.*: autograph_debsign
                 macos.*: macapp
-                windows/opt: autograph_authenticode_sha2
+                windows/opt: autograph_authenticode_202404
                 addons/opt: autograph_rsa
         treeherder:
             job-symbol:
