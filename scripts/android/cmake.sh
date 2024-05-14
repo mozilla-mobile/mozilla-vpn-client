@@ -120,7 +120,7 @@ print Y "Patch Adjust files..."
 
 # If not provided - use the current time.
 if [ -z "$BUILD_TIMESTAMP" ]; then
-  BUILD_TIMESTAMP=$(date +s)
+  BUILD_TIMESTAMP=$(date +%s)
 fi
 
 printn Y "Computing the version... "
