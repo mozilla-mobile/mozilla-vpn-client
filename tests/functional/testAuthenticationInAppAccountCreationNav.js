@@ -51,6 +51,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -73,6 +74,7 @@ describe('User authentication', function() {
 
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_SIGNUP_GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -100,6 +102,7 @@ describe('User authentication', function() {
 
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_SIGNIN_GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -143,6 +146,7 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_EMAILVER_GET_HELP_LINK
               .visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -183,6 +187,7 @@ describe('User authentication', function() {
 
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -227,6 +232,7 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_UNBLOCKCODE_GET_HELP_LINK
               .visible());
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.prop('empty', false));
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
