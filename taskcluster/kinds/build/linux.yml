@@ -121,5 +121,10 @@ linux/flatpak:
             - artifact: image.tar.zst
               extract: false
     worker-type: b-linux-generic
+    worker:
+        artifacts:
+            - type: file
+              name: public/build/mozillavpn.flatpak
+              path: artifacts/mozillavpn.flatpak
     run:
         command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh

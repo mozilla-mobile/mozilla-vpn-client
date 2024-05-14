@@ -20,5 +20,10 @@ echo "Loading docker image..."
 podman load -i $MOZ_FETCHES_DIR/image.tar.zst
 
 echo "Building via docker image..."
-podman run --rm --privileged --volume=$MOZ_FETCHES_DIR:/builds/worker/source \
+podman run --rm --privileged \
+    --volume=$MOZ_FETCHES_DIR:/builds/worker/source \
+    --volume=$(pwd)/artifacts:/builds/worker/artifacts \
     docker.io/library/flatpak:latest /builds/worker/builder.sh
+
+echo "Listing aftifacts..."
+du h $(pwd)/artifacts
