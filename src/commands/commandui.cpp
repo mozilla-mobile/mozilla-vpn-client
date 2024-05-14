@@ -305,6 +305,7 @@ int CommandUI::run(QStringList& tokens) {
     // Prior to Qt 6.5, there was no default QML import path. We must set one.
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     engine->addImportPath("qrc:/");
+    engine->addImportPath("qrc:/qt/qml");
 #endif
 
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
@@ -345,7 +346,7 @@ int CommandUI::run(QStringList& tokens) {
                      &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
-    const QUrl url(QStringLiteral("qrc:/Mozilla/VPN/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
     engine->load(url);
     if (!engineHolder.hasWindow()) {
       logger.error() << "Failed to load " << url.toString();

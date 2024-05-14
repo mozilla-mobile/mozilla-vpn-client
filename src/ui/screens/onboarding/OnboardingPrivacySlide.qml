@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import components 0.1
-import "qrc:/Mozilla/VPN/screens/settings/privacy"
+import "qrc:/qt/qml/Mozilla/VPN/screens/settings/privacy"
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 
 ColumnLayout {

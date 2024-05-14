@@ -17,6 +17,6 @@ MZScreenBase {
 
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenDeviceLimit, getStack())
-        getStack().push("qrc:/Mozilla/VPN/screens/devices/ViewDeviceLimit.qml")
+        getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/devices/ViewDeviceLimit.qml")
     }
 }

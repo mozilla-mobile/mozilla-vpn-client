@@ -10,7 +10,7 @@ import Mozilla.VPN 1.0
 import Mozilla.Shared 1.0
 import components 0.1
 import compat 0.1
-import "qrc:/Mozilla/VPN/sharedViews"
+import "qrc:/qt/qml/Mozilla/VPN/sharedViews"
 
 ViewFullScreen {
     id: root

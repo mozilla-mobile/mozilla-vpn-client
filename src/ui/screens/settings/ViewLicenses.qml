@@ -37,7 +37,7 @@ MZViewBase {
                 title: licenseTitle
                 iconSource: "qrc:/nebula/resources/chevron.svg"
                 iconMirror: MZLocalizer.isRightToLeft
-                onClicked: stackview.push("qrc:/Mozilla/VPN/screens/settings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
+                onClicked: stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
             }
         }
     }

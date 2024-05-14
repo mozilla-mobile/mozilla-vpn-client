@@ -36,7 +36,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateInitializing || MZAuthInApp.state === MZAuthInApp.StateAuthenticated
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationInitializing.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationInitializing.qml"
             }
         },
 
@@ -45,7 +45,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateStart || MZAuthInApp.state === MZAuthInApp.StateCheckingAccount
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationStart.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationStart.qml"
             }
         },
 
@@ -54,7 +54,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateSignIn || MZAuthInApp.state === MZAuthInApp.StateSigningIn
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationSignIn.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationSignIn.qml"
             }
         },
 
@@ -62,7 +62,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateSignUp || MZAuthInApp.state === MZAuthInApp.StateSigningUp
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationSignUp.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationSignUp.qml"
             }
         },
 
@@ -71,7 +71,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingUnblockCode
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml"
             }
         },
 
@@ -80,7 +80,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionEmailCode
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml"
             }
         },
 
@@ -89,7 +89,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded || MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionTotpCode
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml"
             }
         },
 
@@ -98,7 +98,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateIsStubAccount
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationStubAccount.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationStubAccount.qml"
             }
         },
 
@@ -107,7 +107,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateIsSsoAccount
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationSsoAccount.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationSsoAccount.qml"
             }
         },
 
@@ -116,7 +116,7 @@ Item {
             when: MZAuthInApp.state === MZAuthInApp.StateFallbackInBrowser
             PropertyChanges {
                 target: loader
-                source: "qrc:/Mozilla/VPN/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml"
+                source: "qrc:/qt/qml/Mozilla/VPN/authenticationInApp/ViewAuthenticationFallbackInBrowser.qml"
             }
         }
     ]

@@ -15,7 +15,7 @@ MZStackView {
     Component.onCompleted: function(){
        MZNavigator.addStackView(VPN.ScreenSubscriptionExpiredError, stackView)
 
-       stackView.push("qrc:/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
+       stackView.push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
            // Problem confirming subscription...
            headlineText: MZI18n.GenericPurchaseErrorGenericPurchaseErrorHeader,
 

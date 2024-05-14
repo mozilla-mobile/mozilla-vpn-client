@@ -17,7 +17,7 @@ MZScreenBase {
 
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenHome, getStack())
-        getStack().push("qrc:/Mozilla/VPN/screens/home/ViewHome.qml")
+        getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewHome.qml")
     }
 
     Connections {
@@ -33,7 +33,7 @@ MZScreenBase {
             getStack().pop(null);
 
             // push server view
-            getStack().push("qrc:/Mozilla/VPN/screens/home/ViewServers.qml", StackView.Immediate);
+            getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewServers.qml", StackView.Immediate);
         }
     }
 

@@ -62,7 +62,7 @@ Item {
 
             Component.onCompleted: function() {
                 MZNavigator.addStackView(VPN.ScreenGetHelp, getHelpStackView)
-                getHelpStackView.push("qrc:/Mozilla/VPN/screens/getHelp/ViewGetHelp.qml")
+                getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/ViewGetHelp.qml")
             }
 
             onCurrentItemChanged: {

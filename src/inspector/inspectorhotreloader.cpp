@@ -152,7 +152,7 @@ void InspectorHotreloader::reloadWindow() {
       maybeWindow->close();
     }
   }
-  const QUrl url(QStringLiteral("qrc:/Mozilla/VPN/main.qml"));
+  const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
   engine->load(url);
   auto newWindow = qobject_cast<QWindow*>(engine->rootObjects().last());
   if (newWindow) {

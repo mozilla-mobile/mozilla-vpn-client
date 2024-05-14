@@ -16,6 +16,6 @@ MZScreenBase {
 
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenSettings, getStack())
-        getStack().push("qrc:/Mozilla/VPN/screens/settings/ViewSettingsMenu.qml")
+        getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSettingsMenu.qml")
     }
 }
