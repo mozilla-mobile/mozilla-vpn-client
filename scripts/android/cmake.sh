@@ -10,6 +10,16 @@ if [ -f .env ]; then
   . .env
 fi
 
+cleanup() {
+  rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
+  mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
+}
+
+cleanup_and_die() {
+  cleanup
+  die
+}
+
 
 JOBS=24
 RELEASE=1
@@ -168,7 +178,7 @@ cmake --build .tmp -j$JOBS
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
 
-#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || die
+#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || cleanup_and_die
 
 cd .tmp/src/android-build/
 # This will combine the qt-libs + qt-resources and the client
@@ -176,17 +186,16 @@ cd .tmp/src/android-build/
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
-  ./gradlew assemble -Padjusttoken=$ADJUST_SDK_TOKEN || die
+  ./gradlew assemble -Padjusttoken=$ADJUST_SDK_TOKEN || cleanup_and_die
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
 else
   print Y "Generating Debug APK..."
   ./gradlew compileDebugSources
-  ./gradlew assembleDebug || die
+  ./gradlew assembleDebug || cleanup_and_die
   print G "Done 🎉"
   print G "Your Debug APK is under .tmp/src/android-build/build/outputs/apk/debug/"
 fi
 
-rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
+cleanup
