@@ -25,10 +25,11 @@
 namespace {
 Logger logger("WireguardUtilsWindows");
 
-// ID for the Mullvad Split-Tunnel Sublayer Provider
-DEFINE_GUID(AAAA, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
-            0xa7, 0x99, 0x63, 0x56, 0xd9);
-
+// TODO: Change this 
+GUID ExampleGuid = {0xdeadc001,
+                    0xbeef,
+                    0xbabe,
+                    {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}};
 
 };  // namespace
 
@@ -126,71 +127,81 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   return peerList;
 }
 
+/**
+* Creates a Wireguard Adapter with that Private Key
+* -> Enables the Initial Killswitch for that Adapter
+* -> Enables the Route Monitor for that Adapter
+* Returns true on success. 
+*/
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  // TODO: REWRITE
-  m_wireguard_api->CreateAdapter(L"W", L"AA", &AAAA );
+    // TODO: What should those values be?
+  WIREGUARD_ADAPTER_HANDLE wireguard_adapter =
+        m_wireguard_api->CreateAdapter(L"W", L"AA", &ExampleGuid);
+  if (wireguard_adapter == NULL) {
+    logger.error() << "Failed creating Wireguard Adapter";
+    return false;
+  }
+  auto cleanupDeviceOnFailure =
+      qScopeGuard([wireguard_adapter, this]() { 
+      logger.error() << "Failure during Adapter Creation, Closing Device";
+      m_wireguard_api->CloseAdapter(wireguard_adapter); 
+  });
 
   auto private_key = QByteArray::fromBase64(config.m_privateKey.toUtf8(),
                                             QByteArray::Base64Encoding);
+
   WIREGUARD_INTERFACE wgConf = {
       .Flags = WIREGUARD_INTERFACE_HAS_PRIVATE_KEY,
       .ListenPort = 0,  // Choose Randomly
-      .PeersCount = 0,
-  }; 
+      .PeersCount = 0,  // that will happen later with updatePeer()
+  };
   std::copy(std::begin(private_key), std::end(private_key),
             std::begin(wgConf.PrivateKey));
 
-
-  QStringList addresses;
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    addresses.append(ip.toString());
-  }
-
-  QMap<QString, QString> extraConfig;
-  extraConfig["Table"] = "off";
-  QString configString = config.toWgConf(extraConfig);
-  if (configString.isEmpty()) {
-    logger.error() << "Failed to create a config file";
+  if (!m_wireguard_api->SetConfiguration(wireguard_adapter, &wgConf, sizeof(wgConf))) {
+    logger.error() << "Failed setting Wireguard Adapter Config";
     return false;
   }
-
-  // We don't want to pass a peer just yet, that will happen later with
-  // a UAPI command in WireguardUtilsWindows::updatePeer(), so truncate
-  // the config file to remove the [Peer] section.
-  qsizetype peerStart = configString.indexOf("[Peer]", 0, Qt::CaseSensitive);
-  if (peerStart >= 0) {
-    configString.truncate(peerStart);
-  }
-
-  //if (!m_tunnel.start(configString)) {
-  //  logger.error() << "Failed to activate the tunnel service";
-  //  return false;
- // }
+  if (!m_wireguard_api->SetAdapterState(wireguard_adapter, WIREGUARD_ADAPTER_STATE_UP)){
+    return false;
+}
 
   // Determine the interface LUID
   NET_LUID luid;
-  QString ifAlias = interfaceName();
-  DWORD result = ConvertInterfaceAliasToLuid((wchar_t*)ifAlias.utf16(), &luid);
-  if (result != 0) {
-    logger.error() << "Failed to lookup LUID:" << result;
-    return false;
-  }
+  m_wireguard_api->GetAdapterLUID(wireguard_adapter, &luid);
   m_luid = luid.Value;
   m_routeMonitor.setLuid(luid.Value);
+  auto resetLUIDOnFailure =
+      qScopeGuard([this]() { 
+          m_routeMonitor.setLuid(0); 
+          m_luid = 0;
+  });
 
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  WindowsFirewall::instance()->enableKillSwitch(ifindex);
-
-  logger.debug() << "Registration completed";
+  if (!WindowsFirewall::instance()->enableKillSwitch(ifindex)) {
+    logger.error() << "Failed enabling Killswitch";
+    WindowsFirewall::instance()->disableKillSwitch();
+    return false;
+  };
+  cleanupDeviceOnFailure.dismiss();
+  resetLUIDOnFailure.dismiss();
+  m_adapter = wireguard_adapter; 
   return true;
 }
 
+/**
+* Turns down the Adapter and Deletes the Interface
+*/
 bool WireguardUtilsWindows::deleteInterface() {
-  // TODO: REWRITE
+  if (!m_adapter) {
+    return;
+  }
   WindowsFirewall::instance()->disableKillSwitch();
-  //m_tunnel.stop();
+  m_wireguard_api->SetAdapterState(m_adapter, WIREGUARD_ADAPTER_STATE_DOWN); 
+  m_wireguard_api->CloseAdapter(m_adapter); 
+  m_adapter = NULL;
   return true;
 }
 
