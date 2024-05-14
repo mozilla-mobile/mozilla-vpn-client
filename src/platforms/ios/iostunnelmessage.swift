@@ -10,6 +10,9 @@ public enum TunnelMessage: Codable, CustomStringConvertible {
     /// Request for the current runtime configuration
     case getRuntimeConfiguration
 
+    /// Request for the original connection timestamp
+    case getConnectionTimestamp
+
     /// Switch tunnel configuration
     case configurationSwitch(String)
 
@@ -23,6 +26,8 @@ public enum TunnelMessage: Codable, CustomStringConvertible {
         switch self {
         case .getRuntimeConfiguration:
             return "getRuntimeConfiguration"
+        case .getConnectionTimestamp:
+            return "getConnectionTimestamp"
         case .configurationSwitch(let newConfig):
             // We do not want to log the configuration itself.
             // It contains private information.

@@ -71,7 +71,29 @@ public class IOSControllerImpl: NSObject {
             }
 
             if TunnelManager.session?.status == .connected {
-                closure(ConnectionState.Connected, TunnelManager.session?.connectedDate)
+                let failureClosure = {
+                    // Fall back to iOS's connection date, which will be incorrect if there has been
+                    // a user-initiated server switch or silent server switch.
+                    closure(ConnectionState.Connected, TunnelManager.session?.connectedDate)
+                }
+                guard let session = TunnelManager.session else {
+                    failureClosure()
+                    return
+                }
+                do {
+                    try session.sendProviderMessage(TunnelMessage.getConnectionTimestamp.encode()) { date in
+                        guard let dateStampData = date else {
+                            IOSControllerImpl.logger.error(message: "Missing data about datestamp")
+                            failureClosure()
+                            return
+                        }
+                        let timestamp = dateStampData.withUnsafeBytes({ $0.load(as: Double.self) })
+                        closure(ConnectionState.Connected, Date(timeIntervalSinceReferenceDate: timestamp))
+                    }
+                } catch {
+                    IOSControllerImpl.logger.error(message: "Failed to retrieve data about datestamp. \(error)")
+                    failureClosure()
+                }
             } else {
                 closure(ConnectionState.Disconnected, nil)
             }
