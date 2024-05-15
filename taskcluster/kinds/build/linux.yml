@@ -124,7 +124,7 @@ linux/flatpak:
     worker:
         artifacts:
             - type: file
-              name: public/build/mozillavpn.flatpak
-              path: artifacts/mozillavpn.flatpak
+              name: public/build/org.mozilla.vpn.yml.flatpak
+              path: artifacts/org.mozilla.vpn.yml.flatpak
     run:
         command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
