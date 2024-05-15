@@ -27,4 +27,4 @@ podman run --rm --privileged \
     docker.io/library/flatpak:latest /root/builder.sh
 
 echo "Listing aftifacts..."
-du -h $TASK_WORKDIR/artifacts
+ls -al $TASK_WORKDIR/artifacts
