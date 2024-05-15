@@ -277,7 +277,7 @@ void TestLocalizer::formattedDate_data() {
 
   QTest::addRow("en - future")
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
+      << QDateTime(QDate(2000, 1, 1), QTime(11, 0), QTimeZone(0)) << "10:00 AM"
       << (qint64)(14 * 3600);
   QTest::addRow("es_ES - future")
       << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
@@ -286,7 +286,7 @@ void TestLocalizer::formattedDate_data() {
 
   QTest::addRow("en - same")
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
+      << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0)) << "10:00 AM"
       << (qint64)(14 * 3600);
   QTest::addRow("es_ES - same")
       << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
@@ -295,7 +295,7 @@ void TestLocalizer::formattedDate_data() {
 
   QTest::addRow("en - one hour ago")
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
+      << QDateTime(QDate(2000, 1, 1), QTime(9, 0), QTimeZone(0)) << "9:00 AM"
       << (qint64)(15 * 3600);
   QTest::addRow("es_ES - one hour ago")
       << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
@@ -304,7 +304,7 @@ void TestLocalizer::formattedDate_data() {
 
   QTest::addRow("en - midnight")
       << "en" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
-      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
+      << QDateTime(QDate(2000, 1, 1), QTime(0, 0), QTimeZone(0)) << "12:00 AM"
       << (qint64)(24 * 3600);
   QTest::addRow("es_ES - midnight")
       << "es_ES" << QDateTime(QDate(2000, 1, 1), QTime(10, 0), QTimeZone(0))
