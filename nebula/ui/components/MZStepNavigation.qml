@@ -117,7 +117,7 @@ ColumnLayout {
 
         StackView {
             id: stackView
-            propery bool ready: !busy
+            property bool ready: !busy
 
             objectName: "stepNavStackView"
 
