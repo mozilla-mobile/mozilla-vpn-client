@@ -78,8 +78,8 @@ exports.mochaHooks = {
         new firefox.ServiceBuilder()
           .setStdio([
             'ignore',
-            fs.openSync(stdout, 'w'),
-            'ignore',
+            process.stderr,
+            process.stderr,
           ])
       )
       .build();
