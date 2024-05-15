@@ -150,7 +150,7 @@ MZViewBase {
               aboutUsListModel.append({
                    linkId: "license",
                    linkTitleId: "AboutUsLicenses",
-                   openView: "qrc:/Mozilla/VPN/screens/settings/ViewLicenses.qml"
+                   openView: "qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewLicenses.qml"
               });
            }
         }

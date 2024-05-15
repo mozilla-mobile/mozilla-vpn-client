@@ -95,7 +95,7 @@ MZViewBase {
                 delegate: Loader {
                     Layout.fillWidth: true
                     objectName: _objectName
-                    source: "qrc:/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
+                    source: "qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml"
                 }
             }
 

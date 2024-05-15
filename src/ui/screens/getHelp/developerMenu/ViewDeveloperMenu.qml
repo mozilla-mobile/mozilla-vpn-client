@@ -143,23 +143,23 @@ MZViewBase {
 
                 ListElement {
                     title: "Feature list"
-                    viewQrc: "qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewFeatureList.qml"
+                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewFeatureList.qml"
                 }
                 ListElement {
                     title: "Theme list"
-                    viewQrc: "qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewThemeList.qml"
+                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewThemeList.qml"
                 }
                 ListElement {
                     title: "Animations playground"
-                    viewQrc: "qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
+                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
                 }
                 ListElement {
                     title: "UI Testing"
-                    viewQrc: "qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
+                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
                 ListElement {
                     title: "Telemetry Debugging"
-                    viewQrc: "qrc:/Mozilla/VPN/screens/getHelp/developerMenu/ViewTelemetryDebugging.qml"
+                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewTelemetryDebugging.qml"
                 }
             }
 

@@ -15,6 +15,6 @@ MZScreenBase {
 
     Component.onCompleted: () => {
        MZNavigator.addStackView(VPN.ScreenMessaging, getStack())
-       getStack().push("qrc:/Mozilla/VPN/screens/messaging/ViewMessagesInbox.qml")
+       getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/messaging/ViewMessagesInbox.qml")
    }
 }

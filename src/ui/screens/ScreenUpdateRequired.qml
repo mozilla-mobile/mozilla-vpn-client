@@ -8,6 +8,6 @@ Loader {
     id: loader
 
     Component.onCompleted: function(){
-        loader.source="qrc:/Mozilla/VPN/sharedViews/ViewUpdate.qml"
+        loader.source="qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewUpdate.qml"
     }
 }

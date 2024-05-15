@@ -5,7 +5,7 @@
 qt_add_qml_module(mozillavpn-ui
     VERSION 1.0
     URI Mozilla.VPN
-    NO_PLUGIN_OPTIONAL
+    RESOURCE_PREFIX /qt/qml #TODO: Remove this once we only compile with 6.5+
     STATIC
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
     QML_FILES
