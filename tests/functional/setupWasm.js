@@ -36,6 +36,7 @@ let url;
 
 exports.mochaHooks = {
   async beforeAll() {
+    console.log("DEBUG beforeAll started");
     if (process.env['MZ_WASM_URL']) {
       url = process.env['MZ_WASM_URL'];
     } else {
@@ -43,10 +44,15 @@ exports.mochaHooks = {
       url = wasm.url;
     }
 
+    console.log("DEBUG B");
     await guardian.start(false);
+    console.log("DEBUG C");
     await fxaServer.start(guardian.url, false);
+    console.log("DEBUG D");
     await addonServer.start(false);
+    console.log("DEBUG E");
     await captivePortalServer.start(false);
+    console.log("DEBUG F");
 
     const u = new URL(`${url}/test.html`);
     u.searchParams.set('guardian', guardian.url);
@@ -77,6 +83,8 @@ exports.mochaHooks = {
           ])
       )
       .build();
+
+      console.log("DEBUG beforeAll complete");
   },
 
   async afterAll() {
