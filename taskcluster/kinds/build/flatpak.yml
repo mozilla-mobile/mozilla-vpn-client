@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+linux/flatpak:
+    description: "Linux Build (Flatpak)"
+    treeherder:
+        symbol: B
+        kind: build
+        tier: 1
+        platform: linux/flatpak
+    dependencies:
+        build: build-source/vpn
+        docker-image: build-docker-image-flatpak
+    fetches:
+        build:
+            - artifact: mozillavpn-sources.tar.gz
+        docker-image:
+            - artifact: image.tar.zst
+              extract: false
+    worker-type: b-linux-generic
+    worker:
+        max-run-time: 3600
+        chain-of-trust: true
+        artifacts:
+            - type: file
+              name: public/build/org.mozilla.vpn.flatpak
+              path: artifacts/org.mozilla.vpn.flatpak
+    run:
+        using: run-task
+        use-caches: true
+        command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh

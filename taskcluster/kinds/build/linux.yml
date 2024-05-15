@@ -109,22 +109,3 @@ linux64/next-deb:
         docker-image: {in-tree: linux-qt6-build}
     run:
         command: /builds/worker/builder.sh -s
-
-linux/flatpak:
-    description: "Linux Build (Flatpak)"
-    treeherder:
-        platform: linux/flatpak
-    dependencies:
-        docker-image: build-docker-image-flatpak
-    fetches:
-        docker-image:
-            - artifact: image.tar.zst
-              extract: false
-    worker-type: b-linux-generic
-    worker:
-        artifacts:
-            - type: file
-              name: public/build/org.mozilla.vpn.flatpak
-              path: artifacts/org.mozilla.vpn.flatpak
-    run:
-        command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
