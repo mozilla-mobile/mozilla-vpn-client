@@ -45,6 +45,8 @@ LeakDetector::~LeakDetector() {
 
   if (!hasLeaks) {
     out << "No leaks detected." << Qt::endl;
+  } else {
+    qFatal("Leaks were detected.");
   }
 #endif
 }
