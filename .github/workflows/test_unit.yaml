@@ -85,9 +85,9 @@ jobs:
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
-      - name: Install Qt6
+      - name: Install Qt6.6
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
           unzip -a mac.zip
           sudo mv qt_dist /opt
           cd ..
