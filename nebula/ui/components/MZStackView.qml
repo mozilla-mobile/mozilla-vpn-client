@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 
 StackView {
     id: stackView
+    property bool ready: !busy && !empty
 
     Component.onCompleted: function(){
         if(!currentItem && initialItem) {

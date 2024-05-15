@@ -11,7 +11,7 @@ import components 0.1
 
 Rectangle {
     property bool isOpen: false
-    property bool busy: opacityAnimation.running
+    property bool ready: !opacityAnimation.running
 
     anchors.fill: parent
     color: MZTheme.colors.primary
