@@ -29,4 +29,4 @@ linux/flatpak:
     run:
         using: run-task
         use-caches: true
-        command: $VCS_PATH/taskcluster/scripts/build/flatpak.sh
+        command: $VCS_PATH/taskcluster/scripts/podman_worker.sh /root/builder.sh

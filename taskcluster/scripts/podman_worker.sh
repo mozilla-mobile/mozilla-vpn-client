@@ -6,12 +6,13 @@
 
 set -e
 
-echo "Loading docker image..."
-podman load -i $MOZ_FETCHES_DIR/image.tar.zst
+echo "Loading podman image..."
+podman load -i $MOZ_FETCHES_DIR/image.tar.zst | tee /tmp/podman-load.txt
+DOCKER_IMAGE_NAME=$(grep '^Loaded image' /tmp/podman-load.txt | cut -d: -f2-)
 
-echo "Building via docker image..."
+echo "Running ${DOCKER_IMAGE_NAME}..."
 mkdir -p $TASK_WORKDIR/artifacts
 podman run --rm --privileged \
     --volume=$MOZ_FETCHES_DIR:/mnt/source:ro \
     --volume=$TASK_WORKDIR/artifacts:/mnt/artifacts:rw \
-    docker.io/library/flatpak:latest /root/builder.sh
+    ${DOCKER_IMAGE_NAME} "$@"
