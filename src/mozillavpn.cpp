@@ -1481,7 +1481,8 @@ void MozillaVPN::registerNavigatorScreens() {
 
   Navigator::registerScreen(
       MozillaVPN::ScreenCrashReporting, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenCrashReporting.qml", QVector<int>{},
+      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenCrashReporting.qml",
+      QVector<int>{},
       [](int* requestedScreen) -> int8_t {
         return (requestedScreen &&
                 *requestedScreen == MozillaVPN::ScreenCrashReporting)
@@ -1527,8 +1528,9 @@ void MozillaVPN::registerNavigatorScreens() {
 
   Navigator::registerScreen(
       MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenHome.qml", QVector<int>{App::StateMain},
-      [](int*) -> int8_t { return 99; }, []() -> bool { return false; });
+      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenHome.qml",
+      QVector<int>{App::StateMain}, [](int*) -> int8_t { return 99; },
+      []() -> bool { return false; });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenInitialize, Navigator::LoadPolicy::LoadTemporarily,
@@ -1664,7 +1666,8 @@ void MozillaVPN::registerNavigatorScreens() {
   Navigator::registerScreen(
       MozillaVPN::ScreenUpdateRecommended,
       Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenUpdateRecommended.qml", QVector<int>{},
+      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenUpdateRecommended.qml",
+      QVector<int>{},
       [](int* requestedScreen) -> int8_t {
         return (requestedScreen &&
                 *requestedScreen == MozillaVPN::ScreenUpdateRecommended)
@@ -1692,7 +1695,8 @@ void MozillaVPN::registerNavigatorScreens() {
 
   Navigator::registerScreen(
       MozillaVPN::ScreenRemovingDevice, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenRemovingDevice.qml", QVector<int>{},
+      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenRemovingDevice.qml",
+      QVector<int>{},
       [](int* requestedScreen) -> int8_t {
         return (requestedScreen &&
                 *requestedScreen == MozillaVPN::ScreenRemovingDevice)
