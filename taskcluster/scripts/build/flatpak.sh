@@ -6,16 +6,6 @@
 
 set -e
 
-echo "Hello World!"
-echo "Dumping the environment..."
-env
-
-echo "Dumping /etc/os-release..."
-cat /etc/os-release
-
-echo "Listing fetches..."
-ls -al $MOZ_FETCHES_DIR
-
 echo "Loading docker image..."
 podman load -i $MOZ_FETCHES_DIR/image.tar.zst
 
@@ -25,6 +15,3 @@ podman run --rm --privileged \
     --volume=$MOZ_FETCHES_DIR:/mnt/source:ro \
     --volume=$TASK_WORKDIR/artifacts:/mnt/artifacts:rw \
     docker.io/library/flatpak:latest /root/builder.sh
-
-echo "Listing aftifacts..."
-ls -al $TASK_WORKDIR/artifacts
