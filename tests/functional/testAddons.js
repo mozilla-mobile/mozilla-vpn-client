@@ -389,7 +389,10 @@ describe('Addons', function() {
               expectedTimestamp = "Yesterday";
             }
 
-            assert.equal(actualTimestamp, expectedTimestamp);
+            // TODO: Remove this hack once all platforms and tests are on Qt 6.6
+            assert.equal(
+                actualTimestamp.replace(/\s/g, ''),
+                expectedTimestamp.replace(/\s/g, ''));
         }
         assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
 
