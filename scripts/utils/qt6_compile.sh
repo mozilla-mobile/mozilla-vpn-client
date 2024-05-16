@@ -74,6 +74,7 @@ LINUX="
   -opengl es2 \
   -no-icu \
   -no-linuxfb \
+  -fontconfig \
   -bundled-xcb-xinput \
   -feature-qdbus \
   -xcb \
