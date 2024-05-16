@@ -36,10 +36,11 @@ RUN locale-gen "$LANG"
 # %include taskcluster/scripts/build/linux_build_flatpak.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_flatpak.sh /root/builder.sh
 
-# The flatpak manifest to be build should be in the source volume.
-VOLUME /mnt/source
-
-# The generated flatpaks will be sent to the artifacts volume.
+# MOZ_FETCHES_DIR gets mounted here.
+VOLUME /mnt/fetches
+# VCS_PATH gets mounted here.
+VOLUME /mnt/checkouts
+# ${TASK_WORKDIR}/artifacts gets mounted here.
 VOLUME /mnt/artifacts
 
 # Running the container builds a flatpak

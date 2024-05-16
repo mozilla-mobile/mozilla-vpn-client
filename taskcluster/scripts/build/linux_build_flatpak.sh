@@ -6,13 +6,12 @@
 
 set -e
 
-SOURCE_DIR=/mnt/source
 ARTIFACT_DIR=/mnt/artifacts
 
 # Find the app-id and manifest in the mounted source directory.
 FLATPAK_APP_ID=
 FLATPAK_APP_MANIFEST=
-for srcfile in $(find ${SOURCE_DIR} -name '*.yml') $(find ${SOURCE_DIR} -name '*.yaml'); do
+for srcfile in $(find ${MOZ_FETCHES_DIR} -name '*.yml') $(find ${MOZ_FETCHES_DIR} -name '*.yaml'); do
     if yq -e '."app-id"' $srcfile &> /dev/null; then
         FLATPAK_APP_ID=$(yq -re '."app-id"' $srcfile)
         FLATPAK_APP_MANIFEST="$srcfile"
