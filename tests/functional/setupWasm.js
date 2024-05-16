@@ -36,6 +36,9 @@ let url;
 
 exports.mochaHooks = {
   async beforeAll() {
+    // The webdriver can take up to 60s to try and connect.
+    this.timeout(90000);
+
     console.log("DEBUG beforeAll started");
     if (process.env['MZ_WASM_URL']) {
       url = process.env['MZ_WASM_URL'];
@@ -44,15 +47,10 @@ exports.mochaHooks = {
       url = wasm.url;
     }
 
-    console.log("DEBUG B");
     await guardian.start(false);
-    console.log("DEBUG C");
     await fxaServer.start(guardian.url, false);
-    console.log("DEBUG D");
     await addonServer.start(false);
-    console.log("DEBUG E");
     await captivePortalServer.start(false);
-    console.log("DEBUG F");
 
     const u = new URL(`${url}/test.html`);
     u.searchParams.set('guardian', guardian.url);
