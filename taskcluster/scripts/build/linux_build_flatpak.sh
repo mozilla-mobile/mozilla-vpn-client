@@ -18,7 +18,7 @@ for srcfile in $(find ${MOZ_FETCHES_DIR} -name '*.yml') $(find ${MOZ_FETCHES_DIR
     fi
 done
 if [ -z "$FLATPAK_APP_ID" ] || [ -z "$FLATPAK_APP_MANIFEST" ]; then
-    echo "Failed to locate flatpak manifest in $SOURCE_DIR" >&2
+    echo "Failed to locate flatpak manifest in $MOZ_FETCHES_DIR" >&2
     exit 1
 fi
 

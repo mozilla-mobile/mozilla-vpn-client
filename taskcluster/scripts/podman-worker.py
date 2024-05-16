@@ -39,7 +39,7 @@ moz_fetches_dir = os.path.realpath(os.environ.get("MOZ_FETCHES_DIR"))
 
 # Load the podman image.
 image_filename = os.path.join(moz_fetches_dir, 'image.tar.zst')
-print(f"Loading podman image from: {image_filename}", file=sys.stdout)
+print(f"Loading podman image from: {image_filename}")
 sys.stdout.flush()
 image_data = load_podman_image(image_filename)
 image_config = image_data["Config"]
@@ -54,7 +54,7 @@ if '/mnt/checkout' in volumes:
     vcs_path = os.path.realpath(os.environ.get("VCS_PATH"))
     worker_args.append(f"--volume={vcs_path}:/mnt/checkout:ro")
 if '/mnt/fetches' in volumes:
-    worker_args.append(f"--volume={moz_fetches_dir}:/mnt/feteches:ro")
+    worker_args.append(f"--volume={moz_fetches_dir}:/mnt/fetches:ro")
 if 'mnt/artifacts' in volumes:
     artifact_dir = os.path.join(os.environ.get("TASK_WORKDIR"), 'artifacts')
     worker_args.append(f"--volume={artifact_dir}:/mnt/artifacts:rw")
@@ -79,5 +79,6 @@ if len(image_data["RepoTags"]) > 0:
     print(f'Running podman image: {image_data["RepoTags"][0]}')
 else:
     print(f'Running podman image: {image_data["Id"]}')
+sys.stdout.flush()
 x = subprocess.run(worker_args, stdout=sys.stdout, stderr=sys.stderr)
 sys.exit(x.returncode)
