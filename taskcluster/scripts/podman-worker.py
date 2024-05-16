@@ -8,13 +8,14 @@ import json
 import os
 import subprocess
 import sys
-import taskcluster
 import tempfile
+import urllib
 
 def get_task_payload():
-    url = os.environ.get("TASKCLUSTER_ROOT_URL", "https://firefox-ci-tc.services.mozilla.com")
-    queue = taskcluster.Queue({"rootUrl": url})
-    return queue.task(os.environ.get("TASK_ID"))["payload"]
+    rootUrl = os.environ.get("TASKCLUSTER_ROOT_URL", "https://firefox-ci-tc.services.mozilla.com")
+    taskUrl = urllib.parse.urljoin(rootUrl, f'api/queue/v1/task/{os.environ.get("TASK_ID")}')
+    with urllib.request.urlopen(taskUrl) as req:
+        return json.load(req)["payload"]
 
 # Load the podman image and return its description in JSON
 def load_podman_image(path):
