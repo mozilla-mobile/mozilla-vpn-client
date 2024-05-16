@@ -39,15 +39,17 @@ moz_fetches_dir = os.path.realpath(os.environ.get("MOZ_FETCHES_DIR"))
 
 # Load the podman image.
 image_filename = os.path.join(moz_fetches_dir, 'image.tar.zst')
-print(f"Loading podman image from: {image_filename}")
+print(f"Loading podman image from: {image_filename}", file=os.stdout)
+os.sydout.flush()
 image_data = load_podman_image(image_filename)
+image_config = image_data["Config"]
 
 # Prepare the task arguments
 worker_env = get_task_payload()["env"]
 worker_args = ['podman', 'run', '--rm', '--privileged']
 
 # Mount volumes into the container
-volumes = image_data["Config"]["Volumes"]
+volumes = image_config["Volumes"]
 if '/mnt/checkout' in volumes:
     vcs_path = os.path.realpath(os.environ.get("VCS_PATH"))
     worker_args.append(f"--volume={vcs_path}:/mnt/checkout:ro")
@@ -61,7 +63,7 @@ if 'mnt/artifacts' in volumes:
 # Propagate the task environment into the container, while tweaking paths.
 worker_env["VCS_PATH"] = '/mnt/checkout'
 worker_env["MOZ_FETCHES_DIR"] = '/mnt/fetches'
-worker_env["TASK_WORKDIR"] = image_data["Config"]["WorkingDir"]
+worker_env["TASK_WORKDIR"] = image_config.get("WorkingDir", "/")
 worker_env_file = tempfile.NamedTemporaryFile(mode='w+', prefix='env-', suffix='.txt', encoding='utf-8')
 for key in worker_env:
     print(f'{key}={worker_env[key]}', file=worker_env_file)
