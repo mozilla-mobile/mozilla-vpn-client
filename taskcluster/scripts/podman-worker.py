@@ -9,7 +9,8 @@ import os
 import subprocess
 import sys
 import tempfile
-import urllib
+import urllib.parse
+import urllib.request
 
 def get_task_payload():
     rootUrl = os.environ.get("TASKCLUSTER_ROOT_URL", "https://firefox-ci-tc.services.mozilla.com")
