@@ -36,10 +36,9 @@ let url;
 
 exports.mochaHooks = {
   async beforeAll() {
-    // The webdriver can take up to 60s to try and connect.
+    // Give the webdriver a bit more time to connect
     this.timeout(90000);
 
-    console.log("DEBUG beforeAll started");
     if (process.env['MZ_WASM_URL']) {
       url = process.env['MZ_WASM_URL'];
     } else {
@@ -76,13 +75,11 @@ exports.mochaHooks = {
         new firefox.ServiceBuilder()
           .setStdio([
             'ignore',
-            process.stderr,
-            process.stderr,
+            fs.openSync(stdout, 'w'),
+            'ignore',
           ])
       )
       .build();
-
-      console.log("DEBUG beforeAll complete");
   },
 
   async afterAll() {
