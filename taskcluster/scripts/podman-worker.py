@@ -39,8 +39,8 @@ moz_fetches_dir = os.path.realpath(os.environ.get("MOZ_FETCHES_DIR"))
 
 # Load the podman image.
 image_filename = os.path.join(moz_fetches_dir, 'image.tar.zst')
-print(f"Loading podman image from: {image_filename}", file=os.stdout)
-os.sydout.flush()
+print(f"Loading podman image from: {image_filename}", file=sys.stdout)
+sys.stdout.flush()
 image_data = load_podman_image(image_filename)
 image_config = image_data["Config"]
 
