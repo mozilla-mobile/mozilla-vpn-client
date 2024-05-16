@@ -36,6 +36,9 @@ let url;
 
 exports.mochaHooks = {
   async beforeAll() {
+    // Give the webdriver a bit more time to connect
+    this.timeout(90000);
+
     if (process.env['MZ_WASM_URL']) {
       url = process.env['MZ_WASM_URL'];
     } else {

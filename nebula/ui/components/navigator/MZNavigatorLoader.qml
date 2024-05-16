@@ -17,6 +17,7 @@ StackView {
 
   property var screens: []
   property var currentLoadPolicy: null
+  property bool ready: !empty && !busy
 
   function showCurrentComponent() {
       if (stackView.currentLoadPolicy === MZNavigator.LoadTemporarily) {

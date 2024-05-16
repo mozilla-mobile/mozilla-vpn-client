@@ -39,7 +39,7 @@ describe('Devices', function() {
       const devicesTelemetryScreenId = "my_devices"
 
       it('Checking devices screen impression telemetry', async () => {
-        const myDevicesScreenEvents = await vpn.gleanTestGetValue("impression", "myDevicesScreen", "main");
+        const myDevicesScreenEvents = await vpn.waitForGleanValue("impression", "myDevicesScreen", "main");
         assert.equal(myDevicesScreenEvents.length, 1);
         const myDevicesScreenEventsExtras = myDevicesScreenEvents[0].extra;
         assert.equal(devicesTelemetryScreenId, myDevicesScreenEventsExtras.screen);
@@ -50,21 +50,21 @@ describe('Devices', function() {
 
         await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
 
-        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
         assert.equal(helpTooltipSelectedEvents.length, 1);
         const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
         assert.equal(devicesTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
 
         await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
 
-        const myDevicesInfoScreenEvents = await vpn.gleanTestGetValue("impression", "myDevicesInfoScreen", "main");
+        const myDevicesInfoScreenEvents = await vpn.waitForGleanValue("impression", "myDevicesInfoScreen", "main");
         assert.equal(myDevicesInfoScreenEvents.length, 1);
         const myDevicesInfoScreenEventsExtras = myDevicesInfoScreenEvents[0].extra;
         assert.equal(devicesHelpSheetTelemetryScreenId, myDevicesInfoScreenEventsExtras.screen);
 
         await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
         assert.equal(learnMoreSelectedEvents.length, 1);
         const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
         assert.equal(devicesHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);

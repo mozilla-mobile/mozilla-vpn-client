@@ -23,7 +23,7 @@ MZClickableRow {
     property alias serverCountryName: countryName.text
     property var cityList: cityListVisible ? cityLoader.item : cityLoader
     property var cityListExpandedHeight: 54 * cities.length
-    property var busy: cityListVisible && (scrollAnimation.running || listOpenTransition.running || listClosedTransition.running)
+    property bool ready: cityListVisible && !(scrollAnimation.running || listOpenTransition.running || listClosedTransition.running)
 
     Component.onCompleted:{
        cityLoader.active = cityListVisible

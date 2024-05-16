@@ -338,6 +338,16 @@ module.exports = {
     return json.value || null;
   },
 
+  async waitForGleanValue(metricCategory, metricName, ping, count = 1) {
+    // Wait for at least 'count' pings to be recorded, and return them.
+    let result = null;
+    await this.waitForCondition(async () => {
+      result = await this.gleanTestGetValue(metricCategory, metricName, ping);
+      return result.length >= count;
+    });
+    return result;
+  },
+
   async getLastUrl() {
     return await this.getMozillaProperty(
         'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');

@@ -51,7 +51,7 @@ class QmlQueryComposer {
   }
 
   ready() {
-    return this.prop('busy', false);
+    return this.prop('ready', true);
   }
 
   opened() {

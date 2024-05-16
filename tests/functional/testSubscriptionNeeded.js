@@ -48,7 +48,7 @@ describe("subscription needed tests", function() {
       });
 
       it("impression event is recorded", async () => {
-        const  subNeededImpression = await vpn.gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
+        const  subNeededImpression = await vpn.waitForGleanValue("impression", "subscriptionNeededScreen", "main");
         assert.strictEqual(subNeededImpression.length, 1)
         const enterEmailViewEventExtras = subNeededImpression[0].extra;
         assert.strictEqual(screen, enterEmailViewEventExtras.screen);
@@ -91,7 +91,7 @@ describe("subscription needed tests", function() {
       it("subscribe now button event is recorded", async () => {
         // Click the "Subscribe now" button
         await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
-        const subscriptionNeededViewEvents = await vpn.gleanTestGetValue("impression", "subscriptionNeededScreen", "main");
+        const subscriptionNeededViewEvents = await vpn.waitForGleanValue("impression", "subscriptionNeededScreen", "main");
         const subscriptionNeededViewEventExtras = subscriptionNeededViewEvents[0].extra;
         assert.strictEqual(screen, subscriptionNeededViewEventExtras.screen);
       });

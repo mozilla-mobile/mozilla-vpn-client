@@ -133,13 +133,10 @@ jobs:
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
-        uses: nick-invision/retry@v3
-        with:
-          timeout_minutes: 15
-          max_attempts: 3
-          command: |
-            export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-            export HEADLESS=yes
-            export WASM_BUILD_DIRECTORY=$(pwd)/build/wasm_build
-            export MVPN_ADDONS_PATH=$(pwd)/build/addons
-            xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{ matrix.test.path }}
+        env:
+          HEADLESS: yes
+          WASM_BUILD_DIRECTORY: ${{ github.workspace }}/build/wasm_build
+          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
+        run: |
+          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+          xvfb-run -a npm run functionalTestWasm --  --retries 3 ${{ matrix.test.path }}

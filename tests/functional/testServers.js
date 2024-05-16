@@ -273,7 +273,7 @@ describe('Server', function() {
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-        const locationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "locationSinglehopScreen", "main");
+        const locationSinglehopScreenEvents = await vpn.waitForGleanValue("impression", "locationSinglehopScreen", "main");
         assert.equal(locationSinglehopScreenEvents.length, 1);
         const locationSinglehopScreenEventsExtras = locationSinglehopScreenEvents[0].extra;
         assert.equal(singleHopTelemetryScreenId, locationSinglehopScreenEventsExtras.screen);
@@ -286,7 +286,7 @@ describe('Server', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.SINGLEHOP_SELECTOR_TAB.visible());
 
-        const locationSinglehopScreenEvents = await vpn.gleanTestGetValue("impression", "locationSinglehopScreen", "main");
+        const locationSinglehopScreenEvents = await vpn.waitForGleanValue("impression", "locationSinglehopScreen", "main");
         assert.equal(locationSinglehopScreenEvents.length, 1);
         const locationSinglehopScreenEventsExtras = locationSinglehopScreenEvents[0].extra;
         assert.equal(singleHopTelemetryScreenId, locationSinglehopScreenEventsExtras.screen);
@@ -298,21 +298,21 @@ describe('Server', function() {
 
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_BUTTON.visible());
 
-        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
         assert.equal(helpTooltipSelectedEvents.length, 1);
         const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
         assert.equal(singleHopTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
 
         await vpn.waitForQuery(queries.screenHome.serverListView.HELP_SHEET.opened());
 
-        const locationInfoScreenEvents = await vpn.gleanTestGetValue("impression", "locationInfoScreen", "main");
+        const locationInfoScreenEvents = await vpn.waitForGleanValue("impression", "locationInfoScreen", "main");
         assert.equal(locationInfoScreenEvents.length, 1);
         const locationInfoScreenEventsExtras = locationInfoScreenEvents[0].extra;
         assert.equal(locationSheetTelemetryScreenId, locationInfoScreenEventsExtras.screen);
 
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-        const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
         assert.equal(learnMoreSelectedEvents.length, 1);
         const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
         assert.equal(locationSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
@@ -328,7 +328,7 @@ describe('Server', function() {
         await vpn.waitForQueryAndClick(queries.screenHome.SERVER_LIST_BUTTON.visible());
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-        const locationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "locationMultihopScreen", "main");
+        const locationMultihopScreenEvents = await vpn.waitForGleanValue("impression", "locationMultihopScreen", "main");
         assert.equal(locationMultihopScreenEvents.length, 1);
         const locationMultihopScreenEventsExtras = locationMultihopScreenEvents[0].extra;
         assert.equal(multiHopTelemetryScreenId, locationMultihopScreenEventsExtras.screen);
@@ -341,7 +341,7 @@ describe('Server', function() {
         await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
         await vpn.waitForQueryAndClick(queries.screenHome.serverListView.MULTIHOP_SELECTOR_TAB.visible());
 
-        const locationMultihopScreenEvents = await vpn.gleanTestGetValue("impression", "locationMultihopScreen", "main");
+        const locationMultihopScreenEvents = await vpn.waitForGleanValue("impression", "locationMultihopScreen", "main");
         assert.equal(locationMultihopScreenEvents.length, 1);
         const locationMultihopScreenEventsExtras = locationMultihopScreenEvents[0].extra;
         assert.equal(multiHopTelemetryScreenId, locationMultihopScreenEventsExtras.screen);
@@ -357,7 +357,7 @@ describe('Server', function() {
 
         //We only need to test the helpTooltipSelected event as it has a different extra key value (multihop instead of singlehop)
         //Eventhing else related to the sheet is tested in the singlehop tests
-        const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
         assert.equal(helpTooltipSelectedEvents.length, 1);
         const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
         assert.equal(multiHopTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);

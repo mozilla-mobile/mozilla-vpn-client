@@ -383,7 +383,7 @@ describe('Onboarding', function() {
 
     it('Onboarding started event is recorded', async () => {
       await vpn.waitForQuery(queries.screenOnboarding.ONBOARDING_VIEW.visible());
-      let onboardingStartedEvents = await vpn.gleanTestGetValue("outcome", "onboardingStarted", "main");
+      let onboardingStartedEvents = await vpn.waitForGleanValue("outcome", "onboardingStarted", "main");
       assert.equal(onboardingStartedEvents.length, 1);
 
       //Quit and relaunch the app
@@ -403,13 +403,13 @@ describe('Onboarding', function() {
 
       await vpn.completeOnboarding()
 
-      let onboardingCompletedEvents = await vpn.gleanTestGetValue("outcome", "onboardingCompleted", "main");
+      let onboardingCompletedEvents = await vpn.waitForGleanValue("outcome", "onboardingCompleted", "main");
       assert.equal(onboardingCompletedEvents.length, 1);
     });
 
     it('Onboarding slide impression events are recorded', async () => {
       //Verify that dataCollectionScreen event is recorded
-      const dataCollectionScreenEvents = await vpn.gleanTestGetValue("impression", "dataCollectionScreen", "main");
+      const dataCollectionScreenEvents = await vpn.waitForGleanValue("impression", "dataCollectionScreen", "main");
       assert.equal(dataCollectionScreenEvents.length, 1);
       const dataCollectionScreenEventsExtras = dataCollectionScreenEvents[0].extra;
       assert.equal(dataScreenTelemetryId, dataCollectionScreenEventsExtras.screen);
@@ -417,7 +417,7 @@ describe('Onboarding', function() {
       await advanceToSlide(1)
 
       //Verify that getMorePrivacyScreen event is recorded
-      const getMorePrivacyScreenEvents = await vpn.gleanTestGetValue("impression", "getMorePrivacyScreen", "main");
+      const getMorePrivacyScreenEvents = await vpn.waitForGleanValue("impression", "getMorePrivacyScreen", "main");
       assert.equal(getMorePrivacyScreenEvents.length, 1);
       const getMorePrivacyScreenEventsExtras = getMorePrivacyScreenEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, getMorePrivacyScreenEventsExtras.screen);
@@ -425,7 +425,7 @@ describe('Onboarding', function() {
       await advanceToSlide(2)
 
       //Verify that installOn5DevicesScreen event is recorded
-      const installOn5DevicesScreenEvents = await vpn.gleanTestGetValue("impression", "installOn5DevicesScreen", "main");
+      const installOn5DevicesScreenEvents = await vpn.waitForGleanValue("impression", "installOn5DevicesScreen", "main");
       assert.equal(installOn5DevicesScreenEvents.length, 1);
       const installOn5DevicesScreenEventsExtras = installOn5DevicesScreenEvents[0].extra;
       assert.equal(devicesScreenTelemetryId, installOn5DevicesScreenEventsExtras.screen);
@@ -433,7 +433,7 @@ describe('Onboarding', function() {
       await advanceToSlide(3)
 
       //Verify that connectOnStartupScreen event is recorded
-      const connectOnStartupScreenEvents = await vpn.gleanTestGetValue("impression", "connectOnStartupScreen", "main");
+      const connectOnStartupScreenEvents = await vpn.waitForGleanValue("impression", "connectOnStartupScreen", "main");
       assert.equal(connectOnStartupScreenEvents.length, 1);
       const connectOnStartupScreenEventsExtras = connectOnStartupScreenEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupScreenEventsExtras.screen);
@@ -504,7 +504,7 @@ describe('Onboarding', function() {
 
       //Ensure addDevicesSelected event is recorded from the start screen
       await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
-      addDevicesSelectedEvents = await vpn.gleanTestGetValue("interaction", "addDevicesSelected", "main");
+      addDevicesSelectedEvents = await vpn.waitForGleanValue("interaction", "addDevicesSelected", "main");
       assert.equal(addDevicesSelectedEvents.length, 1);
       let addDevicesSelectedEventsExtras = addDevicesSelectedEvents[0].extra;
       assert.equal(startScreenTelemetryId, addDevicesSelectedEventsExtras.screen);
@@ -536,7 +536,7 @@ describe('Onboarding', function() {
 
       //Verify that privacyNoticedSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_PRIVACY_LINK.visible());
-      const privacyNoticeSelectedEvents = await vpn.gleanTestGetValue("interaction", "privacyNoticeSelected", "main");
+      const privacyNoticeSelectedEvents = await vpn.waitForGleanValue("interaction", "privacyNoticeSelected", "main");
       assert.equal(privacyNoticeSelectedEvents.length, 1);
       const privacyNoticeSelectedEventsExtras = privacyNoticeSelectedEvents[0].extra;
       assert.equal(dataScreenTelemetryId, privacyNoticeSelectedEventsExtras.screen);
@@ -547,7 +547,7 @@ describe('Onboarding', function() {
 
       //Verify that continueSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      const continueSelectedEvents = await vpn.waitForGleanValue("interaction", "continueSelected", "main");
       assert.equal(continueSelectedEvents.length, 1);
       const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
       assert.equal(dataScreenTelemetryId, continueSelectedEventsExtras.screen);
@@ -560,7 +560,7 @@ describe('Onboarding', function() {
 
       //Verify that blockAdsEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_ADS_TOGGLE.visible());
-      const blockAdsEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockAdsEnabled", "main");
+      const blockAdsEnabledEvents = await vpn.waitForGleanValue("interaction", "blockAdsEnabled", "main");
       assert.equal(blockAdsEnabledEvents.length, 1);
       const blockAdsEnabledEventsExtras = blockAdsEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockAdsEnabledEventsExtras.screen);
@@ -574,35 +574,35 @@ describe('Onboarding', function() {
 
       //Verify that blockTrackersEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE.visible());
-      const blockTrackersEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersEnabled", "main");
+      const blockTrackersEnabledEvents = await vpn.waitForGleanValue("interaction", "blockTrackersEnabled", "main");
       assert.equal(blockTrackersEnabledEvents.length, 1);
       const blockTrackersEnabledEventsExtras = blockTrackersEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockTrackersEnabledEventsExtras.screen);
 
       //Verify that blockTrackersDisabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_TRACKERS_TOGGLE.visible());
-      const blockTrackersDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockTrackersDisabled", "main");
+      const blockTrackersDisabledEvents = await vpn.waitForGleanValue("interaction", "blockTrackersDisabled", "main");
       assert.equal(blockTrackersDisabledEvents.length, 1);
       const blockTrackersDisabledEventsExtras = blockTrackersDisabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockTrackersDisabledEventsExtras.screen);
 
       //Verify that blockMalwareEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE.visible());
-      const blockMalwareEnabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareEnabled", "main");
+      const blockMalwareEnabledEvents = await vpn.waitForGleanValue("interaction", "blockMalwareEnabled", "main");
       assert.equal(blockMalwareEnabledEvents.length, 1);
       const blockMalwareEnabledEventsExtras = blockMalwareEnabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockMalwareEnabledEventsExtras.screen);
 
       //Verify that blockMalwareDisabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BLOCK_MALWARE_TOGGLE.visible());
-      const blockMalwareDisabledEvents = await vpn.gleanTestGetValue("interaction", "blockMalwareDisabled", "main");
+      const blockMalwareDisabledEvents = await vpn.waitForGleanValue("interaction", "blockMalwareDisabled", "main");
       assert.equal(blockMalwareDisabledEvents.length, 1);
       const blockMalwareDisabledEventsExtras = blockMalwareDisabledEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, blockMalwareDisabledEventsExtras.screen);
 
       //Verify that goBackSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_BACK_BUTTON.visible());
-      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      const goBackSelectedEvents = await vpn.waitForGleanValue("interaction", "goBackSelected", "main");
       assert.equal(goBackSelectedEvents.length, 1);
       const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, goBackSelectedEventsExtras.screen);
@@ -615,7 +615,7 @@ describe('Onboarding', function() {
 
       //Verify that continueSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      const continueSelectedEvents = await vpn.waitForGleanValue("interaction", "continueSelected", "main");
       assert.equal(continueSelectedEvents.length, 1);
       const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
       assert.equal(privacyScreenTelemetryId, continueSelectedEventsExtras.screen);
@@ -630,14 +630,14 @@ describe('Onboarding', function() {
         //[Android, Windows, Linux] Starting with Android - switch to iOS and back to Android
         //Verify that showIosQrSelected event is recorded
         await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
-        const showIosQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showIosQrSelected", "main");
+        const showIosQrSelectedEvents = await vpn.waitForGleanValue("interaction", "showIosQrSelected", "main");
         assert.equal(showIosQrSelectedEvents.length, 1);
         const showIosQrSelectedEventsExtras = showIosQrSelectedEvents[0].extra;
         assert.equal(devicesScreenTelemetryId, showIosQrSelectedEventsExtras.screen);
 
         //Verify that showAndroidQrSelected event is recorded
         await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
-        const showAndroidQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showAndroidQrSelected", "main");
+        const showAndroidQrSelectedEvents = await vpn.waitForGleanValue("interaction", "showAndroidQrSelected", "main");
         assert.equal(showAndroidQrSelectedEvents.length, 1);
         const showAndroidQrSelectedEventsExtras = showAndroidQrSelectedEvents[0].extra;
         assert.equal(devicesScreenTelemetryId, showAndroidQrSelectedEventsExtras.screen);
@@ -647,14 +647,14 @@ describe('Onboarding', function() {
         //[iOS, macOS] Starting with iOS - switch to Android and back to iOS
         //Verify that showAndroidQrSelected event is recorded
         await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_ANDROID.visible());
-        const showAndroidQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showAndroidQrSelected", "main");
+        const showAndroidQrSelectedEvents = await vpn.waitForGleanValue("interaction", "showAndroidQrSelected", "main");
         assert.equal(showAndroidQrSelectedEvents.length, 1);
         const showAndroidQrSelectedEventsExtras = showAndroidQrSelectedEvents[0].extra;
         assert.equal(devicesScreenTelemetryId, showAndroidQrSelectedEventsExtras.screen);
 
         //Verify that showIosQrSelected event is recorded
         await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_TOGGLE_BTN_IOS.visible());
-        const showIosQrSelectedEvents = await vpn.gleanTestGetValue("interaction", "showIosQrSelected", "main");
+        const showIosQrSelectedEvents = await vpn.waitForGleanValue("interaction", "showIosQrSelected", "main");
         assert.equal(showIosQrSelectedEvents.length, 1);
         const showIosQrSelectedEventsExtras = showIosQrSelectedEvents[0].extra;
         assert.equal(devicesScreenTelemetryId, showIosQrSelectedEventsExtras.screen);
@@ -662,7 +662,7 @@ describe('Onboarding', function() {
 
       //Verify that goBackSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_BACK_BUTTON.visible());
-      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      const goBackSelectedEvents = await vpn.waitForGleanValue("interaction", "goBackSelected", "main");
       assert.equal(goBackSelectedEvents.length, 1);
       const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
       assert.equal(devicesScreenTelemetryId, goBackSelectedEventsExtras.screen);
@@ -675,7 +675,7 @@ describe('Onboarding', function() {
 
       //Verify that continueSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-      const continueSelectedEvents = await vpn.gleanTestGetValue("interaction", "continueSelected", "main");
+      const continueSelectedEvents = await vpn.waitForGleanValue("interaction", "continueSelected", "main");
       assert.equal(continueSelectedEvents.length, 1);
       const continueSelectedEventsExtras = continueSelectedEvents[0].extra;
       assert.equal(devicesScreenTelemetryId, continueSelectedEventsExtras.screen);
@@ -688,21 +688,21 @@ describe('Onboarding', function() {
 
       //Verify that connectOnStartupEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupEnabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupEnabled", "main");
+      const connectOnStartupEnabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupEnabled", "main");
       assert.equal(connectOnStartupEnabledEvents.length, 1);
       const connectOnStartupEnabledEventsExtras = connectOnStartupEnabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupEnabledEventsExtras.screen);
 
       //Verify that connectOnStartupDisabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupDisabledEvents = await vpn.gleanTestGetValue("interaction", "connectOnStartupDisabled", "main");
+      const connectOnStartupDisabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupDisabled", "main");
       assert.equal(connectOnStartupDisabledEvents.length, 1);
       const connectOnStartupDisabledEventsExtras = connectOnStartupDisabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupDisabledEventsExtras.screen);
 
       //Verify that goBackSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_BACK_BUTTON.visible());
-      const goBackSelectedEvents = await vpn.gleanTestGetValue("interaction", "goBackSelected", "main");
+      const goBackSelectedEvents = await vpn.waitForGleanValue("interaction", "goBackSelected", "main");
       assert.equal(goBackSelectedEvents.length, 1);
       const goBackSelectedEventsExtras = goBackSelectedEvents[0].extra;
       assert.equal(startScreenTelemetryId, goBackSelectedEventsExtras.screen);
@@ -719,7 +719,7 @@ describe('Onboarding', function() {
 
       //Verify that getStartedSelected event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-      const getStartedSelectedEvents = await vpn.gleanTestGetValue("interaction", "getStartedSelected", "main");
+      const getStartedSelectedEvents = await vpn.waitForGleanValue("interaction", "getStartedSelected", "main");
       assert.equal(getStartedSelectedEvents.length, 1);
       const getStartedSelectedEventsExtras = getStartedSelectedEvents[0].extra;
       assert.equal(startScreenTelemetryId, getStartedSelectedEventsExtras.screen);
