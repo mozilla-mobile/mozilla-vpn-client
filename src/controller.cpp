@@ -625,13 +625,12 @@ bool Controller::silentSwitchServers(
       return false;
     }
 
-    isSwitchingServer = true;
-
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 
+  isSwitchingServer = true;
   m_nextServerData = m_serverData;
   m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
                                     ? RandomizeServerSelection
