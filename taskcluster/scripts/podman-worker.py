@@ -55,7 +55,7 @@ if '/mnt/checkout' in volumes:
     worker_args.append(f"--volume={vcs_path}:/mnt/checkout:ro")
 if '/mnt/fetches' in volumes:
     worker_args.append(f"--volume={moz_fetches_dir}:/mnt/fetches:ro")
-if 'mnt/artifacts' in volumes:
+if '/mnt/artifacts' in volumes:
     artifact_dir = os.path.join(os.environ.get("TASK_WORKDIR"), 'artifacts')
     worker_args.append(f"--volume={artifact_dir}:/mnt/artifacts:rw")
     os.makedirs(artifact_dir, exist_ok=True)
