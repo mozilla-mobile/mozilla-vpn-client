@@ -74,6 +74,7 @@ LINUX="
   -opengl es2 \
   -no-icu \
   -no-linuxfb \
+  -system-freetype \
   -fontconfig \
   -bundled-xcb-xinput \
   -feature-qdbus \
@@ -87,6 +88,7 @@ MACOS="
   -no-feature-quickcontrols2-ios \
   -no-feature-quickcontrols2-macos \
   -no-feature-qdbus \
+  -qt-freetype \
   -appstore-compliant \
   -feature-texthtmlparser \ 
   -- \
@@ -189,7 +191,6 @@ mkdir -p $BUILDDIR
   -qt-libpng \
   -qt-zlib \
   -qt-pcre \
-  -qt-freetype \
   $PLATFORM) || die "Configuration error."
 
 print Y "Compiling..."
