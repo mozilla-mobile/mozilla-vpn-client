@@ -65,7 +65,8 @@ bool DaemonLocalServer::initialize() {
   return true;
 }
 
-QString DaemonLocalServer::daemonPath() const {
+// static
+QString DaemonLocalServer::daemonPath() {
 #if defined(MZ_WINDOWS)
   return "\\\\.\\pipe\\mozillavpn";
 #elif defined(MZ_MACOS)

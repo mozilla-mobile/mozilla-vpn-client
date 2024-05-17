@@ -5,13 +5,19 @@
 #ifndef MOCKDAEMON_H
 #define MOCKDAEMON_H
 
+#include <QLocalServer>
+#include <QString>
+
 #include "daemon/daemon.h"
+#include "dnsutilsmock.h"
 #include "wireguardutilsmock.h"
 
 class MockDaemon final : public Daemon {
+  Q_OBJECT
 
  public:
-  MockDaemon();
+  MockDaemon(QObject* parent = nullptr);
+  MockDaemon(const QString& name, QObject* parent = nullptr);
   ~MockDaemon();
 
   static MockDaemon* instance();
@@ -19,8 +25,15 @@ class MockDaemon final : public Daemon {
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
+  DnsUtils* dnsutils() override { return m_dnsutils; }
+
+ private slots:
+  void newConnection();
 
  private:
+  QString m_socketName;
+  QLocalServer m_server;
+  DnsUtilsMock* m_dnsutils = nullptr;
   WireguardUtilsMock* m_wgutils = nullptr;
 };
 

@@ -4,17 +4,10 @@
 
 #include "mockdaemon.h"
 
-#include <QCoreApplication>
-#include <QDir>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 #include <QLocalSocket>
-#include <QProcess>
-#include <QSettings>
-#include <QTextStream>
-#include <QtGlobal>
+#include <QRandomGenerator>
 
+#include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -23,11 +16,25 @@ Logger logger("MockDaemon");
 MockDaemon* s_daemon = nullptr;
 }  // namespace
 
-MockDaemon::MockDaemon() : Daemon(nullptr) {
+MockDaemon::MockDaemon(QObject* parent) : 
+  MockDaemon("mozillavpn-mock-" + QString::number(QRandomGenerator::global()->generate64(), 16), parent) {}
+
+MockDaemon::MockDaemon(const QString& name, QObject* parent) :
+    Daemon(parent), m_socketName(name) {
   MZ_COUNT_CTOR(MockDaemon);
 
   logger.debug() << "Mock daemon created";
 
+  m_server.setSocketOptions(QLocalServer::UserAccessOption);
+  if (!m_server.listen(m_socketName)) {
+    logger.error() << "Failed to create mock daemon socket:"
+                   << m_server.errorString();
+  } else {
+    logger.info() << "Listening at:" << m_server.fullServerName();
+  }
+  connect(&m_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+
+  m_dnsutils = new DnsUtilsMock(this);
   m_wgutils = new WireguardUtilsMock(this);
 
   Q_ASSERT(s_daemon == nullptr);
@@ -58,4 +65,19 @@ bool MockDaemon::activate(const InterfaceConfig& config) {
   mockConfig.m_deviceIpv6Address = "::1";
 
   return Daemon::activate(mockConfig);
+}
+
+void MockDaemon::newConnection() {
+  logger.debug() << "New connection received";
+  if (!m_server.hasPendingConnections()) {
+    return;
+  }
+
+  QLocalSocket* socket = m_server.nextPendingConnection();
+  Q_ASSERT(socket);
+
+  DaemonLocalServerConnection* connection =
+      new DaemonLocalServerConnection(&m_server, socket);
+  connect(socket, &QLocalSocket::disconnected, connection,
+          &DaemonLocalServerConnection::deleteLater);
 }

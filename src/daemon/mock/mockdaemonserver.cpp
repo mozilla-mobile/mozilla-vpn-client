@@ -41,13 +41,7 @@ int MockDaemonServer::run(QStringList& tokens) {
                                             false);
   }
 
-  MockDaemon daemon;
-
-  DaemonLocalServer server(qApp);
-  if (!server.initialize()) {
-    logger.error() << "Failed to initialize the server";
-    return 1;
-  }
+  MockDaemon daemon(DaemonLocalServer::daemonPath());
 
   // Signal handling for a proper shutdown.
   SignalHandler sh;

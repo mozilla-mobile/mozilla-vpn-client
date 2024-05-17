@@ -49,6 +49,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/dnsutilsmock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/dnsutilsmock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemonserver.cpp
