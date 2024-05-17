@@ -116,7 +116,7 @@ fi
 
 # Create the installation prefix, and convert to an absolute path.
 mkdir -p $PREFIX
-PREFIX=(cd $PREFIX && pwd)
+PREFIX=$(cd $PREFIX && pwd)
 
 print Y "Wait..."
 mkdir -p $BUILDDIR
