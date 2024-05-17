@@ -29,4 +29,4 @@ $VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt_dist -b
 
 echo "Creating Qt dist artifact"
 mkdir -p ${TASK_WORKDIR}/public/build
-zip -qr ${TASK_WORKDIR}/public/build/qt6_mac.zip ${TASK_WORKDIR}/qt_dist/*
+(cd ${TASK_WORKDIR} && zip -qr ./public/build/qt6_mac.zip qt_dist/*)
