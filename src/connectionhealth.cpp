@@ -45,6 +45,26 @@ constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   MZ_COUNT_CTOR(ConnectionHealth);
 
+// On mobile, these metrics are recorded in the daemon process.
+#ifndef MZ_MOBILE
+  m_metricsTimer.setSingleShot(false);
+  m_metricsTimer.setInterval(
+      std::chrono::duration_cast<std::chrono::hours>(3h));
+  connect(&m_metricsTimer, &QTimer::timeout, this, []() {
+    MozillaVPN::instance()->controller()->getStatus(
+        [](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
+           uint64_t txBytes, uint64_t rxBytes) {
+          Q_UNUSED(serverIpv4Gateway);
+          Q_UNUSED(deviceIpv4Address);
+
+          mozilla::glean::connection_health::data_transferred_tx.accumulate(
+              txBytes);
+          mozilla::glean::connection_health::data_transferred_rx.accumulate(
+              rxBytes);
+        });
+  });
+#endif
+
   m_noSignalTimer.setSingleShot(true);
 
   m_settlingTimer.setSingleShot(true);
