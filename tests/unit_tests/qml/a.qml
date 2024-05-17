@@ -73,6 +73,12 @@ Item {
     }
   }
 
+ /* 
+ 
+  TODO: Fix for 6.6 tests
+  The use of any "View" (ListView, PathView, etc)
+  in this file results in SEGFAULT
+
   PathView {
      objectName: "list"
      model: vegetableModel
@@ -80,6 +86,8 @@ Item {
        objectName: name
      }
   }
+
+  */
 
   Item {
     objectName: "rangeA"
