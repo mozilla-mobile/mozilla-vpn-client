@@ -208,6 +208,7 @@ def output_rust(objs, output_fd, options={}):
     # This map is only filled for metrics, not for pings.
     objs_by_type = {
         # Implemented metric types needs to be added here.
+        ("CUSTOM_DISTRIBUTION_MAP", "CustomDistributionMetric"): [],
         ("MEMORY_DISTRIBUTION_MAP", "MemoryDistributionMetric"): [],
         ("TIMING_DISTRIBUTION_MAP", "TimingDistributionMetric"): [],
         ("COUNTER_MAP", "CounterMetric"): [],

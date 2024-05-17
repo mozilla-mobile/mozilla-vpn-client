@@ -16,4 +16,5 @@ pub mod quantity;
 pub mod string;
 pub mod timing_distribution;
 pub mod memory_distribution;
+pub mod custom_distribution;
 pub mod uuid;
