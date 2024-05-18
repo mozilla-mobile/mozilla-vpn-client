@@ -16,15 +16,19 @@ Logger logger("MockDaemon");
 MockDaemon* s_daemon = nullptr;
 }  // namespace
 
-MockDaemon::MockDaemon(QObject* parent) : 
-  MockDaemon("mozillavpn-mock-" + QString::number(QRandomGenerator::global()->generate64(), 16), parent) {}
+MockDaemon::MockDaemon(QObject* parent)
+    : MockDaemon(
+          "mozillavpn-mock-" +
+              QString::number(QRandomGenerator::global()->generate64(), 16),
+          parent) {}
 
-MockDaemon::MockDaemon(const QString& name, QObject* parent) :
-    Daemon(parent), m_socketName(name) {
+MockDaemon::MockDaemon(const QString& name, QObject* parent)
+    : Daemon(parent), m_socketName(name) {
   MZ_COUNT_CTOR(MockDaemon);
 
   logger.debug() << "Mock daemon created";
 
+#ifndef MZ_WASM
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
   if (!m_server.listen(m_socketName)) {
     logger.error() << "Failed to create mock daemon socket:"
@@ -42,6 +46,7 @@ MockDaemon::MockDaemon(const QString& name, QObject* parent) :
     Q_ASSERT(socket);
     new DaemonLocalServerConnection(this, socket);
   });
+#endif
 
   m_dnsutils = new DnsUtilsMock(this);
   m_wgutils = new WireguardUtilsMock(this);

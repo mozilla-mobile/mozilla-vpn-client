@@ -11,8 +11,10 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mockdaemon.h"
-#include "mozillavpn.h"
-#include "signalhandler.h"
+
+#ifndef Q_OS_WIN
+#  include "signalhandler.h"
+#endif
 
 namespace {
 Logger logger("MockDaemonServer");
@@ -51,12 +53,14 @@ int MockDaemonServer::run(QStringList& tokens) {
 
   MockDaemon daemon(path);
 
+#ifndef Q_OS_WIN
   // Signal handling for a proper shutdown.
   SignalHandler sh;
   QObject::connect(&sh, &SignalHandler::quitRequested,
                    [&]() { daemon.deactivate(); });
   QObject::connect(&sh, &SignalHandler::quitRequested, &app,
                    &QCoreApplication::quit, Qt::QueuedConnection);
+#endif
 
   return app.exec();
 }

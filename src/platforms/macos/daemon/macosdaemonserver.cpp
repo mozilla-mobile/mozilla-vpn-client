@@ -4,13 +4,13 @@
 
 #include "macosdaemonserver.h"
 
-#include <QCoreApplication>
-#include <QDir>
-#include <QLocalServer>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <QCoreApplication>
+#include <QDir>
+#include <QLocalServer>
 
 #include "commandlineparser.h"
 #include "constants.h"

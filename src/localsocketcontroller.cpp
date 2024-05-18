@@ -273,33 +273,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "status") {
-    QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
-    if (!serverIpv4Gateway.isString()) {
-      logger.error() << "Unexpected serverIpv4Gateway value";
-      return;
-    }
-
-    QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
-    if (!deviceIpv4Address.isString()) {
-      logger.error() << "Unexpected deviceIpv4Address value";
-      return;
-    }
-
-    QJsonValue txBytes = obj.value("txBytes");
-    if (!txBytes.isDouble()) {
-      logger.error() << "Unexpected txBytes value";
-      return;
-    }
-
-    QJsonValue rxBytes = obj.value("rxBytes");
-    if (!rxBytes.isDouble()) {
-      logger.error() << "Unexpected rxBytes value";
-      return;
-    }
-
-    emit statusUpdated(serverIpv4Gateway.toString(),
-                       deviceIpv4Address.toString(), txBytes.toDouble(),
-                       rxBytes.toDouble());
+    emitStatusFromJson(obj);
     return;
   }
 

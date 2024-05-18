@@ -31,9 +31,7 @@ bool WireguardUtilsMock::addInterface(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsMock::deleteInterface() {
-  return true;
-}
+bool WireguardUtilsMock::deleteInterface() { return true; }
 
 bool WireguardUtilsMock::updatePeer(const InterfaceConfig& config) {
   qint64 now = QDateTime::currentMSecsSinceEpoch();

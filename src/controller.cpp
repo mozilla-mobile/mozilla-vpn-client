@@ -12,11 +12,13 @@
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
 #include "controllerimpl.h"
+#include "daemon/mock/mockdaemon.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "localsocketcontroller.h"
 #include "logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -40,14 +42,12 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-#  include "localsocketcontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcontroller.h"
-#else
-#  include "platforms/dummy/dummycontroller.h"
+#elif defined(MZ_WASM)
+#  include "platforms/wasm/wasmcontroller.h"
 #endif
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -135,8 +135,12 @@ void Controller::initialize() {
   m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
   m_impl.reset(new AndroidController());
+#elif defined(MZ_WASM)
+  m_impl.reset(new WasmController());
 #else
-  m_impl.reset(new DummyController());
+  MockDaemon* daemon = new MockDaemon();
+  m_impl.reset(new LocalSocketController(daemon->socketPath()));
+  daemon->setParent(m_impl.get());
 #endif
 
   connect(m_impl.get(), &ControllerImpl::connected, this,

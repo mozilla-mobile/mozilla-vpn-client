@@ -9,11 +9,13 @@
 #include <winsvc.h>
 
 #include <QCoreApplication>
+#include <QLocalServer>
 #include <QThread>
 #include <QTimer>
 
 #include "commandlineparser.h"
 #include "constants.h"
+#include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "windowsdaemon.h"
@@ -80,7 +82,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
   server.setSocketOptions(QLocalServer::WorldAccessOption);
   connect(&server, &QLocalServer::newConnection, [&]() {
     logger.debug() << "New connection received";
-    if (!m_server.hasPendingConnections()) {
+    if (!server.hasPendingConnections()) {
       return;
     }
 

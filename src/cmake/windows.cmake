@@ -33,17 +33,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.cpp

@@ -14,12 +14,10 @@ DnsUtilsMock::DnsUtilsMock(QObject* parent) : DnsUtils(parent) {
   logger.debug() << "DnsUtilsMock created.";
 }
 
-DnsUtilsMock::~DnsUtilsMock() {
-  logger.debug() << "DnsUtilsMock destroyed.";
-}
+DnsUtilsMock::~DnsUtilsMock() { logger.debug() << "DnsUtilsMock destroyed."; }
 
 bool DnsUtilsMock::updateResolvers(const QString& ifname,
-                                    const QList<QHostAddress>& resolvers) {
+                                   const QList<QHostAddress>& resolvers) {
   Q_UNUSED(ifname);
   Q_UNUSED(resolvers);
 

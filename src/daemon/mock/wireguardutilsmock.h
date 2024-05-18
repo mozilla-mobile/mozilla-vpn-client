@@ -5,8 +5,8 @@
 #ifndef WIREGUARDUTILSMOCK_H
 #define WIREGUARDUTILSMOCK_H
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
 
 #include "daemon/wireguardutils.h"
 
