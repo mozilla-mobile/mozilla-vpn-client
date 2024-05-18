@@ -8,7 +8,6 @@
 
 #include "commandlineparser.h"
 #include "constants.h"
-#include "daemon/daemonlocalserver.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mockdaemon.h"
@@ -41,7 +40,16 @@ int MockDaemonServer::run(QStringList& tokens) {
                                             false);
   }
 
-  MockDaemon daemon(DaemonLocalServer::daemonPath());
+  QString path = qEnvironmentVariable("MVPN_CONTROL_SOCKET");
+  if (path.isEmpty()) {
+#ifdef MZ_WINDOWS
+    path = Constants::WINDOWS_DAEMON_PATH;
+#else
+    path = Constants::MACOS_DAEMON_TMP_PATH;
+#endif
+  }
+
+  MockDaemon daemon(path);
 
   // Signal handling for a proper shutdown.
   SignalHandler sh;

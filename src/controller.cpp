@@ -124,13 +124,13 @@ void Controller::initialize() {
 #elif defined(MZ_LINUX)
   m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS)
-  QString path = "/var/run/mozillavpn/daemon.socket";
+  QString path = Constants::MACOS_DAEMON_VAR_PATH;
   if (!QFileInfo::exists(path)) {
-    path = "/tmp/mozillavpn.socket";
+    path = Constants::MACOS_DAEMON_TMP_PATH;
   }
   m_impl.reset(new LocalSocketController(path));
 #elif defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController("\\\\.\\pipe\\mozillavpn"));
+  m_impl.reset(new LocalSocketController(Constants::WINDOWS_DAEMON_PATH));
 #elif defined(MZ_IOS)
   m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)

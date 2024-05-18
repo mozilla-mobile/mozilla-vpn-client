@@ -27,9 +27,6 @@ class MockDaemon final : public Daemon {
   WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
- private slots:
-  void newConnection();
-
  private:
   QString m_socketName;
   QLocalServer m_server;

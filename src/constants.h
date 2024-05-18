@@ -308,6 +308,10 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
 
 constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
 
+constexpr const char* WINDOWS_DAEMON_PATH = "\\\\.\\pipe\\mozillavpn";
+constexpr const char* MACOS_DAEMON_VAR_PATH = "/var/run/mozillavpn/daemon.socket";
+constexpr const char* MACOS_DAEMON_TMP_PATH = "/tmp/mozillavpn.socket";
+
 };  // namespace Constants
 
 #endif  // CONSTANTS_H

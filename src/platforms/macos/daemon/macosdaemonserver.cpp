@@ -5,10 +5,16 @@
 #include "macosdaemonserver.h"
 
 #include <QCoreApplication>
+#include <QDir>
+#include <QLocalServer>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "commandlineparser.h"
 #include "constants.h"
-#include "daemon/daemonlocalserver.h"
+#include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "macosdaemon.h"
@@ -43,8 +49,24 @@ int MacOSDaemonServer::run(QStringList& tokens) {
 
   MacOSDaemon daemon;
 
-  DaemonLocalServer server(qApp);
-  if (!server.initialize()) {
+  QLocalServer server(qApp);
+  server.setSocketOptions(QLocalServer::WorldAccessOption);
+  connect(&server, &QLocalServer::newConnection, [&]() {
+    logger.debug() << "New connection received";
+    if (!server.hasPendingConnections()) {
+      return;
+    }
+
+    QLocalSocket* socket = server.nextPendingConnection();
+    Q_ASSERT(socket);
+    new DaemonLocalServerConnection(&daemon, socket);
+  });
+
+  QString path = daemonPath();
+  if (QFileInfo::exists(path)) {
+    QFile::remove(path);
+  }
+  if (!server.listen(path)) {
     logger.error() << "Failed to initialize the server";
     return 1;
   }
@@ -57,6 +79,32 @@ int MacOSDaemonServer::run(QStringList& tokens) {
                    &QCoreApplication::quit, Qt::QueuedConnection);
 
   return app.exec();
+}
+
+QString MacOSDaemonServer::daemonPath() {
+  QDir dir("/var/run");
+  if (!dir.exists()) {
+    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+
+  if (dir.exists("mozillavpn")) {
+    logger.debug() << "/var/run/mozillavpn seems to be usable";
+    return Constants::MACOS_DAEMON_VAR_PATH;
+  }
+
+  if (!dir.mkdir("mozillavpn")) {
+    logger.warning() << "Failed to create /var/run/mozillavpn";
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+
+  if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
+    logger.warning()
+        << "Failed to set the right permissions to /var/run/mozillavpn";
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+
+  return Constants::MACOS_DAEMON_VAR_PATH;
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

@@ -40,8 +40,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp

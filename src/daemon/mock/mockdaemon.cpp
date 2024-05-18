@@ -32,7 +32,16 @@ MockDaemon::MockDaemon(const QString& name, QObject* parent) :
   } else {
     logger.info() << "Listening at:" << m_server.fullServerName();
   }
-  connect(&m_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+  connect(&m_server, &QLocalServer::newConnection, this, [&]() {
+    logger.debug() << "New connection received";
+    if (!m_server.hasPendingConnections()) {
+      return;
+    }
+
+    QLocalSocket* socket = m_server.nextPendingConnection();
+    Q_ASSERT(socket);
+    new DaemonLocalServerConnection(this, socket);
+  });
 
   m_dnsutils = new DnsUtilsMock(this);
   m_wgutils = new WireguardUtilsMock(this);
@@ -65,19 +74,4 @@ bool MockDaemon::activate(const InterfaceConfig& config) {
   mockConfig.m_deviceIpv6Address = "::1";
 
   return Daemon::activate(mockConfig);
-}
-
-void MockDaemon::newConnection() {
-  logger.debug() << "New connection received";
-  if (!m_server.hasPendingConnections()) {
-    return;
-  }
-
-  QLocalSocket* socket = m_server.nextPendingConnection();
-  Q_ASSERT(socket);
-
-  DaemonLocalServerConnection* connection =
-      new DaemonLocalServerConnection(&m_server, socket);
-  connect(socket, &QLocalSocket::disconnected, connection,
-          &DaemonLocalServerConnection::deleteLater);
 }
