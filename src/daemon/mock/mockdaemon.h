@@ -20,8 +20,8 @@ class MockDaemon final : public Daemon {
   MockDaemon(const QString& name, QObject* parent = nullptr);
   ~MockDaemon();
 
-  static MockDaemon* instance();
   bool activate(const InterfaceConfig& config) override;
+  QString socketPath() const { return m_server.fullServerName(); }
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }

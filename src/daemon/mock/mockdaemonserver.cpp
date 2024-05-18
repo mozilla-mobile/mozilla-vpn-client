@@ -54,7 +54,7 @@ int MockDaemonServer::run(QStringList& tokens) {
   // Signal handling for a proper shutdown.
   SignalHandler sh;
   QObject::connect(&sh, &SignalHandler::quitRequested,
-                   []() { MockDaemon::instance()->deactivate(); });
+                   [&]() { daemon.deactivate(); });
   QObject::connect(&sh, &SignalHandler::quitRequested, &app,
                    &QCoreApplication::quit, Qt::QueuedConnection);
 

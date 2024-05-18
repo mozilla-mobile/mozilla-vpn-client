@@ -59,12 +59,6 @@ MockDaemon::~MockDaemon() {
   s_daemon = nullptr;
 }
 
-// static
-MockDaemon* MockDaemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
-}
-
 bool MockDaemon::activate(const InterfaceConfig& config) {
   // Overwrite the addresses with loopback.
   InterfaceConfig mockConfig(config);
