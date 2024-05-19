@@ -82,6 +82,7 @@ class MozillaVPN final : public App {
  private:
   Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
   Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
+  Q_PROPERTY(bool modelsInitialized READ modelsInitialized NOTIFY modelsChanged)
 
  public:
   MozillaVPN();
@@ -247,6 +248,7 @@ class MozillaVPN final : public App {
   void deviceRemoving(const QString& publicKey);
   void deviceRemoved(const QString& source);
   void aboutNeeded();
+  void modelsChanged();
   void updatingChanged();
   void accountDeleted();
 

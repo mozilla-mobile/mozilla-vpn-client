@@ -224,6 +224,10 @@ describe('Subscription manager', function() {
 
          await vpn.authenticateInApp();
 
+         // Wait for model init to finish before mocking guardian errors.
+         await vpn.waitForMozillaProperty(
+             'Mozilla.VPN', 'VPN', 'modelsInitialized', 'true');
+
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription. Set the error status to 500.
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
