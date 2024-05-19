@@ -219,6 +219,7 @@ class Controller : public QObject, public LogSerializer {
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  QString useLocalSocketPath() const;
 
  private:
   QTimer m_timer;

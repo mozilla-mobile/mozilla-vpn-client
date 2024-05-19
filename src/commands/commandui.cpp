@@ -18,6 +18,7 @@
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
+#include "daemon/mock/mockdaemon.h"
 #include "feature/feature.h"
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
@@ -152,6 +153,10 @@ int CommandUI::run(QStringList& tokens) {
 
     if (testingOption.m_set) {
       Constants::setStaging();
+
+      // When running automated tests, create a mocked daemon.
+      MockDaemon* daemon = new MockDaemon(qApp);
+      qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
 
     logger.info() << "MozillaVPN" << Constants::versionString();

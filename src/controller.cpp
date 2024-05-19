@@ -12,7 +12,6 @@
 #include "captiveportal/captiveportal.h"
 #include "constants.h"
 #include "controllerimpl.h"
-#include "daemon/mock/mockdaemon.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
 #include "frontend/navigator.h"
@@ -104,6 +103,31 @@ Controller::~Controller() {
   MZ_COUNT_DTOR(Controller);
 }
 
+// Check if we can use a LocalSocketController and return its path if so.
+QString Controller::useLocalSocketPath() const {
+#ifndef MZ_WASM
+  // The control socket can be overriden for testing.
+  QString path = qEnvironmentVariable("MVPN_CONTROL_SOCKET");
+  if (!Constants::inProduction() && !path.isEmpty()) {
+    return path;
+  }
+#endif
+
+#if defined(MZ_MACOS)
+  // MacOS had a path change, so check both /tmp/ and /var/.
+  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
+    return Constants::MACOS_DAEMON_VAR_PATH;
+  } else {
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+#elif defined(MZ_WINDOWS)
+  return Constants::WINDOWS_DAEMON_PATH;
+#endif
+
+  // Otherwise, we will need some other controller.
+  return QString();
+}
+
 void Controller::initialize() {
   logger.debug() << "Initializing the controller";
 
@@ -119,29 +143,26 @@ void Controller::initialize() {
   m_serverData = *MozillaVPN::instance()->serverData();
   m_nextServerData = *MozillaVPN::instance()->serverData();
 
+  QString path = useLocalSocketPath();
+  if (!path.isEmpty()) {
+    m_impl.reset(new LocalSocketController(path));
+  } else {
+    // We must use a specialized platform controller
 #if defined(MZ_FLATPAK)
-  m_impl.reset(new NetworkManagerController());
+    m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
-  m_impl.reset(new LinuxController());
-#elif defined(MZ_MACOS)
-  QString path = Constants::MACOS_DAEMON_VAR_PATH;
-  if (!QFileInfo::exists(path)) {
-    path = Constants::MACOS_DAEMON_TMP_PATH;
-  }
-  m_impl.reset(new LocalSocketController(path));
-#elif defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController(Constants::WINDOWS_DAEMON_PATH));
+    m_impl.reset(new LinuxController());
 #elif defined(MZ_IOS)
-  m_impl.reset(new IOSController());
+    m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
-  m_impl.reset(new AndroidController());
+    m_impl.reset(new AndroidController());
 #elif defined(MZ_WASM)
-  m_impl.reset(new WasmController());
+    m_impl.reset(new WasmController());
 #else
-  MockDaemon* daemon = new MockDaemon();
-  m_impl.reset(new LocalSocketController(daemon->socketPath()));
-  daemon->setParent(m_impl.get());
+    qCritical() << "No platform controller available for "
+                << Constants::PLATFORM_NAME;
 #endif
+  }
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
