@@ -118,37 +118,43 @@ CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option minimizedOption("m", "minimized",
+                                            "Start minimized.");
+  CommandLineParser::Option startAtBootOption("s", "start-at-boot",
+                                              "Start at boot (if configured).");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Enable testing mode.");
+  CommandLineParser::Option updateOption(
+      "u", "updated", "This execution completes an update flow.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&minimizedOption);
+  options.append(&startAtBootOption);
+  options.append(&testingOption);
+  options.append(&updateOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  // Change the application organization for testing mode.
+  // This should ensure we wind up with a different settings file.
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+  }
+
   return runQmlApp([&]() {
     Telemetry::startTimeToFirstScreenTimer();
-
-    QString appName = tokens[0];
-
-    CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option minimizedOption("m", "minimized",
-                                              "Start minimized.");
-    CommandLineParser::Option startAtBootOption(
-        "s", "start-at-boot", "Start at boot (if configured).");
-    CommandLineParser::Option testingOption("t", "testing",
-                                            "Enable testing mode.");
-    CommandLineParser::Option updateOption(
-        "u", "updated", "This execution completes an update flow.");
-
-    QList<CommandLineParser::Option*> options;
-    options.append(&hOption);
-    options.append(&minimizedOption);
-    options.append(&startAtBootOption);
-    options.append(&testingOption);
-    options.append(&updateOption);
-
-    CommandLineParser clp;
-    if (clp.parse(tokens, options, false)) {
-      return 1;
-    }
-
-    if (hOption.m_set) {
-      clp.showHelp(this, appName, options, false, false);
-      return 0;
-    }
 
     if (testingOption.m_set) {
       Constants::setStaging();

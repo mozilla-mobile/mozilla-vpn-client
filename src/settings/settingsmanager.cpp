@@ -23,8 +23,6 @@ SettingsManager* s_instance = nullptr;
 
 #if defined UNIT_TEST
 constexpr const char* SETTINGS_APP_NAME = "vpn_unit";
-#elif defined MZ_DUMMY
-constexpr const char* SETTINGS_APP_NAME = "vpn_dummy";
 #else
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 #endif
