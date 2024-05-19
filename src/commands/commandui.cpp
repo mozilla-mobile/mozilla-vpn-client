@@ -119,8 +119,7 @@ CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   return runQmlApp([&]() {
-    MozillaVPN vpn;
-    vpn.telemetry()->startTimeToFirstScreenTimer();
+    Telemetry::startTimeToFirstScreenTimer();
 
     QString appName = tokens[0];
 
@@ -159,6 +158,7 @@ int CommandUI::run(QStringList& tokens) {
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
 
+    MozillaVPN vpn;
     logger.info() << "MozillaVPN" << Constants::versionString();
     logger.info() << "User-Agent:" << NetworkManager::userAgent();
 

@@ -149,10 +149,13 @@ void Telemetry::vpnSessionPingTimeout() {
   }
 }
 
+// The Glean timer id for the performance.time_to_main_screen metric.
+static qint64 s_timeToFirstScreenTimerId = 0;
+
 void Telemetry::startTimeToFirstScreenTimer() {
   logger.info() << "Start performance.time_to_main_screen timer";
 
-  m_timeToFirstScreenTimerId =
+  s_timeToFirstScreenTimerId =
       mozilla::glean::performance::time_to_main_screen.start();
 }
 
@@ -160,5 +163,5 @@ void Telemetry::stopTimeToFirstScreenTimer() {
   logger.info() << "Stop performance.time_to_main_screen timer";
 
   mozilla::glean::performance::time_to_main_screen.stopAndAccumulate(
-      m_timeToFirstScreenTimerId);
+      s_timeToFirstScreenTimerId);
 }

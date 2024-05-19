@@ -15,8 +15,8 @@ class Telemetry final : public QObject {
 
   void initialize();
 
-  void startTimeToFirstScreenTimer();
-  void stopTimeToFirstScreenTimer();
+  static void startTimeToFirstScreenTimer();
+  static void stopTimeToFirstScreenTimer();
 
  private:
   void connectionStabilityEvent();
@@ -25,9 +25,6 @@ class Telemetry final : public QObject {
  private:
   QTimer m_connectionStabilityTimer;
   QTimer m_vpnSessionPingTimer;
-
-  // The Glean timer id for the performance.time_to_main_screen metric.
-  qint64 m_timeToFirstScreenTimerId = 0;
 };
 
 #endif  // TELEMETRY_H
