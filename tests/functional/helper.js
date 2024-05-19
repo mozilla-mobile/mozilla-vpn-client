@@ -428,7 +428,7 @@ module.exports = {
       await this.skipOnboarding();
     }
 
-    if (await this.isFeatureFlippedOn('inAppAuthentication')) {
+    if (await this.isFeatureEnabled('inAppAuthentication')) {
       await this.flipFeatureOff('inAppAuthentication');
     }
 
@@ -452,6 +452,10 @@ module.exports = {
   async authenticateInApp(skipOnboarding = true) {
     if (skipOnboarding) {
       await this.skipOnboarding();
+    }
+
+    if (!await this.isFeatureEnabled('inAppAuthentication')) {
+      await this.flipFeatureOn('inAppAuthentication');
     }
 
     // This method must be called when the client is on the "Get Started" view.
