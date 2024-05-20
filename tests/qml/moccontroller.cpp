@@ -82,9 +82,7 @@ void Controller::handshakeTimeout() {}
 
 void MozillaVPN::silentSwitch() {}
 
-#ifdef MZ_DUMMY
 QString Controller::currentServerString() const { return QString("42"); }
-#endif
 
 void Controller::serializeLogs(
     std::function<void(const QString& name, const QString& logs)>&&) {}

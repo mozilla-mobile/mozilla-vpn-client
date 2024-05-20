@@ -992,13 +992,11 @@ void Controller::backendFailure() {
   }
 }
 
-#ifdef MZ_DUMMY
 QString Controller::currentServerString() const {
   return QString("%1-%2-%3-%4")
       .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
            m_serverData.entryCountryCode(), m_serverData.entryCityName());
 }
-#endif
 
 // These will eventually go back to the controller but to get the code working
 // for now they will reside here
@@ -1020,9 +1018,7 @@ bool Controller::activate(const ServerData& serverData,
   logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
-#ifdef MZ_DUMMY
   emit currentServerChanged();
-#endif
 
   if (m_state == Controller::StateOff) {
     if (m_portalDetected) {
