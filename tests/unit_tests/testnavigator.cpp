@@ -29,7 +29,7 @@ void TestNavigator::init() {
   // the status of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
-  MZGlean::initialize();
+  MZGlean::initialize("testing");
 }
 
 void TestNavigator::cleanup() { delete m_settingsHolder; }

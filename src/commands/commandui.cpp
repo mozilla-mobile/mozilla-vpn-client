@@ -246,7 +246,13 @@ int CommandUI::run(QStringList& tokens) {
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     // Glean.rs
-    MZGlean::initialize();
+    QString gleanChannel = "production";
+    if (testingOption.m_set) {
+      gleanChannel = "testing";
+    } else if (!Constants::inProduction()) {
+      gleanChannel = "staging";
+    }
+    MZGlean::initialize(gleanChannel);
     // Clear leftover Glean.js stored data.
     // TODO: This code can be removed starting one year after it is released.
     auto offlineStorageDirectory =

@@ -24,7 +24,7 @@ void TestLocalizer::init() {
   // the state of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
-  MZGlean::initialize();
+  MZGlean::initialize("testing");
 }
 
 void TestLocalizer::cleanup() { delete m_settingsHolder; }
