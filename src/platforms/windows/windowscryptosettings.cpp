@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "windowscryptosettings.h"
+
 #include <Windows.h>
 #include <wincred.h>
 #include <wincrypt.h>
@@ -13,36 +15,32 @@
 #include "logger.h"
 
 namespace {
-Logger logger("CryptoSettings");
-
-bool s_initialized = false;
-QByteArray s_key;
+Logger logger("WindowsCryptoSettings");
 }  // namespace
 
-void CryptoSettings::resetKey() {
+void WindowsCryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
-
-  if (s_initialized) {
+  if (m_initialized) {
     CredDeleteW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0);
-    s_initialized = false;
+    m_initialized = false;
   }
 }
 
-bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
-  if (!s_initialized) {
+bool WindowsCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+  if (!m_initialized) {
     logger.debug() << "Get key";
 
-    s_initialized = true;
+    m_initialized = true;
 
     {
       PCREDENTIALW cred;
       if (CredReadW(Constants::WINDOWS_CRED_KEY, CRED_TYPE_GENERIC, 0, &cred)) {
-        s_key =
+        m_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
-        logger.debug() << "Key found with length:" << s_key.length();
+        logger.debug() << "Key found with length:" << m_key.length();
 
-        if (s_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-          memcpy(key, s_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
+        if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+          memcpy(key, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
           return true;
         }
       } else if (GetLastError() != ERROR_NOT_FOUND) {
@@ -52,10 +50,10 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
     }
 
     logger.debug() << "Key not found. Let's create it.";
-    s_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
+    m_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
     QRandomGenerator* rg = QRandomGenerator::system();
     for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      s_key[i] = rg->generate() & 0xFF;
+      m_key[i] = rg->generate() & 0xFF;
     }
 
     {
@@ -65,8 +63,8 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
       cred.Comment = const_cast<wchar_t*>(Constants::WINDOWS_CRED_KEY);
       cred.Type = CRED_TYPE_GENERIC;
       cred.TargetName = const_cast<wchar_t*>(Constants::WINDOWS_CRED_KEY);
-      cred.CredentialBlobSize = s_key.length();
-      cred.CredentialBlob = (LPBYTE)s_key.constData();
+      cred.CredentialBlobSize = m_key.length();
+      cred.CredentialBlob = (LPBYTE)m_key.constData();
       cred.Persist = CRED_PERSIST_ENTERPRISE;
 
       if (!CredWriteW(&cred, 0)) {
@@ -76,8 +74,8 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
     }
   }
 
-  if (s_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(key, s_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
+  if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
+    memcpy(key, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
     return true;
   }
 
@@ -86,6 +84,6 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 }
 
 // static
-CryptoSettings::Version CryptoSettings::getSupportedVersion() {
+CryptoSettings::Version WindowsCryptoSettings::getSupportedVersion() {
   return CryptoSettings::EncryptionChachaPolyV1;
 }

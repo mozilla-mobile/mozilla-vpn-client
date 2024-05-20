@@ -6,6 +6,7 @@ target_sources(shared-sources INTERFACE
      ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/eventlistener.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsutils.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsutils.h
 )

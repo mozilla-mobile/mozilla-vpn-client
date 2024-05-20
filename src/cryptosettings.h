@@ -9,31 +9,40 @@
 
 constexpr int CRYPTO_SETTINGS_KEY_SIZE = 32;
 
-class CryptoSettings final {
+class CryptoSettings {
  public:
   enum Version {
     NoEncryption,
     EncryptionChachaPolyV1,
   };
 
+  virtual ~CryptoSettings() = default;
+
+  static QSettings::Format format();
+
+ private:
+  // Implementations must provide these methods to retrieve keys.
+  virtual void resetKey() = 0;
+  virtual bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]) = 0;
+  virtual Version getSupportedVersion() = 0;
+
+  // Callback methods for QSetting::Format
   static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
   static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
 
- private:
-  static void resetKey();
-  static bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]);
-
-  static Version getSupportedVersion();
   static bool writeVersion(QIODevice& device, Version version);
-
   static bool readJsonFile(QIODevice& device, QSettings::SettingsMap& map);
-  static bool readEncryptedChachaPolyV1File(QIODevice& device,
-                                            QSettings::SettingsMap& map);
-
   static bool writeJsonFile(QIODevice& device,
                             const QSettings::SettingsMap& map);
-  static bool writeEncryptedChachaPolyV1File(QIODevice& device,
-                                             const QSettings::SettingsMap& map);
+
+  bool readEncryptedChachaPolyV1File(QIODevice& device,
+                                     QSettings::SettingsMap& map);
+
+  bool writeEncryptedChachaPolyV1File(QIODevice& device,
+                                      const QSettings::SettingsMap& map);
+
+ private:
+  uint64_t m_lastNonce = 0;
 };
 
 #endif  // CRYPTOSETTINGS_H

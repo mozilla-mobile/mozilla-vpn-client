@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "xdgcryptosettings.h"
+
 #include "constants.h"
 #include "cryptosettings.h"
 #include "hkdf.h"
@@ -13,14 +15,15 @@
 #include <unistd.h>
 
 namespace {
-Logger logger("CryptoSettings");
+Logger logger("XdgCryptoSettings");
 }  // namespace
 
-void CryptoSettings::resetKey() {
+void XdgCryptoSettings::resetKey() {
   // TODO: Implement Me!
 }
 
-static QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options) {
+QDBusMessage XdgCryptoSettings::xdgRetrieveSecret(int fd,
+                                                  const QVariantMap& options) {
   // Note: QDBusUnixFileDescriptor() will dup the file descriptor we give it,
   // but we need to be very sure that we close all write ends of the pipe. So
   // the point of this wrapper is to ensure that the QDBusUnixFileDescriptor
@@ -35,7 +38,7 @@ static QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options) {
   return QDBusConnection::sessionBus().call(msg, QDBus::Block);
 }
 
-bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+bool XdgCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
   auto bus = QDBusConnection::sessionBus();
   auto capabilities = bus.connectionCapabilities();
   if (!(capabilities & QDBusConnection::UnixFileDescriptorPassing)) {
@@ -85,6 +88,6 @@ bool CryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
   }
 }
 
-CryptoSettings::Version CryptoSettings::getSupportedVersion() {
+CryptoSettings::Version XdgCryptoSettings::getSupportedVersion() {
   return CryptoSettings::EncryptionChachaPolyV1;
 }

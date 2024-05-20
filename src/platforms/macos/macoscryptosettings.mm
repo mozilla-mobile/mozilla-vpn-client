@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "macoscryptosettings.h"
+
 #include "constants.h"
 #include "cryptosettings.h"
 #include "logger.h"
@@ -31,8 +33,7 @@ NSString* getAppId() {
 
 }  // namespace
 
-// static
-void CryptoSettings::resetKey() {
+void MacOSCryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
   NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
@@ -52,8 +53,7 @@ void CryptoSettings::resetKey() {
   initialized = false;
 }
 
-// static
-bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
+bool MacOSCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 #if defined(MZ_IOS) || defined(MZ_MACOS)
   if (!initialized) {
     initialized = true;
@@ -129,8 +129,7 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
   return false;
 }
 
-// static
-CryptoSettings::Version CryptoSettings::getSupportedVersion() {
+CryptoSettings::Version MacOSCryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
 #if (defined(MZ_IOS) || defined(MZ_MACOS)) && !defined(UNIT_TEST)

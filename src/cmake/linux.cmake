@@ -44,6 +44,7 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.h
     )
@@ -108,6 +109,7 @@ else()
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp

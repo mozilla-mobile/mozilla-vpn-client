@@ -76,7 +76,6 @@ target_sources(app_auth_tests PRIVATE
     testpasswordvalidation.h
     testsignupandin.cpp
     testsignupandin.h
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
