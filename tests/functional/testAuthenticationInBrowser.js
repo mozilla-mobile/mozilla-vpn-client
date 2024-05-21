@@ -25,7 +25,8 @@ describe('User authentication in browser', function() {
       });
     }
 
-    await vpn.clickOnQuery(
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQueryAndClick(
         queries.screenInitialize.AUTHENTICATE_VIEW.visible());
     await vpn.waitForQueryAndClick(
         queries.screenAuthenticating.CANCEL_FOOTER_LINK.visible());
