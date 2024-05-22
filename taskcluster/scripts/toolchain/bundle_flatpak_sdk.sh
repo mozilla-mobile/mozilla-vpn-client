@@ -4,11 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# This script creates a qt-bundle that we can use in xcode-cloud and 
-# in the taskcluser/ios builds ( to be coming ... )
-
-ARTIFACT_DIR=/mnt/artifacts
-
 # Find the app-id and manifest in the mounted source directory.
 FLATPAK_APP_ID=
 FLATPAK_APP_MANIFEST=
@@ -31,15 +26,15 @@ flatpak remote-modify --collection-id=org.flathub.Stable flathub
 flatpak-builder --install-deps-from=flathub --install-deps-only /tmp/fp-build-dir ${FLATPAK_APP_MANIFEST}
 
 # Export the runtimes
-mkdir ${TASK_WORKDIR}/flatpak-sdks
+mkdir flatpak-sdks
 for REF in $(flatpak list --runtime --columns=ref | tail -n +1); do
     # If this runtime includes extra data - it can't be installed offline.
     if flatpak info -m ${REF} | grep -q '\[Extra Data\]'; then
         echo "Ignoring runtime ${REF} as it contains Extra Data" >&2
         continue
     fi
-    flatpak create-usb ${TASK_WORKDIR}/flatpak-sdks ${REF}
+    flatpak create-usb flatpak-sdks ${REF}
 done
 
 # Compress the result.
-tar -C ${TASK_WORKDIR} -cJf ${ARTIFACT_DIR}/flatpak-sdks.tar.xz flatpak-sdks
+tar -cJf ${UPLOAD_DIR}/flatpak-sdks.tar.xz flatpak-sdks

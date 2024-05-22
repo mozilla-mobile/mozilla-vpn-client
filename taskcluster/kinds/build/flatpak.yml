@@ -24,10 +24,6 @@ linux/flatpak:
     worker:
         max-run-time: 3600
         chain-of-trust: true
-        artifacts:
-            - type: file
-              name: public/build/org.mozilla.vpn.flatpak
-              path: artifacts/org.mozilla.vpn.flatpak
     run:
         using: run-task
         use-caches: true

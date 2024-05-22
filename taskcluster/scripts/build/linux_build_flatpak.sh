@@ -6,8 +6,6 @@
 
 set -e
 
-ARTIFACT_DIR=/mnt/artifacts
-
 # Find the app-id and manifest in the mounted source directory.
 FLATPAK_APP_ID=
 FLATPAK_APP_MANIFEST=
@@ -33,6 +31,6 @@ echo "Building the Flatpak"
 flatpak-builder fp-build-dir ${FLATPAK_APP_MANIFEST}
 
 echo "Exporting the Flatpak"
-mkdir ${ARTIFACT_DIR}/exports
-flatpak build-export ${ARTIFACT_DIR}/exports fp-build-dir
-flatpak build-bundle ${ARTIFACT_DIR}/exports ${ARTIFACT_DIR}/${FLATPAK_APP_ID}.flatpak ${FLATPAK_APP_ID}
+mkdir fp-export-dir
+flatpak build-export fp-export-dir fp-build-dir
+flatpak build-bundle fp-export-dir ${UPLOAD_DIR}/${FLATPAK_APP_ID}.flatpak ${FLATPAK_APP_ID}

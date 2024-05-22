@@ -18,6 +18,13 @@ def get_task_payload():
     with urllib.request.urlopen(taskUrl) as req:
         return json.load(req)["payload"]
 
+def get_artifact_path(payload):
+    for entry in payload.get('artifacts', []):
+        if entry.get('type') == 'directory':
+            return entry['path']
+    
+    return 'public/build'
+
 # Load the podman image and return its description in JSON
 def load_podman_image(path):
     # Load the image and try to grab the tag.
@@ -43,28 +50,29 @@ image_filename = os.path.join(moz_fetches_dir, 'image.tar.zst')
 print(f"Loading podman image from: {image_filename}")
 sys.stdout.flush()
 image_data = load_podman_image(image_filename)
-image_config = image_data["Config"]
 
 # Prepare the task arguments
-worker_env = get_task_payload()["env"]
+task_payload = get_task_payload()
+worker_env = task_payload["env"]
+worker_env["TASK_WORKDIR"] = image_data["Config"].get("WorkingDir", "/")
 worker_args = ['podman', 'run', '--rm', '--privileged']
 
-# Mount volumes into the container
-volumes = image_config["Volumes"]
-if '/mnt/checkouts' in volumes:
-    vcs_path = os.path.join(task_workdir, os.environ.get("VCS_PATH"))
-    worker_args.append(f"--volume={vcs_path}:/mnt/checkouts:ro")
-if '/mnt/fetches' in volumes:
-    worker_args.append(f"--volume={moz_fetches_dir}:/mnt/fetches:ro")
-if '/mnt/artifacts' in volumes:
-    artifact_dir = os.path.join(os.environ.get("TASK_WORKDIR"), 'artifacts')
-    worker_args.append(f"--volume={artifact_dir}:/mnt/artifacts:rw")
-    os.makedirs(artifact_dir, exist_ok=True)
+# Mount the source checkouts at /mnt/checkouts
+vcs_path = os.path.join(task_workdir, os.environ.get("VCS_PATH"))
+worker_args.append(f"--volume={vcs_path}:/mnt/checkouts:ro")
+worker_env["VCS_PATH"] = '/mnt/checkouts'
+
+# Mount the fetches dir at /mnt/fetches
+worker_args.append(f"--volume={moz_fetches_dir}:/mnt/fetches:ro")
+worker_env["MOZ_FETCHES_DIR"] = '/mnt/fetches'
+
+# Mount the artifacts at /mnt/artifacts
+artifact_dir = os.path.join(task_workdir, get_artifact_path(task_payload))
+os.makedirs(artifact_dir, exist_ok=True)
+worker_args.append(f"--volume={artifact_dir}:/mnt/artifacts:rw")
+worker_env["UPLOAD_DIR"] = '/mnt/artifacts'
 
 # Propagate the task environment into the container, while tweaking paths.
-worker_env["VCS_PATH"] = '/mnt/checkouts'
-worker_env["MOZ_FETCHES_DIR"] = '/mnt/fetches'
-worker_env["TASK_WORKDIR"] = image_config.get("WorkingDir", "/")
 worker_env_file = tempfile.NamedTemporaryFile(mode='w+', prefix='env-', suffix='.txt', encoding='utf-8')
 for key in worker_env:
     print(f'{key}={worker_env[key]}', file=worker_env_file)
