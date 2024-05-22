@@ -24,6 +24,7 @@ flatpak-sdks:
         symbol: TL(flatpak-sdks)
     run:
         use-caches: true
-        script: $VCS_PATH/taskcluster/scripts/podman-worker.py /root/bundle_sdk.sh
+        script: ../podman-worker.py
+        arguments: /root/bundle_sdk.sh
         toolchain-alias: flatpak-sdks
         toolchain-artifact: public/build/flatpak-sdks.tar.xz
