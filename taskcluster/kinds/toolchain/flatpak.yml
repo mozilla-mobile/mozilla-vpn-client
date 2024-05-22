@@ -15,6 +15,7 @@ task-defaults:
               extract: false
     run:
         resources:
+            - taskcluster/scripts/podman-worker.py
             - linux/org.mozilla.vpn.yml
             - linux/flatpak-*.yaml
 
@@ -24,7 +25,7 @@ flatpak-sdks:
         symbol: TL(flatpak-sdks)
     run:
         use-caches: true
-        script: ../podman-worker.py
+        script: toolchain_podman_worker.sh
         arguments:
             - '/root/bundle_sdk.sh'
         toolchain-alias: flatpak-sdks
