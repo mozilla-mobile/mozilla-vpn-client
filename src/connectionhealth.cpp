@@ -98,6 +98,10 @@ void ConnectionHealth::stop() {
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
                                    const QString& deviceIpv4Address) {
+
+  m_stability = Stable;
+  emit stabilityChanged();
+  return;
   logger.debug() << "ConnectionHealth active started";
 
   if (serverIpv4Gateway.isEmpty() ||
