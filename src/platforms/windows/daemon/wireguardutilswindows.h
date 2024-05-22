@@ -51,6 +51,8 @@ class WireguardUtilsWindows final : public WireguardUtils {
 
   quint64 m_luid = 0;
   std::unique_ptr<WireGuardAPI> m_wireguard_api;  
+  ulong m_deviceIpv4_Handle = 0;  
+
   WindowsRouteMonitor m_routeMonitor;
   WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
 
