@@ -16,7 +16,7 @@ task-defaults:
     run:
         resources:
             - linux/org.mozilla.vpn.yml
-            - flatpak-*.yaml
+            - linux/flatpak-*.yaml
 
 flatpak-sdks:
     description: "Flatpak Bundle SDKs"
