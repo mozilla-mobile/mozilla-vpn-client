@@ -20,7 +20,7 @@ def get_task_payload():
 
 def get_artifact_path(payload):
     for entry in payload.get('artifacts', []):
-        if entry.get('type') == 'directory':
+        if entry.get('type') == 'directory' and entry.get('name') == 'public/build':
             return entry['path']
     
     return 'public/build'
