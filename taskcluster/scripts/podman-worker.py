@@ -50,9 +50,9 @@ worker_args = ['podman', 'run', '--rm', '--privileged']
 
 # Mount volumes into the container
 volumes = image_config["Volumes"]
-if '/mnt/checkout' in volumes:
+if '/mnt/checkouts' in volumes:
     vcs_path = os.path.realpath(os.environ.get("VCS_PATH"))
-    worker_args.append(f"--volume={vcs_path}:/mnt/checkout:ro")
+    worker_args.append(f"--volume={vcs_path}:/mnt/checkouts:ro")
 if '/mnt/fetches' in volumes:
     worker_args.append(f"--volume={moz_fetches_dir}:/mnt/fetches:ro")
 if '/mnt/artifacts' in volumes:
