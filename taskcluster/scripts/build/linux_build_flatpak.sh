@@ -20,12 +20,19 @@ if [ -z "$FLATPAK_APP_ID" ] || [ -z "$FLATPAK_APP_MANIFEST" ]; then
     exit 1
 fi
 
-# Crudely copied from the github action.
+# Setup the remotes.
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak remote-modify --collection-id=org.flathub.Stable flathub
 
 echo "Installing Dependencies"
-mkdir fp-build-dir
-flatpak-builder --install-deps-from=flathub --install-deps-only fp-build-dir ${FLATPAK_APP_MANIFEST}
+FLAPTAK_SIDELOAD=$(find ${MOZ_FETCHES_DIR} -type d -name '.ostree' -printf '%p/repo\n')
+if [ -d "${FLAPTAK_SIDELOAD}" ]; then
+    # Install all packages found in the sideload repo.
+    flatpak install --sideload-repo=${FLAPTAK_SIDELOAD} $(flatpak remote-ls file://${FLAPTAK_SIDELOAD} --columns=ref | tail -n +1)
+else
+    # Download from flathub
+    flatpak-builder --install-deps-from=flathub --install-deps-only /tmp/fp-build-dir ${FLATPAK_APP_MANIFEST}
+fi
 
 echo "Building the Flatpak"
 flatpak-builder fp-build-dir ${FLATPAK_APP_MANIFEST}
