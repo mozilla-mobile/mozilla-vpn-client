@@ -62,7 +62,7 @@ if '/mnt/artifacts' in volumes:
     os.makedirs(artifact_dir, exist_ok=True)
 
 # Propagate the task environment into the container, while tweaking paths.
-worker_env["VCS_PATH"] = '/mnt/checkout'
+worker_env["VCS_PATH"] = '/mnt/checkouts'
 worker_env["MOZ_FETCHES_DIR"] = '/mnt/fetches'
 worker_env["TASK_WORKDIR"] = image_config.get("WorkingDir", "/")
 worker_env_file = tempfile.NamedTemporaryFile(mode='w+', prefix='env-', suffix='.txt', encoding='utf-8')
