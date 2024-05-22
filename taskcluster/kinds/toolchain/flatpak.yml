@@ -25,6 +25,7 @@ flatpak-sdks:
     run:
         use-caches: true
         script: ../podman-worker.py
-        arguments: /root/bundle_sdk.sh
+        arguments:
+            - '/root/bundle_sdk.sh'
         toolchain-alias: flatpak-sdks
         toolchain-artifact: public/build/flatpak-sdks.tar.xz
