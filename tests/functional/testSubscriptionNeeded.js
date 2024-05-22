@@ -162,13 +162,10 @@ describe("subscription needed tests", function() {
         // Wait for the loading screen to show up
         await vpn.waitForQuery(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_VIEW.visible());
 
-        const subscriptionNeededViewEvent = await vpn.getOneEventOfType({
-          eventCategory: "impression",
-          eventName: "continueInBrowserScreen",
-          screen,
-          expectedEventCount: 1
-        });
-        assert.strictEqual(subscriptionNeededViewEvent.extra.screen, screen);
+        // Wait for the impression metric.
+        const impressionEvent = await vpn.waitForGleanValue("impression", "continueInBrowserScreen", "main");
+        assert.strictEqual(impressionEvent.length, 1);
+        assert.strictEqual(impressionEvent[0].extra.screen, screen);
       });
 
       // TODO (VPN-4784, VPN-4783): This cannot be tested util we are able to run
@@ -179,14 +176,20 @@ describe("subscription needed tests", function() {
         await vpn.authenticateInApp();
         // Click the "Subscribe now" button
         await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
+        // Wait for the loading screen to show up
+        await vpn.waitForQuery(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_VIEW.visible());
+        // Wait for the impression metric - which indicates the view is done loading.
+        const impressionEvent = await vpn.waitForGleanValue("impression", "continueInBrowserScreen", "main");
+        assert.strictEqual(impressionEvent.length, 1);
+        assert.strictEqual(impressionEvent[0].extra.screen, screen);
+
         // Click on the "Cancel" button
         await vpn.waitForQueryAndClick(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
+    
         // Check subscription cancelled event is recorded.
         const eventList = await vpn.waitForGleanValue("outcome", "subscriptionFailed", "main");
-
         assert.strictEqual(eventList.length, 1);
         assert.strictEqual(eventList[0].extra.reason, "SubscriptionCancelled");
-
       });
     });
   });
