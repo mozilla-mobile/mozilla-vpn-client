@@ -27,7 +27,7 @@ linux/flatpak:
         artifacts:
             - type: directory
               name: public/build/
-              path: /builds/worker/artifacts/
+              path: public/build/
     run:
         using: run-task
         use-caches: true
