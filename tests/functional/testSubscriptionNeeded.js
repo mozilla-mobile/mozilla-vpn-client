@@ -110,8 +110,8 @@ describe("subscription needed tests", function() {
       it("successfull outcome events are recorded", async () => {
         // Click the "Subscribe now" button
         await vpn.waitForQueryAndClick(queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON.visible());
-        const startedEventsList = await vpn.gleanTestGetValue("outcome", "subscriptionStarted", "main");
-        assert.strictEqual(startedEventsList.length, 1);
+        const startedEvents = await vpn.waitForGleanValue("outcome", "subscriptionStarted", "main");
+        assert.strictEqual(startedEvents.length, 1);
 
         // Override directly in the running guardian server for this test.
         this.ctx.guardianServer.overrideEndpoints = {
@@ -137,10 +137,9 @@ describe("subscription needed tests", function() {
         await vpn.mockInBrowserAuthentication();
 
         // Check subscription completed is recorded.
-        await vpn.waitForCondition(async () => {
-          const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionCompleted", "main");
-          return eventList.length === 1;
-        });
+
+        const completedEvents = await vpn.waitForGleanValue("outcome", "subscriptionCompleted", "main");
+        assert.strictEqual(completedEvents.length, 1);
 
         // Reset the Gaurdian overrides.
         this.ctx.guardianServer.overrideEndpoints = this.ctx.guardianOverrideEndpoints;
@@ -183,7 +182,7 @@ describe("subscription needed tests", function() {
         // Click on the "Cancel" button
         await vpn.waitForQueryAndClick(queries.screenInBrowserSubscriptionLoading.SUBSCRIPTION_LOADING_CANCEL.visible());
         // Check subscription cancelled event is recorded.
-        const eventList = await vpn.gleanTestGetValue("outcome", "subscriptionFailed", "main");
+        const eventList = await vpn.waitForGleanValue("outcome", "subscriptionFailed", "main");
 
         assert.strictEqual(eventList.length, 1);
         assert.strictEqual(eventList[0].extra.reason, "SubscriptionCancelled");
