@@ -23,7 +23,6 @@ flatpak-sdks:
     treeherder:
         symbol: TL(flatpak-sdks)
     run:
-        using: run-task
         use-caches: true
         script: $VCS_PATH/taskcluster/scripts/podman-worker.py /root/bundle_sdk.sh
         toolchain-alias: flatpak-sdks
