@@ -35,6 +35,8 @@ RUN locale-gen "$LANG"
 
 # %include taskcluster/scripts/build/linux_build_flatpak.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_flatpak.sh /root/builder.sh
+# %include taskcluster/scripts/toolchain/bundle_flatpak_sdk.sh
+ADD topsrcdir/taskcluster/scripts/toolchain/bundle_flatpak_sdk.sh /root/bundle_sdk.sh
 
 # MOZ_FETCHES_DIR gets mounted here.
 VOLUME /mnt/fetches

@@ -1,0 +1,30 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    worker:
+        max-run-time: 3600
+        chain-of-trust: true
+    worker-type: b-linux-generic
+    dependencies:
+        docker-image: build-docker-image-flatpak
+    fetches:
+        docker-image:
+            - artifact: image.tar.zst
+              extract: false
+    run:
+        resources:
+            - linux/org.mozilla.vpn.yml
+            - flatpak-*.yaml
+
+flatpak-sdks:
+    description: "Flatpak Bundle SDKs"
+    treeherder:
+        symbol: TL(flatpak-sdks)
+    run:
+        using: run-task
+        use-caches: true
+        script: $VCS_PATH/taskcluster/scripts/podman-worker.py /root/bundle_sdk.sh
+        toolchain-alias: flatpak-sdks
+        toolchain-artifact: public/build/flatpak-sdks.tar.xz

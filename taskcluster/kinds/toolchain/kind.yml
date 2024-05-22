@@ -6,6 +6,7 @@ loader: taskgraph.loader.transform:loader
 
 kind-dependencies:
     - fetch
+    - docker-image
     - toolchain-openssl
 
 transforms:
