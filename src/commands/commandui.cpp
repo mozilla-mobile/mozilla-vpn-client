@@ -151,6 +151,8 @@ int CommandUI::run(QStringList& tokens) {
   // This should ensure we wind up with a different settings file.
   if (testingOption.m_set) {
     QCoreApplication::setOrganizationName("Mozilla Testing");
+
+    LogHandler::setStderr(true);
   }
 
   return runQmlApp([&]() {
