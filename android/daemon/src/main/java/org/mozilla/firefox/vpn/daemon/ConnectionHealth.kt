@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.CountDownTimer
 import mozilla.telemetry.glean.GleanTimerId
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -245,6 +246,7 @@ class ConnectionHealth(service: VPNService) {
                 // We the server is online but the connection broke up, let's rest it
                 mService.mainLooper.run {
                     // Silent server switch to the same server
+                    Session.daemonSilentServerSwitch.record()
                     mService.reconnect(true)
                 }
                 mResetUsed = true

@@ -1412,7 +1412,9 @@ session:
     send_in_pings:
       - daemonsession
     description: |
-      (iOS only) The daemon requests a silent server switch.
+      (Mobile only) The daemon requests a silent server switch.
+
+      Extra key only included on iOS.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
@@ -1521,7 +1523,7 @@ connection_health:
     send_in_pings:
       - daemonsession
     description: |
-      The connection status changed to pending.
+      (iOS only) The connection status changed to pending.
 
       This event is recorded in daemon.
 
@@ -1625,7 +1627,7 @@ connection_health:
     send_in_pings:
       - daemonsession
     description: |
-      Count of times that the connection health check is in pending.
+      (iOS only) Count of times that the connection health check is in pending.
 
       The health check counters must not be considered as markers of time.
       There is a possible situation in the health check (which calls the
@@ -1719,7 +1721,7 @@ connection_health:
     send_in_pings:
       - daemonsession
     description: |
-      Time spent in pending state.
+      (iOS only) Time spent in pending state.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
