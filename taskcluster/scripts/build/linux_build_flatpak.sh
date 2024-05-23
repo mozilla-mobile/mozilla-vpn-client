@@ -28,7 +28,8 @@ echo "Installing Dependencies"
 FLAPTAK_SIDELOAD=$(find ${MOZ_FETCHES_DIR} -type d -name '.ostree' -printf '%p/repo\n')
 if [ -d "${FLAPTAK_SIDELOAD}" ]; then
     # Install all packages found in the sideload repo.
-    flatpak install --sideload-repo=${FLAPTAK_SIDELOAD} -y $(flatpak remote-ls file://${FLAPTAK_SIDELOAD} --columns=ref | tail -n +1)
+    flatpak install --sideload-repo=${FLAPTAK_SIDELOAD} --noninteractive \
+        $(flatpak remote-ls file://${FLAPTAK_SIDELOAD} --columns=ref | tail -n +1)
 else
     # Download from flathub
     flatpak-builder --install-deps-from=flathub --install-deps-only /tmp/fp-build-dir ${FLATPAK_APP_MANIFEST}
