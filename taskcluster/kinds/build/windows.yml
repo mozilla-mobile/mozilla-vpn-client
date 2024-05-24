@@ -51,7 +51,7 @@ windows/opt:
 windows/next:
     fetches:
         toolchain:
-            - qt-windows-x86_64-6.6.0
+            - qt-windows-x86_64-6.6.3
     description: "Windows Build for Next Version of QT"
     treeherder:
         symbol: NEXT
