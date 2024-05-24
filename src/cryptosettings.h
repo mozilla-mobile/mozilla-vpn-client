@@ -5,6 +5,7 @@
 #ifndef CRYPTOSETTINGS_H
 #define CRYPTOSETTINGS_H
 
+#include <QByteArray>
 #include <QSettings>
 
 constexpr int CRYPTO_SETTINGS_KEY_SIZE = 32;
@@ -23,7 +24,7 @@ class CryptoSettings {
  private:
   // Implementations must provide these methods to retrieve keys.
   virtual void resetKey() = 0;
-  virtual bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]) = 0;
+  virtual QByteArray getKey() = 0;
   virtual Version getSupportedVersion() = 0;
 
   // Callback methods for QSetting::Format

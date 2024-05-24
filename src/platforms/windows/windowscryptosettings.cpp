@@ -26,7 +26,7 @@ void WindowsCryptoSettings::resetKey() {
   }
 }
 
-bool WindowsCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+QByteArray WindowsCryptoSettings::getKey() {
   if (!m_initialized) {
     logger.debug() << "Get key";
 
@@ -38,14 +38,10 @@ bool WindowsCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
         m_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
         logger.debug() << "Key found with length:" << m_key.length();
-
-        if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-          memcpy(key, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-          return true;
-        }
+        return m_key;
       } else if (GetLastError() != ERROR_NOT_FOUND) {
         logger.error() << "Failed to retrieve the key";
-        return false;
+        return QByteArray();
       }
     }
 
@@ -69,18 +65,12 @@ bool WindowsCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
       if (!CredWriteW(&cred, 0)) {
         logger.error() << "Failed to write the key";
-        return false;
+        return QByteArray();
       }
     }
   }
 
-  if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(key, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-
-  logger.warning() << "Invalid key";
-  return false;
+  return m_key;
 }
 
 // static

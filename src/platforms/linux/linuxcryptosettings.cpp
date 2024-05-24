@@ -101,10 +101,10 @@ void LinuxCryptoSettings::resetKey() {
   m_key.clear();
 }
 
-bool LinuxCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
+QByteArray LinuxCryptoSettings::getKey() {
   if (m_keyVersion == CryptoSettings::NoEncryption) {
     logger.error() << "libsecrets is not supported";
-    return false;
+    return QByteArray();
   }
 
   if (m_key.isEmpty()) {
@@ -144,18 +144,12 @@ bool LinuxCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
         // Fallback to unencrypted settings.
         m_keyVersion = CryptoSettings::NoEncryption;
         m_key.clear();
-        return false;
+        return QByteArray();
       }
     }
   }
 
-  if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(key, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-
-  logger.warning() << "Invalid key";
-  return false;
+  return m_key;
 }
 
 CryptoSettings::Version LinuxCryptoSettings::getSupportedVersion() {

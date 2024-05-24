@@ -13,7 +13,7 @@ class LinuxCryptoSettings final : public CryptoSettings {
   virtual ~LinuxCryptoSettings() = default;
 
   void resetKey() override;
-  bool getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) override;
+  QByteArray getKey() override;
   CryptoSettings::Version getSupportedVersion() override;
 
  private:

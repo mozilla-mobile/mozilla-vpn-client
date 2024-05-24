@@ -23,7 +23,7 @@ XdgCryptoSettings::XdgCryptoSettings() : CryptoSettings(), XdgPortal() {
 }
 
 void XdgCryptoSettings::resetKey() {
-  // TODO: Implement Me!
+  m_key.clear();
 }
 
 QDBusMessage XdgCryptoSettings::xdgRetrieveSecret(int fd,
@@ -42,62 +42,71 @@ QDBusMessage XdgCryptoSettings::xdgRetrieveSecret(int fd,
   return QDBusConnection::sessionBus().call(msg, QDBus::Block);
 }
 
-bool XdgCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
-  auto bus = QDBusConnection::sessionBus();
-  auto capabilities = bus.connectionCapabilities();
-  if (!(capabilities & QDBusConnection::UnixFileDescriptorPassing)) {
-    return false;
-  }
-
-  // Create a pipe to receive the secret.
-  int fds[2];
-  int err = pipe(fds);
-  if (err != 0) {
-    return false;
-  }
-  auto guard = qScopeGuard([&] { close(fds[0]); });
-
-  // Request the secret.
-  QVariantMap options;
-  options["handle_token"] = QVariant(token());
-
-  QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
-  close(fds[1]);  // Close our write end of the pipe right away.
-  if (reply.type() != QDBusMessage::ReplyMessage) {
-    logger.info() << "Encrypted settings with XDG secrets is not supported";
-    return false;
-  } else {
-    // We need to rebind our signals if the reply path changed.
-    QVariant qv = reply.arguments().first();
-    QString path = qv.value<QDBusObjectPath>().path();
-    logger.debug() << "Expecting XDG response at:" << path;
-    setReplyPath(path);
-  }
-
-  // Hash the returned secret into a usable key.
-  HKDF hash(QCryptographicHash::Sha256);
-  int keysize = 0;
+QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
+  QByteArray data;
   for (;;) {
     char buf[PIPE_BUF];
-    int len = read(fds[0], buf, sizeof(buf));
-    if (len > 0) {
-      // Retrieved more data.
-      keysize += len;
-      hash.addData(buf, len);
-      continue;
+    int len = read(fd, buf, sizeof(buf));
+    if (len == 0) {
+      // End-of-file.
+      break;
     }
-    else if (len == 0) {
-      // End-of-file. Generate the encryption key.
-      QByteArray result = hash.result(CRYPTO_SETTINGS_KEY_SIZE);
-      memcpy(key, result.constData(), CRYPTO_SETTINGS_KEY_SIZE);
-      return true;
-    }
-    else {
+    if (len < 0) {
       // An error occured.
       logger.warning() << "Failed to retrieve encryption key:" << strerror(errno);
-      return false;
+      return QByteArray();
+    }
+    // Retrieved more data.
+    data.append(buf, len);
+  }
+
+  return data;
+}
+
+QByteArray XdgCryptoSettings::getKey() {
+  // If the key is known - hash it and return it.
+  if (m_key.isEmpty()) {
+    auto bus = QDBusConnection::sessionBus();
+    auto capabilities = bus.connectionCapabilities();
+    if (!(capabilities & QDBusConnection::UnixFileDescriptorPassing)) {
+      return QByteArray();
+    }
+
+    // Create a pipe to receive the secret.
+    int fds[2];
+    int err = pipe(fds);
+    if (err != 0) {
+      return QByteArray();
+    }
+    auto guard = qScopeGuard([&] { close(fds[0]); });
+
+    // Request the secret.
+    QVariantMap options;
+    options["handle_token"] = QVariant(token());
+
+    QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
+    close(fds[1]);  // Close our write end of the pipe right away.
+    if (reply.type() != QDBusMessage::ReplyMessage) {
+      logger.info() << "Encrypted settings with XDG secrets is not supported";
+      return QByteArray();
+    } else {
+      // We need to rebind our signals if the reply path changed.
+      const QVariant& qv = reply.arguments().constFirst();
+      setReplyPath(qv.value<QDBusObjectPath>().path());
+    }
+
+    // Read the secret.
+    m_key = xdgReadSecretFile(fds[0]);
+    if (m_key.isEmpty()) {
+      // Failed to read the key.
+      return QByteArray();
     }
   }
+
+  // Generate the encryption key.
+  HKDF hash(QCryptographicHash::Sha256);
+  hash.addData(m_key);
+  return hash.result(CRYPTO_SETTINGS_KEY_SIZE);
 }
 
 CryptoSettings::Version XdgCryptoSettings::getSupportedVersion() {

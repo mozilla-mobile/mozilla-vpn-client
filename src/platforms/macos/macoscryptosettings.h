@@ -9,11 +9,11 @@
 
 class MacOSCryptoSettings final : public CryptoSettings {
  public:
-  MacOSCryptoSettings() : CryptoSettings() };
+  MacOSCryptoSettings() : CryptoSettings(){};
   virtual ~MacOSCryptoSettings() = default;
 
   void resetKey() override;
-  bool getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) override;
+  QByteArray getKey() override;
   CryptoSettings::Version getSupportedVersion() override;
 };
 

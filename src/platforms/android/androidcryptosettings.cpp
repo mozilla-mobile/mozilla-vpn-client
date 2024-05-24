@@ -62,12 +62,9 @@ void AndroidCryptoSettings::resetKey() {
   m_initialized = false;
 }
 
-bool AndroidCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
+QByteArray AndroidCryptoSettings::getKey() {
   if (m_initialized) {
-    if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-      memcpy(output, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-      return true;
-    }
+    return m_key;
     logger.warning() << "Malformed key?";
   }
 
@@ -79,18 +76,10 @@ bool AndroidCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
       m_key[i] = rg->generate() & 0xFF;
     }
     jni_setKey(m_key);
-    if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-      memcpy(output, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-      return true;
-    }
+    return m_key;
   }
 
-  m_key = jni_getKey();
-  if (m_key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(output, m_key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-  return false;
+  return jni_getKey();
 }
 
 CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {

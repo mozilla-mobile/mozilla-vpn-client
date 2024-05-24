@@ -53,7 +53,7 @@ void MacOSCryptoSettings::resetKey() {
   initialized = false;
 }
 
-bool MacOSCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
+QByteArray MacOSCryptoSettings::getKey() {
 #if defined(MZ_IOS) || defined(MZ_MACOS)
   if (!initialized) {
     initialized = true;
@@ -79,12 +79,8 @@ bool MacOSCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     if (status == noErr) {
       key = QByteArray::fromNSData(keyData);
-
       logger.debug() << "Key found with length:" << key.length();
-      if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-        memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-        return true;
-      }
+      return key;
     }
 
     logger.warning() << "Key not found. Let's create it. Error:" << status;
@@ -116,12 +112,7 @@ bool MacOSCryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     [query release];
   }
 
-  if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-
-  logger.error() << "Invalid key";
+  return key;
 #else
   Q_UNUSED(output);
 #endif
