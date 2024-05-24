@@ -128,7 +128,7 @@ jobs:
       - name: Install Qt
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.3.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
+          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/ceeX7yQJTt6u1rTuhYLc6g/runs/0/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
           Expand-Archive win.zip
           mv win\QT_OUT "C:\\MozillaVPNBuild"
 
