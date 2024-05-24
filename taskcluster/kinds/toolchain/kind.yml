@@ -6,6 +6,7 @@ loader: taskgraph.loader.transform:loader
 
 kind-dependencies:
     - fetch
+    - docker-image
     - toolchain-openssl
 
 transforms:
@@ -27,3 +28,4 @@ tasks-from:
     - conda_android.yml
     - conda_windows.yml
     - conda_osx.yml
+    - flatpak.yml
