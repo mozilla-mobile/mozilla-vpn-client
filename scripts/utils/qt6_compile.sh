@@ -138,7 +138,6 @@ mkdir -p $BUILDDIR
   -no-feature-pixeltool \
   -no-feature-distancefieldgenerator \
   -no-feature-assistant \
-  -no-feature-qml-xml-http-request \
   -no-feature-tiff \
   -no-feature-webp \
   -no-feature-cups \
