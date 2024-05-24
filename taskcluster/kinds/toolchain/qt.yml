@@ -14,6 +14,7 @@ qt-macos-6.6:
     fetches:
         fetch:
             - qt-source-tarball-6.6.0
+            - miniconda-osx
     run:
         use-caches: false
         script: compile_qt_6_mac.sh
@@ -94,7 +95,7 @@ qt-linux:
         toolchain-artifact: public/build/qt6_linux.tar.xz
     treeherder:
         symbol: TL(qt-linux)
-    worker-type: b-linux
+    worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
@@ -111,6 +112,6 @@ qt-linux-6.6.0:
         toolchain-artifact: public/build/qt6_linux.tar.xz
     treeherder:
         symbol: TL(qt-linux-6.6)
-    worker-type: b-linux
+    worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
