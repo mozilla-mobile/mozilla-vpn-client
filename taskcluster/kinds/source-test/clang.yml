@@ -66,7 +66,7 @@ clang-tidy-windows:
     worker-type: b-win2022
     fetches:
       toolchain: 
-        - qt-windows-x86_64-6.6.3
+        - qt-windows-x86_64-6.6.0
         - conda-windows-x86_64
     worker:
           artifacts:
