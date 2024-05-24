@@ -110,6 +110,7 @@ else()
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp

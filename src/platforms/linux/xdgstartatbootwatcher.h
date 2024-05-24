@@ -7,9 +7,11 @@
 
 #include <QObject>
 
+#include "xdgportal.h"
+
 class QDBusPendingCallWatcher;
 
-class XdgStartAtBootWatcher final : public QObject {
+class XdgStartAtBootWatcher final : public XdgPortal {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XdgStartAtBootWatcher)
 
@@ -22,12 +24,7 @@ class XdgStartAtBootWatcher final : public QObject {
 
  private:
   void startAtBootChanged();
-  QString xdgReplyPath();
-  QString parentWindow();
   void callCompleted(QDBusPendingCallWatcher* call);
-
-  QString m_replyPath;
-  QString m_token;
 };
 
 #endif  // XDGSTARTATBOOTWATCHER_H

@@ -6,12 +6,13 @@
 #define XDGCRYPTOSETTINGS_H
 
 #include "cryptosettings.h"
+#include "xdgportal.h"
 
 #include <QDBusMessage>
 
-class XdgCryptoSettings final : public CryptoSettings {
+class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
  public:
-  XdgCryptoSettings() : CryptoSettings(){};
+  XdgCryptoSettings();
   virtual ~XdgCryptoSettings() = default;
 
   void resetKey() override;

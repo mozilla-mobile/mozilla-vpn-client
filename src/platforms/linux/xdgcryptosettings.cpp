@@ -18,6 +18,10 @@ namespace {
 Logger logger("XdgCryptoSettings");
 }  // namespace
 
+XdgCryptoSettings::XdgCryptoSettings() : CryptoSettings(), XdgPortal() {
+  logger.debug() << "XdgCryptoSettings created";
+}
+
 void XdgCryptoSettings::resetKey() {
   // TODO: Implement Me!
 }
@@ -55,11 +59,19 @@ bool XdgCryptoSettings::getKey(uint8_t key[CRYPTO_SETTINGS_KEY_SIZE]) {
 
   // Request the secret.
   QVariantMap options;
+  options["handle_token"] = QVariant(token());
+
   QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
   close(fds[1]);  // Close our write end of the pipe right away.
   if (reply.type() != QDBusMessage::ReplyMessage) {
     logger.info() << "Encrypted settings with XDG secrets is not supported";
     return false;
+  } else {
+    // We need to rebind our signals if the reply path changed.
+    QVariant qv = reply.arguments().first();
+    QString path = qv.value<QDBusObjectPath>().path();
+    logger.debug() << "Expecting XDG response at:" << path;
+    setReplyPath(path);
   }
 
   // Hash the returned secret into a usable key.
