@@ -48,18 +48,20 @@ void XdgPortal::setReplyPath(const QString& path) {
 
   QDBusConnection bus = QDBusConnection::sessionBus();
   bus.disconnect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST,
-                 "Response", this, SLOT(xdgResponse(uint, QVariantMap)));
+                 "Response", this, SLOT(handleDbusResponse(uint, QVariantMap)));
 
   m_replyPath = path;
   bus.connect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST, "Response",
-                this, SLOT(xdgResponse(uint, QVariantMap)));
+                this, SLOT(handleDbusResponse(uint, QVariantMap)));
 }
 
-void XdgPortal::xdgResponse(uint response, QVariantMap results) {
+void XdgPortal::handleDbusResponse(uint response, QVariantMap results) {
   logger.debug() << "Reply received:" << response;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
     logger.debug() << QString("%1:").arg(i.key()) << i.value().toString();
   }
+
+  emit xdgResponse(response, results);
 }
 
 // Try to find the window identifier for an XDG desktop portal request.

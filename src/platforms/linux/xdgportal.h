@@ -22,12 +22,16 @@ class XdgPortal : public QObject {
   explicit XdgPortal(QObject* parent = nullptr);
   ~XdgPortal();
 
- const QString& token() const { return m_token; }
- const QString& replyPath() const { return m_replyPath; }
- void setReplyPath(const QString& path);
+  const QString& token() const { return m_token; }
+  const QString& replyPath() const { return m_replyPath; }
+  void setReplyPath(const QString& path);
+
+
+ signals:
+  void xdgResponse(uint, QVariantMap);
 
  private slots:
-  void xdgResponse(uint, QVariantMap);
+  void handleDbusResponse(uint, QVariantMap);
 
  protected:
   QString parentWindow();

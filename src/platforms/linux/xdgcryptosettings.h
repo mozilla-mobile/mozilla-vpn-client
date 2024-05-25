@@ -8,8 +8,8 @@
 #include "cryptosettings.h"
 #include "xdgportal.h"
 
-#include <QByteArray>
 #include <QDBusMessage>
+#include <QSettings>
 
 class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
  public:
@@ -21,10 +21,11 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
   CryptoSettings::Version getSupportedVersion() override;
 
  private:
-   QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
-   static QByteArray xdgReadSecretFile(int fd);
+  QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
+  static QByteArray xdgReadSecretFile(int fd);
 
-   QByteArray m_key;
+  QSettings m_metadata; 
+  QByteArray m_key;
 };
 
 #endif  // XDGCRYPTOSETTINGS_H

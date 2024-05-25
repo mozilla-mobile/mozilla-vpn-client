@@ -11,6 +11,7 @@
 #include "xdgportal.h"
 
 #include <QScopeGuard>
+#include <QSettings>
 #include <QtDBus/QtDBus>
 #include <unistd.h>
 
@@ -18,11 +19,30 @@ namespace {
 Logger logger("XdgCryptoSettings");
 }  // namespace
 
-XdgCryptoSettings::XdgCryptoSettings() : CryptoSettings(), XdgPortal() {
+XdgCryptoSettings::XdgCryptoSettings()
+    : CryptoSettings(), XdgPortal(),
+      m_metadata(QSettings::NativeFormat, QSettings::UserScope, "mozilla",
+                 "vpn_salt") {
   logger.debug() << "XdgCryptoSettings created";
+  logger.debug() << "metadata file created:" << m_metadata.fileName();
+
+  // Save changes to the "token" to the metadata settings file.
+  connect(this, &XdgPortal::xdgResponse, this,
+          [&](uint replycode, QVariantMap results) {
+            if (replycode != 0) {
+              return;
+            }
+            if (results.contains("token")) {
+              m_metadata.setValue("token", results.value("token"));
+            } else {
+              m_metadata.remove("token");
+            }
+            m_metadata.sync();
+          });
 }
 
 void XdgCryptoSettings::resetKey() {
+  m_metadata.clear();
   m_key.clear();
 }
 
@@ -83,6 +103,9 @@ QByteArray XdgCryptoSettings::getKey() {
     // Request the secret.
     QVariantMap options;
     options["handle_token"] = QVariant(token());
+    if (m_metadata.contains("token")) {
+      options["token"] = m_metadata.value("token");
+    }
 
     QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
     close(fds[1]);  // Close our write end of the pipe right away.
@@ -103,8 +126,18 @@ QByteArray XdgCryptoSettings::getKey() {
     }
   }
 
+  // Generate a salt if necessary.
+  QString salt;
+  if (m_metadata.contains("salt")) {
+    salt = m_metadata.value("salt").toString();
+  } else {
+    salt = generateRandomBytes(32).toBase64();
+    m_metadata.setValue("salt", QVariant(salt));
+    m_metadata.sync();
+  }
+
   // Generate the encryption key.
-  HKDF hash(QCryptographicHash::Sha256);
+  HKDF hash(QCryptographicHash::Sha256, salt.toUtf8());
   hash.addData(m_key);
   return hash.result(CRYPTO_SETTINGS_KEY_SIZE);
 }
