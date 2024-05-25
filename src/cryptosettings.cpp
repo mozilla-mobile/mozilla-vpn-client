@@ -289,3 +289,17 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
 
   return true;
 }
+
+// static
+QByteArray CryptoSettings::generateRandomBytes(qsizetype length) {
+  QRandomGenerator* rg = QRandomGenerator::system();
+  
+  QByteArray value;
+  value.reserve(length + sizeof(quint32) - 1);
+
+  for (qsizetype i = 0; i < length; i += sizeof(quint32)) {
+    quint32 x = rg->generate();
+    value.append((const char*)&x, sizeof(x));
+  }
+  return value.left(length);
+}

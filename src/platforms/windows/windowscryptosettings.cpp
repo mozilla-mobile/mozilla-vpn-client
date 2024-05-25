@@ -8,8 +8,6 @@
 #include <wincred.h>
 #include <wincrypt.h>
 
-#include <QRandomGenerator>
-
 #include "constants.h"
 #include "cryptosettings.h"
 #include "logger.h"
@@ -46,11 +44,7 @@ QByteArray WindowsCryptoSettings::getKey() {
     }
 
     logger.debug() << "Key not found. Let's create it.";
-    m_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-    QRandomGenerator* rg = QRandomGenerator::system();
-    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      m_key[i] = rg->generate() & 0xFF;
-    }
+    m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
 
     {
       CREDENTIALW cred;

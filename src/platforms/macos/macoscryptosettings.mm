@@ -8,8 +8,6 @@
 #include "cryptosettings.h"
 #include "logger.h"
 
-#include <QRandomGenerator>
-
 #import <Foundation/Foundation.h>
 
 namespace {
@@ -84,11 +82,7 @@ QByteArray MacOSCryptoSettings::getKey() {
     }
 
     logger.warning() << "Key not found. Let's create it. Error:" << status;
-    key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-    QRandomGenerator* rg = QRandomGenerator::system();
-    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      key[i] = rg->generate() & 0xFF;
-    }
+    key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
 
     query = [[NSMutableDictionary alloc] init];
 

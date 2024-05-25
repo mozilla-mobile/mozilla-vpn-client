@@ -4,7 +4,6 @@
 
 #include "linuxcryptosettings.h"
 
-#include <QRandomGenerator>
 #include <QtDBus/QtDBus>
 
 #include "constants.h"
@@ -125,11 +124,7 @@ QByteArray LinuxCryptoSettings::getKey() {
       secret_password_free(password);
     } else {
       logger.debug() << "Key not found. Let's create it.";
-      m_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-      QRandomGenerator* rg = QRandomGenerator::system();
-      for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-        m_key[i] = rg->generate() & 0xFF;
-      }
+      m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
 
       QString b64key(m_key.toBase64());
       gboolean ok = secret_password_store_sync(

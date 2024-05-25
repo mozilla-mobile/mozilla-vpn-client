@@ -9,7 +9,6 @@
 #include <QApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
-#include <QRandomGenerator>
 #include <QTimer>
 
 #include "androidcommons.h"
@@ -70,11 +69,7 @@ QByteArray AndroidCryptoSettings::getKey() {
 
   if (!jni_hasKey()) {
     logger.warning() << "Key not found. Let's create it.";
-    m_key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-    QRandomGenerator* rg = QRandomGenerator::system();
-    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      m_key[i] = rg->generate() & 0xFF;
-    }
+    m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
     jni_setKey(m_key);
     return m_key;
   }

@@ -20,6 +20,7 @@ class CryptoSettings {
   virtual ~CryptoSettings() = default;
 
   static QSettings::Format format();
+  static QByteArray generateRandomBytes(qsizetype length);
 
  private:
   // Implementations must provide these methods to retrieve keys.
