@@ -17,7 +17,7 @@ Logger logger("MacOSCryptoSettings");
 MacOSCryptoSettings::MacOSCryptoSettings() : CryptoSettings() {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (appId) {
-    m_appId QString::fromNSString(appId);
+    m_appId = QString::fromNSString(appId);
   } else {
 #ifdef MZ_IOS
     m_appId = Constants::IOS_FALLBACK_APP_ID;
