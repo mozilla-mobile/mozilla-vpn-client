@@ -80,11 +80,10 @@ QByteArray AndroidCryptoSettings::getKey() {
 CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-  uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
-  if (getKey(key)) {
-    logger.debug() << "Encryption supported!";
-    return CryptoSettings::EncryptionChachaPolyV1;
+  if (getKey().isEmpty()) {
+    logger.debug() << "No encryption";
+    return CryptoSettings::NoEncryption;
   }
-  logger.debug() << "No encryption";
-  return CryptoSettings::NoEncryption;
+  logger.debug() << "Encryption supported!";
+  return CryptoSettings::EncryptionChachaPolyV1;
 }

@@ -67,7 +67,6 @@ QByteArray WindowsCryptoSettings::getKey() {
   return m_key;
 }
 
-// static
 CryptoSettings::Version WindowsCryptoSettings::getSupportedVersion() {
   return CryptoSettings::EncryptionChachaPolyV1;
 }
