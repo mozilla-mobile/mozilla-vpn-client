@@ -23,8 +23,6 @@ XdgCryptoSettings::XdgCryptoSettings()
     : CryptoSettings(), XdgPortal(),
       m_metadata(QSettings::NativeFormat, QSettings::UserScope, "mozilla",
                  "vpn_salt") {
-  logger.debug() << "XdgCryptoSettings created";
-  logger.debug() << "metadata file created:" << m_metadata.fileName();
 
   // Save changes to the "token" to the metadata settings file.
   connect(this, &XdgPortal::xdgResponse, this,

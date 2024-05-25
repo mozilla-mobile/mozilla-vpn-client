@@ -283,8 +283,3 @@ file(GLOB QML_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tst_*.qml")
 foreach(QML_SOURCE ${QML_TEST_SOURCES})
     add_test(NAME ${QML_SOURCE} COMMAND qml_tests ${QML_TEST_ARGS} -input ${CMAKE_CURRENT_SOURCE_DIR}/${QML_SOURCE})
 endforeach()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(qml_tests PRIVATE Qt6::DBus)
-endif()

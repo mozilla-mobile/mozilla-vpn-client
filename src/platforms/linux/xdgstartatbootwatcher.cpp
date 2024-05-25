@@ -82,6 +82,5 @@ void XdgStartAtBootWatcher::callCompleted(QDBusPendingCallWatcher* call) {
 
   // We need to rebind our signals if the reply path changed.
   QString path = reply.argumentAt<0>().path();
-  logger.debug() << "Expecting XDG response at:" << path;
   setReplyPath(path);
 }

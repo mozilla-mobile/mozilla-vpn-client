@@ -46,11 +46,6 @@ if(WIN32)
     target_sources(dummyvpn PRIVATE ${CMAKE_SOURCE_DIR}/tests/dummyvpn/qml/qt6winhack.qrc)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(dummyvpn PRIVATE Qt6::DBus)
-endif()
-
 target_compile_definitions(dummyvpn PRIVATE MZ_DEBUG)
 
 # MZ_DUMMY is a separate platform for dummyvpn.

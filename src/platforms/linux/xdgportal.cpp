@@ -56,10 +56,12 @@ void XdgPortal::setReplyPath(const QString& path) {
 }
 
 void XdgPortal::handleDbusResponse(uint response, QVariantMap results) {
+#ifdef MZ_DEBUG
   logger.debug() << "Reply received:" << response;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
     logger.debug() << QString("%1:").arg(i.key()) << i.value().toString();
   }
+#endif
 
   emit xdgResponse(response, results);
 }

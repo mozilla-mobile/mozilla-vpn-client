@@ -34,6 +34,23 @@ Logger logger("CryptoSettings");
 CryptoSettings* s_instance = nullptr;
 }  // namespace
 
+// A mocked implementation that returns a fixed key.
+#ifdef UNIT_TEST
+class MockCryptoSettings final : public CryptoSettings {
+ public:
+  MockCryptoSettings() : CryptoSettings(){};
+  virtual ~MockCryptoSettings() = default;
+
+  virtual void resetKey() override {};
+  virtual QByteArray getKey() override {
+    return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 'A');
+  };
+  virtual Version getSupportedVersion() override {
+    return CryptoSettings::EncryptionChachaPolyV1;
+  };
+};
+#endif
+
 // static
 QSettings::Format CryptoSettings::format() {
   static QSettings::Format format =
@@ -41,7 +58,9 @@ QSettings::Format CryptoSettings::format() {
 
   // Create a platform crypto settings implementation, if supported.
   if (!s_instance) {
-#if defined(MZ_FLATPAK)
+#ifdef UNIT_TEST
+    s_instance = new MockCryptoSettings();
+#elif defined(MZ_FLATPAK)
     s_instance = new XdgCryptoSettings();
 #elif defined(MZ_LINUX)
     s_instance = new LinuxCryptoSettings();
