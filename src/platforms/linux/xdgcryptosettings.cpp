@@ -24,19 +24,26 @@ XdgCryptoSettings::XdgCryptoSettings()
       m_metadata(QSettings::NativeFormat, QSettings::UserScope, "mozilla",
                  "vpn_salt") {
 
-  // Save changes to the "token" to the metadata settings file.
-  connect(this, &XdgPortal::xdgResponse, this,
-          [&](uint replycode, QVariantMap results) {
-            if (replycode != 0) {
-              return;
-            }
-            if (results.contains("token")) {
-              m_metadata.setValue("token", results.value("token"));
-            } else {
-              m_metadata.remove("token");
-            }
-            m_metadata.sync();
-          });
+  // Check if we can support cryptosettings.
+  auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
+  if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&
+      (getVersion(XDG_PORTAL_SECRET) >= 1)) {
+    m_version = EncryptionChachaPolyV1;
+
+    // Save changes to the "token" to the metadata settings file.
+    connect(this, &XdgPortal::xdgResponse, this,
+            [&](uint replycode, QVariantMap results) {
+              if (replycode != 0) {
+                return;
+              }
+              if (results.contains("token")) {
+                m_metadata.setValue("token", results.value("token"));
+              } else {
+                m_metadata.remove("token");
+              }
+              m_metadata.sync();
+            });
+  }
 }
 
 void XdgCryptoSettings::resetKey() {
@@ -138,8 +145,4 @@ QByteArray XdgCryptoSettings::getKey() {
   HKDF hash(QCryptographicHash::Sha256, salt.toUtf8());
   hash.addData(m_key);
   return hash.result(CRYPTO_SETTINGS_KEY_SIZE);
-}
-
-CryptoSettings::Version XdgCryptoSettings::getSupportedVersion() {
-  return CryptoSettings::EncryptionChachaPolyV1;
 }

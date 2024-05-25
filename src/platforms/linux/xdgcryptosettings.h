@@ -18,7 +18,7 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
 
   void resetKey() override;
   QByteArray getKey() override;
-  CryptoSettings::Version getSupportedVersion() override;
+  CryptoSettings::Version getSupportedVersion() override { return m_version; };
 
  private:
   QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
@@ -26,6 +26,7 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
 
   QSettings m_metadata; 
   QByteArray m_key;
+  CryptoSettings::Version m_version = NoEncryption;
 };
 
 #endif  // XDGCRYPTOSETTINGS_H

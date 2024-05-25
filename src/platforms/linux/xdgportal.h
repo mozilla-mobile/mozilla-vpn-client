@@ -25,7 +25,7 @@ class XdgPortal : public QObject {
   const QString& token() const { return m_token; }
   const QString& replyPath() const { return m_replyPath; }
   void setReplyPath(const QString& path);
-
+  static uint getVersion(const QString& interface);
 
  signals:
   void xdgResponse(uint, QVariantMap);
