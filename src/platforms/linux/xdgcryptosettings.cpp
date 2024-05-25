@@ -4,26 +4,27 @@
 
 #include "xdgcryptosettings.h"
 
+#include <unistd.h>
+
+#include <QScopeGuard>
+#include <QSettings>
+#include <QtDBus/QtDBus>
+
 #include "constants.h"
 #include "cryptosettings.h"
 #include "hkdf.h"
 #include "logger.h"
 #include "xdgportal.h"
 
-#include <QScopeGuard>
-#include <QSettings>
-#include <QtDBus/QtDBus>
-#include <unistd.h>
-
 namespace {
 Logger logger("XdgCryptoSettings");
 }  // namespace
 
 XdgCryptoSettings::XdgCryptoSettings()
-    : CryptoSettings(), XdgPortal(),
+    : CryptoSettings(),
+      XdgPortal(),
       m_metadata(QSettings::NativeFormat, QSettings::UserScope, "mozilla",
                  "vpn_salt") {
-
   // Check if we can support cryptosettings.
   auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
   if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&
@@ -57,10 +58,8 @@ QDBusMessage XdgCryptoSettings::xdgRetrieveSecret(int fd,
   // but we need to be very sure that we close all write ends of the pipe. So
   // the point of this wrapper is to ensure that the QDBusUnixFileDescriptor
   // gets destructed and doesn't leave any open file descriptors.
-  QDBusMessage msg = QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE,
-                                                    XDG_PORTAL_PATH,
-                                                    XDG_PORTAL_SECRET,
-                                                    "RetrieveSecret");
+  QDBusMessage msg = QDBusMessage::createMethodCall(
+      XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_SECRET, "RetrieveSecret");
   msg << QVariant::fromValue(QDBusUnixFileDescriptor(fd));
   msg << options;
 
@@ -78,7 +77,8 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
     }
     if (len < 0) {
       // An error occured.
-      logger.warning() << "Failed to retrieve encryption key:" << strerror(errno);
+      logger.warning() << "Failed to retrieve encryption key:"
+                       << strerror(errno);
       return QByteArray();
     }
     // Retrieved more data.

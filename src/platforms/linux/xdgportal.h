@@ -10,7 +10,8 @@
 constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
 constexpr const char* XDG_PORTAL_PATH = "/org/freedesktop/portal/desktop";
 
-constexpr const char* XDG_PORTAL_BACKGROUND = "org.freedesktop.portal.Background";
+constexpr const char* XDG_PORTAL_BACKGROUND =
+    "org.freedesktop.portal.Background";
 constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
 constexpr const char* XDG_PORTAL_SECRET = "org.freedesktop.portal.Secret";
 

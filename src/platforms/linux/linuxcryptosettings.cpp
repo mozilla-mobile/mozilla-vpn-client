@@ -60,8 +60,7 @@ LinuxCryptoSettings::LinuxCryptoSettings() {
   }
 
   QVariant v = autoLoginReply.arguments().first();
-  QDBusArgument arg =
-      v.value<QDBusVariant>().variant().value<QDBusArgument>();
+  QDBusArgument arg = v.value<QDBusVariant>().variant().value<QDBusArgument>();
 
   QStringList users;
   arg.beginArray();

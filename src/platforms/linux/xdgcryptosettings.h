@@ -5,11 +5,11 @@
 #ifndef XDGCRYPTOSETTINGS_H
 #define XDGCRYPTOSETTINGS_H
 
-#include "cryptosettings.h"
-#include "xdgportal.h"
-
 #include <QDBusMessage>
 #include <QSettings>
+
+#include "cryptosettings.h"
+#include "xdgportal.h"
 
 class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
  public:
@@ -24,7 +24,7 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
   QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
   static QByteArray xdgReadSecretFile(int fd);
 
-  QSettings m_metadata; 
+  QSettings m_metadata;
   QByteArray m_key;
   CryptoSettings::Version m_version = NoEncryption;
 };
