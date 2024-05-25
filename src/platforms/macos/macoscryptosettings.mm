@@ -11,31 +11,27 @@
 #import <Foundation/Foundation.h>
 
 namespace {
-
 Logger logger("MacOSCryptoSettings");
+}  // namespace
 
-bool initialized = false;
-QByteArray key;
-
-NSString* getAppId() {
+MacOSCryptoSettings::MacOSCryptoSettings() : CryptoSettings() {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
-  if (!appId) {
+  if (appId) {
+    m_appId QString::fromNSString(appId);
+  } else {
 #ifdef MZ_IOS
-    appId = QString(Constants::IOS_FALLBACK_APP_ID).toNSString();
+    m_appId = Constants::IOS_FALLBACK_APP_ID;
 #else
-    appId = QString(Constants::MACOS_FALLBACK_APP_ID).toNSString();
+    m_appId = Constants::MACOS_FALLBACK_APP_ID;
 #endif
   }
-  return appId;
 }
-
-}  // namespace
 
 void MacOSCryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
   NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
-  NSString* appId = getAppId();
+  NSString* appId = m_appId.toNSString();
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -48,18 +44,17 @@ void MacOSCryptoSettings::resetKey() {
 
   [query release];
 
-  initialized = false;
+  m_initialized = false;
 }
 
 QByteArray MacOSCryptoSettings::getKey() {
-#if defined(MZ_IOS) || defined(MZ_MACOS)
-  if (!initialized) {
-    initialized = true;
+  if (!m_initialized) {
+    m_initialized = true;
 
     logger.debug() << "Retrieving the key from the keychain";
 
     NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
-    NSString* appId = getAppId();
+    NSString* appId = m_appId.toNSString();
 
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -76,13 +71,13 @@ QByteArray MacOSCryptoSettings::getKey() {
     [query release];
 
     if (status == noErr) {
-      key = QByteArray::fromNSData(keyData);
-      logger.debug() << "Key found with length:" << key.length();
-      return key;
+      m_key = QByteArray::fromNSData(keyData);
+      logger.debug() << "Key found with length:" << m_key.length();
+      return m_key;
     }
 
     logger.warning() << "Key not found. Let's create it. Error:" << status;
-    key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
+    m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
 
     query = [[NSMutableDictionary alloc] init];
 
@@ -93,38 +88,29 @@ QByteArray MacOSCryptoSettings::getKey() {
 
     SecItemDelete((CFDictionaryRef)query);
 
-    keyData = key.toNSData();
+    keyData = m_key.toNSData();
     [query setObject:keyData forKey:(id)kSecValueData];
 
     status = SecItemAdd((CFDictionaryRef)query, NULL);
 
     if (status != noErr) {
       logger.error() << "Failed to store the key. Error:" << status;
-      key = QByteArray();
+      m_key = QByteArray();
     }
 
     [query release];
   }
 
-  return key;
-#else
-  Q_UNUSED(output);
-#endif
-
-  return false;
+  return m_key;
 }
 
 CryptoSettings::Version MacOSCryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-#if (defined(MZ_IOS) || defined(MZ_MACOS)) && !defined(UNIT_TEST)
-  uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
-  if (getKey(key)) {
-    logger.debug() << "Encryption supported!";
-    return CryptoSettings::EncryptionChachaPolyV1;
+  if (getKey().isEmpty()) {
+    logger.debug() << "No encryption";
+    return CryptoSettings::NoEncryption;
   }
-#endif
-
-  logger.debug() << "No encryption";
-  return CryptoSettings::NoEncryption;
+  logger.debug() << "Encryption supported!";
+  return CryptoSettings::EncryptionChachaPolyV1;
 }
