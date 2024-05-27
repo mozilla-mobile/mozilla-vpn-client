@@ -31,11 +31,10 @@ DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
 namespace {
 Logger logger("WireguardUtilsWindows");
 
-// TODO: Change this
-GUID ExampleGuid = {0xdeadc001,
-                    0xbeef,
-                    0xbabe,
-                    {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}};
+GUID ADAPTER_GUID = {0xf64063ab,
+                    0xbfee,
+                    0x4881,
+                    {0xbf, 0x79, 0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75}};
 
 Logger nt_logger("WireGuardNT");
 
@@ -311,11 +310,10 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
  * Returns true on success.
  */
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  // TODO: What should those values be?
   
-  // Create the Adapter and Cleanup Rourintes in case of failure.
+  // Create the Adapter and Cleanup fallbacks in case of failure.
   WIREGUARD_ADAPTER_HANDLE wireguard_adapter = m_wireguard_api->CreateAdapter(
-      (const wchar_t*)interfaceName().utf16(), L"AA", &ExampleGuid);
+      (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
   if (wireguard_adapter == NULL) {
     logger.error() << "Failed creating Wireguard Adapter";
     return false;
