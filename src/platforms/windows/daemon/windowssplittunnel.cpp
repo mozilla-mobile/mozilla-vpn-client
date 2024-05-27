@@ -64,12 +64,14 @@ void WindowsSplitTunnel::initDriver() {
     WindowsUtils::windowsLog("Failed to open Driver: ");
 
     // If the handle is not present, try again after the serivce has started;
-    auto driver_manager = WindowsServiceManager::open(QString::fromWCharArray(DRIVER_SERVICE_NAME));
+    auto driver_manager = WindowsServiceManager::open(
+        QString::fromWCharArray(DRIVER_SERVICE_NAME));
     if (driver_manager == nullptr) {
       return;
     }
-    QObject::connect(driver_manager.get(), &WindowsServiceManager::serviceStarted,
-                     this, &WindowsSplitTunnel::initDriver);
+    QObject::connect(driver_manager.get(),
+                     &WindowsServiceManager::serviceStarted, this,
+                     &WindowsSplitTunnel::initDriver);
     driver_manager->startService();
     return;
   }

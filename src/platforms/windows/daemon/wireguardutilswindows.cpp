@@ -24,7 +24,6 @@
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
 
-
 #pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib, "iphlpapi.lib")
 
@@ -32,9 +31,9 @@ namespace {
 Logger logger("WireguardUtilsWindows");
 
 GUID ADAPTER_GUID = {0xf64063ab,
-                    0xbfee,
-                    0x4881,
-                    {0xbf, 0x79, 0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75}};
+                     0xbfee,
+                     0x4881,
+                     {0xbf, 0x79, 0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75}};
 
 Logger nt_logger("WireGuardNT");
 
@@ -60,10 +59,11 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
 
 /**
  * @brief Assigns an ipv4 address to a network device with a given LUID
- * 
+ *
  * @param luid - LUID of the Adapter
  * @param address - Address and NetMask of the Adapter
- * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the assignment.
+ * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
+ * assignment.
  */
 ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
   ULONG nteContext = 0;
@@ -92,8 +92,8 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
   return nteContext;
 }
 /**
- * @brief 
- * 
+ * @brief
+ *
  * @param luid - LUID of the Adapter
  * @param ipAddress - Address and NetMask of the Adapter
  * @return bool - If the assignment was successful
@@ -103,17 +103,19 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
 
   NET_IFINDEX ifIndex;
   if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
-    logger.error() << "Failed to assign ivp6: Cannot Find Interface for this LUID";
+    logger.error()
+        << "Failed to assign ivp6: Cannot Find Interface for this LUID";
     return false;
   }
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
   if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
                 &sockaddr.sin6_addr) != 1) {
-    logger.error() << "Failed to assign ivp6: Cannot Parse IPv6 Address " << ipAddress.address().toString();
+    logger.error() << "Failed to assign ivp6: Cannot Parse IPv6 Address "
+                   << ipAddress.address().toString();
     return false;
   }
- 
+
   InitializeUnicastIpAddressEntry(&row);
   row.Address.Ipv6.sin6_family = AF_INET6;
   row.Address.Ipv6 = sockaddr;
@@ -174,8 +176,7 @@ struct WireGuardAPI {
 
     WindowsUtils::windowsLog("Wireguard DLL FOUND!");
 
-    auto const getFunc = [WireGuardDll](LPCSTR lpProcName,
-                                        auto* ref) -> bool {
+    auto const getFunc = [WireGuardDll](LPCSTR lpProcName, auto* ref) -> bool {
       auto func = GetProcAddress(WireGuardDll, lpProcName);
       if (func == NULL) {
         WindowsUtils::windowsLog("Failed to get ");
@@ -195,16 +196,11 @@ struct WireGuardAPI {
                 &out->GetRunningDriverVersion),
         getFunc("WireGuardDeleteDriver", &out->DeleteDriver),
         getFunc("WireGuardSetLogger", &out->SetLogger),
-        getFunc("WireGuardSetAdapterLogging",
-                &out->SetAdapterLogging),
-        getFunc("WireGuardGetAdapterState",
-                &out->GetAdapterState),
-        getFunc("WireGuardSetAdapterState",
-                &out->SetAdapterState),
-        getFunc("WireGuardGetConfiguration",
-                &out->GetConfiguration),
-        getFunc("WireGuardSetConfiguration",
-                &out->SetConfiguration)};
+        getFunc("WireGuardSetAdapterLogging", &out->SetAdapterLogging),
+        getFunc("WireGuardGetAdapterState", &out->GetAdapterState),
+        getFunc("WireGuardSetAdapterState", &out->SetAdapterState),
+        getFunc("WireGuardGetConfiguration", &out->GetConfiguration),
+        getFunc("WireGuardSetConfiguration", &out->SetConfiguration)};
     if (!std::ranges::all_of(ok, [](bool v) { return v; })) {
       return {};
     };
@@ -245,7 +241,7 @@ WireguardUtilsWindows::~WireguardUtilsWindows() {
   MZ_COUNT_DTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows destroyed.";
   DeleteIPAddress(m_deviceIpv4_Handle);
-  if (m_adapter){
+  if (m_adapter) {
     m_wireguard_api->SetAdapterState(m_adapter, WIREGUARD_ADAPTER_STATE_DOWN);
     m_wireguard_api->CloseAdapter(m_adapter);
   }
@@ -260,7 +256,6 @@ bool WireguardUtilsWindows::interfaceExists() { return m_adapter != NULL; }
  * Returns true on success.
  */
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  
   // Create the Adapter and Cleanup fallbacks in case of failure.
   WIREGUARD_ADAPTER_HANDLE wireguard_adapter = m_wireguard_api->CreateAdapter(
       (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
@@ -273,7 +268,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     m_wireguard_api->CloseAdapter(wireguard_adapter);
   });
 
-  // Set the Private Key of the Device. 
+  // Set the Private Key of the Device.
   WIREGUARD_INTERFACE wgConf = {
       .Flags = WIREGUARD_INTERFACE_HAS_PRIVATE_KEY,
       .ListenPort = 0,  // Choose Randomly
@@ -294,12 +289,12 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   }
 #ifdef MZ_DEBUG
-  // Wireguard does print things like "Receiving handshake response from peer 2 (178.255.149.140:2730)"
-  // as we probably do not want to record which ip the users connect to, let's make it debug only. 
+  // Wireguard does print things like "Receiving handshake response from peer 2
+  // (178.255.149.140:2730)" as we probably do not want to record which ip the
+  // users connect to, let's make it debug only.
   m_wireguard_api->SetAdapterLogging(wireguard_adapter,
                                      WIREGUARD_ADAPTER_LOG_ON);
 #endif
-
 
   // Determine the interface LUID
   NET_LUID luid;
@@ -311,14 +306,14 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     m_luid = 0;
   });
 
-  // Set the Adapters Address: 
+  // Set the Adapters Address:
   m_deviceIpv4_Handle =
       setIPv4AddressAndMask(luid, IPAddress(config.m_deviceIpv4Address));
-  if (m_deviceIpv4_Handle == 0){
+  if (m_deviceIpv4_Handle == 0) {
     logger.error() << "Failed setIPv4AddressAndMask";
     return false;
   }
-  if(!setIPv6AddressAndMask(luid, IPAddress(config.m_deviceIpv6Address))){
+  if (!setIPv6AddressAndMask(luid, IPAddress(config.m_deviceIpv6Address))) {
     logger.error() << "Failed setIPv6AddressAndMask";
     return false;
   };
@@ -344,7 +339,7 @@ bool WireguardUtilsWindows::deleteInterface() {
   if (!m_adapter) {
     return false;
   }
-  if (m_deviceIpv4_Handle != 0){
+  if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);
   }
   WindowsFirewall::instance()->disableKillSwitch();
@@ -371,7 +366,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   wgnt_conf.peer.PersistentKeepalive = WG_KEEPALIVE_PERIOD;
 
   // TODO: We currently assume an ipv4 reachable endpoint
-  // we need to make sure this is the right decision. 
+  // we need to make sure this is the right decision.
   wgnt_conf.peer.Endpoint.si_family = AF_INET;
   wgnt_conf.peer.Endpoint.Ipv4.sin_family = AF_INET;
   wgnt_conf.peer.Endpoint.Ipv4.sin_port = config.m_serverPort;
@@ -399,8 +394,6 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   wgnt_conf.allowedIP[0] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET};
   wgnt_conf.allowedIP[1] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET6};
 
-
-
   if (!m_wireguard_api->SetConfiguration(m_adapter, &wgnt_conf.interface,
                                          sizeof(wgnt_conf))) {
     logger.error() << "Failed setting Wireguard Adapter Config";
@@ -413,7 +406,6 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   }
   return true;
 }
-
 
 QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   if (!m_adapter) {
@@ -471,12 +463,9 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   return peerList;
 }
 
-
-
-
 /**
-* Removes a Peer matching the InterfaceConfig's Public Key
-*/
+ * Removes a Peer matching the InterfaceConfig's Public Key
+ */
 bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   const auto currentPeers = getPeerStatus().count();
 #pragma pack(push, 1)
@@ -489,10 +478,9 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   auto wgnt_conf = WireGuardNTConfig{
       .interface{.PeersCount = 1},
       .peer{
-        .Flags = WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_REMOVE,
-        .AllowedIPsCount = 0,
-      }
-  };
+          .Flags = WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_REMOVE,
+          .AllowedIPsCount = 0,
+      }};
   const auto peer_public_key = QByteArray::fromBase64(
       config.m_serverPublicKey.toUtf8(), QByteArray::Base64Encoding);
   std::copy(std::begin(peer_public_key), std::end(peer_public_key),
@@ -586,4 +574,3 @@ bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
 bool WireguardUtilsWindows::deleteExclusionRoute(const IPAddress& prefix) {
   return m_routeMonitor.deleteExclusionRoute(prefix);
 }
-

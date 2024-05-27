@@ -4,8 +4,8 @@
 
 #include "windowsservicemanager.h"
 
-#include <QTimer>
 #include <QApplication>
+#include <QTimer>
 
 #include "Windows.h"
 #include "Winsvc.h"
@@ -17,27 +17,22 @@ namespace {
 Logger logger("WindowsServiceManager");
 }
 
-WindowsServiceManager::WindowsServiceManager(SC_HANDLE serviceManager, SC_HANDLE service) :
-  QObject(qApp),
-  m_serviceManager(serviceManager),
-  m_service(service)
-{
+WindowsServiceManager::WindowsServiceManager(SC_HANDLE serviceManager,
+                                             SC_HANDLE service)
+    : QObject(qApp), m_serviceManager(serviceManager), m_service(service) {
   m_timer.setSingleShot(false);
 }
 
 std::unique_ptr<WindowsServiceManager> WindowsServiceManager::open(
     const QString serviceName) {
-
   LPCWSTR service = (const wchar_t*)serviceName.utf16();
 
   DWORD err = NULL;
-  auto scm_rights = SC_MANAGER_CONNECT | 
-                    SC_MANAGER_ENUMERATE_SERVICE |
-                    SC_MANAGER_QUERY_LOCK_STATUS | 
-                    STANDARD_RIGHTS_READ;
-  auto manager = OpenSCManager( NULL,  // local computer
-                                NULL,  // servicesActive database
-                                scm_rights);
+  auto scm_rights = SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE |
+                    SC_MANAGER_QUERY_LOCK_STATUS | STANDARD_RIGHTS_READ;
+  auto manager = OpenSCManager(NULL,  // local computer
+                               NULL,  // servicesActive database
+                               scm_rights);
   err = GetLastError();
   if (err != NULL) {
     logger.error() << " OpenSCManager failed code: " << err;
@@ -45,17 +40,17 @@ std::unique_ptr<WindowsServiceManager> WindowsServiceManager::open(
   }
   logger.debug() << "OpenSCManager access given - " << err;
 
-  logger.debug() << "Opening Service - "
-                 << serviceName;
+  logger.debug() << "Opening Service - " << serviceName;
   // Try to get an elevated handle
-  auto serviceHandle = OpenService(manager,  // SCM database
-                          service,       // name of service
-                          (GENERIC_READ | SERVICE_START | SERVICE_STOP));
+  auto serviceHandle =
+      OpenService(manager,  // SCM database
+                  service,  // name of service
+                  (GENERIC_READ | SERVICE_START | SERVICE_STOP));
   err = GetLastError();
   if (err != NULL) {
     CloseServiceHandle(manager);
     WindowsUtils::windowsLog("OpenService failed");
-    return  {};
+    return {};
   }
 
   logger.debug() << "Service manager execute access granted";

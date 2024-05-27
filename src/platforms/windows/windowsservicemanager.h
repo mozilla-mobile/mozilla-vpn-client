@@ -20,7 +20,7 @@ class WindowsServiceManager : public QObject {
   Q_DISABLE_COPY_MOVE(WindowsServiceManager)
 
  public:
-  // Creates a WindowsServiceManager for the Named service. 
+  // Creates a WindowsServiceManager for the Named service.
   // returns nullptr if
   static std::unique_ptr<WindowsServiceManager> open(const QString serviceName);
   WindowsServiceManager(SC_HANDLE serviceManager, SC_HANDLE service);
@@ -56,8 +56,6 @@ class WindowsServiceManager : public QObject {
   QTimer m_timer;
 
   bool startPolling(DWORD goal_state, int maxS);
-
-
 };
 
 #endif  // WINDOWSSERVICEMANAGER

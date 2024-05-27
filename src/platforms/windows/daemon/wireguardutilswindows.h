@@ -11,15 +11,14 @@
 #include "windowsroutemonitor.h"
 #include "wireguard.h"
 
-struct WireGuardAPI; 
-
+struct WireGuardAPI;
 
 class WireguardUtilsWindows final : public WireguardUtils {
   Q_OBJECT
 
  public:
-  // Creates a WireguardUtilsWindows instance, may fail due to i.e 
-  // wireguard-nt failing to initialize, returns nullptr in that case. 
+  // Creates a WireguardUtilsWindows instance, may fail due to i.e
+  // wireguard-nt failing to initialize, returns nullptr in that case.
   static std::unique_ptr<WireguardUtilsWindows> create(QObject* parent);
   ~WireguardUtilsWindows();
 
@@ -50,12 +49,11 @@ class WireguardUtilsWindows final : public WireguardUtils {
   void buildMibForwardRow(const IPAddress& prefix, void* row);
 
   quint64 m_luid = 0;
-  std::unique_ptr<WireGuardAPI> m_wireguard_api;  
-  ulong m_deviceIpv4_Handle = 0;  
+  std::unique_ptr<WireGuardAPI> m_wireguard_api;
+  ulong m_deviceIpv4_Handle = 0;
 
   WindowsRouteMonitor m_routeMonitor;
   WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
-
 };
 
 #endif  // WIREGUARDUTILSWINDOWS_H
