@@ -23,8 +23,7 @@ Logger logger("XdgCryptoSettings");
 XdgCryptoSettings::XdgCryptoSettings()
     : CryptoSettings(),
       XdgPortal(),
-      m_metadata(QSettings::NativeFormat, QSettings::UserScope, "mozilla",
-                 "vpn_salt") {
+      m_metadata(QSettings::UserScope, "mozilla", "vpn_salt") {
   // Check if we can support cryptosettings.
   auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
   if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&
@@ -77,8 +76,7 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
     }
     if (len < 0) {
       // An error occured.
-      logger.warning() << "Failed to retrieve encryption key:"
-                       << strerror(errno);
+      logger.warning() << "Failed to read encryption key:" << strerror(errno);
       return QByteArray();
     }
     // Retrieved more data.
@@ -89,18 +87,12 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
 }
 
 QByteArray XdgCryptoSettings::getKey() {
-  // If the key is known - hash it and return it.
+  // Retrieve the key if we don't already have a copy.
   if (m_key.isEmpty()) {
-    auto bus = QDBusConnection::sessionBus();
-    auto capabilities = bus.connectionCapabilities();
-    if (!(capabilities & QDBusConnection::UnixFileDescriptorPassing)) {
-      return QByteArray();
-    }
-
     // Create a pipe to receive the secret.
     int fds[2];
-    int err = pipe(fds);
-    if (err != 0) {
+    if (pipe(fds) != 0) {
+      logger.warning() << "Failed to create pipe:" << strerror(errno);
       return QByteArray();
     }
     auto guard = qScopeGuard([&] { close(fds[0]); });
@@ -115,7 +107,7 @@ QByteArray XdgCryptoSettings::getKey() {
     QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
     close(fds[1]);  // Close our write end of the pipe right away.
     if (reply.type() != QDBusMessage::ReplyMessage) {
-      logger.info() << "Encrypted settings with XDG secrets is not supported";
+      logger.info() << "Unable to retrieve secret:" << reply.errorMessage();
       return QByteArray();
     } else {
       // We need to rebind our signals if the reply path changed.

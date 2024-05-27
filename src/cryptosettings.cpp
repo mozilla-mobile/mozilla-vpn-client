@@ -12,7 +12,9 @@
 #include "hacl-star/Hacl_Chacha20Poly1305_32.h"
 #include "logger.h"
 
-#if defined(MZ_FLATPAK)
+#if defined(UNIT_TEST)
+#  include "platforms/dummy/dummycryptosettings.h"
+#elif defined(MZ_FLATPAK)
 #  include "platforms/linux/xdgcryptosettings.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcryptosettings.h"
@@ -28,28 +30,9 @@ constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;
 
 namespace {
-
 Logger logger("CryptoSettings");
-
 CryptoSettings* s_instance = nullptr;
 }  // namespace
-
-// A mocked implementation that returns a fixed key.
-#ifdef UNIT_TEST
-class MockCryptoSettings final : public CryptoSettings {
- public:
-  MockCryptoSettings() : CryptoSettings(){};
-  virtual ~MockCryptoSettings() = default;
-
-  virtual void resetKey() override {};
-  virtual QByteArray getKey() override {
-    return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 'A');
-  };
-  virtual Version getSupportedVersion() override {
-    return CryptoSettings::EncryptionChachaPolyV1;
-  };
-};
-#endif
 
 // static
 QSettings::Format CryptoSettings::format() {
@@ -58,8 +41,8 @@ QSettings::Format CryptoSettings::format() {
 
   // Create a platform crypto settings implementation, if supported.
   if (!s_instance) {
-#ifdef UNIT_TEST
-    s_instance = new MockCryptoSettings();
+#if defined(UNIT_TEST)
+    s_instance = new DummyCryptoSettings();
 #elif defined(MZ_FLATPAK)
     s_instance = new XdgCryptoSettings();
 #elif defined(MZ_LINUX)
@@ -74,6 +57,19 @@ QSettings::Format CryptoSettings::format() {
   }
 
   return format;
+}
+
+CryptoSettings::CryptoSettings() {
+  logger.info() << "Creating CryptoSettings";
+  if (s_instance) {
+    delete s_instance;
+  }
+  s_instance = this;
+}
+
+CryptoSettings::~CryptoSettings() {
+  logger.info() << "Destroying CryptoSettings";
+  s_instance = nullptr;
 }
 
 // static
@@ -312,7 +308,7 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
 // static
 QByteArray CryptoSettings::generateRandomBytes(qsizetype length) {
   QRandomGenerator* rg = QRandomGenerator::system();
-  
+
   QByteArray value;
   value.reserve(length + sizeof(quint32) - 1);
 
@@ -321,4 +317,9 @@ QByteArray CryptoSettings::generateRandomBytes(qsizetype length) {
     value.append((const char*)&x, sizeof(x));
   }
   return value.left(length);
+}
+
+// static
+void CryptoSettings::addProvider(CryptoSettings* provider) {
+
 }

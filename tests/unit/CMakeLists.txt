@@ -239,6 +239,7 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkmanager.h
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.h
@@ -324,6 +325,8 @@ target_sources(unit_tests PRIVATE
     testconnectionhealth.h
     testcommandlineparser.cpp
     testcommandlineparser.h
+    testcryptosettings.cpp
+    testcryptosettings.h
     testdnshelper.cpp
     testdnshelper.h
     testipaddresslookup.cpp
