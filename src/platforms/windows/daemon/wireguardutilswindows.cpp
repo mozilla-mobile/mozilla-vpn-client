@@ -235,8 +235,8 @@ std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
 WireguardUtilsWindows::WireguardUtilsWindows(
     QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
     : WireguardUtils(parent),
-      m_routeMonitor(this),
-      m_wireguard_api(std::move(wireguard)) {
+      m_wireguard_api(std::move(wireguard)),
+      m_routeMonitor(this) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 }

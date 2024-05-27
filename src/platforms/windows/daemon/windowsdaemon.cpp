@@ -29,7 +29,7 @@ Logger logger("WindowsDaemon");
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MZ_COUNT_CTOR(WindowsDaemon);
 
-  m_wgutils = std::move(WireguardUtilsWindows::create(this));
+  m_wgutils = WireguardUtilsWindows::create(this);
   m_dnsutils = new DnsUtilsWindows(this);
 
   connect(m_wgutils.get(), &WireguardUtilsWindows::backendFailure, this,
