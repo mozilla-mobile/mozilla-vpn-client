@@ -21,6 +21,9 @@
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
 #include "wireguard.h"
+DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
+DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
+
 
 #pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib, "iphlpapi.lib")
@@ -125,8 +128,6 @@ bool setIPv6Address(NET_LUID luid, const IPAddress ipAddress) {
 
   return true;
 }
-
-
 
 };  // namespace
 
@@ -445,14 +446,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   std::copy(std::begin(peer_public_key), std::end(peer_public_key),
             std::begin(wgnt_conf.peer.PublicKey));
 
-  uint32_t flags =
+  wgnt_conf.peer.Flags =
       WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_HAS_PERSISTENT_KEEPALIVE |
       WIREGUARD_PEER_HAS_ENDPOINT | WIREGUARD_PEER_REPLACE_ALLOWED_IPS;
-  // TODO: this is a hack, or bug? when we OR the bitfields
-  // its no longer a WIREGUARD_PEER_FLAG, which is required in the struct, so
-  // lets just copy that bytes there.
-  std::memcpy(&wgnt_conf.peer.Flags, &flags, sizeof(WIREGUARD_PEER_FLAG));
-  assert(wgnt_conf.peer.Flags == flags);
 
   logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
@@ -491,7 +487,11 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   return true;
 }
 
+/**
+* Removes a Peer matching the InterfaceConfig's Public Key
+*/
 bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
+  const auto currentPeers = getPeerStatus().count();
 #pragma pack(push, 1)
   struct WireGuardNTConfig {
     WIREGUARD_INTERFACE interface;
@@ -499,20 +499,24 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   };
 #pragma pack(pop)
 
-  auto wgnt_conf = WireGuardNTConfig{.interface{.PeersCount = 1}};
-  auto peer_public_key = QByteArray::fromBase64(
+  auto wgnt_conf = WireGuardNTConfig{
+      .interface{.PeersCount = 1},
+      .peer{
+        .Flags = WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_REMOVE,
+        .AllowedIPsCount = 0,
+      }
+  };
+  const auto peer_public_key = QByteArray::fromBase64(
       config.m_serverPublicKey.toUtf8(), QByteArray::Base64Encoding);
   std::copy(std::begin(peer_public_key), std::end(peer_public_key),
             std::begin(wgnt_conf.peer.PublicKey));
-
-  uint32_t flags = WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_REMOVE;
-  std::memcpy(&wgnt_conf.peer.Flags, &flags, sizeof(WIREGUARD_PEER_FLAG));
 
   if (!m_wireguard_api->SetConfiguration(m_adapter, &wgnt_conf.interface,
                                          sizeof(wgnt_conf))) {
     logger.error() << "Failed deletePeer";
     return false;
   }
+  Q_ASSERT(getPeerStatus().count() < currentPeers);
   // Clear exclustion routes for this peer.
   if (config.m_hopType != InterfaceConfig::MultiHopExit) {
     m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
