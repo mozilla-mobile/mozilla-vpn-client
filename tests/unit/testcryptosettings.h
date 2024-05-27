@@ -15,8 +15,14 @@ class TestCryptoSettings final : public TestHelper {
  private:
   void writeTestData(CryptoSettings& crypto);
   void checkTestData(const QSettings& settings);
-  CryptoSettings::Version parseVersion() const;
   QString testFileName() const { return m_tempdir->filePath("settings.moz"); };
+
+  // Parse content from encrypted files.
+  QByteArray parseHeader() const;
+  CryptoSettings::Version parseVersion() const;
+  QByteArray parseMac() const;
+  QByteArray parseNonce() const;
+  QByteArray parseMetaData() const;
 
   QTemporaryDir* m_tempdir;
 
@@ -30,4 +36,9 @@ class TestCryptoSettings final : public TestHelper {
   void readWritePlaintext();
   void readFailsWithPadding();
   void readFailsWithMacError();
+
+  // Tests for the encrypted v2 format.
+  void writeV1andReadV2();
+  void writeV2WithMetaData();
+  void readFailsWithMetaDataError();
 };

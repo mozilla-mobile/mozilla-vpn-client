@@ -18,10 +18,12 @@ class DummyCryptoSettings final : public CryptoSettings {
     Q_UNUSED(metadata);
     return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, m_fakeKeyValue);
   };
+  virtual QByteArray getMetaData() override { return m_metadata; };
   virtual Version getSupportedVersion() override { return m_keyVersion; };
 
  private:
   char m_fakeKeyValue = 'A';
+  QByteArray m_metadata;
   Version m_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
 
   friend class TestCryptoSettings;
