@@ -23,35 +23,6 @@
 #include "wireguard.h"
 
 #pragma comment(lib, "Dbghelp.lib")
-
-void ListExportedFunctions(HMODULE hModule) {
-  if (hModule == nullptr) {
-    std::cerr << "Could not load the DLL: "
-              << "wireguard" << std::endl;
-    return;
-  }
-
-  ULONG size;
-  PIMAGE_EXPORT_DIRECTORY exports =
-      (PIMAGE_EXPORT_DIRECTORY)ImageDirectoryEntryToData(
-          hModule, TRUE, IMAGE_DIRECTORY_ENTRY_EXPORT, &size);
-
-  if (exports == nullptr) {
-    std::cerr << "Could not find the export directory" << std::endl;
-    FreeLibrary(hModule);
-    return;
-  }
-
-  DWORD* functions = (DWORD*)((BYTE*)hModule + exports->AddressOfFunctions);
-  WORD* ordinals = (WORD*)((BYTE*)hModule + exports->AddressOfNameOrdinals);
-  DWORD* names = (DWORD*)((BYTE*)hModule + exports->AddressOfNames);
-
-  for (DWORD i = 0; i < exports->NumberOfFunctions; i++) {
-    const char* functionName = (const char*)((BYTE*)hModule + names[i]);
-    std::cout << "Function: " << functionName << std::endl;
-  }
-}
-
 #pragma comment(lib, "iphlpapi.lib")
 
 namespace {
@@ -86,29 +57,23 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
 }
 
 /**
-* Add's an ip Adress to an Adapter
-* -> returns 0 on failure
-* -> returns nteContextHandle otherwise
-
+* Assigns an ipv4 address to a network device with a given LUID
+* Returns 0 on failure
+* Retuns an nteContext - Call DeleteIPAddress(nteContext) to remove the assignment.
 */
-ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress& addr) {
+ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
   NET_IFINDEX ifIndex;
   if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
     return 0;
   }
-
-  if (addr.address().protocol() != QHostAddress::IPv4Protocol) {
-    return 0;
-  }
-
   IN_ADDR ipAddrBinary, subnetMaskBinary;
-  if (InetPtonA(AF_INET, qPrintable(addr.address().toString()),
+  if (InetPtonA(AF_INET, qPrintable(address.address().toString()),
                 &ipAddrBinary) != 1) {
     return 0;
   }
-  if (InetPtonA(AF_INET, "255.255.255.0",
+  if (InetPtonA(AF_INET, qPrintable(address.netmask().toString()),
                 &subnetMaskBinary) != 1) {
     return 0;
   }
@@ -120,9 +85,48 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress& addr) {
     WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
     return 0;
   }
-
   return nteContext;
 }
+
+bool setIPv6Address(NET_LUID luid, const IPAddress ipAddress) {
+  IN6_ADDR ipAddrBinary;
+  SOCKADDR_IN6 sockaddr;
+  MIB_UNICASTIPADDRESS_ROW row;
+
+  NET_IFINDEX ifIndex;
+  if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
+    return false;
+  }
+
+  if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()), &ipAddrBinary) != 1) {
+    std::cerr << "Invalid IPv6 address format." << std::endl;
+    return false;
+  }
+
+  ZeroMemory(&sockaddr, sizeof(sockaddr));
+  sockaddr.sin6_family = AF_INET6;
+  memcpy(&sockaddr.sin6_addr, &ipAddrBinary, sizeof(ipAddrBinary));
+
+  InitializeUnicastIpAddressEntry(&row);
+  row.Address.Ipv6.sin6_family = AF_INET6;
+  row.Address.Ipv6 = sockaddr;
+  row.InterfaceLuid = luid;
+
+  // Calculate prefix length from subnet mask
+  unsigned int prefixLength = ipAddress.prefixLength();
+  row.OnLinkPrefixLength = prefixLength;
+
+  DWORD dwResult = CreateUnicastIpAddressEntry(&row);
+  if (dwResult != NO_ERROR) {
+    std::cerr << "CreateUnicastIpAddressEntry failed with error: " << dwResult
+              << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+
 
 };  // namespace
 
@@ -179,8 +183,6 @@ struct WireGuardAPI {
       WindowsUtils::windowsLog("Failed to open wireguard.dll");
       return {};
     }
-
-    ListExportedFunctions(WireGuardDll);
 
     WindowsUtils::windowsLog("Wireguard DLL FOUND!");
     std::array ok = {
@@ -357,13 +359,15 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   });
 
   // Set the Adapters ip Address: 
-  auto addr = IPAddress(config.m_deviceIpv4Address);
-  m_deviceIpv4_Handle = setIPv4AddressAndMask(luid, addr);
+
+  m_deviceIpv4_Handle =
+      setIPv4AddressAndMask(luid, IPAddress(config.m_deviceIpv4Address));
   if (m_deviceIpv4_Handle == 0){
     logger.error() << "Failed setIPv4AddressAndMask";
     return false;
   }
 
+  setIPv6Address(luid, IPAddress(config.m_deviceIpv6Address));
 
   // Enable the windows firewall
   NET_IFINDEX ifindex;
@@ -397,15 +401,11 @@ bool WireguardUtilsWindows::deleteInterface() {
 }
 
 bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
-  // TODO: REWRITE
-  QByteArray publicKey =
-      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
-
   // Enable the windows firewall for this peer.
-  WindowsFirewall::instance()->enablePeerTraffic(config);
+  if (!WindowsFirewall::instance()->enablePeerTraffic(config)) {
+    return false;
+  };
 
-// Helper struct.
-// Setconfig expects a continous blob of memory.
 #pragma pack(push, 1)
   struct WireGuardNTConfig {
     WIREGUARD_INTERFACE interface;
@@ -413,7 +413,6 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     std::array<WIREGUARD_ALLOWED_IP, 128> allowedIP;
   };
 #pragma pack(pop)
-
   auto wgnt_conf = WireGuardNTConfig{.interface{.PeersCount = 1}};
 
   if ((size_t)config.m_allowedIPAddressRanges.count() >
@@ -425,6 +424,8 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   wgnt_conf.peer.AllowedIPsCount = config.m_allowedIPAddressRanges.count();
   wgnt_conf.peer.PersistentKeepalive = WG_KEEPALIVE_PERIOD;
 
+  // TODO: We currently assume an ipv4 reachable endpoint
+  // we need to make sure this is the right choise. 
   wgnt_conf.peer.Endpoint.si_family = AF_INET;
   wgnt_conf.peer.Endpoint.Ipv4.sin_family = AF_INET;
   wgnt_conf.peer.Endpoint.Ipv4.sin_port = config.m_serverPort;
@@ -456,6 +457,11 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
 
+  wgnt_conf.peer.AllowedIPsCount = 2;
+  wgnt_conf.allowedIP[0] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET};
+  wgnt_conf.allowedIP[1] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET6};
+
+  /*
   for (auto index = 0u; index < wgnt_conf.peer.AllowedIPsCount; index++) {
     auto const range = config.m_allowedIPAddressRanges.at(index);
     auto config_ip = &wgnt_conf.allowedIP.at(index);
@@ -470,7 +476,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
       std::memcpy(config_ip->Address.V6.u.Byte, &v6,
                   sizeof(config_ip->Address.V6.u.Byte));
     }
-  }
+  }*/
 
   if (!m_wireguard_api->SetConfiguration(m_adapter, &wgnt_conf.interface,
                                          sizeof(wgnt_conf))) {
