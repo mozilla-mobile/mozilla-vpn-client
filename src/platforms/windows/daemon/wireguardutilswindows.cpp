@@ -109,7 +109,7 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
   if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
-                &sockaddr.sin6_addr) != NO_ERROR) {
+                &sockaddr.sin6_addr) != 1) {
     logger.error() << "Failed to assign ivp6: Cannot Parse IPv6 Address " << ipAddress.address().toString();
     return false;
   }
@@ -364,18 +364,10 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   struct WireGuardNTConfig {
     WIREGUARD_INTERFACE interface;
     WIREGUARD_PEER peer;
-    std::array<WIREGUARD_ALLOWED_IP, 128> allowedIP;
+    std::array<WIREGUARD_ALLOWED_IP, 2> allowedIP;
   };
 #pragma pack(pop)
   auto wgnt_conf = WireGuardNTConfig{.interface{.PeersCount = 1}};
-
-  if ((size_t)config.m_allowedIPAddressRanges.count() >
-      wgnt_conf.allowedIP.size()) {
-    // We cannot fit all allowedIPRanged into our struct >:(
-    Q_ASSERT(false);
-    return false;
-  }
-  wgnt_conf.peer.AllowedIPsCount = config.m_allowedIPAddressRanges.count();
   wgnt_conf.peer.PersistentKeepalive = WG_KEEPALIVE_PERIOD;
 
   // TODO: We currently assume an ipv4 reachable endpoint
@@ -402,28 +394,12 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
                  << "via" << config.m_serverIpv4AddrIn;
 
-  /*
+  // Everything that has reached the wireguard adapter should be accepted
   wgnt_conf.peer.AllowedIPsCount = 2;
   wgnt_conf.allowedIP[0] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET};
   wgnt_conf.allowedIP[1] = WIREGUARD_ALLOWED_IP{.AddressFamily = AF_INET6};
-  */
-  
-  for (auto index = 0u; index < wgnt_conf.peer.AllowedIPsCount; index++) {
-    auto const range = config.m_allowedIPAddressRanges.at(index);
-    auto config_ip = &wgnt_conf.allowedIP.at(index);
-    if (range.type() == QAbstractSocket::IPv4Protocol) {
-      config_ip->AddressFamily = AF_INET;
-      inet_pton(AF_INET, qPrintable(config.m_serverIpv4AddrIn),
-                &config_ip->Address.V4.S_un.S_addr);
-      config_ip->Cidr = range.prefixLength();
-    } else {
-      config_ip->AddressFamily = AF_INET6;
-      config_ip->Cidr = range.prefixLength();
-      auto v6 = range.address().toIPv6Address();
-      std::memcpy(config_ip->Address.V6.u.Byte, &v6,
-                  sizeof(config_ip->Address.V6.u.Byte));
-    }
-  }
+
+
 
   if (!m_wireguard_api->SetConfiguration(m_adapter, &wgnt_conf.interface,
                                          sizeof(wgnt_conf))) {
