@@ -15,6 +15,7 @@ class CryptoSettings {
   enum Version {
     NoEncryption,
     EncryptionChachaPolyV1,
+    EncryptionChachaPolyV2,
   };
 
   explicit CryptoSettings();
@@ -34,16 +35,15 @@ class CryptoSettings {
   virtual QByteArray getMetaData() { return QByteArray(); }
   virtual Version getSupportedVersion() = 0;
 
-  static bool writeVersion(QIODevice& device, Version version);
   static bool readJsonFile(QIODevice& device, QSettings::SettingsMap& map);
   static bool writeJsonFile(QIODevice& device,
                             const QSettings::SettingsMap& map);
 
-  bool readEncryptedChachaPolyV1File(QIODevice& device,
-                                     QSettings::SettingsMap& map);
+  bool readEncryptedChachaPolyFile(Version fileVersion, QIODevice& device,
+                                   QSettings::SettingsMap& map);
 
-  bool writeEncryptedChachaPolyV1File(QIODevice& device,
-                                      const QSettings::SettingsMap& map);
+  bool writeEncryptedChachaPolyFile(QIODevice& device,
+                                    const QSettings::SettingsMap& map);
 
  protected:
   uint64_t m_lastNonce = 0;

@@ -7,7 +7,7 @@
 #include "cryptosettings.h"
 #include "helper.h"
 
-class QTemporaryFile;
+class QTemporaryDir;
 
 class TestCryptoSettings final : public TestHelper {
   Q_OBJECT
@@ -16,8 +16,9 @@ class TestCryptoSettings final : public TestHelper {
   void writeTestData(CryptoSettings& crypto);
   void checkTestData(const QSettings& settings);
   CryptoSettings::Version parseVersion() const;
+  QString testFileName() const { return m_tempdir->filePath("settings.moz"); };
 
-  QTemporaryFile* m_tempfile = nullptr;
+  QTemporaryDir* m_tempdir;
 
  private slots:
   void init();
@@ -25,6 +26,7 @@ class TestCryptoSettings final : public TestHelper {
 
   void readAndWrite();
   void resetKeyOnRollover();
+  void restoreNonceFromFile();
   void readWritePlaintext();
   void readFailsWithPadding();
   void readFailsWithMacError();

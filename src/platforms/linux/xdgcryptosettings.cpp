@@ -21,14 +21,12 @@ Logger logger("XdgCryptoSettings");
 }  // namespace
 
 XdgCryptoSettings::XdgCryptoSettings()
-    : CryptoSettings(),
-      XdgPortal(),
-      m_metadata(QSettings::UserScope, "mozilla", "vpn_salt") {
+    : CryptoSettings(), XdgPortal() {
   // Check if we can support cryptosettings.
   auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
   if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&
       (getVersion(XDG_PORTAL_SECRET) >= 1)) {
-    m_version = EncryptionChachaPolyV1;
+    m_version = EncryptionChachaPolyV2;
 
     // Save changes to the "token" to the metadata settings file.
     connect(this, &XdgPortal::xdgResponse, this,
@@ -37,17 +35,17 @@ XdgCryptoSettings::XdgCryptoSettings()
                 return;
               }
               if (results.contains("token")) {
-                m_metadata.setValue("token", results.value("token"));
-              } else {
-                m_metadata.remove("token");
+                m_token = results.value("token").toString();
+                // TODO: We need to trigger a write to the settings file
+                // in order to make sure the token is saved in the metadata.
               }
-              m_metadata.sync();
             });
   }
 }
 
 void XdgCryptoSettings::resetKey() {
-  m_metadata.clear();
+  m_token.clear();
+  m_salt.clear();
   m_key.clear();
 }
 
@@ -87,10 +85,10 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
 }
 
 QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
-  Q_UNUSED(metadata);
-
   // Retrieve the key if we don't already have a copy.
   if (m_key.isEmpty()) {
+    QJsonObject obj = QJsonDocument::fromJson(metadata).object();
+
     // Create a pipe to receive the secret.
     int fds[2];
     if (pipe(fds) != 0) {
@@ -102,8 +100,10 @@ QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
     // Request the secret.
     QVariantMap options;
     options["handle_token"] = QVariant(token());
-    if (m_metadata.contains("token")) {
-      options["token"] = m_metadata.value("token");
+    if (obj.contains("token")) {
+      options["token"] = obj.value("token").toString();
+    } else if (!m_token.isEmpty()) {
+      options["token"] = m_token;
     }
 
     QDBusMessage reply = xdgRetrieveSecret(fds[1], options);
@@ -123,31 +123,32 @@ QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
       // Failed to read the key.
       return QByteArray();
     }
-  }
 
-  // Generate a salt if necessary.
-  QString salt;
-  if (m_metadata.contains("salt")) {
-    salt = m_metadata.value("salt").toString();
-  } else {
-    salt = generateRandomBytes(32).toBase64();
-    m_metadata.setValue("salt", QVariant(salt));
-    m_metadata.sync();
+    // Use the salt found in the metadata, or generate a new one.
+    if (obj.contains("salt")) {
+      m_salt = obj.value("salt").toString();
+    } else if (m_salt.isEmpty()) {
+      m_salt = generateRandomBytes(32).toBase64();
+    }
+    // Store the token we used for the request.
+    if (options.contains("token")) {
+      m_token = options.value("token").toString();
+    }
   }
 
   // Generate the encryption key.
-  HKDF hash(QCryptographicHash::Sha256, salt.toUtf8());
+  HKDF hash(QCryptographicHash::Sha256, m_salt.toUtf8());
   hash.addData(m_key);
   return hash.result(CRYPTO_SETTINGS_KEY_SIZE);
 }
 
 QByteArray XdgCryptoSettings::getMetaData() {
   QJsonObject obj;
-  if (m_metadata.contains("salt")) {
-    obj["salt"] = QJsonValue(m_metadata.value("salt").toString());
+  if (!m_salt.isEmpty()) {
+    obj.insert("salt", QJsonValue(m_salt));
   }
-  if (m_metadata.contains("token")) {
-    obj["token"] = QJsonValue(m_metadata.value("token").toString());
+  if (!m_token.isEmpty()) {
+    obj.insert("token", QJsonValue(m_token));
   }
   return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }

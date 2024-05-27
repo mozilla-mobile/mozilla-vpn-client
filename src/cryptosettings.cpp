@@ -28,6 +28,7 @@
 
 constexpr int NONCE_SIZE = 12;
 constexpr int MAC_SIZE = 16;
+constexpr int ENCRYPTED_V2_HEADER_SIZE = 4;
 
 namespace {
 Logger logger("CryptoSettings");
@@ -98,7 +99,9 @@ bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
       return false;
 
     case EncryptionChachaPolyV1:
-      return s_instance->readEncryptedChachaPolyV1File(device, map);
+      // Fall-through.
+    case EncryptionChachaPolyV2:
+      return s_instance->readEncryptedChachaPolyFile(fileVersion, device, map);
 
     default:
       logger.error() << "Unsupported version";
@@ -126,8 +129,33 @@ bool CryptoSettings::readJsonFile(QIODevice& device,
   return true;
 }
 
-bool CryptoSettings::readEncryptedChachaPolyV1File(
-    QIODevice& device, QSettings::SettingsMap& map) {
+bool CryptoSettings::readEncryptedChachaPolyFile(
+    Version fileVersion, QIODevice& device, QSettings::SettingsMap& map) {
+  QByteArray header(1, fileVersion);
+  QByteArray metadata;
+  if (fileVersion == EncryptionChachaPolyV2) {
+    // Encrypted V2 Header:
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // | Version | Reserved  | Metadata Length | Metadata  |
+    // |  8-bit  |   8-bit   |     16-bit      | variable  |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    header.append(device.read(ENCRYPTED_V2_HEADER_SIZE - 1));
+    if (header.length() != ENCRYPTED_V2_HEADER_SIZE) {
+      logger.error() << "Failed to read encrypted v2 header";
+      return false;
+    }
+    quint16 metaLength = header[2] + (header[3] >> 8);
+    header.append(device.read(metaLength));
+    if (header.length() != (metaLength + ENCRYPTED_V2_HEADER_SIZE)) {
+      logger.error() << "Failed to read metadata";
+      return false;
+    }
+    metadata = header.mid(ENCRYPTED_V2_HEADER_SIZE);
+  } else if (fileVersion != EncryptionChachaPolyV1) {
+    logger.error() << "Unsupported encrypted file version:" << header[0];
+    return false;
+  }
+
   QByteArray nonce = device.read(NONCE_SIZE);
   if (nonce.length() != NONCE_SIZE) {
     logger.error() << "Failed to read the nonce";
@@ -146,7 +174,7 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
     return false;
   }
 
-  QByteArray key = getKey(QByteArray());
+  QByteArray key = getKey(metadata);
   if (key.isEmpty()) {
     logger.error() << "Something went wrong reading the key";
     return false;
@@ -156,11 +184,10 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
     return false;
   }
 
-  QByteArray version(1, EncryptionChachaPolyV1);
   QByteArray content(ciphertext.length(), 0x00);
   uint32_t result = Hacl_Chacha20Poly1305_32_aead_decrypt(
       (uint8_t*)key.data(), (uint8_t*)nonce.data(),
-      static_cast<uint32_t>(version.length()), (uint8_t*)version.data(),
+      static_cast<uint32_t>(header.length()), (uint8_t*)header.data(),
       static_cast<uint32_t>(ciphertext.length()), (uint8_t*)content.data(),
       (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
   if (result != 0) {
@@ -195,17 +222,14 @@ bool CryptoSettings::writeFile(QIODevice& device,
     version = s_instance->getSupportedVersion();
   }
 
-  if (!writeVersion(device, version)) {
-    logger.error() << "Failed to write the version";
-    return false;
-  }
-
   switch (version) {
     case NoEncryption:
       return writeJsonFile(device, map);
     case EncryptionChachaPolyV1:
+      // Fall-through
+    case EncryptionChachaPolyV2:
       Q_ASSERT(s_instance);
-      return s_instance->writeEncryptedChachaPolyV1File(device, map);
+      return s_instance->writeEncryptedChachaPolyFile(device, map);
     default:
       logger.error() << "Unsupported version.";
       return false;
@@ -213,16 +237,12 @@ bool CryptoSettings::writeFile(QIODevice& device,
 }
 
 // static
-bool CryptoSettings::writeVersion(QIODevice& device,
-                                  CryptoSettings::Version version) {
-  QByteArray v(1, version);
-  return device.write(v) == v.length();
-}
-
-// static
 bool CryptoSettings::writeJsonFile(QIODevice& device,
                                    const QSettings::SettingsMap& map) {
-  logger.debug() << "Write plaintext JSON file";
+  if (!device.putChar(CryptoSettings::NoEncryption)) {
+    logger.error() << "Failed to write the version";
+    return false;
+  }
 
   QJsonObject obj;
   for (QSettings::SettingsMap::ConstIterator i = map.begin(); i != map.end();
@@ -242,7 +262,7 @@ bool CryptoSettings::writeJsonFile(QIODevice& device,
   return true;
 }
 
-bool CryptoSettings::writeEncryptedChachaPolyV1File(
+bool CryptoSettings::writeEncryptedChachaPolyFile(
     QIODevice& device, const QSettings::SettingsMap& map) {
   logger.debug() << "Write encrypted file";
 
@@ -277,15 +297,41 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
     return false;
   }
 
-  QByteArray version(1, EncryptionChachaPolyV1);
+  QByteArray header;
+  QByteArray metadata = getMetaData();
+  if (metadata.isEmpty()) {
+    // Encrypted V1 Header: Just the version.
+    header.append(1, CryptoSettings::EncryptionChachaPolyV1);
+  } else if (metadata.length() <= UINT16_MAX) {
+    // Encrypted V2 Header:
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // | Version | Reserved  | Metadata Length | Metadata  |
+    // |  8-bit  |   8-bit   |     16-bit      | variable  |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    header.reserve(ENCRYPTED_V2_HEADER_SIZE + metadata.length());
+    header.append(1, CryptoSettings::EncryptionChachaPolyV2);
+    header.append(1, 0);
+    header.append(1, metadata.length() & 0xff);
+    header.append(1, (metadata.length() >> 8) & 0xff);
+    header.append(metadata);
+  } else {
+    logger.error() << "Failed to write encrypted file header: too long";
+    return false;
+  }
+
   QByteArray ciphertext(content.length(), 0x00);
   QByteArray mac(MAC_SIZE, 0x00);
 
   Hacl_Chacha20Poly1305_32_aead_encrypt(
       (uint8_t*)key.data(), (uint8_t*)nonce.data(),
-      static_cast<uint32_t>(version.length()), (uint8_t*)version.data(),
+      static_cast<uint32_t>(header.length()), (uint8_t*)header.data(),
       static_cast<uint32_t>(content.length()), (uint8_t*)content.data(),
       (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
+
+  if (device.write(header) != header.length()) {
+    logger.error() << "Failed to write the header";
+    return false;
+  }
 
   if (device.write(nonce) != nonce.length()) {
     logger.error() << "Failed to write the nonce";
