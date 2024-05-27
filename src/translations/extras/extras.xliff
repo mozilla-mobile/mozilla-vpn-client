@@ -504,6 +504,9 @@
       <trans-unit id="servers.Vienna" xml:space="preserve">
         <source>Vienna</source>
       </trans-unit>
+      <trans-unit id="servers.Palermo" xml:space="preserve">
+        <source>Palermo</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
