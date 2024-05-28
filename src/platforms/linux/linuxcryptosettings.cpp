@@ -99,7 +99,9 @@ void LinuxCryptoSettings::resetKey() {
   m_key.clear();
 }
 
-QByteArray LinuxCryptoSettings::getKey() {
+QByteArray LinuxCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
   if (m_keyVersion == CryptoSettings::NoEncryption) {
     logger.error() << "libsecrets is not supported";
     return QByteArray();

@@ -47,7 +47,9 @@ void MacOSCryptoSettings::resetKey() {
   m_initialized = false;
 }
 
-QByteArray MacOSCryptoSettings::getKey() {
+QByteArray MacOSCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
   if (!m_initialized) {
     m_initialized = true;
 
@@ -107,7 +109,7 @@ QByteArray MacOSCryptoSettings::getKey() {
 CryptoSettings::Version MacOSCryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-  if (getKey().isEmpty()) {
+  if (getKey(QByteArray()).isEmpty()) {
     logger.debug() << "No encryption";
     return CryptoSettings::NoEncryption;
   }

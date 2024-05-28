@@ -14,7 +14,8 @@ class DummyCryptoSettings final : public CryptoSettings {
   virtual ~DummyCryptoSettings() = default;
 
   virtual void resetKey() override { m_fakeKeyValue++; };
-  virtual QByteArray getKey() override {
+  virtual QByteArray getKey(const QByteArray& metadata) override {
+    Q_UNUSED(metadata);
     return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, m_fakeKeyValue);
   };
   virtual Version getSupportedVersion() override { return m_keyVersion; };

@@ -146,7 +146,7 @@ bool CryptoSettings::readEncryptedChachaPolyV1File(
     return false;
   }
 
-  QByteArray key = getKey();
+  QByteArray key = getKey(QByteArray());
   if (key.isEmpty()) {
     logger.error() << "Something went wrong reading the key";
     return false;
@@ -267,7 +267,7 @@ bool CryptoSettings::writeEncryptedChachaPolyV1File(
   QByteArray nonce(NONCE_SIZE, 0x00);
   memcpy(nonce.data(), &m_lastNonce, sizeof(m_lastNonce));
 
-  QByteArray key = getKey();
+  QByteArray key = getKey(QByteArray());
   if (key.isEmpty()) {
     logger.error() << "Something went wrong reading the key";
     return false;

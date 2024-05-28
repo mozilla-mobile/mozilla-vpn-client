@@ -86,7 +86,9 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
   return data;
 }
 
-QByteArray XdgCryptoSettings::getKey() {
+QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
   // Retrieve the key if we don't already have a copy.
   if (m_key.isEmpty()) {
     // Create a pipe to receive the secret.
@@ -137,4 +139,15 @@ QByteArray XdgCryptoSettings::getKey() {
   HKDF hash(QCryptographicHash::Sha256, salt.toUtf8());
   hash.addData(m_key);
   return hash.result(CRYPTO_SETTINGS_KEY_SIZE);
+}
+
+QByteArray XdgCryptoSettings::getMetaData() {
+  QJsonObject obj;
+  if (m_metadata.contains("salt")) {
+    obj["salt"] = QJsonValue(m_metadata.value("salt").toString());
+  }
+  if (m_metadata.contains("token")) {
+    obj["token"] = QJsonValue(m_metadata.value("token").toString());
+  }
+  return QJsonDocument(obj).toJson(QJsonDocument::Compact);
 }

@@ -30,7 +30,8 @@ class CryptoSettings {
  private:
   // Implementations must provide these methods to retrieve keys.
   virtual void resetKey() = 0;
-  virtual QByteArray getKey() = 0;
+  virtual QByteArray getKey(const QByteArray& metadata) = 0;
+  virtual QByteArray getMetaData() { return QByteArray(); }
   virtual Version getSupportedVersion() = 0;
 
   static bool writeVersion(QIODevice& device, Version version);

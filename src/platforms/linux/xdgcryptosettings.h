@@ -17,7 +17,8 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
   virtual ~XdgCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey() override;
+  QByteArray getKey(const QByteArray& metadata) override;
+  QByteArray getMetaData() override;
   CryptoSettings::Version getSupportedVersion() override { return m_version; };
 
  private:

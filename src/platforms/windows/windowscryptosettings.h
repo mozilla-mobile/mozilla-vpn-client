@@ -13,7 +13,7 @@ class WindowsCryptoSettings final : public CryptoSettings {
   virtual ~WindowsCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey() override;
+  QByteArray getKey(const QByteArray& metadata) override;
   CryptoSettings::Version getSupportedVersion() override;
 
  private:

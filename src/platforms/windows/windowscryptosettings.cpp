@@ -24,7 +24,9 @@ void WindowsCryptoSettings::resetKey() {
   }
 }
 
-QByteArray WindowsCryptoSettings::getKey() {
+QByteArray WindowsCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
   if (!m_initialized) {
     logger.debug() << "Get key";
 

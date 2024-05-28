@@ -61,7 +61,9 @@ void AndroidCryptoSettings::resetKey() {
   m_initialized = false;
 }
 
-QByteArray AndroidCryptoSettings::getKey() {
+QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
   if (m_initialized) {
     return m_key;
     logger.warning() << "Malformed key?";

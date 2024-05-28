@@ -13,7 +13,7 @@ class MacOSCryptoSettings final : public CryptoSettings {
   virtual ~MacOSCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey() override;
+  QByteArray getKey(const QByteArray& metadata) override;
   CryptoSettings::Version getSupportedVersion() override;
 
  private:

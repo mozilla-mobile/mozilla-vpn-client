@@ -55,13 +55,14 @@ void TestCryptoSettings::readAndWrite() {
 
 void TestCryptoSettings::resetKeyOnRollover() {
   DummyCryptoSettings crypto;
-  QByteArray initialKey = crypto.getKey();
+  QByteArray metadata;
+  QByteArray initialKey = crypto.getKey(metadata);
   crypto.m_lastNonce = UINT64_MAX - 1;
 
   writeTestData(crypto);
   QCOMPARE(parseVersion(), CryptoSettings::EncryptionChachaPolyV1);
 
-  QByteArray finalKey = crypto.getKey();
+  QByteArray finalKey = crypto.getKey(metadata);
   QVERIFY(crypto.m_lastNonce < 10);
   QVERIFY(initialKey != finalKey);
 }
