@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "extension/bridge",
+    "qtglean",
+    "signature",
+]
+resolver = "2"

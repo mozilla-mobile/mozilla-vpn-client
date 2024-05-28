@@ -39,16 +39,9 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
-  # Mac Native Messagging 
+  # Rust dependencies
   - package-ecosystem: "cargo"
-    directory: "/extension/bridge"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
-  # Addon signature
-  - package-ecosystem: "cargo"
-    directory: "/signature"
+    directory: "/"
     schedule:
       interval: "weekly"
     labels:
@@ -89,10 +82,3 @@ updates:
   #    interval: "monthly"
   #  labels:
   #    - "dependencies"
-  # Glean/Rust
-  - package-ecosystem: "cargo"
-    directory: "/vpnglean"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
