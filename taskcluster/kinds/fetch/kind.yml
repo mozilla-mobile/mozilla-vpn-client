@@ -79,6 +79,13 @@ tasks:
             url: https://download.qt.io/archive/qt/6.6/6.6.0/single/qt-everywhere-src-6.6.0.tar.xz
             sha256: 652538fcb5d175d8f8176c84c847b79177c87847b7273dccaec1897d80b50002
             size: 812361632
+    qt-source-tarball-6.6.3:
+        description: Qt 6.6.3 Source Tarball
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.6/6.6.3/single/qt-everywhere-src-6.6.3.tar.xz
+            sha256: 69d0348fef415da98aa890a34651e9cfb232f1bffcee289b7b4e21386bf36104
+            size: 801192112
     qt-hotfix:
         description: Qt 6.2.4 Static build
         fetch:

@@ -86,7 +86,7 @@ LINUX="
 MACOS="
   -skip qtwayland  \
   -no-feature-quickcontrols2-ios \
-  -no-feature-quickcontrols2-macos \
+  -no-feature-style-windows \
   -no-feature-qdbus \
   -qt-freetype \
   -appstore-compliant \
@@ -138,19 +138,15 @@ mkdir -p $BUILDDIR
   -no-feature-pixeltool \
   -no-feature-distancefieldgenerator \
   -no-feature-assistant \
-  -no-feature-qml-xml-http-request \
   -no-feature-tiff \
   -no-feature-webp \
   -no-feature-cups \
   -no-feature-style-fusion \
-  -no-feature-style-mac \
-  -no-feature-style-windows \
   -no-feature-textmarkdownwriter \
   -no-feature-itemmodeltester \
   -no-feature-sql-sqlite \
   -no-feature-sql \
   -no-feature-dbus \
-  -no-feature-xml \
   -skip qt3d  \
   -skip qtdoc \
   -skip qtgrpc \
