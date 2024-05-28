@@ -10,7 +10,7 @@ on:
       - "releases/**"
 
 permissions:
-  pull-requests: write
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
