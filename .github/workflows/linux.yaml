@@ -129,7 +129,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      
+
       - name: Checkout flatpak-builder-tools
         uses: actions/checkout@v4
         with:
@@ -147,7 +147,7 @@ jobs:
         run: |
           # Check to see if the pydeps need updating.
           git fetch origin "${{ github.base_ref }}" --depth=1
-          if git diff --name-only HEAD~1 | grep -q '^linux/flatpak-pydeps.yaml'; then
+          if git diff --name-only "origin/${{ github.base_ref }}" | grep -q '^linux/flatpak-pydeps.yaml'; then
             # Skip this check if the pydeps were already updated.
             echo "linux/flatpak-pydeps.yaml has already been updated"
             exit 0
