@@ -60,7 +60,7 @@ void IpAddressLookup::updateIpAddress() {
   }
   m_state = StateUpdating;
 
-  TaskIPFinder* ipfinder = new TaskIPFinder();
+  auto* ipfinder = new TaskIPFinder();
   connect(
       ipfinder, &TaskIPFinder::operationCompleted, this,
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {

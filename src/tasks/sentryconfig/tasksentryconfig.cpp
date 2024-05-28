@@ -27,7 +27,7 @@ TaskSentryConfig::TaskSentryConfig() : Task("TaskSentryConfig") {
 TaskSentryConfig::~TaskSentryConfig() { MZ_COUNT_DTOR(TaskSentryConfig); }
 
 void TaskSentryConfig::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
 
   QUrl url(Constants::apiBaseUrl());
   url.setPath("/api/v1/vpn/crashreporting");

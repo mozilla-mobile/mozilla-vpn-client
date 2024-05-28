@@ -24,7 +24,7 @@ CaptivePortalDetectionImpl::~CaptivePortalDetectionImpl() {
 void CaptivePortalDetectionImpl::start() {
   logger.debug() << "Captive portal detection started";
 
-  CaptivePortalRequestTask* task = new CaptivePortalRequestTask();
+  auto* task = new CaptivePortalRequestTask();
   connect(task, &CaptivePortalRequestTask::operationCompleted, this,
           [this](CaptivePortalRequest::CaptivePortalResult detected) {
             logger.debug() << "Captive portal detection:" << detected;

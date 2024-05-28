@@ -16,7 +16,7 @@ QObject* InspectorUtils::findObject(const QString& name) {
   Q_ASSERT(!parts.isEmpty());
 
   QQuickItem* parent = nullptr;
-  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+  auto* engine = qobject_cast<QQmlApplicationEngine*>(
       QmlEngineHolder::instance()->engine());
   if (!engine) {
     return nullptr;
@@ -54,7 +54,7 @@ QObject* InspectorUtils::findObject(const QString& name) {
     }
 
     if (!found) {
-      QQuickItem* contentItem =
+      auto* contentItem =
           parent->property("contentItem").value<QQuickItem*>();
       if (!contentItem) {
         return nullptr;
@@ -85,7 +85,7 @@ QObject* InspectorUtils::queryObject(const QString& path) {
     return nullptr;
   }
 
-  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+  auto* engine = qobject_cast<QQmlApplicationEngine*>(
       QmlEngineHolder::instance()->engine());
   if (!engine) {
     return nullptr;

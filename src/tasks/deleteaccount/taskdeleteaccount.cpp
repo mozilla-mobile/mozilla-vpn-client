@@ -49,7 +49,7 @@ void TaskDeleteAccount::run() {
         logger.debug() << "Authentication completed with code:"
                        << logger.sensitive(pkceCodeSuccess);
 
-        NetworkRequest* request = new NetworkRequest(this, 200);
+        auto* request = new NetworkRequest(this, 200);
         request->post(
             AuthenticationListener::createLoginVerifyUrl(),
             QJsonObject{{"code", pkceCodeSuccess},

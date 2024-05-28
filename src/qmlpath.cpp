@@ -214,7 +214,7 @@ QList<QQuickItem*> QmlPath::collectChildItems(QQuickItem* item) {
   Q_ASSERT(item);
   QList<QQuickItem*> list = item->childItems();
 
-  QQuickItem* contentItem = item->property("contentItem").value<QQuickItem*>();
+  auto* contentItem = item->property("contentItem").value<QQuickItem*>();
   if (contentItem) {
     list.append(collectChildItems(contentItem));
   }

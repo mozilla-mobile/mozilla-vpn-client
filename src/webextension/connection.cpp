@@ -80,7 +80,7 @@ void Connection::writeMessage(QJsonObject& data) {
 }
 
 void Connection::writeData(const QByteArray& data) {
-  uint32_t length = (uint32_t)data.length();
+  auto length = (uint32_t)data.length();
   char* rawLength = reinterpret_cast<char*>(&length);
 
   if (m_connection->write(rawLength, sizeof(uint32_t)) != sizeof(uint32_t) ||

@@ -44,7 +44,7 @@ bool ItemPicker::eventFilterInternal(QObject* obj, QEvent* event) {
 
   QQuickItem* item = qobject_cast<QQuickItem*>(obj);
   if (!item) {
-    QQuickWindow* window = qobject_cast<QQuickWindow*>(obj);
+    auto* window = qobject_cast<QQuickWindow*>(obj);
     if (window) {
       item = window->contentItem();
     }
@@ -92,7 +92,7 @@ QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
     list.append(pickItem(event, child));
   }
 
-  QQuickItem* contentItem = item->property("contentItem").value<QQuickItem*>();
+  auto* contentItem = item->property("contentItem").value<QQuickItem*>();
   if (contentItem) {
     for (QQuickItem* child : contentItem->childItems()) {
       if (!child->isVisible() || !child->isEnabled()) {
@@ -136,7 +136,7 @@ QList<QQuickItem*> ItemPicker::pickItem(QTouchEvent* event, QQuickItem* item) {
     list.append(pickItem(event, child));
   }
 
-  QQuickItem* contentItem = item->property("contentItem").value<QQuickItem*>();
+  auto* contentItem = item->property("contentItem").value<QQuickItem*>();
   if (contentItem) {
     for (QQuickItem* child : contentItem->childItems()) {
       if (!child->isVisible() || !child->isEnabled()) {

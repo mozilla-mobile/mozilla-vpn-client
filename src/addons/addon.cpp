@@ -684,7 +684,7 @@ void Addon::maybeLoadLanguageFallback(const QString& code) {
 }
 
 bool Addon::createTranslator(const QLocale& locale) {
-  QTranslator* translator = new QTranslator(this);
+  auto translator = new QTranslator(this);
   m_translators.append(translator);
   QCoreApplication::installTranslator(translator);
 

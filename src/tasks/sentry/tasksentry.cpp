@@ -88,7 +88,7 @@ void TaskSentry::sendRequest() {
     emit completed();
     return;
   }
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   QUrl target_endpoint(endpoint, QUrl::StrictMode);
   if (!target_endpoint.isValid()) {
     logger.error() << "Invalid URL for Sentry provided: " << endpoint;

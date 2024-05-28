@@ -26,7 +26,7 @@ void TaskAddonIndex::run() {
         QString("%1manifest.json").arg(AddonManager::addonServerAddress());
     logger.debug() << "Download manifest URL:" << manifestUrl;
 
-    NetworkRequest* request = new NetworkRequest(this, 200);
+    auto* request = new NetworkRequest(this, 200);
     request->get(manifestUrl);
 
     connect(request, &NetworkRequest::requestFailed, this,
@@ -51,7 +51,7 @@ void TaskAddonIndex::run() {
         QString("%1manifest.json.sig").arg(AddonManager::addonServerAddress());
     logger.debug() << "Download manifest signature URL:" << manifestSigUrl;
 
-    NetworkRequest* request = new NetworkRequest(this, 200);
+    auto* request = new NetworkRequest(this, 200);
     request->get(manifestSigUrl);
 
     connect(request, &NetworkRequest::requestFailed, this,

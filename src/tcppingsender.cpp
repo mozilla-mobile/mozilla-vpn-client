@@ -17,7 +17,7 @@ TcpPingSender::TcpPingSender(const QHostAddress& source, quint16 port,
 TcpPingSender::~TcpPingSender() { MZ_COUNT_DTOR(TcpPingSender); }
 
 void TcpPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
-  QTcpSocket* socket = new QTcpSocket(this);
+  auto* socket = new QTcpSocket(this);
   if (!m_source.isNull()) {
     socket->bind(m_source);
   }

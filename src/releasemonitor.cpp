@@ -33,7 +33,7 @@ void ReleaseMonitor::runSoon(
   logger.debug() << "Scheduling a release-check task";
 
   QTimer::singleShot(0, this, [this, errorPropagationPolicy] {
-    TaskRelease* task =
+    auto* task =
         new TaskRelease(TaskRelease::Check, errorPropagationPolicy);
 
     connect(task, &TaskRelease::updateRequired, this,
@@ -63,7 +63,7 @@ void ReleaseMonitor::updateSoon() {
   logger.debug() << "Scheduling a release-update task";
 
   QTimer::singleShot(0, this, [] {
-    TaskRelease* task =
+    auto* task =
         new TaskRelease(TaskRelease::Update, ErrorHandler::PropagateError);
     // The updater, in download mode, is not destroyed. So, if this happens,
     // probably something went wrong.

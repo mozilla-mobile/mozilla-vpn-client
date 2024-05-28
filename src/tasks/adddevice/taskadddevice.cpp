@@ -52,7 +52,7 @@ void TaskAddDevice::run() {
   logger.debug() << "Private key: " << logger.sensitive(privateKey);
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
-  NetworkRequest* request = new NetworkRequest(this, 201);
+  auto* request = new NetworkRequest(this, 201);
   request->auth();
   request->post(Constants::apiUrl(Constants::Device),
                 QJsonObject{{"name", m_deviceName},

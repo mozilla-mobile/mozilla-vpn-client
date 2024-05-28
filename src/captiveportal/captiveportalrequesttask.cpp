@@ -39,7 +39,7 @@ void CaptivePortalRequestTask::run() {
 
 void CaptivePortalRequestTask::createRequest() {
   NetworkManager::instance()->clearCache();
-  CaptivePortalRequest* request = new CaptivePortalRequest(this);
+  auto* request = new CaptivePortalRequest(this);
   connect(request, &CaptivePortalRequest::completed, this,
           [this](CaptivePortalRequest::CaptivePortalResult detected) {
             logger.debug() << "Captive portal detection:" << detected;

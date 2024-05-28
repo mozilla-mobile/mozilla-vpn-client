@@ -66,7 +66,7 @@ EventListener::EventListener() {
 
 void EventListener::socketReadyRead() {
   QObject* obj = QObject::sender();
-  QLocalSocket* socket = qobject_cast<QLocalSocket*>(obj);
+  auto* socket = qobject_cast<QLocalSocket*>(obj);
   if (socket == nullptr) {
     logger.warning() << "Signal sender is not a socket!";
     return;

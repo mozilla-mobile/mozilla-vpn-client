@@ -465,7 +465,7 @@ void MozillaVPN::authenticateWithType(
     // is a bug elsewhere.
     Q_ASSERT(userState() == UserLoggingOut);
 
-    LogoutObserver* lo = new LogoutObserver(this);
+    auto* lo = new LogoutObserver(this);
     // Let's use QueuedConnection to avoid nested tasks executions.
     connect(
         lo, &LogoutObserver::ready, this,
@@ -478,7 +478,7 @@ void MozillaVPN::authenticateWithType(
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 
-  TaskAuthenticate* taskAuthenticate = new TaskAuthenticate(authenticationType);
+  auto* taskAuthenticate = new TaskAuthenticate(authenticationType);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, this,
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
@@ -687,8 +687,8 @@ void MozillaVPN::createSupportTicket(const QString& email,
                                      const QString& category) {
   logger.debug() << "Create support ticket";
 
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
+  auto* buffer = new QString();
+  auto* out = new QTextStream(buffer);
 
   LogHandler::instance()->serializeLogs(
       out, [out, buffer, email, subject, issueText, category] {
@@ -1246,7 +1246,7 @@ void MozillaVPN::requestDeleteAccount() {
   logger.debug() << "delete account";
   Q_ASSERT(Feature::get(Feature::Feature_accountDeletion)->isSupported());
 
-  TaskDeleteAccount* task = new TaskDeleteAccount(m_private->m_user.email());
+  auto* task = new TaskDeleteAccount(m_private->m_user.email());
   connect(task, &TaskDeleteAccount::accountDeleted, this,
           &MozillaVPN::accountDeleted);
 
@@ -1769,7 +1769,7 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/home.svg",
       "qrc:/nebula/resources/navbar/home-selected.svg"));
 
-  NavigationBarButton* messageIcon = new NavigationBarButton(
+  auto* messageIcon = new NavigationBarButton(
       nbm, "navButton-messages", "NavBarMessagesTab",
       MozillaVPN::ScreenMessaging, "qrc:/nebula/resources/navbar/messages.svg",
       "qrc:/nebula/resources/navbar/messages-selected.svg",

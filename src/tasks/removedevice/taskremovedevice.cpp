@@ -43,7 +43,7 @@ void TaskRemoveDevice::run() {
   logger.debug() << "Removing the device with public key"
                  << logger.keys(m_publicKey);
 
-  NetworkRequest* request = new NetworkRequest(this, 204);
+  auto* request = new NetworkRequest(this, 204);
   request->auth(m_authHeader);
   request->deleteResource(
       Constants::apiUrl(Constants::DeviceWithPublicKeyArgument)

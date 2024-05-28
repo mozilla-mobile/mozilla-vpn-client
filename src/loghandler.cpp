@@ -469,8 +469,8 @@ void LogHandler::requestViewLogs() {
 void LogHandler::retrieveLogs() {
   logger.debug() << "Retrieve logs";
 
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
+  auto* buffer = new QString();
+  auto* out = new QTextStream(buffer);
 
   serializeLogs(out, [this, buffer, out]() {
     Q_ASSERT(out);
@@ -490,7 +490,7 @@ void LogHandler::serializeLogs(QTextStream* out,
 
   LogHandler::writeLogs(*out);
 
-  LogSerializeHelper* lsh = new LogSerializeHelper(out, m_logSerializers,
+  auto* lsh = new LogSerializeHelper(out, m_logSerializers,
                                                    std::move(finalizeCallback));
   lsh->run();
 }
@@ -544,14 +544,14 @@ bool LogHandler::writeLogsToLocation(
 
   logger.debug() << "Writing logs.";
 
-  QFile* file = new QFile(logFile);
+  auto* file = new QFile(logFile);
   if (!file->open(QIODevice::WriteOnly | QIODevice::Text)) {
     logger.error() << "Failed to open the logfile";
     delete file;
     return false;
   }
 
-  QTextStream* out = new QTextStream(file);
+  auto* out = new QTextStream(file);
   serializeLogs(out, [callback = std::move(callback), logFile, file, out]() {
     Q_ASSERT(out);
     Q_ASSERT(file);

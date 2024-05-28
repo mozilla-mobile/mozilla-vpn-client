@@ -384,7 +384,7 @@ void NotificationHandler::addonCreated(Addon* addon) {
 void NotificationHandler::maybeAddonNotification(Addon* addon) {
   Q_ASSERT(addon->type() == "message");
 
-  AddonMessage* addonMessage = qobject_cast<AddonMessage*>(addon);
+  auto* addonMessage = qobject_cast<AddonMessage*>(addon);
   if (addonMessage->isReceived()) {
     newInAppMessageNotification(addon->property("title").toString(),
                                 addon->property("subtitle").toString());

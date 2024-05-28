@@ -987,8 +987,8 @@ bool Controller::activate(const ServerData& serverData,
     // Set up a network request to check the subscription status.
     // "task" is an empty task function which is being used to
     // replicate the behavior of a TaskAccount.
-    TaskFunction* task = new TaskFunction([]() {});
-    NetworkRequest* request = new NetworkRequest(task, 200);
+    auto* task = new TaskFunction([]() {});
+    auto* request = new NetworkRequest(task, 200);
     request->auth();
     request->get(Constants::apiUrl(Constants::Account));
 

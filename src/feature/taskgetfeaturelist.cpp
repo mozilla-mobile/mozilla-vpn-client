@@ -27,7 +27,7 @@ TaskGetFeatureList::TaskGetFeatureList() : Task("TaskGetFeatureList") {
 TaskGetFeatureList::~TaskGetFeatureList() { MZ_COUNT_DTOR(TaskGetFeatureList); }
 
 void TaskGetFeatureList::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
 
   QJsonObject body;
   if (SettingsHolder::instance()->token().isEmpty()) {

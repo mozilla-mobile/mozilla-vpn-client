@@ -101,7 +101,7 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
 
   url.setPath("/api/v1/vpn/ipinfo");
 
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->auth();
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);

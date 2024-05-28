@@ -54,7 +54,7 @@ void InspectorWebSocketServer::newConnectionReceived() {
   }
 #endif
 
-  InspectorWebSocketConnection* connection =
+  auto* connection =
       new InspectorWebSocketConnection(this, child);
   connect(child, &QWebSocket::disconnected, connection, &QObject::deleteLater);
 }

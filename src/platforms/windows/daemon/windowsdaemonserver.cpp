@@ -72,7 +72,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
                                             false);
   }
 
-  ServiceThread* st = new ServiceThread();
+  auto* st = new ServiceThread();
   st->start();
 
   WindowsDaemon daemon;
