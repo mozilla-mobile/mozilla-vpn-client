@@ -442,20 +442,19 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
     }
     // Pray this is a peer.
     auto peer = (WIREGUARD_PEER*)&buffer.at(index);
-    if (peer->PersistentKeepalive != WG_KEEPALIVE_PERIOD) {
-      // We're derefrencing garbage.
-      // Let's just stop here >:(
-      Q_ASSERT(false);
-      return {};
+    if (peer->PersistentKeepalive == WG_KEEPALIVE_PERIOD 
+        && (peer->Flags & WIREGUARD_PEER_HAS_PUBLIC_KEY)) {
+      // The peer seems to be okay so
+      // Fill in Data
+      auto b64_key =
+          QByteArray::fromRawData((const char*)peer->PublicKey, 32).toBase64();
+      auto status = PeerStatus{QString(b64_key)};
+      status.m_handshake = peer->LastHandshake;
+      status.m_rxBytes = peer->RxBytes;
+      status.m_txBytes = peer->TxBytes;
+      peerList.append(status);
     }
-    // Fill in Data
-    auto b64_key =
-        QByteArray::fromRawData((const char*)peer->PublicKey, 32).toBase64();
-    auto status = PeerStatus{QString(b64_key)};
-    status.m_handshake = peer->LastHandshake;
-    status.m_rxBytes = peer->RxBytes;
-    status.m_txBytes = peer->TxBytes;
-    peerList.append(status);
+   
     // Calculate the next index.
     index = index + sizeof(WIREGUARD_PEER) +
             sizeof(WIREGUARD_ALLOWED_IP) * peer->AllowedIPsCount;
