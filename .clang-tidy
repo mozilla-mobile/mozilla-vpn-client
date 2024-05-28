@@ -14,6 +14,7 @@ Checks: >
   misc*,
   -misc-no-recursion
 WarningsAsErrors: >
+  modernize-use-auto,
   clang-analyzer-security.*
 AnalyzeTemporaryDtors: false
 # Use our .clang-format file when applying fixes.
