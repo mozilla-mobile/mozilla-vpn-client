@@ -1,5 +1,4 @@
 # Generated with flatpak-pip-generator -r ../requirements.txt --output flatpak-pydeps --yaml --build-only
-# Foo
 build-commands: []
 buildsystem: simple
 modules:
