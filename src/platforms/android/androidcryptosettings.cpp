@@ -82,7 +82,7 @@ QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
 CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {
   logger.debug() << "Get supported settings method";
 
-  if (getKey().isEmpty()) {
+  if (getKey(QByteArray()).isEmpty()) {
     logger.debug() << "No encryption";
     return CryptoSettings::NoEncryption;
   }
