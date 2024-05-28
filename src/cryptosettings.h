@@ -45,9 +45,6 @@ class CryptoSettings {
                                       const QSettings::SettingsMap& map);
 
  protected:
-  static void addProvider(CryptoSettings* provider);
-
- protected:
   uint64_t m_lastNonce = 0;
 };
 

@@ -13,7 +13,7 @@ class DummyCryptoSettings final : public CryptoSettings {
   DummyCryptoSettings() : CryptoSettings(){};
   virtual ~DummyCryptoSettings() = default;
 
-  virtual void resetKey() override{ m_fakeKeyValue++; };
+  virtual void resetKey() override { m_fakeKeyValue++; };
   virtual QByteArray getKey() override {
     return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, m_fakeKeyValue);
   };

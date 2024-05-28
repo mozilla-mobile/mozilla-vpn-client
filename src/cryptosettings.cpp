@@ -318,8 +318,3 @@ QByteArray CryptoSettings::generateRandomBytes(qsizetype length) {
   }
   return value.left(length);
 }
-
-// static
-void CryptoSettings::addProvider(CryptoSettings* provider) {
-
-}

@@ -56,7 +56,7 @@ void TestCryptoSettings::readAndWrite() {
 void TestCryptoSettings::resetKeyOnRollover() {
   DummyCryptoSettings crypto;
   QByteArray initialKey = crypto.getKey();
-  crypto.m_lastNonce = UINT64_MAX-1;
+  crypto.m_lastNonce = UINT64_MAX - 1;
 
   writeTestData(crypto);
   QCOMPARE(parseVersion(), CryptoSettings::EncryptionChachaPolyV1);
@@ -89,7 +89,7 @@ void TestCryptoSettings::readFailsWithPadding() {
   QFile file(m_tempfile->fileName());
   Q_ASSERT(file.open(QIODeviceBase::ReadWrite | QIODevice::Append));
   Q_ASSERT(file.putChar(0xb2));
-  
+
   // Reading the file should fail due an AEAD authentication error.
   QSettings::SettingsMap map;
   Q_ASSERT(file.reset());
@@ -106,7 +106,7 @@ void TestCryptoSettings::readFailsWithMacError() {
   QFile file(m_tempfile->fileName());
   Q_ASSERT(file.open(QIODeviceBase::ReadWrite));
   Q_ASSERT(file.seek(encrypted_v1_mac_start));
-  
+
   // Flip a bit in the MAC
   char c;
   Q_ASSERT(file.getChar(&c));
