@@ -37,7 +37,7 @@ qt-macos-6.6.3:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-macos-6.6
+        toolchain-alias: qt-macos-6.6.3
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
         symbol: TL(qt-mac-6.6.3)
