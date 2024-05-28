@@ -130,7 +130,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       
-      - name: Checkout flatpak-pip-generator
+      - name: Checkout flatpak-builder-tools
         uses: actions/checkout@v4
         with:
           repository: flatpak/flatpak-builder-tools
@@ -147,26 +147,23 @@ jobs:
         run: |
           # Check to see if the pydeps need updating.
           git fetch origin "${{ github.base_ref }}" --depth=1
-          git diff --name-only "origin/${{ github.base_ref }}" > changeset.txt
-          if grep -q '^linux/flatpak-pydeps.yaml' changeset.txt; then
+          if git diff --name-only HEAD~1 | grep -q '^linux/flatpak-pydeps.yaml'; then
             # Skip this check if the pydeps were already updated.
+            echo "linux/flatpak-pydeps.yaml has already been updated"
             exit 0
           fi
-          if ! grep -q '^requirements.txt' changeset.txt; then
-            # Skip this check if the python deps haven't changed.
-            exit 0
-          fi 
+          if git diff --name-only "origin/${{ github.base_ref }}" | grep -q '^requirements.txt'; then
+            # Regenerate the pydeps.yml
+            FLATPAK_PIP_ARGS="-r requirements.txt --output linux/flatpak-pydeps --yaml --build-only"
+            3rdparty/flatpak-builder-tools/pip/flatpak-pip-generator $FLATPAK_PIP_ARGS
 
-          # Regenerate the pydeps.yml
-          FLATPAK_PIP_ARGS="-r requirements.txt --output linux/flatpak-pydeps --yaml --build-only"
-          3rdparty/flatpak-builder-tools/pip/flatpak-pip-generator $FLATPAK_PIP_ARGS
+            echo "Diffing..."
+            git diff
 
-          echo "Diffing..."
-          git diff
-
-          # Add the commit
-          git add linux/flatpak-pydeps.yaml
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com" 
-          git commit -m "Update linux/flatpak-pydeps.yaml"
-          git status
+            # Add the commit
+            git add linux/flatpak-pydeps.yaml
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com" 
+            git commit -m "Update linux/flatpak-pydeps.yaml"
+            git status
+          fi
