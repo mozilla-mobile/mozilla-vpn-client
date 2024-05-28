@@ -9,9 +9,6 @@ on:
       - main
       - "releases/**"
 
-permissions:
-  contents: write
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -124,6 +121,9 @@ jobs:
     runs-on: ubuntu-latest
     #if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
     if: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -136,9 +136,11 @@ jobs:
           repository: flatpak/flatpak-builder-tools
           path: 3rdparty/flatpak-builder-tools
 
-      - name: Install dependencies
-        shell: bash
-        run: pip install requirements-parser
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - run: pip install requirements-parser
 
       - name: Rebuild flatpak-pydeps.yaml
         shell: bash
@@ -148,7 +150,7 @@ jobs:
           # Check to see if the pydeps need updating.
           git fetch origin "${{ github.base_ref }}" --depth=1
           if git diff --name-only "origin/${{ github.base_ref }}" | grep -q '^linux/flatpak-pydeps.yaml'; then
-            # Skip this check if the pydeps were already updated.
+            # Skip this check if the pydeps were already updated in this PR.
             echo "linux/flatpak-pydeps.yaml has already been updated"
             exit 0
           fi
@@ -164,6 +166,6 @@ jobs:
             git add linux/flatpak-pydeps.yaml
             git config user.name "${GITHUB_ACTOR}"
             git config user.email "${GITHUB_ACTOR}@users.noreply.github.com" 
-            git commit -m "Update linux/flatpak-pydeps.yaml"
+            git commit -m "[Bot] Update linux/flatpak-pydeps.yaml"
             git push
           fi
