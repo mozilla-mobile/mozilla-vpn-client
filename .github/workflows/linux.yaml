@@ -134,12 +134,9 @@ jobs:
       - name: Rebuild flatpak-pydeps.yml
         shell: bash
         run: |
-          # Deepen the checkout to run a diff.
-          NCOMMITS=${{ github.event.pull_request.commits }}
-          git fetch --depth="$(( NCOMMITS + 1 ))"
-
           # Run the check only if requirements.txt was modified.
-          if git diff --name-only HEAD~${NCOMMITS} | grep -q '^requirements.txt'; then
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          if git diff --name-only "origin/${{ github.base_ref }}" | grep -q '^requirements.txt'; then
             # Regenerate the pydeps.yml
             FLATPAK_PIP_ARGS="-r requirements.txt --output flatpak-pydeps --yaml --build-only"
             3rdparty/flatpak-builder-tools/pip/flatpak-pip-generator $FLATPAK_PIP_ARGS
