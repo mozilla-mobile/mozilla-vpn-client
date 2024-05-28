@@ -631,12 +631,12 @@ void WireguardUtilsLinux::nlsockReady() {
     switch (nlmsg->nlmsg_type) {
       case NLMSG_DONE:
         return;
-      
+
       case NLMSG_NOOP:
         // Ignore noops - typically used for message padding.
         continue;
-      
-      case NLMSG_ERROR:{
+
+      case NLMSG_ERROR: {
         struct nlmsgerr* err = static_cast<struct nlmsgerr*>(NLMSG_DATA(nlmsg));
         if (err->error != 0) {
           logger.debug() << "Netlink request failed:" << strerror(-err->error);
@@ -647,7 +647,7 @@ void WireguardUtilsLinux::nlsockReady() {
       case RTM_NEWLINK:
         nlsockHandleNewlink(nlmsg);
         break;
-      
+
       case RTM_DELLINK:
         nlsockHandleDellink(nlmsg);
         break;
@@ -661,7 +661,7 @@ void WireguardUtilsLinux::nlsockReady() {
 }
 
 void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
-  struct ifinfomsg *msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
+  struct ifinfomsg* msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
 
   // Ignore messages unless they pertain to the wireguard interface.
   if (msg->ifi_index != static_cast<int>(m_ifindex)) {
@@ -679,11 +679,12 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
     setupWireguardRoutingTable(AF_INET6);
   }
 
-  logger.debug() << "RTM_NEWLINK flags:" << "0x" + QString::number(msg->ifi_flags, 16);
+  logger.debug() << "RTM_NEWLINK flags:"
+                 << "0x" + QString::number(msg->ifi_flags, 16);
 }
 
 void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
-  struct ifinfomsg *msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
+  struct ifinfomsg* msg = static_cast<struct ifinfomsg*>(NLMSG_DATA(nlmsg));
 
   // Ignore messages unless they pertain to the wireguard interface.
   if (msg->ifi_index != static_cast<int>(m_ifindex)) {
@@ -693,7 +694,8 @@ void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
   // Interface is down!
   m_ifindex = 0;
   m_ifflags = 0;
-  logger.debug() << "RTM_DELLINK flags:" << "0x" + QString::number(msg->ifi_flags, 16);
+  logger.debug() << "RTM_DELLINK flags:"
+                 << "0x" + QString::number(msg->ifi_flags, 16);
 }
 
 // static
