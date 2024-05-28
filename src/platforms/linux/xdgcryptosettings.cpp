@@ -20,8 +20,7 @@ namespace {
 Logger logger("XdgCryptoSettings");
 }  // namespace
 
-XdgCryptoSettings::XdgCryptoSettings()
-    : CryptoSettings(), XdgPortal() {
+XdgCryptoSettings::XdgCryptoSettings() : CryptoSettings(), XdgPortal() {
   // Check if we can support cryptosettings.
   auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
   if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&

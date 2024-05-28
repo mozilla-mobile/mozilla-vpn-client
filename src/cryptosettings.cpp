@@ -129,8 +129,9 @@ bool CryptoSettings::readJsonFile(QIODevice& device,
   return true;
 }
 
-bool CryptoSettings::readEncryptedChachaPolyFile(
-    Version fileVersion, QIODevice& device, QSettings::SettingsMap& map) {
+bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
+                                                 QIODevice& device,
+                                                 QSettings::SettingsMap& map) {
   QByteArray header(1, fileVersion);
   QByteArray metadata;
   if (fileVersion == EncryptionChachaPolyV2) {

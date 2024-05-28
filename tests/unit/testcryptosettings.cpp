@@ -61,14 +61,14 @@ CryptoSettings::Version TestCryptoSettings::parseVersion() const {
 }
 
 QByteArray TestCryptoSettings::parseNonce() const {
-  QByteArray header = parseHeader(); 
+  QByteArray header = parseHeader();
   QFile file(testFileName());
   Q_ASSERT(file.seek(header.length()));
   return file.read(12);
 }
 
 QByteArray TestCryptoSettings::parseMac() const {
-  QByteArray header = parseHeader(); 
+  QByteArray header = parseHeader();
   QFile file(testFileName());
   Q_ASSERT(file.seek(header.length() + 12));
   return file.read(16);
