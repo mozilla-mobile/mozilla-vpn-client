@@ -20,6 +20,9 @@ class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
   QByteArray getMetaData() override;
   CryptoSettings::Version getSupportedVersion() override { return m_version; };
 
+ private slots:
+  void handleResponse(uint code, QVariantMap results);
+
  private:
   QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
   static QByteArray xdgReadSecretFile(int fd);

@@ -14,6 +14,7 @@
 #include "cryptosettings.h"
 #include "hkdf.h"
 #include "logger.h"
+#include "settingsholder.h"
 #include "xdgportal.h"
 
 namespace {
@@ -29,16 +30,17 @@ XdgCryptoSettings::XdgCryptoSettings() : CryptoSettings(), XdgPortal() {
 
     // Save changes to the "token" to the metadata settings file.
     connect(this, &XdgPortal::xdgResponse, this,
-            [&](uint replycode, QVariantMap results) {
-              if (replycode != 0) {
-                return;
-              }
-              if (results.contains("token")) {
-                m_token = results.value("token").toString();
-                // TODO: We need to trigger a write to the settings file
-                // in order to make sure the token is saved in the metadata.
-              }
-            });
+            &XdgCryptoSettings::handleResponse);
+  }
+}
+
+void XdgCryptoSettings::handleResponse(uint code, QVariantMap results) {
+  if (code != 0) {
+    return;
+  }
+  if (results.contains("token")) {
+    m_token = results.value("token").toString();
+    SettingsHolder::instance()->setXdgSecretToken(m_token);
   }
 }
 
