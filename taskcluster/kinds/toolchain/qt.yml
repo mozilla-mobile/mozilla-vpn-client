@@ -13,7 +13,7 @@ qt-macos-6.6:
     description: "Mac QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-6.6.0
+            - qt-source-tarball-6.6.3
             - miniconda-osx
     run:
         use-caches: false
@@ -24,23 +24,6 @@ qt-macos-6.6:
         toolchain-artifact: public/build/qt6_mac.zip
     treeherder:
         symbol: TL(qt-mac-6.6)
-    worker-type: b-macos
-
-qt-macos-6.6.3:
-    description: "Mac QT 6.6.3 compile Task"
-    fetches:
-        fetch:
-            - qt-source-tarball-6.6.3
-            - miniconda-osx
-    run:
-        use-caches: false
-        script: compile_qt_6_mac.sh
-        resources:
-            - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-macos-6.6.3
-        toolchain-artifact: public/build/qt6_mac.zip
-    treeherder:
-        symbol: TL(qt-mac-6.6.3)
     worker-type: b-macos
 
 qt-windows-x86_64-6.2.4:
