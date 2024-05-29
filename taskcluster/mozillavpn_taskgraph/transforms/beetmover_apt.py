@@ -44,7 +44,7 @@ def get_gcs_sources(dependent_task):
 
 ALLOWED_SHIPPING_PHASES = [
     "ship-client",
-#    "promote-client" - candidates are not setup yet.
+    "promote-client"
 ]
 
 @transforms.add
@@ -70,12 +70,14 @@ def beetmover_apt(config, tasks):
             # We do have nothing to ship, skip this task
             continue
         task["worker"]["gcs-sources"] = gcs_sources
-        is_relpro = (
+
+        is_production = (
             config.params["level"] == "3"
+            and config.params.get("shipping_phase", "") == "ship-client"
             and config.params["tasks_for"] in task["run-on-tasks-for"]
         )
-        bucket = "release" if is_relpro else "dep"
-        project_name = "mozillavpn" if is_relpro else "mozillavpn:releng"
+        bucket = "release" if is_production else "dep"
+        project_name = "mozillavpn" if is_production else "mozillavpn:releng"
 
         task["scopes"] = [
             f"project:{project_name}:beetmover:apt-repo:{bucket}",
@@ -83,6 +85,3 @@ def beetmover_apt(config, tasks):
         ]
 
         yield task
-
-
-
