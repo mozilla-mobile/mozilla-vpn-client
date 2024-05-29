@@ -10,14 +10,14 @@
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);
 
-  connect(App::instance(), &App::userStateChanged, this,
-          &LogoutObserver::userStateChanged);
+  connect(App::instance(), &App::stateChanged, this,
+          &LogoutObserver::stateChanged);
 }
 
 LogoutObserver::~LogoutObserver() { MZ_COUNT_DTOR(LogoutObserver); }
 
-void LogoutObserver::userStateChanged() {
-  if (App::instance()->userState() == App::UserNotAuthenticated) {
+void LogoutObserver::stateChanged() {
+  if (App::instance()->state() == App::StateInitialize) {
     emit ready();
     deleteLater();
   }

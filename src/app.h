@@ -11,8 +11,7 @@ class App : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(App)
 
-  Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
-  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userStateChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY stateChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
@@ -20,6 +19,11 @@ class App : public QObject {
     // This is the first state when the app starts. During the initialization,
     // the app can move to a different state
     StateInitialize = 0,
+
+    // We are logging out the user. There are a few steps to run in order to
+    // complete the logout. In the meantime, the user should be considered as
+    // not-authenticated. The next state will be `StateInitialize`.
+    StateLoggingOut,
 
     // The authentication flow has started.
     StateAuthenticating,
@@ -54,24 +58,6 @@ class App : public QObject {
   };
   Q_ENUM(State);
 
-  enum UserState {
-    // The user is not authenticated and there is not a logging-out operation
-    // in progress. Maybe we are running the authentication flow (to know if we
-    // are running the authentication flow, please use the
-    // `StateAuthenticating` state).
-    UserNotAuthenticated,
-
-    // The user is authenticated and there is not a logging-out operation in
-    // progress.
-    UserAuthenticated,
-
-    // We are logging out the user. There are a few steps to run in order to
-    // complete the logout. In the meantime, the user should be considered as
-    // not-authenticated. The next state will be `UserNotAuthenticated`.
-    UserLoggingOut,
-  };
-  Q_ENUM(UserState);
-
   // Important! Each app _must_ implement this static method.
   static App* instance();
 
@@ -80,10 +66,7 @@ class App : public QObject {
   int state() const;
   void setState(int state);
 
-  UserState userState() const;
-  void setUserState(UserState userState);
-
-  bool userAuthenticated() const { return m_userState == UserAuthenticated; };
+  bool userAuthenticated() const { return m_state > StateAuthenticating; };
   static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
 
   static QByteArray authorizationHeader();
@@ -92,14 +75,12 @@ class App : public QObject {
 
  signals:
   void stateChanged();
-  void userStateChanged();
 
  protected:
   App(QObject* parent);
 
  private:
   int m_state = StateInitialize;
-  UserState m_userState = UserNotAuthenticated;
 };
 
 #endif  // APP_H

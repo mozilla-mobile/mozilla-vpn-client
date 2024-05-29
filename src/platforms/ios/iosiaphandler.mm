@@ -160,7 +160,7 @@ bool s_transactionsProcessed = false;
     logger.debug() << "Subscription completed - but all the transactions are known";
     QMetaObject::invokeMethod(m_handler, "stopSubscription", Qt::QueuedConnection);
     QMetaObject::invokeMethod(m_handler, "subscriptionCanceled", Qt::QueuedConnection);
-  } else if (App::instance()->userState() == App::UserAuthenticated) {
+  } else if (App::instance()->userAuthenticated()) {
     Q_ASSERT(completedTransactions);
     logger.debug() << "Subscription completed. Let's start the validation";
     QMetaObject::invokeMethod(m_handler, "processCompletedTransactions", Qt::QueuedConnection,

@@ -36,8 +36,6 @@ App::~App() { MZ_COUNT_DTOR(App); }
 
 int App::state() const { return m_state; }
 
-App::UserState App::userState() const { return m_userState; }
-
 void App::setState(int state) {
   logger.debug() << "Set state:" << state;
 
