@@ -434,7 +434,7 @@ module.exports = {
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
     // Wait for model init to finish to ensure keys and devices are synchronized.
-    await vpn.waitForMozillaProperty(
+    await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'modelsInitialized', 'true');
   },
 
@@ -472,7 +472,7 @@ module.exports = {
         'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
 
     // Wait for model init to finish to ensure keys and devices are synchronized.
-    await vpn.waitForMozillaProperty(
+    await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'modelsInitialized', 'true');
   },
 
