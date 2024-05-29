@@ -86,6 +86,7 @@ LINUX="
 MACOS="
   -skip qtwayland  \
   -no-feature-quickcontrols2-ios \
+  -no-feature-quickcontrols2-macos \
   -no-feature-style-windows \
   -no-feature-qdbus \
   -qt-freetype \
