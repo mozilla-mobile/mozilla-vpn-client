@@ -504,6 +504,40 @@ void Controller::clearConnectedTime() {
   m_timer.stop();
 }
 
+// static
+Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
+  QList<IPAddress> excludeIPv4s;
+  QList<IPAddress> excludeIPv6s;
+
+  // filtering out the RFC1918 local area network
+  logger.debug() << "Filtering out the local area networks (rfc 1918)";
+  excludeIPv4s.append(RFC1918::ipv4());
+
+  logger.debug() << "Filtering out the local area networks";
+  excludeIPv6s.append(RFC4193::ipv6());
+  excludeIPv6s.append(RFC4291::ipv6LinkLocalAddressBlock());
+
+  logger.debug() << "Filtering out multicast addresses";
+  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
+  logger.debug() << "Filtering out explicitely-set network address ranges";
+  for (const QString& ipv4String :
+       SettingsHolder::instance()->excludedIpv4Addresses()) {
+    excludeIPv4s.append(IPAddress(ipv4String));
+  }
+  for (const QString& ipv6String :
+       SettingsHolder::instance()->excludedIpv6Addresses()) {
+    excludeIPv6s.append(IPAddress(ipv6String));
+  }
+
+  return IPAddressList{
+      .v6 = excludeIPv6s,
+      .v4 = excludeIPv4s,
+  };
+}
+
+// static
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
@@ -522,32 +556,8 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 #else
-  QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
-  // For multi-hop connections, the last entry in the server list is the
-  // ingress node to the network of wireguard servers, and must not be
-  // routed through the VPN.
 
-  // filtering out the RFC1918 local area network
-  logger.debug() << "Filtering out the local area networks (rfc 1918)";
-  excludeIPv4s.append(RFC1918::ipv4());
-
-  logger.debug() << "Filtering out the local area networks (rfc 4193)";
-  excludeIPv6s.append(RFC4193::ipv6());
-
-  logger.debug() << "Filtering out multicast addresses";
-  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
-  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
-
-  logger.debug() << "Filtering out explicitely-set network address ranges";
-  for (const QString& ipv4String :
-       SettingsHolder::instance()->excludedIpv4Addresses()) {
-    excludeIPv4s.append(IPAddress(ipv4String));
-  }
-  for (const QString& ipv6String :
-       SettingsHolder::instance()->excludedIpv6Addresses()) {
-    excludeIPv6s.append(IPAddress(ipv6String));
-  }
+  auto excludedIPs = getExcludedIPAddressRanges();
 
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
@@ -561,9 +571,9 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   // Allow access to everything not covered by an excluded address.
   QList<IPAddress> allowedIPv4 = {IPAddress("0.0.0.0/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv4, excludeIPv4s));
+  list.append(IPAddress::excludeAddresses(allowedIPv4, excludedIPs.v4));
   QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv6, excludeIPv6s));
+  list.append(IPAddress::excludeAddresses(allowedIPv6, excludedIPs.v6));
 #endif
 
   return list;
@@ -849,7 +859,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   logger.debug() << "Status updated";
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
-                           uint64_t rxBytes)>>
+                           uint64_t rxBytes)> >
       list;
 
   list.swap(m_getStatusCallbacks);

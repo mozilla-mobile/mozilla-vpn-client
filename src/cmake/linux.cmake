@@ -75,6 +75,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxdaemon.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
     )

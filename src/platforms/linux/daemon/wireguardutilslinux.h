@@ -11,6 +11,9 @@
 #include <QStringList>
 
 #include "daemon/wireguardutils.h"
+#include "linuxfirewall.h"
+
+struct nlmsghdr;
 
 class WireguardUtilsLinux final : public WireguardUtils {
   Q_OBJECT
@@ -26,12 +29,6 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
-  bool updateRoutePrefix(const IPAddress& prefix) override;
-  bool deleteRoutePrefix(const IPAddress& prefix) override;
-
-  bool addExclusionRoute(const IPAddress& prefix) override;
-  bool deleteExclusionRoute(const IPAddress& prefix) override;
-
   void excludeCgroup(const QString& cgroup);
   void resetCgroup(const QString& cgroup);
   void resetAllCgroups();
@@ -41,19 +38,37 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
   bool addPeerPrefix(struct wg_peer* peer, const IPAddress& prefix);
   bool rtmSendRule(int action, int flags, int addrfamily);
-  bool rtmSendRoute(int action, int flags, int type, const IPAddress& prefix);
+  /**
+   * This table is made up of a single routing rule:
+   *    default dev moz0 proto static scope link
+   *
+   * This rule simply states that all packets that make it here,
+   * just go through the moz0 interface.
+   *
+   * Packets that make it to this table must go through the Wireguard interface.
+   * Firewall rules and ip rules are responsible for making sure of that.
+   */
+  bool setupWireguardRoutingTable(int family);
   bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
+  void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
+  void nlsockHandleDellink(struct nlmsghdr* nlmsg);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
+  char m_nlrecvbuf[32768];
   QSocketNotifier* m_notifier = nullptr;
 
   int m_cgroupVersion = 0;
   QString m_cgroupNetClass;
   QString m_cgroupUnified;
+
+  LinuxFirewall m_firewall;
+
+  unsigned int m_ifindex = 0;
+  int m_ifflags = 0;
 
  private slots:
   void nlsockReady();
