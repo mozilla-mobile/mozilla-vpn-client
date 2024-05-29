@@ -80,7 +80,7 @@ describe('Factory Reset', function() {
   	await vpn.waitForQuery(queries.screenInitialize.SCREEN.visible());
 
   	//Check that the user is logged out
-  	await vpn.waitForMozillaProperty('Mozilla.VPN', 'VPN', 'userState', 'UserNotAuthenticated');
+  	await vpn.waitForMozillaProperty('Mozilla.VPN', 'VPN', 'userAuthenticated', 'false');
 
 	//Check that settings were reset to factory
 	assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);

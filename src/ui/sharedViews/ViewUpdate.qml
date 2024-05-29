@@ -55,7 +55,7 @@ MZFlickable {
 
             PropertyChanges {
                 target: signOff
-                visible: VPN.userState === VPN.UserAuthenticated
+                visible: VPN.userAuthenticated
             }
 
             PropertyChanges {

@@ -12,6 +12,7 @@ class App : public QObject {
   Q_DISABLE_COPY_MOVE(App)
 
   Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY userStateChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
@@ -82,9 +83,8 @@ class App : public QObject {
   UserState userState() const;
   void setUserState(UserState userState);
 
-  static bool isUserAuthenticated() {
-    return App::instance()->userState() == App::UserAuthenticated;
-  }
+  bool userAuthenticated() const { return m_userState == UserAuthenticated; };
+  static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
 
   static QByteArray authorizationHeader();
 

@@ -221,13 +221,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
 
-  connect(&m_private->m_user, &User::changed, this,
-          [&]() { emit modelsChanged(); });
-  connect(&m_private->m_serverCountryModel, &ServerCountryModel::changed, this,
-          [&]() { emit modelsChanged(); });
-  connect(&m_private->m_deviceModel, &DeviceModel::changed, this,
-          [&]() { emit modelsChanged(); });
-
   ensureApplicationIdExists();
 }
 
