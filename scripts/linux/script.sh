@@ -16,6 +16,8 @@ PPA_URL=
 DPKG_SIGN="--no-sign"
 RPM=N
 DEB=N
+VENDOR_CARGO=Y
+VENDOR_GOLANG=Y
 
 if [ -f .env ]; then
   . .env
@@ -29,6 +31,8 @@ helpFunction() {
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
   print N "      --source           Build source packages only (no binary)"
+  print N "      --no-cargo         Disable vendoring of Cargo crates"
+  print N "      --no-golang        Disable vendoring of Golang modules"
   print N ""
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
@@ -78,6 +82,14 @@ while [[ $# -gt 0 ]]; do
     ;;
   --no-sign)
     DPKG_SIGN="--no-sign"
+    shift
+    ;;
+  --no-cargo)
+    VENDOR_CARGO=N
+    shift
+    ;;
+  --no-golang)
+    VENDOR_GOLANG=N
     shift
     ;;
   *)
@@ -136,13 +148,17 @@ cd .tmp
 print Y "Generating Glean (qtglean) files..."
 (cd $WORKDIR && python3 qtglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (qtglean) files"
 
-printn Y "Downloading Go dependencies..."
-(cd $WORKDIR/linux/netfilter && go mod vendor)
-print G "done."
+if [ "$VENDOR_GOLANG" == "Y" ]; then
+  printn Y "Downloading Go dependencies..."
+  (cd $WORKDIR/linux/netfilter && go mod vendor)
+  print G "done."
+fi
 
-printn Y "Downloading Rust dependencies..."
-(cd $WORKDIR && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+if [ "$VENDOR_CARGO" == "Y" ]; then
+  printn Y "Downloading Rust dependencies..."
+  (cd $WORKDIR && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+  print G "done."
+fi
 
 printn Y "Removing the packaging templates... "
 rm -f $WORKDIR/linux/mozillavpn.spec || die "Failed"
