@@ -21,4 +21,4 @@ if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps/vendor ]]; then
    rsync ${MOZ_FETCHES_DIR}/cargo-deps $(pwd)
 fi
 
-./scripts/linux/script.sh --source -g ${GITREF} ${CARGO_OPTIONS}
+./scripts/linux/script.sh -g ${GITREF} ${CARGO_OPTIONS}

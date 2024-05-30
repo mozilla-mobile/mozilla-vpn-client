@@ -38,7 +38,7 @@ jobs:
         env:
           GITREF: ${{github.ref}}
         run: |
-          ./scripts/linux/script.sh --source --gitref ${GITREF}
+          ./scripts/linux/script.sh --gitref ${GITREF}
 
           if [[ "$GITREF" == "refs/heads/main" ]]; then
             echo "ppa-url=ppa:okirby/mozilla-vpn-nightly" >> $GITHUB_OUTPUT

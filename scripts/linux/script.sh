@@ -11,7 +11,6 @@ set -e
 REVISION=1
 RELEASE=
 GITREF=
-SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
 RPM=N
@@ -30,7 +29,6 @@ helpFunction() {
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --source           Build source packages only (no binary)"
   print N "      --no-cargo         Disable vendoring of Cargo crates"
   print N "      --no-golang        Disable vendoring of Golang modules"
   print N ""
@@ -68,7 +66,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    SOURCEONLY=Y
+    # Deprecated option - ignore it.
     shift
     ;;
   --sign)
@@ -216,53 +214,16 @@ build_deb_source() {
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
-## If we are just doing source packaging, then build the dpkg and rpm sources.
-if [ "$SOURCEONLY" == "Y" ]; then
-  print Y "Building RPM sources"
-  build_rpm_source
+print Y "Building RPM sources"
+build_rpm_source
 
-  print Y "Building Debian sources"
-  build_deb_source
+print Y "Building Debian sources"
+build_deb_source
 
-  print Y "Building Flatpak sources"
-  build_flatpak_manifest
-
-  print Y "Cleaning up working directory..."
-  rm -rf $WORKDIR || die "Failed"
-
-  print G "All done."
-  exit 0
-fi
-
-## Prepare the distribution's packaging sources
-case $RELEASE in
-  fedora|rpm)
-    print Y "Building RPM packages for $distro"
-    build_rpm_source
-    ;;
-  
-  flatpak)
-    print Y "Building Flatpak sources"
-    build_flatpak_manifest
-    ;;
-
-  *)
-    print Y "Building Debian packages for $RELEASE"
-    build_deb_source $RELEASE
-    ;;
-esac
+print Y "Building Flatpak sources"
+build_flatpak_manifest
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
-
-## Build Binary packages
-if [ "$SOURCEONLY" != "Y" ]; then
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    print Y "Building binary package from $changeset"
-    dpkg-source -x ${changeset%_source.changes}.dsc
-    (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
-    rm -rf $WORKDIR
-  done
-fi
 
 print G "All done."
