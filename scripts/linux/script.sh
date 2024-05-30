@@ -15,8 +15,7 @@ PPA_URL=
 DPKG_SIGN="--no-sign"
 RPM=N
 DEB=N
-VENDOR_CARGO=Y
-VENDOR_GOLANG=Y
+VENDOR_CARGO_SRC=
 
 if [ -f .env ]; then
   . .env
@@ -29,8 +28,7 @@ helpFunction() {
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --no-cargo         Disable vendoring of Cargo crates"
-  print N "      --no-golang        Disable vendoring of Golang modules"
+  print N "      --cargo-deps DIR   Vendor cargo dependencies from DIR"
   print N ""
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
@@ -82,12 +80,9 @@ while [[ $# -gt 0 ]]; do
     DPKG_SIGN="--no-sign"
     shift
     ;;
-  --no-cargo)
-    VENDOR_CARGO=N
+  --cargo-deps)
+    VENDOR_CARGO_SRC="$2"
     shift
-    ;;
-  --no-golang)
-    VENDOR_GOLANG=N
     shift
     ;;
   *)
@@ -146,17 +141,32 @@ cd .tmp
 print Y "Generating Glean (qtglean) files..."
 (cd $WORKDIR && python3 qtglean/glean_parser_ext/run_glean_parser.py) || die "Failed to generate Glean (qtglean) files"
 
-if [ "$VENDOR_GOLANG" == "Y" ]; then
-  printn Y "Downloading Go dependencies..."
-  (cd $WORKDIR/linux/netfilter && go mod vendor)
-  print G "done."
-fi
+printn Y "Downloading Go dependencies..."
+(cd $WORKDIR/linux/netfilter && go mod vendor)
+print G "done."
 
-if [ "$VENDOR_CARGO" == "Y" ]; then
+if [ -d "$VENDOR_CARGO_SRC" ]; then
+  mkdir -p $WORKDIR/3rdparty/cargo-deps
+  rsync -a "$VENDOR_CARGO_SRC/" $WORKDIR/3rdparty/cargo-deps
+else
   printn Y "Downloading Rust dependencies..."
-  (cd $WORKDIR && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-  print G "done."
+  cargo vendor --manifest-path $WORKDIR/Cargo.toml $WORKDIR/3rdparty/cargo-deps > /dev/null
 fi
+for MANIFEST in $(git ls-files -c 'Cargo.toml'); do
+    SUBPROJECT=$(dirname ${MANIFEST})
+    CONFIGFILE="${SUBPROJECT}/.cargo/config.toml"
+    echo "Generating ${CONFIGFILE}"
+
+    mkdir -p $WORKDIR/${SUBPROJECT}
+    cat << EOF > $WORKDIR/${CONFIGFILE}
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "$(realpath -s --relative-to="${WORKDIR}/${SUBPROJECT}" "$WORKDIR/3rdparty/cargo-deps")"
+done
+EOF
+print G "done."
 
 printn Y "Removing the packaging templates... "
 rm -f $WORKDIR/linux/mozillavpn.spec || die "Failed"

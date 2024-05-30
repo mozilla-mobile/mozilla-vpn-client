@@ -16,9 +16,8 @@ fi
 
 # Extracted the vendored cargo dependencies ontop.
 CARGO_OPTIONS=""
-if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps/vendor ]]; then
-   CARGO_OPTIONS="--no-cargo"
-   rsync -a ${MOZ_FETCHES_DIR}/cargo-deps/ $(pwd)
+if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps ]]; then
+   CARGO_OPTIONS="--cargo-deps ${MOZ_FETCHES_DIR}/cargo-deps"
 fi
 
 ./scripts/linux/script.sh -g ${GITREF} ${CARGO_OPTIONS}
