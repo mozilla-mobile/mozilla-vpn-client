@@ -31,10 +31,6 @@
 	path = 3rdparty/sentry
 	url = https://github.com/getsentry/sentry-native/
 	shallow = true
-[submodule "3rdparty/swiftyping"]
-	path = 3rdparty/swiftyping
-	url = https://github.com/samiyr/SwiftyPing.git
-	shallow = true
 [submodule "3rdparty/i18n"]
 	path = 3rdparty/i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
