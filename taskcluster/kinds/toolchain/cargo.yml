@@ -1,0 +1,24 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    worker:
+        docker-image: {in-tree: build}
+        max-run-time: 3600
+        chain-of-trust: true
+    worker-type: b-linux
+    run:
+        use-caches: true
+        toolchain-alias: cargo-deps
+        toolchain-artifact: public/build/cargo-deps.tar.xz
+
+cargo-deps:
+    description: "Bundle Cargo Dependencies"
+    treeherder:
+        symbol: TL(cargo-deps)
+    run:
+        script: bundle_cargo_deps.sh
+        resources:
+            - Cargo.toml
+            - Cargo.lock

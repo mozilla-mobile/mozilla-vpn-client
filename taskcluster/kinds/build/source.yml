@@ -10,6 +10,10 @@ source/vpn:
         kind: build
         tier: 1
         platform: source/vpn
+    fetches:
+        toolchain:
+            - artifact: cargo-deps.tar.xz
+              extract: false
     worker-type: b-linux
     worker:
         docker-image: {in-tree: build}
