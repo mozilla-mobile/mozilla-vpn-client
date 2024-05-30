@@ -1189,7 +1189,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
       REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setState(StateInitialize); // TODO: or maybe logging out?
+      setState(StateInitialize);
       return;
     }
   }));

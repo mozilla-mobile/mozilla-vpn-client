@@ -77,7 +77,8 @@ void TestAddon::message_notification_data() {
 
   // Mock a user login.
   TestHelper::resetLastSystemNotification();
-  App::instance()->setUserState(App::UserAuthenticated);
+  settingsHolder.setToken("Hello World");
+  App::instance()->setState(App::StateMain);
   // A login should not trigger any messages either.
   QTest::addRow("login") << QString() << QString()
                          << TestHelper::lastSystemNotification.title
@@ -138,7 +139,7 @@ void TestAddon::message_notification_data() {
       << TestHelper::lastSystemNotification.message;
 
   TestHelper::resetLastSystemNotification();
-  // Message is created but due to it"s conditions it"s not enabled
+  // Message is created but due to its conditions it's not enabled
   AddonMessage* disabledMessage = static_cast<AddonMessage*>(
       Addon::create(&parent, ":/addons_test/message4.json"));
   emit AddonManager::instance()->addonCreated(disabledMessage);
@@ -155,7 +156,7 @@ void TestAddon::message_notification_data() {
       << TestHelper::lastSystemNotification.title
       << TestHelper::lastSystemNotification.message;
 
-  App::instance()->setUserState(App::UserNotAuthenticated);
+  App::instance()->setState(App::StateInitialize);
 }
 
 void TestAddon::message_notification() {

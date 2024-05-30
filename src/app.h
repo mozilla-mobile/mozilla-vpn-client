@@ -12,7 +12,7 @@ class App : public QObject {
   Q_DISABLE_COPY_MOVE(App)
 
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
-             userAuthenticationChanged)
+                 userAuthenticationChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
