@@ -365,7 +365,23 @@ void TestLocalizer::formattedDate() {
   QVERIFY(date.isValid());
 
   QFETCH(QString, result);
-  QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
+
+  /*
+
+    CLDR (Common Locale Data Repository) 42 changed the formatting here
+    from a white space to a Narrow No-Break Space. Qt adopted CLDR 42 in Qt6.5.
+    This means that tests run with Qt6.2.4 should expect a white space,
+    and tests run with Qt6.6 should expect a Narrow No-Break Space (U+202F).
+    We can remove this workaround once all the tests are running on 6.6
+
+    CLDR change: https://unicode-org.atlassian.net/browse/CLDR-14032
+    Qt6.5 CLDR change note: https://doc.qt.io/qt-6/license-changes.html#qt-6-5-0
+
+  */
+
+  QString expectedString =
+      Localizer::instance()->formatDate(now, date, "Yesterday");
+  QCOMPARE(expectedString.replace(" ", " "), result);
 }
 
 void TestLocalizer::nativeLanguageName_data() {
