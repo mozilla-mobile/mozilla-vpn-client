@@ -15,8 +15,8 @@ else
 fi
 
 # Extracted the vendored cargo dependencies ontop.
-if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps.tar.xz ]]; then
-   tar xf --strip-components 1 ${MOZ_FETCHES_DIR}/cargo-deps.tar.xz
+if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps/vendor ]]; then
+   rsync ${MOZ_FETCHES_DIR}/cargo-deps $(pwd)
 fi
 
 ./scripts/linux/script.sh --source -g ${GITREF}

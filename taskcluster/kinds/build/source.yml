@@ -12,8 +12,7 @@ source/vpn:
         platform: source/vpn
     fetches:
         toolchain:
-            - artifact: cargo-deps.tar.xz
-              extract: false
+            - cargo-deps
     worker-type: b-linux
     worker:
         docker-image: {in-tree: build}
