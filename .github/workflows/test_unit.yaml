@@ -87,7 +87,7 @@ jobs:
 
       - name: Install Qt6
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/ffVNctUPQ42PXwgpt6dzRg/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/DTRTm0KGQ7-QEhOH4zkxZw/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
           unzip -a mac.zip
           sudo mv qt_dist /opt
           cd ..
