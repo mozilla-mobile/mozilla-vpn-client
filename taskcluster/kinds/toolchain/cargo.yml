@@ -4,6 +4,8 @@
 ---
 task-defaults:
     worker:
+        env:
+            FOO: "bar"
         docker-image: {in-tree: build}
         max-run-time: 3600
         chain-of-trust: true
