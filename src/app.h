@@ -11,7 +11,8 @@ class App : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(App)
 
-  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY stateChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
+             userAuthenticationChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
@@ -19,11 +20,6 @@ class App : public QObject {
     // This is the first state when the app starts. During the initialization,
     // the app can move to a different state
     StateInitialize = 0,
-
-    // We are logging out the user. There are a few steps to run in order to
-    // complete the logout. In the meantime, the user should be considered as
-    // not-authenticated. The next state will be `StateInitialize`.
-    StateLoggingOut,
 
     // The authentication flow has started.
     StateAuthenticating,
@@ -66,7 +62,7 @@ class App : public QObject {
   int state() const;
   void setState(int state);
 
-  bool userAuthenticated() const { return m_state > StateAuthenticating; };
+  bool userAuthenticated() const;
   static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
 
   static QByteArray authorizationHeader();
@@ -74,6 +70,7 @@ class App : public QObject {
   void quit();
 
  signals:
+  void userAuthenticationChanged();
   void stateChanged();
 
  protected:

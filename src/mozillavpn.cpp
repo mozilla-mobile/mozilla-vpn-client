@@ -453,21 +453,9 @@ void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
-  if (state() != StateInitialize) {
-    // If we try to start an authentication flow when already logged in, there
-    // is a bug elsewhere.
-    Q_ASSERT(state() == StateLoggingOut);
-
-    LogoutObserver* lo = new LogoutObserver(this);
-    // Let's use QueuedConnection to avoid nested tasks executions.
-    connect(
-        lo, &LogoutObserver::ready, this,
-        [this, authenticationType]() {
-          authenticateWithType(authenticationType);
-        },
-        Qt::QueuedConnection);
-    return;
-  }
+  // If we try to start an authentication flow when already logged in, there
+  // is a bug elsewhere.
+  Q_ASSERT(state() == StateInitialize);
 
   setState(StateAuthenticating);
 
@@ -774,33 +762,16 @@ void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
-  setState(StateLoggingOut);
 
   TaskScheduler::deleteTasks();
 
-  PurchaseHandler::instance()->stopSubscription();
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    ProductsHandler::instance()->stopProductsRegistration();
-  }
-
-  controller()->deleteOSTunnelConfig();
-
-  // update-required state is the only one we want to keep when logging out.
-  if (state() != StateUpdateRequired) {
-    setState(StateInitialize);
-  }
-
+  // Schedule the removal of our device and let it run in the background.
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
-
-    // Immediately after the scheduling of the device removal, we want to
-    // delete the session token, so that, in case the app is terminated, at
-    // the next execution we go back to the init screen.
-    reset(false);
-    return;
   }
 
-  TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
+  // update-required state is the only one we want to keep when logging out.
+  reset(state() != StateUpdateRequired);
 }
 
 void MozillaVPN::reset(bool forceInitialState) {

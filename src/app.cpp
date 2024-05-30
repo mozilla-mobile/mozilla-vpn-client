@@ -30,6 +30,9 @@ App::App(QObject* parent) : QObject(parent) {
                                     WasmNetworkRequest::postResource,
                                     WasmNetworkRequest::postResourceIODevice);
 #endif
+
+  connect(SettingsHolder::instance(), &SettingsHolder::tokenChanged, this,
+          [this]() { emit userAuthenticationChanged(); });
 }
 
 App::~App() { MZ_COUNT_DTOR(App); }
@@ -40,15 +43,8 @@ void App::setState(int state) {
   logger.debug() << "Set state:" << state;
 
   m_state = state;
+  emit userAuthenticationChanged();
   emit stateChanged();
-}
-
-void App::setUserState(UserState state) {
-  logger.debug() << "User authentication state:" << state;
-  if (m_userState != state) {
-    m_userState = state;
-    emit userStateChanged();
-  }
 }
 
 void App::quit() {
@@ -64,4 +60,9 @@ void App::quit() {
 #endif
 
   qApp->quit();
+}
+
+bool App::userAuthenticated() const {
+  auto holder = SettingsHolder::instance();
+  return (m_state > StateAuthenticating) && holder->hasToken();
 }
