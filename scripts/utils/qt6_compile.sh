@@ -138,6 +138,7 @@ mkdir -p $BUILDDIR
   -skip qtgamepad \
   -skip qtwebchannel \
   -skip qtandroidextras \
+  -skip qtspeech \
   -feature-imageformat_png \
   -qt-doubleconversion \
   -qt-libpng \
