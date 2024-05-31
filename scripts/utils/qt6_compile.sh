@@ -135,8 +135,11 @@ mkdir -p $BUILDDIR
   -no-feature-qtplugininfo \
   -no-feature-pixeltool \
   -no-feature-distancefieldgenerator \
-  -no-feature-designer \
   -no-feature-assistant \
+  -no-feature-tiff \
+  -no-feature-webp \
+  -no-feature-cups \
+  -no-feature-textmarkdownwriter \
   -no-feature-sql-sqlite \
   -no-feature-sql \
   -no-feature-dbus \
