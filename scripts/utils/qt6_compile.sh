@@ -123,11 +123,11 @@ mkdir -p $BUILDDIR
   --prefix=$PREFIX \
   -opensource \
   -confirm-license \
-  -release \
+  -debug-and-release \
   -static \
-  -strip \
   -silent \
   -nomake tests \
+  -nomake examples \
   -make libs \
   -no-feature-sql-odbc \
   -no-feature-qtattributionsscanner \
@@ -139,7 +139,6 @@ mkdir -p $BUILDDIR
   -no-feature-tiff \
   -no-feature-webp \
   -no-feature-cups \
-  -no-feature-textmarkdownwriter \
   -no-feature-sql-sqlite \
   -no-feature-sql \
   -no-feature-dbus \
@@ -173,7 +172,6 @@ mkdir -p $BUILDDIR
   -skip qtvirtualkeyboard  \
   -skip qtweb \
   -feature-imageformat_png \
-  -feature-optimize_full \
   -feature-xml \
   -qt-doubleconversion \
   -qt-libpng \
