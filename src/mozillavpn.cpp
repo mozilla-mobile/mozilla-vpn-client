@@ -792,6 +792,9 @@ void MozillaVPN::reset(bool forceInitialState) {
 
   if (forceInitialState) {
     setState(StateInitialize);
+  } else {
+    // Manually emit an auth change if we are not changing state.
+    emit userAuthenticationChanged();
   }
 }
 

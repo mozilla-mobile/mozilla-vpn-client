@@ -30,9 +30,6 @@ App::App(QObject* parent) : QObject(parent) {
                                     WasmNetworkRequest::postResource,
                                     WasmNetworkRequest::postResourceIODevice);
 #endif
-
-  connect(SettingsHolder::instance(), &SettingsHolder::tokenChanged, this,
-          [this]() { emit userAuthenticationChanged(); });
 }
 
 App::~App() { MZ_COUNT_DTOR(App); }
