@@ -67,7 +67,7 @@ jobs:
 
       - name: Install Qt6
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/BSnihN--QTOidlH2ZmAQHw/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/LaUyUkotR4aVB7sZ6nfLEg/runs/0/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
       - name: Compile test client
