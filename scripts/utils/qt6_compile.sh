@@ -129,22 +129,61 @@ mkdir -p $BUILDDIR
   -silent \
   -nomake tests \
   -make libs \
-  -sql-sqlite \
-  -skip qt3d \
-  -skip webengine \
-  -skip qtmultimedia \
-  -skip qtserialport \
-  -skip qtsensors \
-  -skip qtgamepad \
-  -skip qtwebchannel \
-  -skip qtandroidextras \
-  -skip qtspeech \
+  -no-feature-sql-odbc \
+  -no-feature-qtattributionsscanner \
+  -no-feature-qtdiag \
+  -no-feature-qtplugininfo \
+  -no-feature-pixeltool \
+  -no-feature-distancefieldgenerator \
+  -no-feature-assistant \
+  -no-feature-tiff \
+  -no-feature-webp \
+  -no-feature-cups \
+  -no-feature-textmarkdownwriter \
+  -no-feature-itemmodeltester \
+  -no-feature-sql-sqlite \
+  -no-feature-sql \
+  -no-feature-dbus \
+  -skip qt3d  \
+  -skip qtdoc \
+  -skip qtgrpc \
+  -skip qtconnectivity \
+  -skip qtquickeffectmaker \
+  -skip qtquicktimeline \
+  -skip qtwebengine  \
+  -skip qtwebview \
+  -skip qtlocation \
+  -skip qtmultimedia  \
+  -skip qtserialport  \
+  -skip qtsensors  \
+  -skip qtgamepad  \
+  -skip qtgraphs \
+  -skip qtandroidextras  \
+  -skip qtquick3dphysics \
+  -skip qtactiveqt  \
+  -skip qtcharts  \
+  -skip qtcoap  \
+  -skip qtdatavis3d  \
+  -skip qtgrpc  \
+  -skip qtremoteobjects  \
+  -skip qtlottie  \
+  -skip qtmqtt  \
+  -skip qtopcua  \
+  -skip qtpositioning  \
+  -skip qtquick3d  \
+  -skip qtscxml  \
+  -skip qtserialbus  \
+  -skip qtserialport  \
+  -skip qtspeech  \
+  -skip qtvirtualkeyboard  \
+  -skip qtweb \
   -feature-imageformat_png \
+  -feature-optimize_full \
+  -feature-xml \
   -qt-doubleconversion \
   -qt-libpng \
   -qt-zlib \
   -qt-pcre \
-  -feature-xml \
   $PLATFORM) || die "Configuration error."
 
 print Y "Compiling..."
