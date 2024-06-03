@@ -13,7 +13,7 @@ qt-macos-6.6:
     description: "Mac QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-6.6.0
+            - qt-source-tarball-6.6.3
             - miniconda-osx
     run:
         use-caches: false
@@ -47,7 +47,7 @@ qt-windows-x86_64-6.2.4:
         platform: windows/x86_64
     worker-type: b-win2022
 
-qt-windows-x86_64-6.6.0:
+qt-windows-x86_64-6.6:
     description: "Windows QT compile Task"
     fetches:
         fetch:
@@ -56,17 +56,16 @@ qt-windows-x86_64-6.6.0:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-x86_64-6.6.0
+        toolchain-alias: qt-windows-x86_64-6.6
         toolchain-artifact: public/build/qt6_win.zip
     treeherder:
-        symbol: TL(qt-win-6.6.0)
+        symbol: TL(qt-win-6.6)
         platform: windows/x86_64
     worker-type: b-win2022
     worker:
         env:
-            QT_VERSION: "6.6.0"
+            QT_VERSION: "6.6.3"
             QT_MAJOR: "6.6"
-
 
 qt-ios:
     description: "QT ios bundle Task"
