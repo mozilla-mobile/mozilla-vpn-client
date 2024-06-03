@@ -109,6 +109,11 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -no-feature-distancefieldgenerator `
   -no-feature-designer `
   -no-feature-assistant `
+  -no-feature-style-fusion `
+  -no-feature-style-windows `
+  -no-feature-style-windowsvista `
+  -no-feature-quickcontrols2-material `
+  -no-feature-quickcontrols2-macos `
   -no-feature-sql-sqlite `
   -no-feature-sql `
   -no-feature-textodfwriter `
@@ -120,15 +125,19 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -skip qtgrpc `
   -skip qtconnectivity `
   -skip qtquickeffectmaker `
+  -skip qtquicktimeline `
   -skip qtwebengine  `
   -skip qtlocation `
+  -skip qtmultimedia  `
   -skip qtserialport  `
   -skip qtsensors  `
   -skip qtgamepad  `
   -skip qtandroidextras  `
   -skip qtquick3dphysics `
   -skip qtactiveqt  `
+  -skip qtcharts  `
   -skip qtcoap  `
+  -skip qtdatavis3d  `
   -skip qtgrpc  `
   -skip qtremoteobjects  `
   -skip qtlottie  `
