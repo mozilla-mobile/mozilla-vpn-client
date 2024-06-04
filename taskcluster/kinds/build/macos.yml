@@ -26,23 +26,14 @@ task-defaults:
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/macos_build.sh
 
-macos/pr:
-    fetches:
-        fetch:
-            - qt-hotfix
-    description: "Mac Build"
-    treeherder:
-        symbol: BD
-    run:
-        command: ./taskcluster/scripts/build/macos_build.sh -d
 
-macos/next:
+macos/pr:
     fetches:
         toolchain:
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
-        symbol: NEXT
+        symbol: BD
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
 
@@ -50,7 +41,7 @@ macos/next:
 macos/opt:
     fetches:
         fetch:
-            - qt-hotfix
+            - qt-macos-6.6
     description: "Mac Build"
     treeherder:
         symbol: B

@@ -5,8 +5,8 @@
 task-defaults:
     worker:
         env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
+            QT_VERSION: "6.6.3"
+            QT_MAJOR: "6.6"
         max-run-time: 14400
 
 qt-macos-6.6:
@@ -26,27 +26,6 @@ qt-macos-6.6:
         symbol: TL(qt-mac-6.6)
     worker-type: b-macos
 
-qt-windows-x86_64-6.2.4:
-    description: "Windows QT compile Task"
-    fetches:
-        fetch:
-            - win-dev-env
-        openssl:
-            - artifact: open_ssl_win.zip
-              extract: false  # For some reason unzip exits with 1 even tho the file is okay
-    dependencies:
-        openssl: toolchain-openssl-win
-    run:
-        script: compile_qt_6.ps1
-        resources:
-            - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-win-x86_64-6.2.4
-        toolchain-artifact: public/build/qt6_win.zip
-    treeherder:
-        symbol: TL(qt-win)
-        platform: windows/x86_64
-    worker-type: b-win2022
-
 qt-windows-x86_64-6.6:
     description: "Windows QT compile Task"
     fetches:
@@ -62,10 +41,6 @@ qt-windows-x86_64-6.6:
         symbol: TL(qt-win-6.6)
         platform: windows/x86_64
     worker-type: b-win2022
-    worker:
-        env:
-            QT_VERSION: "6.6.3"
-            QT_MAJOR: "6.6"
 
 qt-ios:
     description: "QT ios bundle Task"
@@ -80,6 +55,9 @@ qt-ios:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
+        env:
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
 
 qt-linux:
     description: "Linux QT compile Task"
@@ -97,6 +75,9 @@ qt-linux:
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
+        env:
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
 
 qt-linux-6.6.0:
     description: "Linux QT compile Task"
@@ -114,3 +95,6 @@ qt-linux-6.6.0:
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
+        env:
+            QT_VERSION: "6.6.0"
+            QT_MAJOR: "6.6"
