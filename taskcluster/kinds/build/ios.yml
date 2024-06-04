@@ -25,18 +25,10 @@ task-defaults:
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/ios_build_debug.sh
 
-ios-arm64-qt-next/debug:
-    description: "IOS Debug Build using Qt-Next"
-    treeherder:
-        symbol: NEXT
-    fetches:
-        toolchain:
-            - conda-ios-6.6.0
-
 ios-arm64/debug:
     description: "IOS Debug Build using Qt-Next"
     treeherder:
         symbol: BD
     fetches:
         toolchain:
-            - conda-ios-6.2.4
+            - conda-ios-6.6.0
