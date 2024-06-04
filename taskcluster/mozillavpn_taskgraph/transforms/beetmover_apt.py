@@ -51,14 +51,10 @@ ALLOWED_SHIPPING_PHASES = [
 def filter_shipping(config, tasks):
     shipping_phase = config.params.get("shipping_phase", "")
     for task in tasks:
-        if not shipping_phase in ALLOWED_SHIPPING_PHASES:
+        if shipping_phase not in ALLOWED_SHIPPING_PHASES:
             continue
-        attributes = {
-            **task["attributes"],
-            "shipping-phase": shipping_phase,
-        } 
-        task["attributes"]=attributes   
         yield task
+
 
 @transforms.add
 def beetmover_apt(config, tasks):
@@ -76,6 +72,7 @@ def beetmover_apt(config, tasks):
             and config.params.get("shipping_phase", "") == "ship-client"
             and config.params["tasks_for"] in task["run-on-tasks-for"]
         )
+
         bucket = "release" if is_production else "dep"
         project_name = "mozillavpn" if is_production else "mozillavpn:releng"
 
