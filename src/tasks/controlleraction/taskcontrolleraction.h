@@ -23,6 +23,7 @@ class TaskControllerAction final : public Task {
     eActivate,
     eActivateForExtension,
     eDeactivate,
+    eDeactivateForExtension,
     eSilentSwitch,
     eSwitch,
   };

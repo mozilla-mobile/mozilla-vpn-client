@@ -73,8 +73,6 @@ void StatusIcon::activateAnimation() {
 }
 
 void StatusIcon::animateIcon() {
-  logger.debug() << "Animate icon";
-
   Q_ASSERT(m_animatedIconIndex < ANIMATED_LOGO_STEPS.size());
   m_animatedIconIndex++;
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
@@ -84,8 +82,6 @@ void StatusIcon::animateIcon() {
 }
 
 const QString StatusIcon::iconString() {
-  logger.debug() << "Icon string" << m_animatedIconIndex;
-
   MozillaVPN* vpn = MozillaVPN::instance();
 
   // If we are in a non-main state, we don't need to show special icons.
@@ -149,8 +145,6 @@ const QColor StatusIcon::indicatorColor() const {
 }
 
 void StatusIcon::refreshNeeded() {
-  logger.debug() << "Refresh needed";
-
   if (!m_icon.isNull()) {
     m_icon = QIcon();
   }
@@ -158,8 +152,6 @@ void StatusIcon::refreshNeeded() {
 }
 
 QIcon StatusIcon::drawStatusIndicator() {
-  logger.debug() << "Get icon from URL";
-
   // Create pixmap so that we can paint on the original resource.
   QPixmap iconPixmap = QPixmap(iconString());
 

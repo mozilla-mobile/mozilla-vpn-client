@@ -103,7 +103,8 @@ Item {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            when: VPNController.state === VPNController.StateOff ||
+                  VPNController.state === VPNController.StateOnPartial
 
             PropertyChanges {
                 target: boxBackground

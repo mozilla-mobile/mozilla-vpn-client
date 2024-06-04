@@ -19,7 +19,8 @@ MZButtonBase {
 
     function handleClick() {
         toolTip.close();
-        if (VPNController.state !== VPNController.StateOff) {
+        if (VPNController.state !== VPNController.StateOff &&
+            VPNController.state !== VPNController.StateOnPartial) {
             return VPN.deactivate();
         }
 
@@ -66,7 +67,8 @@ MZButtonBase {
         },
         State {
             name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            when: VPNController.state === VPNController.StateOff ||
+                  VPNController.state === VPNController.StateOnPartial
 
             PropertyChanges {
                 target: cursor
@@ -277,6 +279,7 @@ MZButtonBase {
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateOn ||
+               VPNController.state === VPNController.StateOnPartial ||
                 VPNController.state === VPNController.StateSilentSwitching ||
                 VPNController.state === VPNController.StateOff ||
                 (VPNController.state === VPNController.StateConfirming &&

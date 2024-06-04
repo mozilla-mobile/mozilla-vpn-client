@@ -58,6 +58,9 @@ void TaskControllerAction::run() {
     case eDeactivate:
       expectSignal = controller->deactivate();
       break;
+    case eDeactivateForExtension:
+      expectSignal = controller->deactivate(Controller::ExtensionUser);
+      break;
     case eSilentSwitch:
       expectSignal = controller->silentSwitchServers(m_serverCoolDownPolicy);
       break;

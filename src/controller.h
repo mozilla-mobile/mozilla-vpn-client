@@ -35,6 +35,7 @@ class Controller : public QObject, public LogSerializer {
     StateConnecting,
     StateConfirming,
     StateOn,
+    StateOnPartial,
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
@@ -51,11 +52,12 @@ class Controller : public QObject, public LogSerializer {
    * to be Iniated? A Webextension 
    * or a User Interaction inside the Client?
    */
-  enum ActivationInitiator {
+  enum ActivationPrincipal {
     Null = 0,
     ExtensionUser = 1,
     ClientUser = 2,
   };
+  Q_ENUM(ActivationPrincipal)
 
  public:
   qint64 time() const;
@@ -104,10 +106,9 @@ class Controller : public QObject, public LogSerializer {
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
   bool activate(
-      const ServerData& serverData,
-      ActivationInitiator = ClientUser, 
+      const ServerData& serverData, ActivationPrincipal = ClientUser,
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-  bool deactivate();
+  bool deactivate(ActivationPrincipal = ClientUser);
 
   Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
@@ -180,7 +181,8 @@ class Controller : public QObject, public LogSerializer {
   };
   static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  static QList<IPAddress> getExtensionProxyAddressRanges();
+  static QList<IPAddress> getExtensionProxyAddressRanges(
+      const Server& exitServer);
 
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,
@@ -208,8 +210,8 @@ class Controller : public QObject, public LogSerializer {
   };
 
   void activateInternal(DNSPortPolicy dnsPort,
-                        std::optional<QList<IPAddress>> allowedIPList, 
-                        ServerSelectionPolicy serverSelectionPolicy);
+                        ServerSelectionPolicy serverSelectionPolicy,
+                        ActivationPrincipal);
 
   void clearConnectedTime();
   void clearRetryCounter();
@@ -228,7 +230,7 @@ class Controller : public QObject, public LogSerializer {
   QDateTime m_connectedTimeInUTC;
 
   State m_state = StateInitializing;
-  ActivationInitiator m_iniator = Null;
+  ActivationPrincipal m_iniator = Null;
   bool m_enableDisconnectInConfirming = false;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;

@@ -16,7 +16,8 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
-bool Controller::activate(const ServerData&, ServerSelectionPolicy) {
+bool Controller::activate(const ServerData&, ActivationPrincipal user,
+                          ServerSelectionPolicy) {
   return false;
 }
 
@@ -28,9 +29,13 @@ bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
 
 bool Controller::silentServerSwitchingSupported() const { return false; }
 
-void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy) {}
+void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy,
+                                  ActivationPrincipal user) {}
 
-bool Controller::deactivate() { return false; }
+bool Controller::deactivate(ActivationPrincipal user) {
+  Q_UNUSED(user);
+  return false;
+}
 
 void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
