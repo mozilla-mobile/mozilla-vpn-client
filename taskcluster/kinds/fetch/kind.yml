@@ -49,13 +49,13 @@ tasks:
             sha256: f242f98378691496851f78beaf466797fb20251ba5092840c794503594d37726
             artifact-name: miniconda_installer.exe
             size: 80281312
-    wintun:
-        description: Wintun Driver
+    wireguard-nt:
+        description: Wireguard Driver
         fetch: 
             type: static-url 
-            url: https://www.wintun.net/builds/wintun-0.12.zip
-            sha256: eba90e26686ed86595ae0a6d4d3f4f022924b1758f5148a32a91c60cc6e604df
-            size: 1192872
+            url: https://download.wireguard.com/wireguard-nt/wireguard-nt-0.10.1.zip
+            sha256: 772c0b1463d8d2212716f43f06f4594d880dea4f735165bd68e388fc41b81605
+            size: 1774096
     macos-miniconda:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:

@@ -17,7 +17,7 @@ task-defaults:
             - win-dev-env
             - win-sentry-cli
             - win-conda
-            - wintun
+            - wireguard-nt
         toolchain:
             - conda-windows-x86_64
         build:

@@ -5,23 +5,24 @@
 #ifndef WIREGUARDUTILSWINDOWS_H
 #define WIREGUARDUTILSWINDOWS_H
 
-#include <windows.h>
-
-#include <QHostAddress>
 #include <QObject>
 
 #include "daemon/wireguardutils.h"
 #include "windowsroutemonitor.h"
-#include "windowstunnelservice.h"
+#include "wireguard.h"
+
+struct WireGuardAPI;
 
 class WireguardUtilsWindows final : public WireguardUtils {
   Q_OBJECT
 
  public:
-  WireguardUtilsWindows(QObject* parent);
+  // Creates a WireguardUtilsWindows instance, may fail due to i.e
+  // wireguard-nt failing to initialize, returns nullptr in that case.
+  static std::unique_ptr<WireguardUtilsWindows> create(QObject* parent);
   ~WireguardUtilsWindows();
 
-  bool interfaceExists() override { return m_tunnel.isRunning(); }
+  bool interfaceExists() override;
   QString interfaceName() override {
     return WireguardUtilsWindows::s_interfaceName();
   }
@@ -43,11 +44,16 @@ class WireguardUtilsWindows final : public WireguardUtils {
   void backendFailure();
 
  private:
+  WireguardUtilsWindows(QObject* parent,
+                        std::unique_ptr<WireGuardAPI> wireguard_api);
   void buildMibForwardRow(const IPAddress& prefix, void* row);
 
   quint64 m_luid = 0;
-  WindowsTunnelService m_tunnel;
+  std::unique_ptr<WireGuardAPI> m_wireguard_api;
+  ulong m_deviceIpv4_Handle = 0;
+
   WindowsRouteMonitor m_routeMonitor;
+  WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
 };
 
 #endif  // WIREGUARDUTILSWINDOWS_H

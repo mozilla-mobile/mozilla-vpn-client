@@ -29,10 +29,10 @@ Logger logger("WindowsDaemon");
 WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
   MZ_COUNT_CTOR(WindowsDaemon);
 
-  m_wgutils = new WireguardUtilsWindows(this);
+  m_wgutils = WireguardUtilsWindows::create(this);
   m_dnsutils = new DnsUtilsWindows(this);
 
-  connect(m_wgutils, &WireguardUtilsWindows::backendFailure, this,
+  connect(m_wgutils.get(), &WireguardUtilsWindows::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
   connect(this, &WindowsDaemon::activationFailure,
           []() { WindowsFirewall::instance()->disableKillSwitch(); });

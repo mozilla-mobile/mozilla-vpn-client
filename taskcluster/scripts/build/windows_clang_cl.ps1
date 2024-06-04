@@ -69,7 +69,7 @@ cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
         -DCMAKE_BUILD_TYPE=Release `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
-        -DWINTUN_FOLDER="$FETCHES_PATH\wintun" `
+        -DWIREGUARD_FOLDER="$FETCHES_PATH\wireguard-nt" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
         -DBUILD_TESTS=OFF
 
