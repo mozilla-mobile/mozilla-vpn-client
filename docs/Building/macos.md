@@ -48,7 +48,7 @@ When you next want to start building the VPN, all you need to do is activate you
 
 Get a static build of Qt made built in our CI.
 
-https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip
+https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip
 
 Unzip the folder and remember the location for the configure step.
 

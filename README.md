@@ -98,8 +98,8 @@ export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
  * Sample .env file:
   ```
-  export PATH=$PATH:~/Qt/6.2.4/macos/bin:$PATH
-  export QT_MACOS_BIN=~/Qt/6.2.4/macos/bin
+  export PATH=$PATH:~/Qt/6.6.3/macos/bin:$PATH
+  export QT_MACOS_BIN=~/Qt/6.6.3/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
   MVPN_BIN=dummybuild/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
