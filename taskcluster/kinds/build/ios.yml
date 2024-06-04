@@ -26,7 +26,7 @@ task-defaults:
         command: ./taskcluster/scripts/build/ios_build_debug.sh
 
 ios-arm64/debug:
-    description: "IOS Debug Build using Qt-Next"
+    description: "IOS Debug Build"
     treeherder:
         symbol: BD
     fetches:
