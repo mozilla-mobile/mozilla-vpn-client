@@ -40,7 +40,7 @@ macos/pr:
 
 macos/opt:
     fetches:
-        fetch:
+        toolchain:
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
