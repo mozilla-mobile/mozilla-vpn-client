@@ -45,6 +45,8 @@ macos/opt:
     description: "Mac Build"
     treeherder:
         symbol: B
+    run:
+        command: ./taskcluster/scripts/build/macos_build.sh -d
     requires-level: 3 
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
