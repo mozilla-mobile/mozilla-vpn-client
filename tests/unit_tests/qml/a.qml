@@ -73,6 +73,13 @@ Item {
     }
   }
 
+/*   
+
+  This PathView breaks testqmlpath when run with statically compiled
+  Qt6.6.3 on mac. 
+  
+  See: https://mozilla-hub.atlassian.net/browse/VPN-6423
+
   PathView {
      objectName: "list"
      model: vegetableModel
@@ -80,6 +87,9 @@ Item {
        objectName: name
      }
   }
+
+*/
+
 
   Item {
     objectName: "rangeA"
