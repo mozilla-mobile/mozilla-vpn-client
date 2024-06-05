@@ -99,7 +99,8 @@ WebExtensionAdapter::~WebExtensionAdapter() {
 }
 
 void WebExtensionAdapter::writeState() {
-  QJsonObject obj = serializeStatus();
+  QJsonObject obj;
+  obj["status"] = serializeStatus();
   obj["t"] = "status";
 
   emit onOutgoingMessage(obj);
