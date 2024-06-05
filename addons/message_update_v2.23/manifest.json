@@ -17,9 +17,9 @@
     "badge": "new_update",
     "blocks": [
       {
-        "id": "c_1-1",
+        "id": "c_1-2",
         "type": "text",
-        "content": "This update includes a new and easier way to access educational content on the app. It also includes bug fixes, UI adjustments and other performance improvements."
+        "content": "This update includes minor bug fixes, UI adjustments and other performance improvements."
       },
       {
         "id": "c_3",

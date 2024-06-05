@@ -19,9 +19,9 @@
     "notify": false,
     "blocks": [
       {
-        "id": "c_1-2",
+        "id": "c_1-3",
         "type": "text",
-        "content": "This update includes a new and easier way to access educational content on the app. It also includes bug fixes, UI adjustments and other performance improvements."
+        "content": "We've made bug fixes, UI adjustments and other performance improvements to make your experience using VPN even better."
       },
       {
         "id": "c_3",
