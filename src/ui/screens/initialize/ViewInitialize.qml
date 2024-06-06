@@ -412,4 +412,9 @@ Item {
             statusBarModifier.resetDefaults();
         }
     }
+
+    Connections {
+        target: Qt.application
+        onStateChanged: VPN.statusBarCheck()
+    }
 }

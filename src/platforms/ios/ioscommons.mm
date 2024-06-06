@@ -63,6 +63,17 @@ void IOSCommons::setStatusBarTextColor(Theme::StatusBarTextColor color) {
   [rootViewController setNeedsStatusBarAppearanceUpdate];
 }
 
+// There is a bug for iOS 16 and below where the status bar text is the wrong color
+// when app is restored from background. This fixes the bug. More info: VPN-2387
+// Remove this code when the app's minimum supported iOS version is iOS 17.
+void IOSCommons::statusBarUpdateHack() {
+  if (@available(iOS 17, *)) {
+    // No need to update status bar color, as works as expected on iOS 17+.
+  } else {
+    setStatusBarTextColor(Theme::StatusBarTextColorLight);
+  }
+}
+
 // static
 bool IOSCommons::verifySignature(const QByteArray& publicKey, const QByteArray& content,
                                  const QByteArray& signature) {
