@@ -187,7 +187,4 @@ elseif(IOS)
     if(BUILD_ADJUST_SDK_TOKEN)
         add_subdirectory(ios/adjust)
     endif()
-
-    # A final post-processing hack to enable simulation builds.
-    include(scripts/cmake/ios-arch-fixup.cmake)
 endif()
