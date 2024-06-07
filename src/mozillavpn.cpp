@@ -80,6 +80,10 @@
 #  include "adjust/adjusthandler.h"
 #endif
 
+#ifdef MZ_IOS
+#  include "platforms/ios/ioscommons.h"
+#endif
+
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -2214,6 +2218,19 @@ void MozillaVPN::ensureApplicationIdExists() {
   if (!settingsHolder->hasInstallationId()) {
     QString uuid = mozilla::glean::session::installation_id.generateAndSet();
     settingsHolder->setInstallationId(uuid);
+  }
+#endif
+}
+
+// There is a bug for iOS 16 and below where the status bar text is the wrong
+// color when app is restored from background. This fixes the bug. More info:
+// VPN-2387 Remove this code when the app's minimum supported iOS version is
+// iOS 17.
+void MozillaVPN::statusBarCheck() {
+#ifdef MZ_IOS
+  if (QGuiApplication::applicationState() ==
+      Qt::ApplicationState::ApplicationActive) {
+    IOSCommons::statusBarUpdateHack();
   }
 #endif
 }

@@ -14,6 +14,7 @@ class IOSCommons final {
   static int compareStrings(const QString& a, const QString& b);
 
   static void setStatusBarTextColor(Theme::StatusBarTextColor color);
+  static void statusBarUpdateHack();
 
   static QStringList systemLanguageCodes();
 
