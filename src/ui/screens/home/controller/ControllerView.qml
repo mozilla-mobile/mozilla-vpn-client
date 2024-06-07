@@ -548,6 +548,8 @@ Item {
             //% "Secure and private"
             //: This refers to the user’s internet connection.
             text: qsTrId("vpn.controller.active") + " • "
+            onPaintedHeightChanged: if (visible) col.handleMultilineText()
+            onVisibleChanged: if (visible) col.handleMultilineText()
           }
 
           ConnectionTimer {
