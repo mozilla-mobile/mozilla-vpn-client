@@ -43,6 +43,7 @@ const QSettings::Format MozFormat = QSettings::registerFormat(
 SettingsManager* SettingsManager::instance() {
   if (!s_instance) {
     s_instance = new SettingsManager(qApp);
+    qAddPostRoutine([]() { delete s_instance; });
   }
 
   return s_instance;
