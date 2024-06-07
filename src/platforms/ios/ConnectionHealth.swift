@@ -29,6 +29,8 @@ class ConnectionHealth {
     private let checkTime = 15.0 // 15 seconds
     private let toleranceTime = 1.0 // 1 seconds
     private var timer: Timer?
+    private var nextPossibleServerSwitch = Date()
+    private let serverSwitchCooldownMinutes: TimeInterval = 60*5 // 5 minutes
 
     private var lastHealthStatus: ConnectionStability = .pending
     private var connectionHealthTimerId: GleanTimerId? = nil
@@ -69,29 +71,26 @@ class ConnectionHealth {
             return
         }
 
-        let _ = InternetChecker(pingAddress: pingAddress) { (wasSuccess) in
-            guard wasSuccess else {
-                self.logger.error(message: "InternetChecker was not successful, skipping PingAnalyzer")
-                self.recordMetrics(with: .pending)
+        logger.info(message: "Creating PingAnalyzer")
+        let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity) in
+            guard let connectivity = connectivity else {
+                self.logger.error(message: "PingAnalyzer returned error")
+                GleanMetrics.ConnectionHealth.pingAnalyzerError.record()
                 return
             }
 
-            self.logger.info(message: "Creating PingAnalyzer")
-            let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity) in
-                guard let connectivity = connectivity else {
-                    self.logger.error(message: "PingAnalyzer returned error")
-                    GleanMetrics.ConnectionHealth.pingAnalyzerError.record()
-                    return
-                }
+            self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
+            self.recordMetrics(with: connectivity)
 
-                self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
-                self.recordMetrics(with: connectivity)
-
-                if connectivity == .unstable {
-                    self.logger.info(message: "Unstable, starting silent switch from network extension")
-                    self.serverSwitchingDelegate?.silentServerSwitch()
-                }
+            let isServerSwitchCriteriaReached = ((connectivity == .noSignal) || (connectivity == .unstable && self.lastHealthStatus == .unstable))
+            let isTimeForSilentServerSwitch = (self.nextPossibleServerSwitch < Date())
+            if isServerSwitchCriteriaReached && isTimeForSilentServerSwitch {
+                self.logger.info(message: "Starting silent switch from network extension")
+                self.serverSwitchingDelegate?.silentServerSwitch()
+                self.nextPossibleServerSwitch = Date(timeIntervalSinceNow: self.serverSwitchCooldownMinutes)
             }
+
+            self.lastHealthStatus = connectivity
         }
 
         // Timer set to repeat until stop() is run, so no need to call any repeat step in this function.
@@ -120,8 +119,6 @@ class ConnectionHealth {
 
         stopTimingDistributionMetric(for: lastHealthStatus)
         startTimingDistributionMetric(for: stability)
-
-        lastHealthStatus = stability
     }
 
     private func startTimingDistributionMetric(for stability: ConnectionStability) {

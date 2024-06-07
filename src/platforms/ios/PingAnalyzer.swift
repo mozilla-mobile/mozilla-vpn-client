@@ -12,7 +12,7 @@ class PingAnalyzer {
     private let pingSendTimespan: Double = 5.0 // send numberOfPings over 5 seconds
 
     private var checkTime: Double {
-        return pingSendTimespan + pingTimeNoSignalSeconds
+        return pingSendTimespan + pingTimeoutSeconds
     }
     private var timer: Timer = Timer()
 
@@ -21,12 +21,11 @@ class PingAnalyzer {
         return pingSendTimespan / Double(numberOfPings)
     }
 
-    private var pingDurations: [TimeInterval] = []
+    private var returnedPings = 0
 
-    private let pingTimeUnstableSeconds: Double = 1
-    private let pingTimeNoSignalSeconds: Double = 4.0
-    private let pingLossUnstableThreshold: Double = 0.10
-    private let pingLossNoSignalThreshold: Double = 0.20
+    private let pingTimeoutSeconds: Double = 0.5
+    private let pingLossUnstableThreshold: Double = 0.65 // 13 of 20 pings
+    private let pingLossNoSignalThreshold: Double = 1.0 // all pings
 
     private let callback: (ConnectionHealth.ConnectionStability?) -> Void
 
@@ -34,16 +33,18 @@ class PingAnalyzer {
         self.callback = callback
 
         do {
-            let ping = try SwiftyPing(host: pingAddress, configuration: PingConfiguration(interval: pingSendTimeSeconds, with: pingTimeNoSignalSeconds), queue: DispatchQueue.global())
+            let ping = try SwiftyPing(host: pingAddress, configuration: PingConfiguration(interval: pingSendTimeSeconds, with: pingTimeoutSeconds), queue: DispatchQueue.global())
             ping.observer = { (response) in
                 if let error = response.error {
                     self.logger.error(message: "Ping error: \(error)")
                     return
                 }
 
-                self.pingDurations.append(response.duration)
+                if (response.duration < self.pingTimeoutSeconds) {
+                    self.returnedPings += 1
+                }
 
-                if self.pingDurations.count == self.numberOfPings {
+                if self.returnedPings == self.numberOfPings {
                     self.timer.invalidate()
                     self.calculateStability()
                 }
@@ -60,16 +61,15 @@ class PingAnalyzer {
 
     // This will be called when all pings return or the timer completes, whichever comes first.
     @objc func calculateStability() {
-        let packetLoss = numberOfPings - pingDurations.count
+        let packetLoss = numberOfPings - returnedPings
         let packetLossPercent = Double(packetLoss) / Double(numberOfPings)
-        let longestPingTime = pingDurations.max() ?? 100 // in the rare situation all pings are lost, max is nil and a default large value is used
 
-        logger.error(message: "Calculated stability: Packet loss \(packetLoss), longest ping time \(longestPingTime)")
+        logger.error(message: "Calculated stability: Packet loss \(packetLoss)")
 
         // If any pings take too long to return or
-        if (packetLossPercent > pingLossNoSignalThreshold) || (longestPingTime > pingTimeNoSignalSeconds) {
+        if (packetLossPercent >= pingLossNoSignalThreshold) {
             callback(.noSignal)
-        } else if (packetLossPercent > pingLossUnstableThreshold) || (longestPingTime > pingTimeUnstableSeconds) {
+        } else if (packetLossPercent >= pingLossUnstableThreshold) {
             callback(.unstable)
         } else {
             callback(.stable)
