@@ -28,7 +28,7 @@ MZViewBase {
     }
 
     //% "Devices"
-    _menuTitle: qsTrId("vpn.devices.myDevices")
+    _menuTitle: MZI18n.DevicesSectionTitle
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.vSpacingSmall

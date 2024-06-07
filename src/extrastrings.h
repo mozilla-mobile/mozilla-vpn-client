@@ -41,8 +41,8 @@ void macOSInstallerStrings() {
   //% "Trouble with this installation?"
   qtTrId("macosinstaller.conclusion.message2");
 
-  //% "Help."
-  qtTrId("macosinstaller.conclusion.message3");
+  //% "Help"
+  qtTrId("macosinstaller.conclusion.message31");
 }
 
 };  // namespace ExtraStrings
