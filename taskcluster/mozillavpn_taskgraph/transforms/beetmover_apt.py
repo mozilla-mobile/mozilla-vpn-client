@@ -41,21 +41,6 @@ def get_gcs_sources(dependent_task):
     return gcs_paths
 
 
-
-ALLOWED_SHIPPING_PHASES = [
-    "ship-client",
-    "promote-client"
-]
-
-@transforms.add
-def filter_shipping(config, tasks):
-    shipping_phase = config.params.get("shipping_phase", "")
-    for task in tasks:
-        if shipping_phase not in ALLOWED_SHIPPING_PHASES:
-            continue
-        yield task
-
-
 @transforms.add
 def beetmover_apt(config, tasks):
     for task in tasks:
@@ -67,18 +52,17 @@ def beetmover_apt(config, tasks):
             continue
         task["worker"]["gcs-sources"] = gcs_sources
 
-        is_production = (
-            config.params["level"] == "3"
-            and config.params.get("shipping_phase", "") == "ship-client"
-            and config.params["tasks_for"] in task["run-on-tasks-for"]
-        )
-
-        bucket = "release" if is_production else "dep"
-        project_name = "mozillavpn" if is_production else "mozillavpn:releng"
+        if task["attributes"]["shipping-phase"] == "ship-client":
+            bucket = "release"
+            project_name = "mozillavpn"
+        else:
+            bucket = "dep"
+            project_name = "mozillavpn:releng"
 
         task["scopes"] = [
             f"project:{project_name}:beetmover:apt-repo:{bucket}",
             f"project:{project_name}:beetmover:action:import-from-gcs-to-artifact-registry"
         ]
 
+        task["label"] = f"beetmover-apt-{task['name']}"
         yield task

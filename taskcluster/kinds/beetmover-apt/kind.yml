@@ -12,19 +12,24 @@ transforms:
 kind-dependencies:
     - beetmover-promote
 
-tasks:
-    push-to-gcr:
-        from-deps:
-            with-attributes:
-                build-type:
-                    - linux64/release-deb
-        run-on-tasks-for: [action]
-        description: description
-        worker-type: beetmover-apt
-        worker:
-            product: vpn
-            max-run-time: 1800
-            gcs-sources: [] # Set from Transform beetmover_apt
-        
+task-defaults:
+    description: Import .deb package into Google Artifact Registry
+    run-on-tasks-for: [action]
+    from-deps:
+        with-attributes:
+            build-type:
+                - linux64/release-deb
+        set-name: false
+    worker-type: beetmover-apt
+    worker:
+        product: vpn
+        max-run-time: 1800
 
-      
+tasks:
+    promote-linux64-deb:
+        attributes:
+            shipping-phase: promote-client
+
+    ship-linux64-deb:
+        attributes:
+            shipping-phase: ship-client
