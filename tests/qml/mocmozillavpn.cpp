@@ -142,5 +142,7 @@ void MozillaVPN::gleanSetDebugViewTag(QString tag) {}
 
 void MozillaVPN::gleanSetLogPings(bool flag) {}
 
+void MozillaVPN::statusBarCheck() {}
+
 // static
 QString MozillaVPN::appVersionForUpdate() { return "42"; }
