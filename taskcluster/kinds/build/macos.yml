@@ -26,34 +26,27 @@ task-defaults:
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/macos_build.sh
 
+
 macos/pr:
     fetches:
-        fetch:
-            - qt-hotfix
+        toolchain:
+            - qt-macos-6.6
     description: "Mac Build"
     treeherder:
         symbol: BD
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
 
-macos/next:
+
+macos/opt:
     fetches:
         toolchain:
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
-        symbol: NEXT
+        symbol: B
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
-
-
-macos/opt:
-    fetches:
-        fetch:
-            - qt-hotfix
-    description: "Mac Build"
-    treeherder:
-        symbol: B
     requires-level: 3 
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
