@@ -24,7 +24,7 @@ TaskServers::TaskServers(
 TaskServers::~TaskServers() { MZ_COUNT_DTOR(TaskServers); }
 
 void TaskServers::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->auth();
   request->get(Constants::apiUrl(Constants::Servers));
 

@@ -29,7 +29,7 @@ VersionApi::~VersionApi() {
 }
 
 void VersionApi::start(Task* task) {
-  NetworkRequest* request = new NetworkRequest(task, 200);
+  auto* request = new NetworkRequest(task, 200);
   request->get(Constants::apiUrl(Constants::Versions));
 
   connect(request, &NetworkRequest::requestFailed, request,

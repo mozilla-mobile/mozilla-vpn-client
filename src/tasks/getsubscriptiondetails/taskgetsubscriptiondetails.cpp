@@ -49,7 +49,7 @@ void TaskGetSubscriptionDetails::run() {
 }
 
 void TaskGetSubscriptionDetails::runInternal() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->auth();
   request->get(Constants::apiUrl(Constants::SubscriptionDetails));
 
@@ -145,7 +145,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
             logger.debug() << "Authentication completed with code:"
                            << logger.sensitive(pkceCodeSuccess);
 
-            NetworkRequest* request = new NetworkRequest(this, 200);
+            auto* request = new NetworkRequest(this, 200);
             request->post(
                 Constants::apiUrl(Constants::LoginVerify),
                 QJsonObject{{"code", pkceCodeSuccess},

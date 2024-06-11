@@ -32,7 +32,7 @@ void TaskGetLocation::run() {
   QUrl url(Constants::apiUrl(Constants::IPInfo));
   QString host = url.host();
 
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->auth();
   request->requestInternal().setRawHeader("Host", host.toLocal8Bit());
   request->requestInternal().setPeerVerifyName(host);

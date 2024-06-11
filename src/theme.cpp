@@ -117,7 +117,7 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
     }
   }
 
-  ThemeData* data = new ThemeData();
+  auto* data = new ThemeData();
   data->theme = themeValue;
   data->colors = colorsValue;
   m_themes.insert(themeName, data);

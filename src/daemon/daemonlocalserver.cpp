@@ -56,7 +56,7 @@ bool DaemonLocalServer::initialize() {
     QLocalSocket* socket = m_server.nextPendingConnection();
     Q_ASSERT(socket);
 
-    DaemonLocalServerConnection* connection =
+    auto* connection =
         new DaemonLocalServerConnection(&m_server, socket);
     connect(socket, &QLocalSocket::disconnected, connection,
             &DaemonLocalServerConnection::deleteLater);

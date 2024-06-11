@@ -34,7 +34,7 @@ NetworkRequest* fxaHawkPostRequest(Task* parent, const QString& path,
   QByteArray hawkHeader =
       hawk.generate(url, "POST", "application/json", payload).toUtf8();
 
-  NetworkRequest* request = new NetworkRequest(parent, 200);
+  auto* request = new NetworkRequest(parent, 200);
   request->requestInternal().setRawHeader("Authorization", hawkHeader);
   request->post(url, payload);
 
@@ -59,7 +59,7 @@ void AuthenticationInAppSession::terminate() {
     return;
   }
 
-  NetworkRequest* request = fxaHawkPostRequest(m_task, "/v1/session/destroy",
+  auto* request = fxaHawkPostRequest(m_task, "/v1/session/destroy",
                                                m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -90,7 +90,7 @@ void AuthenticationInAppSession::start(Task* task, const QString& codeChallenge,
   QUrl url(AuthenticationListener::createAuthenticationUrl(
       codeChallenge, codeChallengeMethod, emailAddress));
 
-  NetworkRequest* request = new NetworkRequest(task);
+  auto* request = new NetworkRequest(task);
   request->get(url);
 
   connect(request, &NetworkRequest::requestCompleted, this,
@@ -173,7 +173,7 @@ void AuthenticationInAppSession::checkAccount(const QString& emailAddress) {
   aia->requestEmailAddressChange(this);
   aia->requestState(AuthenticationInApp::StateCheckingAccount, this);
 
-  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  auto* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/status").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{
                     {"email", m_emailAddress},
@@ -300,7 +300,7 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
     obj.insert("unblockCode", unblockCode);
   }
 
-  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  auto* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/login").arg(Constants::fxaApiBaseUrl()),
                 obj);
 
@@ -378,7 +378,7 @@ void AuthenticationInAppSession::signUp() {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningUp, this);
 
-  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  auto* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/create").arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{
                     {
@@ -439,7 +439,7 @@ void AuthenticationInAppSession::sendUnblockCodeEmail() {
   logger.debug() << "Resend unblock code";
   Q_ASSERT(m_sessionToken.isEmpty());
 
-  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  auto* request = new NetworkRequest(m_task, 200);
   request->post(QString("%1/v1/account/login/send_unblock_code")
                     .arg(Constants::fxaApiBaseUrl()),
                 QJsonObject{{"email", m_emailAddressCaseFix}});
@@ -475,7 +475,7 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
     scopes.append(parsedScope);
   }
 
-  NetworkRequest* request =
+  auto* request =
       fxaHawkPostRequest(m_task, "/v1/session/verify_code", m_sessionToken,
                          QJsonObject{{"code", code},
                                      {"service", m_fxaParams.m_clientId},
@@ -513,7 +513,7 @@ void AuthenticationInAppSession::resendVerificationSessionCodeEmail() {
   logger.debug() << "Resend verification code";
   Q_ASSERT(!m_sessionToken.isEmpty());
 
-  NetworkRequest* request = fxaHawkPostRequest(
+  auto* request = fxaHawkPostRequest(
       m_task, "/v1/session/resend_code", m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -535,7 +535,7 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateVerifyingSessionTotpCode, this);
 
-  NetworkRequest* request = fxaHawkPostRequest(
+  auto* request = fxaHawkPostRequest(
       m_task, "/v1/session/verify/totp", m_sessionToken,
       QJsonObject{{"code", code},
                   {"service", m_fxaParams.m_clientId},
@@ -624,7 +624,7 @@ void AuthenticationInAppSession::signInOrUpCompleted(
 
 #ifdef UNIT_TEST
 void AuthenticationInAppSession::createTotpCodes() {
-  NetworkRequest* request = fxaHawkPostRequest(m_task, "/v1/totp/create",
+  auto* request = fxaHawkPostRequest(m_task, "/v1/totp/create",
                                                m_sessionToken, QJsonObject());
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -654,7 +654,7 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
   HawkAuth hawk = HawkAuth(m_sessionToken);
   QByteArray hawkHeader = hawk.generate(url, "GET", "", "").toUtf8();
 
-  NetworkRequest* request = new NetworkRequest(m_task, 200);
+  auto* request = new NetworkRequest(m_task, 200);
   request->requestInternal().setRawHeader("Authorization", hawkHeader);
   request->get(url);
 
@@ -708,7 +708,7 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
 }
 
 void AuthenticationInAppSession::deleteAccount() {
-  NetworkRequest* request = fxaHawkPostRequest(
+  auto* request = fxaHawkPostRequest(
       m_task, "/v1/account/destroy", m_sessionToken,
       QJsonObject{{"email", m_emailAddress},
                   {"authPW", QString(generateAuthPw().toHex())}});
@@ -742,7 +742,7 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
   }
 #endif
 
-  NetworkRequest* request = fxaHawkPostRequest(
+  auto* request = fxaHawkPostRequest(
       m_task, "/v1/oauth/authorization", m_sessionToken,
       QJsonObject{{"client_id", m_fxaParams.m_clientId},
                   {"state", m_fxaParams.m_state},
@@ -787,7 +787,7 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
           return;
         }
 
-        NetworkRequest* request = new NetworkRequest(m_task, 200);
+        auto* request = new NetworkRequest(m_task, 200);
         request->requestInternal().setAttribute(
             QNetworkRequest::RedirectPolicyAttribute,
             QNetworkRequest::NoLessSafeRedirectPolicy);

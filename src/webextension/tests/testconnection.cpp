@@ -98,7 +98,7 @@ void TestConnection::testInvalidJSONEmitsInvalid() {
 }
 
 void TestConnection::writeTo(const QByteArray& data, QIODevice* target) {
-  uint32_t length = (uint32_t)data.length();
+  auto length = (uint32_t)data.length();
   writeTo(data, length, target);
 }
 

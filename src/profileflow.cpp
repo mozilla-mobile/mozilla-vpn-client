@@ -52,7 +52,7 @@ void ProfileFlow::start() {
 
   setState(StateLoading);
 
-  TaskGetSubscriptionDetails* task = new TaskGetSubscriptionDetails(
+  auto* task = new TaskGetSubscriptionDetails(
       m_forceReauthFlow
           ? TaskGetSubscriptionDetails::ForceAuthenticationFlow
           : TaskGetSubscriptionDetails::RunAuthenticationFlowIfNeeded,

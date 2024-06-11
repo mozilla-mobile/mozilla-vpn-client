@@ -144,7 +144,7 @@ void DnsPingSender::readData() {
     memcpy(&header, payload.constData(), sizeof(header));
 
     // Perfom some checks to ensure this is the reply we were expecting.
-    quint16 flags = qFromBigEndian<quint16>(header.flags);
+    auto flags = qFromBigEndian<quint16>(header.flags);
     if ((flags & DNS_FLAG_QR) == 0) {
       logger.debug() << "Received bogus DNS reply: QR == query";
       continue;

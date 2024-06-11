@@ -146,7 +146,7 @@ void AddonApi::connectSignal(QObject* obj, const QString& signalName,
     return;
   }
 
-  AddonApiCallbackWrapper* cw = new AddonApiCallbackWrapper(this, callback);
+  auto cw = new AddonApiCallbackWrapper(this, callback);
 
   QMetaMethod slot =
       cw->metaObject()->method(cw->metaObject()->indexOfSlot("run()"));

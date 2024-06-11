@@ -80,8 +80,8 @@ void InspectorHotreloader::fetchAndAnnounce(const QUrl& path) {
     logger.error() << "Unexpected File Scheme in: " << path.toString();
     return;
   }
-  TaskFunction* dummy_task = new TaskFunction([]() {});
-  NetworkRequest* request = new NetworkRequest(dummy_task, 200);
+  auto* dummy_task = new TaskFunction([]() {});
+  auto* request = new NetworkRequest(dummy_task, 200);
   request->get(path.toString());
 
   QObject::connect(
@@ -129,7 +129,7 @@ void InspectorHotreloader::resetAllFiles() {
 
 void InspectorHotreloader::reloadWindow() {
   auto engineHolder = QmlEngineHolder::instance();
-  QQmlApplicationEngine* engine =
+  auto* engine =
       static_cast<QQmlApplicationEngine*>(engineHolder->engine());
   // Here is the main QML file.
   if (!engineHolder->hasWindow()) {

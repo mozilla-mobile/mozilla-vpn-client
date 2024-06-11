@@ -24,7 +24,7 @@ TaskHeartbeat::TaskHeartbeat() : Task("TaskHeartbeat") {
 TaskHeartbeat::~TaskHeartbeat() { MZ_COUNT_DTOR(TaskHeartbeat); }
 
 void TaskHeartbeat::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->get(Constants::apiUrl(Constants::Heartbeat));
 
   connect(request, &NetworkRequest::requestFailed, this,

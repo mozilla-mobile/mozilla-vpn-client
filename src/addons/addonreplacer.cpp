@@ -44,7 +44,7 @@ Addon* AddonReplacer::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  AddonReplacer* replacer =
+  auto replacer =
       new AddonReplacer(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { replacer->deleteLater(); });
 

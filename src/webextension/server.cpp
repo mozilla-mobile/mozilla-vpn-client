@@ -48,7 +48,7 @@ void Server::newConnectionReceived() {
     return;
   }
 
-  Connection* connection = new Connection(this, child);
+  auto* connection = new Connection(this, child);
   connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
   connect(connection, &Connection::onMessageReceived, m_adapter,
           &BaseAdapter::onMessage);

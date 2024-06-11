@@ -34,7 +34,7 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
-  AddonMessage* message = new AddonMessage(parent, manifestFileName, id, name);
+  auto message = new AddonMessage(parent, manifestFileName, id, name);
   auto guard = qScopeGuard([&] { message->deleteLater(); });
 
   MessageStatus messageStatus = message->loadMessageStatus(id);

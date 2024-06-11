@@ -364,7 +364,7 @@ bool Localizer::loadLanguage(const QString& requestedLocalCode) {
 }
 
 bool Localizer::createTranslator(const QLocale& locale) {
-  QTranslator* translator = new QTranslator(this);
+  auto* translator = new QTranslator(this);
   m_translators.append(translator);
   QCoreApplication::installTranslator(translator);
 

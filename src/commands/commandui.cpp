@@ -225,7 +225,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+    auto* engine = new QQmlApplicationEngine();
     QmlEngineHolder engineHolder(engine);
 
     // TODO pending #3398

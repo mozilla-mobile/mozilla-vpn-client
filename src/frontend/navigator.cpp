@@ -107,7 +107,7 @@ QList<ScreenData*> computeScreens(int* requestedScreen) {
 
 void maybeGenerateComponent(Navigator* navigator, ScreenData* screen) {
   if (!screen->m_qmlComponent) {
-    QQmlComponent* qmlComponent = new QQmlComponent(
+    auto* qmlComponent = new QQmlComponent(
         QmlEngineHolder::instance()->engine(), screen->m_qmlComponentUrl,
         QQmlComponent::Asynchronous, navigator);
 

@@ -38,7 +38,7 @@ void PurchaseWebHandler::startSubscription(const QString&) {
   // user to login on the browser (rather than the client) in order to complete
   // the subscription platform flow elegantly. If/when guardian adds endpoints
   // that seperate these concerns we can use them.
-  TaskAuthenticate* taskAuthenticate =
+  auto* taskAuthenticate =
       new TaskAuthenticate(AuthenticationListener::AuthenticationInBrowser);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, vpn,
           &MozillaVPN::abortAuthentication);

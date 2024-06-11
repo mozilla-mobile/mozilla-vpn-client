@@ -21,7 +21,7 @@ TaskAddon::TaskAddon(const QString& addonId, const QByteArray& sha256)
 TaskAddon::~TaskAddon() { MZ_COUNT_DTOR(TaskAddon); }
 
 void TaskAddon::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->get(
       QString("%1%2.rcc").arg(AddonManager::addonServerAddress(), m_addonId));
 

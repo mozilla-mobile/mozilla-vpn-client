@@ -304,9 +304,9 @@ static QList<InspectorCommand> s_commands{
           int id = qmlTypeId(qPrintable(arguments[1]), 1, 0,
                              qPrintable(arguments[2]));
 
-          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+          auto* engine = qobject_cast<QQmlApplicationEngine*>(
               QmlEngineHolder::instance()->engine());
-          QObject* item = engine->singletonInstance<QObject*>(id);
+          auto* item = engine->singletonInstance<QObject*>(id);
           if (!item) {
             obj["error"] = "Object not found";
             return obj;
@@ -330,9 +330,9 @@ static QList<InspectorCommand> s_commands{
           int id = qmlTypeId(qPrintable(arguments[1]), 1, 0,
                              qPrintable(arguments[2]));
 
-          QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+          auto* engine = qobject_cast<QQmlApplicationEngine*>(
               QmlEngineHolder::instance()->engine());
-          QObject* item = engine->singletonInstance<QObject*>(id);
+          auto* item = engine->singletonInstance<QObject*>(id);
           if (!item) {
             obj["error"] = "Object not found";
             return obj;
@@ -361,7 +361,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"click", "Click on an object", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
-                       QQuickWindow* window = qobject_cast<QQuickWindow*>(
+                       auto* window = qobject_cast<QQuickWindow*>(
                            QmlEngineHolder::instance()->window());
 
 #if QT_CONFIG(thread)
@@ -765,7 +765,7 @@ void InspectorHandler::initialize() {
   WasmInspector::instance();
 #else
   if (!Constants::inProduction()) {
-    InspectorWebSocketServer* inspectWebSocketServer =
+    auto* inspectWebSocketServer =
         new InspectorWebSocketServer(qApp);
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,
                      inspectWebSocketServer, &InspectorWebSocketServer::close);
@@ -902,7 +902,7 @@ QJsonObject InspectorHandler::getViewTree() {
   QJsonObject out;
   out["type"] = "qml_tree";
 
-  QQmlApplicationEngine* engine = qobject_cast<QQmlApplicationEngine*>(
+  auto* engine = qobject_cast<QQmlApplicationEngine*>(
       QmlEngineHolder::instance()->engine());
   if (!engine) {
     return out;
@@ -910,7 +910,7 @@ QJsonObject InspectorHandler::getViewTree() {
 
   QJsonArray viewRoots;
   for (auto& root : engine->rootObjects()) {
-    QQuickWindow* window = qobject_cast<QQuickWindow*>(root);
+    auto* window = qobject_cast<QQuickWindow*>(root);
     if (window == nullptr) {
       continue;
     }

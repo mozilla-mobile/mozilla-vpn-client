@@ -48,7 +48,7 @@ TaskCreateSupportTicket::~TaskCreateSupportTicket() {
 void TaskCreateSupportTicket::run() {
   logger.debug() << "Sending the support ticket";
 
-  NetworkRequest* request = new NetworkRequest(this, 201);
+  auto* request = new NetworkRequest(this, 201);
   if (App::isUserAuthenticated()) {
     request->auth();
   }

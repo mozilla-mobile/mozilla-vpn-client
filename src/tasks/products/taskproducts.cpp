@@ -23,7 +23,7 @@ TaskProducts::TaskProducts() : Task("TaskProducts") {
 TaskProducts::~TaskProducts() { MZ_COUNT_DTOR(TaskProducts); }
 
 void TaskProducts::run() {
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->get(QString("%1/v1/oauth/subscriptions/iap/plans/%2")
                    .arg(Constants::fxaApiBaseUrl(), Constants::IAP_PLANS));
 

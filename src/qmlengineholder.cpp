@@ -111,7 +111,7 @@ void QmlEngineHolder::clearCacheInternal() {
 }
 
 QWindow* QmlEngineHolder::window() const {
-  QQmlApplicationEngine* engine =
+  auto* engine =
       qobject_cast<QQmlApplicationEngine*>(m_engine);
   if (!engine) return nullptr;
 

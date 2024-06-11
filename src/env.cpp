@@ -44,7 +44,7 @@ QString Env::devVersion() {
 
 // static
 QString Env::graphicsApi() {
-  QQuickWindow* window =
+  auto* window =
       qobject_cast<QQuickWindow*>(QmlEngineHolder::instance()->window());
   if (!window) {
     // In unit-tests we do not have a window.

@@ -29,7 +29,7 @@ TaskCaptivePortalLookup::~TaskCaptivePortalLookup() {
 void TaskCaptivePortalLookup::run() {
   logger.debug() << "Resolving the captive portal detector URL";
 
-  NetworkRequest* request = new NetworkRequest(this, 200);
+  auto* request = new NetworkRequest(this, 200);
   request->auth();
   request->get(Constants::apiUrl(Constants::DNSDetectPortal));
 
