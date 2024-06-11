@@ -169,6 +169,10 @@ if(NOT BUILD_ADJUST_SDK_TOKEN)
     )
 endif()
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    list(APPEND UNIT_TEST_ARGS -platform offscreen)
+endif()
+
 ## Add the tests to be run, one for each test class.
 get_target_property(UTEST_SOURCES app_unit_tests SOURCES)
 list(FILTER UTEST_SOURCES INCLUDE REGEX "test.*.h$")
@@ -181,7 +185,7 @@ foreach(filename ${UTEST_SOURCES})
     )
 
     foreach(UTEST_CLASS ${UTEST_CLASS_LIST})
-        add_test(NAME ${UTEST_CLASS} COMMAND app_unit_tests ${UTEST_CLASS})
+        add_test(NAME ${UTEST_CLASS} COMMAND app_unit_tests ${UNIT_TEST_ARGS} ${UTEST_CLASS})
         set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
     endforeach()
 endforeach()
