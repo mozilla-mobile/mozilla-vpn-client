@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   pe.insert("LANG", "en");
   pe.insert("LANGUAGE", "en");
 
-  QCoreApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
 
   I18nStrings::initialize();
 
