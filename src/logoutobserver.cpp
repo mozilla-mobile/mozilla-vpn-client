@@ -10,7 +10,7 @@
 LogoutObserver::LogoutObserver(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LogoutObserver);
 
-  connect(App::instance(), &App::userAuthenticationChanged, this,
+  connect(App::instance(), &App::userAuthenticationMaybeChanged, this,
           &LogoutObserver::stateChanged);
 }
 

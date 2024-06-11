@@ -12,7 +12,7 @@ class App : public QObject {
   Q_DISABLE_COPY_MOVE(App)
 
   Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
-                 userAuthenticationChanged)
+                 userAuthenticationMaybeChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
@@ -70,7 +70,7 @@ class App : public QObject {
   void quit();
 
  signals:
-  void userAuthenticationChanged();
+  void userAuthenticationMaybeChanged();
   void stateChanged();
 
  protected:

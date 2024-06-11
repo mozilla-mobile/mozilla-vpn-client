@@ -40,7 +40,7 @@ void App::setState(int state) {
   logger.debug() << "Set state:" << state;
 
   m_state = state;
-  emit userAuthenticationChanged();
+  emit userAuthenticationMaybeChanged();
   emit stateChanged();
 }
 
