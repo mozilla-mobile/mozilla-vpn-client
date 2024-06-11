@@ -4,6 +4,7 @@
 
 #include "cryptosettings.h"
 
+#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -36,25 +37,33 @@ CryptoSettings* s_instance = nullptr;
 }  // namespace
 
 // static
+void CryptoSettings::create() {
+#if defined(UNIT_TEST)
+  new DummyCryptoSettings();
+#elif defined(MZ_FLATPAK)
+  new XdgCryptoSettings();
+#elif defined(MZ_LINUX)
+  new LinuxCryptoSettings();
+#elif defined(MZ_MACOS) || defined(MZ_IOS)
+  new MacOSCryptoSettings();
+#elif defined(MZ_WINDOWS)
+  new WindowsCryptoSettings();
+#elif defined(MZ_ANDROID)
+  new AndroidCryptoSettings();
+#endif
+
+  // Ensure the implementation is garbage collected at program exit.
+  qAddPostRoutine([]() { if (s_instance) delete s_instance; });
+}
+
+// static
 QSettings::Format CryptoSettings::format() {
   static QSettings::Format format =
       QSettings::registerFormat("moz", readFile, writeFile);
 
   // Create a platform crypto settings implementation, if supported.
   if (!s_instance) {
-#if defined(UNIT_TEST)
-    s_instance = new DummyCryptoSettings();
-#elif defined(MZ_FLATPAK)
-    s_instance = new XdgCryptoSettings();
-#elif defined(MZ_LINUX)
-    s_instance = new LinuxCryptoSettings();
-#elif defined(MZ_MACOS) || defined(MZ_IOS)
-    s_instance = new MacOSCryptoSettings();
-#elif defined(MZ_WINDOWS)
-    s_instance = new WindowsCryptoSettings();
-#elif defined(MZ_ANDROID)
-    s_instance = new AndroidCryptoSettings();
-#endif
+    CryptoSettings::create();
   }
 
   return format;

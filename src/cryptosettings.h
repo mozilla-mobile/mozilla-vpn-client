@@ -18,27 +18,31 @@ class CryptoSettings {
     EncryptionChachaPolyV2,
   };
 
+  static void create();
+  static QSettings::Format format();
+
+ protected:
   explicit CryptoSettings();
   virtual ~CryptoSettings();
 
-  static QSettings::Format format();
   static QByteArray generateRandomBytes(qsizetype length);
 
-  // Callback methods for QSetting::Format
-  static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
-  static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
-
- private:
   // Implementations must provide these methods to retrieve keys.
   virtual void resetKey() = 0;
   virtual QByteArray getKey(const QByteArray& metadata) = 0;
   virtual QByteArray getMetaData() { return QByteArray(); }
   virtual Version getSupportedVersion() = 0;
 
+  // Callback methods for QSetting::Format
+  static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
+  static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
+
+  // Plantext file implementation
   static bool readJsonFile(QIODevice& device, QSettings::SettingsMap& map);
   static bool writeJsonFile(QIODevice& device,
                             const QSettings::SettingsMap& map);
 
+  // Encrypted V1 and V2 implementation
   bool readEncryptedChachaPolyFile(Version fileVersion, QIODevice& device,
                                    QSettings::SettingsMap& map);
 
