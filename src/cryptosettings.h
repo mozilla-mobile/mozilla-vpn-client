@@ -21,6 +21,10 @@ class CryptoSettings {
   static void create();
   static QSettings::Format format();
 
+  // Callback methods for QSetting::Format
+  static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
+  static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
+
  protected:
   explicit CryptoSettings();
   virtual ~CryptoSettings();
@@ -33,10 +37,7 @@ class CryptoSettings {
   virtual QByteArray getMetaData() { return QByteArray(); }
   virtual Version getSupportedVersion() = 0;
 
-  // Callback methods for QSetting::Format
-  static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
-  static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
-
+ private:
   // Plantext file implementation
   static bool readJsonFile(QIODevice& device, QSettings::SettingsMap& map);
   static bool writeJsonFile(QIODevice& device,
