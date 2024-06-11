@@ -15,6 +15,13 @@ constexpr const char* XDG_PORTAL_BACKGROUND =
 constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
 constexpr const char* XDG_PORTAL_SECRET = "org.freedesktop.portal.Secret";
 
+// XDG Portals allow sandboxed applications to interact with the host operating
+// system in a secure way via D-Bus APIs. This class implements some common
+// conventions in the portal APIs to support things like sessions, asynchronous
+// requests and determining the GUI window indentifiers.
+//
+// See https://flatpak.github.io/xdg-desktop-portal/docs/ for more information.
+//
 class XdgPortal : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XdgPortal)
