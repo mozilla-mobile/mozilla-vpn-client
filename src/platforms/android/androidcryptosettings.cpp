@@ -66,7 +66,6 @@ QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
 
   if (m_initialized) {
     return m_key;
-    logger.warning() << "Malformed key?";
   }
 
   if (!jni_hasKey()) {
@@ -80,12 +79,9 @@ QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
 }
 
 CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {
-  logger.debug() << "Get supported settings method";
-
   if (getKey(QByteArray()).isEmpty()) {
-    logger.debug() << "No encryption";
+    logger.warning() << "No encryption";
     return CryptoSettings::NoEncryption;
   }
-  logger.debug() << "Encryption supported!";
   return CryptoSettings::EncryptionChachaPolyV1;
 }
