@@ -53,7 +53,9 @@ void CryptoSettings::create() {
 #endif
 
   // Ensure the implementation is garbage collected at program exit.
-  qAddPostRoutine([]() { if (s_instance) delete s_instance; });
+  qAddPostRoutine([]() {
+    if (s_instance) delete s_instance;
+  });
 }
 
 // static
