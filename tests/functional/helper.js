@@ -431,7 +431,7 @@ module.exports = {
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+        'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
   },
 
   async authenticateInApp(skipOnboarding = true) {
@@ -465,7 +465,7 @@ module.exports = {
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+        'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
   },
 
   async skipOnboarding() {

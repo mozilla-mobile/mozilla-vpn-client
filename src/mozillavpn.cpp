@@ -314,7 +314,6 @@ void MozillaVPN::initialize() {
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
   if (m_private->m_user.subscriptionNeeded()) {
-    setUserState(UserAuthenticated);
     setState(StateAuthenticating);
     TaskScheduler::scheduleTask(
         new TaskFunction([this]() { maybeStateMain(); }));
@@ -367,7 +366,6 @@ void MozillaVPN::initialize() {
   }
 
   scheduleRefreshDataTasks();
-  setUserState(UserAuthenticated);
   maybeStateMain();
 }
 
@@ -411,7 +409,6 @@ void MozillaVPN::maybeStateMain() {
     SettingsManager::instance()->reset();
     REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
 
-    setUserState(UserNotAuthenticated);
     setState(StateInitialize);
     return;
   }
@@ -460,25 +457,13 @@ void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
+  // If we try to start an authentication flow when already logged in, there
+  // is a bug elsewhere.
+  Q_ASSERT(state() == StateInitialize);
+
   setState(StateAuthenticating);
 
   ErrorHandler::instance()->hideAlert();
-
-  if (userState() != UserNotAuthenticated) {
-    // If we try to start an authentication flow when already logged in, there
-    // is a bug elsewhere.
-    Q_ASSERT(userState() == UserLoggingOut);
-
-    LogoutObserver* lo = new LogoutObserver(this);
-    // Let's use QueuedConnection to avoid nested tasks executions.
-    connect(
-        lo, &LogoutObserver::ready, this,
-        [this, authenticationType]() {
-          authenticateWithType(authenticationType);
-        },
-        Qt::QueuedConnection);
-    return;
-  }
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 
@@ -523,7 +508,6 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   m_private->m_deviceModel.writeSettings();
 
   SettingsHolder::instance()->setToken(token);
-  setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
     maybeStateMain();
@@ -782,33 +766,16 @@ void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
-  setUserState(UserLoggingOut);
 
   TaskScheduler::deleteTasks();
 
-  PurchaseHandler::instance()->stopSubscription();
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    ProductsHandler::instance()->stopProductsRegistration();
-  }
-
-  controller()->deleteOSTunnelConfig();
-
-  // update-required state is the only one we want to keep when logging out.
-  if (state() != StateUpdateRequired) {
-    setState(StateInitialize);
-  }
-
+  // Schedule the removal of our device and let it run in the background.
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
-
-    // Immediately after the scheduling of the device removal, we want to
-    // delete the session token, so that, in case the app is terminated, at
-    // the next execution we go back to the init screen.
-    reset(false);
-    return;
   }
 
-  TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
+  // update-required state is the only one we want to keep when logging out.
+  reset(state() != StateUpdateRequired);
 }
 
 void MozillaVPN::reset(bool forceInitialState) {
@@ -827,10 +794,11 @@ void MozillaVPN::reset(bool forceInitialState) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
-  setUserState(UserNotAuthenticated);
-
   if (forceInitialState) {
     setState(StateInitialize);
+  } else {
+    // Manually emit a potential auth change if we are not changing state.
+    emit userAuthenticationMaybeChanged();
   }
 }
 
@@ -880,7 +848,7 @@ void MozillaVPN::onboardingCompleted() {
     return;
   }
 
-  if (userState() != UserAuthenticated) {
+  if (!userAuthenticated()) {
     authenticate();
     return;
   }
@@ -1178,7 +1146,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (!modelsInitialized() || userState() != UserAuthenticated) {
+  if (!modelsInitialized() || !userAuthenticated()) {
     setState(StateInitialize);
     return;
   }
@@ -1228,7 +1196,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
       REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setUserState(UserNotAuthenticated);
+      setState(StateInitialize);
       return;
     }
   }));

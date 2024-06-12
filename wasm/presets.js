@@ -126,7 +126,7 @@ const MVPNPresets = [
       await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
       await controller.wait();
       await controller.waitForQuery('//screenLoader{busy=false}');
 
@@ -277,7 +277,7 @@ const MVPNPresets = [
       await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
       await controller.wait();
 
       await controller.waitForQuery('//screenLoader{busy=false}');
@@ -330,7 +330,7 @@ const MVPNPresets = [
       await controller.clickOnQuery('//signUpButton');
 
       await controller.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
       await controller.waitForQuery('//screenLoader{busy=false}');
 
       await controller.waitForQueryAndClick('//telemetryPolicyButton');

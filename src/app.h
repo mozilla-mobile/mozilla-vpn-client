@@ -11,7 +11,8 @@ class App : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(App)
 
-  Q_PROPERTY(UserState userState READ userState NOTIFY userStateChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
+                 userAuthenticationMaybeChanged)
   Q_PROPERTY(int state READ state NOTIFY stateChanged)
 
  public:
@@ -53,24 +54,6 @@ class App : public QObject {
   };
   Q_ENUM(State);
 
-  enum UserState {
-    // The user is not authenticated and there is not a logging-out operation
-    // in progress. Maybe we are running the authentication flow (to know if we
-    // are running the authentication flow, please use the
-    // `StateAuthenticating` state).
-    UserNotAuthenticated,
-
-    // The user is authenticated and there is not a logging-out operation in
-    // progress.
-    UserAuthenticated,
-
-    // We are logging out the user. There are a few steps to run in order to
-    // complete the logout. In the meantime, the user should be considered as
-    // not-authenticated. The next state will be `UserNotAuthenticated`.
-    UserLoggingOut,
-  };
-  Q_ENUM(UserState);
-
   // Important! Each app _must_ implement this static method.
   static App* instance();
 
@@ -79,27 +62,22 @@ class App : public QObject {
   int state() const;
   void setState(int state);
 
-  UserState userState() const;
-  void setUserState(UserState userState);
-
-  static bool isUserAuthenticated() {
-    return App::instance()->userState() == App::UserAuthenticated;
-  }
+  bool userAuthenticated() const;
+  static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
 
   static QByteArray authorizationHeader();
 
   void quit();
 
  signals:
+  void userAuthenticationMaybeChanged();
   void stateChanged();
-  void userStateChanged();
 
  protected:
   App(QObject* parent);
 
  private:
   int m_state = StateInitialize;
-  UserState m_userState = UserNotAuthenticated;
 };
 
 #endif  // APP_H

@@ -25,7 +25,7 @@ class LogoutObserver final : public QObject {
   void ready();
 
  private slots:
-  void userStateChanged();
+  void stateChanged();
 };
 
 #endif  // LOGOUTOBSERVER_H

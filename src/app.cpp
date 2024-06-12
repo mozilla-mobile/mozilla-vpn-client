@@ -36,21 +36,12 @@ App::~App() { MZ_COUNT_DTOR(App); }
 
 int App::state() const { return m_state; }
 
-App::UserState App::userState() const { return m_userState; }
-
 void App::setState(int state) {
   logger.debug() << "Set state:" << state;
 
   m_state = state;
+  emit userAuthenticationMaybeChanged();
   emit stateChanged();
-}
-
-void App::setUserState(UserState state) {
-  logger.debug() << "User authentication state:" << state;
-  if (m_userState != state) {
-    m_userState = state;
-    emit userStateChanged();
-  }
 }
 
 void App::quit() {
@@ -66,4 +57,9 @@ void App::quit() {
 #endif
 
   qApp->quit();
+}
+
+bool App::userAuthenticated() const {
+  auto holder = SettingsHolder::instance();
+  return (m_state > StateAuthenticating) && holder->hasToken();
 }

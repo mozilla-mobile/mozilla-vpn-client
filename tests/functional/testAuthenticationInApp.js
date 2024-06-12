@@ -145,7 +145,7 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
@@ -252,7 +252,7 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
@@ -360,7 +360,7 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
@@ -437,7 +437,7 @@ describe('User authentication', function() {
               .enabled());
 
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
@@ -756,7 +756,7 @@ describe('User authentication', function() {
             assert.strictEqual(startedOutcomeEvent.length, 1);
 
             await vpn.waitForMozillaProperty(
-                'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+                'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
             const endedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "loginEnded", "main");
             assert.strictEqual(endedOutcomeEvent.length, 1);
@@ -1044,7 +1044,7 @@ describe('User authentication', function() {
             assert.strictEqual(startedEvent.length, 1);
 
             await vpn.waitForMozillaProperty(
-                'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+                'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
             const completedOutcomeEvent = await vpn.gleanTestGetValue("outcome", "registrationCompleted", "main");
             assert.strictEqual(completedOutcomeEvent.length, 1);

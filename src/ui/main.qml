@@ -185,7 +185,6 @@ Window {
         ]
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&
-                 VPN.userState === VPN.UserAuthenticated &&
                  VPN.state === VPN.StateMain
     }
 
