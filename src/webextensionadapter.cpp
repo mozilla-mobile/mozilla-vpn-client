@@ -21,9 +21,9 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
-#include "webextensionadapter.h"
-#include "taskscheduler.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "taskscheduler.h"
+#include "webextensionadapter.h"
 
 namespace {
 
@@ -46,7 +46,7 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
       RequestType{"activate",
                   [](const QJsonObject&) {
                     auto t = new TaskControllerAction(
-                      TaskControllerAction::eActivateForExtension);
+                        TaskControllerAction::eActivateForExtension);
                     TaskScheduler::scheduleTask(t);
                     QJsonObject obj;
                     obj["ok"] = true;

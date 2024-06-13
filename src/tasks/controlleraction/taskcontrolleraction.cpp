@@ -53,7 +53,8 @@ void TaskControllerAction::run() {
       expectSignal = controller->activate(m_serverData);
       break;
     case eActivateForExtension:
-      expectSignal = controller->activate(m_serverData, Controller::ExtensionUser);
+      expectSignal =
+          controller->activate(m_serverData, Controller::ExtensionUser);
       break;
     case eDeactivate:
       expectSignal = controller->deactivate();
