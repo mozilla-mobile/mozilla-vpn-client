@@ -764,7 +764,7 @@ void InspectorHandler::initialize() {
 #ifdef MZ_WASM
   WasmInspector::instance();
 #else
-  if (true) {
+  if (!Constants::inProduction()) {
     InspectorWebSocketServer* inspectWebSocketServer =
         new InspectorWebSocketServer(qApp);
     QObject::connect(qApp, &QCoreApplication::aboutToQuit,
