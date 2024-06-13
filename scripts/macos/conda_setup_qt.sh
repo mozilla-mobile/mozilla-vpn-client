@@ -16,6 +16,7 @@ else
 fi
 
 export QT_DIR=$CONDA_PREFIX/Qt
+set -e
 # QT_Host Tools
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET -m all
 # QT Android Tools
